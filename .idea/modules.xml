@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/across.iml" filepath="$PROJECT_DIR$/across.iml" />
       <module fileurl="file://$PROJECT_DIR$/debug-web/across-debug-web.iml" filepath="$PROJECT_DIR$/debug-web/across-debug-web.iml" />
       <module fileurl="file://$PROJECT_DIR$/across-ehcache/across-ehcache.iml" filepath="$PROJECT_DIR$/across-ehcache/across-ehcache.iml" />
       <module fileurl="file://$PROJECT_DIR$/across-hibernate/across-hibernate.iml" filepath="$PROJECT_DIR$/across-hibernate/across-hibernate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/across-standard-modules.iml" filepath="$PROJECT_DIR$/across-standard-modules.iml" />
       <module fileurl="file://$PROJECT_DIR$/admin-web/admin-web.iml" filepath="$PROJECT_DIR$/admin-web/admin-web.iml" />
       <module fileurl="file://$PROJECT_DIR$/debug-web/debug-web.iml" filepath="$PROJECT_DIR$/debug-web/debug-web.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-security/spring-security.iml" filepath="$PROJECT_DIR$/spring-security/spring-security.iml" />
