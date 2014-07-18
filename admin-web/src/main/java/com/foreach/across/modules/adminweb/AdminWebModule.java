@@ -2,8 +2,6 @@ package com.foreach.across.modules.adminweb;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfig;
-import com.foreach.across.core.context.bootstrap.ModuleBootstrapConfig;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.modules.adminweb.config.AdminWebMvcConfiguration;
@@ -50,12 +48,7 @@ public class AdminWebModule extends AcrossModule
 
 	@Override
 	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
-		contextConfigurers.add( new AnnotatedClassConfigurer( AdminWebMvcConfiguration.class/*, AdminWebSecurityConfiguration.class*/ ) );
-	}
-
-	@Override
-	public void prepareForBootstrap( ModuleBootstrapConfig currentModule,
-	                                 AcrossBootstrapConfig contextConfig ) {
-		contextConfig.extendModule( "SpringSecurityModule", AdminWebSecurityConfiguration.class );
+		contextConfigurers.add( new AnnotatedClassConfigurer( AdminWebMvcConfiguration.class,
+		                                                      AdminWebSecurityConfiguration.class ) );
 	}
 }
