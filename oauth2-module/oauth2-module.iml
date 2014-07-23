@@ -9,6 +9,20 @@
         <naming-strategy-map />
       </configuration>
     </facet>
+    <facet type="Spring" name="Spring">
+      <configuration>
+        <fileset id="fileset" name="Spring Application Context" removed="false">
+          <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/oauth2/config/security/AuthorizationServerConfiguration.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/oauth2/config/security/AuthorizationServerSecurityConfiguration.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/oauth2/config/security/CustomTokenEndpointsConfiguration.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/oauth2/config/OAuth2EndpointsConfiguration.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/oauth2/config/OAuth2RepositoriesConfiguration.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/oauth2/config/OAuth2ServicesConfiguration.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/oauth2/config/security/ResourceServerConfiguration.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/oauth2/config/security/ResourceServerSecurityConfiguration.java</file>
+        </fileset>
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
