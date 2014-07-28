@@ -1,7 +1,10 @@
 package com.foreach.across.modules.properties.config;
 
 import com.foreach.across.core.AcrossException;
-import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.core.annotations.Module;
+import com.foreach.across.core.context.info.AcrossModuleInfo;
+import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.modules.properties.PropertiesModuleSettings;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -23,13 +26,16 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 public class ConversionServiceConfiguration
 {
 	@Autowired
+	@Module(AcrossModule.CURRENT_MODULE)
+	private AcrossModuleInfo currentModuleInfo;
+
+	@Autowired
 	private Environment environment;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Bean
-	@Exposed
 	public ConversionService propertiesConversionService() {
 		ConversionService conversionServiceToUse = environment.getProperty(
 				PropertiesModuleSettings.CONVERSION_SERVICE,
@@ -52,12 +58,20 @@ public class ConversionServiceConfiguration
 				conversionServiceToUse = getConversionServiceBeanFromParent();
 
 				if ( conversionServiceToUse == null ) {
-					return new DefaultFormattingConversionService( true );
+					conversionServiceToUse = createDefaultConversionService();
+
 				}
 			}
 		}
 
 		return conversionServiceToUse;
+	}
+
+	private ConversionService createDefaultConversionService() {
+		// If we are creating the default conversion service, make sure we expose it
+		currentModuleInfo.getBootstrapConfiguration().addExposeFilter( new ClassBeanFilter( ConversionService.class ) );
+
+		return new DefaultFormattingConversionService( true );
 	}
 
 	private ConversionService getConversionServiceBeanFromParent() {
