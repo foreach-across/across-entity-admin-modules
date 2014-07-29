@@ -2,12 +2,11 @@ package com.foreach.across.modules.properties.registries;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
-import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
+import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
 import com.foreach.across.modules.properties.repositories.PropertyTrackingRepository;
 import com.foreach.spring.util.PropertyTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
 
@@ -24,32 +23,25 @@ public abstract class EntityPropertiesRegistry
 {
 	private final Logger LOG = LoggerFactory.getLogger( getClass() );
 
-	private final String propertiesId;
-
 	private final PropertyTypeRegistry<String> propertyTypeRegistry;
 	private final ConversionService conversionService;
-	private final EntityPropertiesRepository repository;
 
-	@Autowired
-	private PropertyTrackingRepository propertyTrackingRepository;
+	private final EntityPropertiesDescriptor descriptor;
+	private final PropertyTrackingRepository propertyTrackingRepository;
 
-	protected EntityPropertiesRegistry( String propertiesId,
-	                                    EntityPropertiesRepository repository,
-	                                    ConversionService conversionService ) {
-		this( propertiesId, repository, null, conversionService );
+	protected EntityPropertiesRegistry( EntityPropertiesDescriptor descriptor ) {
+		this( descriptor, null );
 	}
 
-	protected EntityPropertiesRegistry( String propertiesId,
-	                                    EntityPropertiesRepository repository,
-	                                    Class classForUnknownProperties,
-	                                    ConversionService conversionService ) {
-		Assert.notNull( conversionService, "EntityPropertiesRegistry requires a valid ConversionService" );
-		this.propertiesId = propertiesId;
-		this.repository = repository;
+	protected EntityPropertiesRegistry( EntityPropertiesDescriptor descriptor, Class classForUnknownProperties ) {
+		this.descriptor = descriptor;
 		this.propertyTypeRegistry = classForUnknownProperties != null
 				? new PropertyTypeRegistry<String>( classForUnknownProperties )
 				: new PropertyTypeRegistry<String>();
-		this.conversionService = conversionService;
+		this.conversionService = descriptor.conversionService();
+		this.propertyTrackingRepository = descriptor.trackingRepository();
+
+		Assert.notNull( conversionService, "EntityPropertiesRegistry requires a valid ConversionService" );
 	}
 
 	public PropertyTypeRegistry<String> getPropertyTypeRegistry() {
@@ -96,11 +88,13 @@ public abstract class EntityPropertiesRegistry
 	}
 
 	private void trackProperty( String owner, String propertyKey ) {
-		try {
-			propertyTrackingRepository.register( owner, propertiesId, repository.getPropertiesTable(), propertyKey );
-		}
-		catch ( Exception e ) {
-			LOG.warn( "Tracking property registration failed", e );
+		if ( propertyTrackingRepository != null ) {
+			try {
+				propertyTrackingRepository.register( owner, descriptor, propertyKey );
+			}
+			catch ( Exception e ) {
+				LOG.warn( "Tracking property registration failed", e );
+			}
 		}
 	}
 

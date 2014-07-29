@@ -1,10 +1,14 @@
 package com.foreach.across.modules.it.properties.extendingmodule.config;
 
 import com.foreach.across.core.AcrossModule;
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Module;
-import com.foreach.across.core.context.info.AcrossModuleInfo;
+import com.foreach.across.modules.it.properties.definingmodule.repositories.UserPropertiesRepository;
 import com.foreach.across.modules.it.properties.extendingmodule.registry.ClientPropertyRegistry;
+import com.foreach.across.modules.it.properties.extendingmodule.repositories.ClientPropertiesRepository;
+import com.foreach.across.modules.properties.config.AbstractEntityPropertiesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
@@ -13,20 +17,37 @@ import javax.annotation.PostConstruct;
  * @author Arne Vandamme
  */
 @Configuration
-public class ClientPropertiesConfig
+public class ClientPropertiesConfig extends AbstractEntityPropertiesConfiguration
 {
-	@Autowired
-	@Module(AcrossModule.CURRENT_MODULE)
-	private AcrossModule currentModule;
-
 	public static final String BOOLEAN = "extending.booleanProperty";
 
-	@Autowired
-	private ClientPropertyRegistry clientPropertyRegistry;
+	@Override
+	protected String originalTableName() {
+		return "client_properties";
+	}
 
-	@PostConstruct
-	private void registerProperties()
-	{
-		clientPropertyRegistry.register( currentModule, BOOLEAN, Boolean.class, true );
+	@Override
+	public String propertiesId() {
+		return "ExtendingModule.ClientProperties";
+	}
+
+	@Override
+	public String keyColumnName() {
+		return "client_id";
+	}
+
+	@Bean
+	public ClientPropertiesRepository clientPropertiesRepository() {
+		return new ClientPropertiesRepository( this );
+	}
+
+	@Bean
+	@Exposed
+	public ClientPropertyRegistry clientPropertyRegistry() {
+		ClientPropertyRegistry registry = new ClientPropertyRegistry( this );
+
+		registry.register( currentModule, BOOLEAN, Boolean.class, true );
+
+		return registry;
 	}
 }

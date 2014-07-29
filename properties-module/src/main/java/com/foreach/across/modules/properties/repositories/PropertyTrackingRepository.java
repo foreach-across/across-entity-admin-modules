@@ -1,6 +1,6 @@
 package com.foreach.across.modules.properties.repositories;
 
-import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -20,7 +20,6 @@ import java.util.UUID;
  * @author Arne Vandamme
  */
 @Repository
-@Exposed
 public class PropertyTrackingRepository
 {
 	private static final Logger LOG = LoggerFactory.getLogger( PropertyTrackingRepository.class );
@@ -40,16 +39,16 @@ public class PropertyTrackingRepository
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public synchronized void register( String moduleName,
-	                                   String propertiesId,
-	                                   String databaseTable,
+	                                   EntityPropertiesDescriptor descriptor,
 	                                   String propertyName ) {
-		LOG.debug( "Registering {} property {} for module {}", propertiesId, propertyName, moduleName );
+		LOG.debug( "Registering {} property {} for module {}", descriptor.propertiesId(), propertyName, moduleName );
 
-		String hashCode = hashCode( moduleName, propertiesId, databaseTable, propertyName );
-		String id = existingRecordId( hashCode, moduleName, propertiesId, databaseTable, propertyName );
+		String hashCode = hashCode( moduleName, descriptor.propertiesId(), descriptor.tableName(), propertyName );
+		String id = existingRecordId( hashCode, moduleName, descriptor.propertiesId(), descriptor.tableName(),
+		                              propertyName );
 
 		if ( id == null ) {
-			createRecord( hashCode, moduleName, propertiesId, databaseTable, propertyName );
+			createRecord( hashCode, moduleName, descriptor.propertiesId(), descriptor.tableName(), propertyName );
 		}
 		else {
 			updateRegistrationTimestamp( id );
