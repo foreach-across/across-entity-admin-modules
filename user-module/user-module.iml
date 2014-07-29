@@ -8,6 +8,7 @@
           <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/user/config/UserRepositoriesConfiguration.java</file>
           <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/user/config/UserServicesConfiguration.java</file>
           <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/user/config/modules/UserSpringSecurityConfiguration.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/foreach/across/modules/user/config/UserPropertiesConfiguration.java</file>
         </fileset>
       </configuration>
     </facet>
