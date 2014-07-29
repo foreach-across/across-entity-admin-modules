@@ -21,6 +21,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.sql.DataSource;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -113,6 +115,7 @@ public class ITConversionService
 
 	private ConversionService bootstrap( boolean useParent ) {
 		context = new AcrossContext( useParent ? parent : null );
+		context.setDataSource( mock( DataSource.class ) );
 		context.setInstallerAction( InstallerAction.DISABLED );
 		context.addModule( propertiesModule );
 		context.bootstrap();

@@ -16,6 +16,8 @@ import java.util.Map;
  */
 public class EntityPropertiesRepository<T>
 {
+	private final String tableName;
+
 	private final String SQL_INSERT_PROPERTY;
 	private final String SQL_SELECT_PROPERTIES;
 	private final String SQL_DROP_PROPERTIES;
@@ -27,11 +29,17 @@ public class EntityPropertiesRepository<T>
 	                                   String keyColumn ) {
 		jdbcTemplate = new JdbcTemplate( dataSource );
 
+		this.tableName = table;
+
 		SQL_INSERT_PROPERTY = String.format( "INSERT INTO %s (%s,property_name,property_value) VALUES (?,?,?)", table,
 		                                     keyColumn );
 		SQL_SELECT_PROPERTIES = String.format( "SELECT property_name, property_value FROM %s WHERE %s = ?", table,
 		                                       keyColumn );
 		SQL_DROP_PROPERTIES = String.format( "DELETE FROM %s WHERE %s = ?", table, keyColumn );
+	}
+
+	public String getPropertiesTable() {
+		return tableName;
 	}
 
 	@Transactional(readOnly = true)
