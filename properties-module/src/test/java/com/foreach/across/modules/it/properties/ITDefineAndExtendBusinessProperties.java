@@ -2,9 +2,12 @@ package com.foreach.across.modules.it.properties;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
+import com.foreach.across.core.context.info.AcrossContextInfo;
+import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.it.properties.definingmodule.DefiningModule;
 import com.foreach.across.modules.it.properties.definingmodule.business.User;
 import com.foreach.across.modules.it.properties.definingmodule.business.UserProperties;
+import com.foreach.across.modules.it.properties.definingmodule.registry.UserPropertyRegistry;
 import com.foreach.across.modules.it.properties.definingmodule.services.UserPropertyService;
 import com.foreach.across.modules.it.properties.extendingmodule.ExtendingModule;
 import com.foreach.across.modules.it.properties.extendingmodule.business.ClientProperties;
@@ -40,6 +43,21 @@ public class ITDefineAndExtendBusinessProperties
 
 	@Autowired
 	private ClientPropertyService clientPropertyService;
+
+	@Autowired
+	private UserPropertyRegistry userPropertyRegistry;
+
+	@Autowired
+	private AcrossContextInfo acrossContextInfo;
+
+	@Test
+	public void forceTrackingUpdate() throws InterruptedException {
+		AcrossModuleInfo moduleInfo = acrossContextInfo.getModuleInfo( "ExtendingModule" );
+
+		Thread.sleep( 1000 );
+
+		userPropertyRegistry.register( moduleInfo, UserPropertiesConfig.BOOLEAN, Boolean.class );
+	}
 
 	@Test
 	public void defaultPropertyValues() {

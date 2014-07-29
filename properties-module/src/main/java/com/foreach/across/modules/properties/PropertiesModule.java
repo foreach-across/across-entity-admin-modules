@@ -5,6 +5,8 @@ import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.modules.properties.config.ConversionServiceConfiguration;
+import com.foreach.across.modules.properties.config.PropertyTrackingConfiguration;
+import com.foreach.across.modules.properties.installers.PropertyTrackingSchemaInstaller;
 
 import java.util.Set;
 
@@ -27,7 +29,13 @@ public class PropertiesModule extends AcrossModule
 	}
 
 	@Override
+	public Object[] getInstallers() {
+		return new Object[] { PropertyTrackingSchemaInstaller.class };
+	}
+
+	@Override
 	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
-		contextConfigurers.add( new AnnotatedClassConfigurer( ConversionServiceConfiguration.class ) );
+		contextConfigurers.add( new AnnotatedClassConfigurer( ConversionServiceConfiguration.class,
+		                                                      PropertyTrackingConfiguration.class ) );
 	}
 }
