@@ -25,6 +25,8 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 @Configuration
 public class ConversionServiceConfiguration
 {
+	public static final String CONVERSION_SERVICE_BEAN = "propertiesConversionService";
+
 	@Autowired
 	@Module(AcrossModule.CURRENT_MODULE)
 	private AcrossModuleInfo currentModuleInfo;
@@ -35,7 +37,7 @@ public class ConversionServiceConfiguration
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@Bean
+	@Bean(name = CONVERSION_SERVICE_BEAN)
 	public ConversionService propertiesConversionService() {
 		ConversionService conversionServiceToUse = environment.getProperty(
 				PropertiesModuleSettings.CONVERSION_SERVICE,
