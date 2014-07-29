@@ -1,10 +1,10 @@
 package com.foreach.across.modules.properties.repositories;
 
 import com.foreach.across.modules.properties.business.StringPropertiesSource;
+import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,30 +16,23 @@ import java.util.Map;
  */
 public class EntityPropertiesRepository<T>
 {
-	private final String tableName;
-
 	private final String SQL_INSERT_PROPERTY;
 	private final String SQL_SELECT_PROPERTIES;
 	private final String SQL_DROP_PROPERTIES;
 
 	private final JdbcTemplate jdbcTemplate;
 
-	public EntityPropertiesRepository( DataSource dataSource,
-	                                   String table,
-	                                   String keyColumn ) {
-		jdbcTemplate = new JdbcTemplate( dataSource );
+	public EntityPropertiesRepository( EntityPropertiesDescriptor configuration ) {
+		jdbcTemplate = new JdbcTemplate( configuration.dataSource() );
 
-		this.tableName = table;
+		String table = configuration.tableName();
+		String keyColumn = configuration.keyColumnName();
 
 		SQL_INSERT_PROPERTY = String.format( "INSERT INTO %s (%s,property_name,property_value) VALUES (?,?,?)", table,
 		                                     keyColumn );
 		SQL_SELECT_PROPERTIES = String.format( "SELECT property_name, property_value FROM %s WHERE %s = ?", table,
 		                                       keyColumn );
 		SQL_DROP_PROPERTIES = String.format( "DELETE FROM %s WHERE %s = ?", table, keyColumn );
-	}
-
-	public String getPropertiesTable() {
-		return tableName;
 	}
 
 	@Transactional(readOnly = true)
