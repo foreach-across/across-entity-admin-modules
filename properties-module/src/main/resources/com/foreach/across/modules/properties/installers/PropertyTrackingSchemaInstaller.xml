@@ -12,7 +12,7 @@
 		</sql>
 	</changeSet>
 
-	<changeSet id="201407290940" author="arne">
+	<changeSet id="201407290940B" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="across_property_tracking"/>
@@ -22,7 +22,7 @@
 			<column name="uuid" type="java.sql.Types.CHAR(36)">
 				<constraints nullable="false" primaryKey="true"/>
 			</column>
-			<column name="hash_code" type="java.sql.Types.VARCHAR(250)">
+			<column name="hash_code" type="java.sql.Types.CHAR(32)">
 				<constraints nullable="false"/>
 			</column>
 			<column name="module" type="java.sql.Types.VARCHAR(255)"/>
