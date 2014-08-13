@@ -5,8 +5,6 @@ import com.foreach.spring.util.PropertyTypeRegistry;
 import com.foreach.spring.util.TypedPropertyMap;
 import org.springframework.core.convert.ConversionService;
 
-import java.util.Map;
-
 /**
  * @author Arne Vandamme
  */

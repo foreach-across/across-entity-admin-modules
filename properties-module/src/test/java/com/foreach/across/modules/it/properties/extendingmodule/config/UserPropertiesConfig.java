@@ -2,7 +2,6 @@ package com.foreach.across.modules.it.properties.extendingmodule.config;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.Module;
-import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.it.properties.definingmodule.registry.UserPropertyRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

@@ -1,17 +1,11 @@
 package com.foreach.across.modules.it.properties.extendingmodule.config;
 
-import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.core.annotations.Module;
-import com.foreach.across.modules.it.properties.definingmodule.repositories.UserPropertiesRepository;
 import com.foreach.across.modules.it.properties.extendingmodule.registry.ClientPropertyRegistry;
 import com.foreach.across.modules.it.properties.extendingmodule.repositories.ClientPropertiesRepository;
 import com.foreach.across.modules.properties.config.AbstractEntityPropertiesConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author Arne Vandamme

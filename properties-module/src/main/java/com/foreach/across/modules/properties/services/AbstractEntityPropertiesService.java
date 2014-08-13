@@ -1,7 +1,7 @@
 package com.foreach.across.modules.properties.services;
 
-import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.business.EntityProperties;
+import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
 import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 import com.foreach.spring.util.PropertyTypeRegistry;

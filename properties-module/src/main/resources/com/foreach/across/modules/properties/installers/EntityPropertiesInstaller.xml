@@ -46,7 +46,7 @@
 	</changeSet>
 
 	<changeSet id="propertyname-length-${table.entity_properties}-mssql-1" author="arne" dbms="mssql">
-		<dropPrimaryKey tableName="${table.entity_properties}" />
+		<dropPrimaryKey tableName="${table.entity_properties}"/>
 	</changeSet>
 
 	<changeSet id="propertyname-length-${table.entity_properties}" author="arne">
@@ -61,8 +61,8 @@
 
 	<changeSet id="propertyname-length-${table.entity_properties}-mssql-2" author="arne" dbms="mssql">
 		<addNotNullConstraint tableName="${table.entity_properties}" columnDataType="java.sql.Types.VARCHAR(250)"
-		                      columnName="property_name" />
-		<addPrimaryKey tableName="${table.entity_properties}" columnNames="${column.entity_id},property_name" />
+		                      columnName="property_name"/>
+		<addPrimaryKey tableName="${table.entity_properties}" columnNames="${column.entity_id},property_name"/>
 	</changeSet>
 
 </databaseChangeLog>

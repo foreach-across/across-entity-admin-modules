@@ -5,7 +5,6 @@ import com.foreach.across.modules.it.properties.definingmodule.registry.UserProp
 import com.foreach.across.modules.it.properties.definingmodule.repositories.UserPropertiesRepository;
 import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.services.AbstractEntityPropertiesService;
-import com.foreach.across.modules.properties.services.EntityPropertiesService;
 import com.foreach.spring.util.PropertyTypeRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
