@@ -25,9 +25,9 @@ public class BootstrapWebResourcePackage extends SimpleWebResourcePackage
 //			                                new WebResource( WebResource.CSS, NAME + "-theme",
 //			                                                 "//netdna.bootstrapcdn.com/bootstrap/" + version + "/css/bootstrap-theme.min.css",
 //			                                                 WebResource.EXTERNAL ),
-			                                new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
-			                                                 "//netdna.bootstrapcdn.com/bootstrap/" + version + "/js/bootstrap.min.js",
-			                                                 WebResource.EXTERNAL )
+                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
+                                                             "//netdna.bootstrapcdn.com/bootstrap/" + version + "/js/bootstrap.min.js",
+                                                             WebResource.EXTERNAL )
 			                 )
 			);
 		}
@@ -38,9 +38,9 @@ public class BootstrapWebResourcePackage extends SimpleWebResourcePackage
 //			                                new WebResource( WebResource.CSS, NAME + "-theme",
 //			                                                 "//netdna.bootstrapcdn.com/bootstrap/" + version + "/css/bootstrap-theme.css",
 //			                                                 WebResource.EXTERNAL ),
-			                                new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
-			                                                 "//netdna.bootstrapcdn.com/bootstrap/" + version + "/js/bootstrap.js",
-			                                                 WebResource.EXTERNAL )
+                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
+                                                             "//netdna.bootstrapcdn.com/bootstrap/" + version + "/js/bootstrap.js",
+                                                             WebResource.EXTERNAL )
 			                 )
 			);
 		}
