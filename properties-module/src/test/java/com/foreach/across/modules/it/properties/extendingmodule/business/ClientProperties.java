@@ -1,8 +1,7 @@
 package com.foreach.across.modules.it.properties.extendingmodule.business;
 
-import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.business.EntityProperties;
-import com.foreach.across.modules.it.properties.definingmodule.business.User;
+import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.spring.util.PropertyTypeRegistry;
 import org.springframework.core.convert.ConversionService;
 

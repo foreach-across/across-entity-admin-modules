@@ -11,10 +11,11 @@ import java.util.Collections;
  */
 public abstract class EntityPropertiesInstaller extends AcrossLiquibaseInstaller
 {
-	private final SchemaConfiguration schemaConfiguration = new SchemaConfiguration( Collections.<SchemaObject>emptyList() );
+	private final SchemaConfiguration schemaConfiguration = new SchemaConfiguration(
+			Collections.<SchemaObject>emptyList() );
 
 	protected EntityPropertiesInstaller() {
-		super("classpath:com/foreach/across/modules/properties/installers/EntityPropertiesInstaller.xml");
+		super( "classpath:com/foreach/across/modules/properties/installers/EntityPropertiesInstaller.xml" );
 		setSchemaConfiguration( schemaConfiguration );
 	}
 
