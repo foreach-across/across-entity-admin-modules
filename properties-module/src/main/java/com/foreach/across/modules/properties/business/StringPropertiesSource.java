@@ -1,6 +1,6 @@
 package com.foreach.across.modules.properties.business;
 
-import com.foreach.spring.util.DirectPropertiesSource;
+import com.foreach.common.spring.util.DirectPropertiesSource;
 
 import java.util.Map;
 
