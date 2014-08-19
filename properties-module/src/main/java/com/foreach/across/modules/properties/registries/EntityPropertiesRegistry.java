@@ -4,7 +4,7 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
 import com.foreach.across.modules.properties.repositories.PropertyTrackingRepository;
-import com.foreach.spring.util.PropertyTypeRegistry;
+import com.foreach.common.spring.util.PropertyTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.ConversionService;

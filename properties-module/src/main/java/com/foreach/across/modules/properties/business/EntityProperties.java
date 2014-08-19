@@ -1,8 +1,8 @@
 package com.foreach.across.modules.properties.business;
 
-import com.foreach.spring.util.PropertiesSource;
-import com.foreach.spring.util.PropertyTypeRegistry;
-import com.foreach.spring.util.TypedPropertyMap;
+import com.foreach.common.spring.util.PropertiesSource;
+import com.foreach.common.spring.util.PropertyTypeRegistry;
+import com.foreach.common.spring.util.TypedPropertyMap;
 import org.springframework.core.convert.ConversionService;
 
 /**
