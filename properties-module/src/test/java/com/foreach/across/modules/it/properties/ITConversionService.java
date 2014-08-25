@@ -57,7 +57,10 @@ public class ITConversionService
 	@After
 	public void teardown() {
 		if ( context != null ) {
-			context.shutdown();
+			try {
+				context.shutdown();
+			}
+			catch ( Exception e ) {}
 		}
 	}
 
