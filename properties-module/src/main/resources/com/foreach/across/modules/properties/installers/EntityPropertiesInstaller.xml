@@ -16,10 +16,10 @@
 	</changeSet>
 
 	<!--
-		The property value field is limited to 4000 unicode characters.  If there is a situation
+		The property value field is limited to 2000 unicode characters.  If there is a situation
 		where more is required, the module should provide its own installer.
 	-->
-	<changeSet id="create-${table.entity_properties}" author="arne">
+	<changeSet id="create-${table.entity_properties}-2000" author="arne">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="${table.entity_properties}"/>
@@ -32,7 +32,7 @@
 			<column name="property_name" type="java.sql.Types.VARCHAR(190)">
 				<constraints nullable="false" primaryKey="true"/>
 			</column>
-			<column name="property_value" type="java.sql.Types.NVARCHAR(4000)"/>
+			<column name="property_value" type="java.sql.Types.NVARCHAR(2000)"/>
 		</createTable>
 	</changeSet>
 
