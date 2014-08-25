@@ -1,6 +1,7 @@
 package com.foreach.across.modules.it.properties;
 
 import com.foreach.across.core.AcrossContext;
+import com.foreach.across.core.AcrossException;
 import com.foreach.across.core.context.AcrossContextUtils;
 import com.foreach.across.core.installers.InstallerAction;
 import com.foreach.across.modules.properties.PropertiesModule;
@@ -97,7 +98,7 @@ public class ITConversionService
 		assertEquals( third, actual );
 	}
 
-	@Test(expected = BeanCreationException.class)
+	@Test(expected = AcrossException.class)
 	public void bootstrapFailsIfConversionServiceBeanNotFound() {
 		propertiesModule.setProperty( PropertiesModuleSettings.CONVERSION_SERVICE_BEAN,
 		                              "unexistingConversionServiceBean" );
