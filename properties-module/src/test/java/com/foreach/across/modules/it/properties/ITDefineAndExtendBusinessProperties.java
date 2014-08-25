@@ -78,7 +78,7 @@ public class ITDefineAndExtendBusinessProperties
 
 		UUID uuid = UUID.randomUUID();
 		Date date = new Date();
-		String randomLongString = RandomStringUtils.randomAscii( 4000 );
+		String randomLongString = RandomStringUtils.randomAscii( 2000 );
 
 		UserProperties created = userPropertyService.getProperties( userTwo.getId() );
 		created.set( UserPropertiesConfig.BOOLEAN, true );
