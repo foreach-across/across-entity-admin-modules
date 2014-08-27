@@ -1,12 +1,11 @@
-package com.foreach.across.modules.user.services.security;
+package com.foreach.across.modules.spring.security.acl.services;
 
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
-import com.foreach.across.modules.spring.security.business.AclPermission;
-import com.foreach.across.modules.spring.security.business.SecurityPrincipal;
-import com.foreach.across.modules.user.business.Permission;
-import com.foreach.across.modules.user.business.Role;
+import com.foreach.across.modules.spring.security.acl.business.AclPermission;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
 import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * Provides easy access to ACL related services and checking.
@@ -23,9 +22,7 @@ public interface AclSecurityService
 
 	void allow( SecurityPrincipal principal, IdBasedEntity entity, AclPermission... aclPermissions );
 
-	void allow( Role role, IdBasedEntity entity, AclPermission... aclPermissions );
-
-	void allow( Permission permission, IdBasedEntity entity, AclPermission... aclPermissions );
+	void allow( GrantedAuthority authority, IdBasedEntity entity, AclPermission... aclPermissions );
 
 	void allow( String authority, IdBasedEntity entity, AclPermission... aclPermissions );
 
@@ -33,9 +30,7 @@ public interface AclSecurityService
 
 	void revoke( SecurityPrincipal principal, IdBasedEntity entity, AclPermission... aclPermissions );
 
-	void revoke( Role role, IdBasedEntity entity, AclPermission... aclPermissions );
-
-	void revoke( Permission permission, IdBasedEntity entity, AclPermission... aclPermissions );
+	void revoke( GrantedAuthority authority, IdBasedEntity entity, AclPermission... aclPermissions );
 
 	void revoke( String authority, IdBasedEntity entity, AclPermission... aclPermissions );
 
@@ -43,9 +38,7 @@ public interface AclSecurityService
 
 	void deny( SecurityPrincipal principal, IdBasedEntity entity, AclPermission... aclPermissions );
 
-	void deny( Role role, IdBasedEntity entity, AclPermission... aclPermissions );
-
-	void deny( Permission permission, IdBasedEntity entity, AclPermission... aclPermissions );
+	void deny( GrantedAuthority authority, IdBasedEntity entity, AclPermission... aclPermissions );
 
 	void deny( String authority, IdBasedEntity entity, AclPermission... aclPermissions );
 

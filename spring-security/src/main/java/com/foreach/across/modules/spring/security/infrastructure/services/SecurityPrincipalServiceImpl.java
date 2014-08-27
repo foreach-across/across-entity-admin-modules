@@ -1,9 +1,8 @@
-package com.foreach.across.modules.user.services.security;
+package com.foreach.across.modules.spring.security.infrastructure.services;
 
 import com.foreach.across.core.events.AcrossEventPublisher;
-import com.foreach.across.modules.user.business.NonGroupedPrincipal;
-import com.foreach.across.modules.user.events.SecurityPrincipalRenamedEvent;
-import com.foreach.across.modules.user.repositories.SecurityPrincipalRepository;
+import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.spring.security.infrastructure.events.SecurityPrincipalRenamedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -16,14 +15,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SecurityPrincipalServiceImpl implements SecurityPrincipalService
 {
-	@Autowired
-	private SecurityPrincipalRepository securityPrincipalRepository;
+	private SecurityPrincipalRetrievalStrategy securityPrincipalRetrievalStrategy;
 
 	@Autowired
 	private AcrossEventPublisher eventPublisher;
 
+	public SecurityPrincipalServiceImpl( SecurityPrincipalRetrievalStrategy securityPrincipalRetrievalStrategy ) {
+		this.securityPrincipalRetrievalStrategy = securityPrincipalRetrievalStrategy;
+	}
+
+	public void setSecurityPrincipalRetrievalStrategy( SecurityPrincipalRetrievalStrategy securityPrincipalRetrievalStrategy ) {
+		this.securityPrincipalRetrievalStrategy = securityPrincipalRetrievalStrategy;
+	}
+
 	@Override
-	public void authenticate( NonGroupedPrincipal principal ) {
+	public void authenticate( SecurityPrincipal principal ) {
 		PreAuthenticatedAuthenticationToken authRequest = new PreAuthenticatedAuthenticationToken(
 				principal, null, principal.getAuthorities()
 		);
@@ -38,14 +44,8 @@ public class SecurityPrincipalServiceImpl implements SecurityPrincipalService
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends NonGroupedPrincipal> T getPrincipalById( long id ) {
-		return (T) securityPrincipalRepository.getById( id );
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T extends NonGroupedPrincipal> T getPrincipalByName( String principalName ) {
-		return (T) securityPrincipalRepository.getByPrincipalName( principalName );
+	public <T extends SecurityPrincipal> T getPrincipalByName( String principalName ) {
+		return (T) securityPrincipalRetrievalStrategy.getPrincipalByName( principalName );
 	}
 
 	@Override

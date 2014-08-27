@@ -1,10 +1,10 @@
-package com.foreach.across.modules.user.events;
+package com.foreach.across.modules.spring.security.infrastructure.events;
 
 import com.foreach.across.core.events.AcrossEvent;
 
 /**
- * Event fired through the {@link com.foreach.across.modules.user.services.security.SecurityPrincipalService}
- * to notify listeners that a {@link com.foreach.across.modules.spring.security.business.SecurityPrincipal} has
+ * Event fired through the {@link com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalService}
+ * to notify listeners that a {@link com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal} has
  * been renamed.  When the unique principal name is modified, security settings often need updating.
  *
  * @author Arne Vandamme

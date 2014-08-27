@@ -1,4 +1,4 @@
-package com.foreach.across.modules.user.services.security;
+package com.foreach.across.modules.spring.security.infrastructure.services;
 
 /**
  * @author Arne Vandamme
