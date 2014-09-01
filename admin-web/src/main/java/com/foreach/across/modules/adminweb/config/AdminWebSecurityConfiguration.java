@@ -7,7 +7,6 @@ import com.foreach.across.modules.adminweb.events.AdminWebUrlRegistry;
 import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 
@@ -21,7 +20,7 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	private AdminWeb adminWeb;
 
 	@Autowired
-	private Environment environment;
+	private AdminWebModuleSettings settings;
 
 	@Override
 	@SuppressWarnings("SignatureDeclareThrowsException")
@@ -43,11 +42,9 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	@SuppressWarnings("SignatureDeclareThrowsException")
 	private void configureRememberMe( HttpSecurity http ) throws Exception {
 		if ( adminWeb.getSettings().isRememberMeEnabled() ) {
-			String rememberMeKey = environment.getProperty( AdminWebModuleSettings.REMEMBER_ME_KEY, "" );
-			int rememberMeValiditySeconds =
-					environment.getProperty( AdminWebModuleSettings.REMEMBER_ME_TOKEN_VALIDITY_SECONDS,
-					                         Integer.class,
-					                         259200 );
+			String rememberMeKey = settings.getProperty( AdminWebModuleSettings.REMEMBER_ME_KEY );
+			int rememberMeValiditySeconds = settings.getProperty(
+					AdminWebModuleSettings.REMEMBER_ME_TOKEN_VALIDITY_SECONDS, Integer.class );
 
 			http.rememberMe().key( rememberMeKey ).tokenValiditySeconds( rememberMeValiditySeconds );
 		}
