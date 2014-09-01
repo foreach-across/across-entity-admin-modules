@@ -2,9 +2,11 @@ package com.foreach.across.modules.properties.config;
 
 import com.foreach.across.core.AcrossException;
 import com.foreach.across.core.AcrossModule;
+import com.foreach.across.core.AcrossModuleSettings;
 import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.filters.ClassBeanFilter;
+import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.properties.PropertiesModuleSettings;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -13,7 +15,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.env.Environment;
 import org.springframework.format.support.DefaultFormattingConversionService;
 
 /**
@@ -32,20 +33,21 @@ public class ConversionServiceConfiguration
 	private AcrossModuleInfo currentModuleInfo;
 
 	@Autowired
-	private Environment environment;
+	@Module(PropertiesModule.NAME)
+	private PropertiesModuleSettings settings;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Bean(name = CONVERSION_SERVICE_BEAN)
 	public ConversionService propertiesConversionService() {
-		ConversionService conversionServiceToUse = environment.getProperty(
+		ConversionService conversionServiceToUse = settings.getProperty(
 				PropertiesModuleSettings.CONVERSION_SERVICE,
 				ConversionService.class
 		);
 
 		if ( conversionServiceToUse == null ) {
-			String beanName = environment.getProperty( PropertiesModuleSettings.CONVERSION_SERVICE_BEAN );
+			String beanName = settings.getProperty( PropertiesModuleSettings.CONVERSION_SERVICE_BEAN );
 
 			if ( beanName != null ) {
 				try {
