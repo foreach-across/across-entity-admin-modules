@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: across:across-test:1.0.4-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/across/across-test/1.0.4-SNAPSHOT/across-test-1.0.4-SNAPSHOT.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/across/across-test/1.0.4-SNAPSHOT/across-test-1.0.4-20140901.123405-4.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/across/across-test/1.0.4-SNAPSHOT/across-test-1.0.4-SNAPSHOT-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/across/across-test/1.0.4-SNAPSHOT/across-test-1.0.4-20140901.123405-4-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/across/across-test/1.0.4-SNAPSHOT/across-test-1.0.4-SNAPSHOT-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/across/across-test/1.0.4-SNAPSHOT/across-test-1.0.4-20140901.123405-4-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
