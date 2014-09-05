@@ -15,7 +15,13 @@ public abstract class EntityPropertiesInstaller extends AcrossLiquibaseInstaller
 			Collections.<SchemaObject>emptyList() );
 
 	protected EntityPropertiesInstaller() {
-		super( "classpath:com/foreach/across/modules/properties/installers/EntityPropertiesInstaller.xml" );
+		this( false );
+	}
+
+	protected EntityPropertiesInstaller( boolean revisionBased ) {
+		super( revisionBased
+				       ? "classpath:com/foreach/across/modules/properties/installers/RevisionBasedEntityPropertiesInstaller.xml"
+				       : "classpath:com/foreach/across/modules/properties/installers/EntityPropertiesInstaller.xml" );
 		setSchemaConfiguration( schemaConfiguration );
 	}
 

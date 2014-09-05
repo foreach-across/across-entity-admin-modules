@@ -4,10 +4,11 @@ import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.context.info.AcrossContextInfo;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
+import com.foreach.across.core.revision.Revision;
 import com.foreach.across.modules.it.properties.definingmodule.DefiningModule;
-import com.foreach.across.modules.it.properties.definingmodule.business.User;
-import com.foreach.across.modules.it.properties.definingmodule.business.UserProperties;
+import com.foreach.across.modules.it.properties.definingmodule.business.*;
 import com.foreach.across.modules.it.properties.definingmodule.registry.UserPropertyRegistry;
+import com.foreach.across.modules.it.properties.definingmodule.services.RevisionPropertyService;
 import com.foreach.across.modules.it.properties.definingmodule.services.UserPropertyService;
 import com.foreach.across.modules.it.properties.extendingmodule.ExtendingModule;
 import com.foreach.across.modules.it.properties.extendingmodule.business.ClientProperties;
@@ -46,6 +47,9 @@ public class ITDefineAndExtendBusinessProperties
 
 	@Autowired
 	private UserPropertyRegistry userPropertyRegistry;
+
+	@Autowired
+	private RevisionPropertyService revisionPropertyService;
 
 	@Autowired
 	private AcrossContextInfo acrossContextInfo;
@@ -118,6 +122,54 @@ public class ITDefineAndExtendBusinessProperties
 
 		assertTrue( userPropertyService.getProperties( userTwo.getId() ).isEmpty() );
 		assertTrue( clientPropertyService.getProperties( userTwo.getId() ).isEmpty() );
+	}
+
+	@Test
+	public void revisionBasedPropertiesForNonRevision() {
+		Entity entity = new Entity( 3 );
+		EntityRevision revision = new EntityRevision( 0, false, true );
+	}
+
+	@Test
+	public void revisionBasedProperties() {
+		Entity entity = new Entity( 3 );
+		EntityRevision latest = new EntityRevision( 1, false, true );
+		EntityRevision draft = new EntityRevision( Revision.DRAFT, true, false );
+
+		RevisionProperties created = revisionPropertyService.getProperties( entity.getId(), draft );
+		assertNotNull( created );
+		assertTrue( created.isEmpty() );
+
+		created.put( "integer", 123 );
+		created.put( "string", "text" );
+
+		revisionPropertyService.saveProperties( created, draft );
+
+		RevisionProperties latestProps = revisionPropertyService.getProperties( entity.getId(), latest );
+		assertTrue( latestProps.isEmpty() );
+
+		RevisionProperties draftProps = revisionPropertyService.getProperties( entity.getId(), draft );
+		assertEquals( 2, draftProps.size() );
+		assertEquals( Integer.valueOf( 123 ), draftProps.getValue( "integer", Integer.class ) );
+		assertEquals( "text", draftProps.getValue( "string" ) );
+
+		draftProps.put( "string", "modified" );
+
+		UUID uuid = UUID.randomUUID();
+
+		draftProps.put( "uuid", uuid );
+
+		revisionPropertyService.saveProperties( draftProps, draft );
+
+		RevisionProperties updated = revisionPropertyService.getProperties( entity.getId(), draft );
+		assertEquals( 3, updated.size() );
+		assertEquals( Integer.valueOf( 123 ), updated.getValue( "integer", Integer.class ) );
+		assertEquals( "modified", updated.getValue( "string" ) );
+		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
+
+		// remove property on draft
+
+		// checkin properties to version
 	}
 
 	@AcrossTestConfiguration
