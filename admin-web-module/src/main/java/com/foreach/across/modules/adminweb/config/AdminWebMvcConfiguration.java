@@ -18,6 +18,7 @@ package com.foreach.across.modules.adminweb.config;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Module;
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
@@ -56,8 +57,7 @@ public class AdminWebMvcConfiguration extends WebMvcConfigurerAdapter
 	private AdminWebModule adminWebModule;
 
 	@Autowired
-	@Module(AcrossWebModule.NAME)
-	private AcrossWebModule acrossWebModule;
+	private AcrossDevelopmentMode developmentMode;
 
 	@Autowired
 	private MenuFactory menuFactory;
@@ -119,10 +119,10 @@ public class AdminWebMvcConfiguration extends WebMvcConfigurerAdapter
 		WebResourcePackageManager webResourcePackageManager = new WebResourcePackageManager();
 		webResourcePackageManager.register( JQueryWebResourcePackage.NAME,
 		                                    new JQueryWebResourcePackage(
-				                                    !acrossWebModule.isDevelopmentMode() ) );
+				                                    !developmentMode.isActive() ) );
 		webResourcePackageManager.register( BootstrapWebResourcePackage.NAME,
 		                                    new BootstrapWebResourcePackage(
-				                                    !acrossWebModule.isDevelopmentMode() ) );
+				                                    !developmentMode.isActive() ) );
 
 		return webResourcePackageManager;
 	}
