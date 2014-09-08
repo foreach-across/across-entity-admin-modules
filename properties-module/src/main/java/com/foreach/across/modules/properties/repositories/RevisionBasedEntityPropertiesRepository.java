@@ -35,7 +35,7 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 	private static final String FILTER_FOR_REVISION = "first_revision >= 0 and first_revision <= ? " +
 			"and (last_revision = 0 or last_revision > ?)";
 	private static final String FILTER_FOR_LATEST = "first_revision >= 0 and last_revision = 0";
-	private static final String FILTER_FOR_LATEST_AND_DRAFTS = "first_revision = -1 or last_revision = 0";
+	private static final String FILTER_FOR_LATEST_AND_DRAFTS = "(first_revision = -1 or last_revision = 0)";
 
 	private final String SQL_INSERT_PROPERTY;
 	private final String SQL_SELECT_PROPERTIES;
@@ -146,6 +146,8 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 
 		Map<Object, RevisionPair<PropertyRevision>> pairs = getRevisionPairs( revisionProperties );
 
+		boolean useDraft = revision.isDraftRevision();
+
 		for ( Map.Entry<String, ?> entry : properties.getProperties().entrySet() ) {
 			PropertyRevision candidate = new PropertyRevision();
 			candidate.setFirstRevision( revision.getRevisionId() );
@@ -160,13 +162,23 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 			PropertyRevision draft = pair != null ? pair.draft : null;
 
 			if ( current == null || candidate.isDifferentVersionOf( current ) ) {
-				if ( draft == null ) {
-					// insert this item as a new draft
+				if ( useDraft ) {
+					if ( draft == null ) {
+						// insert this item as a new draft
+						createProperty( entityId, candidate );
+					}
+					else if ( candidate.isDifferentVersionOf( draft ) ) {
+						// update the draft item if different
+						updateProperty( entityId, candidate, candidate.getFirstRevision(),
+						                candidate.getLastRevision() );
+					}
+				}
+				else if ( current == null ) {
 					createProperty( entityId, candidate );
 				}
-				else if ( candidate.isDifferentVersionOf( draft ) ) {
-					// update the draft item if different
-					updateProperty( entityId, candidate, candidate.getFirstRevision(), candidate.getLastRevision() );
+				else {
+					current.setValue( candidate.getValue() );
+					updateProperty( entityId, current, current.getFirstRevision(), current.getLastRevision() );
 				}
 			}
 			else if ( draft != null ) {
@@ -180,15 +192,21 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 		// All pairs left should be removed
 		for ( RevisionPair<PropertyRevision> remaining : pairs.values() ) {
 			if ( remaining.draft == null ) {
-				// new draft that needs to delete the item
-				PropertyRevision candidate = new PropertyRevision();
-				candidate.setName( remaining.nonDraft.getName() );
-				candidate.setFirstRevision( Revision.DRAFT );
-				candidate.setLastRevision( Revision.DRAFT );
-				candidate.setValue( remaining.nonDraft.getValue() );
-				candidate.setDeleted( true );
+				if ( useDraft ) {
+					// new draft that needs to delete the item
+					PropertyRevision candidate = new PropertyRevision();
+					candidate.setName( remaining.nonDraft.getName() );
+					candidate.setFirstRevision( Revision.DRAFT );
+					candidate.setLastRevision( Revision.DRAFT );
+					candidate.setValue( remaining.nonDraft.getValue() );
+					candidate.setDeleted( true );
 
-				createProperty( entityId, candidate );
+					createProperty( entityId, candidate );
+				}
+				else {
+					// delete the actual property
+					deleteProperty( entityId, remaining.nonDraft );
+				}
 			}
 			else if ( remaining.nonDraft == null ) {
 				// draft should be removed

@@ -141,9 +141,8 @@ public class ITDefineAndExtendBusinessProperties
 	}
 
 	@Test
-	@Ignore
 	public void revisionBasedPropertiesForNonRevision() {
-		Entity entity = new Entity( 3 );
+		Entity entity = new Entity( 4 );
 		EntityRevision revision = new EntityRevision( 0, false, true );
 
 		RevisionProperties created = revisionPropertyService.getProperties( entity.getId(), revision );
@@ -173,6 +172,15 @@ public class ITDefineAndExtendBusinessProperties
 		assertEquals( 2, updated.size() );
 		assertEquals( "modified", updated.getValue( "string" ) );
 		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
+
+		updated.put( "other", 8989L );
+		revisionPropertyService.saveProperties( updated, revision );
+
+		updated = revisionPropertyService.getProperties( entity.getId(), revision );
+		assertEquals( 3, updated.size() );
+		assertEquals( "modified", updated.getValue( "string" ) );
+		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
+		assertEquals( Long.valueOf( 8989 ), updated.getValue( "other", Long.class ) );
 	}
 
 	@Test
