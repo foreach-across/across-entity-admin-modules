@@ -56,7 +56,11 @@ public abstract class AbstractRevisionBasedEntityPropertiesService<T extends Ent
 
 	@Override
 	public void deleteProperties( U entityId ) {
+	}
 
+	@Override
+	public void checkin( U entityId, R revision, int revisionId ) {
+		entityPropertiesRepository.checkinProperties( entityId, revision, revisionId );
 	}
 
 	protected abstract T createEntityProperties( U entityId,

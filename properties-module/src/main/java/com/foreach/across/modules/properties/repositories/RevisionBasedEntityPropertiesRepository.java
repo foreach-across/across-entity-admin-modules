@@ -104,7 +104,10 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 
 			for ( RevisionPair<PropertyRevision> pair : pairs.values() ) {
 				PropertyRevision use = pair.draft != null ? pair.draft : pair.nonDraft;
-				sourceMap.put( use.getName(), use.getValue() );
+
+				if ( !use.isDeleted() ) {
+					sourceMap.put( use.getName(), use.getValue() );
+				}
 			}
 		}
 		else {
@@ -118,9 +121,26 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 
 	@Transactional
 	public void saveProperties( T entityId, P revision, StringPropertiesSource properties ) {
-		List<Map<String, Object>> records = jdbcTemplate.queryForList(
-				String.format( SQL_SELECT_PROPERTIES, FILTER_FOR_LATEST_AND_DRAFTS ), entityId
-		);
+		List<Map<String, Object>> records;
+
+		if ( revision.isLatestRevision() ) {
+			records = jdbcTemplate.queryForList(
+					String.format( SQL_SELECT_PROPERTIES, FILTER_FOR_LATEST ),
+					entityId
+			);
+		}
+		else if ( revision.isDraftRevision() ) {
+			records = jdbcTemplate.queryForList(
+					String.format( SQL_SELECT_PROPERTIES, FILTER_FOR_LATEST_AND_DRAFTS ),
+					entityId
+			);
+		}
+		else {
+			records = jdbcTemplate.queryForList(
+					String.format( SQL_SELECT_PROPERTIES, FILTER_FOR_REVISION ),
+					entityId, revision.getRevisionId(), revision.getRevisionId()
+			);
+		}
 
 		Collection<PropertyRevision> revisionProperties = buildProperties( records );
 
@@ -128,8 +148,8 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 
 		for ( Map.Entry<String, ?> entry : properties.getProperties().entrySet() ) {
 			PropertyRevision candidate = new PropertyRevision();
-			candidate.setFirstRevision( Revision.DRAFT );
-			candidate.setLastRevision( Revision.DRAFT );
+			candidate.setFirstRevision( revision.getRevisionId() );
+			candidate.setLastRevision( revision.getRevisionId() );
 			candidate.setName( entry.getKey() );
 
 			Object value = entry.getValue();
@@ -146,7 +166,7 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 				}
 				else if ( candidate.isDifferentVersionOf( draft ) ) {
 					// update the draft item if different
-					updateProperty( entityId, candidate );
+					updateProperty( entityId, candidate, candidate.getFirstRevision(), candidate.getLastRevision() );
 				}
 			}
 			else if ( draft != null ) {
@@ -165,6 +185,7 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 				candidate.setName( remaining.nonDraft.getName() );
 				candidate.setFirstRevision( Revision.DRAFT );
 				candidate.setLastRevision( Revision.DRAFT );
+				candidate.setValue( remaining.nonDraft.getValue() );
 				candidate.setDeleted( true );
 
 				createProperty( entityId, candidate );
@@ -176,9 +197,82 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 			else if ( !remaining.draft.isDeleted() ) {
 				// update draft for deletion
 				remaining.draft.setDeleted( true );
-				updateProperty( entityId, remaining.draft );
+				updateProperty( entityId, remaining.draft, remaining.draft.getFirstRevision(),
+				                remaining.draft.getLastRevision() );
 			}
 		}
+	}
+
+	@Transactional
+	public void checkinProperties( T entityId, P revision, int revisionId ) {
+		List<Map<String, Object>> records = jdbcTemplate.queryForList(
+				String.format( SQL_SELECT_PROPERTIES, FILTER_FOR_LATEST_AND_DRAFTS ), entityId
+		);
+
+		Collection<PropertyRevision> revisionProperties = buildProperties( records );
+
+		Map<Object, RevisionPair<PropertyRevision>> pairs = getRevisionPairs( revisionProperties );
+
+		for ( RevisionPair<PropertyRevision> pair : pairs.values() ) {
+			if ( pair.nonDraft != null )        // Existing record
+			{
+				if ( pair.draft != null ) {
+					if ( pair.draft.isDifferentVersionOf( pair.nonDraft ) ) {
+						// If draft and non-draft are different, draft should replace non-draft
+						expire( entityId, pair.nonDraft, revisionId );
+						activate( entityId, pair.draft, revisionId );
+					}
+					else if ( pair.draft.isDeleted() ) {
+						// Expire the non-draft and remove the draft
+						expire( entityId, pair.nonDraft, revisionId );
+						deleteProperty( entityId, pair.draft );
+					}
+					else {
+						// There's no point for this draft record
+						deleteProperty( entityId, pair.draft );
+					}
+				}
+				else if ( pair.nonDraft.isDeleted() ) {
+					// If the existing record is deleted, put it on update list for expiring
+					expire( entityId, pair.nonDraft, revisionId );
+				}
+			}
+			else if ( pair.draft != null ) { // New record
+				// If it's already deleted again, the record is pointless
+				if ( pair.draft.isDeleted() ) {
+					deleteProperty( entityId, pair.draft );
+				}
+				else {
+					activate( entityId, pair.draft, revisionId );
+				}
+			}
+		}
+	}
+
+	/**
+	 * Makes a draft instance start in that revision.
+	 */
+	protected void activate( T entityId, PropertyRevision draft, int revision ) {
+		int previousFirst = draft.getFirstRevision();
+		int previousLast = draft.getLastRevision();
+
+		draft.setFirstRevision( revision );
+		draft.setLastRevision( 0 );
+		draft.setDeleted( false );
+
+		updateProperty( entityId, draft, previousFirst, previousLast );
+	}
+
+	/**
+	 * Makes an active instance end in this revision.
+	 */
+	protected void expire( T entityId, PropertyRevision instance, int revision ) {
+		int previousLast = instance.getLastRevision();
+
+		instance.setLastRevision( revision );
+		instance.setDeleted( false );
+
+		updateProperty( entityId, instance, instance.getFirstRevision(), previousLast );
 	}
 
 	private Collection<PropertyRevision> buildProperties( List<Map<String, Object>> properties ) {
@@ -228,7 +322,7 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 		                     revision.isDeleted() );
 	}
 
-	private void updateProperty( T entityId, PropertyRevision revision ) {
+	private void updateProperty( T entityId, PropertyRevision revision, int firstVersion, int lastVersion ) {
 		jdbcTemplate.update( SQL_UPDATE_PROPERTY,
 		                     revision.getValue(),
 		                     revision.getFirstRevision(),
@@ -236,8 +330,8 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 		                     revision.isDeleted(),
 		                     entityId,
 		                     revision.getName(),
-		                     revision.getFirstRevision(),
-		                     revision.getLastRevision() );
+		                     firstVersion,
+		                     lastVersion );
 	}
 
 	private void deleteProperty( T entityId, PropertyRevision revision ) {
