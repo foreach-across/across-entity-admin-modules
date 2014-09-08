@@ -28,4 +28,6 @@ public interface RevisionBasedEntityPropertiesService<T extends EntityProperties
 	void saveProperties( T entityProperties, R revision );
 
 	void deleteProperties( U entityId );
+
+	void checkin( U entityId, R revision, int revisionId );
 }
