@@ -188,14 +188,34 @@ public class RevisionBasedEntityPropertiesRepository<T, P extends Revision>
 			PropertyRevision propertyRevision = new PropertyRevision();
 			propertyRevision.setName( (String) entry.get( "property_name" ) );
 			propertyRevision.setValue( (String) entry.get( "property_value" ) );
-			propertyRevision.setFirstRevision( (Integer) entry.get( "first_revision" ) );
-			propertyRevision.setLastRevision( (Integer) entry.get( "last_revision" ) );
-			propertyRevision.setDeleted( (Boolean) entry.get( "deleted" ) );
+			propertyRevision.setFirstRevision( toInteger( entry.get( "first_revision" ) ) );
+			propertyRevision.setLastRevision( toInteger( entry.get( "last_revision" ) ) );
+			propertyRevision.setDeleted( toBoolean( entry.get( "deleted" ) ) );
 
 			props.add( propertyRevision );
 		}
 
 		return props;
+	}
+
+	private boolean toBoolean( Object instance ) {
+		if ( instance instanceof Boolean ) {
+			return (Boolean) instance;
+		}
+
+		if ( instance instanceof Number ) {
+			return ( (Number) instance ).intValue() == 1;
+		}
+
+		return false;
+	}
+
+	private int toInteger( Object numericObject ) {
+		if ( numericObject instanceof Number ) {
+			return ( (Number) numericObject ).intValue();
+		}
+
+		return numericObject != null ? Integer.valueOf( numericObject.toString() ) : 0;
 	}
 
 	private void createProperty( T entityId, PropertyRevision revision ) {

@@ -30,6 +30,7 @@ import java.util.Set;
 public class AdminWebModule extends AcrossModule
 {
 	public static final String NAME = "AdminWebModule";
+	public static final String RESOURCES = "adminweb";
 
 	private String rootPath = "/admin";
 
@@ -54,6 +55,11 @@ public class AdminWebModule extends AcrossModule
 	@Override
 	public String getName() {
 		return NAME;
+	}
+
+	@Override
+	public String getResourcesKey() {
+		return RESOURCES;
 	}
 
 	@Override
