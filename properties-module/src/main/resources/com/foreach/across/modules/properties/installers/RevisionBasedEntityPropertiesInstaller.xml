@@ -83,14 +83,20 @@
 	<changeSet id="revision-columns-${table.entity_properties}" author="arne">
 		<preConditions>
 			<not>
-				<columnExists tableName="${table.entity_properties}" columnName="first_revision" />
+				<columnExists tableName="${table.entity_properties}" columnName="first_revision"/>
 			</not>
 		</preConditions>
 		<comment>Add revision columns</comment>
 		<addColumn tableName="${table.entity_properties}">
-			<column name="first_revision" type="java.sql.Types.INTEGER" defaultValueNumeric="0"/>
-			<column name="last_revision" type="java.sql.Types.INTEGER" defaultValueNumeric="0" />
-			<column name="deleted" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false" />
+			<column name="first_revision" type="java.sql.Types.INTEGER" defaultValueNumeric="0">
+				<constraints nullable="false"/>
+			</column>
+			<column name="last_revision" type="java.sql.Types.INTEGER" defaultValueNumeric="0">
+				<constraints nullable="false"/>
+			</column>
+			<column name="deleted" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
+				<constraints nullable="false"/>
+			</column>
 		</addColumn>
 		<dropPrimaryKey tableName="${table.entity_properties}"/>
 		<addPrimaryKey tableName="${table.entity_properties}"
