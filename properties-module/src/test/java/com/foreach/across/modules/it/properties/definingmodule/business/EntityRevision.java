@@ -20,18 +20,26 @@ import com.foreach.across.core.revision.*;
 /**
  * @author Arne Vandamme
  */
-public class EntityRevision implements com.foreach.across.core.revision.Revision
+public class EntityRevision implements com.foreach.across.core.revision.Revision<Long>
 {
+	private Entity entity;
 	private int revisionId;
 	private boolean draft, latest;
 
-	public EntityRevision( int revisionId, boolean draft, boolean latest ) {
+	public EntityRevision( Entity entity, int revisionId, boolean draft, boolean latest ) {
+		this.entity = entity;
 		this.revisionId = revisionId;
 		this.draft = draft;
 		this.latest = latest;
 	}
 
-	public int getRevisionId() {
+	@Override
+	public Long getRevisionOwner() {
+		return entity.getId();
+	}
+
+	@Override
+	public int getRevisionNumber() {
 		return revisionId;
 	}
 

@@ -23,11 +23,25 @@ import com.foreach.across.modules.properties.business.EntityProperties;
  */
 public interface RevisionBasedEntityPropertiesService<T extends EntityProperties<U>, U, R extends Revision>
 {
-	T getProperties( U entityId, R revision );
+	T getProperties( R revision );
+
+	T getProperties( U entityId, int revisionNumber );
 
 	void saveProperties( T entityProperties, R revision );
 
+	void saveProperties( T entityProperties, U entityId, int revisionNumber );
+
 	void deleteProperties( U entityId );
 
-	void checkin( U entityId, R revision, int revisionId );
+	void deleteProperties( R revision );
+
+	void deleteProperties( U entityId, int revisionNumber );
+
+	void checkin( R revision, int newRevisionNumber );
+
+	void checkin( U entityId, int revisionNumber, int newRevisionNumber );
+
+	T checkout( R revision );
+
+	T checkout( U entityId, int revisionNumber );
 }

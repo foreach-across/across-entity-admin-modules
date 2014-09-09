@@ -33,7 +33,6 @@ import com.foreach.across.modules.it.properties.extendingmodule.services.ClientP
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,9 +142,9 @@ public class ITDefineAndExtendBusinessProperties
 	@Test
 	public void revisionBasedPropertiesForNonRevision() {
 		Entity entity = new Entity( 4 );
-		EntityRevision revision = new EntityRevision( 0, false, true );
+		EntityRevision revision = new EntityRevision( entity, 0, false, true );
 
-		RevisionProperties created = revisionPropertyService.getProperties( entity.getId(), revision );
+		RevisionProperties created = revisionPropertyService.getProperties( revision );
 		assertNotNull( created );
 		assertTrue( created.isEmpty() );
 
@@ -154,7 +153,7 @@ public class ITDefineAndExtendBusinessProperties
 
 		revisionPropertyService.saveProperties( created, revision );
 
-		RevisionProperties fetched = revisionPropertyService.getProperties( entity.getId(), revision );
+		RevisionProperties fetched = revisionPropertyService.getProperties( revision );
 		assertEquals( 2, fetched.size() );
 		assertEquals( Integer.valueOf( 123 ), fetched.getValue( "integer", Integer.class ) );
 		assertEquals( "text", fetched.getValue( "string" ) );
@@ -168,7 +167,7 @@ public class ITDefineAndExtendBusinessProperties
 
 		revisionPropertyService.saveProperties( fetched, revision );
 
-		RevisionProperties updated = revisionPropertyService.getProperties( entity.getId(), revision );
+		RevisionProperties updated = revisionPropertyService.getProperties( revision );
 		assertEquals( 2, updated.size() );
 		assertEquals( "modified", updated.getValue( "string" ) );
 		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
@@ -176,7 +175,7 @@ public class ITDefineAndExtendBusinessProperties
 		updated.put( "other", 8989L );
 		revisionPropertyService.saveProperties( updated, revision );
 
-		updated = revisionPropertyService.getProperties( entity.getId(), revision );
+		updated = revisionPropertyService.getProperties( revision );
 		assertEquals( 3, updated.size() );
 		assertEquals( "modified", updated.getValue( "string" ) );
 		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
@@ -186,10 +185,10 @@ public class ITDefineAndExtendBusinessProperties
 	@Test
 	public void revisionBasedProperties() {
 		Entity entity = new Entity( 3 );
-		EntityRevision latest = new EntityRevision( 1, false, true );
-		EntityRevision draft = new EntityRevision( Revision.DRAFT, true, false );
+		EntityRevision latest = new EntityRevision( entity, 1, false, true );
+		EntityRevision draft = new EntityRevision( entity, Revision.DRAFT, true, false );
 
-		RevisionProperties created = revisionPropertyService.getProperties( entity.getId(), draft );
+		RevisionProperties created = revisionPropertyService.getProperties( draft );
 		assertNotNull( created );
 		assertTrue( created.isEmpty() );
 
@@ -198,10 +197,10 @@ public class ITDefineAndExtendBusinessProperties
 
 		revisionPropertyService.saveProperties( created, draft );
 
-		RevisionProperties latestProps = revisionPropertyService.getProperties( entity.getId(), latest );
+		RevisionProperties latestProps = revisionPropertyService.getProperties( latest );
 		assertTrue( latestProps.isEmpty() );
 
-		RevisionProperties draftProps = revisionPropertyService.getProperties( entity.getId(), draft );
+		RevisionProperties draftProps = revisionPropertyService.getProperties( draft );
 		assertEquals( 2, draftProps.size() );
 		assertEquals( Integer.valueOf( 123 ), draftProps.getValue( "integer", Integer.class ) );
 		assertEquals( "text", draftProps.getValue( "string" ) );
@@ -214,23 +213,23 @@ public class ITDefineAndExtendBusinessProperties
 
 		revisionPropertyService.saveProperties( draftProps, draft );
 
-		RevisionProperties updated = revisionPropertyService.getProperties( entity.getId(), draft );
+		RevisionProperties updated = revisionPropertyService.getProperties( draft );
 		assertEquals( 3, updated.size() );
 		assertEquals( Integer.valueOf( 123 ), updated.getValue( "integer", Integer.class ) );
 		assertEquals( "modified", updated.getValue( "string" ) );
 		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
 
 		// Checkin and make the draft the new version
-		revisionPropertyService.checkin( entity.getId(), draft, 1 );
+		revisionPropertyService.checkin( draft, 1 );
 
-		latestProps = revisionPropertyService.getProperties( entity.getId(), latest );
+		latestProps = revisionPropertyService.getProperties( latest );
 		assertEquals( 3, latestProps.size() );
 		assertEquals( Integer.valueOf( 123 ), latestProps.getValue( "integer", Integer.class ) );
 		assertEquals( "modified", latestProps.getValue( "string" ) );
 		assertEquals( uuid, latestProps.getValue( "uuid", UUID.class ) );
 
 		// remove property on draft
-		updated = revisionPropertyService.getProperties( entity.getId(), draft );
+		updated = revisionPropertyService.getProperties( draft );
 		assertEquals( 3, updated.size() );
 		assertEquals( Integer.valueOf( 123 ), updated.getValue( "integer", Integer.class ) );
 		assertEquals( "modified", updated.getValue( "string" ) );
@@ -242,39 +241,66 @@ public class ITDefineAndExtendBusinessProperties
 		revisionPropertyService.saveProperties( updated, draft );
 
 		// Fetch latest again, should not be modified
-		latestProps = revisionPropertyService.getProperties( entity.getId(), latest );
+		latestProps = revisionPropertyService.getProperties( latest );
 		assertEquals( 3, latestProps.size() );
 		assertEquals( Integer.valueOf( 123 ), latestProps.getValue( "integer", Integer.class ) );
 		assertEquals( "modified", latestProps.getValue( "string" ) );
 		assertEquals( uuid, latestProps.getValue( "uuid", UUID.class ) );
 
-		RevisionProperties removed = revisionPropertyService.getProperties( entity.getId(), draft );
+		RevisionProperties removed = revisionPropertyService.getProperties( draft );
 		assertEquals( 2, removed.size() );
 		assertEquals( "modified again", updated.getValue( "string" ) );
 		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
 
 		// checkin properties to version
-		revisionPropertyService.checkin( entity.getId(), draft, 2 );
+		revisionPropertyService.checkin( draft, 2 );
 
-		EntityRevision versionOne = new EntityRevision( 1, false, false );
-		latest = new EntityRevision( 2, false, true );
+		EntityRevision versionOne = new EntityRevision( entity, 1, false, false );
+		latest = new EntityRevision( entity, 2, false, true );
 
-		RevisionProperties propsOne = revisionPropertyService.getProperties( entity.getId(), versionOne );
+		RevisionProperties propsOne = revisionPropertyService.getProperties( versionOne );
 		assertEquals( 3, propsOne.size() );
 		assertEquals( Integer.valueOf( 123 ), propsOne.getValue( "integer", Integer.class ) );
 		assertEquals( "modified", propsOne.getValue( "string" ) );
 		assertEquals( uuid, propsOne.getValue( "uuid", UUID.class ) );
 
-		RevisionProperties propsTwo = revisionPropertyService.getProperties( entity.getId(), latest );
+		RevisionProperties propsTwo = revisionPropertyService.getProperties( latest );
 		assertEquals( 2, propsTwo.size() );
 		assertEquals( "modified again", propsTwo.getValue( "string" ) );
 		assertEquals( uuid, propsTwo.getValue( "uuid", UUID.class ) );
 
-		RevisionProperties newDraftProps = revisionPropertyService.getProperties( entity.getId(), draft );
+		RevisionProperties newDraftProps = revisionPropertyService.getProperties( draft );
 		assertEquals( 2, newDraftProps.size() );
 		assertEquals( "modified again", newDraftProps.getValue( "string" ) );
 		assertEquals( uuid, newDraftProps.getValue( "uuid", UUID.class ) );
 
+		// Update draft
+		newDraftProps.put( "string", "back to original" );
+		revisionPropertyService.saveProperties( newDraftProps, draft );
+		newDraftProps = revisionPropertyService.getProperties( draft );
+		assertEquals( 2, newDraftProps.size() );
+		assertEquals( "back to original", newDraftProps.getValue( "string" ) );
+
+		// Cancel draft
+		revisionPropertyService.deleteProperties( draft );
+
+		newDraftProps = revisionPropertyService.getProperties( draft );
+		assertEquals( 2, newDraftProps.size() );
+		assertEquals( "modified again", newDraftProps.getValue( "string" ) );
+		assertEquals( uuid, newDraftProps.getValue( "uuid", UUID.class ) );
+
+		// Checkout from draft
+		newDraftProps = revisionPropertyService.checkout( draft );
+		assertEquals( 2, newDraftProps.size() );
+		assertEquals( "modified again", newDraftProps.getValue( "string" ) );
+		assertEquals( uuid, newDraftProps.getValue( "uuid", UUID.class ) );
+
+		// Create a new draft from version 1
+		newDraftProps = revisionPropertyService.checkout( versionOne );
+		assertEquals( 3, newDraftProps.size() );
+		assertEquals( Integer.valueOf( 123 ), newDraftProps.getValue( "integer", Integer.class ) );
+		assertEquals( "modified", newDraftProps.getValue( "string" ) );
+		assertEquals( uuid, newDraftProps.getValue( "uuid", UUID.class ) );
 	}
 
 	@AcrossTestConfiguration
