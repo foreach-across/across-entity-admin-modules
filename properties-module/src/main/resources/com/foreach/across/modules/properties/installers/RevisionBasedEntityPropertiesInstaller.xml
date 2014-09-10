@@ -91,16 +91,16 @@
 			<column name="first_revision" type="java.sql.Types.INTEGER" defaultValueNumeric="0">
 				<constraints nullable="false"/>
 			</column>
-			<column name="last_revision" type="java.sql.Types.INTEGER" defaultValueNumeric="0">
+			<column name="removal_revision" type="java.sql.Types.INTEGER" defaultValueNumeric="0">
 				<constraints nullable="false"/>
 			</column>
-			<column name="deleted" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
+			<column name="delete_for_revision" type="java.sql.Types.BOOLEAN" defaultValueBoolean="false">
 				<constraints nullable="false"/>
 			</column>
 		</addColumn>
 		<dropPrimaryKey tableName="${table.entity_properties}"/>
 		<addPrimaryKey tableName="${table.entity_properties}"
-		               columnNames="${column.entity_id},first_revision,last_revision,property_name"/>
+		               columnNames="${column.entity_id},first_revision,removal_revision,property_name"/>
 	</changeSet>
 
 </databaseChangeLog>

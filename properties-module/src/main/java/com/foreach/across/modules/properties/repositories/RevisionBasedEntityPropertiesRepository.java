@@ -35,9 +35,9 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 		extends RevisionBasedEntityManager<RevisionBasedEntityPropertiesRepository.PropertyRevision<T>, T, R>
 {
 	private static final String FILTER_FOR_REVISION = "first_revision >= 0 and first_revision <= ? " +
-			"and (last_revision = 0 or last_revision > ?)";
-	private static final String FILTER_FOR_LATEST = "first_revision >= 0 and last_revision = 0";
-	private static final String FILTER_FOR_LATEST_AND_DRAFTS = "(first_revision = -1 or last_revision = 0)";
+			"and (removal_revision = 0 or removal_revision > ?)";
+	private static final String FILTER_FOR_LATEST = "first_revision >= 0 and removal_revision = 0";
+	private static final String FILTER_FOR_LATEST_AND_DRAFTS = "(first_revision = -1 or removal_revision = 0)";
 
 	private final String SQL_INSERT_PROPERTY;
 	private final String SQL_SELECT_PROPERTIES;
@@ -54,20 +54,20 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 		String keyColumn = configuration.keyColumnName();
 
 		SQL_INSERT_PROPERTY = String.format(
-				"INSERT INTO %s (%s,property_name,property_value,first_revision,last_revision,deleted) " +
+				"INSERT INTO %s (%s,property_name,property_value,first_revision,removal_revision,delete_for_revision) " +
 						"VALUES (?,?,?,?,?,?)", table, keyColumn );
 		SQL_SELECT_PROPERTIES = String.format(
-				"SELECT property_name, property_value,first_revision,last_revision,deleted " +
+				"SELECT property_name, property_value,first_revision,removal_revision,delete_for_revision " +
 						"FROM %s WHERE %s = ?", table, keyColumn ) + " AND %s";
 
 		SQL_UPDATE_PROPERTY = String.format(
-				"UPDATE %s SET property_value = ?, first_revision = ?, last_revision = ?, deleted = ? " +
-						"WHERE %s = ? AND property_name = ? AND first_revision = ? AND last_revision = ?",
+				"UPDATE %s SET property_value = ?, first_revision = ?, removal_revision = ?, delete_for_revision = ? " +
+						"WHERE %s = ? AND property_name = ? AND first_revision = ? AND removal_revision = ?",
 				table, keyColumn
 		);
 
 		SQL_DELETE_PROPERTY = String.format(
-				"DELETE FROM %s WHERE %s = ? AND property_name = ? AND first_revision = ? AND last_revision = ?",
+				"DELETE FROM %s WHERE %s = ? AND property_name = ? AND first_revision = ? AND removal_revision = ?",
 				table, keyColumn
 		);
 
@@ -82,8 +82,8 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 				entity.getName(),
 				entity.getValue(),
 				entity.getFirstRevision(),
-				entity.getLastRevision(),
-				entity.isDeleted()
+				entity.getRemovalRevision(),
+				entity.isDeleteForRevision()
 		);
 	}
 
@@ -95,8 +95,8 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 				SQL_UPDATE_PROPERTY,
 				entity.getValue(),
 				entity.getFirstRevision(),
-				entity.getLastRevision(),
-				entity.isDeleted(),
+				entity.getRemovalRevision(),
+				entity.isDeleteForRevision(),
 				entity.getOwner(),
 				entity.getName(),
 				currentFirstRevision,
@@ -111,7 +111,7 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 				entity.getOwner(),
 				entity.getName(),
 				entity.getFirstRevision(),
-				entity.getLastRevision()
+				entity.getRemovalRevision()
 		);
 	}
 
@@ -163,7 +163,7 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 		candidate.setOwner( existing.getOwner() );
 		candidate.setName( existing.getName() );
 		candidate.setValue( existing.getValue() );
-		candidate.setDeleted( existing.isDeleted() );
+		candidate.setDeleteForRevision( existing.isDeleteForRevision() );
 
 		return candidate;
 	}
@@ -206,7 +206,7 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 			PropertyRevision<T> candidate = new PropertyRevision<>();
 			candidate.setOwner( owner );
 			candidate.setFirstRevision( revisionNumber );
-			candidate.setLastRevision( revisionNumber );
+			candidate.setRemovalRevision( revisionNumber );
 			candidate.setName( entry.getKey() );
 
 			Object value = entry.getValue();
@@ -227,8 +227,8 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 			propertyRevision.setName( (String) entry.get( "property_name" ) );
 			propertyRevision.setValue( (String) entry.get( "property_value" ) );
 			propertyRevision.setFirstRevision( toInteger( entry.get( "first_revision" ) ) );
-			propertyRevision.setLastRevision( toInteger( entry.get( "last_revision" ) ) );
-			propertyRevision.setDeleted( toBoolean( entry.get( "deleted" ) ) );
+			propertyRevision.setRemovalRevision( toInteger( entry.get( "removal_revision" ) ) );
+			propertyRevision.setDeleteForRevision( toBoolean( entry.get( "delete_for_revision" ) ) );
 
 			props.add( propertyRevision );
 		}
@@ -260,8 +260,8 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 	{
 		private T owner;
 		private String name, value;
-		private int firstRevision, lastRevision;
-		private boolean deleted;
+		private int firstRevision, removalRevision;
+		private boolean deleteForRevision;
 
 		public T getOwner() {
 			return owner;
@@ -283,12 +283,8 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 			this.firstRevision = firstRevision;
 		}
 
-		public void setLastRevision( int lastRevision ) {
-			this.lastRevision = lastRevision;
-		}
-
-		public void setDeleted( boolean deleted ) {
-			this.deleted = deleted;
+		public void setRemovalRevision( int removalRevision ) {
+			this.removalRevision = removalRevision;
 		}
 
 		public String getName() {
@@ -303,12 +299,16 @@ public class RevisionBasedEntityPropertiesRepository<T, R extends Revision<T>>
 			return firstRevision;
 		}
 
-		public int getLastRevision() {
-			return lastRevision;
+		public int getRemovalRevision() {
+			return removalRevision;
 		}
 
-		public boolean isDeleted() {
-			return deleted;
+		public boolean isDeleteForRevision() {
+			return deleteForRevision;
+		}
+
+		public void setDeleteForRevision( boolean deleteForRevision ) {
+			this.deleteForRevision = deleteForRevision;
 		}
 
 		public boolean isDraft() {
