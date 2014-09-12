@@ -20,9 +20,11 @@ import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.context.info.AcrossContextInfo;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.revision.Revision;
+import com.foreach.across.core.revision.RevisionModificationException;
 import com.foreach.across.modules.it.properties.definingmodule.DefiningModule;
 import com.foreach.across.modules.it.properties.definingmodule.business.*;
 import com.foreach.across.modules.it.properties.definingmodule.registry.UserPropertyRegistry;
+import com.foreach.across.modules.it.properties.definingmodule.repositories.RevisionPropertiesRepository;
 import com.foreach.across.modules.it.properties.definingmodule.services.RevisionPropertyService;
 import com.foreach.across.modules.it.properties.definingmodule.services.UserPropertyService;
 import com.foreach.across.modules.it.properties.extendingmodule.ExtendingModule;
@@ -33,6 +35,7 @@ import com.foreach.across.modules.it.properties.extendingmodule.services.ClientP
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +71,16 @@ public class ITDefineAndExtendBusinessProperties
 
 	@Autowired
 	private AcrossContextInfo acrossContextInfo;
+
+	@Autowired
+	private RevisionPropertiesRepository revisionPropertiesRepository;
+
+	private long entityId = System.currentTimeMillis();
+
+	@Before
+	public void resetRepository() {
+		revisionPropertiesRepository.setAllowRevisionModification( false );
+	}
 
 	@Test
 	public void forceTrackingUpdate() throws InterruptedException {
@@ -141,8 +154,69 @@ public class ITDefineAndExtendBusinessProperties
 
 	@Test
 	public void revisionBasedPropertiesForNonRevision() {
-		Entity entity = new Entity( 4 );
+		Entity entity = new Entity( entityId() );
 		EntityRevision revision = new EntityRevision( entity, 0, false, true );
+
+		RevisionProperties created = revisionPropertyService.getProperties( revision );
+		assertNotNull( created );
+		assertTrue( created.isEmpty() );
+
+		created.put( "integer", 123 );
+		created.put( "string", "text" );
+
+		revisionPropertyService.saveProperties( created, revision );
+
+		RevisionProperties fetched = revisionPropertyService.getProperties( revision );
+		assertEquals( 2, fetched.size() );
+		assertEquals( Integer.valueOf( 123 ), fetched.getValue( "integer", Integer.class ) );
+		assertEquals( "text", fetched.getValue( "string" ) );
+
+		fetched.put( "string", "modified" );
+		fetched.remove( "integer" );
+
+		UUID uuid = UUID.randomUUID();
+
+		fetched.put( "uuid", uuid );
+
+		revisionPropertyService.saveProperties( fetched, revision );
+
+		RevisionProperties updated = revisionPropertyService.getProperties( revision );
+		assertEquals( 2, updated.size() );
+		assertEquals( "modified", updated.getValue( "string" ) );
+		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
+
+		updated.put( "other", 8989L );
+		revisionPropertyService.saveProperties( updated, revision );
+
+		updated = revisionPropertyService.getProperties( revision );
+		assertEquals( 3, updated.size() );
+		assertEquals( "modified", updated.getValue( "string" ) );
+		assertEquals( uuid, updated.getValue( "uuid", UUID.class ) );
+		assertEquals( Long.valueOf( 8989 ), updated.getValue( "other", Long.class ) );
+	}
+
+	@Test(expected = RevisionModificationException.class)
+	public void revisionBasedPropertiesForSpecificRevisionIfNotAllowed() {
+		Entity entity = new Entity( entityId() );
+		EntityRevision revision = new EntityRevision( entity, 2, false, true );
+
+		RevisionProperties created = revisionPropertyService.getProperties( revision );
+		assertNotNull( created );
+		assertTrue( created.isEmpty() );
+
+		created.put( "integer", 123 );
+		created.put( "string", "text" );
+
+		revisionPropertyService.saveProperties( created, revision );
+	}
+
+	@Test
+	public void revisionBasedPropertiesForSpecificRevisionWhenAllowed() {
+		// Explicitly allow revision falsification
+		revisionPropertiesRepository.setAllowRevisionModification( true );
+
+		Entity entity = new Entity( entityId() );
+		EntityRevision revision = new EntityRevision( entity, 2, false, true );
 
 		RevisionProperties created = revisionPropertyService.getProperties( revision );
 		assertNotNull( created );
@@ -184,7 +258,7 @@ public class ITDefineAndExtendBusinessProperties
 
 	@Test
 	public void revisionBasedProperties() {
-		Entity entity = new Entity( 3 );
+		Entity entity = new Entity( entityId() );
 		EntityRevision latest = new EntityRevision( entity, 1, false, true );
 		EntityRevision draft = new EntityRevision( entity, Revision.DRAFT, true, false );
 
@@ -303,6 +377,10 @@ public class ITDefineAndExtendBusinessProperties
 		assertEquals( uuid, newDraftProps.getValue( "uuid", UUID.class ) );
 	}
 
+	private long entityId() {
+		return entityId++;
+	}
+
 	@AcrossTestConfiguration
 	protected static class Config implements AcrossContextConfigurer
 	{
@@ -313,4 +391,5 @@ public class ITDefineAndExtendBusinessProperties
 			acrossContext.addModule( new ExtendingModule() );
 		}
 	}
+
 }
