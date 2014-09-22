@@ -44,4 +44,8 @@ public interface RevisionBasedEntityPropertiesService<T extends EntityProperties
 	T checkout( R revision );
 
 	T checkout( U entityId, int revisionNumber );
+
+	T createProperties( R revision );
+
+	T createProperties( U entityId );
 }
