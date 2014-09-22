@@ -24,6 +24,8 @@ import com.foreach.common.spring.util.PropertyTypeRegistry;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+
 /**
  * @author Arne Vandamme
  */
@@ -114,6 +116,18 @@ public abstract class AbstractRevisionBasedEntityPropertiesService<T extends Ent
 		                               entityPropertiesRegistry.getPropertyTypeRegistry(),
 		                               entityPropertiesRegistry.getConversionService(),
 		                               source );
+	}
+
+	public T createProperties( R revision ) {
+		return createProperties( revision.getRevisionOwner() );
+	}
+
+	public T createProperties( U entityId ) {
+		return createEntityProperties( entityId,
+		                               entityPropertiesRegistry.getPropertyTypeRegistry(),
+		                               entityPropertiesRegistry.getConversionService(),
+		                               new StringPropertiesSource( new HashMap<String,String>() )
+		                               );
 	}
 
 	protected abstract T createEntityProperties( U entityId,
