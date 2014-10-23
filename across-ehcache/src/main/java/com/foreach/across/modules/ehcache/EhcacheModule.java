@@ -22,8 +22,6 @@ import com.foreach.across.core.context.AcrossModuleRole;
 import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.modules.ehcache.config.EhcacheModuleConfig;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 import java.util.Set;
 
@@ -33,16 +31,6 @@ public class EhcacheModule extends AcrossModule
 {
 	public static final String NAME = "EhcacheModule";
 	public static final String RESOURCES = "ehcache";
-
-	private Resource configLocation = new ClassPathResource( "ehcache.xml" );
-
-	public Resource getConfigLocation() {
-		return configLocation;
-	}
-
-	public void setConfigLocation( Resource configLocation ) {
-		this.configLocation = configLocation;
-	}
 
 	/**
 	 * @return Name of this module.  The spring bean should also be using this name.
