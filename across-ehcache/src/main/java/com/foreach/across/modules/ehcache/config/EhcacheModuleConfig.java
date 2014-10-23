@@ -16,26 +16,33 @@
 package com.foreach.across.modules.ehcache.config;
 
 import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.core.cache.AcrossCompositeCacheManager;
 import com.foreach.across.modules.ehcache.EhcacheModule;
+import com.foreach.across.modules.ehcache.handlers.RegisterClientModuleConfigHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Arrays;
 
 /**
  * Declares the cache manager instance that is shared between all modules.
  */
 @Configuration
-@Exposed
+@ComponentScan("com.foreach.across.modules.ehcache.controllers")
 public class EhcacheModuleConfig
 {
 	@Autowired
 	@Qualifier(AcrossModule.CURRENT_MODULE)
 	private EhcacheModule ehcacheModule;
+
+	@Autowired
+	private AcrossCompositeCacheManager acrossCompositeCacheManager;
 
 	@Bean
 	public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
@@ -45,9 +52,16 @@ public class EhcacheModuleConfig
 	}
 
 	@Bean
-	public CacheManager cacheManager( net.sf.ehcache.CacheManager ehCacheCacheManager ) {
+	public CacheManager ehCacheManager( net.sf.ehcache.CacheManager ehCacheCacheManager ) {
 		EhCacheCacheManager cacheManager = new EhCacheCacheManager();
 		cacheManager.setCacheManager( ehCacheCacheManager );
+		// add ourselves to the global across cache manager
+		acrossCompositeCacheManager.setCacheManagers( Arrays.<CacheManager>asList( cacheManager ) );
 		return cacheManager;
+	}
+
+	@Bean
+	public RegisterClientModuleConfigHandler registerClientModuleConfigHandler() {
+		return new RegisterClientModuleConfigHandler();
 	}
 }
