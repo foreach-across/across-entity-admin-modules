@@ -17,6 +17,8 @@ package com.foreach.across.modules.properties.services;
 
 import com.foreach.across.modules.properties.business.EntityProperties;
 
+import java.util.Collection;
+
 /**
  * @author Arne Vandamme
  */
@@ -27,4 +29,6 @@ public interface EntityPropertiesService<T extends EntityProperties<U>, U>
 	void saveProperties( T entityProperties );
 
 	void deleteProperties( U entityId );
+
+	Collection<U> getEntityIdsForPropertyValue( String propertyName, Object propertyValue );
 }

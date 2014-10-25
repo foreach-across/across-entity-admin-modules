@@ -17,6 +17,8 @@ package com.foreach.across.modules.user.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepositoryImpl;
 import com.foreach.across.modules.user.business.Group;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -25,4 +27,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class GroupRepositoryImpl extends BasicRepositoryImpl<Group> implements GroupRepository
 {
+	@Override
+	protected Criteria ordered( Criteria criteria ) {
+		criteria.addOrder( Order.asc( "name" ) );
+
+		return criteria;
+	}
 }

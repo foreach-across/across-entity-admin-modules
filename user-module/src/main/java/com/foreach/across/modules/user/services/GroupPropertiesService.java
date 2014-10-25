@@ -13,21 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.hibernate.repositories;
+package com.foreach.across.modules.user.services;
 
-import java.util.Collection;
+import com.foreach.across.modules.properties.services.EntityPropertiesService;
+import com.foreach.across.modules.user.business.GroupProperties;
+import com.foreach.across.modules.user.business.UserProperties;
 
-public interface BasicRepository<T>
+/**
+ * @author Arne Vandamme
+ */
+public interface GroupPropertiesService extends EntityPropertiesService<GroupProperties, Long>
 {
-	T getById( long id );
-
-	Collection<T> getAll();
-
-	Collection<T> getAllForIds( Collection<Long> ids );
-
-	void create( T object );
-
-	void update( T object );
-
-	void delete( T object );
 }
