@@ -17,12 +17,11 @@ package com.foreach.across.modules.properties.repositories;
 
 import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Repository interface for persitence of StringTypedPropertyMap instances.
@@ -34,6 +33,10 @@ public class EntityPropertiesRepository<T>
 	private final String SQL_INSERT_PROPERTY;
 	private final String SQL_SELECT_PROPERTIES;
 	private final String SQL_DROP_PROPERTIES;
+	private final String SQL_SELECT_ENTITIES_WITH_PROPERTY;
+
+	private final String keyColumn;
+	private final ConversionService conversionService;
 
 	private final JdbcTemplate jdbcTemplate;
 
@@ -41,13 +44,36 @@ public class EntityPropertiesRepository<T>
 		jdbcTemplate = new JdbcTemplate( configuration.dataSource() );
 
 		String table = configuration.tableName();
-		String keyColumn = configuration.keyColumnName();
+		keyColumn = configuration.keyColumnName();
+		conversionService = configuration.conversionService();
 
 		SQL_INSERT_PROPERTY = String.format( "INSERT INTO %s (%s,property_name,property_value) VALUES (?,?,?)", table,
 		                                     keyColumn );
 		SQL_SELECT_PROPERTIES = String.format( "SELECT property_name, property_value FROM %s WHERE %s = ?", table,
 		                                       keyColumn );
 		SQL_DROP_PROPERTIES = String.format( "DELETE FROM %s WHERE %s = ?", table, keyColumn );
+		SQL_SELECT_ENTITIES_WITH_PROPERTY = String.format(
+				"SELECT DISTINCT %s FROM %s WHERE property_name = ? AND property_value = ?", keyColumn, table );
+	}
+
+	/**
+	 * Select all entity ids that have a property registered with a specific value.
+	 */
+	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
+	public Collection<T> getEntityIdsForPropertyValue( String propertyName, Object propertyValue ) {
+		String valueAsString = propertyValue != null ? conversionService.convert( propertyValue, String.class ) : null;
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList( SQL_SELECT_ENTITIES_WITH_PROPERTY,
+		                                                            propertyName,
+		                                                            valueAsString );
+
+		List<T> entityIdList = new ArrayList<>( rows.size() );
+
+		for ( Map<String, Object> entry : rows ) {
+			entityIdList.add( (T) entry.get( keyColumn ) );
+		}
+
+		return entityIdList;
 	}
 
 	@Transactional(readOnly = true)
