@@ -22,6 +22,8 @@ import com.foreach.across.modules.properties.repositories.EntityPropertiesReposi
 import com.foreach.common.spring.util.PropertyTypeRegistry;
 import org.springframework.core.convert.ConversionService;
 
+import java.util.Collection;
+
 /**
  * @author Arne Vandamme
  */
@@ -43,6 +45,10 @@ public abstract class AbstractEntityPropertiesService<T extends EntityProperties
 		                               entityPropertiesRegistry.getPropertyTypeRegistry(),
 		                               entityPropertiesRegistry.getConversionService(),
 		                               source );
+	}
+
+	public Collection<U> getEntityIdsForPropertyValue( String propertyName, Object propertyValue ) {
+		return entityPropertiesRepository.getEntityIdsForPropertyValue( propertyName, propertyValue );
 	}
 
 	public void saveProperties( T entityProperties ) {

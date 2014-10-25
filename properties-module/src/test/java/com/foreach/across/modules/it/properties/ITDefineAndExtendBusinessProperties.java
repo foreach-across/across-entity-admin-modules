@@ -44,6 +44,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
@@ -150,6 +151,41 @@ public class ITDefineAndExtendBusinessProperties
 
 		assertTrue( userPropertyService.getProperties( userTwo.getId() ).isEmpty() );
 		assertTrue( clientPropertyService.getProperties( userTwo.getId() ).isEmpty() );
+	}
+
+	@Test
+	public void selectPropertyValues() {
+		User three = new User( 3, "three" );
+		User four = new User( 4, "four" );
+
+		UserProperties propsThree = userPropertyService.getProperties( three.getId() );
+		propsThree.set( UserPropertiesConfig.BOOLEAN, true );
+		propsThree.set( "description", "some user" );
+		propsThree.set( "number", 123 );
+		userPropertyService.saveProperties( propsThree );
+
+		UserProperties propsFour = userPropertyService.getProperties( four.getId() );
+		propsFour.set( "description", "some user" );
+		propsFour.set( "number", 456 );
+		userPropertyService.saveProperties( propsFour );
+
+		Collection<Long> entityIds = userPropertyService.getEntityIdsForPropertyValue( UserPropertiesConfig.BOOLEAN,
+		                                                                               true );
+		assertEquals( 1, entityIds.size() );
+		assertTrue( entityIds.contains( 3L ) );
+
+		entityIds = userPropertyService.getEntityIdsForPropertyValue( "number", 123 );
+		assertEquals( 1, entityIds.size() );
+		assertTrue( entityIds.contains( 3L ) );
+
+		entityIds = userPropertyService.getEntityIdsForPropertyValue( "number", 456 );
+		assertEquals( 1, entityIds.size() );
+		assertTrue( entityIds.contains( 4L ) );
+
+		entityIds = userPropertyService.getEntityIdsForPropertyValue( "description", "some user" );
+		assertEquals( 2, entityIds.size() );
+		assertTrue( entityIds.contains( 3L ) );
+		assertTrue( entityIds.contains( 4L ) );
 	}
 
 	@Test
