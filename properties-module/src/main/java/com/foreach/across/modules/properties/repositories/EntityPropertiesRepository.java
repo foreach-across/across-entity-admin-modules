@@ -21,6 +21,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 /**
@@ -30,6 +31,8 @@ import java.util.*;
  */
 public class EntityPropertiesRepository<T>
 {
+	private final Class<T> clazz;
+
 	private final String SQL_INSERT_PROPERTY;
 	private final String SQL_SELECT_PROPERTIES;
 	private final String SQL_DROP_PROPERTIES;
@@ -40,7 +43,11 @@ public class EntityPropertiesRepository<T>
 
 	private final JdbcTemplate jdbcTemplate;
 
+	@SuppressWarnings("unchecked")
 	public EntityPropertiesRepository( EntityPropertiesDescriptor configuration ) {
+		ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
+		this.clazz = (Class<T>) genericSuperclass.getActualTypeArguments()[0];
+
 		jdbcTemplate = new JdbcTemplate( configuration.dataSource() );
 
 		String table = configuration.tableName();
@@ -70,10 +77,20 @@ public class EntityPropertiesRepository<T>
 		List<T> entityIdList = new ArrayList<>( rows.size() );
 
 		for ( Map<String, Object> entry : rows ) {
-			entityIdList.add( (T) entry.get( keyColumn ) );
+			entityIdList.add( convertObjectToRequiredType( entry.get( keyColumn ) ) );
 		}
 
 		return entityIdList;
+	}
+
+	@SuppressWarnings( "unchecked" )
+	private T convertObjectToRequiredType( Object value ) {
+		// Oracle maps numbers to BigDecimal by default, and in most cases we'd be using a Long implementation
+		if ( clazz.isInstance( value ) ) {
+			return (T) value;
+		}
+
+		return conversionService.convert( value, clazz );
 	}
 
 	@Transactional(readOnly = true)
