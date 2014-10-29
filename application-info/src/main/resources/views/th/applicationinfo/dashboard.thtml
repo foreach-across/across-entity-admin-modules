@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2014 the original author or authors
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Application info</title>
+</head>
+<body th:fragment="content">
+
+	<table class="table">
+		<tr>
+			<th>Application id</th>
+			<td th:text="${applicationInfo.applicationId}"></td>
+		</tr>
+		<tr>
+			<th>Application name</th>
+			<td th:text="${applicationInfo.applicationName}"></td>
+		</tr>
+		<tr>
+			<th>Environment</th>
+			<td th:text="${applicationInfo.environment}"></td>
+		</tr>
+		<tr>
+			<th>Startup time</th>
+			<td th:text="${applicationInfo.startupDate}"></td>
+		</tr>
+		<tr>
+			<th>Build id</th>
+			<td th:text="${applicationInfo.buildId}"></td>
+		</tr>
+		<tr>
+			<th>Build date</th>
+			<td th:text="${applicationInfo.buildDate}"></td>
+		</tr>
+		<tr>
+			<th><br />Hostname</th>
+			<td><br /><span th:text="${applicationInfo.hostName}"></span></td>
+		</tr>
+		<tr>
+			<th>Ip Addresses</th>
+			<th>
+
+			</th>
+		</tr>
+		<tr>
+			<th colspan="2"><br />Properties</th>
+		</tr>
+		<tr th:each="prop : ${applicationInfo.properties}">
+			<td th:text="${prop.key}"></td>
+			<td th:text="${prop.value}"></td>
+		</tr>
+	</table>
+
+</body>
+</html>

@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/across-hibernate/across-hibernate.iml" filepath="$PROJECT_DIR$/across-hibernate/across-hibernate.iml" />
       <module fileurl="file://$PROJECT_DIR$/across-standard-modules.iml" filepath="$PROJECT_DIR$/across-standard-modules.iml" />
       <module fileurl="file://$PROJECT_DIR$/admin-web/admin-web.iml" filepath="$PROJECT_DIR$/admin-web/admin-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/application-info/application-info.iml" filepath="$PROJECT_DIR$/application-info/application-info.iml" />
       <module fileurl="file://$PROJECT_DIR$/debug-web/debug-web.iml" filepath="$PROJECT_DIR$/debug-web/debug-web.iml" />
       <module fileurl="file://$PROJECT_DIR$/entity-module/entity-module.iml" filepath="$PROJECT_DIR$/entity-module/entity-module.iml" />
       <module fileurl="file://$PROJECT_DIR$/oauth2-module/oauth2-module.iml" filepath="$PROJECT_DIR$/oauth2-module/oauth2-module.iml" />
