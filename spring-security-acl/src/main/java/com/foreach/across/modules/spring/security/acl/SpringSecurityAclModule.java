@@ -31,6 +31,7 @@ import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.acl.config.AclSecurityConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.ModuleAclSecurityConfiguration;
 import com.foreach.across.modules.spring.security.acl.config.modules.AcrossHibernateModuleConfiguration;
+import com.foreach.across.modules.spring.security.acl.config.modules.SpringSecurityInfrastructureModuleConfiguration;
 import com.foreach.across.modules.spring.security.acl.installers.AclSchemaInstaller;
 import com.foreach.across.modules.spring.security.infrastructure.SpringSecurityInfrastructureModule;
 
@@ -75,6 +76,10 @@ public class SpringSecurityAclModule extends AcrossModule implements HasHibernat
 
 	@Override
 	public void prepareForBootstrap( ModuleBootstrapConfig currentModule, AcrossBootstrapConfig contextConfig ) {
+		contextConfig.getModule( SpringSecurityInfrastructureModule.NAME ).addApplicationContextConfigurer(
+			new AnnotatedClassConfigurer( SpringSecurityInfrastructureModuleConfiguration.class )
+		);
+
 		setProperties( contextConfig.getModule( SpringSecurityModule.NAME ).getModule().getProperties() );
 
 		for ( ModuleBootstrapConfig module : contextConfig.getModules() ) {

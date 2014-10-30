@@ -19,6 +19,7 @@ import com.foreach.across.core.database.DatabaseInfo;
 import com.foreach.across.modules.spring.security.acl.business.AclAuthorities;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityService;
 import com.foreach.across.modules.spring.security.acl.services.AclSecurityServiceImpl;
+import com.foreach.across.modules.spring.security.acl.services.SecurityPrincipalAclService;
 import com.foreach.across.modules.spring.security.acl.services.SecurityPrincipalJdbcAclService;
 import com.foreach.across.modules.spring.security.acl.strategy.SecurityPrincipalSidRetrievalStrategy;
 import org.slf4j.Logger;
@@ -34,7 +35,6 @@ import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
 import org.springframework.security.acls.model.AclCache;
-import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.PermissionGrantingStrategy;
 import org.springframework.security.acls.model.SidRetrievalStrategy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -66,8 +66,8 @@ public class AclSecurityConfiguration
 	}
 
 	@Bean
-	public MutableAclService aclService() {
-		JdbcMutableAclService aclService = new SecurityPrincipalJdbcAclService( dataSource, lookupStrategy(),
+	public SecurityPrincipalAclService aclService() {
+		SecurityPrincipalJdbcAclService aclService = new SecurityPrincipalJdbcAclService( dataSource, lookupStrategy(),
 		                                                                        aclCache() );
 
 		DatabaseInfo databaseInfo = DatabaseInfo.retrieve( dataSource );

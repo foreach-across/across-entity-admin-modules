@@ -33,6 +33,7 @@
         <module name="oauth2-module" />
         <module name="properties-module" />
         <module name="spring-security" />
+        <module name="spring-security-acl" />
         <module name="user-module" />
       </profile>
     </annotationProcessing>
@@ -50,6 +51,7 @@
       <module name="oauth2-module" target="1.7" />
       <module name="properties-module" target="1.7" />
       <module name="spring-security" target="1.7" />
+      <module name="spring-security-acl" target="1.7" />
       <module name="test-web" target="1.7" />
       <module name="user-module" target="1.7" />
     </bytecodeTargetLevel>

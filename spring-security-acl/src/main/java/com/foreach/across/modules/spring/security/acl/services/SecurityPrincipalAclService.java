@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.infrastructure.services;
+package com.foreach.across.modules.spring.security.acl.services;
 
-import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.security.acls.model.Sid;
+
+import java.util.List;
 
 /**
  * @author Arne Vandamme
  */
-public interface CurrentSecurityPrincipalProxy extends SecurityPrincipal
+public interface SecurityPrincipalAclService extends MutableAclService
 {
-	boolean isAuthenticated();
-
-	boolean hasAuthority( String authority );
-
-	<T extends SecurityPrincipal> T getPrincipal();
+	List<ObjectIdentity> findObjectIdentitiesWithAclForSid( Sid sid );
 }

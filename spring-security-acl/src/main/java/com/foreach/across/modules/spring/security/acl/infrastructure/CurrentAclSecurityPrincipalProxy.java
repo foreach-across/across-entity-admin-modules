@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.infrastructure.services;
+package com.foreach.across.modules.spring.security.acl.infrastructure;
 
-import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
+import com.foreach.across.modules.hibernate.business.IdBasedEntity;
+import com.foreach.across.modules.spring.security.acl.business.AclPermission;
+import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
 
 /**
+ * Extends the {@link com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy}
+ * with ACL related methods.
+ *
  * @author Arne Vandamme
  */
-public interface CurrentSecurityPrincipalProxy extends SecurityPrincipal
+public interface CurrentAclSecurityPrincipalProxy extends CurrentSecurityPrincipalProxy
 {
-	boolean isAuthenticated();
-
-	boolean hasAuthority( String authority );
-
-	<T extends SecurityPrincipal> T getPrincipal();
+	boolean hasAclPermission( IdBasedEntity entity, AclPermission permission );
 }

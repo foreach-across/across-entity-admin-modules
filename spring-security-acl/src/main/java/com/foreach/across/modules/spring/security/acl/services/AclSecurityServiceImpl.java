@@ -42,7 +42,7 @@ import java.util.*;
 public class AclSecurityServiceImpl implements AclSecurityService
 {
 	@Autowired
-	private MutableAclService aclService;
+	private SecurityPrincipalAclService aclService;
 
 	@Autowired
 	private PermissionEvaluator aclPermissionEvaluator;
@@ -298,6 +298,12 @@ public class AclSecurityServiceImpl implements AclSecurityService
 		}
 
 		return false;
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public Collection<ObjectIdentity> getObjectIdentitiesWithAclEntriesForPrincipal( SecurityPrincipal principal ) {
+		return aclService.findObjectIdentitiesWithAclForSid( sid( principal ) );
 	}
 
 	private List<Sid> buildSids( SecurityPrincipal principal ) {

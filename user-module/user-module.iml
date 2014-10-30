@@ -83,9 +83,10 @@
     <orderEntry type="library" name="Maven: org.aspectj:aspectjrt:1.6.8" level="project" />
     <orderEntry type="module" module-name="spring-security" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-core:3.2.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-acl:3.2.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:3.2.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-config:3.2.4.RELEASE" level="project" />
+    <orderEntry type="module" module-name="spring-security-acl" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-acl:3.2.4.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.el:javax.el-api:2.2.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.glassfish.web:javax.el:2.2.4" level="project" />
     <orderEntry type="module" module-name="admin-web" />
