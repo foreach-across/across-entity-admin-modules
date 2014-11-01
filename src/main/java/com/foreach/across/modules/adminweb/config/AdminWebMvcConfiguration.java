@@ -25,9 +25,10 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.controllers.AuthenticationController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuBuilder;
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenuBuilder;
 import com.foreach.across.modules.adminweb.resource.BootstrapWebResourcePackage;
 import com.foreach.across.modules.adminweb.resource.JQueryWebResourcePackage;
-import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.mvc.PrefixingRequestMappingHandlerMapping;
 import com.foreach.across.modules.web.resource.*;
@@ -62,14 +63,21 @@ public class AdminWebMvcConfiguration extends WebMvcConfigurerAdapter
 	@Autowired
 	private MenuFactory menuFactory;
 
+	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public void initialize() {
 		menuFactory.addMenuBuilder( adminMenuBuilder(), AdminMenu.class );
+		menuFactory.addMenuBuilder( entityAdminMenuBuilder(), EntityAdminMenu.class );
 	}
 
 	@Bean
 	public AdminMenuBuilder adminMenuBuilder() {
 		return new AdminMenuBuilder();
+	}
+
+	@Bean
+	public EntityAdminMenuBuilder entityAdminMenuBuilder() {
+		return new EntityAdminMenuBuilder();
 	}
 
 	@Bean
