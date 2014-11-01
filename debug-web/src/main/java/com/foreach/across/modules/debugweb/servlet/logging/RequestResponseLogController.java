@@ -24,6 +24,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @DebugWebController
@@ -31,17 +34,23 @@ public class RequestResponseLogController
 {
 	@Autowired
 	private RequestResponseLogRegistry logRegistry;
+	@Autowired
+	private RequestResponseLoggingFilter logFilter;
+	@Autowired(required = false)
+	private DebugWeb debugWeb;
 
 	@Handler
 	public void buildMenu( DebugMenuEvent event ) {
-		event.builder()
-		     .item( "/logging/requestResponse", "Request - response logs", "/logging/requestResponse/list" );/*.and()
-		     .item( "/logging/requestResponse/detail", "detail" ).disable()*/;
+		event.builder().group( "/logging/requestResponse", "Request - response logs" ).and()
+		     .item( "/logging/requestResponse/list", "Overview" ).and()
+			 .item( "/logging/requestResponse/settings", "Settings" );/*.and()
+		     .item( "/logging/requestResponse/detail", "detail" ).disable()*/
 	}
 
 	@RequestMapping("/logging/requestResponse/list")
 	public String listEntries( Model model ) {
 		model.addAttribute( "maxEntries", logRegistry.getMaxEntries() );
+		model.addAttribute( "paused", logFilter.isPaused() );
 		model.addAttribute( "logEntries", logRegistry.getEntries() );
 
 		return DebugWeb.VIEW_LOGGING_REQUEST_RESPONSE_LIST;
@@ -52,5 +61,43 @@ public class RequestResponseLogController
 		model.addAttribute( "entry", logRegistry.getEntry( id ) );
 
 		return DebugWeb.VIEW_LOGGING_REQUEST_RESPONSE_DETAIL;
+	}
+
+	@RequestMapping(value = "/logging/requestResponse/settings" )
+	public String settings( Model model, @RequestParam( value = "excludedPathPatterns", required = false) String excludedPathPatterns,
+			@RequestParam( value = "includedPathPatterns", required = false ) String includedPathPatterns) {
+		model.addAttribute( "logFilter", logFilter );
+		if( excludedPathPatterns != null ) {
+			logFilter.setExcludedPathPatterns( fromTextArea( excludedPathPatterns ) );
+		}
+		if( includedPathPatterns != null ) {
+			logFilter.setIncludedPathPatterns( fromTextArea( includedPathPatterns ) );
+		}
+		return DebugWeb.VIEW_LOGGING_REQUEST_RESPONSE_SETTINGS;
+	}
+
+	@RequestMapping("/logging/requestResponse/pause")
+	public String pauseLogger() {
+		logFilter.setPaused( true );
+		return debugWeb.redirect( "/logging/requestResponse/list" );
+	}
+
+	@RequestMapping("/logging/requestResponse/resume")
+	public String resumeLogger() {
+		logFilter.setPaused( false );
+		return debugWeb.redirect( "/logging/requestResponse/list" );
+	}
+
+	private List<String> fromTextArea( String items ) {
+		List<String> splitItems = Arrays.asList( items.split( "," ) );
+		List<String> cleanedItems = new ArrayList<>();
+		if( splitItems.size() > 0 ) {
+			for( String item : splitItems ) {
+				if( item != null && item.length() > 0 ) {
+					cleanedItems.add( item.trim() );
+				}
+			}
+		}
+		return cleanedItems;
 	}
 }
