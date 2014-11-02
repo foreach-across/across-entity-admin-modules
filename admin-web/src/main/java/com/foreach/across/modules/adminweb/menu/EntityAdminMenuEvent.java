@@ -18,7 +18,7 @@ public class EntityAdminMenuEvent<T> extends BuildMenuEvent<EntityAdminMenu<T>>
 		return getMenu().getEntity();
 	}
 
-	public boolean isExisting() {
+	public boolean isForUpdate() {
 		return getEntity() != null;
 	}
 }

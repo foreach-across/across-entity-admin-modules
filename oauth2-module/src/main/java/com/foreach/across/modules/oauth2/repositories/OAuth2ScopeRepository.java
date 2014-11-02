@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.user.repositories;
+package com.foreach.across.modules.oauth2.repositories;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepository;
-import com.foreach.across.modules.user.business.Role;
+import com.foreach.across.modules.oauth2.business.OAuth2Client;
+import com.foreach.across.modules.oauth2.business.OAuth2Scope;
 
 import java.util.Collection;
 
-public interface RoleRepository extends BasicRepository<Role>
+public interface OAuth2ScopeRepository extends BasicRepository<OAuth2Scope>
 {
-	Role getRole( String name );
-
-	void save( Role role );
+	void save( OAuth2Scope oAuth2Scope );
 }
