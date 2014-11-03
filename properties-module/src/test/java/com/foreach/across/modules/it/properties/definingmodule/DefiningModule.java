@@ -16,8 +16,12 @@
 package com.foreach.across.modules.it.properties.definingmodule;
 
 import com.foreach.across.core.AcrossModule;
+import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
+import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
 import com.foreach.across.modules.it.properties.definingmodule.installers.RevisionPropertiesInstaller;
 import com.foreach.across.modules.it.properties.definingmodule.installers.UserPropertiesInstaller;
+
+import java.util.Set;
 
 /**
  * @author Arne Vandamme
@@ -32,6 +36,11 @@ public class DefiningModule extends AcrossModule
 	@Override
 	public String getDescription() {
 		return "Defines a two custom property sets: one revision based, one not.";
+	}
+
+	@Override
+	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
+		contextConfigurers.add( new ComponentScanConfigurer( getClass().getPackage().getName() ) );
 	}
 
 	@Override
