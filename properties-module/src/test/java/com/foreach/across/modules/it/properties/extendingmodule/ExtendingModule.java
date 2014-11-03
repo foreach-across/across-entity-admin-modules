@@ -17,7 +17,11 @@ package com.foreach.across.modules.it.properties.extendingmodule;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
+import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
 import com.foreach.across.modules.it.properties.extendingmodule.installers.ClientPropertiesInstaller;
+
+import java.util.Set;
 
 /**
  * @author Arne Vandamme
@@ -33,6 +37,11 @@ public class ExtendingModule extends AcrossModule
 	@Override
 	public String getDescription() {
 		return "Extends the UserProperties with some custom properties.";
+	}
+
+	@Override
+	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
+		contextConfigurers.add( new ComponentScanConfigurer( getClass().getPackage().getName() ) );
 	}
 
 	@Override
