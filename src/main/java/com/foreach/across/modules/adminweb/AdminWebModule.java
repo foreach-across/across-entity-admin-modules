@@ -26,7 +26,10 @@ import com.foreach.across.modules.web.AcrossWebModule;
 
 import java.util.Set;
 
-@AcrossDepends(required = { AcrossWebModule.NAME, SpringSecurityModule.NAME })
+@AcrossDepends(
+		required = { AcrossWebModule.NAME, SpringSecurityModule.NAME },
+        optional = { "AcrossHibernateModule" }
+)
 public class AdminWebModule extends AcrossModule
 {
 	public static final String NAME = "AdminWebModule";

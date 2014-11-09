@@ -18,6 +18,8 @@ package com.foreach.across.modules.adminweb.config;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Module;
+import com.foreach.across.core.context.info.AcrossContextInfo;
+import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
@@ -39,8 +41,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.annotation.AnnotationClassFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.annotation.PostConstruct;
@@ -52,6 +56,12 @@ public class AdminWebMvcConfiguration extends WebMvcConfigurerAdapter
 
 	@Autowired(required = false)
 	private WebResourceTranslator viewsWebResourceTranslator;
+
+	@Autowired
+	private AcrossContextInfo contextInfo;
+
+	@Autowired
+	private AcrossContextBeanRegistry beanRegistry;
 
 	@Autowired
 	@Module(AcrossModule.CURRENT_MODULE)
@@ -158,8 +168,18 @@ public class AdminWebMvcConfiguration extends WebMvcConfigurerAdapter
 				new PrefixingRequestMappingHandlerMapping( adminWebModule.getRootPath(),
 				                                           new AnnotationClassFilter( AdminWebController.class,
 				                                                                      true ) );
-		mappingHandlerMapping.setInterceptors(
-				new Object[] { adminWebResourceRegistryInterceptor(), adminWebTemplateInterceptor() } );
+		// todo: unify web registration approach and move this to a different configuration
+		if ( contextInfo.hasModule( "AcrossHibernateModule" ) ) {
+			ApplicationContext moduleCtx = contextInfo.getModuleInfo( "AcrossHibernateModule" ).getApplicationContext();
+
+			if ( moduleCtx.containsLocalBean( "openSessionInViewInterceptor" ) ) {
+				mappingHandlerMapping.addInterceptor( moduleCtx.getBean( "openSessionInViewInterceptor",
+				                                                         OpenSessionInViewInterceptor.class ) );
+			}
+		}
+
+		mappingHandlerMapping.addInterceptor( adminWebResourceRegistryInterceptor(), adminWebTemplateInterceptor() );
+
 		return mappingHandlerMapping;
 	}
 
