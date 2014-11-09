@@ -1,0 +1,87 @@
+package com.foreach.across.modules.entity.form;
+
+import com.foreach.across.modules.entity.business.FormElement;
+import com.foreach.across.modules.entity.business.FormPropertyDescriptor;
+import com.foreach.across.modules.entity.services.EntityRegistry;
+
+import java.beans.PropertyDescriptor;
+import java.io.Serializable;
+import java.util.Collection;
+
+public class SelectFormElement implements FormElement
+{
+	private final EntityRegistry registry;
+	private Object entity;
+	private Collection<?> possibleValues;
+
+	private String name, label;
+	private Object value;
+
+	public SelectFormElement( EntityRegistry registry,
+	                          PropertyDescriptor propertyDescriptor,
+	                          Collection<?> possibleValues ) {
+		this.registry = registry;
+		this.possibleValues = possibleValues;
+
+		setName( propertyDescriptor.getName() );
+		setLabel( propertyDescriptor.getDisplayName() );
+	}
+
+	public SelectFormElement( EntityRegistry registry,
+	                          FormPropertyDescriptor propertyDescriptor,
+	                          Collection<?> possibleValues ) {
+		this.registry = registry;
+		this.possibleValues = possibleValues;
+
+		setName( propertyDescriptor.getName() );
+		setLabel( propertyDescriptor.getDisplayName() );
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	public void setName( String name ) {
+		this.name = name;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel( String label ) {
+		this.label = label;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	@Override
+	public void setValue( Object value ) {
+		this.value = value;
+	}
+
+	@Override
+	public void setEntity( Object entity ) {
+		this.entity = entity;
+	}
+
+	@Override
+	public String getElementType() {
+		return "select";
+	}
+
+	public String entityLabel( Object entity ) {
+		return registry.wrap( entity ).getEntityLabel();
+	}
+
+	public Serializable entityId( Object entity ) {
+		return registry.wrap( entity ).getId();
+	}
+
+	public Collection<?> getPossibleValues() {
+		return possibleValues;
+	}
+}
