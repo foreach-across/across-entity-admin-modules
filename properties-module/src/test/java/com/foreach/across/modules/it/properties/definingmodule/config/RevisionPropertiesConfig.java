@@ -18,6 +18,7 @@ package com.foreach.across.modules.it.properties.definingmodule.config;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.it.properties.definingmodule.registry.RevisionPropertyRegistry;
 import com.foreach.across.modules.it.properties.definingmodule.repositories.RevisionPropertiesRepository;
+import com.foreach.across.modules.it.properties.definingmodule.services.RevisionPropertyService;
 import com.foreach.across.modules.properties.config.AbstractEntityPropertiesConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RevisionPropertiesConfig extends AbstractEntityPropertiesConfiguration
 {
+	@Override
+	public Class<?> entityClass() {
+		return Object.class;
+	}
+
 	@Override
 	protected String originalTableName() {
 		return "revision_properties";
@@ -43,14 +49,22 @@ public class RevisionPropertiesConfig extends AbstractEntityPropertiesConfigurat
 		return "revision_id";
 	}
 
+	@Exposed
+	@Bean(name = "revisionPropertyService")
+	@Override
+	public RevisionPropertyService service() {
+		return new RevisionPropertyService( registry(), revisionPropertiesRepository() );
+	}
+
 	@Bean
 	public RevisionPropertiesRepository revisionPropertiesRepository() {
 		return new RevisionPropertiesRepository( this );
 	}
 
-	@Bean
+	@Bean(name = "revisionPropertyRegistry")
 	@Exposed
-	public RevisionPropertyRegistry revisionPropertyRegistry() {
+	@Override
+	public RevisionPropertyRegistry registry() {
 		return new RevisionPropertyRegistry( this );
 	}
 

@@ -7,7 +7,7 @@ import org.springframework.core.ResolvableType;
 public class EntityAdminMenuEvent<T> extends BuildMenuEvent<EntityAdminMenu<T>>
 {
 	public EntityAdminMenuEvent( EntityAdminMenu<T> menu, PathBasedMenuBuilder menuBuilder ) {
-		super( menu, menuBuilder ); //TODO Was syntax error related to stuff from entity-forms branch. No syntax error now. Not sure if this is correct though.
+		super( menu, menuBuilder, ResolvableType.forClass( menu.getEntityClass() ) );
 	}
 
 	public Class<T> getEntityClass() {

@@ -22,6 +22,7 @@ import com.foreach.across.modules.properties.business.EntityProperties;
  * @author Arne Vandamme
  */
 public interface RevisionBasedEntityPropertiesService<T extends EntityProperties<U>, U, R extends Revision>
+		extends EntityPropertiesServiceBase
 {
 	T getProperties( R revision );
 

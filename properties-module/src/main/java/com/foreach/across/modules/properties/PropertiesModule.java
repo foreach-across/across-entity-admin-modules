@@ -17,18 +17,12 @@ package com.foreach.across.modules.properties;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.core.context.configurer.AnnotatedClassConfigurer;
-import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
-import com.foreach.across.modules.properties.config.ConversionServiceConfiguration;
-import com.foreach.across.modules.properties.config.PropertyTrackingConfiguration;
 import com.foreach.across.modules.properties.installers.PropertyTrackingSchemaInstaller;
-
-import java.util.Set;
 
 /**
  * @author Arne Vandamme
  */
-@AcrossDepends(optional = "AcrossWebModule")
+@AcrossDepends(optional = { "AcrossWebModule", "EntityModule" })
 public class PropertiesModule extends AcrossModule
 {
 	public static final String NAME = "PropertiesModule";
@@ -46,11 +40,5 @@ public class PropertiesModule extends AcrossModule
 	@Override
 	public Object[] getInstallers() {
 		return new Object[] { PropertyTrackingSchemaInstaller.class };
-	}
-
-	@Override
-	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
-		contextConfigurers.add( new AnnotatedClassConfigurer( ConversionServiceConfiguration.class,
-		                                                      PropertyTrackingConfiguration.class ) );
 	}
 }

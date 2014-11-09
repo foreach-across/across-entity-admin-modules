@@ -16,8 +16,10 @@
 package com.foreach.across.modules.it.properties.extendingmodule.config;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.it.properties.extendingmodule.business.ClientProperties;
 import com.foreach.across.modules.it.properties.extendingmodule.registry.ClientPropertyRegistry;
 import com.foreach.across.modules.it.properties.extendingmodule.repositories.ClientPropertiesRepository;
+import com.foreach.across.modules.it.properties.extendingmodule.services.ClientPropertyService;
 import com.foreach.across.modules.properties.config.AbstractEntityPropertiesConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +31,11 @@ import org.springframework.context.annotation.Configuration;
 public class ClientPropertiesConfig extends AbstractEntityPropertiesConfiguration
 {
 	public static final String BOOLEAN = "extending.booleanProperty";
+
+	@Override
+	public Class<?> entityClass() {
+		return Object.class;
+	}
 
 	@Override
 	protected String originalTableName() {
@@ -46,13 +53,21 @@ public class ClientPropertiesConfig extends AbstractEntityPropertiesConfiguratio
 	}
 
 	@Bean
+	@Exposed
+	@Override
+	public ClientPropertyService service() {
+		return new ClientPropertyService( registry(), clientPropertiesRepository() );
+	}
+
+	@Bean
 	public ClientPropertiesRepository clientPropertiesRepository() {
 		return new ClientPropertiesRepository( this );
 	}
 
-	@Bean
+	@Bean(name = "clientPropertyRegistry")
 	@Exposed
-	public ClientPropertyRegistry clientPropertyRegistry() {
+	@Override
+	public ClientPropertyRegistry registry() {
 		ClientPropertyRegistry registry = new ClientPropertyRegistry( this );
 
 		registry.register( currentModule, BOOLEAN, Boolean.class, true );

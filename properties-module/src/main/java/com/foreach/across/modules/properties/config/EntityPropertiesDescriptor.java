@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.properties.config;
 
+import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
+import com.foreach.across.modules.properties.services.EntityPropertiesServiceBase;
 import com.foreach.across.modules.properties.repositories.PropertyTrackingRepository;
 import org.springframework.core.convert.ConversionService;
 
@@ -27,6 +29,11 @@ import javax.sql.DataSource;
  */
 public interface EntityPropertiesDescriptor
 {
+	/**
+	 * @return Entity class these are custom properties for.
+	 */
+	Class<?> entityClass();
+
 	/**
 	 * @return Unique id of the properties registry.
 	 */
@@ -56,4 +63,14 @@ public interface EntityPropertiesDescriptor
 	 * @return The repository in which to track the registered properties.
 	 */
 	PropertyTrackingRepository trackingRepository();
+
+	/**
+	 * @return The registry where custom properties are registered.
+	 */
+	EntityPropertiesRegistry registry();
+
+	/**
+	 * @return The service that manages the property persistence.
+	 */
+	EntityPropertiesServiceBase service();
 }
