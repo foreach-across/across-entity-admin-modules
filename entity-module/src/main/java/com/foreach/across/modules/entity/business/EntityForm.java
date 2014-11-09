@@ -1,5 +1,9 @@
 package com.foreach.across.modules.entity.business;
 
+import com.foreach.across.modules.entity.util.EntityUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.ClassUtils;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -9,7 +13,13 @@ public class EntityForm
 
 	public void setEntity( Object instance ) {
 		for ( FormElement element : elements ) {
-			element.setEntity( instance );
+			element.setValue(
+					EntityUtils.getPropertyValue(
+							BeanUtils.getPropertyDescriptor( ClassUtils.getUserClass( instance.getClass() ),
+							                                 element.getName() ),
+							instance
+					)
+			);
 		}
 	}
 

@@ -30,6 +30,7 @@
         <module name="admin-web" />
         <module name="core" />
         <module name="debug-web" />
+        <module name="entity-module" />
         <module name="oauth2-module" />
         <module name="properties-module" />
         <module name="spring-security" />
@@ -48,6 +49,7 @@
       <module name="admin-web" target="1.7" />
       <module name="debug-web" target="1.7" />
       <module name="demo-web" target="1.7" />
+      <module name="entity-module" target="1.7" />
       <module name="oauth2-module" target="1.7" />
       <module name="properties-module" target="1.7" />
       <module name="spring-security" target="1.7" />

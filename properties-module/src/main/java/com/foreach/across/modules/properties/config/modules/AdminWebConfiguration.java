@@ -5,7 +5,7 @@ import com.foreach.across.modules.properties.controllers.EntityPropertiesControl
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@AcrossDepends(required = "AdminWebModule")
+@AcrossDepends(required = { "AdminWebModule", "EntityModule" })
 @Configuration
 public class AdminWebConfiguration
 {

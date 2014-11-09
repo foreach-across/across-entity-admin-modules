@@ -6,5 +6,7 @@ public interface FormElement
 
 	String getName();
 
+	void setValue( Object value );
+
 	String getElementType();
 }
