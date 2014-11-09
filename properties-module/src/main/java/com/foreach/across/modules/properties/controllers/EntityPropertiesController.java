@@ -4,46 +4,51 @@ import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
+import com.foreach.across.modules.adminweb.menu.AdminMenu;
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenuEvent;
+import com.foreach.across.modules.entity.business.EntityForm;
+import com.foreach.across.modules.entity.business.EntityWrapper;
+import com.foreach.across.modules.entity.business.FormElement;
+import com.foreach.across.modules.entity.business.FormPropertyDescriptor;
+import com.foreach.across.modules.entity.config.EntityConfiguration;
+import com.foreach.across.modules.entity.services.EntityFormFactory;
+import com.foreach.across.modules.entity.services.EntityRegistry;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
+import com.foreach.across.modules.properties.business.EntityProperties;
 import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
+import com.foreach.across.modules.properties.services.EntityPropertiesService;
 import com.foreach.across.modules.web.menu.MenuFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
+import org.springframework.core.ResolvableType;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.Validator;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @AdminWebController
-@RequestMapping("/entities/{entityConfig}")
+@RequestMapping("/entities/{entityConfig}/{entityId}")
 public class EntityPropertiesController
 {
 	@RefreshableCollection(includeModuleInternals = true)
 	private Collection<EntityPropertiesDescriptor> propertiesDescriptors;
 
-//	@Autowired
-//	private AdminWeb adminWeb;
-//
-//	@Autowired
-//	private EntityRegistry entityRegistry;
-//
-//	@Autowired
-//	private EntityFormFactory formFactory;
-//
-//	@Autowired
-//	private MenuFactory menuFactory;
-//
-//	@Autowired
-//	private Validator entityValidatorFactory;
-//
-//	@InitBinder
-//	protected void initBinder( WebDataBinder binder ) {
-//		binder.setValidator( entityValidatorFactory );
-//	}
+	@Autowired
+	private AdminWeb adminWeb;
+
+	@Autowired
+	private EntityRegistry entityRegistry;
+
+	@Autowired
+	private EntityFormFactory formFactory;
+
+	@Autowired
+	private MenuFactory menuFactory;
 
 	@Event
 	protected void registerCustomPropertiesTab( EntityAdminMenuEvent<IdBasedEntity> menu ) {
@@ -58,31 +63,92 @@ public class EntityPropertiesController
 	}
 
 	private boolean hasProperties( Class<?> entityClass ) {
+		return getDescriptor( entityClass ) != null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private EntityProperties loadProperties( Class<?> entityClass, Object entityId ) {
+		EntityPropertiesDescriptor descriptor = getDescriptor( entityClass );
+
+		if ( descriptor.service() instanceof EntityPropertiesService ) {
+			EntityPropertiesService propertiesService = (EntityPropertiesService) descriptor.service();
+
+			return propertiesService.getProperties( entityId );
+		}
+		else {
+			throw new RuntimeException( "Revision based properties are currently unsupported" );
+		}
+	}
+
+	private EntityPropertiesDescriptor getDescriptor( Class<?> entityClass ) {
 		for ( EntityPropertiesDescriptor descriptor : propertiesDescriptors ) {
 			if ( descriptor.entityClass() != null && descriptor.entityClass().isAssignableFrom( entityClass ) ) {
-				return true;
+				return descriptor;
 			}
 		}
 
-		return false;
+		return null;
 	}
 
-//	@ModelAttribute("entity")
-//	public Object entity( @PathVariable("entityConfig") String entityType,
-//	                      @RequestParam(value = "id") long entityId,
-//	                      ModelMap model
-//	) throws Exception {
-//		EntityConfiguration entityConfiguration = entityRegistry.getEntityByPath( entityType );
-//
-//		Object entity = entityConfiguration.getEntityClass().newInstance();
-//
-//		if ( entityId != null && entityId != 0 ) {
-//			Object original = entityConfiguration.getRepository().getById( entityId );
-//			model.addAttribute( "original", entityConfiguration.wrap( original ) );
-//			BeanUtils.copyProperties( original, entity );
-//		}
-//
-//		return entity;
-//	}
+	@ModelAttribute("entity")
+	public EntityWrapper entity( @PathVariable("entityConfig") String entityType,
+	                             @PathVariable("entityId") long entityId,
+	                             ModelMap model
+	) throws Exception {
+		EntityConfiguration entityConfiguration = entityRegistry.getEntityByPath( entityType );
+		Object original = entityConfiguration.getRepository().getById( entityId );
 
+		model.addAttribute( "entityConfig", entityConfiguration );
+		model.addAttribute( "properties", loadProperties( entityConfiguration.getEntityClass(), entityId ) );
+
+		return entityConfiguration.wrap( original );
+	}
+
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/properties", method = RequestMethod.GET)
+	public String viewProperties(
+			@ModelAttribute("entityConfig") EntityConfiguration entityConfiguration,
+			@ModelAttribute("entity") EntityWrapper entity,
+			@ModelAttribute("properties") EntityProperties properties,
+			ModelMap model,
+			AdminMenu adminMenu ) {
+		model.addAttribute( "tab", "properties" );
+
+		adminMenu.getLowestSelectedItem()
+		         .addItem( "/selectedEntity", entity.getEntityLabel() )
+		         .setSelected( true );
+
+		model.addAttribute( "entityMenu",
+		                    menuFactory.buildMenu(
+				                    new EntityAdminMenu(
+						                    entityConfiguration.getEntityClass(),
+						                    entity.getEntity()
+				                    )
+		                    )
+		);
+
+		Collection<FormPropertyDescriptor> descriptors = new ArrayList<>();
+
+		EntityPropertiesDescriptor descriptor = getDescriptor( entityConfiguration.getEntityClass() );
+
+		for ( String propertyName : descriptor.registry().getRegisteredProperties() ) {
+			FormPropertyDescriptor d = new FormPropertyDescriptor();
+			d.setName( propertyName );
+			d.setDisplayName( propertyName );
+			d.setPropertyType( descriptor.registry().getClassForProperty( propertyName ) );
+			d.setPropertyResolvableType( ResolvableType.forClass( d.getPropertyType() ) );
+
+			descriptors.add( d );
+		}
+
+		EntityForm entityForm = formFactory.create( descriptors );
+
+		for ( FormElement element : entityForm.getElements() ) {
+			element.setValue( properties.getValue( element.getName() ) );
+		}
+
+		model.addAttribute( "entityForm", entityForm );
+
+		return "th/entity/form";
+	}
 }
