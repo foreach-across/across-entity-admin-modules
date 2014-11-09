@@ -18,6 +18,7 @@ package com.foreach.across.modules.it.properties.definingmodule.config;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.it.properties.definingmodule.registry.UserPropertyRegistry;
 import com.foreach.across.modules.it.properties.definingmodule.repositories.UserPropertiesRepository;
+import com.foreach.across.modules.it.properties.definingmodule.services.UserPropertyService;
 import com.foreach.across.modules.properties.config.AbstractEntityPropertiesConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UserPropertiesConfig extends AbstractEntityPropertiesConfiguration
 {
+	@Override
+	public Class<?> entityClass() {
+		return Object.class;
+	}
+
 	@Override
 	protected String originalTableName() {
 		return "user_properties";
@@ -43,15 +49,22 @@ public class UserPropertiesConfig extends AbstractEntityPropertiesConfiguration
 		return "user_id";
 	}
 
-	@Bean
-	public UserPropertiesRepository userPropertiesRepository() {
+	@Exposed
+	@Bean(name = "userPropertiesService")
+	@Override
+	public UserPropertyService service() {
+		return new UserPropertyService( registry(), repository() );
+	}
+
+	@Bean(name = "userPropertiesRepository")
+	public UserPropertiesRepository repository() {
 		return new UserPropertiesRepository( this );
 	}
 
-	@Bean
+	@Bean(name = "userPropertyRegistry")
 	@Exposed
-	public UserPropertyRegistry userPropertyRegistry() {
+	@Override
+	public UserPropertyRegistry registry() {
 		return new UserPropertyRegistry( this );
 	}
-
 }

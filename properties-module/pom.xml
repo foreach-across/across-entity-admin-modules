@@ -29,6 +29,12 @@
 			<groupId>com.foreach.libs</groupId>
 			<artifactId>common-spring</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>across-standard-modules</groupId>
+			<artifactId>admin-web</artifactId>
+			<version>${project.parent.version}</version>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 </project>

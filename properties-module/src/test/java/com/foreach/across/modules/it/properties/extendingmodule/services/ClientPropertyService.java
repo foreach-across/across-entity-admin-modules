@@ -28,10 +28,8 @@ import org.springframework.stereotype.Service;
 /**
  * @author Arne Vandamme
  */
-@Service
 public class ClientPropertyService extends AbstractEntityPropertiesService<ClientProperties, Long>
 {
-	@Autowired
 	public ClientPropertyService( ClientPropertyRegistry clientPropertyRegistry,
 	                              ClientPropertiesRepository clientPropertiesRepository ) {
 		super( clientPropertyRegistry, clientPropertiesRepository );

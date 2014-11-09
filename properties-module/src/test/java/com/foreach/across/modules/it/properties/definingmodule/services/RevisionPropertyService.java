@@ -29,10 +29,8 @@ import org.springframework.stereotype.Service;
 /**
  * @author Arne Vandamme
  */
-@Service
 public class RevisionPropertyService extends AbstractRevisionBasedEntityPropertiesService<RevisionProperties, Long, EntityRevision>
 {
-	@Autowired
 	public RevisionPropertyService( RevisionPropertyRegistry revisionPropertyRegistry,
 	                                RevisionPropertiesRepository revisionPropertiesRepository ) {
 		super( revisionPropertyRegistry, revisionPropertiesRepository );

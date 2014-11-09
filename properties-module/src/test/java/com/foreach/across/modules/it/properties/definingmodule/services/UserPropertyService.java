@@ -28,10 +28,8 @@ import org.springframework.stereotype.Service;
 /**
  * @author Arne Vandamme
  */
-@Service
 public class UserPropertyService extends AbstractEntityPropertiesService<UserProperties, Long>
 {
-	@Autowired
 	public UserPropertyService( UserPropertyRegistry userPropertyRegistry,
 	                            UserPropertiesRepository userPropertiesRepository ) {
 		super( userPropertyRegistry, userPropertiesRepository );

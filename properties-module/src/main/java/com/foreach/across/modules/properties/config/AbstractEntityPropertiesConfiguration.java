@@ -21,7 +21,10 @@ import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.database.HasSchemaConfiguration;
 import com.foreach.across.modules.properties.PropertiesModule;
+import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
+import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 import com.foreach.across.modules.properties.repositories.PropertyTrackingRepository;
+import com.foreach.across.modules.properties.services.EntityPropertiesServiceBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
@@ -87,4 +90,16 @@ public abstract class AbstractEntityPropertiesConfiguration implements EntityPro
 	}
 
 	protected abstract String originalTableName();
+
+	/**
+	 * Override and annotate with @Bean(name=X) to create the repository bean.
+	 */
+	@Override
+	public abstract EntityPropertiesServiceBase service();
+
+	/**
+	 * Override and annotate with @Bean(name=X) to create the registry bean.
+	 */
+	@Override
+	public abstract EntityPropertiesRegistry registry();
 }

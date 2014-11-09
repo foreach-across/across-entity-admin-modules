@@ -22,7 +22,7 @@ import java.util.Collection;
 /**
  * @author Arne Vandamme
  */
-public interface EntityPropertiesService<T extends EntityProperties<U>, U>
+public interface EntityPropertiesService<T extends EntityProperties<U>, U> extends EntityPropertiesServiceBase
 {
 	T getProperties( U entityId );
 
