@@ -22,7 +22,7 @@ import com.foreach.across.modules.properties.installers.PropertyTrackingSchemaIn
 /**
  * @author Arne Vandamme
  */
-@AcrossDepends(optional = { "AcrossWebModule", "EntityModule" })
+@AcrossDepends(optional = { "AcrossWebModule", "EntityModule", "AdminWebModule" })
 public class PropertiesModule extends AcrossModule
 {
 	public static final String NAME = "PropertiesModule";
