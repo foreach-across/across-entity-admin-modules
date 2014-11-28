@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.acl.aop;
+package com.foreach.across.modules.hibernate.aop;
 
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.hibernate.repositories.Undeletable;
-import com.foreach.across.modules.spring.security.acl.support.IdBasedEntityAclInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.slf4j.Logger;
@@ -33,29 +32,29 @@ import java.util.Collection;
  *
  * @author Arne Vandamme
  */
-public class BasicRepositoryAclInterceptor implements MethodInterceptor
+public class BasicRepositoryInterceptor implements MethodInterceptor
 {
-	private static final Logger LOG = LoggerFactory.getLogger( BasicRepositoryAclInterceptor.class );
+	private static final Logger LOG = LoggerFactory.getLogger( BasicRepositoryInterceptor.class );
 
 	static final String CREATE = "create";
 	static final String UPDATE = "update";
 	static final String DELETE = "delete";
 
-	private final Collection<IdBasedEntityAclInterceptor> interceptors;
+	private final Collection<EntityInterceptor> interceptors;
 
-	public BasicRepositoryAclInterceptor( Collection<IdBasedEntityAclInterceptor> interceptors ) {
+	public BasicRepositoryInterceptor( Collection<EntityInterceptor> interceptors ) {
 		this.interceptors = interceptors;
 	}
 
 	@Override
 	public Object invoke( MethodInvocation invocation ) throws Throwable {
-		if ( BasicRepositoryAclPointcut.isEntityMethod( invocation.getMethod() ) ) {
+		if ( BasicRepositoryPointcut.isEntityMethod( invocation.getMethod() ) ) {
 			Object entityObject = invocation.getArguments()[0];
 
 			if ( entityObject instanceof IdBasedEntity ) {
 				String methodName = invocation.getMethod().getName();
 				IdBasedEntity entity = (IdBasedEntity) entityObject;
-				IdBasedEntityAclInterceptor interceptor = findInterceptorToApply( entity );
+				EntityInterceptor interceptor = findInterceptorToApply( entity );
 
 				if ( interceptor != null ) {
 					callBefore( interceptor, methodName, entity );
@@ -77,12 +76,12 @@ public class BasicRepositoryAclInterceptor implements MethodInterceptor
 	}
 
 	@SuppressWarnings("unchecked")
-	private IdBasedEntityAclInterceptor findInterceptorToApply( IdBasedEntity entity ) {
+	private EntityInterceptor findInterceptorToApply( IdBasedEntity entity ) {
 		Class<?> entityClass = ClassUtils.getUserClass( AopProxyUtils.ultimateTargetClass( entity ) );
 
-		IdBasedEntityAclInterceptor fallback = null;
+		EntityInterceptor fallback = null;
 
-		for ( IdBasedEntityAclInterceptor candidate : interceptors ) {
+		for ( EntityInterceptor candidate : interceptors ) {
 			if ( candidate.getEntityClass().equals( entityClass ) ) {
 				return candidate;
 			}
@@ -95,7 +94,7 @@ public class BasicRepositoryAclInterceptor implements MethodInterceptor
 	}
 
 	@SuppressWarnings("unchecked")
-	private void callBefore( IdBasedEntityAclInterceptor interceptor, String methodName, IdBasedEntity entity ) {
+	private void callBefore( EntityInterceptor interceptor, String methodName, IdBasedEntity entity ) {
 		switch ( methodName ) {
 			case CREATE:
 				interceptor.beforeCreate( entity );
@@ -110,7 +109,7 @@ public class BasicRepositoryAclInterceptor implements MethodInterceptor
 	}
 
 	@SuppressWarnings("unchecked")
-	private void callAfter( IdBasedEntityAclInterceptor interceptor, String methodName, IdBasedEntity entity ) {
+	private void callAfter( EntityInterceptor interceptor, String methodName, IdBasedEntity entity ) {
 		switch ( methodName ) {
 			case CREATE:
 				interceptor.afterCreate( entity );

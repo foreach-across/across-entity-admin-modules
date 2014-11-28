@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.acl.aop;
+package com.foreach.across.modules.hibernate.aop;
 
 import com.foreach.across.modules.hibernate.repositories.BasicRepository;
 import org.springframework.aop.support.StaticMethodMatcherPointcut;
@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
  *
  * @author Arne Vandamme
  */
-public class BasicRepositoryAclPointcut extends StaticMethodMatcherPointcut
+public class BasicRepositoryPointcut extends StaticMethodMatcherPointcut
 {
 	@Override
 	public boolean matches( Method method, Class<?> targetClass ) {
@@ -37,9 +37,9 @@ public class BasicRepositoryAclPointcut extends StaticMethodMatcherPointcut
 
 	static boolean isEntityMethod( Method method ) {
 		switch ( method.getName() ) {
-			case BasicRepositoryAclInterceptor.CREATE:
-			case BasicRepositoryAclInterceptor.UPDATE:
-			case BasicRepositoryAclInterceptor.DELETE:
+			case BasicRepositoryInterceptor.CREATE:
+			case BasicRepositoryInterceptor.UPDATE:
+			case BasicRepositoryInterceptor.DELETE:
 				break;
 			default:
 				return false;
