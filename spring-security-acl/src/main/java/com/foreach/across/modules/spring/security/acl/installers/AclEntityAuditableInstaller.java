@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.user.config.modules;
+package com.foreach.across.modules.spring.security.acl.installers;
 
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.modules.user.controllers.UserAclController;
-import com.foreach.across.modules.user.services.GroupAclInterceptor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.foreach.across.core.annotations.Installer;
+import com.foreach.across.modules.hibernate.installers.AuditableSchemaInstaller;
 
-@AcrossDepends(required = { "SpringSecurityAclModule", "AcrossHibernateModule" })
-@Configuration
-public class UserSpringSecurityAclConfiguration
+/**
+ * @author Andy Somers
+ */
+@AcrossDepends(optional = "AcrossHibernateModule")
+@Installer(description = "Adds the auditable columns to the acl_entity table", version = 1)
+public class AclEntityAuditableInstaller extends AuditableSchemaInstaller
 {
-	@Bean
-	public UserAclController userAclController() {
-		return new UserAclController();
-	}
-
-	@Bean
-	public GroupAclInterceptor groupAclInterceptor() {
-		return new GroupAclInterceptor();
+	@Override
+	protected String getTableName() {
+		return "acl_entity";
 	}
 }

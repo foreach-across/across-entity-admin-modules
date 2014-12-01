@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.acl.aop;
+package com.foreach.across.modules.hibernate.aop;
 
 import com.foreach.across.core.context.configurer.TransactionManagementConfigurer;
+import com.foreach.across.modules.hibernate.aop.BasicRepositoryPointcut;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractBeanFactoryPointcutAdvisor;
 
 /**
  * @author Arne Vandamme
  */
-public class BasicRepositoryAclInterceptorAdvisor extends AbstractBeanFactoryPointcutAdvisor
+public class BasicRepositoryInterceptorAdvisor extends AbstractBeanFactoryPointcutAdvisor
 {
 	/**
 	 * By default the interceptor should run within the same transaction.
 	 */
 	public static final int INTERCEPT_ORDER = TransactionManagementConfigurer.INTERCEPT_ORDER + 1;
 
-	private final Pointcut pointcut = new BasicRepositoryAclPointcut();
+	private final Pointcut pointcut = new BasicRepositoryPointcut();
 
 	@Override
 	public Pointcut getPointcut() {
