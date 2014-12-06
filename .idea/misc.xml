@@ -35,7 +35,6 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/across-core/pom.xml" />
-        <option value="$PROJECT_DIR$/across-hibernate/pom.xml" />
         <option value="$PROJECT_DIR$/across-test/pom.xml" />
         <option value="$PROJECT_DIR$/across-web/pom.xml" />
         <option value="$PROJECT_DIR$/demo-web/pom.xml" />
