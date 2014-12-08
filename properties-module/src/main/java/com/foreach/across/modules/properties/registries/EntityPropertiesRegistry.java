@@ -39,7 +39,6 @@ public abstract class EntityPropertiesRegistry
 	private final Logger LOG = LoggerFactory.getLogger( getClass() );
 
 	private final PropertyTypeRegistry<String> propertyTypeRegistry;
-	private final ConversionService conversionService;
 
 	private final EntityPropertiesDescriptor descriptor;
 	private final PropertyTrackingRepository propertyTrackingRepository;
@@ -51,20 +50,19 @@ public abstract class EntityPropertiesRegistry
 	protected EntityPropertiesRegistry( EntityPropertiesDescriptor descriptor, Class classForUnknownProperties ) {
 		this.descriptor = descriptor;
 		this.propertyTypeRegistry = classForUnknownProperties != null
-				? new PropertyTypeRegistry<String>( classForUnknownProperties )
-				: new PropertyTypeRegistry<String>();
-		this.conversionService = descriptor.conversionService();
+				? new PropertyTypeRegistry<String>( classForUnknownProperties, descriptor.conversionService() )
+				: new PropertyTypeRegistry<String>( descriptor.conversionService() );
 		this.propertyTrackingRepository = descriptor.trackingRepository();
 
-		Assert.notNull( conversionService, "EntityPropertiesRegistry requires a valid ConversionService" );
+		Assert.notNull( descriptor.conversionService() , "EntityPropertiesRegistry requires a valid ConversionService" );
 	}
 
 	public PropertyTypeRegistry<String> getPropertyTypeRegistry() {
 		return propertyTypeRegistry;
 	}
 
-	public ConversionService getConversionService() {
-		return conversionService;
+	public ConversionService getDefaultConversionService() {
+		return propertyTypeRegistry.getDefaultConversionService();
 	}
 
 	public void register( AcrossModuleInfo acrossModule, String propertyKey, Class propertyClass ) {

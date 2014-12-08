@@ -17,7 +17,6 @@ package com.foreach.across.modules.properties.config;
 
 import com.foreach.across.core.AcrossException;
 import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.AcrossModuleSettings;
 import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.filters.ClassBeanFilter;
