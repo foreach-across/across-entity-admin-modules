@@ -16,7 +16,6 @@
 package com.foreach.across.modules.it.properties.extendingmodule.config;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.it.properties.extendingmodule.business.ClientProperties;
 import com.foreach.across.modules.it.properties.extendingmodule.registry.ClientPropertyRegistry;
 import com.foreach.across.modules.it.properties.extendingmodule.repositories.ClientPropertiesRepository;
 import com.foreach.across.modules.it.properties.extendingmodule.services.ClientPropertyService;

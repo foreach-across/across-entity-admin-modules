@@ -1,7 +1,6 @@
 package com.foreach.across.modules.entity.business;
 
 import com.foreach.across.modules.entity.config.EntityConfiguration;
-import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 
 import java.io.Serializable;
 

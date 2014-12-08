@@ -22,9 +22,6 @@ import com.foreach.across.modules.it.properties.definingmodule.repositories.Revi
 import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.services.AbstractRevisionBasedEntityPropertiesService;
 import com.foreach.common.spring.util.PropertyTypeRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.stereotype.Service;
 
 /**
  * @author Arne Vandamme
@@ -39,8 +36,7 @@ public class RevisionPropertyService extends AbstractRevisionBasedEntityProperti
 	@Override
 	protected RevisionProperties createEntityProperties( Long entityId,
 	                                                     PropertyTypeRegistry<String> propertyTypeRegistry,
-	                                                     ConversionService conversionService,
 	                                                     StringPropertiesSource source ) {
-		return new RevisionProperties( entityId, propertyTypeRegistry, conversionService, source );
+		return new RevisionProperties( entityId, propertyTypeRegistry, source );
 	}
 }

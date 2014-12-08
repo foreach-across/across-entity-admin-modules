@@ -20,7 +20,6 @@ import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
 import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 import com.foreach.common.spring.util.PropertyTypeRegistry;
-import org.springframework.core.convert.ConversionService;
 
 import java.util.Collection;
 
@@ -43,7 +42,6 @@ public abstract class AbstractEntityPropertiesService<T extends EntityProperties
 
 		return createEntityProperties( entityId,
 		                               entityPropertiesRegistry.getPropertyTypeRegistry(),
-		                               entityPropertiesRegistry.getConversionService(),
 		                               source );
 	}
 
@@ -62,6 +60,5 @@ public abstract class AbstractEntityPropertiesService<T extends EntityProperties
 
 	protected abstract T createEntityProperties( U entityId,
 	                                             PropertyTypeRegistry<String> propertyTypeRegistry,
-	                                             ConversionService conversionService,
 	                                             StringPropertiesSource source );
 }
