@@ -15,9 +15,9 @@
  */
 package com.foreach.across.modules.properties.business;
 
-import com.foreach.common.spring.util.PropertiesSource;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
-import com.foreach.common.spring.util.TypedPropertyMap;
+import com.foreach.common.spring.properties.PropertiesSource;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
+import com.foreach.common.spring.properties.TypedPropertyMap;
 
 /**
  * @author Arne Vandamme
@@ -26,7 +26,7 @@ public abstract class EntityProperties<T> extends TypedPropertyMap<String>
 {
 	protected EntityProperties( PropertyTypeRegistry<String> propertyTypeRegistry,
 	                            PropertiesSource source ) {
-		super( propertyTypeRegistry, null, source, String.class );
+		super( propertyTypeRegistry, source, String.class );
 	}
 
 	@Override

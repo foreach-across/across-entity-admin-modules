@@ -19,7 +19,7 @@ import com.foreach.across.modules.properties.business.EntityProperties;
 import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
 import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 
 import java.util.Collection;
 
