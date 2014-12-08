@@ -20,7 +20,7 @@ import com.foreach.across.modules.it.properties.definingmodule.registry.UserProp
 import com.foreach.across.modules.it.properties.definingmodule.repositories.UserPropertiesRepository;
 import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.services.AbstractEntityPropertiesService;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 
 /**
  * @author Arne Vandamme

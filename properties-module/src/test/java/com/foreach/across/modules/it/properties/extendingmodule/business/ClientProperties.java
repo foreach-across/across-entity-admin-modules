@@ -17,7 +17,7 @@ package com.foreach.across.modules.it.properties.extendingmodule.business;
 
 import com.foreach.across.modules.properties.business.EntityProperties;
 import com.foreach.across.modules.properties.business.StringPropertiesSource;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 
 /**
  * Custom client properties (where client is also a user but the property collection is different).

@@ -19,7 +19,8 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.properties.config.EntityPropertiesDescriptor;
 import com.foreach.across.modules.properties.repositories.PropertyTrackingRepository;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
+import com.foreach.common.spring.properties.support.SingletonPropertyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.ConversionService;
@@ -54,7 +55,7 @@ public abstract class EntityPropertiesRegistry
 				: new PropertyTypeRegistry<String>( descriptor.conversionService() );
 		this.propertyTrackingRepository = descriptor.trackingRepository();
 
-		Assert.notNull( descriptor.conversionService() , "EntityPropertiesRegistry requires a valid ConversionService" );
+		Assert.notNull( descriptor.conversionService(), "EntityPropertiesRegistry requires a valid ConversionService" );
 	}
 
 	public PropertyTypeRegistry<String> getPropertyTypeRegistry() {
@@ -97,7 +98,8 @@ public abstract class EntityPropertiesRegistry
 
 		trackProperty( owner, propertyKey );
 
-		propertyTypeRegistry.register( propertyKey, propertyClass, propertyValue );
+		propertyTypeRegistry.register( propertyKey, propertyClass,
+		                               SingletonPropertyFactory.<String, A>forValue( propertyValue ) );
 	}
 
 	private void trackProperty( String owner, String propertyKey ) {

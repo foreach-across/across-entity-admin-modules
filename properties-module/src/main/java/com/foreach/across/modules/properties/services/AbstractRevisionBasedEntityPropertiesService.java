@@ -20,7 +20,7 @@ import com.foreach.across.modules.properties.business.EntityProperties;
 import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
 import com.foreach.across.modules.properties.repositories.RevisionBasedEntityPropertiesRepository;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
