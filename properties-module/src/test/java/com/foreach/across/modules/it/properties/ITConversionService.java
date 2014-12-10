@@ -21,6 +21,7 @@ import com.foreach.across.core.context.AcrossContextUtils;
 import com.foreach.across.core.installers.InstallerAction;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.properties.PropertiesModuleSettings;
+import com.foreach.common.spring.convert.HierarchicalConversionService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,7 +91,7 @@ public class ITConversionService
 	@Test
 	public void availableConversionServiceIsUsedIfPossible() {
 		ConversionService actual = bootstrapWithParent();
-		assertSame( conversionServiceOne, actual );
+		assertSame( conversionServiceOne, ((HierarchicalConversionService) actual).getParent() );
 	}
 
 	@Test
