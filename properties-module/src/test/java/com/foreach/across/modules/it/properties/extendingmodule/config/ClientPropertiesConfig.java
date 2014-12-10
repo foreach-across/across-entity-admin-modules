@@ -20,6 +20,7 @@ import com.foreach.across.modules.it.properties.extendingmodule.registry.ClientP
 import com.foreach.across.modules.it.properties.extendingmodule.repositories.ClientPropertiesRepository;
 import com.foreach.across.modules.it.properties.extendingmodule.services.ClientPropertyService;
 import com.foreach.across.modules.properties.config.AbstractEntityPropertiesConfiguration;
+import com.foreach.common.spring.properties.support.SingletonPropertyFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -69,7 +70,8 @@ public class ClientPropertiesConfig extends AbstractEntityPropertiesConfiguratio
 	public ClientPropertyRegistry registry() {
 		ClientPropertyRegistry registry = new ClientPropertyRegistry( this );
 
-		registry.register( currentModule, BOOLEAN, Boolean.class, true );
+		registry.register( currentModule, BOOLEAN, Boolean.class,
+		                   SingletonPropertyFactory.<String, Boolean>forValue( true ) );
 
 		return registry;
 	}
