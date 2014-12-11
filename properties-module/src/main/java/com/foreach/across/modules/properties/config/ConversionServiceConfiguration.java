@@ -22,6 +22,7 @@ import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.properties.PropertiesModuleSettings;
+import com.foreach.common.spring.convert.HierarchicalConversionService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,23 +74,21 @@ public class ConversionServiceConfiguration
 				}
 			}
 			else {
-				conversionServiceToUse = getConversionServiceBeanFromParent();
+				HierarchicalConversionService conversionService =
+						HierarchicalConversionService.defaultConversionService(
+						getConversionServiceBeanFromParent()
+				);
 
-				if ( conversionServiceToUse == null ) {
-					conversionServiceToUse = createDefaultConversionService();
-
+				if ( conversionService.getParent() == null ) {
+					// We created default conversion service, expose it
+					currentModuleInfo.getBootstrapConfiguration().addExposeFilter( new ClassBeanFilter( ConversionService.class ) );
 				}
+
+				conversionServiceToUse = conversionService;
 			}
 		}
 
 		return conversionServiceToUse;
-	}
-
-	private ConversionService createDefaultConversionService() {
-		// If we are creating the default conversion service, make sure we expose it
-		currentModuleInfo.getBootstrapConfiguration().addExposeFilter( new ClassBeanFilter( ConversionService.class ) );
-
-		return new DefaultFormattingConversionService( true );
 	}
 
 	private ConversionService getConversionServiceBeanFromParent() {
