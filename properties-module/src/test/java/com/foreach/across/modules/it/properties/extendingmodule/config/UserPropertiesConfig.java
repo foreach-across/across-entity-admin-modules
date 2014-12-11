@@ -18,6 +18,7 @@ package com.foreach.across.modules.it.properties.extendingmodule.config;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.Module;
 import com.foreach.across.modules.it.properties.definingmodule.registry.UserPropertyRegistry;
+import com.foreach.common.spring.properties.support.SingletonPropertyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,8 +47,10 @@ public class UserPropertiesConfig
 
 	@PostConstruct
 	private void registerProperties() {
-		userPropertyRegistry.register( currentModule, BOOLEAN, Boolean.class, false );
+		userPropertyRegistry.register( currentModule, BOOLEAN, Boolean.class,
+		                               SingletonPropertyFactory.<String, Boolean>forValue( false ) );
 		userPropertyRegistry.register( currentModule, DATE, Date.class );
-		userPropertyRegistry.register( currentModule, DECIMAL, BigDecimal.class, new BigDecimal( 0 ) );
+		userPropertyRegistry.register( currentModule, DECIMAL, BigDecimal.class,
+		                               SingletonPropertyFactory.<String, BigDecimal>forValue( new BigDecimal( 0 ) ) );
 	}
 }

@@ -21,7 +21,6 @@ import com.foreach.across.modules.properties.services.EntityPropertiesService;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
-import org.springframework.core.ResolvableType;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -135,8 +134,8 @@ public class EntityPropertiesController
 			FormPropertyDescriptor d = new FormPropertyDescriptor();
 			d.setName( propertyName );
 			d.setDisplayName( propertyName );
-			d.setPropertyType( descriptor.registry().getClassForProperty( propertyName ) );
-			d.setPropertyResolvableType( ResolvableType.forClass( d.getPropertyType() ) );
+			d.setPropertyType( descriptor.registry().getTypeForProperty( propertyName ).getType() );
+			d.setPropertyResolvableType( descriptor.registry().getTypeForProperty( propertyName ).getResolvableType() );
 
 			descriptors.add( d );
 		}
