@@ -71,7 +71,7 @@
 							       th:id="${#ids.seq(element.name)}"
 							       th:name="${element.name}"
 							       th:value="${element.entityId(possibleValue)}"
-								   th:checked="${element.value.contains(possibleValue)}" />
+								   th:checked="${element.value != null and element.value.contains(possibleValue)}" />
 							<input type="hidden" th:name="|_${element.name}|" value="on" />
 							<label th:text="${element.entityLabel(possibleValue)}" th:for="${#ids.prev(element.name)}"></label>
 						</li>
