@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Holds the basic application info
  */
-public class ApplicationInfo
+public class ApplicationInfoImpl
 {
 	private String applicationId;
 	private String applicationName;

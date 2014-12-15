@@ -23,6 +23,10 @@
 			<version>${project.version}</version>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>com.foreach.libs</groupId>
+			<artifactId>common-spring</artifactId>
+		</dependency>
 	</dependencies>
 
 </project>
