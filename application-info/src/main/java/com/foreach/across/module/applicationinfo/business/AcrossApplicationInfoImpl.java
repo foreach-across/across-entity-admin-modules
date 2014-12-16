@@ -153,4 +153,11 @@ public class AcrossApplicationInfoImpl implements MutableApplicationInfo, Across
 	public boolean isRunningIn( String environmentId ) {
 		return StringUtils.equalsIgnoreCase( getEnvironmentId(), environmentId );
 	}
+
+	@Override
+	public String toString() {
+		return "AcrossApplicationInfo{" +
+				"instanceId='" + instanceId + '\'' +
+				'}';
+	}
 }

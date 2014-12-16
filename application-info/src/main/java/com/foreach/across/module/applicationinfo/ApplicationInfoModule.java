@@ -3,7 +3,6 @@ package com.foreach.across.module.applicationinfo;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossRole;
 import com.foreach.across.core.context.AcrossModuleRole;
-import com.foreach.across.module.applicationinfo.business.ApplicationInfoImpl;
 import org.springframework.core.Ordered;
 
 import java.util.Date;
@@ -13,7 +12,6 @@ public class ApplicationInfoModule extends AcrossModule
 {
 	public final static String NAME = "ApplicationInfoModule";
 
-	private ApplicationInfoImpl applicationInfo;
 	private final Date configurationDate;
 
 	public ApplicationInfoModule() {
@@ -28,14 +26,6 @@ public class ApplicationInfoModule extends AcrossModule
 	@Override
 	public String getDescription() {
 		return "Provides support for configuring both the running application and synchronizing remote application information.";
-	}
-
-	public ApplicationInfoImpl getApplicationInfo() {
-		return applicationInfo;
-	}
-
-	public void setApplicationInfo( ApplicationInfoImpl applicationInfo ) {
-		this.applicationInfo = applicationInfo;
 	}
 
 	/**

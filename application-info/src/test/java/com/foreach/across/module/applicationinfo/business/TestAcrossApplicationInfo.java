@@ -1,16 +1,13 @@
-package com.foreach.across.module.applicationinfo.it;
+package com.foreach.across.module.applicationinfo.business;
 
-import com.foreach.across.module.applicationinfo.business.AcrossApplicationInfoImpl;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-public class TestApplicationInfo
+public class TestAcrossApplicationInfo
 {
 	private AcrossApplicationInfoImpl applicationInfo;
 
@@ -66,20 +63,20 @@ public class TestApplicationInfo
 
 	@Test
 	public void isRunningIn() {
-		assertFalse( applicationInfo.isRunningIn( "test" ));
+		assertFalse( applicationInfo.isRunningIn( "test" ) );
 
 		applicationInfo.setEnvironmentId( "production" );
-		assertFalse( applicationInfo.isRunningIn( "test" ));
+		assertFalse( applicationInfo.isRunningIn( "test" ) );
 		assertTrue( applicationInfo.isRunningIn( "PRODUCTION" ) );
 		assertTrue( applicationInfo.isRunningIn( "production" ) );
 
 		applicationInfo.setEnvironmentName( "test" );
-		assertFalse( applicationInfo.isRunningIn( "test" ));
+		assertFalse( applicationInfo.isRunningIn( "test" ) );
 		assertTrue( applicationInfo.isRunningIn( "PRODUCTION" ) );
 		assertTrue( applicationInfo.isRunningIn( "production" ) );
 
 		applicationInfo.setEnvironmentId( "TEST" );
-		assertTrue( applicationInfo.isRunningIn( "test" ));
+		assertTrue( applicationInfo.isRunningIn( "test" ) );
 		assertFalse( applicationInfo.isRunningIn( "PRODUCTION" ) );
 		assertFalse( applicationInfo.isRunningIn( "production" ) );
 	}

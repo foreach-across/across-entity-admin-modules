@@ -2,7 +2,15 @@ package com.foreach.across.module.applicationinfo;
 
 import com.foreach.across.core.AcrossModuleSettings;
 import com.foreach.across.core.AcrossModuleSettingsRegistry;
+import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.core.env.ConfigurablePropertyResolver;
+import org.springframework.core.env.Environment;
 
+import java.text.ParseException;
 import java.util.Date;
 
 public class ApplicationInfoModuleSettings extends AcrossModuleSettings
@@ -17,6 +25,34 @@ public class ApplicationInfoModuleSettings extends AcrossModuleSettings
 	public static final String BUILD_DATE = "applicationInfo.buildDate";
 	public static final String HOSTNAME = "applicationInfo.hostName";
 	public static final String STARTUP_DATE = "applicationInfo.startupDate";
+
+	@Override
+	public void setEnvironment( Environment environment ) {
+		super.setEnvironment( environment );
+
+		if ( environment instanceof ConfigurablePropertyResolver ) {
+			configureDateConverterIfNecessary( ( (ConfigurablePropertyResolver) environment ).getConversionService() );
+		}
+	}
+
+	private void configureDateConverterIfNecessary( ConfigurableConversionService conversionService ) {
+		// TODO: remove once a ConversionService is set from the AcrossContext
+		conversionService.addConverter( new Converter<String, Date>()
+		{
+			@Override
+			public Date convert( String source ) {
+				try {
+					return DateUtils.parseDate( source,
+					                            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.SSS" );
+				}
+				catch ( ParseException pe ) {
+					throw new ConversionFailedException(
+							TypeDescriptor.forObject( source ), TypeDescriptor.valueOf( Date.class ), source, pe
+					);
+				}
+			}
+		} );
+	}
 
 	@Override
 	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
