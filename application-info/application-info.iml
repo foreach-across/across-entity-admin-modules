@@ -52,6 +52,7 @@
     <orderEntry type="library" name="Maven: gigadot.rebound:rebound:0.2" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:log4j-over-slf4j:1.7.7" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: javax.servlet:javax.servlet-api:3.0.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.mysema.querydsl:querydsl-apt:3.5.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.mysema.querydsl:querydsl-codegen:3.5.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.mysema.querydsl:querydsl-core:3.5.1" level="project" />
