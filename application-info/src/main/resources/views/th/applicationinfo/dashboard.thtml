@@ -20,49 +20,50 @@
 </head>
 <body th:fragment="content">
 
-	<table class="table">
-		<tr>
-			<th>Application id</th>
-			<td th:text="${applicationInfo.applicationId}"></td>
-		</tr>
-		<tr>
-			<th>Application name</th>
-			<td th:text="${applicationInfo.applicationName}"></td>
-		</tr>
-		<tr>
-			<th>Environment</th>
-			<td th:text="${applicationInfo.environment}"></td>
-		</tr>
-		<tr>
-			<th>Startup time</th>
-			<td th:text="${applicationInfo.startupDate}"></td>
-		</tr>
-		<tr>
-			<th>Build id</th>
-			<td th:text="${applicationInfo.buildId}"></td>
-		</tr>
-		<tr>
-			<th>Build date</th>
-			<td th:text="${applicationInfo.buildDate}"></td>
-		</tr>
-		<tr>
-			<th><br />Hostname</th>
-			<td><br /><span th:text="${applicationInfo.hostName}"></span></td>
-		</tr>
-		<tr>
-			<th>Ip Addresses</th>
-			<th>
-
-			</th>
-		</tr>
-		<tr>
-			<th colspan="2"><br />Properties</th>
-		</tr>
-		<tr th:each="prop : ${applicationInfo.properties}">
-			<td th:text="${prop.key}"></td>
-			<td th:text="${prop.value}"></td>
-		</tr>
-	</table>
+<table class="table">
+	<tr>
+		<th>Instance id</th>
+		<td th:text="${applicationInfo.instanceId}"></td>
+	</tr>
+	<tr>
+		<th>Application name<br/>
+			<small>Application id</small>
+		</th>
+		<td>
+			<span th:text="${applicationInfo.applicationName}"></span><br/>
+			<small th:text="${applicationInfo.applicationId}"></small>
+		</td>
+	</tr>
+	<tr>
+		<th>Environment name<br/>
+			<small>Environment id</small>
+		</th>
+		<td>
+			<span th:text="${applicationInfo.environmentName}"></span><br/>
+			<small th:text="${applicationInfo.environmentId}"></small>
+		</td>
+	</tr>
+	<tr>
+		<th>Hostname</th>
+		<td><span th:text="${applicationInfo.hostName}"></span></td>
+	</tr>
+	<tr>
+		<th>Uptime</th>
+		<td>
+			<span th:text="${uptimeFormatted}"></span>
+			<br/>since <span th:text="${applicationInfo.startupDate}"></span>
+			<small></small>
+		</td>
+	</tr>
+	<tr>
+		<th><br/>Build id</th>
+		<td><br/><span th:text="${applicationInfo.buildId}"></span></td>
+	</tr>
+	<tr>
+		<th>Build date</th>
+		<td th:text="${applicationInfo.buildDate}"></td>
+	</tr>
+</table>
 
 </body>
 </html>
