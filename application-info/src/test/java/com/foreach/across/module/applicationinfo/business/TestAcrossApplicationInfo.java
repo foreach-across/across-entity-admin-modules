@@ -22,16 +22,17 @@ public class TestAcrossApplicationInfo
 
 	@Test
 	public void uptimeCalculation() throws InterruptedException {
-		applicationInfo.setBootstrapEndDate( new Date() );
+		AcrossApplicationInfoImpl localApplicationInfo = new AcrossApplicationInfoImpl();
+		localApplicationInfo.setBootstrapEndDate( new Date() );
 
-		long first = applicationInfo.getUptime();
+		long first = localApplicationInfo.getUptime();
 		logger.debug( "initial uptime: " + first );
 		assertTrue( first >= 0 );
 
 		Thread.sleep( 15 );
-		logger.debug( "uptime after thread sleep: " + applicationInfo.getUptime() );
-		assertTrue( applicationInfo.getUptime() > first );
-		assertTrue( applicationInfo.getUptime() >= 5 );
+		logger.debug( "uptime after thread sleep: " + localApplicationInfo.getUptime() );
+		assertTrue( localApplicationInfo.getUptime() > first );
+		assertTrue( localApplicationInfo.getUptime() >= 5 );
 	}
 
 	@Test
