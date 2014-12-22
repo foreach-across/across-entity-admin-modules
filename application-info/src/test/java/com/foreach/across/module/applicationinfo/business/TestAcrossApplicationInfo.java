@@ -2,6 +2,8 @@ package com.foreach.across.module.applicationinfo.business;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -9,6 +11,8 @@ import static org.junit.Assert.*;
 
 public class TestAcrossApplicationInfo
 {
+	private Logger logger = LoggerFactory.getLogger( TestAcrossApplicationInfo.class );
+
 	private AcrossApplicationInfoImpl applicationInfo;
 
 	@Before
@@ -21,9 +25,11 @@ public class TestAcrossApplicationInfo
 		applicationInfo.setBootstrapEndDate( new Date() );
 
 		long first = applicationInfo.getUptime();
+		logger.debug( "initial uptime: " + first );
 		assertTrue( first >= 0 );
 
 		Thread.sleep( 15 );
+		logger.debug( "uptime after thread sleep: " + applicationInfo.getUptime() );
 		assertTrue( applicationInfo.getUptime() > first );
 //		assertTrue( applicationInfo.getUptime() >= 5 );
 	}
