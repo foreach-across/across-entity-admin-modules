@@ -31,7 +31,7 @@ public class TestAcrossApplicationInfo
 		Thread.sleep( 15 );
 		logger.debug( "uptime after thread sleep: " + applicationInfo.getUptime() );
 		assertTrue( applicationInfo.getUptime() > first );
-//		assertTrue( applicationInfo.getUptime() >= 5 );
+		assertTrue( applicationInfo.getUptime() >= 5 );
 	}
 
 	@Test
