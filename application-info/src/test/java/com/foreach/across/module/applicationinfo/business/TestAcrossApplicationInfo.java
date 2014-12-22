@@ -29,7 +29,7 @@ public class TestAcrossApplicationInfo
 		logger.debug( "initial uptime: " + first );
 		assertTrue( first >= 0 );
 
-		Thread.sleep( 15 );
+		Thread.sleep( 150 );
 		logger.debug( "uptime after thread sleep: " + localApplicationInfo.getUptime() );
 		assertTrue( localApplicationInfo.getUptime() > first );
 		assertTrue( localApplicationInfo.getUptime() >= 5 );
