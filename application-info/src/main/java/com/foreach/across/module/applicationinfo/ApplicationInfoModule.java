@@ -1,21 +1,22 @@
 package com.foreach.across.module.applicationinfo;
 
 import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.annotations.AcrossRole;
 import com.foreach.across.core.context.AcrossModuleRole;
-import com.foreach.across.module.applicationinfo.business.ApplicationInfo;
-import com.foreach.across.modules.properties.PropertiesModule;
+import org.springframework.core.Ordered;
 
-@AcrossRole(AcrossModuleRole.INFRASTRUCTURE)
-@AcrossDepends(
-		required = PropertiesModule.NAME
-)
+import java.util.Date;
+
+@AcrossRole(value = AcrossModuleRole.APPLICATION, order = Ordered.HIGHEST_PRECEDENCE)
 public class ApplicationInfoModule extends AcrossModule
 {
 	public final static String NAME = "ApplicationInfoModule";
 
-	private ApplicationInfo applicationInfo;
+	private final Date configurationDate;
+
+	public ApplicationInfoModule() {
+		configurationDate = new Date();
+	}
 
 	@Override
 	public String getName() {
@@ -27,11 +28,13 @@ public class ApplicationInfoModule extends AcrossModule
 		return "Provides support for configuring both the running application and synchronizing remote application information.";
 	}
 
-	public ApplicationInfo getApplicationInfo() {
-		return applicationInfo;
-	}
-
-	public void setApplicationInfo( ApplicationInfo applicationInfo ) {
-		this.applicationInfo = applicationInfo;
+	/**
+	 * If no startup date is specified, the configuration timestamp for the module will be considered
+	 * the initial startup date.
+	 *
+	 * @return Timestamp when the module was configured.
+	 */
+	public Date getConfigurationDate() {
+		return configurationDate;
 	}
 }
