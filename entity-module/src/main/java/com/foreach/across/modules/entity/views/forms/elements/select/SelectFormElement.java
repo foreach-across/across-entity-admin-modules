@@ -13,23 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.oauth2;
+package com.foreach.across.modules.entity.views.forms.elements.select;
 
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+import com.foreach.across.modules.entity.views.forms.elements.CommonFormElements;
+import com.foreach.across.modules.entity.views.forms.elements.FormElementSupport;
+
+import java.util.Collection;
 
 /**
  * @author Arne Vandamme
  */
-public class TestOAuth2ModuleConventions extends AbstractAcrossModuleConventionsTest
+public class SelectFormElement extends FormElementSupport
 {
-	@Override
-	protected boolean hasSettings() {
-		return false;
+	public static final String TYPE = CommonFormElements.SELECT;
+
+	private Collection<SelectOption> options;
+
+	public SelectFormElement() {
+		super( TYPE );
 	}
 
-	@Override
-	protected AcrossModule createModule() {
-		return new OAuth2Module();
+	public Collection<SelectOption> getOptions() {
+		return options;
 	}
+
+	public void setOptions( Collection<SelectOption> options ) {
+		this.options = options;
+	}
+
 }
