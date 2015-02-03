@@ -24,4 +24,14 @@ public class AdminMenu extends Menu
 	public AdminMenu() {
 		super( NAME );
 	}
+
+	/**
+	 * Shortcut to specify the leaf point of the current breadcrumb by adding an additional
+	 * item to the path.
+	 *
+	 * @param title text for the leaf.
+	 */
+	public void breadcrumbLeaf( String title ) {
+		getLowestSelectedItem().addItem( "/breadcrumbLeaf", title ).setSelected( true );
+	}
 }
