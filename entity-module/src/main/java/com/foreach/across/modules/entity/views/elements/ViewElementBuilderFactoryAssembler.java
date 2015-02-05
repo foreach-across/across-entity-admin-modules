@@ -17,19 +17,28 @@ package com.foreach.across.modules.entity.views.elements;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 
 /**
- * Strategy interface that looks up the most fitting
- * {@link com.foreach.across.modules.entity.views.elements.ViewElement} type to create.
+ * All naming aside, this is the base interface for constructing a
+ * {@link ViewElementBuilderFactory} for a
+ * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor} instance.
  *
  * @author Arne Vandamme
  */
-public interface ViewElementTypeLookupStrategy
+public interface ViewElementBuilderFactoryAssembler
 {
 	/**
-	 * @return element type or null if none could be determined.
+	 * View element type that this assembler supports.  It can create builder factories for these types.
+	 *
+	 * @param viewElementType Unique type string.
+	 * @return True if it can create a builder factory for this element type.
 	 */
-	String findElementType( EntityConfiguration entityConfiguration,
-	                        EntityPropertyDescriptor descriptor,
-	                        ViewElementMode viewElementMode );
+	boolean supports( String viewElementType );
+
+	ViewElementBuilderFactory createBuilderFactory(
+			EntityConfiguration entityConfiguration,
+			EntityPropertyRegistry entityPropertyRegistry,
+			EntityPropertyDescriptor propertyDescriptor
+	);
 }

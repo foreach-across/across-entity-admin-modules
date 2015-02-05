@@ -15,21 +15,16 @@
  */
 package com.foreach.across.modules.entity.views.elements;
 
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-
 /**
- * Strategy interface that looks up the most fitting
- * {@link com.foreach.across.modules.entity.views.elements.ViewElement} type to create.
+ * Creates a {@link ViewElementBuilder} that creates a
+ * specific {@link com.foreach.across.modules.entity.views.elements.ViewElement} type.
+ * The factory is expected to be immutable and create a builder usually using a base builder as a template.
+ * The builder itself can then be modified for a particular view before creating the actual
+ * {@link com.foreach.across.modules.entity.views.elements.ViewElement}.
  *
  * @author Arne Vandamme
  */
-public interface ViewElementTypeLookupStrategy
+public interface ViewElementBuilderFactory<T extends ViewElementBuilder>
 {
-	/**
-	 * @return element type or null if none could be determined.
-	 */
-	String findElementType( EntityConfiguration entityConfiguration,
-	                        EntityPropertyDescriptor descriptor,
-	                        ViewElementMode viewElementMode );
+	T createBuilder();
 }

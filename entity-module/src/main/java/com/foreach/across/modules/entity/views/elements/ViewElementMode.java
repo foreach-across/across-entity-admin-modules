@@ -15,21 +15,10 @@
  */
 package com.foreach.across.modules.entity.views.elements;
 
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-
 /**
- * Strategy interface that looks up the most fitting
- * {@link com.foreach.across.modules.entity.views.elements.ViewElement} type to create.
- *
- * @author Arne Vandamme
+ * @author Andy Somers
  */
-public interface ViewElementTypeLookupStrategy
+public enum ViewElementMode
 {
-	/**
-	 * @return element type or null if none could be determined.
-	 */
-	String findElementType( EntityConfiguration entityConfiguration,
-	                        EntityPropertyDescriptor descriptor,
-	                        ViewElementMode viewElementMode );
+	FOR_READING, FOR_WRITING
 }
