@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   Copyright 2014 the original author or authors
 
@@ -13,26 +14,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-	<title th:fragment="title">Entity overview</title>
-</head>
-<body th:fragment="content">
-
-
-<table class="table table-striped table-hover">
-	<thead>
-	<tr>
-		<th>#</th>
-		<th>Name</th>
-	</tr>
-	</thead>
-	<tbody>
-	<tr th:each="entity,entityStats:${entities}">
-		<td th:text="${entityStats.count}"></td>
-		<td><a th:href="@{${@adminWeb.path('/entities/' + entity.name)}}" th:text="${entity.displayName}">entity type</a></td>
-	</tr>
-	</tbody>
-</table>
-</body>
-</html>
+<configuration>
+	<include resource="logback-across-test.xml"/>
+</configuration>
