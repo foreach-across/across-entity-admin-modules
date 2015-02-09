@@ -1,11 +1,18 @@
-package com.foreach.across.modules.entity.views.elements;
+package com.foreach.across.modules.entity.views.elements.fieldset;
 
+import com.foreach.across.modules.entity.views.elements.CommonViewElements;
+import com.foreach.across.modules.entity.views.elements.ViewElement;
+import com.foreach.across.modules.entity.views.elements.ViewElements;
 import com.foreach.across.modules.entity.views.support.ValuePrinter;
 import org.springframework.util.Assert;
 
-public class ViewElementSupport implements ViewElement
+/**
+ * Represents a described group of other {@link com.foreach.across.modules.entity.views.elements.ViewElement}
+ * instances.
+ */
+public class FieldsetElement extends ViewElements implements ViewElement
 {
-	private String elementType;
+	public static final String TYPE = CommonViewElements.FIELDSET;
 
 	private String name, label, customTemplate;
 	private ValuePrinter valuePrinter;
@@ -14,11 +21,7 @@ public class ViewElementSupport implements ViewElement
 
 	@Override
 	public String getElementType() {
-		return elementType;
-	}
-
-	protected void setElementType( String elementType ) {
-		this.elementType = elementType;
+		return TYPE;
 	}
 
 	@Override
@@ -44,15 +47,6 @@ public class ViewElementSupport implements ViewElement
 		return customTemplate;
 	}
 
-	@Override
-	public boolean isField() {
-		return field;
-	}
-
-	public void setField( boolean field ) {
-		this.field = field;
-	}
-
 	public void setCustomTemplate( String customTemplate ) {
 		this.customTemplate = customTemplate;
 	}
@@ -64,6 +58,15 @@ public class ViewElementSupport implements ViewElement
 	public void setValuePrinter( ValuePrinter valuePrinter ) {
 		Assert.notNull( valuePrinter );
 		this.valuePrinter = valuePrinter;
+	}
+
+	@Override
+	public boolean isField() {
+		return field;
+	}
+
+	public void setField( boolean field ) {
+		this.field = field;
 	}
 
 	@Override
