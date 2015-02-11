@@ -57,7 +57,7 @@ public class ITAdminWebModule
 	private WebResourceRegistryInterceptor adminWebResourceRegistryInterceptor;
 
 	@Autowired
-	@Qualifier("adminRequestMappingHandlerMapping")
+	@Qualifier("adminWebHandlerMapping")
 	private PrefixingRequestMappingHandlerMapping adminRequestMappingHandlerMapping;
 
 	@Autowired
