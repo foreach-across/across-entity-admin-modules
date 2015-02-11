@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
+package com.foreach.across.test.modules.debugweb;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.modules.debugweb.DebugWebModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
 /**
  * @author Arne Vandamme
  */
-public interface EntityListViewPageFetcher<V extends ViewCreationContext>
+public class TestDebugWebModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-	Page fetchPage( V viewCreationContext, Pageable pageable, EntityView model );
+	@Override
+	protected boolean hasSettings() {
+		return true;
+	}
+
+	@Override
+	protected AcrossModule createModule() {
+		return new DebugWebModule();
+	}
 }
