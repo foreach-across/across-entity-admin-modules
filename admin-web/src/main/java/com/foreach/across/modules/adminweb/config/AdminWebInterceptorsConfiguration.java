@@ -95,8 +95,8 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	public WebTemplateRegistry adminWebTemplateRegistry() {
 		WebTemplateRegistry webTemplateRegistry = new WebTemplateRegistry();
 
-		webTemplateRegistry.register( AdminWeb.LAYOUT_TEMPLATE, adminLayoutTemplateProcessor() );
-		webTemplateRegistry.setDefaultTemplateName( AdminWeb.LAYOUT_TEMPLATE );
+		webTemplateRegistry.register( adminLayoutTemplateProcessor() );
+		webTemplateRegistry.setDefaultTemplateName( "adminWeb" );
 
 		return webTemplateRegistry;
 	}
@@ -116,7 +116,7 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	// todo: verify thymeleaf support is enabled
 	@Bean
 	public LayoutTemplateProcessorAdapterBean adminLayoutTemplateProcessor() {
-		return new LayoutTemplateProcessorAdapterBean( AdminWeb.LAYOUT_TEMPLATE )
+		return new LayoutTemplateProcessorAdapterBean( "adminWeb", AdminWeb.LAYOUT_TEMPLATE )
 		{
 			@Override
 			protected void registerWebResources( WebResourceRegistry registry ) {
