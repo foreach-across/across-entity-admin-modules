@@ -13,26 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
+package com.foreach.across.test.modules.spring.security.acl;
 
-import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
 /**
  * @author Arne Vandamme
  */
-public interface ViewCreationContext
+public class TestSpringSecurityAclModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-	/**
- 	 * @return EntityConfiguration the view is generated for.
-	 */
-	EntityConfiguration getEntityConfiguration();
+	@Override
+	protected boolean hasSettings() {
+		return false;
+	}
 
-	void setEntityConfiguration( EntityConfiguration entityConfiguration );
-
-	EntityAssociation getEntityAssociation();
-
-	void setEntityAssociation( EntityAssociation entityAssociation );
-
-	boolean isForAssociation();
+	@Override
+	protected AcrossModule createModule() {
+		return new SpringSecurityAclModule();
+	}
 }
