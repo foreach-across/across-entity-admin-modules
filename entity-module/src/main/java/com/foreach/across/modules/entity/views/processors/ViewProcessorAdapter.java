@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata2;
+package com.foreach.across.modules.entity.views.processors;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.ViewCreationContext;
 
-public interface ClientRepository extends JpaRepository<Client, Long>
+/**
+ * @author Andy Somers
+ */
+public class ViewProcessorAdapter<T extends ViewCreationContext, U extends EntityView>
+		implements ViewPreProcessor<T, U>, ViewPostProcessor<T, U>
 {
+	@Override
+	public void preProcess( T creationContext, U view ) {
+
+	}
+
+	@Override
+	public void postProcess( T creationContext, U view ) {
+
+	}
 }

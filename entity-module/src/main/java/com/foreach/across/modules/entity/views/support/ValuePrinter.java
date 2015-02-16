@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata2;
+package com.foreach.across.modules.entity.views.support;
 
-import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-@Configuration
-@EnableJpaRepositories(transactionManagerRef = HibernateJpaConfiguration.TRANSACTION_MANAGER)
-public class ClientConfig
+/**
+ * Single interface providing fetching a value from an entity
+ * and printing it to a String if required.
+ *
+ * @author Arne Vandamme
+ */
+public interface ValuePrinter<T> extends ValueFetcher<T>
 {
+	/**
+	 * Print the object of type T for display.
+	 *
+	 * @param object the instance to print
+	 * @return the printed text string
+	 */
+	String print( T object );
 }

@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.web;
+package com.foreach.across.modules.entity.views.elements;
+
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 
 /**
+ * Strategy interface that looks up the most fitting
+ * {@link com.foreach.across.modules.entity.views.elements.ViewElement} type to create.
+ *
  * @author Arne Vandamme
  */
-public interface EntityLinkBuilder
+public interface ViewElementTypeLookupStrategy
 {
-	String overview();
-
-	String create();
-
-	String update( Object entity );
-
-	String delete( Object entity );
-
-	String view( Object entity );
-
-	String associations( Object entity );
-
 	/**
-	 * Creates a new link builder that represents the current linkbuilder as an association from a source entity,
-	 * this will use {@link com.foreach.across.modules.entity.web.EntityLinkBuilder#associations(Object)} on the
-	 * source link builder for prefixing the current link builder.
+	 * @return element type or null if none could be determined.
 	 */
-	EntityLinkBuilder asAssociationFor( EntityLinkBuilder sourceLinkBuilder, Object sourceEntity );
+	String findElementType( EntityConfiguration entityConfiguration,
+	                        EntityPropertyDescriptor descriptor,
+	                        ViewElementMode viewElementMode );
 }

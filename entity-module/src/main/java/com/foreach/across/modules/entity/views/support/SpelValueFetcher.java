@@ -13,13 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata;
+package com.foreach.across.modules.entity.views.support;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
  */
-public interface RepresentativeRepository extends JpaRepository<Representative, String>
+public class SpelValueFetcher<T> implements ValueFetcher<T>
 {
+	private static final ExpressionParser PARSER;
+
+	static {
+		PARSER = new SpelExpressionParser();
+	}
+
+	private final String expression;
+
+	public SpelValueFetcher( String expression ) {
+		this.expression = expression;
+	}
+
+	@Override
+	public Object getValue( T entity ) {
+		return PARSER.parseExpression( expression ).getValue( entity, Object.class );
+	}
 }

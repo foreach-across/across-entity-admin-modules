@@ -13,29 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.web;
+package com.foreach.across.modules.entity.testmodules.springdata.business;
+
+import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
+import java.io.Serializable;
 
 /**
  * @author Arne Vandamme
  */
-public interface EntityLinkBuilder
+@Embeddable
+public class ClientGroupId implements Serializable
 {
-	String overview();
+	@ManyToOne
+	private Client client;
 
-	String create();
+	@ManyToOne
+	private Group group;
 
-	String update( Object entity );
+	public Client getClient() {
+		return client;
+	}
 
-	String delete( Object entity );
+	public void setClient( Client client ) {
+		this.client = client;
+	}
 
-	String view( Object entity );
+	public Group getGroup() {
+		return group;
+	}
 
-	String associations( Object entity );
-
-	/**
-	 * Creates a new link builder that represents the current linkbuilder as an association from a source entity,
-	 * this will use {@link com.foreach.across.modules.entity.web.EntityLinkBuilder#associations(Object)} on the
-	 * source link builder for prefixing the current link builder.
-	 */
-	EntityLinkBuilder asAssociationFor( EntityLinkBuilder sourceLinkBuilder, Object sourceEntity );
+	public void setGroup( Group group ) {
+		this.group = group;
+	}
 }

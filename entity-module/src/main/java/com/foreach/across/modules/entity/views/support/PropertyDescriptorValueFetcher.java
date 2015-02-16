@@ -13,23 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata;
+package com.foreach.across.modules.entity.views.support;
+
+import java.beans.PropertyDescriptor;
 
 /**
  * @author Arne Vandamme
  */
-public enum CompanyStatus
+public class PropertyDescriptorValueFetcher<T> implements ValueFetcher<T>
 {
-	IN_BUSINESS( "In business" ),
-	BROKE( "Broke" );
+	private final PropertyDescriptor descriptor;
 
-	private String name;
-
-	CompanyStatus( String name ) {
-		this.name = name;
+	public PropertyDescriptorValueFetcher( PropertyDescriptor descriptor ) {
+		this.descriptor = descriptor;
 	}
 
-	public String getName() {
-		return name;
+	@Override
+	public Object getValue( T entity ) {
+		try {
+			return descriptor.getReadMethod().invoke( entity );
+		}
+		catch ( Exception e ) {
+			return null;
+		}
 	}
 }
