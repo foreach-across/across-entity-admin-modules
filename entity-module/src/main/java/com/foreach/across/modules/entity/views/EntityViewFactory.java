@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata;
+package com.foreach.across.modules.entity.views;
+
+import com.foreach.across.modules.entity.controllers.EntityViewCommand;
+import org.springframework.ui.ExtendedModelMap;
+import org.springframework.ui.Model;
 
 /**
  * @author Arne Vandamme
  */
-public enum CompanyStatus
+public interface EntityViewFactory<T extends ViewCreationContext>
 {
-	IN_BUSINESS( "In business" ),
-	BROKE( "Broke" );
+	void prepareModelAndCommand( String viewName,
+	                             T creationContext,
+	                             EntityViewCommand command,
+	                             ExtendedModelMap model );
 
-	private String name;
+	void prepareDataBinder( String viewName, T creationContext, EntityViewCommand viewRequest );
 
-	CompanyStatus( String name ) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return name;
-	}
+	EntityView create( String viewName, T creationContext, Model model );
 }

@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata;
+package com.foreach.across.modules.entity.views;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
  */
-public interface RepresentativeRepository extends JpaRepository<Representative, String>
+public interface EntityListViewPageFetcher<V extends ViewCreationContext>
 {
+	Page fetchPage( V viewCreationContext, Pageable pageable, EntityView model );
 }
