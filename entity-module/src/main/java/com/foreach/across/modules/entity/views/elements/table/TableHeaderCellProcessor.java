@@ -13,32 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.support;
+package com.foreach.across.modules.entity.views.elements.table;
 
-import java.beans.PropertyDescriptor;
+import com.foreach.across.modules.entity.views.elements.ViewElement;
+
+import java.util.Map;
 
 /**
  * @author Arne Vandamme
  */
-public class PropertyDescriptorValueFetcher<T> implements ValueFetcher<T>
+public interface TableHeaderCellProcessor
 {
-	private final PropertyDescriptor descriptor;
-
-	public PropertyDescriptorValueFetcher( PropertyDescriptor descriptor ) {
-		this.descriptor = descriptor;
-	}
-
-	@Override
-	public Object getValue( T entity ) {
-		if ( entity == null ) {
-			return null;
-		}
-
-		try {
-			return descriptor.getReadMethod().invoke( entity );
-		}
-		catch ( Exception e ) {
-			return null;
-		}
-	}
+	Map<String, String> attributes( ViewElement column );
 }

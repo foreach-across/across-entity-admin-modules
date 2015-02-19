@@ -13,43 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.button;
+package com.foreach.across.modules.entity.views.elements.table;
 
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
+import com.foreach.across.modules.entity.views.elements.ViewElement;
 import com.foreach.across.modules.entity.views.elements.ViewElementSupport;
+
+import java.util.Map;
 
 /**
  * @author Arne Vandamme
  */
-public class ButtonViewElement extends ViewElementSupport
+public class TableHeaderViewElement extends ViewElementSupport
 {
-	public static final String TYPE = CommonViewElements.BUTTON;
+	private TableHeaderCellProcessor cellProcessor;
 
-	private String link;
-
-	public ButtonViewElement() {
-		setElementType( TYPE );
+	public TableHeaderViewElement() {
+		setElementType( "table-header" );
 	}
 
-	@Override
-	public void setElementType( String elementType ) {
-		super.setElementType( elementType );
+	public TableHeaderCellProcessor getCellProcessor() {
+		return cellProcessor;
 	}
 
-	public String getLink() {
-		return link;
+	public void setCellProcessor( TableHeaderCellProcessor cellProcessor ) {
+		this.cellProcessor = cellProcessor;
 	}
 
-	public void setLink( String link ) {
-		this.link = link;
-	}
-
-	public boolean hasLink() {
-		return link != null;
-	}
-
-	@Override
-	public String print( Object entity ) {
-		return getLink();
+	public Map<String, String> cellProcessor( ViewElement element ) {
+		return cellProcessor != null ? cellProcessor.attributes( element ) : null;
 	}
 }
