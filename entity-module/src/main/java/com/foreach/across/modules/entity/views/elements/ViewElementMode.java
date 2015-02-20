@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-$(document).ready(function() {
-    $('.js-form-element-datepicker').each(function(){
-        $(this).datepicker({
-            constrainInput: false
-        });
-    });
+package com.foreach.across.modules.entity.views.elements;
 
-    $('[data-dependson]').each(function(){
-        var dependsonConfig = $(this).data('dependson');
-        $(this).dependsOn(dependsonConfig, {hide: false});
-    });
-});
+/**
+ * @author Andy Somers
+ */
+public enum ViewElementMode
+{
+	FOR_READING, FOR_WRITING
+}
