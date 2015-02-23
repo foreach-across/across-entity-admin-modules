@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-$(document).ready(function() {
-    $('.js-form-element-datepicker').each(function(){
-        var datepickerConfig = $( this ).data( 'datepicker-config' );
-        if ( !datepickerConfig ) {
-            datepickerConfig = {};
-        }
-        datepickerConfig['constrainInput'] = false;
-        $(this).datepicker(datepickerConfig);
-    });
+package com.foreach.across.modules.entity.views;
 
-    $('[data-dependson]').each(function(){
-        var dependsonConfig = $(this).data('dependson');
-        $(this).dependsOn(dependsonConfig, {hide: false});
-    });
-});
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+/**
+ * @author Arne Vandamme
+ */
+public interface EntityListViewPageFetcher<V extends ViewCreationContext>
+{
+	Page fetchPage( V viewCreationContext, Pageable pageable, EntityView model );
+}
