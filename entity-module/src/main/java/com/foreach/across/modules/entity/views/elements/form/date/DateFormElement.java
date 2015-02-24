@@ -13,32 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.support;
+package com.foreach.across.modules.entity.views.elements.form.date;
 
-import java.beans.PropertyDescriptor;
+import com.foreach.across.modules.entity.views.elements.CommonViewElements;
+import com.foreach.across.modules.entity.views.elements.form.FormElementSupport;
 
 /**
- * @author Arne Vandamme
+ * @author Andy Somers
  */
-public class PropertyDescriptorValueFetcher<T> implements ValueFetcher<T>
+public class DateFormElement extends FormElementSupport
 {
-	private final PropertyDescriptor descriptor;
+	public static final String TYPE = CommonViewElements.DATE;
 
-	public PropertyDescriptorValueFetcher( PropertyDescriptor descriptor ) {
-		this.descriptor = descriptor;
-	}
-
-	@Override
-	public Object getValue( T entity ) {
-		if ( entity == null ) {
-			return null;
-		}
-
-		try {
-			return descriptor.getReadMethod().invoke( entity );
-		}
-		catch ( Exception e ) {
-			return null;
-		}
+	public DateFormElement() {
+		super( TYPE );
 	}
 }
