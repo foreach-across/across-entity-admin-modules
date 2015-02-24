@@ -13,18 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-$(document).ready(function() {
-    $('.js-form-element-datepicker').each(function(){
-        var datepickerConfig = $( this ).data( 'datepicker-config' );
-        if ( !datepickerConfig ) {
-            datepickerConfig = {};
-        }
-        datepickerConfig['constrainInput'] = false;
-        $(this).datepicker(datepickerConfig);
-    });
+package com.foreach.across.modules.entity.views.support;
 
-    $('[data-dependson]').each(function(){
-        var dependsonConfig = $(this).data('dependson');
-        $(this).dependsOn(dependsonConfig, {hide: false});
-    });
-});
+import java.lang.reflect.Method;
+
+/**
+ * @author Arne Vandamme
+ */
+public class MethodValueFetcher<T> implements ValueFetcher<T>
+{
+	private final Method method;
+
+	public MethodValueFetcher( Method method ) {
+		this.method = method;
+	}
+
+	@Override
+	public Object getValue( T entity ) {
+		if ( entity == null ) {
+			return null;
+		}
+
+		try {
+			return method.invoke( entity );
+		}
+		catch ( Exception e ) {
+			return null;
+		}
+	}
+}
