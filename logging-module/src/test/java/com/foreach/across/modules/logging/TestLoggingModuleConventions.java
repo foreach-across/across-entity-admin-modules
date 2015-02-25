@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.container;
+package com.foreach.across.modules.logging;
 
-/**
- * @author Arne Vandamme
- */
-public class ColumnsViewElement extends ContainerViewElement
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+
+public class TestLoggingModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-	public ColumnsViewElement() {
-	}
-
-	public ColumnsViewElement( String name ) {
-		super( name );
+	@Override
+	protected boolean hasSettings() {
+		return true;
 	}
 
 	@Override
-	public String getElementType() {
-		return "columns";
+	protected AcrossModule createModule() {
+		return new LoggingModule();
 	}
 }
