@@ -13,16 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
+package com.foreach.across.modules.entity.testmodules.springdata.business;
 
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.domain.Persistable;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  * @author Arne Vandamme
  */
-public interface CompanyRepository extends JpaRepository<Company, String>, JpaSpecificationExecutor<Company>, QueryDslPredicateExecutor<Company>
+@Entity
+public class Car implements Persistable<String>
 {
+	@Id
+	private String id;
+
+	@ManyToOne
+	private Company company;
+
+	@Override
+	public String getId() {
+		return id;
+	}
+
+	public void setId( String id ) {
+		this.id = id;
+	}
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany( Company company ) {
+		this.company = company;
+	}
+
+	@Override
+	public boolean isNew() {
+		return false;
+	}
 }

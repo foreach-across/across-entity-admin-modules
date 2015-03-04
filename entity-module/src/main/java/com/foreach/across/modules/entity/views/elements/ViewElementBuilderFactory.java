@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
-
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+package com.foreach.across.modules.entity.views.elements;
 
 /**
+ * Creates a {@link ViewElementBuilder} that creates a
+ * specific {@link com.foreach.across.modules.entity.views.elements.ViewElement} type.
+ * The factory is expected to be immutable and create a builder usually using a base builder as a template.
+ * The builder itself can then be modified for a particular view before creating the actual
+ * {@link com.foreach.across.modules.entity.views.elements.ViewElement}.
+ *
  * @author Arne Vandamme
  */
-public interface CompanyRepository extends JpaRepository<Company, String>, JpaSpecificationExecutor<Company>, QueryDslPredicateExecutor<Company>
+public interface ViewElementBuilderFactory<T extends ViewElementBuilder>
 {
+	T createBuilder();
 }
