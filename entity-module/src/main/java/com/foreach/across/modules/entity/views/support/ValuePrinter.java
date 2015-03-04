@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
-
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+package com.foreach.across.modules.entity.views.support;
 
 /**
+ * Single interface providing fetching a value from an entity
+ * and printing it to a String if required.
+ *
  * @author Arne Vandamme
  */
-public interface CompanyRepository extends JpaRepository<Company, String>, JpaSpecificationExecutor<Company>, QueryDslPredicateExecutor<Company>
+public interface ValuePrinter<T> extends ValueFetcher<T>
 {
+	/**
+	 * Print the object of type T for display.
+	 *
+	 * @param object the instance to print
+	 * @return the printed text string
+	 */
+	String print( T object );
 }

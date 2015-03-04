@@ -13,16 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
+package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 
 /**
  * @author Arne Vandamme
  */
-public interface CompanyRepository extends JpaRepository<Company, String>, JpaSpecificationExecutor<Company>, QueryDslPredicateExecutor<Company>
+public interface ViewCreationContext
 {
+	/**
+ 	 * @return EntityConfiguration the view is generated for.
+	 */
+	EntityConfiguration getEntityConfiguration();
+
+	void setEntityConfiguration( EntityConfiguration entityConfiguration );
+
+	EntityAssociation getEntityAssociation();
+
+	void setEntityAssociation( EntityAssociation entityAssociation );
+
+	boolean isForAssociation();
 }

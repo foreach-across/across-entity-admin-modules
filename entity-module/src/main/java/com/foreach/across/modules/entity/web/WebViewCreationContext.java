@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
+package com.foreach.across.modules.entity.web;
 
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import com.foreach.across.modules.entity.views.ViewCreationContext;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import org.springframework.web.context.request.NativeWebRequest;
 
 /**
  * @author Arne Vandamme
  */
-public interface CompanyRepository extends JpaRepository<Company, String>, JpaSpecificationExecutor<Company>, QueryDslPredicateExecutor<Company>
+public interface WebViewCreationContext extends ViewCreationContext
 {
+	NativeWebRequest getRequest();
+
+	WebResourceRegistry getWebResourceRegistry();
 }
