@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.generators;
+package com.foreach.across.modules.entity.testmodules.springdata.repositories;
 
-@Deprecated
-public interface EntityLabelGenerator
+import com.foreach.across.modules.entity.testmodules.springdata.business.Car;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+/**
+ * @author Andy Somers
+ */
+public interface CarRepository extends JpaRepository<Car, String>
 {
-	/**
-	 * Generates the default display label for an entity.
-	 *
-	 * @param entity Entity instance for which the label should be generated.
-	 * @return Generated label.
-	 */
-	String getLabel( Object entity );
 }

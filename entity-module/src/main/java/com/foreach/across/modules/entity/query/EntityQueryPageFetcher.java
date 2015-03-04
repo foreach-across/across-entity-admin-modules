@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.generators;
+package com.foreach.across.modules.entity.query;
 
-@Deprecated
-public interface EntityLabelGenerator
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+/**
+ * Interface supporting fetching data for a generic {@link com.foreach.across.modules.entity.query.EntityQuery}
+ * instance, used as abstraction for JPA, QueryDsl repositories.
+ *
+ * @author Arne Vandamme
+ */
+public interface EntityQueryPageFetcher
 {
-	/**
-	 * Generates the default display label for an entity.
-	 *
-	 * @param entity Entity instance for which the label should be generated.
-	 * @return Generated label.
-	 */
-	String getLabel( Object entity );
+	Page fetchPage( EntityQuery query, Pageable pageable );
 }

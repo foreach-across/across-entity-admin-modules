@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.generators;
+package com.foreach.across.modules.entity.query;
 
-@Deprecated
-public interface EntityLabelGenerator
+/**
+ * @author Arne Vandamme
+ */
+public interface EntityQueryExpression
 {
-	/**
-	 * Generates the default display label for an entity.
-	 *
-	 * @param entity Entity instance for which the label should be generated.
-	 * @return Generated label.
-	 */
-	String getLabel( Object entity );
+	EntityQueryOps getOperand();
 }
