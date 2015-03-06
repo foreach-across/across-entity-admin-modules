@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.processors;
+package com.foreach.across.modules.entity.views.elements.table;
+
+import com.foreach.across.modules.entity.views.elements.ViewElement;
 
 import java.util.Map;
 
 /**
- * @author niels
- * @since 6/02/2015
+ * @author Arne Vandamme
  */
-@Deprecated
-public class NoOpRowProcessor<T> implements RowProcessor<T>
+public interface TableHeaderCellProcessor
 {
-	@Override
-	public Map<String, String> attributes( T entity ) {
-		return null;
-	}
+	Map<String, String> attributes( ViewElement column );
 }
