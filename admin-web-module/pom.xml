@@ -48,6 +48,11 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 </project>
