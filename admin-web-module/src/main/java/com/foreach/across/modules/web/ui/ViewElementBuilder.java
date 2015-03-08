@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.test.modules.adminweb;
-
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.modules.adminweb.AdminWebModule;
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+package com.foreach.across.modules.web.ui;
 
 /**
+ * Base interface to create a single {@link ViewElement} instance.
+ *
  * @author Arne Vandamme
  */
-public class TestAdminWebModuleConventions extends AbstractAcrossModuleConventionsTest
+public interface ViewElementBuilder<T extends ViewElement>
 {
-	@Override
-	protected boolean hasSettings() {
-		return true;
-	}
-
-	@Override
-	protected AcrossModule createModule() {
-		return new AdminWebModule();
-	}
+	/**
+	 * Builds the actual element.
+	 *
+	 * @param builderContext provides the context for this build event
+	 * @return instance to render the element.
+	 */
+	T build( ViewElementBuilderContext builderContext );
 }
