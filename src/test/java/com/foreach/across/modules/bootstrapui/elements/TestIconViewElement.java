@@ -15,19 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.config.AcrossContextConfigurer;
-import com.foreach.across.core.AcrossContext;
-import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
-import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Test;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
 
 /**
  * @author Arne Vandamme
  */
-@ContextConfiguration
-public class TestIconViewElement extends AbstractViewElementTemplateTest
+public class TestIconViewElement extends AbstractBootstrapViewElementTest
 {
 	@Test
 	public void simpleIcon() {
@@ -62,14 +55,5 @@ public class TestIconViewElement extends AbstractViewElementTemplateTest
 				new IconViewElement( "" ),
 				"<span class='glyphicon ' aria-hidden='true'></span>"
 		);
-	}
-
-	@Configuration
-	protected static class Config implements AcrossContextConfigurer
-	{
-		@Override
-		public void configure( AcrossContext context ) {
-			context.addModule( new BootstrapUiModule() );
-		}
 	}
 }

@@ -15,7 +15,9 @@
  */
 package com.foreach.across.modules.bootstrapui.config;
 
+import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.IconViewElement;
+import com.foreach.across.modules.bootstrapui.elements.thymeleaf.ButtonViewElementNodeBuilder;
 import com.foreach.across.modules.bootstrapui.elements.thymeleaf.IconViewElementNodeBuilder;
 import com.foreach.across.modules.web.ui.thymeleaf.ViewElementNodeBuilderRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +38,7 @@ public class ViewElementsConfiguration
 	@PostConstruct
 	public void registerViewElements() {
 		viewElementNodeBuilderRegistry.registerNodeBuilder( IconViewElement.class, new IconViewElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( ButtonViewElement.class,
+		                                                    new ButtonViewElementNodeBuilder() );
 	}
 }
