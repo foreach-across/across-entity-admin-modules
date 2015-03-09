@@ -13,17 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.form.date;
+package com.foreach.across.modules.metrics.config;
 
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
-import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderFactoryAssemblerSupport;
+import com.foreach.across.modules.metrics.AcrossMetric;
+import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * @author Andy Somers
- */
-public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
+import javax.annotation.PostConstruct;
+
+public abstract class BaseMetricModuleConfiguration
 {
-	public DateFormElementBuilderFactoryAssembler() {
-		super( DateFormElementBuilder.class, CommonViewElements.DATE );
+	@Autowired
+	private AcrossMetricRegistry acrossMetricRegistry;
+
+	@PostConstruct
+	public void validate() {
+		getAcrossMetric().validateDependency();
+		register();
 	}
+
+	public void register() {
+		acrossMetricRegistry.register( this, getAcrossMetric() );
+	}
+
+	public abstract AcrossMetric getAcrossMetric();
 }
