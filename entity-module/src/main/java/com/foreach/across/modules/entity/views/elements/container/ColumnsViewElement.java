@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.metrics.config;
+package com.foreach.across.modules.entity.views.elements.container;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.metrics.controllers.MetricsController;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class MetricModuleConfiguration
+/**
+ * @author Arne Vandamme
+ */
+public class ColumnsViewElement extends ContainerViewElement
 {
-	@Bean
-	public MetricsController metricsController() {
-		return new MetricsController();
+	public ColumnsViewElement() {
 	}
 
-	@Bean
-	@Exposed
-	public AcrossMetricRegistry acrossMetricRegistry() {
-		return new AcrossMetricRegistry();
+	public ColumnsViewElement( String name ) {
+		super( name );
+	}
+
+	@Override
+	public String getElementType() {
+		return "columns";
 	}
 }

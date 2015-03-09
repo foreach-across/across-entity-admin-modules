@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.metrics.config;
+package com.foreach.across.modules.entity.views.elements.form.date;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.metrics.controllers.MetricsController;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.foreach.across.modules.entity.views.elements.CommonViewElements;
+import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderFactoryAssemblerSupport;
 
-@Configuration
-public class MetricModuleConfiguration
+/**
+ * @author Andy Somers
+ */
+public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
 {
-	@Bean
-	public MetricsController metricsController() {
-		return new MetricsController();
-	}
-
-	@Bean
-	@Exposed
-	public AcrossMetricRegistry acrossMetricRegistry() {
-		return new AcrossMetricRegistry();
+	public DateFormElementBuilderFactoryAssembler() {
+		super( DateFormElementBuilder.class, CommonViewElements.DATE );
 	}
 }

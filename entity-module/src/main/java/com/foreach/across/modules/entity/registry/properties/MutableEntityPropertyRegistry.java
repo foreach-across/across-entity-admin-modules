@@ -13,24 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.metrics.config;
+package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.metrics.controllers.MetricsController;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class MetricModuleConfiguration
+/**
+ * @author Arne Vandamme
+ */
+public interface MutableEntityPropertyRegistry extends EntityPropertyRegistry
 {
-	@Bean
-	public MetricsController metricsController() {
-		return new MetricsController();
-	}
-
-	@Bean
-	@Exposed
-	public AcrossMetricRegistry acrossMetricRegistry() {
-		return new AcrossMetricRegistry();
-	}
+	MutableEntityPropertyDescriptor getMutableProperty( String propertyName );
 }

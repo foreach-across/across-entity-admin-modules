@@ -13,24 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.metrics.config;
+package com.foreach.across.modules.entity.registry;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.metrics.controllers.MetricsController;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.data.repository.core.EntityInformation;
 
-@Configuration
-public class MetricModuleConfiguration
+import java.io.Serializable;
+import java.util.Locale;
+
+/**
+ * @author Arne Vandamme
+ */
+public interface EntityModel<T, ID extends Serializable> extends EntityInformation<T, ID>
 {
-	@Bean
-	public MetricsController metricsController() {
-		return new MetricsController();
-	}
+	/**
+	 * @return The default generated label for an entity.
+	 */
+	String getLabel( T entity );
 
-	@Bean
-	@Exposed
-	public AcrossMetricRegistry acrossMetricRegistry() {
-		return new AcrossMetricRegistry();
-	}
+	String getLabel( T entity, Locale locale );
+
+	T createNew( Object... args );
+
+	T createDto( T entity );
+
+	T findOne( ID id );
+
+	T save( T entity );
 }

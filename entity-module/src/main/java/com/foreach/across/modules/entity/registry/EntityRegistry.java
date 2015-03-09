@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.metrics.config;
+package com.foreach.across.modules.entity.registry;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.metrics.controllers.MetricsController;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.util.Collection;
 
-@Configuration
-public class MetricModuleConfiguration
+/**
+ * Base interface for querying the registered entity types.
+ *
+ * @author Arne Vandamme
+ * @see com.foreach.across.modules.entity.registry.MutableEntityRegistry
+ */
+public interface EntityRegistry
 {
-	@Bean
-	public MetricsController metricsController() {
-		return new MetricsController();
-	}
+	Collection<EntityConfiguration> getEntities();
 
-	@Bean
-	@Exposed
-	public AcrossMetricRegistry acrossMetricRegistry() {
-		return new AcrossMetricRegistry();
-	}
+	boolean contains( Class<?> entityType );
+
+	boolean contains( String entityName );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( Class<T> entityType );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( String entityName );
 }

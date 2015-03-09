@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.metrics.config;
+package com.foreach.across.modules.entity.registrars.repository.associations;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.metrics.controllers.MetricsController;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
+import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import org.springframework.data.mapping.PersistentProperty;
 
-@Configuration
-public class MetricModuleConfiguration
+/**
+ * @author Andy Somers
+ */
+public interface EntityAssociationBuilder
 {
-	@Bean
-	public MetricsController metricsController() {
-		return new MetricsController();
-	}
+	boolean supports( PersistentProperty<?> sourceProperty );
 
-	@Bean
-	@Exposed
-	public AcrossMetricRegistry acrossMetricRegistry() {
-		return new AcrossMetricRegistry();
-	}
+	void buildAssociation( MutableEntityRegistry entityRegistry,
+	                       MutableEntityConfiguration entityConfiguration,
+	                       PersistentProperty property );
 }
