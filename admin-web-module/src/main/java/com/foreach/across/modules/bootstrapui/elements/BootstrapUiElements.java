@@ -23,4 +23,5 @@ import com.foreach.across.modules.web.ui.StandardViewElements;
 public interface BootstrapUiElements extends StandardViewElements
 {
 	public static final String ICON = "bootstrapIcon";
+	public static final String BUTTON = "bootstrapButton";
 }
