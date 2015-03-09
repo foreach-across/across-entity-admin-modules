@@ -15,83 +15,11 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
-import org.springframework.util.Assert;
-
 /**
  * Represents a Bootstrap button.
  *
  * @author Arne Vandamme
  */
-public class ButtonViewElement extends NodeViewElementSupport
+public class ButtonViewElement
 {
-	public static enum Type
-	{
-		BUTTON,
-		BUTTON_SUBMIT,
-		BUTTON_RESET,
-		INPUT,
-		INPUT_SUBMIT,
-		INPUT_RESET,
-		LINK
-	}
-
-	public static enum State
-	{
-		ACTIVE,
-		DISABLED
-	}
-
-	public static final String ELEMENT_TYPE = BootstrapUiElements.BUTTON;
-
-	private String text;
-	private Style style = Style.Button.DEFAULT;
-	private Type type = Type.BUTTON;
-	private State state;
-	private Size size;
-
-	public ButtonViewElement() {
-		super( ELEMENT_TYPE );
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public void setText( String text ) {
-		this.text = text;
-	}
-
-	public Type getType() {
-		return type;
-	}
-
-	public void setType( Type type ) {
-		Assert.notNull( type );
-		this.type = type;
-	}
-
-	public Style getStyle() {
-		return style;
-	}
-
-	public void setStyle( Style style ) {
-		this.style = style;
-	}
-
-	public State getState() {
-		return state;
-	}
-
-	public void setState( State state ) {
-		this.state = state;
-	}
-
-	public Size getSize() {
-		return size;
-	}
-
-	public void setSize( Size size ) {
-		this.size = size;
-	}
 }
