@@ -65,7 +65,6 @@ public class WebViewProcessorAdapter<U extends EntityView>
 	                                    WebViewCreationContext creationContext,
 	                                    EntityViewCommand command,
 	                                    WebDataBinder dataBinder ) {
-
 	}
 
 	protected void prepareDataBinder( WebDataBinder dataBinder, EntityViewCommand command ) {
