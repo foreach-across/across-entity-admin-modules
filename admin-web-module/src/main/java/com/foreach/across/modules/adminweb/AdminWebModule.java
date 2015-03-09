@@ -15,14 +15,16 @@
  */
 package com.foreach.across.modules.adminweb;
 
+import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.AcrossWebModule;
 
 @AcrossDepends(
-		required = { AcrossWebModule.NAME, SpringSecurityModule.NAME },
-        optional = { "AcrossHibernateModule" }
+		required = { AcrossWebModule.NAME, SpringSecurityModule.NAME, BootstrapUiModule.NAME },
+		optional = { "AcrossHibernateModule" }
 )
 public class AdminWebModule extends AcrossModule
 {
@@ -36,6 +38,16 @@ public class AdminWebModule extends AcrossModule
 	 */
 	public String getRootPath() {
 		return rootPath;
+	}
+
+	@Override
+	protected void setContext( AcrossContext context ) {
+		super.setContext( context );
+
+		// todo BootstrapUiModule should be managed externally (?)
+		if ( context.getModule( BootstrapUiModule.NAME ) == null ) {
+			context.addModule( new BootstrapUiModule() );
+		}
 	}
 
 	/**
