@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.web.ui;
+package com.foreach.across.modules.bootstrapui.elements;
 
 /**
- * Base interface to create a single {@link ViewElement} instance.
+ * Represents a Bootstrap button.
  *
  * @author Arne Vandamme
  */
-public interface ViewElementBuilder<T extends ViewElement>
+public class ButtonViewElement
 {
-	/**
-	 * Builds the actual element.
-	 *
-	 * @param builderContext provides the context for this build event
-	 * @return instance to render the element.
-	 */
-	T build( ViewElementBuilderContext builderContext );
 }
