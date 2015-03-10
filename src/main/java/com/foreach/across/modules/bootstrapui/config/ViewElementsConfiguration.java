@@ -15,10 +15,8 @@
  */
 package com.foreach.across.modules.bootstrapui.config;
 
-import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
-import com.foreach.across.modules.bootstrapui.elements.IconViewElement;
-import com.foreach.across.modules.bootstrapui.elements.thymeleaf.ButtonViewElementNodeBuilder;
-import com.foreach.across.modules.bootstrapui.elements.thymeleaf.IconViewElementNodeBuilder;
+import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.thymeleaf.*;
 import com.foreach.across.modules.web.ui.thymeleaf.ViewElementNodeBuilderRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -40,5 +38,23 @@ public class ViewElementsConfiguration
 		viewElementNodeBuilderRegistry.registerNodeBuilder( IconViewElement.class, new IconViewElementNodeBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( ButtonViewElement.class,
 		                                                    new ButtonViewElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( FormViewElement.class,
+		                                                    new FormViewElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( TextboxFormElement.class,
+		                                                    new TextboxFormElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( TextareaFormElement.class,
+		                                                    new TextareaFormElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( CheckboxFormElement.class,
+		                                                    new CheckboxFormElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( RadioFormElement.class,
+		                                                    new RadioFormElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( SelectFormElement.class,
+		                                                    new SelectFormElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( SelectFormElement.Option.class,
+		                                                    new SelectFormElementNodeBuilder.OptionBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( SelectFormElement.OptionGroup.class,
+		                                                    new SelectFormElementNodeBuilder.OptionGroupBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( StaticFormElement.class,
+		                                                    new StaticFormElementNodeBuilder() );
 	}
 }

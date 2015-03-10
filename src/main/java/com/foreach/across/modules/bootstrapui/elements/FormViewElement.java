@@ -15,20 +15,21 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.StandardViewElements;
+import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 
 /**
+ * Represents a HTML form element.
+ *
  * @author Arne Vandamme
  */
-public interface BootstrapUiElements extends StandardViewElements
+public class FormViewElement extends NodeViewElementSupport
 {
-	public static final String ICON = "bootstrapIcon";
-	public static final String BUTTON = "bootstrapButton";
-	public static final String TEXTBOX = "bootstrapTextbox";
-	public static final String TEXTAREA = "bootstrapTextarea";
-	public static final String FORM = "bootstrapForm";
-	public static final String CHECKBOX = "bootstrapCheckbox";
-	public static final String RADIO = "bootstrapRadio";
-	public static final String SELECT = "bootstrapSelect";
-	public static final String STATIC_CONTROL = "bootstrapStaticControl";
+	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM;
+
+	public FormViewElement() {
+		super( ELEMENT_TYPE );
+	}
+
+	//form-inline
+	//form-horizontal
 }
