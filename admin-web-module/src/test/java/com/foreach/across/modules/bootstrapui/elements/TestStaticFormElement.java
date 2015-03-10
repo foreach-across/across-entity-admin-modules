@@ -15,20 +15,20 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.StandardViewElements;
+import org.junit.Test;
 
 /**
  * @author Arne Vandamme
  */
-public interface BootstrapUiElements extends StandardViewElements
+public class TestStaticFormElement extends AbstractBootstrapViewElementTest
 {
-	public static final String ICON = "bootstrapIcon";
-	public static final String BUTTON = "bootstrapButton";
-	public static final String TEXTBOX = "bootstrapTextbox";
-	public static final String TEXTAREA = "bootstrapTextarea";
-	public static final String FORM = "bootstrapForm";
-	public static final String CHECKBOX = "bootstrapCheckbox";
-	public static final String RADIO = "bootstrapRadio";
-	public static final String SELECT = "bootstrapSelect";
-	public static final String STATIC_CONTROL = "bootstrapStaticControl";
-}
+	@Test
+	public void simple() {
+		StaticFormElement box = new StaticFormElement();
+		box.setText( "somedude@example.com" );
+
+		renderAndExpect(
+				box,
+				"<p class='form-control-static'>somedude@example.com</p>"
+		);
+	}}
