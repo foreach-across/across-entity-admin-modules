@@ -15,20 +15,26 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.StandardViewElements;
+import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 
 /**
  * @author Arne Vandamme
  */
-public interface BootstrapUiElements extends StandardViewElements
+public class StaticFormElement extends NodeViewElementSupport
 {
-	public static final String ICON = "bootstrapIcon";
-	public static final String BUTTON = "bootstrapButton";
-	public static final String TEXTBOX = "bootstrapTextbox";
-	public static final String TEXTAREA = "bootstrapTextarea";
-	public static final String FORM = "bootstrapForm";
-	public static final String CHECKBOX = "bootstrapCheckbox";
-	public static final String RADIO = "bootstrapRadio";
-	public static final String SELECT = "bootstrapSelect";
-	public static final String STATIC_CONTROL = "bootstrapStaticControl";
+	public static final String ELEMENT_TYPE = BootstrapUiElements.STATIC_CONTROL;
+
+	private String text;
+
+	public StaticFormElement() {
+		super( ELEMENT_TYPE );
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText( String text ) {
+		this.text = text;
+	}
 }
