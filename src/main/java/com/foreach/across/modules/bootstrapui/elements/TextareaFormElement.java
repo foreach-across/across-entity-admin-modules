@@ -15,20 +15,32 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.StandardViewElements;
-
 /**
+ * Represents HTML textarea.
+ *
  * @author Arne Vandamme
  */
-public interface BootstrapUiElements extends StandardViewElements
+public class TextareaFormElement extends TextboxFormElement
 {
-	public static final String ICON = "bootstrapIcon";
-	public static final String BUTTON = "bootstrapButton";
-	public static final String TEXTBOX = "bootstrapTextbox";
-	public static final String TEXTAREA = "bootstrapTextarea";
-	public static final String FORM = "bootstrapForm";
-	public static final String CHECKBOX = "bootstrapCheckbox";
-	public static final String RADIO = "bootstrapRadio";
-	public static final String SELECT = "bootstrapSelect";
-	public static final String STATIC_CONTROL = "bootstrapStaticControl";
+	public static final String ELEMENT_TYPE = BootstrapUiElements.TEXTAREA;
+
+	public static class Type
+	{
+		public static TextboxFormElement.Type TEXTAREA = new TextboxFormElement.Type( "textarea" );
+	}
+
+	private int rows = 3;
+
+	public TextareaFormElement() {
+		setElementType( ELEMENT_TYPE );
+		setType( Type.TEXTAREA );
+	}
+
+	public int getRows() {
+		return rows;
+	}
+
+	public void setRows( int rows ) {
+		this.rows = rows;
+	}
 }

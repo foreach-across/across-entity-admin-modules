@@ -15,20 +15,35 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.StandardViewElements;
-
 /**
+ * Represents a HTML checkbox element.
+ *
  * @author Arne Vandamme
  */
-public interface BootstrapUiElements extends StandardViewElements
+public class CheckboxFormElement extends FormControlElementSupport
 {
-	public static final String ICON = "bootstrapIcon";
-	public static final String BUTTON = "bootstrapButton";
-	public static final String TEXTBOX = "bootstrapTextbox";
-	public static final String TEXTAREA = "bootstrapTextarea";
-	public static final String FORM = "bootstrapForm";
-	public static final String CHECKBOX = "bootstrapCheckbox";
-	public static final String RADIO = "bootstrapRadio";
-	public static final String SELECT = "bootstrapSelect";
-	public static final String STATIC_CONTROL = "bootstrapStaticControl";
+	public static final String ELEMENT_TYPE = BootstrapUiElements.CHECKBOX;
+
+	private boolean checked;
+	private Object value;
+
+	public CheckboxFormElement() {
+		super( ELEMENT_TYPE );
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked( boolean checked ) {
+		this.checked = checked;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public void setValue( Object value ) {
+		this.value = value;
+	}
 }
