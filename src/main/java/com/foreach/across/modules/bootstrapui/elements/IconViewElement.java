@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
  */
 public class IconViewElement extends SingleNodeViewElementSupport
 {
-	public static final String TYPE = BootstrapUiElements.ICON;
+	public static final String ELEMENT_TYPE = BootstrapUiElements.ICON;
 
 	private String glyph;
 
@@ -35,7 +35,7 @@ public class IconViewElement extends SingleNodeViewElementSupport
 	}
 
 	public IconViewElement() {
-		super( TYPE, "span" );
+		super( ELEMENT_TYPE, "span" );
 
 		setAttribute( "aria-hidden", "true" );
 	}
