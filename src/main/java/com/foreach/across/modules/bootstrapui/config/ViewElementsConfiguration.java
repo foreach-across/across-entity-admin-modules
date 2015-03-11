@@ -56,5 +56,7 @@ public class ViewElementsConfiguration
 		                                                    new SelectFormElementNodeBuilder.OptionGroupBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( StaticFormElement.class,
 		                                                    new StaticFormElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( LabelFormElement.class,
+		                                                    new LabelFormElementNodeBuilder() );
 	}
 }
