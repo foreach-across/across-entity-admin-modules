@@ -31,4 +31,5 @@ public interface BootstrapUiElements extends StandardViewElements
 	public static final String RADIO = "bootstrapRadio";
 	public static final String SELECT = "bootstrapSelect";
 	public static final String STATIC_CONTROL = "bootstrapStaticControl";
+	public static final String LABEL = "bootstrapLabel";
 }
