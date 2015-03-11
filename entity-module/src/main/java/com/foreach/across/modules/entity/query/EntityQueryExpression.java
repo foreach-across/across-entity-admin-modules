@@ -13,24 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.test.modules.debugweb;
-
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.modules.debugweb.DebugWebModule;
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+package com.foreach.across.modules.entity.query;
 
 /**
  * @author Arne Vandamme
  */
-public class TestDebugWebModuleConventions extends AbstractAcrossModuleConventionsTest
+public interface EntityQueryExpression
 {
-	@Override
-	protected boolean hasSettings() {
-		return true;
-	}
-
-	@Override
-	protected AcrossModule createModule() {
-		return new DebugWebModule();
-	}
+	EntityQueryOps getOperand();
 }
