@@ -17,6 +17,8 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
+import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
@@ -28,6 +30,7 @@ public class SelectFormElementNodeBuilder extends FormControlElementBuilderSuppo
 	{
 		@Override
 		protected Element createNode( SelectFormElement.Option control,
+		                              Arguments arguments,
 		                              ViewElementNodeFactory viewElementNodeFactory ) {
 			Element element = new Element( "option" );
 
@@ -46,6 +49,7 @@ public class SelectFormElementNodeBuilder extends FormControlElementBuilderSuppo
 	{
 		@Override
 		protected Element createNode( SelectFormElement.OptionGroup control,
+		                              Arguments arguments,
 		                              ViewElementNodeFactory viewElementNodeFactory ) {
 			Element element = new Element( "optgroup" );
 
@@ -57,7 +61,9 @@ public class SelectFormElementNodeBuilder extends FormControlElementBuilderSuppo
 	}
 
 	@Override
-	protected Element createNode( SelectFormElement control, ViewElementNodeFactory viewElementNodeFactory ) {
+	protected Element createNode( SelectFormElement control,
+	                              Arguments arguments,
+	                              ViewElementNodeFactory viewElementNodeFactory ) {
 		Element element = new Element( "select" );
 		element.setAttribute( "class", "form-control" );
 
