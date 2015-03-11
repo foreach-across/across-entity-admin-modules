@@ -15,45 +15,37 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
+
 /**
- * Represents a HTML checkbox element.
- *
  * @author Arne Vandamme
  */
-public class CheckboxFormElement extends FormControlElementSupport
+public class FormGroupElement extends NodeViewElementSupport
 {
-	public static final String ELEMENT_TYPE = BootstrapUiElements.CHECKBOX;
+	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM_GROUP;
 
-	private boolean checked;
-	private Object value;
+	private ViewElement label, control;
 
-	private String label;
-
-	public CheckboxFormElement() {
+	public FormGroupElement() {
 		super( ELEMENT_TYPE );
 	}
 
-	public boolean isChecked() {
-		return checked;
+	@SuppressWarnings("unchecked")
+	public <V extends ViewElement> V getLabel() {
+		return (V) label;
 	}
 
-	public void setChecked( boolean checked ) {
-		this.checked = checked;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel( String label ) {
+	public void setLabel( ViewElement label ) {
 		this.label = label;
 	}
 
-	public Object getValue() {
-		return value;
+	@SuppressWarnings("unchecked")
+	public <V extends ViewElement> V getControl() {
+		return (V) control;
 	}
 
-	public void setValue( Object value ) {
-		this.value = value;
+	public void setControl( ViewElement control ) {
+		this.control = control;
 	}
 }
