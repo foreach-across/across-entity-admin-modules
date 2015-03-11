@@ -25,16 +25,10 @@ public abstract class FormControlElementBuilderSupport<T extends FormControlElem
 		extends NestableNodeBuilderSupport<T>
 {
 	protected void applyProperties( T control, Element node ) {
-		if ( control.isDisabled() ) {
-			node.setAttribute( "disabled", "disabled" );
-		}
+		attribute( node, "id", control.getHtmlId() );
+		attribute( node, "name", control.getControlName() );
 
-		if ( control.isReadonly() ) {
-			node.setAttribute( "readonly", "readonly" );
-		}
-
-		if ( control.getControlName() != null ) {
-			node.setAttribute( "name", control.getControlName() );
-		}
+		attribute( node, "disabled", control.isDisabled() );
+		attribute( node, "readonly", control.isReadonly() );
 	}
 }
