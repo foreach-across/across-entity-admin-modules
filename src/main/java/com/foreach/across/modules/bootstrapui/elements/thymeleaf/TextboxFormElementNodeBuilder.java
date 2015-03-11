@@ -17,6 +17,7 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
+import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
@@ -25,7 +26,9 @@ import org.thymeleaf.dom.Element;
 public class TextboxFormElementNodeBuilder extends FormControlElementBuilderSupport<TextboxFormElement>
 {
 	@Override
-	protected Element createNode( TextboxFormElement control, ViewElementNodeFactory viewElementNodeFactory ) {
+	protected Element createNode( TextboxFormElement control,
+	                              Arguments arguments,
+	                              ViewElementNodeFactory viewElementNodeFactory ) {
 		Element node = new Element( "input" );
 		node.setAttribute( "type", control.getType().getName() );
 		node.setAttribute( "class", "form-control" );

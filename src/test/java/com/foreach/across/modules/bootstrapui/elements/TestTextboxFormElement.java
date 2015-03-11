@@ -63,14 +63,14 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='text' class='form-control' name='internalName' />"
+				"<input type='text' id='internalName' class='form-control' name='internalName' />"
 		);
 
 		box.setControlName( "controlName" );
 
 		renderAndExpect(
 				box,
-				"<input type='text' class='form-control' name='controlName' />"
+				"<input type='text' id='controlName' class='form-control' name='controlName' />"
 		);
 	}
 

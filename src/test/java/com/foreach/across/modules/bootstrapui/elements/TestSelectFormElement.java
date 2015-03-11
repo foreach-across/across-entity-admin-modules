@@ -25,6 +25,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void simple() {
 		SelectFormElement box = new SelectFormElement();
+		box.setHtmlId( null );
 		box.setControlName( "boxName" );
 
 		renderAndExpect(
@@ -122,7 +123,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<select class='form-control' name='controlName' multiple='multiple' readonly='readonly'>" +
+				"<select id='controlName' class='form-control' name='controlName' multiple='multiple' readonly='readonly'>" +
 						"<option label='Short two' selected='selected' disabled='disabled'>Some text</option>" +
 						"<optgroup>" +
 						"<option value='one'>Inner text</option>" +

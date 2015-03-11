@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import org.junit.Test;
 
 /**
@@ -27,10 +28,15 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 		CheckboxFormElement box = new CheckboxFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
+		box.setLabel( "label text" );
 
 		renderAndExpect(
 				box,
-				"<input type='checkbox' name='boxName' value='123' />"
+				"<div class='checkbox'><label>" +
+						"<input type='checkbox' id='boxName' name='boxName' value='123' /> label text" +
+						"</label>" +
+						"<input type='hidden' name='_boxName' value='on' />" +
+						"</div>"
 		);
 	}
 
@@ -42,7 +48,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='checkbox' value='true' checked='checked' />"
+				"<div class='checkbox'><label>" +
+						"<input type='checkbox' value='true' checked='checked' />" +
+						"</label></div>"
 		);
 	}
 
@@ -54,7 +62,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='checkbox' value='on' disabled='disabled' />"
+				"<div class='checkbox'><label>" +
+						"<input type='checkbox' value='on' disabled='disabled' />" +
+						"</label></div>"
 		);
 
 		box.setDisabled( false );
@@ -62,7 +72,27 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='checkbox' value='on' readonly='readonly' />"
+				"<div class='checkbox'><label>" +
+						"<input type='checkbox' value='on' readonly='readonly' />" +
+						"</label></div>"
+		);
+	}
+
+	@Test
+	public void additionalLabelText() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setLabel( "label text" );
+		box.add( NodeViewElement.forTag( "strong" ) );
+
+		renderAndExpect(
+				box,
+				"<div class='checkbox'><label>" +
+						"<input type='checkbox' id='boxName' name='boxName' value='123' /> label text<strong></strong>" +
+						"</label>" +
+						"<input type='hidden' name='_boxName' value='on' />" +
+						"</div>"
 		);
 	}
 }
