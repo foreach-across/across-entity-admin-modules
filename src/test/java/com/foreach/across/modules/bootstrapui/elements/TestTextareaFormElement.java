@@ -43,13 +43,13 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<textarea class='form-control' rows='3' name='internalName' />"
+				"<textarea id='internalName' class='form-control' rows='3' name='internalName' />"
 		);
 
 		box.setControlName( "controlName" );
 		renderAndExpect(
 				box,
-				"<textarea class='form-control' rows='3' name='controlName' />"
+				"<textarea id='controlName' class='form-control' rows='3' name='controlName' />"
 		);
 	}
 

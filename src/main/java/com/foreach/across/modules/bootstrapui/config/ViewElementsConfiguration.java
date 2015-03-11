@@ -58,5 +58,7 @@ public class ViewElementsConfiguration
 		                                                    new StaticFormElementNodeBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( LabelFormElement.class,
 		                                                    new LabelFormElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( FormGroupElement.class,
+		                                                    new FormGroupElementNodeBuilder() );
 	}
 }

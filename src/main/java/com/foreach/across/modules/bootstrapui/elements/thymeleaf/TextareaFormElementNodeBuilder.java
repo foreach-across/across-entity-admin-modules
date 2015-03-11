@@ -17,6 +17,7 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
+import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
@@ -25,7 +26,9 @@ import org.thymeleaf.dom.Element;
 public class TextareaFormElementNodeBuilder extends FormControlElementBuilderSupport<TextareaFormElement>
 {
 	@Override
-	protected Element createNode( TextareaFormElement control, ViewElementNodeFactory viewElementNodeFactory ) {
+	protected Element createNode( TextareaFormElement control,
+	                              Arguments arguments,
+	                              ViewElementNodeFactory viewElementNodeFactory ) {
 		Element node = new Element( "textarea" );
 		node.setAttribute( "class", "form-control" );
 		node.setAttribute( "rows", String.valueOf( control.getRows() ) );

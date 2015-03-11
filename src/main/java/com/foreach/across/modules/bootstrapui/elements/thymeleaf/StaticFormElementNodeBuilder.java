@@ -17,6 +17,8 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
+import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
@@ -25,7 +27,9 @@ import org.thymeleaf.dom.Element;
 public class StaticFormElementNodeBuilder extends NestableNodeBuilderSupport<StaticFormElement>
 {
 	@Override
-	protected Element createNode( StaticFormElement control, ViewElementNodeFactory viewElementNodeFactory ) {
+	protected Element createNode( StaticFormElement control,
+	                              Arguments arguments,
+	                              ViewElementNodeFactory viewElementNodeFactory ) {
 		Element element = new Element( "p" );
 		element.setAttribute( "class", "form-control-static" );
 
