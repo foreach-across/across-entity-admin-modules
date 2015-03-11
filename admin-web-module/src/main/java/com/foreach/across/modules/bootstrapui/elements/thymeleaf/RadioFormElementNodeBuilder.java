@@ -17,7 +17,13 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.RadioFormElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
+import com.foreach.across.modules.web.ui.ViewElement;
+import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Arne Vandamme
@@ -25,13 +31,42 @@ import org.thymeleaf.dom.Element;
 public class RadioFormElementNodeBuilder extends FormControlElementBuilderSupport<RadioFormElement>
 {
 	@Override
-	protected Element createNode( RadioFormElement control, ViewElementNodeFactory viewElementNodeFactory ) {
-		Element node = new Element( "input" );
-		node.setAttribute( "type", "radio" );
+	public List<Node> buildNodes( RadioFormElement control,
+	                              Arguments arguments,
+	                              ViewElementNodeFactory viewElementNodeFactory ) {
+		Element wrapper = new Element( "div" );
+		wrapper.setAttribute( "class", "radio" );
 
-		attribute( node, "value", control.getValue(), viewElementNodeFactory );
-		attribute( node, "checked", control.isChecked() );
+		Element label = new Element( "label" );
+		Element checkbox = new Element( "input" );
+		checkbox.setAttribute( "type", "radio" );
 
-		return node;
+		attribute( checkbox, "id", retrieveHtmlId( arguments, control ) );
+		attribute( checkbox, "value", control.getValue(), viewElementNodeFactory );
+		attribute( checkbox, "checked", control.isChecked() );
+		applyProperties( control, arguments, checkbox );
+
+		if ( control.getLabel() != null ) {
+			text( label, " " + control.getLabel() );
+		}
+
+		for ( ViewElement child : control ) {
+			for ( Node childNode : viewElementNodeFactory.buildNodes( child, arguments ) ) {
+				label.addChild( childNode );
+			}
+		}
+
+		label.addChild( checkbox );
+		wrapper.addChild( label );
+
+		return Collections.singletonList( (Node) wrapper );
 	}
+
+	@Override
+	protected Element createNode( RadioFormElement control,
+	                              Arguments arguments,
+	                              ViewElementNodeFactory viewElementNodeFactory ) {
+		return null;
+	}
+
 }

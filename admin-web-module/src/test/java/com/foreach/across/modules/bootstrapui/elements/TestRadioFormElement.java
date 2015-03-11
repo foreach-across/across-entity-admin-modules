@@ -26,11 +26,14 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 	public void simple() {
 		RadioFormElement box = new RadioFormElement();
 		box.setControlName( "boxName" );
+		box.setLabel( "label text" );
 		box.setValue( 123 );
 
 		renderAndExpect(
 				box,
-				"<input type='radio' name='boxName' value='123' />"
+				"<div class='radio'><label>" +
+				"<input type='radio' id='boxName' name='boxName' value='123' /> label text" +
+						"</label></div>"
 		);
 	}
 
@@ -42,7 +45,9 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='radio' value='true' checked='checked' />"
+				"<div class='radio'><label>" +
+						"<input type='radio' value='true' checked='checked' />" +
+						"</label></div>"
 		);
 	}
 
@@ -54,7 +59,9 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='radio' value='on' disabled='disabled' />"
+				"<div class='radio'><label>" +
+						"<input type='radio' value='on' disabled='disabled' />" +
+						"</label></div>"
 		);
 
 		box.setDisabled( false );
@@ -62,7 +69,9 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='radio' value='on' readonly='readonly' />"
+				"<div class='radio'><label>" +
+						"<input type='radio' value='on' readonly='readonly' />" +
+						"</label></div>"
 		);
 	}
 }

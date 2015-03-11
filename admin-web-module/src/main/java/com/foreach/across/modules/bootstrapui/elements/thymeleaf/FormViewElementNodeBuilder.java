@@ -17,34 +17,19 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.FormViewElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.thymeleaf.ViewElementNodeBuilder;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.Node;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Arne Vandamme
  */
-public class FormViewElementNodeBuilder implements ViewElementNodeBuilder<FormViewElement>
+public class FormViewElementNodeBuilder extends NestableNodeBuilderSupport<FormViewElement>
 {
 	@Override
-	public List<Node> buildNodes( FormViewElement element,
+	protected Element createNode( FormViewElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element node = new Element( "form" );
-
-		viewElementNodeFactory.setAttributes( node, element.getAttributes() );
-
-		for ( ViewElement child : element ) {
-			for ( Node childNode : viewElementNodeFactory.buildNodes( child, arguments ) ) {
-				node.addChild( childNode );
-			}
-		}
-
-		return Collections.singletonList( (Node) node );
+		return new Element( "form" );
 	}
 }
