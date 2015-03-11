@@ -23,7 +23,9 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 public abstract class FormControlElementSupport extends NodeViewElementSupport
 {
 	private boolean disabled, readonly;
-	private String controlName;
+	private String controlName, htmlId;
+
+	private boolean htmlIdSpecified;
 
 	protected FormControlElementSupport( String elementType ) {
 		super( elementType );
@@ -59,5 +61,17 @@ public abstract class FormControlElementSupport extends NodeViewElementSupport
 
 	public void setControlName( String controlName ) {
 		this.controlName = controlName;
+		if ( !htmlIdSpecified ) {
+			this.htmlId = controlName;
+		}
+	}
+
+	public String getHtmlId() {
+		return htmlId;
+	}
+
+	public void setHtmlId( String htmlId ) {
+		this.htmlId = htmlId;
+		this.htmlIdSpecified = true;
 	}
 }
