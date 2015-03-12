@@ -15,15 +15,16 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
-import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
-import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
+import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
+
+import java.util.List;
 
 /**
  * @author Arne Vandamme
@@ -37,56 +38,75 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 		Element node = new Element( "div" );
 		node.setAttribute( "class", "form-group" );
 
-//		if ( isCheckboxGroup( group ) ) {
-//			LabelFormElement configured = group.getLabel();
-//
-//			LabelFormElement label = new LabelFormElement();
-//			label.setCustomTemplate( configured.getCustomTemplate() );
-//			label.getAttributes().putAll( configured.getAttributes() );
-//			label.add( group.getControl() );
-//			label.add( new TextViewElement( " " + configured.getText() ) );
-//
-//			Element div = new Element( "div" );
-//			div.setAttribute( "class", "checkbox" );
-//
-//			for ( Node childNode : viewElementNodeFactory.buildNodes( label, arguments ) ) {
-//				if ( childNode instanceof Element ) {
-//					Element e = (Element) childNode;
-//					if ( StringUtils.equals( "label", e.getNormalizedName() ) ) {
-//						String cleanedClass = StringUtils.replace( e.getAttributeValue( "class" ), "control-label",
-//						                                           "" );
-//
-//						if ( StringUtils.isEmpty( cleanedClass ) ) {
-//							e.removeAttribute( "class" );
-//						}
-//						else {
-//							e.setAttribute( "class", cleanedClass );
-//						}
-//					}
-//				}
-//				div.addChild( childNode );
-//			}
-//
-//			return div;
-//			// Render label
-//			// Render checkbox
-//		}
+		FormLayout layout = group.getFormLayout();
 
 		ViewElement label = group.getLabel();
 		if ( label != null ) {
-			for ( Node childNode : viewElementNodeFactory.buildNodes( label, arguments ) ) {
+			List<Node> labelNodes = viewElementNodeFactory.buildNodes( label, arguments );
+			Element labelElement = labelElement( labelNodes );
+
+			if ( labelElement != null ) {
+				if ( layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
+					labelElement.setAttribute( "class", "sr-only" );
+				}
+			}
+
+			for ( Node childNode : labelNodes ) {
 				node.addChild( childNode );
 			}
 		}
 
 		ViewElement control = group.getControl();
 		if ( control != null ) {
-			for ( Node childNode : viewElementNodeFactory.buildNodes( control, arguments ) ) {
+			List<Node> controlNodes = viewElementNodeFactory.buildNodes( control, arguments );
+
+			if ( control instanceof TextboxFormElement && layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
+				Element controlElement = controlElement( controlNodes );
+
+				if ( controlElement != null && label instanceof LabelFormElement ) {
+					String labelText = ((LabelFormElement) label).getText();
+
+					if ( labelText != null && !controlElement.hasAttribute( "placeholder" ) ) {
+						controlElement.setAttribute( "placeholder", labelText );
+					}
+				}
+			}
+
+			for ( Node childNode : controlNodes ) {
 				node.addChild( childNode );
 			}
 		}
 
 		return node;
+	}
+
+	private Element labelElement( List<Node> labelNodes ) {
+		if ( !labelNodes.isEmpty() ) {
+			Node node = labelNodes.get( 0 );
+			if ( node instanceof Element ) {
+				Element candidate = (Element) node;
+
+				if ( StringUtils.equals( candidate.getNormalizedName(), "label" ) ) {
+					return candidate;
+				}
+			}
+		}
+		return null;
+	}
+
+	private Element controlElement( List<Node> controlNodes ) {
+		if ( !controlNodes.isEmpty() ) {
+			Node node = controlNodes.get( 0 );
+			if ( node instanceof Element ) {
+				Element candidate = (Element) node;
+
+				if ( StringUtils.equals( candidate.getNormalizedName(), "input" )
+						|| StringUtils.equals( candidate.getNormalizedName(), "textarea" ) ) {
+					return candidate;
+				}
+			}
+		}
+		return null;
 	}
 
 	private boolean isCheckboxGroup( FormGroupElement group ) {
