@@ -70,4 +70,48 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"</div>"
 		);
 	}
+
+	@Test
+	public void inlineFormLayoutWithVisibleLabel() {
+		group.setFormLayout( FormLayout.inline( true ) );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void inlineFormLayoutWithHiddenLabel() {
+		group.setFormLayout( FormLayout.inline( false ) );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label for='control' class='sr-only'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' placeholder='title' />" +
+						"</div>"
+		);
+
+		group.<TextboxFormElement>getControl().setPlaceholder( "some placeholder" );
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label for='control' class='sr-only'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' placeholder='some placeholder' />" +
+						"</div>"
+		);
+
+		group.<TextboxFormElement>getControl().setPlaceholder( "" );
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label for='control' class='sr-only'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' placeholder='' />" +
+						"</div>"
+		);
+	}
 }
