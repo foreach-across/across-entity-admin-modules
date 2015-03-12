@@ -26,6 +26,7 @@ public class FormGroupElement extends NodeViewElementSupport
 	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM_GROUP;
 
 	private ViewElement label, control;
+	private FormLayout formLayout;
 
 	public FormGroupElement() {
 		super( ELEMENT_TYPE );
@@ -47,5 +48,13 @@ public class FormGroupElement extends NodeViewElementSupport
 
 	public void setControl( ViewElement control ) {
 		this.control = control;
+	}
+
+	public FormLayout getFormLayout() {
+		return formLayout;
+	}
+
+	public void setFormLayout( FormLayout formLayout ) {
+		this.formLayout = formLayout;
 	}
 }
