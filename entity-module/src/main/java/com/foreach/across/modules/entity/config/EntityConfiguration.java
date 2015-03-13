@@ -1,8 +1,8 @@
 package com.foreach.across.modules.entity.config;
 
+import com.foreach.across.modules.entity.business.EntityWrapper;
 import com.foreach.across.modules.entity.generators.EntityIdGenerator;
 import com.foreach.across.modules.entity.generators.EntityLabelGenerator;
-import com.foreach.across.modules.entity.business.EntityWrapper;
 import com.foreach.across.modules.entity.generators.id.DefaultIdGenerator;
 import com.foreach.across.modules.entity.generators.label.ToStringLabelGenerator;
 import com.foreach.across.modules.hibernate.repositories.BasicRepository;

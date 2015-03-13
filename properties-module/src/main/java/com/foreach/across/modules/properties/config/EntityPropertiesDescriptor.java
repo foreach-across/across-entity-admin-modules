@@ -16,8 +16,8 @@
 package com.foreach.across.modules.properties.config;
 
 import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
-import com.foreach.across.modules.properties.services.EntityPropertiesServiceBase;
 import com.foreach.across.modules.properties.repositories.PropertyTrackingRepository;
+import com.foreach.across.modules.properties.services.EntityPropertiesServiceBase;
 import org.springframework.core.convert.ConversionService;
 
 import javax.sql.DataSource;

@@ -17,29 +17,39 @@ package com.foreach.across.modules.debugweb;
 
 import com.foreach.across.core.AcrossModuleSettings;
 import com.foreach.across.core.AcrossModuleSettingsRegistry;
-import com.foreach.across.modules.debugweb.servlet.logging.RequestResponseLogConfiguration;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Arne Vandamme
  */
 public class DebugWebModuleSettings extends AcrossModuleSettings
 {
-	public static final String REQUEST_RESPONSE_LOG_ENABLED = "debugWeb.log.requestResponse.enabled";
-	public static final String REQUEST_RESPONSE_LOG_PAUSED = "debugWeb.log.requestResponse.paused";
-	public static final String REQUEST_RESPONSE_LOG_CONFIGURATION = "debugWeb.log.requestResponse.configuration";
+	public static final String DASHBOARD_PATH = "debugWeb.dashboard";
+
+	private String dashboardPath = null;
 
 	@Override
 	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
-		registry.register( REQUEST_RESPONSE_LOG_ENABLED, Boolean.class, false,
-		                   "Should request/response details be logged." );
-		registry.register( REQUEST_RESPONSE_LOG_CONFIGURATION, RequestResponseLogConfiguration.class,
-		                   new RequestResponseLogConfiguration(),
-		                   "Configuration settings for request/response details log." );
-		registry.register( REQUEST_RESPONSE_LOG_PAUSED, Boolean.class, false,
-		                   "If enabled, should this logger be paused or not." );
+		registry.register( DASHBOARD_PATH, String.class, null,
+		                   "Relative path (within debug web) for the landing page of debug web." );
 	}
 
-	public boolean isRequestResponseLogEnabled() {
-		return getProperty( REQUEST_RESPONSE_LOG_ENABLED, Boolean.class );
+	/**
+	 * Allows changing the debug web dashboard path at runtime.
+	 *
+	 * @param dashboardPath Path within the debug web context to the dashboard.
+	 */
+	public void setDashboardPath( String dashboardPath ) {
+		this.dashboardPath = dashboardPath;
+	}
+
+	public String getDashboardPath() {
+		if ( dashboardPath == null ) {
+			String path = getProperty( DASHBOARD_PATH );
+
+			return StringUtils.isEmpty( path ) ? "/" : path;
+		}
+
+		return dashboardPath;
 	}
 }
