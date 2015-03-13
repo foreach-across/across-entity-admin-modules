@@ -36,7 +36,7 @@ public class EntityFormFactory
 					ResolvableType type = descriptor.getPropertyResolvableType();
 
 					if ( type.hasGenerics() ) {
-						Class itemType = type.getGeneric( 0 ).getRawClass();
+						Class itemType = type.getGeneric( 0 ).resolve();
 
 						Collection<?> possibleValues = Collections.emptyList();
 
@@ -94,7 +94,7 @@ public class EntityFormFactory
 					ResolvableType type = ResolvableType.forMethodParameter( descriptor.getWriteMethod(), 0 );
 
 					if ( type.hasGenerics() ) {
-						Class itemType = type.getGeneric( 0 ).getRawClass();
+						Class itemType = type.getGeneric( 0 ).resolve();
 
 						Collection<?> possibleValues = Collections.emptyList();
 
