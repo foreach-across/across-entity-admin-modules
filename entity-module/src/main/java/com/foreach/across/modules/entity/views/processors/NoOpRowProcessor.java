@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.spring.security.acl.services;
+package com.foreach.across.modules.entity.views.processors;
 
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Sid;
-
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 /**
- * @author Arne Vandamme
+ * @author niels
+ * @since 6/02/2015
  */
-public interface SecurityPrincipalAclService extends MutableAclService
+@Deprecated
+public class NoOpRowProcessor<T> implements RowProcessor<T>
 {
-	List<ObjectIdentity> findObjectIdentitiesWithAclForSid( Sid sid );
-
-	Collection<Class<?>> getRegisteredAclClasses();
+	@Override
+	public Map<String, String> attributes( T entity ) {
+		return null;
+	}
 }

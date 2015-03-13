@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.test.modules.spring.security.acl;
+package com.foreach.across.modules.entity.views.processors;
 
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+import com.foreach.across.modules.entity.controllers.EntityViewCommand;
+import com.foreach.across.modules.entity.views.ViewCreationContext;
+import org.springframework.validation.DataBinder;
 
 /**
  * @author Arne Vandamme
  */
-public class TestSpringSecurityAclModuleConventions extends AbstractAcrossModuleConventionsTest
+public interface ViewDataBinderProcessor<V extends ViewCreationContext>
 {
-	@Override
-	protected boolean hasSettings() {
-		return false;
-	}
-
-	@Override
-	protected AcrossModule createModule() {
-		return new SpringSecurityAclModule();
-	}
+	void prepareDataBinder( String viewName, V creationContext, EntityViewCommand command, DataBinder dataBinder );
 }
