@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.properties.business;
 
-import com.foreach.common.spring.util.DirectPropertiesSource;
+import com.foreach.common.spring.properties.support.DirectPropertiesSource;
 
 import java.util.Map;
 

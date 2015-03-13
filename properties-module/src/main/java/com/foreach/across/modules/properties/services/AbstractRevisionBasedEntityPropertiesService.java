@@ -20,8 +20,7 @@ import com.foreach.across.modules.properties.business.EntityProperties;
 import com.foreach.across.modules.properties.business.StringPropertiesSource;
 import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
 import com.foreach.across.modules.properties.repositories.RevisionBasedEntityPropertiesRepository;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
-import org.springframework.core.convert.ConversionService;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -55,7 +54,6 @@ public abstract class AbstractRevisionBasedEntityPropertiesService<T extends Ent
 
 		return createEntityProperties( entityId,
 		                               entityPropertiesRegistry.getPropertyTypeRegistry(),
-		                               entityPropertiesRegistry.getConversionService(),
 		                               source );
 	}
 
@@ -114,7 +112,6 @@ public abstract class AbstractRevisionBasedEntityPropertiesService<T extends Ent
 
 		return createEntityProperties( entityId,
 		                               entityPropertiesRegistry.getPropertyTypeRegistry(),
-		                               entityPropertiesRegistry.getConversionService(),
 		                               source );
 	}
 
@@ -125,13 +122,11 @@ public abstract class AbstractRevisionBasedEntityPropertiesService<T extends Ent
 	public T createProperties( U entityId ) {
 		return createEntityProperties( entityId,
 		                               entityPropertiesRegistry.getPropertyTypeRegistry(),
-		                               entityPropertiesRegistry.getConversionService(),
 		                               new StringPropertiesSource( new HashMap<String,String>() )
 		                               );
 	}
 
 	protected abstract T createEntityProperties( U entityId,
 	                                             PropertyTypeRegistry<String> propertyTypeRegistry,
-	                                             ConversionService conversionService,
 	                                             StringPropertiesSource source );
 }

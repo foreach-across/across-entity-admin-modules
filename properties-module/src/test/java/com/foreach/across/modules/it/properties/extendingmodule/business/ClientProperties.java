@@ -17,8 +17,7 @@ package com.foreach.across.modules.it.properties.extendingmodule.business;
 
 import com.foreach.across.modules.properties.business.EntityProperties;
 import com.foreach.across.modules.properties.business.StringPropertiesSource;
-import com.foreach.common.spring.util.PropertyTypeRegistry;
-import org.springframework.core.convert.ConversionService;
+import com.foreach.common.spring.properties.PropertyTypeRegistry;
 
 /**
  * Custom client properties (where client is also a user but the property collection is different).
@@ -32,9 +31,8 @@ public class ClientProperties extends EntityProperties<Long>
 	public ClientProperties(
 			long userId,
 			PropertyTypeRegistry<String> propertyTypeRegistry,
-			ConversionService conversionService,
 			StringPropertiesSource source ) {
-		super( propertyTypeRegistry, conversionService, source );
+		super( propertyTypeRegistry, source );
 
 		this.userId = userId;
 	}

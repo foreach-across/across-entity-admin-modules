@@ -22,7 +22,6 @@ import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.database.HasSchemaConfiguration;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
-import com.foreach.across.modules.properties.repositories.EntityPropertiesRepository;
 import com.foreach.across.modules.properties.repositories.PropertyTrackingRepository;
 import com.foreach.across.modules.properties.services.EntityPropertiesServiceBase;
 import org.springframework.beans.factory.annotation.Autowired;

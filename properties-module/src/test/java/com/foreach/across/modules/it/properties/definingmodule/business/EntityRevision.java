@@ -15,8 +15,6 @@
  */
 package com.foreach.across.modules.it.properties.definingmodule.business;
 
-import com.foreach.across.core.revision.*;
-
 /**
  * @author Arne Vandamme
  */
