@@ -185,6 +185,21 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 
 		EntityMessages messages = view.getEntityMessages();
 
+		/*
+		bootstrapUi.buttons()
+		.add(
+			bootstrapUi.button()
+				.name("btn-create").link( "url" ).label( messages.createAction() )
+			)
+
+		.add(
+		    bootstrapUi.link().name("btn-edit").icon( Glyphicon.EDIT ).title( messages.updateAction() )
+		)
+		.add(
+			bootstrapUi.link().name("btn-delete").icon( Glyphicon.DELETE ).title( messages.deleteAction() )
+		)
+
+		 */
 		ButtonViewElement create = new ButtonViewElement();
 		create.setName( "btn-create" );
 		create.setElementType( CommonViewElements.LINK_BUTTON );
