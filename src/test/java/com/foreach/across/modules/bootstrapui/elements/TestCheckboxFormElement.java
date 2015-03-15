@@ -62,7 +62,7 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox'><label>" +
+				"<div class='checkbox disabled'><label>" +
 						"<input type='checkbox' value='on' disabled='disabled' />" +
 						"</label></div>"
 		);
