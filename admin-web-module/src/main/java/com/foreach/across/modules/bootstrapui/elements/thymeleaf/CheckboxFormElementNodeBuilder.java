@@ -37,6 +37,10 @@ public class CheckboxFormElementNodeBuilder extends FormControlElementBuilderSup
 		Element wrapper = new Element( "div" );
 		wrapper.setAttribute( "class", "checkbox" );
 
+		if ( control.isDisabled() ) {
+			wrapper.setAttribute( "class", wrapper.getAttributeValue( "class" ) + " disabled" );
+		}
+
 		Element label = new Element( "label" );
 		Element checkbox = new Element( "input" );
 		checkbox.setAttribute( "type", "checkbox" );
