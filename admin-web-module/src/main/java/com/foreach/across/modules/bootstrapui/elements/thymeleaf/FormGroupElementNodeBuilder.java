@@ -46,7 +46,7 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 			Element labelElement = labelElement( labelNodes );
 
 			if ( labelElement != null ) {
-				if ( layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
+				if ( layout != null && layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
 					labelElement.setAttribute( "class", "sr-only" );
 				}
 			}
@@ -60,7 +60,8 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 		if ( control != null ) {
 			List<Node> controlNodes = viewElementNodeFactory.buildNodes( control, arguments );
 
-			if ( control instanceof TextboxFormElement && layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
+			if ( control instanceof TextboxFormElement && layout != null
+					&& layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
 				Element controlElement = controlElement( controlNodes );
 
 				if ( controlElement != null && label instanceof LabelFormElement ) {
