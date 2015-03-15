@@ -37,6 +37,10 @@ public class RadioFormElementNodeBuilder extends FormControlElementBuilderSuppor
 		Element wrapper = new Element( "div" );
 		wrapper.setAttribute( "class", "radio" );
 
+		if ( control.isDisabled() ) {
+			wrapper.setAttribute( "class", wrapper.getAttributeValue( "class" ) + " disabled" );
+		}
+
 		Element label = new Element( "label" );
 		Element checkbox = new Element( "input" );
 		checkbox.setAttribute( "type", "radio" );
