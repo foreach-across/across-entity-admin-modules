@@ -148,4 +148,20 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		button.setType( ButtonViewElement.Type.LINK );
 		renderAndExpect( button, "<a class='btn btn-default disabled' href='#' role='button'>disabled button</a>" );
 	}
+
+	@Test
+	public void url() {
+		ButtonViewElement button = new ButtonViewElement();
+		button.setText( "click me" );
+		button.setUrl( "http://go-somewhere.com" );
+
+		renderAndExpect(
+				button,
+				"<button type='button' data-url='http://go-somewhere.com' class='btn btn-default'>click me</button>"
+		);
+
+		button.setType( ButtonViewElement.Type.LINK );
+		renderAndExpect( button,
+		                 "<a class='btn btn-default' href='http://go-somewhere.com' role='button'>click me</a>" );
+	}
 }
