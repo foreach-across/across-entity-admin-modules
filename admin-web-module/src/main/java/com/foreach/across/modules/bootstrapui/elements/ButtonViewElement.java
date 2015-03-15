@@ -44,7 +44,7 @@ public class ButtonViewElement extends NodeViewElementSupport
 
 	public static final String ELEMENT_TYPE = BootstrapUiElements.BUTTON;
 
-	private String text;
+	private String text, url = "#";
 	private Style style = Style.Button.DEFAULT;
 	private Type type = Type.BUTTON;
 	private State state;
@@ -93,5 +93,13 @@ public class ButtonViewElement extends NodeViewElementSupport
 
 	public void setSize( Size size ) {
 		this.size = size;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl( String url ) {
+		this.url = url;
 	}
 }
