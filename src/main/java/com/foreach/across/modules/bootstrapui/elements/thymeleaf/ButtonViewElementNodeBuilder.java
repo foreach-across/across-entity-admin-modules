@@ -18,22 +18,19 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Size;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
-import com.foreach.across.modules.web.ui.thymeleaf.ViewElementNodeBuilder;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
+import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Arne Vandamme
  */
-public class ButtonViewElementNodeBuilder implements ViewElementNodeBuilder<ButtonViewElement>
+public class ButtonViewElementNodeBuilder extends NestableNodeBuilderSupport<ButtonViewElement>
 {
 	@Override
-	public List<Node> buildNodes( ButtonViewElement button,
+	protected Element createNode( ButtonViewElement button,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
 		Element node = basicNode( button );
@@ -42,7 +39,14 @@ public class ButtonViewElementNodeBuilder implements ViewElementNodeBuilder<Butt
 		size( button, node );
 		state( button, node );
 
-		return Collections.singletonList( (Node) node );
+		if ( button.getType() == ButtonViewElement.Type.LINK ) {
+			attribute( node, "href", button.getUrl() );
+		}
+		else if ( !StringUtils.equals( "#", button.getUrl() ) ) {
+			attribute( node, "data-url", button.getUrl() );
+		}
+
+		return node;
 	}
 
 	private void style( ButtonViewElement button, Element node ) {
@@ -104,7 +108,6 @@ public class ButtonViewElementNodeBuilder implements ViewElementNodeBuilder<Butt
 				node.setAttribute( "type", "button" );
 				break;
 			case LINK:
-				node.setAttribute( "href", "#" );
 				node.setAttribute( "role", "button" );
 				break;
 		}
