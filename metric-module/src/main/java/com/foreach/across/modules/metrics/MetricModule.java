@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity;
+package com.foreach.across.modules.metrics;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.debugweb.DebugWebModule;
 
-@AcrossDepends(
-		optional = { "AcrossWebModule", "AdminWebModule" }
-)
-public class EntityModule extends AcrossModule
+/**
+ * @author Marc Vanbrabant
+ */
+@AcrossDepends( optional = DebugWebModule.NAME )
+public class MetricModule extends AcrossModule
 {
-	public static final String VALIDATOR = "entityValidator";
-
-	public static final String NAME = "EntityModule";
-	public static final String RESOURCES = "entity";
+	public static final String NAME = "MetricModule";
+	public static final String RESOURCES = "metrics";
 
 	@Override
 	public String getName() {
@@ -34,12 +34,12 @@ public class EntityModule extends AcrossModule
 	}
 
 	@Override
-	public String getDescription() {
-		return "Provide entity management functionality.";
+	public String getResourcesKey() {
+		return RESOURCES;
 	}
 
 	@Override
-	public String getResourcesKey() {
-		return RESOURCES;
+	public String getDescription() {
+		return "Provides metrics.";
 	}
 }

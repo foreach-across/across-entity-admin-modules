@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
 <!--
   Copyright 2014 the original author or authors
 
@@ -14,6 +14,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<configuration>
-	<include resource="logback-across-test.xml"/>
-</configuration>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>List metrics</title>
+</head>
+<body th:fragment="content">
+<div class="row">
+	<h3>Metrics detail</h3>
+
+    <div class="row" th:each="metric : ${metrics}">
+        <div th:replace="th/across :: table (${metric})"></div>
+    </div>
+</div>
+</body>
+</html>
