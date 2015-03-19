@@ -146,11 +146,13 @@
 					       th:id="${#ids.seq(element.name)}" type="text" th:name="${element.name}"
 					       class="form-control" th:value="${element.print(entity)}"
 					       th:attr="maxlength=${element.maxLength}" em:dependencies="${element.dependencies}"
+					       em:attributes="${element.attributes}"
 							/>
 					<textarea th:if="${element.multiLine}" class="form-control"
 					          th:id="${#ids.seq(element.name)}"
 					          th:name="${element.name}"
 					          th:text="${element.print(entity)}"
+					          em:attributes="${element.attributes}"
 					          th:attr="maxlength=${element.maxLength}"/>
 				</div>
 				<!--/* date */-->
