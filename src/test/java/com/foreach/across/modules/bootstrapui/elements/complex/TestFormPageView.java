@@ -46,27 +46,20 @@ public class TestFormPageView extends AbstractBootstrapViewElementTest
 		BootstrapUiFactory bootstrapUi = new BootstrapUiFactoryImpl();
 
 		FormViewElementBuilder formBuilder = bootstrapUi
-				.form();
-
-		/*
-		FormViewElementBuilder formBuilder = bootstrapUi
 				.form()
 				.add(
 						bootstrapUi.formGroup(
-								bootstrapUi.label( "Name *" )
+								bootstrapUi.label( "Name *" ),
 								bootstrapUi.textbox().text( "John Doe" )
 						)
 				)
 				.add(
 						bootstrapUi.formGroup()
 						           .add(
-								           bootstrapUi.button().submit().style( Style.Button.PRIMARY ).text("Save"),
+								           bootstrapUi.button().submit().style( Style.Button.PRIMARY ).text( "Save" ),
 								           bootstrapUi.button().link( "/goback" ).text( "Cancel" )
 						           )
 				);
-
-
-		*/
 
 		verify( formBuilder.build( null ) );
 	}
