@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
  */
 public class ButtonViewElement extends NodeViewElementSupport
 {
-	public static enum Type
+	public enum Type
 	{
 		BUTTON,
 		BUTTON_SUBMIT,
@@ -36,7 +36,7 @@ public class ButtonViewElement extends NodeViewElementSupport
 		LINK
 	}
 
-	public static enum State
+	public enum State
 	{
 		ACTIVE,
 		DISABLED
