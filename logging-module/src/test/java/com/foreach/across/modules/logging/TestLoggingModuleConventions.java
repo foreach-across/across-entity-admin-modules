@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.support;
+package com.foreach.across.modules.logging;
 
-/**
- * Single interface providing fetching a value from an entity
- * and printing it to a String if required.
- *
- * @author Arne Vandamme
- */
-public interface ValuePrinter<T> extends ValueFetcher<T>
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+
+public class TestLoggingModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-	/**
-	 * Print the object of type T for display.
-	 *
-	 * @param object the instance to print
-	 * @return the printed text string
-	 */
-	String print( T object );
+	@Override
+	protected boolean hasSettings() {
+		return true;
+	}
+
+	@Override
+	protected AcrossModule createModule() {
+		return new LoggingModule();
+	}
 }
