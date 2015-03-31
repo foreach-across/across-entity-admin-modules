@@ -26,6 +26,8 @@ import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
@@ -42,7 +44,9 @@ public class MenuEventsHandler
 		builder.item( "/entities", "Entity management" );
 
 		for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
-			if ( !entityConfiguration.isHidden() ) {
+			AllowableActions allowableActions = entityConfiguration.getAllowableActions();
+
+			if ( !entityConfiguration.isHidden() && allowableActions.contains( AllowableAction.READ ) ) {
 				EntityMessageCodeResolver messageCodeResolver = entityConfiguration.getEntityMessageCodeResolver();
 				EntityMessages messages = new EntityMessages( messageCodeResolver );
 				EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
@@ -57,12 +61,14 @@ public class MenuEventsHandler
 
 				builder.item( group + "/" + entityConfiguration.getName(),
 				              messageCodeResolver.getNameSingular(),
-				              linkBuilder.overview() )
-				       .and()
-				       .item( group + "/" + entityConfiguration.getName() + "/create",
-				              messages.createAction(),
-				              linkBuilder.create()
-				       );
+				              linkBuilder.overview() );
+
+				if ( allowableActions.contains( AllowableAction.CREATE ) ) {
+					builder.item( group + "/" + entityConfiguration.getName() + "/create",
+					              messages.createAction(),
+					              linkBuilder.create()
+					);
+				}
 			}
 		}
 	}

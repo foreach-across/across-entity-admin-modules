@@ -15,11 +15,14 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
+import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.support.AttributeSupport;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
+import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
@@ -42,6 +45,10 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	private final Map<String, EntityAssociation> entityAssociations = new HashMap<>();
 
 	private EntityMessageCodeResolver entityMessageCodeResolver;
+	private EntityConfigurationAllowableActionsBuilder allowableActionsBuilder
+			= new FixedEntityAllowableActionsBuilder(
+			FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS
+	);
 
 	private boolean hidden;
 	private String displayName;
@@ -176,5 +183,26 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	@Override
 	public MutableEntityAssociation association( String name ) {
 		return (MutableEntityAssociation) entityAssociations.get( name );
+	}
+
+	@Override
+	public EntityConfigurationAllowableActionsBuilder getAllowableActionsBuilder() {
+		return allowableActionsBuilder;
+	}
+
+	@Override
+	public void setAllowableActionsBuilder( EntityConfigurationAllowableActionsBuilder allowableActionsBuilder ) {
+		Assert.notNull( allowableActionsBuilder );
+		this.allowableActionsBuilder = allowableActionsBuilder;
+	}
+
+	@Override
+	public AllowableActions getAllowableActions() {
+		return allowableActionsBuilder.getAllowableActions( this );
+	}
+
+	@Override
+	public AllowableActions getAllowableActions( T entity ) {
+		return allowableActionsBuilder.getAllowableActions( this, entity );
 	}
 }

@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.registry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.support.ReadableAttributes;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.spring.security.actions.AllowableActions;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -52,4 +53,15 @@ public interface EntityConfiguration<T> extends ReadableAttributes, EntityViewRe
 	 * @return True if this configuration should not be displayed in UI implementations.
 	 */
 	boolean isHidden();
+
+	/**
+	 * @return The set of actions allowed on all entities of this EntityConfiguration.
+	 */
+	AllowableActions getAllowableActions();
+
+	/**
+	 * @param entity for which to fetch the allowed actions
+	 * @return The set of actions allowes on the specific entity.
+	 */
+	AllowableActions getAllowableActions( T entity );
 }

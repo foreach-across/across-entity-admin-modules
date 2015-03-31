@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.support.WritableAttributes;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -42,4 +43,8 @@ public interface MutableEntityConfiguration<T> extends EntityConfiguration<T>, W
 	MutableEntityAssociation association( String name );
 
 	MutableEntityAssociation createAssociation( String name );
+
+	EntityConfigurationAllowableActionsBuilder getAllowableActionsBuilder();
+
+	void setAllowableActionsBuilder( EntityConfigurationAllowableActionsBuilder allowableActionsBuilder );
 }

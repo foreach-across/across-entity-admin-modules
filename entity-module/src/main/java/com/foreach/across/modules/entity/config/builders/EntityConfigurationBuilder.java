@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.config.builders.configuration.FormViewBuilder;
 import com.foreach.across.modules.entity.config.builders.configuration.ListViewBuilder;
@@ -27,6 +28,7 @@ import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -102,6 +104,8 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 	private PropertyRegistryBuilder propertyRegistryBuilder;
 	private final Map<String, EntityAssociationBuilder> associations = new HashMap<>();
 
+	private EntityConfigurationAllowableActionsBuilder allowableActionsBuilder;
+
 	private Boolean hidden;
 
 	EntityConfigurationBuilder( Class<T> entityType, EntitiesConfigurationBuilder parent ) {
@@ -145,6 +149,18 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 	 */
 	public EntityConfigurationBuilder<T> hidden( boolean hidden ) {
 		this.hidden = hidden;
+		return this;
+	}
+
+	/**
+	 * Configure the {@link com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder} to be used.
+	 *
+	 * @param allowableActionsBuilder instance
+	 * @return current builder
+	 */
+	public EntityConfigurationBuilder<T> allowableActionsBuilder( EntityConfigurationAllowableActionsBuilder allowableActionsBuilder ) {
+		Assert.notNull( allowableActionsBuilder );
+		this.allowableActionsBuilder = allowableActionsBuilder;
 		return this;
 	}
 
@@ -211,6 +227,10 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 
 		if ( hidden != null ) {
 			configuration.setHidden( hidden );
+		}
+
+		if ( allowableActionsBuilder != null ) {
+			configuration.setAllowableActionsBuilder( allowableActionsBuilder );
 		}
 
 		applyAttributes( configuration );
