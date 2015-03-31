@@ -24,6 +24,8 @@ import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.web.WebViewCreationContextImpl;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -58,6 +60,7 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 	@Autowired
 	private ViewRequestValidator viewRequestValidator;
 
+	@SuppressWarnings( "unchecked" )
 	protected Object buildViewRequest(
 			EntityConfiguration entityConfiguration,
 			boolean includeEntity,
@@ -98,6 +101,8 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 			throw new RuntimeException( "Entity must be included if dto is requested." );
 		}
 
+		AllowableActions allowableActions;
+
 		if ( includeEntity ) {
 			if ( entityId != null ) {
 				if ( includeDto ) {
@@ -110,6 +115,16 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 			else if ( includeDto ) {
 				viewRequest.setEntity( buildNewEntityDto( entityConfiguration, model ) );
 			}
+
+			allowableActions = entityConfiguration.getAllowableActions( viewRequest.getEntity() );
+		}
+		else {
+			allowableActions = entityConfiguration.getAllowableActions();
+		}
+
+		if ( !isAllowedAccess( entityConfiguration, allowableActions ) ) {
+			LOG.warn( "Access denied because the security check on the AllowableActions returned false." );
+			throw new AccessDeniedException( "Not allowed to manage this entity type." );
 		}
 
 		viewRequest.prepareModelAndCommand( model );
@@ -119,6 +134,10 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 		initViewFactoryBinder( request );
 
 		return viewRequest;
+	}
+
+	protected boolean isAllowedAccess( EntityConfiguration entityConfiguration, AllowableActions allowableActions ) {
+		return allowableActions.contains( AllowableAction.READ );
 	}
 
 	protected boolean isDefaultView( String viewName ) {

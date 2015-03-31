@@ -27,6 +27,8 @@ import com.foreach.across.modules.entity.views.elements.table.TableViewElement;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.resource.WebResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -180,39 +182,49 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			}
 		}
 
-		ContainerViewElement buttons = new ContainerViewElement( "buttons" );
-		buttons.setElementType( "paragraph" );
-
+		AllowableActions allowableActions = viewCreationContext.getEntityConfiguration().getAllowableActions();
 		EntityMessages messages = view.getEntityMessages();
 
-		ButtonViewElement create = new ButtonViewElement();
-		create.setName( "btn-create" );
-		create.setElementType( CommonViewElements.LINK_BUTTON );
-		create.setLink( view.getEntityLinkBuilder().create() );
-		create.setLabel( messages.createAction() );
-		buttons.add( create );
+		ContainerViewElement buttons = null;
 
-		ContainerViewElement itemButtons = new ContainerViewElement( "itemButtons" );
+		if ( allowableActions.contains( AllowableAction.CREATE ) ) {
+			buttons = new ContainerViewElement( "buttons" );
+			buttons.setElementType( "paragraph" );
 
-		ButtonViewElement edit = new ButtonViewElement()
-		{
-			@Override
-			public String print( Object entity ) {
-				return view.getEntityLinkBuilder().update( entity );
-			}
-		};
-		edit.setName( "btn-edit" );
-		edit.setElementType( CommonViewElements.LINK_BUTTON );
-		edit.setStyle( ButtonViewElement.Style.ICON );
-		edit.setIcon( "edit" );
-		edit.setLabel( messages.updateAction() );
+			ButtonViewElement create = new ButtonViewElement();
+			create.setName( "btn-create" );
+			create.setElementType( CommonViewElements.LINK_BUTTON );
+			create.setLink( view.getEntityLinkBuilder().create() );
+			create.setLabel( messages.createAction() );
+			buttons.add( create );
+		}
 
-		itemButtons.add( edit );
+		if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
+			ContainerViewElement itemButtons = new ContainerViewElement( "itemButtons" );
 
-		( (ViewElements) table.getColumns() ).add( itemButtons );
+			ButtonViewElement edit = new ButtonViewElement()
+			{
+				@Override
+				public String print( Object entity ) {
+					return view.getEntityLinkBuilder().update( entity );
+				}
+			};
+			edit.setName( "btn-edit" );
+			edit.setElementType( CommonViewElements.LINK_BUTTON );
+			edit.setStyle( ButtonViewElement.Style.ICON );
+			edit.setIcon( "edit" );
+			edit.setLabel( messages.updateAction() );
+
+			itemButtons.add( edit );
+
+			( (ViewElements) table.getColumns() ).add( itemButtons );
+		}
 
 		view.getEntityProperties().addFirst( table );
-		view.getEntityProperties().addFirst( buttons );
+
+		if ( buttons != null ) {
+			view.getEntityProperties().addFirst( buttons );
+		}
 	}
 
 	private Pageable buildPageable( EntityListView view ) {

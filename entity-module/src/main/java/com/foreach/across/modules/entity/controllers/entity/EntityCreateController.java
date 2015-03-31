@@ -24,6 +24,8 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
@@ -57,6 +59,11 @@ public class EntityCreateController extends EntityControllerSupport
 	@Override
 	protected String getDefaultViewName() {
 		return EntityFormView.CREATE_VIEW_NAME;
+	}
+
+	@Override
+	protected boolean isAllowedAccess( EntityConfiguration entityConfiguration, AllowableActions allowableActions ) {
+		return allowableActions.contains( AllowableAction.CREATE );
 	}
 
 	@ModelAttribute(VIEW_REQUEST)
