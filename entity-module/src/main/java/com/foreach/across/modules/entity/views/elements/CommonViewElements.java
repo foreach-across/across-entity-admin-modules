@@ -13,22 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.bootstrapui.elements;
-
-import org.junit.Test;
+package com.foreach.across.modules.entity.views.elements;
 
 /**
  * @author Arne Vandamme
  */
-public class TestStaticFormElement extends AbstractBootstrapViewElementTest
+public interface CommonViewElements
 {
-	@Test
-	public void simple() {
-		StaticFormElement box = new StaticFormElement();
-		box.setText( "somedude@example.com" );
+	String CONTAINER = "container";
 
-		renderAndExpect(
-				box,
-				"<p class='form-control-static'>somedude@example.com</p>"
-		);
-	}}
+	String TEXTBOX = "textbox";
+	String HIDDEN = "hidden";
+	String SELECT = "select";
+	String RADIO = "radio";
+	String MULTI_CHECKBOX = "multi-checkbox";
+	String CHECKBOX = "checkbox";
+	String DATE = "date";
+	String FIELDSET = "fieldset";
+	String TEXT = "text";
+
+	String BUTTON = "button";
+	String SUBMIT_BUTTON = "submit";
+	String LINK_BUTTON = "link-button";
+	String LINK = "link";
+}
