@@ -32,5 +32,6 @@ public abstract class FormControlElementBuilderSupport<T extends FormControlElem
 
 		attribute( node, "disabled", control.isDisabled() );
 		attribute( node, "readonly", control.isReadonly() );
+		attribute( node, "required", control.isRequired() );
 	}
 }

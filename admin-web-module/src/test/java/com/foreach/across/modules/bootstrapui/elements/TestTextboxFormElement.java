@@ -75,7 +75,18 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
-	public void disabled() {
+	public void maxLength() {
+		TextboxFormElement box = new TextboxFormElement();
+		box.setMaxLength( 100 );
+
+		renderAndExpect(
+				box,
+				"<input type='text' class='form-control' maxlength='100' />"
+		);
+	}
+
+	@Test
+	public void disabledReadonlyRequired() {
 		TextboxFormElement box = new TextboxFormElement();
 		box.setDisabled( true );
 
@@ -90,6 +101,13 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				box,
 				"<input type='text' class='form-control' readonly='readonly' />"
+		);
+
+		box.setRequired( true );
+
+		renderAndExpect(
+				box,
+				"<input type='text' class='form-control' readonly='readonly' required='required' />"
 		);
 	}
 }
