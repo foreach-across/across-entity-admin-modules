@@ -69,10 +69,18 @@ public class TextboxFormElement extends FormControlElementSupport
 		public int hashCode() {
 			return name != null ? name.hashCode() : 0;
 		}
+
+		@Override
+		public String toString() {
+			return "Type{" +
+					"name='" + name + '\'' +
+					'}';
+		}
 	}
 
 	private Type type = Type.TEXT;
 	private String placeholder, text;
+	private Integer maxLength;
 
 	public TextboxFormElement() {
 		super( ELEMENT_TYPE );
@@ -100,5 +108,13 @@ public class TextboxFormElement extends FormControlElementSupport
 
 	public void setText( String text ) {
 		this.text = text;
+	}
+
+	public Integer getMaxLength() {
+		return maxLength;
+	}
+
+	public void setMaxLength( Integer maxLength ) {
+		this.maxLength = maxLength;
 	}
 }

@@ -36,6 +36,10 @@ public class TextboxFormElementNodeBuilder extends FormControlElementBuilderSupp
 		attribute( node, "placeholder", control.getPlaceholder() );
 		attribute( node, "value", control.getText() );
 
+		if ( control.getMaxLength() != null ) {
+			attribute( node, "maxlength", control.getMaxLength().toString() );
+		}
+
 		return node;
 	}
 }

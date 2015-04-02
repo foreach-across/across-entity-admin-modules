@@ -1,3 +1,18 @@
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
@@ -18,7 +33,7 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 
 	private TextboxFormElement.Type type;
 	private String placeholder, text;
-	private Integer rows;
+	private Integer rows, maxLength;
 
 	/**
 	 * Will create a textarea element.
@@ -26,7 +41,37 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 	 * @return current builder
 	 */
 	public TextboxFormElementBuilder multiLine() {
-		multiLine = true;
+		return multiLine( true );
+	}
+
+	/**
+	 * Should a textarea element be created.
+	 *
+	 * @param multiLine true if a textarea should be created
+	 * @return current builder
+	 */
+	public TextboxFormElementBuilder multiLine( boolean multiLine ) {
+		this.multiLine = multiLine;
+		return this;
+	}
+
+	/**
+	 * Will create a textarea element with the set number of rows.
+	 *
+	 * @return current builder
+	 */
+	public TextboxFormElementBuilder multiLine( int rows ) {
+		return rows( rows );
+	}
+
+	/**
+	 * Set the maxlength attribute. Usually only applies to non-textarea elements.
+	 *
+	 * @param maxLength maximum allowed length of the value
+	 * @return current builder
+	 */
+	public TextboxFormElementBuilder maxLength( Integer maxLength ) {
+		this.maxLength = maxLength;
 		return this;
 	}
 
@@ -37,15 +82,6 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 	 */
 	public TextboxFormElementBuilder password() {
 		return type( TextboxFormElement.Type.PASSWORD );
-	}
-
-	/**
-	 * Will create a textarea element with the set number of rows.
-	 *
-	 * @return current builder
-	 */
-	public TextboxFormElementBuilder multiLine( int rows ) {
-		return rows( rows );
 	}
 
 	public TextboxFormElementBuilder type( TextboxFormElement.Type type ) {
@@ -98,6 +134,16 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 	@Override
 	public TextboxFormElementBuilder readonly( boolean readonly ) {
 		return super.readonly( readonly );
+	}
+
+	@Override
+	public TextboxFormElementBuilder required() {
+		return super.required();
+	}
+
+	@Override
+	public TextboxFormElementBuilder required( boolean required ) {
+		return super.required( required );
 	}
 
 	@Override
@@ -174,6 +220,9 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 		}
 		if ( placeholder != null ) {
 			textbox.setPlaceholder( placeholder );
+		}
+		if ( maxLength != null ) {
+			textbox.setMaxLength( maxLength );
 		}
 
 		return apply( textbox, builderContext );

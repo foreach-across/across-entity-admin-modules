@@ -22,15 +22,15 @@ import com.foreach.across.modules.web.ui.StandardViewElements;
  */
 public interface BootstrapUiElements extends StandardViewElements
 {
-	public static final String ICON = "bootstrapIcon";
-	public static final String BUTTON = "bootstrapButton";
-	public static final String TEXTBOX = "bootstrapTextbox";
-	public static final String TEXTAREA = "bootstrapTextarea";
-	public static final String FORM = "bootstrapForm";
-	public static final String CHECKBOX = "bootstrapCheckbox";
-	public static final String RADIO = "bootstrapRadio";
-	public static final String SELECT = "bootstrapSelect";
-	public static final String STATIC_CONTROL = "bootstrapStaticControl";
-	public static final String LABEL = "bootstrapLabel";
-	public static final String FORM_GROUP = "bootstrapFormGroup";
+	String ICON = "bootstrapIcon";
+	String BUTTON = "bootstrapButton";
+	String TEXTBOX = "bootstrapTextbox";
+	String TEXTAREA = "bootstrapTextarea";
+	String FORM = "bootstrapForm";
+	String CHECKBOX = "bootstrapCheckbox";
+	String RADIO = "bootstrapRadio";
+	String SELECT = "bootstrapSelect";
+	String STATIC_CONTROL = "bootstrapStaticControl";
+	String LABEL = "bootstrapLabel";
+	String FORM_GROUP = "bootstrapFormGroup";
 }

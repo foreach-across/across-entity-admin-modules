@@ -22,7 +22,7 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
  */
 public abstract class FormControlElementSupport extends NodeViewElementSupport
 {
-	private boolean disabled, readonly;
+	private boolean disabled, readonly, required;
 	private String controlName;
 
 	private boolean htmlIdSpecified;
@@ -45,6 +45,14 @@ public abstract class FormControlElementSupport extends NodeViewElementSupport
 
 	public void setReadonly( boolean readonly ) {
 		this.readonly = readonly;
+	}
+
+	public boolean isRequired() {
+		return required;
+	}
+
+	public void setRequired( boolean required ) {
+		this.required = required;
 	}
 
 	@Override
