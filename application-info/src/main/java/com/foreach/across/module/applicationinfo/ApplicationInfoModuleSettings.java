@@ -43,7 +43,7 @@ public class ApplicationInfoModuleSettings extends AcrossModuleSettings
 			public Date convert( String source ) {
 				try {
 					return DateUtils.parseDate( source,
-					                            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.SSS" );
+					                            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd'T'HH:mm:ss.SSSZ", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" );
 				}
 				catch ( ParseException pe ) {
 					throw new ConversionFailedException(
