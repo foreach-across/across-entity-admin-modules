@@ -21,21 +21,23 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 
 /**
+ * Processor interface for modifying a {@link ViewElementBuilder} that is being created for a particular
+ * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor}.
+ *
  * @author Arne Vandamme
  */
-public interface EntityViewElementBuilderFactory<T extends ViewElementBuilder>
+public interface EntityViewElementBuilderProcessor<T extends ViewElementBuilder>
 {
 	/**
-	 * View element type that this factory supports.  It can create builders for these types.
+	 * Process the builder instance.
 	 *
-	 * @param viewElementType Unique type string.
-	 * @return True if it can create a builder factory for this element type.
+	 * @param propertyDescriptor for which the builder is being created
+	 * @param entityPropertyRegistry that owns the property descriptor
+	 * @param entityConfiguration entity configuration context (can be null)
+	 * @param builder builder instance already created
 	 */
-	boolean supports( String viewElementType );
-
-	T createBuilder(
-			EntityPropertyDescriptor propertyDescriptor,
-			EntityPropertyRegistry entityPropertyRegistry,
-			EntityConfiguration entityConfiguration
-	);
+	void process( EntityPropertyDescriptor propertyDescriptor,
+	              EntityPropertyRegistry entityPropertyRegistry,
+	              EntityConfiguration entityConfiguration,
+	              T builder );
 }

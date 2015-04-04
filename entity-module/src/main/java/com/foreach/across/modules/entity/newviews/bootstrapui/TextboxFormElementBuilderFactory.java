@@ -15,38 +15,44 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
-import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
-import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactory;
+import com.foreach.across.modules.entity.newviews.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.URL;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 
 import javax.validation.constraints.Size;
 import javax.validation.metadata.ConstraintDescriptor;
-import javax.validation.metadata.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.util.Map;
 
 /**
+ * Builds a {@link TextboxFormElement} for a given {@link EntityPropertyDescriptor}.
+ *
  * @author Arne Vandamme
  */
-public class TextboxFormElementBuilderFactory implements EntityViewElementBuilderFactory
+public class TextboxFormElementBuilderFactory extends FormGroupElementBuilderFactorySupport
 {
-	public interface FormGroupElementBuilderFactoryProcessor<T extends ViewElementBuilder>
-	{
-		void enhance( EntityPropertyDescriptor propertyDescriptor,
-		              EntityPropertyRegistry entityPropertyRegistry,
-		              EntityConfiguration entityConfiguration,
-		              FormGroupElementBuilder group,
-		              LabelFormElementBuilder label,
-		              T control );
-	}
+	@Autowired
+	private ConversionService conversionService;
 
 	private int maximumSingleLineLength = 300;
+
+	public TextboxFormElementBuilderFactory() {
+		addProcessor( new TextboxConstraintsProcessor() );
+	}
 
 	public void setMaximumSingleLineLength( int maximumSingleLineLength ) {
 		this.maximumSingleLineLength = maximumSingleLineLength;
@@ -54,110 +60,74 @@ public class TextboxFormElementBuilderFactory implements EntityViewElementBuilde
 
 	@Override
 	public boolean supports( String viewElementType ) {
-		return false;
+		return BootstrapUiElements.TEXTAREA.equals( viewElementType )
+				|| BootstrapUiElements.TEXTBOX.equals( viewElementType );
 	}
 
 	@Override
-	public ViewElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                         EntityPropertyRegistry entityPropertyRegistry,
-	                                         EntityConfiguration entityConfiguration ) {
-		FormGroupElementBuilder group = new FormGroupElementBuilder();
-
-		LabelFormElementBuilder label = new LabelFormElementBuilder()
-				.text( propertyDescriptor.getDisplayName() );
-
-		TextboxFormElementBuilder textbox = new TextboxFormElementBuilder()
+	protected ViewElementBuilder createControlBuilder( EntityPropertyDescriptor propertyDescriptor,
+	                                                   EntityPropertyRegistry entityPropertyRegistry,
+	                                                   EntityConfiguration entityConfiguration ) {
+		return new TextboxFormElementBuilder()
 				.name( propertyDescriptor.getName() )
 				.controlName( propertyDescriptor.getName() )
-				.multiLine( true );
-
-		new TextboxConstraintsHandler()
-				.enhance( propertyDescriptor, entityPropertyRegistry, entityConfiguration, group, label, textbox );
-
-		// required yes/no
-		// fetch label from the message resolver, fetch placeholder from the message resolver
-		// render dependson qualifiers
-
-		return group.label( label ).control( textbox );
-
+				.multiLine( String.class.equals( propertyDescriptor.getPropertyType() ) )
+				.postProcessor( new EntityValueProcessor( conversionService, propertyDescriptor ) );
 	}
 
-	private static class ConstraintsHandlerAdapter<T extends ViewElementBuilder> implements FormGroupElementBuilderFactoryProcessor<T>
+	/**
+	 * Responsible for calculating max length and multi/single line type based on validation constraints.
+	 */
+	private class TextboxConstraintsProcessor extends ValidationConstraintsBuilderProcessor<FormGroupElementBuilder>
 	{
 		@Override
-		public void enhance( EntityPropertyDescriptor propertyDescriptor,
-		                     EntityPropertyRegistry entityPropertyRegistry,
-		                     EntityConfiguration entityConfiguration,
-		                     FormGroupElementBuilder group,
-		                     LabelFormElementBuilder label,
-		                     T control ) {
-			PropertyDescriptor validationDescriptor = propertyDescriptor.getAttribute( PropertyDescriptor.class );
+		protected void handleConstraint( FormGroupElementBuilder builder,
+		                                 Annotation annotation,
+		                                 Map<String, Object> attributes,
+		                                 ConstraintDescriptor constraint ) {
+			TextboxFormElementBuilder textbox = builder.getControl( TextboxFormElementBuilder.class );
 
-			if ( validationDescriptor != null && validationDescriptor.hasConstraints() ) {
-				for ( ConstraintDescriptor constraint : validationDescriptor.getConstraintDescriptors() ) {
-					Annotation annotation = constraint.getAnnotation();
-					Class<? extends Annotation> type = annotation.annotationType();
+			if ( textbox != null ) {
+				if ( isOfType( annotation, Size.class, Length.class ) ) {
+					Integer max = (Integer) attributes.get( "max" );
 
-					handleLabelConstraint( label, type, constraint );
-					handleControlConstraint( control, type, constraint );
-					handleFormGroupConstraint( group, type, constraint );
-
-//					if ( NotBlank.class.equals( type ) ) {
-//						NotBlank notBlank = (NotBlank) annotation;
-//						Class<?>[] groups = notBlank.groups();
-//						//checkValidationGroups( template, groups );
-//					}
-//					else if ( NotNull.class.equals( type ) ) {
-//						NotNull notBlank = (NotNull) annotation;
-//						Class<?>[] groups = notBlank.groups();
-//						//checkValidationGroups( template, groups );
-//					}
-//					else if ( NotEmpty.class.equals( type ) ) {
-//						NotEmpty notBlank = (NotEmpty) annotation;
-//						Class<?>[] groups = notBlank.groups();
-//						//checkValidationGroups( template, groups );
-//					}
-//					else {
-//						//handleConstraint( template, type, constraint );
-//					}
+					if ( max != Integer.MAX_VALUE ) {
+						textbox.maxLength( max );
+						textbox.multiLine( max > maximumSingleLineLength );
+					}
 				}
 			}
 		}
-
-		protected void handleFormGroupConstraint( FormGroupElementBuilder group,
-		                                          Class<? extends Annotation> type,
-		                                          ConstraintDescriptor constraint ) {
-
-		}
-
-		protected void handleLabelConstraint( LabelFormElementBuilder label,
-		                                      Class<? extends Annotation> type,
-		                                      ConstraintDescriptor constraint ) {
-		}
-
-		protected void handleControlConstraint( T control,
-		                                        Class<? extends Annotation> type,
-		                                        ConstraintDescriptor constraint ) {
-		}
 	}
 
-	private class TextboxConstraintsHandler extends ConstraintsHandlerAdapter<TextboxFormElementBuilder>
+	/**
+	 * Responsible for fetching the property value and setting it on the textbox.
+	 */
+	public static class EntityValueProcessor implements ViewElementPostProcessor<TextboxFormElement>
 	{
+		private static final TypeDescriptor STRING_TYPE = TypeDescriptor.valueOf( String.class );
+
+		private final ConversionService conversionService;
+		private final EntityPropertyDescriptor propertyDescriptor;
+
+		public EntityValueProcessor( ConversionService conversionService,
+		                             EntityPropertyDescriptor propertyDescriptor ) {
+			this.conversionService = conversionService;
+			this.propertyDescriptor = propertyDescriptor;
+		}
+
 		@Override
-		protected void handleControlConstraint( TextboxFormElementBuilder control,
-		                                        Class<? extends Annotation> type,
-		                                        ConstraintDescriptor constraint ) {
-			if ( Size.class.equals( type ) || Length.class.equals( type ) ) {
-				Integer max = (Integer) constraint.getAttributes().get( "max" );
+		@SuppressWarnings("unchecked")
+		public void postProcess( ViewElementBuilderContext builderContext, TextboxFormElement textbox ) {
+			Object entity = builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY );
+			ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
 
-				if ( max != Integer.MAX_VALUE ) {
-					control.maxLength( max );
-					control.multiLine( max > maximumSingleLineLength );
-				}
-			}
+			if ( entity != null && valueFetcher != null ) {
+				String text = (String) conversionService.convert( valueFetcher.getValue( entity ),
+				                                                  propertyDescriptor.getPropertyTypeDescriptor(),
+				                                                  STRING_TYPE );
 
-			if ( URL.class.equals( type ) ) {
-				//template.setUrl( true );
+				textbox.setText( text );
 			}
 		}
 	}
