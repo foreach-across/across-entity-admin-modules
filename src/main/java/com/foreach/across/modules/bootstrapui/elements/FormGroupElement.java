@@ -27,6 +27,7 @@ public class FormGroupElement extends NodeViewElementSupport
 
 	private ViewElement label, control;
 	private FormLayout formLayout;
+	private boolean required;
 
 	public FormGroupElement() {
 		super( ELEMENT_TYPE );
@@ -56,5 +57,13 @@ public class FormGroupElement extends NodeViewElementSupport
 
 	public void setFormLayout( FormLayout formLayout ) {
 		this.formLayout = formLayout;
+	}
+
+	public boolean isRequired() {
+		return required;
+	}
+
+	public void setRequired( boolean required ) {
+		this.required = required;
 	}
 }

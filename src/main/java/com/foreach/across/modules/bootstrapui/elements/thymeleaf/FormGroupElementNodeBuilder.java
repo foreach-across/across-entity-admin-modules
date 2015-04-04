@@ -38,6 +38,10 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 		Element node = new Element( "div" );
 		node.setAttribute( "class", "form-group" );
 
+		if ( group.isRequired() ) {
+			attributeAppend( node, "class", "required" );
+		}
+
 		FormLayout layout = group.getFormLayout();
 
 		ViewElement label = group.getLabel();

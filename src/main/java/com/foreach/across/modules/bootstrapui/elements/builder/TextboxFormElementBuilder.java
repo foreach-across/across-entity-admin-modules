@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 
 import java.util.Map;
 
@@ -197,7 +198,12 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 	}
 
 	@Override
-	public TextboxFormElement build( ViewElementBuilderContext builderContext ) {
+	public TextboxFormElementBuilder postProcessor( ViewElementPostProcessor<TextboxFormElement> postProcessor ) {
+		return super.postProcessor( postProcessor );
+	}
+
+	@Override
+	protected TextboxFormElement createElement( ViewElementBuilderContext builderContext ) {
 		TextboxFormElement textbox;
 
 		if ( multiLine ) {

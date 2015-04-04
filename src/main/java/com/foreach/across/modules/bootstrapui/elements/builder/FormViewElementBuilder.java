@@ -4,6 +4,7 @@ import com.foreach.across.modules.bootstrapui.elements.FormViewElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
 
 import java.util.Map;
@@ -61,7 +62,12 @@ public class FormViewElementBuilder extends NodeViewElementSupportBuilder<FormVi
 	}
 
 	@Override
-	public FormViewElement build( ViewElementBuilderContext viewElementBuilderContext ) {
+	public FormViewElementBuilder postProcessor( ViewElementPostProcessor<FormViewElement> postProcessor ) {
+		return super.postProcessor( postProcessor );
+	}
+
+	@Override
+	protected FormViewElement createElement( ViewElementBuilderContext viewElementBuilderContext ) {
 		return apply( new FormViewElement(), viewElementBuilderContext );
 	}
 }
