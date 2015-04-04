@@ -54,6 +54,19 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void requiredGroup() {
+		group.setRequired( true );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group required'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>"
+		);
+	}
+
+	@Test
 	public void withHelpText() {
 		NodeViewElement help = NodeViewElement.forTag( "p" );
 		help.setAttribute( "class", "help-block" );

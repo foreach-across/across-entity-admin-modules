@@ -4,6 +4,7 @@ import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
 
 import java.util.Map;
@@ -63,6 +64,11 @@ public class LabelFormElementBuilder extends NodeViewElementSupportBuilder<Label
 		return super.customTemplate( template );
 	}
 
+	@Override
+	public LabelFormElementBuilder postProcessor( ViewElementPostProcessor<LabelFormElement> postProcessor ) {
+		return super.postProcessor( postProcessor );
+	}
+
 	public LabelFormElementBuilder text( String text ) {
 		this.text = text;
 		return this;
@@ -84,7 +90,7 @@ public class LabelFormElementBuilder extends NodeViewElementSupportBuilder<Label
 	}
 
 	@Override
-	public LabelFormElement build( ViewElementBuilderContext viewElementBuilderContext ) {
+	protected LabelFormElement createElement( ViewElementBuilderContext viewElementBuilderContext ) {
 		LabelFormElement label = new LabelFormElement();
 
 		if ( text != null ) {

@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.FormLayout;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
 
 import java.util.Map;
@@ -28,13 +29,51 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 {
 	private ElementOrBuilder label, control;
 	private FormLayout formLayout;
+	private Boolean required;
+
+	public Boolean isRequired() {
+		return required;
+	}
 
 	public ElementOrBuilder getLabel() {
 		return label;
 	}
 
+	/**
+	 * Gets the label configured on this builder if it is of the target type specified.
+	 * If no label is set or the label is not of the specified type, null will be returned.
+	 *
+	 * @param targetClass target type the label should match
+	 * @param <V>         target type the label should match
+	 * @return label instance or null
+	 */
+	public <V> V getLabel( Class<V> targetClass ) {
+		if ( targetClass.isInstance( label.getSource() ) ) {
+			return (V) label.getSource();
+		}
+
+		return null;
+	}
+
 	public ElementOrBuilder getControl() {
 		return control;
+	}
+
+	/**
+	 * Gets the control configured on this builder if it is of the target type specified.
+	 * If no control is set or the control is not of the specified type, null will be returned.
+	 *
+	 * @param targetClass target type the control should match
+	 * @param <V>         target type the control should match
+	 * @return control instance or null
+	 */
+	@SuppressWarnings("unchecked")
+	public <V> V getControl( Class<V> targetClass ) {
+		if ( targetClass.isInstance( control.getSource() ) ) {
+			return (V) control.getSource();
+		}
+
+		return null;
 	}
 
 	public FormLayout getFormLayout() {
@@ -63,6 +102,15 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 
 	public FormGroupElementBuilder formLayout( FormLayout formLayout ) {
 		this.formLayout = formLayout;
+		return this;
+	}
+
+	public FormGroupElementBuilder required() {
+		return required( true );
+	}
+
+	public FormGroupElementBuilder required( boolean required ) {
+		this.required = required;
 		return this;
 	}
 
@@ -117,8 +165,17 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 	}
 
 	@Override
-	public FormGroupElement build( ViewElementBuilderContext builderContext ) {
+	public FormGroupElementBuilder postProcessor( ViewElementPostProcessor<FormGroupElement> postProcessor ) {
+		return super.postProcessor( postProcessor );
+	}
+
+	@Override
+	protected FormGroupElement createElement( ViewElementBuilderContext builderContext ) {
 		FormGroupElement group = new FormGroupElement();
+
+		if ( required != null ) {
+			group.setRequired( required );
+		}
 
 		if ( label != null ) {
 			group.setLabel( label.get( builderContext ) );

@@ -6,6 +6,7 @@ import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
 
 import java.util.Map;
@@ -135,7 +136,12 @@ public class ButtonViewElementBuilder extends NodeViewElementSupportBuilder<Butt
 	}
 
 	@Override
-	public ButtonViewElement build( ViewElementBuilderContext builderContext ) {
+	public ButtonViewElementBuilder postProcessor( ViewElementPostProcessor<ButtonViewElement> postProcessor ) {
+		return super.postProcessor( postProcessor );
+	}
+
+	@Override
+	protected ButtonViewElement createElement( ViewElementBuilderContext builderContext ) {
 		ButtonViewElement button = new ButtonViewElement();
 
 		if ( text != null ) {
