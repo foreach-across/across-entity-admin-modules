@@ -19,6 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactorySupport;
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -37,22 +38,25 @@ public abstract class FormGroupElementBuilderFactorySupport extends EntityViewEl
 	@Override
 	protected FormGroupElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                        EntityPropertyRegistry entityPropertyRegistry,
-	                                                        EntityConfiguration entityConfiguration ) {
+	                                                        EntityConfiguration entityConfiguration,
+	                                                        ViewElementMode viewElementMode ) {
 		FormGroupElementBuilder group = new FormGroupElementBuilder();
 
 		LabelFormElementBuilder label = new LabelFormElementBuilder()
 				.text( propertyDescriptor.getDisplayName() )
 				.postProcessor( labelCodeResolver( propertyDescriptor, entityConfiguration ) );
 
-		ViewElementBuilder controlBuilder = createControlBuilder( propertyDescriptor, entityPropertyRegistry,
-		                                                          entityConfiguration );
+		ViewElementBuilder controlBuilder = createControlBuilder(
+				propertyDescriptor, entityPropertyRegistry, entityConfiguration, viewElementMode
+		);
 
 		return group.label( label ).control( controlBuilder );
 	}
 
 	protected abstract ViewElementBuilder createControlBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                            EntityPropertyRegistry entityPropertyRegistry,
-	                                                            EntityConfiguration entityConfiguration );
+	                                                            EntityConfiguration entityConfiguration,
+	                                                            ViewElementMode viewElementMode );
 
 	protected ViewElementPostProcessor<LabelFormElement> labelCodeResolver( EntityPropertyDescriptor propertyDescriptor,
 	                                                                        EntityConfiguration entityConfiguration ) {

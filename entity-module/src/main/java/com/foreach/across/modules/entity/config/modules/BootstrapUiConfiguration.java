@@ -16,6 +16,11 @@
 package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
+import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
+import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderServiceImpl;
+import com.foreach.across.modules.entity.newviews.bootstrapui.BootstrapUiElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.newviews.bootstrapui.TextboxFormElementBuilderFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +32,22 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BootstrapUiConfiguration
 {
+	// todo: this is not boostrap dependant
+	@Bean
+	public EntityViewElementBuilderService entityViewElementBuilderService() {
+		return new EntityViewElementBuilderServiceImpl();
+	}
+
+	@Bean
+	public BootstrapUiElementTypeLookupStrategy bootstrapUiElementTypeLookupStrategy() {
+		return new BootstrapUiElementTypeLookupStrategy();
+	}
+
+	@Bean
+	public BootstrapUiFactory bootstrapUiFactory() {
+		return new BootstrapUiFactoryImpl();
+	}
+
 	@Bean
 	public TextboxFormElementBuilderFactory textboxFormElementBuilderFactory() {
 		return new TextboxFormElementBuilderFactory();

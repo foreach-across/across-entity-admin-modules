@@ -31,13 +31,15 @@ public interface EntityViewElementBuilderProcessor<T extends ViewElementBuilder>
 	/**
 	 * Process the builder instance.
 	 *
-	 * @param propertyDescriptor for which the builder is being created
+	 * @param propertyDescriptor     for which the builder is being created
 	 * @param entityPropertyRegistry that owns the property descriptor
-	 * @param entityConfiguration entity configuration context (can be null)
-	 * @param builder builder instance already created
+	 * @param entityConfiguration    entity configuration context (can be null)
+	 * @param viewElementMode        mode for which the builder is being created
+	 * @param builder                builder instance already created
 	 */
 	void process( EntityPropertyDescriptor propertyDescriptor,
 	              EntityPropertyRegistry entityPropertyRegistry,
 	              EntityConfiguration entityConfiguration,
+	              ViewElementMode viewElementMode,
 	              T builder );
 }

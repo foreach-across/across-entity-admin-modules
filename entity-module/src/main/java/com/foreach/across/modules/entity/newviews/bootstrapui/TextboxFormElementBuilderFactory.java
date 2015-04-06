@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.ValidationConstraintsBuilderProcessor;
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -67,7 +68,8 @@ public class TextboxFormElementBuilderFactory extends FormGroupElementBuilderFac
 	@Override
 	protected ViewElementBuilder createControlBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                   EntityPropertyRegistry entityPropertyRegistry,
-	                                                   EntityConfiguration entityConfiguration ) {
+	                                                   EntityConfiguration entityConfiguration,
+	                                                   ViewElementMode viewElementMode ) {
 		return new TextboxFormElementBuilder()
 				.name( propertyDescriptor.getName() )
 				.controlName( propertyDescriptor.getName() )

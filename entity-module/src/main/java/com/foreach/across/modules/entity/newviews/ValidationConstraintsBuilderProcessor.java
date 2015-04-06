@@ -43,6 +43,7 @@ public abstract class ValidationConstraintsBuilderProcessor<T extends ViewElemen
 	public void process( EntityPropertyDescriptor propertyDescriptor,
 	                     EntityPropertyRegistry entityPropertyRegistry,
 	                     EntityConfiguration entityConfiguration,
+	                     ViewElementMode viewElementMode,
 	                     T builder ) {
 		PropertyDescriptor validationDescriptor = propertyDescriptor.getAttribute( PropertyDescriptor.class );
 
