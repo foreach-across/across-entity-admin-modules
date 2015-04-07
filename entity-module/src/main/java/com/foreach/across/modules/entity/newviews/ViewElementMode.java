@@ -19,15 +19,52 @@ import java.util.Objects;
 
 /**
  * Represents the mode for which a {@link com.foreach.across.modules.web.ui.ViewElementBuilder}
- * is being requested.  Two default modes exist: {@link #READING} and {@link #WRITING}.
+ * is being requested.  Two default modes exist: {@link #FORM_READ} and {@link #FORM_WRITE}.
  * A mode is essentially represented by a string, so it is easy to add custom modes.
  *
  * @author Arne Vandamme
  */
 public class ViewElementMode
 {
-	public static final ViewElementMode READING = new ViewElementMode( "reading" );
-	public static final ViewElementMode WRITING = new ViewElementMode( "writing" );
+	/**
+	 * Only the label text of the descriptor.
+	 */
+	public static final ViewElementMode LABEL = new ViewElementMode( "LABEL" );
+
+	/**
+	 * Only the (readonly) value of the descriptor.
+	 */
+	public static final ViewElementMode VALUE = new ViewElementMode( "VALUE" );
+
+	/**
+	 * Form control for modifying the descriptor.
+	 */
+	public static final ViewElementMode CONTROL = new ViewElementMode( "CONTROL" );
+
+	/**
+	 * Only the label text of the descriptor - for use in list view (usually tabular).
+	 */
+	public static final ViewElementMode LIST_LABEL = new ViewElementMode( "LIST_LABEL" );
+
+	/**
+	 * Only the (readonly) value of the descriptor - for use in list view (usually tabular).
+	 */
+	public static final ViewElementMode LIST_VALUE = new ViewElementMode( "LIST_VALUE" );
+
+	/**
+	 * Form control for modifying the descriptor - for use in list view (usually tabular).
+	 */
+	public static final ViewElementMode LIST_CONTROL = new ViewElementMode( "LIST_CONTROL" );
+
+	/**
+	 * Control for detail (form) view.
+	 */
+	public static final ViewElementMode FORM_READ = new ViewElementMode( "FORM_READ" );
+
+	/**
+	 * Control for modifying form view.
+	 */
+	public static final ViewElementMode FORM_WRITE = new ViewElementMode( "FORM_WRITE" );
 
 	private final String type;
 
@@ -50,5 +87,17 @@ public class ViewElementMode
 	@Override
 	public int hashCode() {
 		return Objects.hash( type );
+	}
+
+	public static boolean isLabel( ViewElementMode mode ) {
+		return LABEL.equals( mode ) || LIST_LABEL.equals( mode );
+	}
+
+	public static boolean isValue( ViewElementMode mode ) {
+		return VALUE.equals( mode ) || LIST_VALUE.equals( mode );
+	}
+
+	public static boolean isControl( ViewElementMode mode ) {
+		return CONTROL.equals( mode ) || LIST_CONTROL.equals( mode );
 	}
 }

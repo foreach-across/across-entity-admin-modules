@@ -15,27 +15,38 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactorySupport;
+import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.FormGroupRequiredBuilderProcessor;
-import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element.LabelCodeResolverPostProcessor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Arne Vandamme
  */
-@Deprecated
-public abstract class FormGroupElementBuilderFactorySupport extends EntityViewElementBuilderFactorySupport<FormGroupElementBuilder>
+public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFactorySupport<FormGroupElementBuilder>
 {
-	public FormGroupElementBuilderFactorySupport() {
+	@Autowired
+	private EntityViewElementBuilderService entityViewElementBuilderService;
+
+	@Autowired
+	private BootstrapUiFactory bootstrapUi;
+
+	public FormGroupElementBuilderFactory() {
 		addProcessor( new FormGroupRequiredBuilderProcessor() );
+	}
+
+	@Override
+	public boolean supports( String viewElementType ) {
+		return BootstrapUiElements.FORM_GROUP.equals( viewElementType );
 	}
 
 	@Override
@@ -43,27 +54,22 @@ public abstract class FormGroupElementBuilderFactorySupport extends EntityViewEl
 	                                                        EntityPropertyRegistry entityPropertyRegistry,
 	                                                        EntityConfiguration entityConfiguration,
 	                                                        ViewElementMode viewElementMode ) {
-		FormGroupElementBuilder group = new FormGroupElementBuilder();
-
-		LabelFormElementBuilder label = new LabelFormElementBuilder()
-				.text( propertyDescriptor.getDisplayName() )
-				.postProcessor( labelCodeResolver( propertyDescriptor, entityConfiguration ) );
-
-		ViewElementBuilder controlBuilder = createControlBuilder(
-				propertyDescriptor, entityPropertyRegistry, entityConfiguration, viewElementMode
+		ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder(
+				entityConfiguration, propertyDescriptor, ViewElementMode.LABEL
 		);
 
-		return group.label( label ).control( controlBuilder );
-	}
+		LabelFormElementBuilder labelBuilder = bootstrapUi.label().add( labelText );
 
-	protected abstract ViewElementBuilder createControlBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                            EntityPropertyRegistry entityPropertyRegistry,
-	                                                            EntityConfiguration entityConfiguration,
-	                                                            ViewElementMode viewElementMode );
+		ViewElementMode controlMode = ViewElementMode.CONTROL;
 
-	protected ViewElementPostProcessor<LabelFormElement> labelCodeResolver( EntityPropertyDescriptor propertyDescriptor,
-	                                                                        EntityConfiguration entityConfiguration ) {
-		return new LabelCodeResolverPostProcessor( "properties." + propertyDescriptor.getName(),
-		                                           entityConfiguration.getEntityMessageCodeResolver() );
+		if ( !propertyDescriptor.isWritable() || ViewElementMode.FORM_READ.equals( viewElementMode ) ) {
+			controlMode = ViewElementMode.VALUE;
+		}
+
+		ViewElementBuilder controlBuilder = entityViewElementBuilderService.getElementBuilder(
+				entityConfiguration, propertyDescriptor, controlMode
+		);
+
+		return bootstrapUi.formGroup( labelBuilder, controlBuilder );
 	}
 }

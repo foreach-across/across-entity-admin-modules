@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.newviews.bootstrapui;
+package com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.FormControlElementBuilderSupport;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;

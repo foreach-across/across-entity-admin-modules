@@ -16,12 +16,17 @@
 package com.foreach.across.modules.entity.newviews.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.newviews.ViewElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
+import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Arne Vandamme
@@ -35,15 +40,27 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	public String findElementType( EntityConfiguration entityConfiguration,
 	                               EntityPropertyDescriptor descriptor,
 	                               ViewElementMode viewElementMode ) {
-		if ( descriptor.isHidden() ) {
+		// todo: preferred type for mode!
+
+		if ( descriptor.isHidden()
+				|| ( ViewElementMode.FORM_READ.equals( viewElementMode ) && !descriptor.isReadable() )
+				|| ( ViewElementMode.FORM_WRITE.equals( viewElementMode ) && !descriptor.isWritable() ) ) {
 			return null;
 		}
 
-		if ( descriptor.isWritable() ) {
-			return BootstrapUiElements.TEXTBOX;
+		if ( ViewElementMode.FORM_WRITE.equals( viewElementMode )
+				|| ViewElementMode.FORM_READ.equals( viewElementMode ) ) {
+			return BootstrapUiElements.FORM_GROUP;
 		}
 
-		return null;
+		if ( ViewElementMode.isValue( viewElementMode ) ) {
+			return BootstrapUiElements.TEXT;
+		}
+
+		if ( ViewElementMode.isLabel( viewElementMode ) ) {
+			return BootstrapUiElements.LABEL;
+		}
+
 /*
 		if ( viewElementMode == ViewElementMode.FOR_READING ) {
 			String preferredType = descriptor.getAttribute( EntityAttributes.ELEMENT_TYPE_READABLE );
@@ -60,48 +77,48 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		if ( preferredType != null ) {
 			return preferredType;
 		}
-
+*/
 		PropertyPersistenceMetadata metadata = descriptor.getAttribute(
 				EntityAttributes.PROPERTY_PERSISTENCE_METADATA );
 
+		/*
 		if ( metadata != null && metadata.isEmbedded() ) {
-			return CommonViewElements.FIELDSET;
-		}
+			return BootstrapUiElements.FIELDSET;
+		}*/
 
 		if ( descriptor.isWritable() ) {
 			Class propertyType = descriptor.getPropertyType();
 
 			if ( propertyType != null ) {
-				if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) ) {
-					return CommonViewElements.MULTI_CHECKBOX;
-				}
+				/*if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) ) {
+					return BootstrapUiElements.MULTI_CHECKBOX;
+				}*/
 
 				if ( propertyType.isEnum() ) {
-					return CommonViewElements.SELECT;
+					return BootstrapUiElements.SELECT;
 				}
 
 				if ( !ClassUtils.isPrimitiveOrWrapper( propertyType ) ) {
 					EntityConfiguration member = entityRegistry.getEntityConfiguration( propertyType );
 
 					if ( member != null ) {
-						return CommonViewElements.SELECT;
+						return BootstrapUiElements.SELECT;
 					}
 				}
 
 				if ( ClassUtils.isAssignable( Boolean.class, propertyType )
 						|| ClassUtils.isAssignable( AtomicBoolean.class, propertyType ) ) {
-					return CommonViewElements.CHECKBOX;
+					return BootstrapUiElements.CHECKBOX;
 				}
 
-				if ( ClassUtils.isAssignable( Date.class, propertyType ) ) {
-					return CommonViewElements.DATE;
-				}
+				/*if ( ClassUtils.isAssignable( Date.class, propertyType ) ) {
+					return BootstrapUiElements.DATE;
+				}*/
 
-				return CommonViewElements.TEXTBOX;
+				return BootstrapUiElements.TEXTBOX;
 			}
 		}
 
 		return null;
-		*/
 	}
 }

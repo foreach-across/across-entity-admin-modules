@@ -16,18 +16,17 @@
 package com.foreach.across.modules.entity.newviews.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
-import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.newviews.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
-import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.hibernate.validator.constraints.Length;
@@ -45,18 +44,15 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
-public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<TextboxFormElementBuilder>
+@Deprecated
+public class TextboxGroupFormElementBuilderFactory extends FormGroupElementBuilderFactorySupport
 {
 	@Autowired
 	private ConversionService conversionService;
 
-	@Autowired
-	private BootstrapUiFactory bootstrapUi;
-
 	private int maximumSingleLineLength = 300;
 
-	public TextboxFormElementBuilderFactory() {
-		addProcessor( new FormControlRequiredBuilderProcessor<TextboxFormElementBuilder>() );
+	public TextboxGroupFormElementBuilderFactory() {
 		addProcessor( new TextboxConstraintsProcessor() );
 	}
 
@@ -71,33 +67,37 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	}
 
 	@Override
-	protected TextboxFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                          EntityPropertyRegistry entityPropertyRegistry,
-	                                                          EntityConfiguration entityConfiguration,
-	                                                          ViewElementMode viewElementMode ) {
-		return bootstrapUi.textbox()
-		                  .name( propertyDescriptor.getName() )
-		                  .controlName( propertyDescriptor.getName() )
-		                  .multiLine( String.class.equals( propertyDescriptor.getPropertyType() ) )
-		                  .postProcessor( new EntityValueProcessor( conversionService, propertyDescriptor ) );
+	protected ViewElementBuilder createControlBuilder( EntityPropertyDescriptor propertyDescriptor,
+	                                                   EntityPropertyRegistry entityPropertyRegistry,
+	                                                   EntityConfiguration entityConfiguration,
+	                                                   ViewElementMode viewElementMode ) {
+		return new TextboxFormElementBuilder()
+				.name( propertyDescriptor.getName() )
+				.controlName( propertyDescriptor.getName() )
+				.multiLine( String.class.equals( propertyDescriptor.getPropertyType() ) )
+				.postProcessor( new EntityValueProcessor( conversionService, propertyDescriptor ) );
 	}
 
 	/**
 	 * Responsible for calculating max length and multi/single line type based on validation constraints.
 	 */
-	private class TextboxConstraintsProcessor extends ValidationConstraintsBuilderProcessor<TextboxFormElementBuilder>
+	private class TextboxConstraintsProcessor extends ValidationConstraintsBuilderProcessor<FormGroupElementBuilder>
 	{
 		@Override
-		protected void handleConstraint( TextboxFormElementBuilder textbox,
+		protected void handleConstraint( FormGroupElementBuilder builder,
 		                                 Annotation annotation,
 		                                 Map<String, Object> attributes,
 		                                 ConstraintDescriptor constraint ) {
-			if ( isOfType( annotation, Size.class, Length.class ) ) {
-				Integer max = (Integer) attributes.get( "max" );
+			TextboxFormElementBuilder textbox = builder.getControl( TextboxFormElementBuilder.class );
 
-				if ( max != Integer.MAX_VALUE ) {
-					textbox.maxLength( max );
-					textbox.multiLine( max > maximumSingleLineLength );
+			if ( textbox != null ) {
+				if ( isOfType( annotation, Size.class, Length.class ) ) {
+					Integer max = (Integer) attributes.get( "max" );
+
+					if ( max != Integer.MAX_VALUE ) {
+						textbox.maxLength( max );
+						textbox.multiLine( max > maximumSingleLineLength );
+					}
 				}
 			}
 		}

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.newviews.bootstrapui;
+package com.foreach.across.modules.entity.newviews.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class LabelCodeResolverPostProcessor implements ViewElementPostProcessor<LabelFormElement>
 {
 	private final String messageCode;
