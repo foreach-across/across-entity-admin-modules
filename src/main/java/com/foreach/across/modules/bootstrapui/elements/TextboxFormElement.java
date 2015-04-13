@@ -15,12 +15,14 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+
 import java.util.Objects;
 
 /**
  * @author Arne Vandamme
  */
-public class TextboxFormElement extends FormControlElementSupport
+public class TextboxFormElement extends FormControlElementSupport implements ConfigurableTextViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.TEXTBOX;
 
@@ -102,10 +104,12 @@ public class TextboxFormElement extends FormControlElementSupport
 		this.type = type;
 	}
 
+	@Override
 	public String getText() {
 		return text;
 	}
 
+	@Override
 	public void setText( String text ) {
 		this.text = text;
 	}
