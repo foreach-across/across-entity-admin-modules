@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 import org.springframework.util.Assert;
 
@@ -23,7 +24,7 @@ import org.springframework.util.Assert;
  *
  * @author Arne Vandamme
  */
-public class ButtonViewElement extends NodeViewElementSupport
+public class ButtonViewElement extends NodeViewElementSupport implements ConfigurableTextViewElement
 {
 	public enum Type
 	{
@@ -54,10 +55,12 @@ public class ButtonViewElement extends NodeViewElementSupport
 		super( ELEMENT_TYPE );
 	}
 
+	@Override
 	public String getText() {
 		return text;
 	}
 
+	@Override
 	public void setText( String text ) {
 		this.text = text;
 	}

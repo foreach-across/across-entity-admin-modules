@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 
 /**
@@ -27,7 +28,7 @@ public class SelectFormElement extends FormControlElementSupport
 	/**
 	 * Single option.
 	 */
-	public static class Option extends NodeViewElementSupport
+	public static class Option extends NodeViewElementSupport implements ConfigurableTextViewElement
 	{
 		private boolean disabled, selected;
 		private String text, label;
@@ -53,10 +54,12 @@ public class SelectFormElement extends FormControlElementSupport
 			this.selected = selected;
 		}
 
+		@Override
 		public String getText() {
 			return text;
 		}
 
+		@Override
 		public void setText( String text ) {
 			this.text = text;
 		}
