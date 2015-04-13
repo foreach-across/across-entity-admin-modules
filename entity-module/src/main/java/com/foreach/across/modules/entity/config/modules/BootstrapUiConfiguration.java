@@ -20,10 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderServiceImpl;
-import com.foreach.across.modules.entity.newviews.bootstrapui.BootstrapUiElementTypeLookupStrategy;
-import com.foreach.across.modules.entity.newviews.bootstrapui.FormGroupElementBuilderFactory;
-import com.foreach.across.modules.entity.newviews.bootstrapui.LabelFormElementBuilderFactory;
-import com.foreach.across.modules.entity.newviews.bootstrapui.TextboxFormElementBuilderFactory;
+import com.foreach.across.modules.entity.newviews.bootstrapui.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -65,4 +62,8 @@ public class BootstrapUiConfiguration
 		return new TextboxFormElementBuilderFactory();
 	}
 
+	@Bean
+	public TextViewElementBuilderFactory textViewElementBuilderFactory() {
+		return new TextViewElementBuilderFactory();
+	}
 }

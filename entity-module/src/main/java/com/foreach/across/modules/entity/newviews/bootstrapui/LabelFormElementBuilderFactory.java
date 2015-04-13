@@ -61,7 +61,7 @@ public class LabelFormElementBuilderFactory extends EntityViewElementBuilderFact
 
 	protected ViewElementPostProcessor<TextViewElement> labelCodeResolver( EntityPropertyDescriptor propertyDescriptor,
 	                                                                       EntityConfiguration entityConfiguration ) {
-		return new TextCodeResolverPostProcessor( "properties." + propertyDescriptor.getName(),
+		return new TextCodeResolverPostProcessor<>( "properties." + propertyDescriptor.getName(),
 		                                          entityConfiguration.getEntityMessageCodeResolver() );
 	}
 }

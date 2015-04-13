@@ -18,17 +18,18 @@ package com.foreach.across.modules.entity.newviews.bootstrapui.processors.elemen
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import org.springframework.util.Assert;
 
 /**
- * Implementation of {@link ViewElementPostProcessor} for a {@link TextViewElement} that will set the body
- * of the element based on a messagecode that is being resolved.  The currently set text will
- * be used as the fallback in case the code cannot be resolved.
+ * Implementation of {@link ViewElementPostProcessor} for a {@link ConfigurableTextViewElement}
+ * that will set the text property of the element based on a messagecode that is being resolved.
+ * The currently set text will be used as the fallback in case the code cannot be resolved.
  *
  * @author Arne Vandamme
  */
-public class TextCodeResolverPostProcessor implements ViewElementPostProcessor<TextViewElement>
+public class TextCodeResolverPostProcessor<T extends ConfigurableTextViewElement>
+		implements ViewElementPostProcessor<T>
 {
 	private final String messageCode;
 	private EntityMessageCodeResolver defaultMessageCodeResolver;
@@ -45,7 +46,7 @@ public class TextCodeResolverPostProcessor implements ViewElementPostProcessor<T
 	}
 
 	@Override
-	public void postProcess( ViewElementBuilderContext builderContext, TextViewElement text ) {
+	public void postProcess( ViewElementBuilderContext builderContext, T text ) {
 		EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
 
 		if ( codeResolver == null ) {

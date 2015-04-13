@@ -23,17 +23,13 @@ import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactor
 import com.foreach.across.modules.entity.newviews.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
+import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element.EntityPropertyValuePostProcessor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.TypeDescriptor;
 
 import javax.validation.constraints.Size;
 import javax.validation.metadata.ConstraintDescriptor;
@@ -79,7 +75,10 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		                  .name( propertyDescriptor.getName() )
 		                  .controlName( propertyDescriptor.getName() )
 		                  .multiLine( String.class.equals( propertyDescriptor.getPropertyType() ) )
-		                  .postProcessor( new EntityValueProcessor( conversionService, propertyDescriptor ) );
+		                  .postProcessor(
+				                  new EntityPropertyValuePostProcessor<TextboxFormElement>( conversionService,
+				                                                                            propertyDescriptor )
+		                  );
 	}
 
 	/**
@@ -103,35 +102,4 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 	}
 
-	/**
-	 * Responsible for fetching the property value and setting it on the textbox.
-	 */
-	public static class EntityValueProcessor implements ViewElementPostProcessor<TextboxFormElement>
-	{
-		private static final TypeDescriptor STRING_TYPE = TypeDescriptor.valueOf( String.class );
-
-		private final ConversionService conversionService;
-		private final EntityPropertyDescriptor propertyDescriptor;
-
-		public EntityValueProcessor( ConversionService conversionService,
-		                             EntityPropertyDescriptor propertyDescriptor ) {
-			this.conversionService = conversionService;
-			this.propertyDescriptor = propertyDescriptor;
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public void postProcess( ViewElementBuilderContext builderContext, TextboxFormElement textbox ) {
-			Object entity = builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY );
-			ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
-
-			if ( entity != null && valueFetcher != null ) {
-				String text = (String) conversionService.convert( valueFetcher.getValue( entity ),
-				                                                  propertyDescriptor.getPropertyTypeDescriptor(),
-				                                                  STRING_TYPE );
-
-				textbox.setText( text );
-			}
-		}
-	}
 }

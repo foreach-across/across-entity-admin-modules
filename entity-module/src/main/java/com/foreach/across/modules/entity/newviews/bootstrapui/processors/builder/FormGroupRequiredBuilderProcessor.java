@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.builder.FormControlElementBuilderSupport;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.entity.newviews.ValidationConstraintsBuilderProcessor;
 import org.hibernate.validator.constraints.NotBlank;
@@ -43,12 +42,12 @@ public class FormGroupRequiredBuilderProcessor extends ValidationConstraintsBuil
 		if ( isOfType( annotation, NotNull.class, NotEmpty.class, NotBlank.class ) ) {
 			builder.required();
 
-			FormControlElementBuilderSupport controlBuilder
+			/*FormControlElementBuilderSupport controlBuilder
 					= builder.getControl( FormControlElementBuilderSupport.class );
 
 			if ( controlBuilder != null ) {
 				controlBuilder.required();
-			}
+			}*/
 		}
 	}
 }
