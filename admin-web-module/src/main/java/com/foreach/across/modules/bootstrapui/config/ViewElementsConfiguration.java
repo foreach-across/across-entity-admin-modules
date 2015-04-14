@@ -60,5 +60,11 @@ public class ViewElementsConfiguration
 		                                                    new LabelFormElementNodeBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( FormGroupElement.class,
 		                                                    new FormGroupElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( TableViewElement.class,
+		                                                    new TableViewElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( TableViewElement.Row.class,
+		                                                    new TableViewElementNodeBuilder.RowElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( TableViewElement.Cell.class,
+		                                                    new TableViewElementNodeBuilder.CellElementNodeBuilder() );
 	}
 }
