@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -35,12 +36,30 @@ public class Style
 		public static final Style LINK = new Style( "link", true );
 	}
 
+	public static class Table
+	{
+		public static final Style STRIPED = new Style( "striped", true );
+		public static final Style BORDERED = new Style( "bordered", true );
+		public static final Style HOVER = new Style( "hover", true );
+		public static final Style CONDENSED = new Style( "condensed", true );
+	}
+
+	public static class TableCell
+	{
+		public static final Style ACTIVE = Style.ACTIVE;
+		public static final Style SUCCESS = Style.SUCCESS;
+		public static final Style INFO = Style.INFO;
+		public static final Style WARNING = Style.WARNING;
+		public static final Style DANGER = Style.DANGER;
+	}
+
 	public static final Style DEFAULT = new Style( "default", true );
 	public static final Style PRIMARY = new Style( "primary", true );
 	public static final Style SUCCESS = new Style( "success", true );
 	public static final Style INFO = new Style( "info", true );
 	public static final Style WARNING = new Style( "warning", true );
 	public static final Style DANGER = new Style( "danger", true );
+	public static final Style ACTIVE = new Style( "active", true );
 
 	private final boolean isDefault;
 	private final String name;
@@ -60,7 +79,7 @@ public class Style
 	}
 
 	public String forPrefix( String prefix ) {
-		return isDefault ? prefix + "-" + name : name;
+		return isDefault && !StringUtils.isBlank( prefix ) ? prefix + "-" + name : name;
 	}
 
 	/**

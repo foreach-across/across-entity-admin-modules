@@ -18,7 +18,6 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Size;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
 import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
@@ -27,7 +26,7 @@ import org.thymeleaf.dom.Text;
 /**
  * @author Arne Vandamme
  */
-public class ButtonViewElementNodeBuilder extends NestableNodeBuilderSupport<ButtonViewElement>
+public class ButtonViewElementNodeBuilder extends BootstrapNodeBuilderSupport<ButtonViewElement>
 {
 	@Override
 	protected Element createNode( ButtonViewElement button,
@@ -50,23 +49,24 @@ public class ButtonViewElementNodeBuilder extends NestableNodeBuilderSupport<But
 	}
 
 	private void style( ButtonViewElement button, Element node ) {
-		node.setAttribute( "class", "btn " + button.getStyle().forPrefix( "btn" ) );
+		attribute( node, "class", "btn" );
+		style( node, "btn", button.getStyle() );
 	}
 
 	private void size( ButtonViewElement button, Element node ) {
 		Size size = button.getSize();
 		if ( size != null && !Size.DEFAULT.equals( size ) ) {
-			node.setAttribute( "class", node.getAttributeValue( "class" ) + " " + button.getSize().forPrefix( "btn" ) );
+			attributeAppend( node, "class", button.getSize().forPrefix( "btn" ) );
 		}
 	}
 
 	private void state( ButtonViewElement button, Element node ) {
 		if ( button.getState() == ButtonViewElement.State.ACTIVE ) {
-			node.setAttribute( "class", node.getAttributeValue( "class" ) + " active" );
+			attributeAppend( node, "class", "active" );
 		}
 		else if ( button.getState() == ButtonViewElement.State.DISABLED ) {
 			if ( button.getType() == ButtonViewElement.Type.LINK ) {
-				node.setAttribute( "class", node.getAttributeValue( "class" ) + " disabled" );
+				attributeAppend( node, "class", "disabled" );
 			}
 			else {
 				node.setAttribute( "disabled", "disabled" );
