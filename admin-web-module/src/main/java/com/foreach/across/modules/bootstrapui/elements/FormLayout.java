@@ -2,7 +2,7 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 public class FormLayout
 {
-	public static enum Type
+	public enum Type
 	{
 		DEFAULT,
 		INLINE,
