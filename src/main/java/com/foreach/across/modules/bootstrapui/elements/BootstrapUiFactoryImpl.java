@@ -50,4 +50,9 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	public TextboxFormElementBuilder textbox() {
 		return new TextboxFormElementBuilder();
 	}
+
+	@Override
+	public TableViewElementBuilder table() {
+		return new TableViewElementBuilder();
+	}
 }

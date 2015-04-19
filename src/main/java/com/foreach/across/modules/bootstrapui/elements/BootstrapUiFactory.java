@@ -23,4 +23,6 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 	TextboxFormElementBuilder textarea();
 
 	TextboxFormElementBuilder password();
+
+	TableViewElementBuilder table();
 }
