@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.foreach.across.modules.entity.views.elements.container;
 
-// See the Getting Started docs for more information:
-// http://getbootstrap.com/getting-started/#support-ie10-width
+/**
+ * @author Arne Vandamme
+ */
+public class ColumnsViewElement extends ContainerViewElement
+{
+	public ColumnsViewElement() {
+	}
 
-(function () {
-    'use strict';
-    if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
-        var msViewportStyle = document.createElement('style')
-        msViewportStyle.appendChild(
-            document.createTextNode(
-                '@-ms-viewport{width:auto!important}'
-            )
-        )
-        document.querySelector('head').appendChild(msViewportStyle)
-    }
-})();
+	public ColumnsViewElement( String name ) {
+		super( name );
+	}
+
+	@Override
+	public String getElementType() {
+		return "columns";
+	}
+}

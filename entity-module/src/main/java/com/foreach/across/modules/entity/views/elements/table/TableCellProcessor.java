@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.adminweb;
+package com.foreach.across.modules.entity.views.elements.table;
 
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+import com.foreach.across.modules.entity.views.elements.ViewElement;
+
+import java.util.Map;
 
 /**
  * @author Arne Vandamme
  */
-public class TestAdminWebModuleConventions extends AbstractAcrossModuleConventionsTest
+public interface TableCellProcessor
 {
-	@Override
-	protected boolean hasSettings() {
-		return true;
-	}
-
-	@Override
-	protected AcrossModule createModule() {
-		return new AdminWebModule();
-	}
+	Map<String, String> attributes( ViewElement column, Object entity );
 }
