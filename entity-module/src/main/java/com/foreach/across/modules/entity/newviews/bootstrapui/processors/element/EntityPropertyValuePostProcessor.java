@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -44,15 +45,28 @@ public class EntityPropertyValuePostProcessor<T extends ConfigurableTextViewElem
 	@Override
 	@SuppressWarnings("unchecked")
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
-		Object entity = builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY );
+		Object entity = getEntity( builderContext );
 		ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
 
 		if ( entity != null && valueFetcher != null ) {
-			String text = (String) conversionService.convert( valueFetcher.getValue( entity ),
-			                                                  propertyDescriptor.getPropertyTypeDescriptor(),
-			                                                  STRING_TYPE );
+			Object propertyValue = valueFetcher.getValue( entity );
+			TypeDescriptor sourceType = propertyDescriptor.getPropertyTypeDescriptor();
+
+			if ( sourceType == null && propertyValue != null ) {
+				sourceType = TypeDescriptor.forObject( propertyValue );
+			}
+
+			String text = (String) conversionService.convert( propertyValue, sourceType, STRING_TYPE );
 
 			element.setText( text );
 		}
+	}
+
+	private Object getEntity( ViewElementBuilderContext builderContext ) {
+		if ( builderContext instanceof IteratorViewElementBuilderContext ) {
+			return ( (IteratorViewElementBuilderContext) builderContext ).getItem();
+		}
+
+		return builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY );
 	}
 }
