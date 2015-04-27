@@ -20,19 +20,19 @@ import org.junit.Test;
 /**
  * @author Arne Vandamme
  */
-public class TestIconViewElement extends AbstractBootstrapViewElementTest
+public class TestGlyphIcon extends AbstractBootstrapViewElementTest
 {
 	@Test
 	public void simpleIcon() {
 		renderAndExpect(
-				new IconViewElement( GlyphIcon.ARROW_DOWN ),
+				new GlyphIcon( GlyphIcon.ARROW_DOWN ),
 				"<span class='glyphicon glyphicon-arrow-down' aria-hidden='true'></span>"
 		);
 	}
 
 	@Test
 	public void customTagName() {
-		IconViewElement icon = new IconViewElement( GlyphIcon.SEARCH );
+		IconViewElement icon = new GlyphIcon( GlyphIcon.SEARCH );
 		icon.setTagName( "div" );
 
 		renderAndExpect(
@@ -42,17 +42,9 @@ public class TestIconViewElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
-	public void noGlyphResultsInNoElement() {
-		renderAndExpect(
-				new IconViewElement(),
-				""
-		);
-	}
-
-	@Test
 	public void emptyGlyphGeneratesElement() {
 		renderAndExpect(
-				new IconViewElement( "" ),
+				new GlyphIcon( "" ),
 				"<span class='glyphicon ' aria-hidden='true'></span>"
 		);
 	}

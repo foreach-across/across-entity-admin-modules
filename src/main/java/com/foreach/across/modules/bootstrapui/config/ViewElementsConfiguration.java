@@ -35,7 +35,7 @@ public class ViewElementsConfiguration
 
 	@PostConstruct
 	public void registerViewElements() {
-		viewElementNodeBuilderRegistry.registerNodeBuilder( IconViewElement.class, new IconViewElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( IconViewElement.ELEMENT_TYPE, new IconViewElementNodeBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( ButtonViewElement.class,
 		                                                    new ButtonViewElementNodeBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( FormViewElement.class,

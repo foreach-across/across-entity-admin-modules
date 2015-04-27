@@ -16,23 +16,18 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.SingleNodeViewElementSupport;
-import org.springframework.util.Assert;
 
 /**
- * Represents a Bootstrap Glyphicon.
+ * Represents a simple icon element that does not support child elements.
  *
  * @author Arne Vandamme
+ * @see GlyphIcon
  */
-public class IconViewElement extends SingleNodeViewElementSupport
+public abstract class IconViewElement extends SingleNodeViewElementSupport
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.ICON;
 
-	private String glyph;
-
-	public IconViewElement( String glyph ) {
-		this();
-		this.glyph = glyph;
-	}
+	private String iconCss;
 
 	public IconViewElement() {
 		super( ELEMENT_TYPE, "span" );
@@ -50,12 +45,11 @@ public class IconViewElement extends SingleNodeViewElementSupport
 		super.setTagName( tagName );
 	}
 
-	public String getGlyph() {
-		return glyph;
+	public String getIconCss() {
+		return iconCss;
 	}
 
-	public void setGlyph( String glyph ) {
-		Assert.notNull( glyph );
-		this.glyph = glyph;
+	protected void setIconCss( String iconCss ) {
+		this.iconCss = iconCss;
 	}
 }
