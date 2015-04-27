@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.hibernate.testmodules.hibernate1;
+package com.foreach.across.modules.properties;
 
-public interface ProductRepository
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+
+/**
+ * @author Arne Vandamme
+ */
+public class TestPropertiesModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-	Product getProductWithId( int id );
+	@Override
+	protected boolean hasSettings() {
+		return true;
+	}
 
-	void save( Product product );
+	@Override
+	protected AcrossModule createModule() {
+		return new PropertiesModule();
+	}
 }
