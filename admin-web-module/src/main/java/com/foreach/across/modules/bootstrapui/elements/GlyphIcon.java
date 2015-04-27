@@ -15,12 +15,14 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import org.springframework.util.Assert;
+
 /**
  * Lists the standard Bootstrap GlyphIcons.
  *
  * @author Arne Vandamme
  */
-public final class GlyphIcon
+public class GlyphIcon extends IconViewElement
 {
 	public static final String ASTERISK = "glyphicon-asterisk";
 	public static final String PLUS = "glyphicon-plus";
@@ -282,6 +284,23 @@ public final class GlyphIcon
 	public static final String MENU_DOWN = "glyphicon-menu-down";
 	public static final String MENU_UP = "glyphicon-menu-up";
 
-	private GlyphIcon() {
+	private String glyph;
+
+	public GlyphIcon() {
+	}
+
+	public GlyphIcon( String glyph ) {
+		setGlyph( glyph );
+	}
+
+	public void setGlyph( String glyph ) {
+		Assert.notNull( glyph );
+
+		this.glyph = glyph;
+		setIconCss( "glyphicon " + glyph );
+	}
+
+	public String getGlyph() {
+		return glyph;
 	}
 }

@@ -18,12 +18,14 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 import com.foreach.across.modules.bootstrapui.elements.IconViewElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
 import com.foreach.across.modules.web.ui.thymeleaf.ViewElementNodeBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Arne Vandamme
@@ -34,15 +36,20 @@ public class IconViewElementNodeBuilder implements ViewElementNodeBuilder<IconVi
 	public List<Node> buildNodes( IconViewElement viewElement,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		if ( viewElement.getGlyph() != null ) {
-			Element node = new Element( viewElement.getTagName() );
-			node.setAttribute( "class", "glyphicon " + viewElement.getGlyph() );
+		Element node = new Element( viewElement.getTagName() );
 
-			viewElementNodeFactory.setAttributes( node, viewElement.getAttributes() );
+		viewElementNodeFactory.setAttributes( node, viewElement.getAttributes() );
 
-			return Collections.singletonList( (Node) node );
+		if ( viewElement.getIconCss() != null ) {
+			node.setAttribute( "class",
+			                   StringUtils.trim(
+					                   StringUtils.join( new String[] {
+							                   viewElement.getIconCss(),
+							                   Objects.toString( viewElement.getAttribute( "class" ), "" )
+					                   }, " " )
+			                   ) );
 		}
 
-		return Collections.emptyList();
+		return Collections.singletonList( (Node) node );
 	}
 }
