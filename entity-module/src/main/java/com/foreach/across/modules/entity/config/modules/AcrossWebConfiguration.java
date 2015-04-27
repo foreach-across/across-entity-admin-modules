@@ -71,6 +71,7 @@ public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 
 	@Autowired
 	private PageableHandlerMethodArgumentResolver pageableHandlerMethodArgumentResolver;
+
 	@Autowired
 	private ApplicationContext applicationContext;
 
