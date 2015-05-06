@@ -13,14 +13,119 @@ import java.util.Map;
 
 public class ButtonViewElementBuilder extends NodeViewElementSupportBuilder<ButtonViewElement, ButtonViewElementBuilder>
 {
-	private String text, url;
+	private String text, title, url;
 	private ButtonViewElement.Type type;
 	private ButtonViewElement.State state;
 	private Style style;
 	private Size size;
+	private ElementOrBuilder icon;
+	private boolean iconOnly = false;
+	private boolean iconRight = false;
 
+	/**
+	 * Set the icon as a {@link ViewElement} to use for the button
+	 * and sets the button as only an icon.
+	 *
+	 * @param icon ViewElement
+	 * @return builder instance
+	 */
+	public ButtonViewElementBuilder iconOnly( ViewElement icon ) {
+		return icon( icon ).iconOnly();
+	}
+
+	/**
+	 * Set the icon as a {@link ViewElementBuilder} to use for the button
+	 * and sets the button as only an icon.
+	 *
+	 * @param icon ViewElementBuilder
+	 * @return builder instance
+	 */
+	public ButtonViewElementBuilder iconOnly( ViewElementBuilder icon ) {
+		return icon( icon ).iconOnly();
+	}
+
+	/**
+	 * Set the icon as a {@link ViewElement} to use for the button.
+	 *
+	 * @param icon ViewElement
+	 * @return builder instance
+	 */
+	public ButtonViewElementBuilder icon( ViewElement icon ) {
+		this.icon = ElementOrBuilder.wrap( icon );
+		return this;
+	}
+
+	/**
+	 * Set the icon as a {@link ViewElementBuilder} to use for the button.
+	 *
+	 * @param icon ViewElementBuilder
+	 * @return builder instance
+	 */
+	public ButtonViewElementBuilder icon( ViewElementBuilder icon ) {
+		this.icon = ElementOrBuilder.wrap( icon );
+		return this;
+	}
+
+	/**
+	 * Converts the button to a button with only an icon.  Any text set will be used as title attribute or as
+	 * aria-label if a title attribute it set explicitly.
+	 *
+	 * @return builder instance
+	 */
+	public ButtonViewElementBuilder iconOnly() {
+		return iconOnly( true );
+	}
+
+	/**
+	 * Set if the button is only an icon or not.
+	 *
+	 * @param iconOnly true if button should only display an icon
+	 * @return builder instance
+	 */
+	public ButtonViewElementBuilder iconOnly( boolean iconOnly ) {
+		this.iconOnly = iconOnly;
+		return this;
+	}
+
+	/**
+	 * Show the icon on the right side of the text (if an icon is used).
+	 *
+	 * @return builder instance
+	 */
+	public ButtonViewElementBuilder iconRight() {
+		this.iconRight = true;
+		return this;
+	}
+
+	/**
+	 * Show the icon the left side of the text (if an icon is used).
+	 *
+	 * @return builder instance
+	 */
+	public ButtonViewElementBuilder iconLeft() {
+		this.iconRight = false;
+		return this;
+	}
+
+	/**
+	 * Set the button text.
+	 *
+	 * @param text for the button
+	 * @return builder instance
+	 */
 	public ButtonViewElementBuilder text( String text ) {
 		this.text = text;
+		return this;
+	}
+
+	/**
+	 * Set the button title attribute.
+	 *
+	 * @param title attribute
+	 * @return builder instance
+	 */
+	public ButtonViewElementBuilder title( String title ) {
+		this.title = title;
 		return this;
 	}
 
@@ -144,9 +249,6 @@ public class ButtonViewElementBuilder extends NodeViewElementSupportBuilder<Butt
 	protected ButtonViewElement createElement( ViewElementBuilderContext builderContext ) {
 		ButtonViewElement button = new ButtonViewElement();
 
-		if ( text != null ) {
-			button.setText( text );
-		}
 		if ( url != null ) {
 			button.setUrl( url );
 		}
@@ -161,6 +263,35 @@ public class ButtonViewElementBuilder extends NodeViewElementSupportBuilder<Butt
 		}
 		if ( size != null ) {
 			button.setSize( size );
+		}
+
+		if ( title != null ) {
+			button.setTitle( title );
+		}
+
+		if ( iconOnly && icon != null ) {
+			if ( text != null ) {
+				if ( title == null ) {
+					button.setTitle( text );
+				}
+				else {
+					button.setAttribute( "aria-label", text );
+				}
+			}
+		}
+		else {
+			if ( text != null ) {
+				button.setText( text );
+			}
+		}
+
+		if ( icon != null ) {
+			if ( iconRight ) {
+				button.add( icon.get( builderContext ) );
+			}
+			else {
+				button.setIcon( icon.get( builderContext ) );
+			}
 		}
 
 		return apply( button, builderContext );
