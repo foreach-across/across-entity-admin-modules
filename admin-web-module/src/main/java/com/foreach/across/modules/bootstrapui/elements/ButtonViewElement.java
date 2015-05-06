@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 import org.springframework.util.Assert;
@@ -45,11 +46,12 @@ public class ButtonViewElement extends NodeViewElementSupport implements Configu
 
 	public static final String ELEMENT_TYPE = BootstrapUiElements.BUTTON;
 
-	private String text, url = "#";
+	private String text, title, url = "#";
 	private Style style = Style.Button.DEFAULT;
 	private Type type = Type.BUTTON;
 	private State state;
 	private Size size;
+	private ViewElement icon;
 
 	public ButtonViewElement() {
 		super( ELEMENT_TYPE );
@@ -63,6 +65,32 @@ public class ButtonViewElement extends NodeViewElementSupport implements Configu
 	@Override
 	public void setText( String text ) {
 		this.text = text;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	/**
+	 * Set the title attribute for the element.
+	 *
+	 * @param title text
+	 */
+	public void setTitle( String title ) {
+		this.title = title;
+	}
+
+	public ViewElement getIcon() {
+		return icon;
+	}
+
+	/**
+	 * Set the icon to be aligned on the left-hand side of the text (if there is any text).
+	 *
+	 * @param icon ViewElement
+	 */
+	public void setIcon( ViewElement icon ) {
+		this.icon = icon;
 	}
 
 	public Type getType() {

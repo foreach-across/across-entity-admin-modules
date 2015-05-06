@@ -164,4 +164,24 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		renderAndExpect( button,
 		                 "<a class='btn btn-default' href='http://go-somewhere.com' role='button'>click me</a>" );
 	}
+
+	@Test
+	public void icon() {
+		ButtonViewElement button = new ButtonViewElement();
+		button.setText( " icon button" );
+		button.setIcon( new GlyphIcon( GlyphIcon.BARCODE ) );
+
+		renderAndExpect( button,
+		                 "<button type='button' class='btn btn-default'>" +
+				                 "<span class='glyphicon glyphicon-barcode' aria-hidden='true'></span> icon button" +
+				                 "</button>" );
+
+		button.setTitle( "icon button" );
+		button.setText( null );
+
+		renderAndExpect( button,
+		                 "<button type='button' class='btn btn-default' title='icon button'>" +
+				                 "<span class='glyphicon glyphicon-barcode' aria-hidden='true'></span>" +
+				                 "</button>" );
+	}
 }

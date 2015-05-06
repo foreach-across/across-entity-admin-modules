@@ -34,9 +34,13 @@ public class ButtonViewElementNodeBuilder extends BootstrapNodeBuilderSupport<Bu
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
 		Element node = basicNode( button );
 		style( button, node );
+
+		addChild( node, button.getIcon(), arguments, viewElementNodeFactory );
+
 		text( button, node );
 		size( button, node );
 		state( button, node );
+		attribute( node, "title", button.getTitle() );
 
 		if ( button.getType() == ButtonViewElement.Type.LINK ) {
 			attribute( node, "href", button.getUrl() );
