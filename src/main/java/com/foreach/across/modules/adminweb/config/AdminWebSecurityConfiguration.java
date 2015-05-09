@@ -67,16 +67,26 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 		           .and().logout().permitAll();
 
 		configureRememberMe( http );
+		customizeAdminWebSecurity( http );
 	}
 
 	@SuppressWarnings("SignatureDeclareThrowsException")
-	private void configureRememberMe( HttpSecurity http ) throws Exception {
+	protected void configureRememberMe( HttpSecurity http ) throws Exception {
 		if ( adminWeb.getSettings().isRememberMeEnabled() ) {
 			String rememberMeKey = settings.getProperty( AdminWebModuleSettings.REMEMBER_ME_KEY );
 			int rememberMeValiditySeconds = settings.getProperty(
-					AdminWebModuleSettings.REMEMBER_ME_TOKEN_VALIDITY_SECONDS, Integer.class );
+					AdminWebModuleSettings.REMEMBER_ME_TOKEN_VALIDITY_SECONDS, Integer.class
+			);
 
 			http.rememberMe().key( rememberMeKey ).tokenValiditySeconds( rememberMeValiditySeconds );
 		}
+	}
+
+	/**
+	 * Adapter method to customize admin security.
+	 *
+	 * @param http security element scoped for adminweb urls
+	 */
+	protected void customizeAdminWebSecurity( HttpSecurity http ) throws Exception {
 	}
 }
