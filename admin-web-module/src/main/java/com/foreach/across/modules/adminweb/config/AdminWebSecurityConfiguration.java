@@ -63,7 +63,8 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 
 		// Only users with any of the configured admin permissions can login
 		urlRegistry.anyRequest().hasAnyAuthority( settings.getAccessPermissions() )
-		           .and().formLogin().defaultSuccessUrl( adminWeb.path( "/" ) ).loginPage( adminWeb.path( "/login" ) ).permitAll()
+		           .and().formLogin().defaultSuccessUrl( adminWeb.path( "/" ) ).loginPage( adminWeb.path( "/login" ) )
+		           .permitAll()
 		           .and().logout().permitAll();
 
 		configureRememberMe( http );
@@ -87,6 +88,7 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	 *
 	 * @param http security element scoped for adminweb urls
 	 */
+	@SuppressWarnings( "all" )
 	protected void customizeAdminWebSecurity( HttpSecurity http ) throws Exception {
 	}
 }
