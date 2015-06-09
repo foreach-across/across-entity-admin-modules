@@ -45,7 +45,7 @@ import org.springframework.core.convert.ConversionService;
 public class AdminWebConfiguration implements EntityConfigurer
 {
 	@Autowired
-	private ConversionService conversionService;
+	private ConversionService mvcConversionService;
 
 	@Bean
 	public MenuEventsHandler menuEventsHandler() {
@@ -101,14 +101,14 @@ public class AdminWebConfiguration implements EntityConfigurer
 				configuration.addAttribute(
 						EntityLinkBuilder.class,
 						new EntityConfigurationLinkBuilder(
-								EntityControllerAttributes.ROOT_PATH, configuration, conversionService
+								EntityControllerAttributes.ROOT_PATH, configuration, mvcConversionService
 						)
 				);
 
 				for ( EntityAssociation association : configuration.getAssociations() ) {
 					MutableEntityAssociation mutable = configuration.association( association.getName() );
 					mutable.addAttribute( EntityLinkBuilder.class,
-					                      new EntityAssociationLinkBuilder( association, conversionService ) );
+					                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
 				}
 			}
 		} );

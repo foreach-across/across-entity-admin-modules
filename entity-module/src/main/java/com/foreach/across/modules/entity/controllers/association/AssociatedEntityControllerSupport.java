@@ -54,7 +54,7 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 	protected final Logger LOG = LoggerFactory.getLogger( getClass() );
 
 	@Autowired
-	private ConversionService conversionService;
+	private ConversionService mvcConversionService;
 
 	@Autowired
 	private ViewRequestValidator viewRequestValidator;
@@ -160,7 +160,7 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 	protected Object buildSourceEntityModel( EntityConfiguration<?> entityConfiguration,
 	                                         Serializable entityId,
 	                                         ModelMap model ) {
-		Object entity = conversionService.convert( entityId, entityConfiguration.getEntityType() );
+		Object entity = mvcConversionService.convert( entityId, entityConfiguration.getEntityType() );
 
 		model.addAttribute( ATTRIBUTE_SOURCE_ENTITY, entity );
 
@@ -174,7 +174,7 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 	                                           Serializable entityId,
 	                                           ModelMap model
 	) {
-		Object entity = conversionService.convert( entityId, entityConfiguration.getEntityType() );
+		Object entity = mvcConversionService.convert( entityId, entityConfiguration.getEntityType() );
 
 		model.addAttribute( EntityFormView.ATTRIBUTE_ORIGINAL_ENTITY, entity );
 		model.addAttribute( EntityView.ATTRIBUTE_ENTITY, entity );

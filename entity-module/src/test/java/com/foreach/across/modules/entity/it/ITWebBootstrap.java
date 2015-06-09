@@ -29,10 +29,7 @@ import com.foreach.across.test.AcrossTestWebConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -61,11 +58,6 @@ public class ITWebBootstrap
 	@AcrossTestWebConfiguration
 	public static class Config implements AcrossContextConfigurer
 	{
-		@Bean
-		public ConversionService conversionService() {
-			return new DefaultFormattingConversionService( true );
-		}
-
 		@Override
 		public void configure( AcrossContext context ) {
 			context.addModule( new EntityModule() );
