@@ -13,24 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.metrics.config;
+package com.foreach.across.modules.entity.views.elements;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.metrics.controllers.MetricsController;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class MetricModuleConfiguration
+/**
+ * @author Arne Vandamme
+ */
+public interface CommonViewElements
 {
-	@Bean
-	public MetricsController metricsController() {
-		return new MetricsController();
-	}
+	String CONTAINER = "container";
 
-	@Bean
-	@Exposed
-	public AcrossMetricRegistry acrossMetricRegistry() {
-		return new AcrossMetricRegistry();
-	}
+	String TEXTBOX = "textbox";
+	String HIDDEN = "hidden";
+	String SELECT = "select";
+	String RADIO = "radio";
+	String MULTI_CHECKBOX = "multi-checkbox";
+	String CHECKBOX = "checkbox";
+	String DATE = "date";
+	String FIELDSET = "fieldset";
+	String TEXT = "text";
+
+	String BUTTON = "button";
+	String SUBMIT_BUTTON = "submit";
+	String LINK_BUTTON = "link-button";
+	String LINK = "link";
 }

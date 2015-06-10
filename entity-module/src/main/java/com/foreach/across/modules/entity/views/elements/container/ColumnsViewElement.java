@@ -13,33 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.metrics;
-
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.modules.debugweb.DebugWebModule;
+package com.foreach.across.modules.entity.views.elements.container;
 
 /**
- * @author Marc Vanbrabant
+ * @author Arne Vandamme
  */
-@AcrossDepends( optional = DebugWebModule.NAME )
-public class MetricModule extends AcrossModule
+public class ColumnsViewElement extends ContainerViewElement
 {
-	public static final String NAME = "MetricModule";
-	public static final String RESOURCES = "metrics";
+	public ColumnsViewElement() {
+	}
 
-	@Override
-	public String getName() {
-		return NAME;
+	public ColumnsViewElement( String name ) {
+		super( name );
 	}
 
 	@Override
-	public String getResourcesKey() {
-		return RESOURCES;
-	}
-
-	@Override
-	public String getDescription() {
-		return "Provides metrics.";
+	public String getElementType() {
+		return "columns";
 	}
 }
