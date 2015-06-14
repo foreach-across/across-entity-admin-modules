@@ -67,7 +67,7 @@ public class TestFormPageView extends AbstractBootstrapViewElementTest
 	private void verify( ViewElement element ) {
 		renderAndExpect(
 				element,
-				"<form>" +
+				"<form role='form' method='post'>" +
 						"<div class='form-group'>" +
 						"<label class='control-label'>Name *</label>" +
 						"<input type='text' class='form-control' value='John Doe' />" +

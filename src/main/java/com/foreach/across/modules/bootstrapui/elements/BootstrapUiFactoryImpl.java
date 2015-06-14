@@ -3,6 +3,7 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
 import com.foreach.across.modules.web.ui.StandardViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 
 public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory implements BootstrapUiFactory
 {
@@ -54,5 +55,15 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	@Override
 	public TableViewElementBuilder table() {
 		return new TableViewElementBuilder();
+	}
+
+	@Override
+	public NodeViewElementBuilder row() {
+		return new NodeViewElementBuilder().tagName( "div" ).attribute( "class", "row" );
+	}
+
+	@Override
+	public ColumnViewElementBuilder column( Grid.DeviceGridLayout... layouts ) {
+		return new ColumnViewElementBuilder().layout( layouts );
 	}
 }

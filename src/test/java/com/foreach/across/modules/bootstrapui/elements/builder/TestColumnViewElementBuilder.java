@@ -13,30 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.bootstrapui.elements;
+package com.foreach.across.modules.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
+import com.foreach.across.modules.bootstrapui.elements.ColumnViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
+import com.foreach.across.test.support.AbstractViewElementBuilderTest;
 
 /**
- * Represents a HTML form element.
- *
  * @author Arne Vandamme
  */
-public class FormViewElement extends NodeViewElementSupport
+public class TestColumnViewElementBuilder extends AbstractViewElementBuilderTest<ColumnViewElementBuilder, ColumnViewElement>
 {
-	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM;
-
-	public FormViewElement() {
-		super( ELEMENT_TYPE );
-
-		setAttribute( "role", "form" );
-		setAttribute( "method", "post" );
+	@Override
+	protected ColumnViewElementBuilder createBuilder( ViewElementBuilderFactory builderFactory ) {
+		return new ColumnViewElementBuilder();
 	}
-
-	public void setAction( String url ) {
-		setAttribute( "action", url );
-	}
-
-	//form-inline
-	//form-horizontal
 }

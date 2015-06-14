@@ -150,6 +150,11 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 	}
 
 	@Override
+	public FormGroupElementBuilder addAll( Iterable<?> viewElements ) {
+		return super.addAll( viewElements );
+	}
+
+	@Override
 	public FormGroupElementBuilder sort( String... elementNames ) {
 		return super.sort( elementNames );
 	}

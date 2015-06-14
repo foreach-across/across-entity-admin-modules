@@ -47,6 +47,11 @@ public class FormViewElementBuilder extends NodeViewElementSupportBuilder<FormVi
 	}
 
 	@Override
+	public FormViewElementBuilder addAll( Iterable<?> viewElements ) {
+		return super.addAll( viewElements );
+	}
+
+	@Override
 	public FormViewElementBuilder sort( String... elementNames ) {
 		return super.sort( elementNames );
 	}

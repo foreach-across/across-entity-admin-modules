@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*
  * Copyright 2014 the original author or authors
  *
@@ -13,3 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+table td .btn {
+    padding: 0px 3px;
+}
+
+.btn .glyphicon-remove {
+    color: orangered;
+}

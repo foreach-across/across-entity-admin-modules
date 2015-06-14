@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static com.foreach.across.modules.bootstrapui.elements.Grid.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class TestGridClassGeneration
 {
@@ -53,8 +54,28 @@ public class TestGridClassGeneration
 		);
 
 		assertEquals(
-			"Grid{[hidden-md col-lg-offset-3],[col-sm-9]}",
-		    grid.toString()
+				"Grid{[hidden-md col-lg-offset-3],[col-sm-9]}",
+				grid.toString()
 		);
+	}
+
+	@Test
+	public void equality() {
+		assertEquals( Device.MD.visible(), Device.MD.visible() );
+		assertEquals( Device.LG.width( 3 ), Device.LG.width( 3 ) );
+		assertNotEquals( Device.LG.width( 3 ), Device.LG.width( 4 ) );
+		assertNotEquals( Device.LG.width( 3 ), Device.XS.width( 3 ) );
+
+		Grid gridOne = Grid.create(
+				Grid.position( Device.MD.hidden(), Device.LG.width( Width.QUARTER ).asOffset() ),
+				Grid.position( Device.SM.width( Width.THREE_QUARTERS ) )
+		);
+
+		Grid gridTwo = Grid.create(
+				Grid.position( Device.MD.hidden(), Device.LG.width( Width.QUARTER ).asOffset() ),
+				Grid.position( Device.SM.width( Width.THREE_QUARTERS ) )
+		);
+
+		assertEquals( gridOne, gridTwo );
 	}
 }

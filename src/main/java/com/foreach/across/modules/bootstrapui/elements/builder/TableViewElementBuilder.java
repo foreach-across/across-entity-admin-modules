@@ -337,6 +337,11 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 	}
 
 	@Override
+	public TableViewElementBuilder addAll( Iterable<?> viewElements ) {
+		return super.addAll( viewElements );
+	}
+
+	@Override
 	public TableViewElementBuilder sort( String... elementNames ) {
 		return super.sort( elementNames );
 	}

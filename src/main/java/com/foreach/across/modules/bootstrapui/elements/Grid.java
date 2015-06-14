@@ -5,6 +5,7 @@ import liquibase.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Grid extends ArrayList<Grid.Position>
 {
@@ -34,16 +35,33 @@ public class Grid extends ArrayList<Grid.Position>
 		public static final int TWELVE = 12;
 	}
 
-	public interface DeviceGridAction
+	public interface DeviceGridLayout
 	{
 	}
 
-	public static class SingleCssClassDeviceGridAction implements DeviceGridAction
+	public static class SingleCssClassDeviceGridLayout implements DeviceGridLayout
 	{
 		private final String generatedClass;
 
-		public SingleCssClassDeviceGridAction( String generatedClass ) {
+		public SingleCssClassDeviceGridLayout( String generatedClass ) {
 			this.generatedClass = generatedClass;
+		}
+
+		@Override
+		public boolean equals( Object o ) {
+			if ( this == o ) {
+				return true;
+			}
+			if ( o == null || getClass() != o.getClass() ) {
+				return false;
+			}
+			SingleCssClassDeviceGridLayout that = (SingleCssClassDeviceGridLayout) o;
+			return Objects.equals( generatedClass, that.generatedClass );
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash( generatedClass );
 		}
 
 		@Override
@@ -65,12 +83,12 @@ public class Grid extends ArrayList<Grid.Position>
 		public static final Device LARGE = LG;
 
 		private final String token;
-		private DeviceGridAction hidden;
+		private DeviceGridLayout hidden;
 		private Visibility visible;
 
 		public Device( String token ) {
 			this.token = token;
-			hidden = new SingleCssClassDeviceGridAction( "hidden-" + token );
+			hidden = new SingleCssClassDeviceGridLayout( "hidden-" + token );
 			visible = new Visibility( token );
 		}
 
@@ -78,7 +96,7 @@ public class Grid extends ArrayList<Grid.Position>
 			return new Column( token, columns );
 		}
 
-		public DeviceGridAction hidden() {
+		public DeviceGridLayout hidden() {
 			return hidden;
 		}
 
@@ -87,7 +105,7 @@ public class Grid extends ArrayList<Grid.Position>
 		}
 	}
 
-	public static class Visibility implements DeviceGridAction
+	public static class Visibility implements DeviceGridLayout
 	{
 		private final String token;
 
@@ -95,16 +113,16 @@ public class Grid extends ArrayList<Grid.Position>
 			this.token = token;
 		}
 
-		public DeviceGridAction block() {
-			return new SingleCssClassDeviceGridAction( "visible-" + token + "-block" );
+		public DeviceGridLayout block() {
+			return new SingleCssClassDeviceGridLayout( "visible-" + token + "-block" );
 		}
 
-		public DeviceGridAction inline() {
-			return new SingleCssClassDeviceGridAction( "visible-" + token + "-inline" );
+		public DeviceGridLayout inline() {
+			return new SingleCssClassDeviceGridLayout( "visible-" + token + "-inline" );
 		}
 
-		public DeviceGridAction inlineBlock() {
-			return new SingleCssClassDeviceGridAction( "visible-" + token + "-inline-block" );
+		public DeviceGridLayout inlineBlock() {
+			return new SingleCssClassDeviceGridLayout( "visible-" + token + "-inline-block" );
 		}
 
 		public String toString() {
@@ -112,7 +130,7 @@ public class Grid extends ArrayList<Grid.Position>
 		}
 	}
 
-	public static class Column implements DeviceGridAction
+	public static class Column implements DeviceGridLayout
 	{
 		private final String token;
 		private final int width;
@@ -122,20 +140,38 @@ public class Grid extends ArrayList<Grid.Position>
 			this.width = width;
 		}
 
-		public DeviceGridAction asWidth() {
-			return new SingleCssClassDeviceGridAction( "col-" + token + "-" + width );
+		public DeviceGridLayout asWidth() {
+			return new SingleCssClassDeviceGridLayout( "col-" + token + "-" + width );
 		}
 
-		public DeviceGridAction asOffset() {
-			return new SingleCssClassDeviceGridAction( "col-" + token + "-offset-" + width );
+		public DeviceGridLayout asOffset() {
+			return new SingleCssClassDeviceGridLayout( "col-" + token + "-offset-" + width );
 		}
 
-		public DeviceGridAction asPull() {
-			return new SingleCssClassDeviceGridAction( "col-" + token + "-pull-" + width );
+		public DeviceGridLayout asPull() {
+			return new SingleCssClassDeviceGridLayout( "col-" + token + "-pull-" + width );
 		}
 
-		public DeviceGridAction asPush() {
-			return new SingleCssClassDeviceGridAction( "col-" + token + "-push-" + width );
+		public DeviceGridLayout asPush() {
+			return new SingleCssClassDeviceGridLayout( "col-" + token + "-push-" + width );
+		}
+
+		@Override
+		public boolean equals( Object o ) {
+			if ( this == o ) {
+				return true;
+			}
+			if ( o == null || getClass() != o.getClass() ) {
+				return false;
+			}
+			Column column = (Column) o;
+			return Objects.equals( width, column.width ) &&
+					Objects.equals( token, column.token );
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash( token, width );
 		}
 
 		@Override
@@ -144,7 +180,7 @@ public class Grid extends ArrayList<Grid.Position>
 		}
 	}
 
-	public static class Position extends ArrayList<DeviceGridAction>
+	public static class Position extends ArrayList<DeviceGridLayout>
 	{
 		public Position() {
 			super( 4 );
@@ -153,7 +189,7 @@ public class Grid extends ArrayList<Grid.Position>
 		@Override
 		public String toString() {
 			List<String> strings = new ArrayList<>( size() );
-			for ( DeviceGridAction action : this ) {
+			for ( DeviceGridLayout action : this ) {
 				strings.add( action.toString() );
 			}
 
@@ -181,9 +217,9 @@ public class Grid extends ArrayList<Grid.Position>
 		return grid;
 	}
 
-	public static Position position( DeviceGridAction... actions ) {
+	public static Position position( DeviceGridLayout... layouts ) {
 		Position position = new Position();
-		Collections.addAll( position, actions );
+		Collections.addAll( position, layouts );
 
 		return position;
 	}
