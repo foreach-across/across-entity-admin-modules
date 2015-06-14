@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.processors;
-
-import com.foreach.across.modules.entity.controllers.EntityViewCommand;
-import com.foreach.across.modules.entity.views.ViewCreationContext;
-import org.springframework.ui.ModelMap;
+package com.foreach.across.modules.entity.registry.properties;
 
 /**
  * @author Arne Vandamme
  */
-public interface ViewModelAndCommandProcessor<T extends ViewCreationContext>
+public interface MutableEntityPropertyRegistry extends EntityPropertyRegistry
 {
-	void prepareModelAndCommand( String viewName,
-	                             T creationContext,
-	                             EntityViewCommand command,
-	                             ModelMap model );
+	MutableEntityPropertyDescriptor getMutableProperty( String propertyName );
 }
