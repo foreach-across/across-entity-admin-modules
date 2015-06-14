@@ -259,6 +259,10 @@ configuration:
 defining a custom view
 registering custom properties
 
+how to:
+* view processor
+*
+
 
 
 

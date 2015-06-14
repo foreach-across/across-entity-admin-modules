@@ -15,13 +15,26 @@
  */
 package com.foreach.across.modules.entity.newviews;
 
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.support.AttributeSupport;
 
 /**
  * @author Arne Vandamme
  */
-public class EntityViewElementBuilderContext extends AttributeSupport implements ViewElementBuilderContext
+public class EntityViewElementBuilderContext<T extends EntityView> extends AttributeSupport implements ViewElementBuilderContext
 {
 	public static final String ENTITY = "entity";
+
+	private final T entityView;
+
+	public EntityViewElementBuilderContext( T view ) {
+		this.entityView = view;
+
+		addAttribute( ENTITY, view.getEntity() );
+	}
+
+	public T getEntityView() {
+		return entityView;
+	}
 }

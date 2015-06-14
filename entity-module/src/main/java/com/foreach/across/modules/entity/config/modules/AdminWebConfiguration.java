@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -35,10 +36,12 @@ import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.web.EntityAssociationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.web.context.WebAppPathResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @AcrossDepends(required = "AdminWebModule")
 @Configuration
@@ -46,6 +49,9 @@ public class AdminWebConfiguration implements EntityConfigurer
 {
 	@Autowired
 	private ConversionService conversionService;
+
+	@Autowired
+	private AdminWeb adminWeb;
 
 	@Bean
 	public MenuEventsHandler menuEventsHandler() {
@@ -94,6 +100,22 @@ public class AdminWebConfiguration implements EntityConfigurer
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
+		// TODO: move to across web
+		final WebAppPathResolver servletContextResolver = new WebAppPathResolver()
+		{
+			@Override
+			public String path( String path ) {
+				return ServletUriComponentsBuilder.fromCurrentContextPath()
+				                                  .path( adminWeb.path( path ) )
+				                                  .toUriString();
+			}
+
+			@Override
+			public String redirect( String path ) {
+				return "redirect:" + path( path );
+			}
+		};
+
 		configuration.addPostProcessor( new PostProcessor<MutableEntityConfiguration<?>>()
 		{
 			@Override
@@ -101,7 +123,8 @@ public class AdminWebConfiguration implements EntityConfigurer
 				configuration.addAttribute(
 						EntityLinkBuilder.class,
 						new EntityConfigurationLinkBuilder(
-								EntityControllerAttributes.ROOT_PATH, configuration, conversionService
+								EntityControllerAttributes.ROOT_PATH, configuration, conversionService,
+								servletContextResolver
 						)
 				);
 
