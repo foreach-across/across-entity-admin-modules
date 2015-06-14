@@ -34,4 +34,5 @@ public interface BootstrapUiElements extends StandardViewElements
 	String LABEL = "bootstrapLabel";
 	String FORM_GROUP = "bootstrapFormGroup";
 	String TABLE = "bootstrapTable";
+	String COLUMN = "bootstrapColumn";
 }

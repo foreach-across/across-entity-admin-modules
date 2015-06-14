@@ -15,28 +15,32 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
+import org.junit.Test;
 
 /**
- * Represents a HTML form element.
- *
  * @author Arne Vandamme
  */
-public class FormViewElement extends NodeViewElementSupport
+public class TestColumnViewElement extends AbstractBootstrapViewElementTest
 {
-	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM;
+	@Test
+	public void simple() {
+		ColumnViewElement column = new ColumnViewElement();
 
-	public FormViewElement() {
-		super( ELEMENT_TYPE );
-
-		setAttribute( "role", "form" );
-		setAttribute( "method", "post" );
+		renderAndExpect(
+				column,
+				"<div></div>"
+		);
 	}
 
-	public void setAction( String url ) {
-		setAttribute( "action", url );
-	}
+	@Test
+	public void deviceLayouts() {
+		ColumnViewElement column = new ColumnViewElement();
+		column.addLayout( Grid.Device.MEDIUM.width( Grid.Width.HALF ) );
+		column.addLayout( Grid.Device.XS.hidden() );
 
-	//form-inline
-	//form-horizontal
+		renderAndExpect(
+				column,
+				"<div class='col-md-6 hidden-xs'></div>"
+		);
+	}
 }

@@ -226,6 +226,11 @@ public class ButtonViewElementBuilder extends NodeViewElementSupportBuilder<Butt
 	}
 
 	@Override
+	public ButtonViewElementBuilder addAll( Iterable<?> viewElements ) {
+		return super.addAll( viewElements );
+	}
+
+	@Override
 	public ButtonViewElementBuilder sort( String... elementNames ) {
 		return super.sort( elementNames );
 	}

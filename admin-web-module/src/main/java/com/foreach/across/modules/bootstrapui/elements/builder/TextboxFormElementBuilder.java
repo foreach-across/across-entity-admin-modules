@@ -183,6 +183,11 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 	}
 
 	@Override
+	public TextboxFormElementBuilder addAll( Iterable<?> viewElements ) {
+		return super.addAll( viewElements );
+	}
+
+	@Override
 	public TextboxFormElementBuilder sort( String... elementNames ) {
 		return super.sort( elementNames );
 	}

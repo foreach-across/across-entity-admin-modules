@@ -30,7 +30,7 @@ public class TestFormViewElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				form,
-				"<form>some text</form>"
+				"<form role='form' method='post'>some text</form>"
 		);
 	}
 }

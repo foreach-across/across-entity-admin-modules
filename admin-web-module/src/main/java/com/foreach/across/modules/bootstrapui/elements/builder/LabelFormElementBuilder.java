@@ -50,6 +50,11 @@ public class LabelFormElementBuilder extends NodeViewElementSupportBuilder<Label
 	}
 
 	@Override
+	public LabelFormElementBuilder addAll( Iterable<?> viewElements ) {
+		return super.addAll( viewElements );
+	}
+
+	@Override
 	public LabelFormElementBuilder sort( String... elementNames ) {
 		return super.sort( elementNames );
 	}

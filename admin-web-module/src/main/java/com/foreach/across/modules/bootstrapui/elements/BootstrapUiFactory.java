@@ -3,6 +3,7 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
+import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 
 public interface BootstrapUiFactory extends ViewElementBuilderFactory
 {
@@ -25,4 +26,8 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 	TextboxFormElementBuilder password();
 
 	TableViewElementBuilder table();
+
+	NodeViewElementBuilder row();
+
+	ColumnViewElementBuilder column( Grid.DeviceGridLayout... layouts );
 }
