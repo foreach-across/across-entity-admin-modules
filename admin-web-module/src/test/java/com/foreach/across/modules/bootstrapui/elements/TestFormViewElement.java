@@ -17,6 +17,9 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Test;
+import org.springframework.http.HttpMethod;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
@@ -24,13 +27,128 @@ import org.junit.Test;
 public class TestFormViewElement extends AbstractBootstrapViewElementTest
 {
 	@Test
+	public void method() {
+		FormViewElement form = new FormViewElement();
+		assertEquals( HttpMethod.POST, form.getMethod() );
+
+		form.setMethod( HttpMethod.GET );
+		assertEquals( HttpMethod.GET, form.getMethod() );
+	}
+
+	@Test
+	public void formNameIsSameAsNameUnlessOtherwiseSpecified() {
+		FormViewElement form = new FormViewElement();
+		assertNull( form.getName() );
+		assertNull( form.getFormName() );
+
+		form.setName( "someName" );
+		assertEquals( "someName", form.getName() );
+		assertEquals( "someName", form.getFormName() );
+
+		form.setFormName( "formName" );
+		assertEquals( "someName", form.getName() );
+		assertEquals( "formName", form.getFormName() );
+	}
+
+	@Test
 	public void simpleForm() {
 		FormViewElement form = new FormViewElement();
+		form.setCommandAttribute( "${element}" );
 		form.add( new TextViewElement( "some text" ) );
 
 		renderAndExpect(
 				form,
 				"<form role='form' method='post'>some text</form>"
+		);
+	}
+
+	@Test
+	public void namedForms() {
+		FormViewElement form = new FormViewElement();
+		form.add( new TextViewElement( "some text" ) );
+		form.setName( "defaultName" );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post' name='defaultName'>some text</form>"
+		);
+
+		form.setFormName( "formName" );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post' name='formName'>some text</form>"
+		);
+	}
+
+	@Test
+	public void customHttpMethodAndAction() {
+		FormViewElement form = new FormViewElement();
+		form.add( new TextViewElement( "some text" ) );
+		form.setMethod( HttpMethod.GET );
+		form.setAction( "actionUrl" );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='get' action='actionUrl'>some text</form>"
+		);
+	}
+
+	@Test
+	public void encType() {
+		FormViewElement form = new FormViewElement();
+		form.setEncType( FormViewElement.ENCTYPE_MULTIPART );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post' enctype='multipart/form-data'></form>"
+		);
+	}
+
+	@Test
+	public void acceptCharSet() {
+		FormViewElement form = new FormViewElement();
+		form.setAcceptCharSet( "UTF-8" );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post' accept-charset='UTF-8'></form>"
+		);
+	}
+
+	@Test
+	public void noValidate() {
+		FormViewElement form = new FormViewElement();
+		assertFalse( form.isNoValidate() );
+
+		form.setNoValidate( true );
+		assertTrue( form.isNoValidate() );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post' novalidate='novalidate'></form>"
+		);
+	}
+
+	@Test
+	public void autoComplete() {
+		FormViewElement form = new FormViewElement();
+		assertTrue( form.isAutoComplete() );
+
+		form.setAutoComplete( true );
+		assertTrue( form.isAutoComplete() );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post' autocomplete='on'></form>"
+		);
+
+		form.setAutoComplete( false );
+		assertFalse( form.isAutoComplete() );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post' autocomplete='off'></form>"
 		);
 	}
 }

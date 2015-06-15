@@ -14,10 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* todo: to bootstrap ui css! */
 table td .btn {
     padding: 0px 3px;
 }
 
 .btn .glyphicon-remove {
     color: orangered;
+}
+
+label.control-label > sup.required {
+    margin-left: 3px;
 }

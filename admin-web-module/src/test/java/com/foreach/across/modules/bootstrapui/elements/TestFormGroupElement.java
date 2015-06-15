@@ -60,7 +60,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				group,
 				"<div class='form-group required'>" +
-						"<label for='control' class='control-label'>title</label>" +
+						"<label for='control' class='control-label'>title<sup class='required'>*</sup></label>" +
 						"<input type='text' class='form-control' name='control' id='control' />" +
 						"</div>"
 		);

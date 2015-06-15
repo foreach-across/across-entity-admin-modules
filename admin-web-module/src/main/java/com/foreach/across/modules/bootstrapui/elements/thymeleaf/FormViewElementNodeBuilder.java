@@ -17,19 +17,77 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.FormViewElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
+import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Arne Vandamme
  */
 public class FormViewElementNodeBuilder extends NestableNodeBuilderSupport<FormViewElement>
 {
+	public static final String VAR_CURRENT_BOOSTRAP_FORM = "_currentBootstrapForm";
+
+	@Override
+	public List<Node> buildNodes( FormViewElement form,
+	                              Arguments arguments,
+	                              ViewElementNodeFactory viewElementNodeFactory ) {
+		Element node = createNode( form, arguments, viewElementNodeFactory );
+		attribute( node, "id", retrieveHtmlId( arguments, form ) );
+
+		applyProperties( form, arguments, node );
+
+		viewElementNodeFactory.setAttributes( node, form.getAttributes() );
+
+		Arguments newArguments = buildFormArguments( form, arguments );
+
+		for ( ViewElement child : form ) {
+			for ( Node childNode : viewElementNodeFactory.buildNodes( child, newArguments ) ) {
+				node.addChild( childNode );
+			}
+		}
+
+		return Collections.singletonList( (Node) node );
+	}
+
+	private Arguments buildFormArguments( FormViewElement form, Arguments original ) {
+		Arguments newArguments = original.addLocalVariables(
+				Collections.<String, Object>singletonMap( VAR_CURRENT_BOOSTRAP_FORM, form )
+		);
+		newArguments.getExpressionObjects().putAll( original.getExpressionObjects() );
+
+		return newArguments;
+	}
+
 	@Override
 	protected Element createNode( FormViewElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		return new Element( "form" );
+		Element node = new Element( "form" );
+
+		// Support request data value processing - CSRF tokens
+		final Map<String, String> extraHiddenFields =
+				RequestDataValueProcessorUtils.getExtraHiddenFields( arguments.getConfiguration(), arguments );
+
+		if ( extraHiddenFields != null && extraHiddenFields.size() > 0 ) {
+
+			for ( final Map.Entry<String, String> extraHiddenField : extraHiddenFields.entrySet() ) {
+				final Element extraHiddenElement = new Element( "input" );
+				extraHiddenElement.setAttribute( "type", "hidden" );
+				extraHiddenElement.setAttribute( "name", extraHiddenField.getKey() );
+				extraHiddenElement.setAttribute( "value", extraHiddenField.getValue() );
+
+				node.insertChild( node.numChildren(), extraHiddenElement );
+			}
+		}
+
+		return node;
 	}
 }
