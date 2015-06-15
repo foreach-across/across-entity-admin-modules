@@ -15,8 +15,10 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
+import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.FormLayout;
+import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -188,6 +190,14 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 
 		if ( control != null ) {
 			group.setControl( control.get( builderContext ) );
+		}
+
+		if ( group.getLabel() instanceof LabelFormElement ) {
+			LabelFormElement label = group.getLabel();
+
+			if ( !label.hasTarget() && group.getControl() instanceof FormControlElementSupport ) {
+				label.setTarget( group.getControl() );
+			}
 		}
 
 		if ( formLayout != null ) {

@@ -23,6 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
+import org.thymeleaf.dom.Text;
+import org.thymeleaf.spring4.expression.Fields;
+import org.thymeleaf.spring4.expression.SpelVariableExpressionEvaluator;
 
 import java.util.List;
 
@@ -50,6 +53,9 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 			Element labelElement = labelElement( labelNodes );
 
 			if ( labelElement != null ) {
+				if ( group.isRequired() ) {
+					addRequiredIndicator( labelElement );
+				}
 				if ( layout != null && layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
 					labelElement.setAttribute( "class", "sr-only" );
 				}
@@ -69,7 +75,7 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 				Element controlElement = controlElement( controlNodes );
 
 				if ( controlElement != null && label instanceof LabelFormElement ) {
-					String labelText = ((LabelFormElement) label).getText();
+					String labelText = ( (LabelFormElement) label ).getText();
 
 					if ( labelText != null && !controlElement.hasAttribute( "placeholder" ) ) {
 						controlElement.setAttribute( "placeholder", labelText );
@@ -80,9 +86,45 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 			for ( Node childNode : controlNodes ) {
 				node.addChild( childNode );
 			}
+
+			if ( control instanceof FormControlElementSupport ) {
+				addFieldErrors( node, ( (FormControlElementSupport) control ).getControlName(), arguments );
+			}
 		}
 
 		return node;
+	}
+
+	private void addRequiredIndicator( Element labelElement ) {
+		Element indicator = new Element( "sup" );
+		indicator.setAttribute( "class", "required" );
+		indicator.addChild( new Text( "*" ) );
+
+		labelElement.addChild( indicator );
+	}
+
+	private void addFieldErrors( Element node, String controlName, Arguments arguments ) {
+		if ( arguments.hasLocalVariable( FormViewElementNodeBuilder.VAR_CURRENT_BOOSTRAP_FORM ) ) {
+			FormViewElement form = (FormViewElement) arguments.getLocalVariable(
+					FormViewElementNodeBuilder.VAR_CURRENT_BOOSTRAP_FORM
+			);
+
+			if ( form.getCommandAttribute() != null ) {
+				Fields fields = (Fields) arguments.getExpressionObjects()
+				                                  .get( SpelVariableExpressionEvaluator.FIELDS_EVALUATION_VARIABLE_NAME );
+
+				String fullControlName = form.getCommandAttribute() + "." + controlName;
+				if ( fields != null && fields.hasErrors( fullControlName ) ) {
+					attributeAppend( node, "class", "has-error" );
+
+					Element errors = new Element( "div" );
+					errors.setAttribute( "class", "small text-danger" );
+					errors.addChild( new Text( "" + StringUtils.join( fields.errors( fullControlName ), " " ) ) );
+
+					node.addChild( errors );
+				}
+			}
+		}
 	}
 
 	private Element labelElement( List<Node> labelNodes ) {

@@ -16,9 +16,13 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpMethod;
+import org.springframework.util.Assert;
 
 /**
- * Represents a HTML form element.
+ * Represents a HTML form element, supporting a Bootstrap {@link FormLayout} that will automatically
+ * be applied to all controls of the form that do not have a separate layout specified.
  *
  * @author Arne Vandamme
  */
@@ -26,15 +30,132 @@ public class FormViewElement extends NodeViewElementSupport
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM;
 
+	public static final String ENCTYPE_PLAIN = "text/plain";
+	public static final String ENCTYPE_MULTIPART = "multipart/form-data";
+	public static final String ENCTYPE_URLENCODED = "application/x-www-form-urlencoded";
+
+	private FormLayout formLayout;
+	private String commandAttribute;
+
 	public FormViewElement() {
 		super( ELEMENT_TYPE );
 
 		setAttribute( "role", "form" );
-		setAttribute( "method", "post" );
+
+		setMethod( HttpMethod.POST );
+	}
+
+	public FormLayout getFormLayout() {
+		return formLayout;
+	}
+
+	public String getCommandAttribute() {
+		return commandAttribute;
+	}
+
+	/**
+	 * Set the attribute name of the command object that this form is for.  All form group
+	 * within this form will have the control names prefixed and field errors bound.
+	 *
+	 * @param commandAttribute instance
+	 */
+	public void setCommandAttribute( String commandAttribute ) {
+		this.commandAttribute = commandAttribute;
+	}
+
+	/**
+	 * Set the {@link FormLayout} that should be applied to all {@link FormGroupElement} members
+	 * of this form.
+	 *
+	 * @param formLayout instance
+	 */
+	public void setFormLayout( FormLayout formLayout ) {
+		this.formLayout = formLayout;
+	}
+
+	public void setMethod( HttpMethod httpMethod ) {
+		Assert.isTrue( httpMethod == HttpMethod.GET || httpMethod == HttpMethod.POST,
+		               "Method POST or GET is required." );
+		setAttribute( "method", StringUtils.lowerCase( httpMethod.toString() ) );
+	}
+
+	public HttpMethod getMethod() {
+		return HttpMethod.valueOf( StringUtils.upperCase( (String) getAttribute( "method" ) ) );
 	}
 
 	public void setAction( String url ) {
 		setAttribute( "action", url );
+	}
+
+	public String getAction() {
+		return getAttribute( "action" );
+	}
+
+	@Override
+	public void setName( String name ) {
+		super.setName( name );
+
+		if ( getFormName() == null ) {
+			setFormName( name );
+		}
+	}
+
+	/**
+	 * Set the HTML name attribute of this form.  Defaults to {@link #getName()}.
+	 *
+	 * @param name attribute to use
+	 */
+	public void setFormName( String name ) {
+		setAttribute( "name", name );
+	}
+
+	/**
+	 * @return name attribute of the form
+	 */
+	public String getFormName() {
+		return getAttribute( "name" );
+	}
+
+	/**
+	 * Set encoding type (enctype attribute) to use for this form.
+	 *
+	 * @param encType value
+	 */
+	public void setEncType( String encType ) {
+		setAttribute( "enctype", encType );
+	}
+
+	public String getEncType() {
+		return getAttribute( "enctype" );
+	}
+
+	public void setAcceptCharSet( String charSet ) {
+		setAttribute( "accept-charset", charSet );
+	}
+
+	public String getAcceptCharSet() {
+		return getAttribute( "accept-charset" );
+	}
+
+	public void setAutoComplete( boolean autoComplete ) {
+		setAttribute( "autocomplete", autoComplete ? "on" : "off" );
+	}
+
+	public boolean isAutoComplete() {
+		return !hasAttribute( "autocomplete" ) || StringUtils.equals( (String) getAttribute( "autocomplete" ), "on" );
+	}
+
+	public void setNoValidate( boolean noValidate ) {
+		if ( noValidate ) {
+			setAttribute( "novalidate", "novalidate" );
+		}
+		else {
+			removeAttribute( "novalidate" );
+		}
+	}
+
+	public boolean isNoValidate() {
+		return hasAttribute( "novalidate" );
 	}
 
 	//form-inline
