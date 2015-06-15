@@ -13,22 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.container;
+package com.foreach.across.modules.entity.views;
+
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
+import org.springframework.ui.ModelMap;
 
 /**
+ * Base implementation for viewing properties of a single entity.
+ *
  * @author Arne Vandamme
  */
-public class ColumnsViewElement extends ContainerViewElement
+public class EntityViewViewFactory extends SingleEntityViewFactory<ViewCreationContext, EntityView>
 {
-	public ColumnsViewElement() {
-	}
-
-	public ColumnsViewElement( String name ) {
-		super( name );
+	@Override
+	public ViewElementMode getViewElementMode() {
+		return super.getViewElementMode();
 	}
 
 	@Override
-	public String getElementType() {
-		return "columns";
+	public void setViewElementMode( ViewElementMode viewElementMode ) {
+		super.setViewElementMode( viewElementMode );
+	}
+
+	@Override
+	protected EntityView createEntityView( ModelMap model ) {
+		return new EntityView( model );
 	}
 }
