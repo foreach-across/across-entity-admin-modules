@@ -31,7 +31,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.services.EntityFormService;
 import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
-import com.foreach.across.modules.entity.views.SingleEntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewViewFactory;
 import com.foreach.across.modules.entity.views.elements.CommonViewElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.views.elements.fieldset.FieldsetViewElementBuilderFactoryAssembler;
 import com.foreach.across.modules.entity.views.elements.form.checkbox.CheckboxFormElementBuilderFactoryAssembler;
@@ -58,7 +58,6 @@ import javax.annotation.PostConstruct;
 @Configuration
 public class EntityModuleConfiguration
 {
-
 	private static final Logger LOG = LoggerFactory.getLogger( EntityModuleConfiguration.class );
 
 	@Autowired(required = false)
@@ -168,8 +167,8 @@ public class EntityModuleConfiguration
 	@Bean
 	@Exposed
 	@Scope("prototype")
-	public SingleEntityViewFactory simpleEntityViewFactory() {
-		return new SingleEntityViewFactory();
+	public EntityViewViewFactory entityViewViewFactory() {
+		return new EntityViewViewFactory();
 	}
 
 	@Bean
@@ -182,7 +181,7 @@ public class EntityModuleConfiguration
 	@Bean
 	@Exposed
 	@Scope("prototype")
-	public EntityFormViewFactory entityCreateViewFactory() {
+	public EntityFormViewFactory entityFormViewFactory() {
 		return new EntityFormViewFactory();
 	}
 }

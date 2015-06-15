@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.registry.properties.MergingEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.SingleEntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewViewFactory;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.Assert;
 
@@ -113,7 +113,7 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 	@SuppressWarnings("unchecked")
 	@Override
 	protected T createFactoryInstance( AutowireCapableBeanFactory beanFactory ) {
-		return (T) beanFactory.getBean( SingleEntityViewFactory.class );
+		return (T) beanFactory.getBean( EntityViewViewFactory.class );
 	}
 
 	@Override
