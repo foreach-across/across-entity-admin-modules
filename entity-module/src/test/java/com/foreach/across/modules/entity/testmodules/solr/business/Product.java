@@ -13,27 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements;
+package com.foreach.across.modules.entity.testmodules.solr.business;
+
+import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.solr.core.mapping.Indexed;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Arne Vandamme
  */
-public interface CommonViewElements
+public class Product
 {
-	String CONTAINER = "container";
+	@Id
+	@Field
+	private String simpleProperty;
 
-	String TEXTBOX = "textbox";
-	String HIDDEN = "hidden";
-	String SELECT = "select";
-	String RADIO = "radio";
-	String MULTI_CHECKBOX = "multi-checkbox";
-	String CHECKBOX = "checkbox";
-	String DATE = "date";
-	String FIELDSET = "fieldset";
-	String TEXT = "text";
+	@Field("somePropertyName")
+	private String namedPropery;
 
-	String BUTTON = "button";
-	String SUBMIT_BUTTON = "submit";
-	String LINK_BUTTON = "link-button";
-	String LINK = "link";
+	@Field
+	private List<String> listOfValues;
+
+	@Indexed(readonly = true)
+	@Field("property_*")
+	private List<String> ignoredFromWriting;
+
+	@Field("mappedField_*")
+	private Map<String, List<String>> mappedFieldValues;
 }

@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.container;
+package com.foreach.across.modules.entity.testmodules.solr.repositories;
+
+import com.foreach.across.modules.entity.testmodules.solr.business.Product;
+import org.springframework.data.solr.repository.SolrCrudRepository;
 
 /**
  * @author Arne Vandamme
  */
-public class ColumnsViewElement extends ContainerViewElement
+public interface ProductRepository extends SolrCrudRepository<Product, String>
 {
-	public ColumnsViewElement() {
-	}
-
-	public ColumnsViewElement( String name ) {
-		super( name );
-	}
-
-	@Override
-	public String getElementType() {
-		return "columns";
-	}
 }
