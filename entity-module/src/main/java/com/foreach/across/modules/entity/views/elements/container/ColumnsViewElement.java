@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.sortable {
-  cursor: pointer;
+package com.foreach.across.modules.entity.views.elements.container;
 
-  :hover {
-    color: orange;
-  }
+/**
+ * @author Arne Vandamme
+ */
+public class ColumnsViewElement extends ContainerViewElement
+{
+	public ColumnsViewElement() {
+	}
 
-  span.caret {
-    display: none;
-  }
-  &.dropup, &.dropdown {
-    span.caret {
-      display: inline-block;
-    }
-  }
-}
+	public ColumnsViewElement( String name ) {
+		super( name );
+	}
 
-.table > thead > tr.odd {
-  background-color: #ffffff; }
-
-.pager-form {
-  color: black;
+	@Override
+	public String getElementType() {
+		return "columns";
+	}
 }
