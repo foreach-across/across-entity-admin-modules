@@ -26,3 +26,40 @@ table td .btn {
 label.control-label > sup.required {
     margin-left: 3px;
 }
+
+.pager-form {
+    color: black;
+}
+.pager-form label {
+    font-weight: normal;
+}
+.pager-form .btn {
+    padding: 0px 10px;
+}
+.pager-form .form-control {
+    width: 30px;
+    padding: 2px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.pager-form > span, .pager-form label > span {
+    margin-left: 6px;
+    margin-right: 6px;
+    vertical-align: middle;
+    color: gray;
+}
+
+.pager-form .no-btn {
+    display: inline-block;
+    width: 24px;
+}
+
+.pager-form .total-pages-link {
+    font-weight: bold;
+    font-size: 14px;
+    vertical-align: middle;
+    color: black;
+    margin-right: 8px;
+}
+

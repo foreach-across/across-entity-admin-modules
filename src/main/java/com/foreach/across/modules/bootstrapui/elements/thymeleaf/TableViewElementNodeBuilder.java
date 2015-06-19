@@ -17,10 +17,8 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
-import com.foreach.across.modules.web.ui.ViewElement;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.Node;
 
 /**
  * @author Arne Vandamme
@@ -68,6 +66,22 @@ public class TableViewElementNodeBuilder extends BootstrapNodeBuilderSupport<Tab
 		addChild( element, table.getHeader(), arguments, viewElementNodeFactory );
 		addChild( element, table.getBody(), arguments, viewElementNodeFactory );
 		addChild( element, table.getFooter(), arguments, viewElementNodeFactory );
+
+		return element;
+	}
+
+	@Override
+	protected Element postProcess( Element element,
+	                               TableViewElement table,
+	                               Arguments arguments,
+	                               ViewElementNodeFactory viewElementNodeFactory ) {
+		if ( table.isResponsive() ) {
+			Element responsiveWrapper = new Element( "div" );
+			responsiveWrapper.setAttribute( "class", "table-responsive" );
+			responsiveWrapper.addChild( element );
+
+			return responsiveWrapper;
+		}
 
 		return element;
 	}
