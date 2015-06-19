@@ -13,26 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.sortable {
-  cursor: pointer;
+package com.foreach.across.modules.entity.newviews.bootstrapui.util;
 
-  :hover {
-    color: orange;
-  }
+import org.springframework.data.domain.Page;
 
-  span.caret {
-    display: none;
-  }
-  &.dropup, &.dropdown {
-    span.caret {
-      display: inline-block;
-    }
-  }
-}
+/**
+ * @author Arne Vandamme
+ */
+public interface PagingMessages
+{
+	String pagerText( Page currentPage, Object... args );
 
-.table > thead > tr.odd {
-  background-color: #ffffff; }
+	String nextPage( Page currentPage, Object... args );
 
-.pager-form {
-  color: black;
+	String previousPage( Page currentPage, Object... args );
+
+	String resultsFound( Page currentPage, Object... args );
 }

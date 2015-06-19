@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.sortable {
-  cursor: pointer;
+package com.foreach.across.modules.entity.config;
 
-  :hover {
-    color: orange;
-  }
+import com.foreach.across.modules.entity.newviews.bootstrapui.util.SortableTableBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.stereotype.Service;
 
-  span.caret {
-    display: none;
-  }
-  &.dropup, &.dropdown {
-    span.caret {
-      display: inline-block;
-    }
-  }
-}
+/**
+ * @author Arne Vandamme
+ */
+@Service
+public class ViewHelpers
+{
+	@Autowired
+	private AutowireCapableBeanFactory beanFactory;
 
-.table > thead > tr.odd {
-  background-color: #ffffff; }
-
-.pager-form {
-  color: black;
+	public SortableTableBuilder createSortableTableBuilder() {
+		return beanFactory.createBean( SortableTableBuilder.class );
+	}
 }

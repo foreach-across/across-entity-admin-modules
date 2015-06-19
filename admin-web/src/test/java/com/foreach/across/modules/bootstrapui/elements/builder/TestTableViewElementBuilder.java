@@ -48,6 +48,7 @@ public class TestTableViewElementBuilder extends AbstractViewElementBuilderTest<
 	public void emptyTable() {
 		build();
 
+		assertFalse( element.isResponsive() );
 		assertNull( element.getHeader() );
 		assertNull( element.getBody() );
 		assertNull( element.getCaption() );
@@ -136,6 +137,7 @@ public class TestTableViewElementBuilder extends AbstractViewElementBuilderTest<
 	@Test
 	public void commonTable() {
 		TableViewElementBuilder table = builder;
+		table.responsive();
 		table.caption( "Table caption" );
 		table.header()
 		     .add(
@@ -156,6 +158,7 @@ public class TestTableViewElementBuilder extends AbstractViewElementBuilderTest<
 
 		assertEquals( "Table caption", element.getCaption().getText() );
 
+		assertTrue( element.isResponsive() );
 		assertEquals( 1, element.getHeader().size() );
 		assertEquals( 2, element.getBody().size() );
 
