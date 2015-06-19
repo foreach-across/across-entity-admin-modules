@@ -123,6 +123,7 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 		}
 	}
 
+	private Boolean responsive;
 	private Set<Style> styles = new HashSet<>();
 	private TableViewElementBuilder.Header header;
 	private TableViewElementBuilder.Body body;
@@ -136,6 +137,24 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 
 	public TableViewElementBuilder clearStyles() {
 		styles.clear();
+		return this;
+	}
+
+	/**
+	 * Will make the table responsive.
+	 * @return current builder
+	 */
+	public TableViewElementBuilder responsive() {
+		return responsive( true );
+	}
+
+	/**
+	 * Determine if the table should be responsive or not.
+	 * @param responsive true if the table should be responsive
+	 * @return current builder
+	 */
+	public TableViewElementBuilder responsive( boolean responsive ) {
+		this.responsive = responsive;
 		return this;
 	}
 
@@ -366,6 +385,9 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 		TableViewElement table = apply( new TableViewElement(), builderContext );
 		table.setStyles( styles );
 
+		if ( responsive != null ) {
+			table.setResponsive( responsive );
+		}
 		if ( caption != null ) {
 			table.setCaption( caption.build( builderContext ) );
 		}

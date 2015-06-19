@@ -166,8 +166,24 @@ public class TableViewElement extends NodeViewElementSupport
 	private Footer footer;
 	private Body body;
 
+	private boolean responsive;
+
 	public TableViewElement() {
 		super( ELEMENT_TYPE );
+	}
+
+	/**
+	 * Set the table as a responsive table.  This will wrap the table in a single div with
+	 * table-responsive class.
+	 *
+	 * @param responsive true if table should be wrapped
+	 */
+	public void setResponsive( boolean responsive ) {
+		this.responsive = responsive;
+	}
+
+	public boolean isResponsive() {
+		return responsive;
 	}
 
 	public Caption getCaption() {

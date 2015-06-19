@@ -36,6 +36,18 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void responsive() {
+		TableViewElement table = new TableViewElement();
+		table.setAttribute( "data-test", "test" );
+		table.setResponsive( true );
+
+		renderAndExpect(
+				table,
+		        "<div class='table-responsive'><table class='table' data-test='test'></table></div>"
+		);
+	}
+
+	@Test
 	public void styles() {
 		TableViewElement table = new TableViewElement();
 		table.addStyle( Style.Table.CONDENSED );
