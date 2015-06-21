@@ -26,6 +26,10 @@ public interface PagingMessages
 
 	String nextPage( Page currentPage, Object... args );
 
+	String page( Page currentPage, Object... args );
+
+	String ofPages( Page currentPage, Object... args );
+
 	String previousPage( Page currentPage, Object... args );
 
 	String resultsFound( Page currentPage, Object... args );

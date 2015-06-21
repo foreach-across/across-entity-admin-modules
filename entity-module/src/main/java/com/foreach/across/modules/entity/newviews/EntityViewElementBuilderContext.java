@@ -20,6 +20,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.support.AttributeSupport;
 
 /**
+ * todo: should delegate to the backing entity view instead
  * @author Arne Vandamme
  */
 public class EntityViewElementBuilderContext<T extends EntityView> extends AttributeSupport implements ViewElementBuilderContext

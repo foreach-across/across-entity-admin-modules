@@ -31,9 +31,7 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_LABEL;
 import static com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_VALUE;
@@ -110,6 +108,9 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	private PagingMessages pagingMessages;
 
 	private ViewElementBuilderSupport.ElementOrBuilder noResultsElement;
+
+	private Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors = new ArrayList<>();
+	private Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors = new ArrayList<>();
 
 	@Autowired
 	public SortableTableBuilder( EntityViewElementBuilderService viewElementBuilderService,
@@ -199,6 +200,24 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		this.noResultsElement = ViewElementBuilderSupport.ElementOrBuilder.wrap( builder );
 	}
 
+	public void setHeaderRowProcessors( Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors ) {
+		this.headerRowProcessors.clear();
+		this.headerRowProcessors.addAll( headerRowProcessors );
+	}
+
+	public void setValueRowProcessors( Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors ) {
+		this.valueRowProcessors.clear();
+		this.valueRowProcessors.addAll( valueRowProcessors );
+	}
+
+	public void addHeaderRowProcessor( ViewElementPostProcessor<TableViewElement.Row> processor ) {
+		headerRowProcessors.add( processor );
+	}
+
+	public void addValueRowProcessor( ViewElementPostProcessor<TableViewElement.Row> processor ) {
+		valueRowProcessors.add( processor );
+	}
+
 	public String getTableName() {
 		return tableName;
 	}
@@ -233,6 +252,14 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 
 	public Collection<String> getSortableProperties() {
 		return sortableProperties;
+	}
+
+	public Collection<ViewElementPostProcessor<TableViewElement.Row>> getHeaderRowProcessors() {
+		return Collections.unmodifiableCollection( headerRowProcessors );
+	}
+
+	public Collection<ViewElementPostProcessor<TableViewElement.Row>> getValueRowProcessors() {
+		return Collections.unmodifiableCollection( valueRowProcessors );
 	}
 
 	/**
@@ -310,6 +337,10 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 			headerRow.add( heading );
 		}
 
+		for ( ViewElementPostProcessor<TableViewElement.Row> postProcessor : getHeaderRowProcessors() ) {
+			headerRow.postProcessor( postProcessor );
+		}
+
 		table.header().add( headerRow );
 	}
 
@@ -349,12 +380,15 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 			valueRow.add( cell );
 		}
 
+		for ( ViewElementPostProcessor<TableViewElement.Row> postProcessor : getValueRowProcessors() ) {
+			valueRow.postProcessor( postProcessor );
+		}
+
 		table.body()
 		     .add(
 				     bootstrapUi.generator( Object.class, TableViewElement.Row.class )
 				                .itemBuilder( valueRow )
 				                .items( page.getContent() )
-
 		     );
 	}
 
@@ -425,7 +459,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 
 		pager.add(
 				bootstrapUi.label()
-				           .add( bootstrapUi.node( "span" ).add( bootstrapUi.text( "page" ) ) )
+				           .add( bootstrapUi.node( "span" ).add( bootstrapUi.text( messages.page( currentPage ) ) ) )
 				           .add(
 						           bootstrapUi.textbox()
 						                      .attribute( "data-tbl-page-selector", "selector" )
@@ -433,7 +467,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 						                      .text( String.valueOf( currentPage.getNumber() + 1 ) )
 				           )
 		)
-		     .add( bootstrapUi.node( "span" ).add( bootstrapUi.text( "of" ) ) )
+		     .add( bootstrapUi.node( "span" ).add( bootstrapUi.text( messages.ofPages( currentPage ) ) ) )
 		     .add(
 				     bootstrapUi.node( "a" )
 				                .attribute( "href", "#" )
