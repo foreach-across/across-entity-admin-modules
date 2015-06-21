@@ -34,13 +34,17 @@ label.control-label > sup.required {
     font-weight: normal;
 }
 .pager-form .btn {
-    padding: 0px 10px;
+    padding: 0 10px;
 }
 .pager-form .form-control {
-    width: 30px;
+    width: 34px;
     padding: 2px;
     text-align: center;
     vertical-align: middle;
+}
+
+.pager-form .form-control.has-error {
+    border-color: red;
 }
 
 .pager-form > span, .pager-form label > span {
