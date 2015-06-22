@@ -133,6 +133,5 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 						"<option value='one'>Inner text</option>" +
 						"</select>"
 		);
-
 	}
 }

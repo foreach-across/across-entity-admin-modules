@@ -50,6 +50,8 @@ public class CheckboxFormElementNodeBuilder extends FormControlElementBuilderSup
 		attribute( checkbox, "checked", control.isChecked() );
 		applyProperties( control, arguments, checkbox );
 
+		label.addChild( checkbox );
+
 		if ( control.getLabel() != null ) {
 			text( label, " " + control.getLabel() );
 		}
@@ -60,7 +62,6 @@ public class CheckboxFormElementNodeBuilder extends FormControlElementBuilderSup
 			}
 		}
 
-		label.addChild( checkbox );
 		wrapper.addChild( label );
 
 		if ( control.getControlName() != null ) {
