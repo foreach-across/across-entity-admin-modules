@@ -142,7 +142,7 @@ public class RepositoryEntityPropertyRegistryBuilder
 					|| persistentProperty.isAnnotationPresent( EmbeddedId.class ) ) ) {
 				MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
 				if ( mutable != null ) {
-					mutable.addAttribute( EntityAttributes.PROPERTY_PERSISTENCE_METADATA,
+					mutable.setAttribute( EntityAttributes.PROPERTY_PERSISTENCE_METADATA,
 					                      new PropertyPersistenceMetadata() );
 				}
 			}
@@ -181,7 +181,7 @@ public class RepositoryEntityPropertyRegistryBuilder
 				MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
 
 				if ( mutable != null ) {
-					mutable.addAttribute( EntityAttributes.SORTABLE_PROPERTY, persistentProperty.getName() );
+					mutable.setAttribute( EntityAttributes.SORTABLE_PROPERTY, persistentProperty.getName() );
 				}
 			}
 		}
@@ -192,7 +192,7 @@ public class RepositoryEntityPropertyRegistryBuilder
 		BeanDescriptor beanDescriptor = metaData.getBeanDescriptor();
 
 		if ( beanDescriptor != null ) {
-			entityConfiguration.addAttribute( BeanDescriptor.class, beanDescriptor );
+			entityConfiguration.setAttribute( BeanDescriptor.class, beanDescriptor );
 		}
 	}
 }

@@ -15,9 +15,9 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.registry.ConfigurableEntityViewRegistry;
-import com.foreach.across.modules.entity.registry.support.WritableAttributes;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.Assert;
@@ -165,10 +165,10 @@ public abstract class AbstractAttributesAndViewsBuilder<T extends AbstractAttrib
 	protected void applyAttributes( WritableAttributes writableAttributes ) {
 		for ( Map.Entry<Object, Object> attribute : attributes.entrySet() ) {
 			if ( attribute.getKey() instanceof String ) {
-				writableAttributes.addAttribute( (String) attribute.getKey(), attribute.getValue() );
+				writableAttributes.setAttribute( (String) attribute.getKey(), attribute.getValue() );
 			}
 			else {
-				writableAttributes.addAttribute( (Class) attribute.getKey(), attribute.getValue() );
+				writableAttributes.setAttribute( (Class) attribute.getKey(), attribute.getValue() );
 			}
 		}
 	}

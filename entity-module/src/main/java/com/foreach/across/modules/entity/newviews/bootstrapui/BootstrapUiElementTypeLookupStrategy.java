@@ -79,7 +79,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		}
 */
 		PropertyPersistenceMetadata metadata = descriptor.getAttribute(
-				EntityAttributes.PROPERTY_PERSISTENCE_METADATA );
+				EntityAttributes.PROPERTY_PERSISTENCE_METADATA, PropertyPersistenceMetadata.class );
 
 		/*
 		if ( metadata != null && metadata.isEmbedded() ) {

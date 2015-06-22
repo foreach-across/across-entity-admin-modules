@@ -141,10 +141,10 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 
 		if ( entityTypeName != null ) {
 			EntityConfigurationImpl entityConfiguration = new EntityConfigurationImpl<>( entityTypeName, entityType );
-			entityConfiguration.addAttribute( AcrossModuleInfo.class, moduleInfo );
-			entityConfiguration.addAttribute( RepositoryFactoryInformation.class, repositoryFactoryInformation );
-			entityConfiguration.addAttribute( Repository.class, repository );
-			entityConfiguration.addAttribute( PersistentEntity.class,
+			entityConfiguration.setAttribute( AcrossModuleInfo.class, moduleInfo );
+			entityConfiguration.setAttribute( RepositoryFactoryInformation.class, repositoryFactoryInformation );
+			entityConfiguration.setAttribute( Repository.class, repository );
+			entityConfiguration.setAttribute( PersistentEntity.class,
 			                                  repositoryFactoryInformation.getPersistentEntity() );
 
 			findDefaultValidatorInModuleContext( entityConfiguration, moduleInfo.getApplicationContext() );
@@ -197,7 +197,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 			           ClassUtils.getUserClass( validatorToUse ).getName(), entityConfiguration.getEntityType() );
 		}
 
-		entityConfiguration.addAttribute( Validator.class, validatorToUse );
+		entityConfiguration.setAttribute( Validator.class, validatorToUse );
 	}
 
 	private EntityMessageCodeResolver buildMessageCodeResolver( EntityConfiguration entityConfiguration,
@@ -233,7 +233,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 		}
 
 		if ( entityQueryPageFetcher != null ) {
-			entityConfiguration.addAttribute( EntityQueryPageFetcher.class, entityQueryPageFetcher );
+			entityConfiguration.setAttribute( EntityQueryPageFetcher.class, entityQueryPageFetcher );
 		}
 	}
 

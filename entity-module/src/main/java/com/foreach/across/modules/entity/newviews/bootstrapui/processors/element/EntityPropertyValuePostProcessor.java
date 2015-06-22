@@ -15,13 +15,12 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.processors.element;
 
+import com.foreach.across.modules.entity.newviews.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -45,7 +44,7 @@ public class EntityPropertyValuePostProcessor<T extends ConfigurableTextViewElem
 	@Override
 	@SuppressWarnings("unchecked")
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
-		Object entity = getEntity( builderContext );
+		Object entity = EntityViewElementUtils.currentEntity( builderContext );
 		ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
 
 		if ( entity != null && valueFetcher != null ) {
@@ -60,13 +59,5 @@ public class EntityPropertyValuePostProcessor<T extends ConfigurableTextViewElem
 
 			element.setText( text );
 		}
-	}
-
-	private Object getEntity( ViewElementBuilderContext builderContext ) {
-		if ( builderContext instanceof IteratorViewElementBuilderContext ) {
-			return ( (IteratorViewElementBuilderContext) builderContext ).getItem();
-		}
-
-		return builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY );
 	}
 }

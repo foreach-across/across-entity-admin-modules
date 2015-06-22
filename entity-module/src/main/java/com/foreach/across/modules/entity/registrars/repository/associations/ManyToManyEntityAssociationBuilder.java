@@ -69,7 +69,7 @@ public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuil
 				association.setSourceProperty(
 						entityConfiguration.getPropertyRegistry().getProperty( property.getName() )
 				);
-				association.addAttribute( PersistentProperty.class, property );
+				association.setAttribute( PersistentProperty.class, property );
 
 				// By default hide this association as it would be managed as a regular property
 				association.setHidden( true );
@@ -93,7 +93,7 @@ public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuil
 					association.setTargetProperty(
 							entityConfiguration.getPropertyRegistry().getProperty( property.getName() )
 					);
-					association.addAttribute( PersistentProperty.class, property );
+					association.setAttribute( PersistentProperty.class, property );
 
 					buildCreateView( association );
 					buildListView( association );

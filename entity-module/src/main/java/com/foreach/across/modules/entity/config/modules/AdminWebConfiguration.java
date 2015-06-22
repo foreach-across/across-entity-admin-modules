@@ -120,7 +120,7 @@ public class AdminWebConfiguration implements EntityConfigurer
 		{
 			@Override
 			public void process( MutableEntityConfiguration<?> configuration ) {
-				configuration.addAttribute(
+				configuration.setAttribute(
 						EntityLinkBuilder.class,
 						new EntityConfigurationLinkBuilder(
 								EntityControllerAttributes.ROOT_PATH, configuration, conversionService,
@@ -130,7 +130,7 @@ public class AdminWebConfiguration implements EntityConfigurer
 
 				for ( EntityAssociation association : configuration.getAssociations() ) {
 					MutableEntityAssociation mutable = configuration.association( association.getName() );
-					mutable.addAttribute( EntityLinkBuilder.class,
+					mutable.setAttribute( EntityLinkBuilder.class,
 					                      new EntityAssociationLinkBuilder( association, conversionService ) );
 				}
 			}

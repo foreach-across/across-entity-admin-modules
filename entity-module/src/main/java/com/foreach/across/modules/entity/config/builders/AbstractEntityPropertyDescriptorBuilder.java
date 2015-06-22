@@ -36,7 +36,7 @@ public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends Abstr
 
 	private Boolean hidden, writable, readable;
 
-	private final Map<Object, Object> attributes = new HashMap<>();
+	private final Map<String, Object> attributes = new HashMap<>();
 
 	protected void setName( String name ) {
 		this.name = name;
@@ -65,7 +65,7 @@ public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends Abstr
 	 */
 	public <S> SELF attribute( Class<S> type, S value ) {
 		Assert.notNull( type );
-		attributes.put( type, value );
+		attributes.put( type.getName(), value );
 		return (SELF) this;
 	}
 
@@ -167,7 +167,7 @@ public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends Abstr
 			descriptor.setHidden( hidden );
 		}
 
-		descriptor.addAllAttributes( attributes );
+		descriptor.setAttributes( attributes );
 
 		// There was an existing descriptor, but not mutable, we created a custom merge
 		if ( existing != null && !( existing instanceof MutableEntityPropertyDescriptor ) ) {

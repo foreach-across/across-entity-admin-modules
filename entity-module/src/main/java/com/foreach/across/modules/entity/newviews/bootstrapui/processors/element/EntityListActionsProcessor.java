@@ -19,13 +19,13 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
+import com.foreach.across.modules.entity.newviews.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext;
 
 /**
  * Adds common actions (update, delete) for an {@link EntityConfiguration} entity to every result item.
@@ -52,8 +52,9 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 	                         TableViewElement.Row row ) {
 		TableViewElementBuilder.Cell cell = new TableViewElementBuilder.Cell();
 
-		if ( builderContext instanceof IteratorViewElementBuilderContext ) {
-			Object entity = ( (IteratorViewElementBuilderContext) builderContext ).getItem();
+		Object entity = EntityViewElementUtils.currentEntity( builderContext );
+
+		if ( entity != null ) {
 			addEntityActions( cell, entity );
 		}
 		else {
@@ -73,12 +74,12 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 					           .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
 					           .text( messages.updateAction() )
 			);
-					                              /*.add(
-					           bootstrapUi.button()
-			                              .link()
-			                              .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
-			                              .text( "Delete group" )
-	                   )*/
+	      /*.add(
+		           bootstrapUi.button()
+                              .link()
+                              .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
+                              .text( "Delete group" )
+           )*/
 		}
 	}
 }
