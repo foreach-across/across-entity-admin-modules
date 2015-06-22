@@ -16,6 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
+import com.foreach.across.modules.bootstrapui.elements.RadioFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -95,6 +96,9 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 			if ( options.type == Type.CHECKBOX ) {
 				option = createCheckboxOption( options );
 			}
+			else if ( options.type == Type.RADIO ) {
+				option = createRadioOption( options );
+			}
 			else {
 				option = createSelectOption( options );
 			}
@@ -103,8 +107,15 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 		}
 
 		private NodeViewElementSupport createCheckboxOption( OptionsFormElementBuilder builder ) {
-			CheckboxFormElement checkbox = apply( new CheckboxFormElement());
+			return applyCheckboxAttributes( builder, new CheckboxFormElement() );
+		}
 
+		private NodeViewElementSupport createRadioOption( OptionsFormElementBuilder builder ) {
+			return applyCheckboxAttributes( builder, new RadioFormElement() );
+		}
+
+		private CheckboxFormElement applyCheckboxAttributes( OptionsFormElementBuilder builder,
+		                                                     CheckboxFormElement checkbox ) {
 			checkbox.setControlName( builder.controlName );
 
 			if ( text != null ) {
@@ -123,8 +134,9 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 				checkbox.setDisabled( disabled );
 			}
 
-			return checkbox;
+			return apply( checkbox );
 		}
+
 		private NodeViewElementSupport createSelectOption( OptionsFormElementBuilder builder ) {
 			SelectFormElement.Option option = new SelectFormElement.Option();
 
@@ -195,7 +207,7 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 	}
 
 	/**
-	 * Will generate a radio button list.
+	 * Will generate a radio button list.  Radio button list never allows multiple values.
 	 *
 	 * @return current builder
 	 */
@@ -326,11 +338,11 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 		try {
 			NodeViewElementSupport control;
 
-			if ( type == Type.CHECKBOX ) {
-				control = createCheckbox( builderContext );
+			if ( type == Type.CHECKBOX || type == Type.RADIO ) {
+				control = createBoxDiv();
 			}
 			else {
-				control = createSelect( builderContext );
+				control = createSelect();
 			}
 
 			if ( controlName != null ) {
@@ -344,7 +356,7 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 		}
 	}
 
-	private NodeViewElementSupport createSelect( ViewElementBuilderContext builderContext ) {
+	private NodeViewElementSupport createSelect() {
 		SelectFormElement select = new SelectFormElement();
 		select.setMultiple( multiple );
 
@@ -364,7 +376,7 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 		return select;
 	}
 
-	private NodeViewElementSupport createCheckbox( ViewElementBuilderContext builderContext ) {
+	private NodeViewElementSupport createBoxDiv() {
 		return NodeViewElement.forTag( "div" );
 	}
 }

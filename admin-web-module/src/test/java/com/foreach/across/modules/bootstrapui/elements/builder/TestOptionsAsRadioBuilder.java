@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  * @author Arne Vandamme
  */
-public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
+public class TestOptionsAsRadioBuilder extends AbstractBootstrapViewElementTest
 {
 	protected OptionsFormElementBuilder builder;
 
@@ -34,7 +34,7 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 	public void reset() {
 		builderContext = new ViewElementBuilderContextImpl();
 
-		builder = new OptionsFormElementBuilder();
+		builder = new OptionsFormElementBuilder().radio();
 	}
 
 	@Test
@@ -42,47 +42,50 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 		builder.htmlId( "mybox" ).controlName( "boxName" );
 
 		expect(
-				"<select name='boxName' id='mybox' class='form-control' />"
+				"<div id='mybox' />"
 		);
 	}
 
-	@Test
-	public void multiple() {
-		builder.multiple();
-
-		expect(
-				"<select class='form-control' multiple='multiple' />"
-		);
-	}
-
-	@Test
-	public void disabledAndReadonly() {
-		builder.disabled();
-
-		expect(
-				"<select class='form-control' disabled='disabled' />"
-		);
-
-		builder.disabled( false ).readonly();
-
-		expect(
-				"<select class='form-control' readonly='readonly' />"
-		);
-	}
+//	@Test
+//	public void multiple() {
+//		builder.multiple();
+//
+//		expect(
+//				"<select class='form-control' multiple='multiple' />"
+//		);
+//	}
+//
+//	@Test
+//	public void disabledAndReadonly() {
+//		builder.disabled();
+//
+//		expect(
+//				"<select class='form-control' disabled='disabled' />"
+//		);
+//
+//		builder.disabled( false ).readonly();
+//
+//		expect(
+//				"<select class='form-control' readonly='readonly' />"
+//		);
+//	}
 
 	@Test
 	public void options() {
 		builder
+				.controlName( "mybox" )
 				.add( builder.option().text( "Inner text" ).value( "one" ) )
-				.add( builder.option().label( "Only label" ).value( 123 ) )
-				.add( builder.option().label( "Short two" ).text( "Some text" ).selected().disabled() );
+				.add( builder.option().label( "Short two" ).text( "Some text" ).value( 2 ).selected().disabled() );
 
 		expect(
-				"<select class='form-control'>" +
-						"<option value='one'>Inner text</option>" +
-						"<option value='123'>Only label</option>" +
-						"<option label='Short two' selected='selected' disabled='disabled'>Some text</option>" +
-						"</select>"
+				"<div id='mybox'>" +
+						"<div class='radio'><label>" +
+						"<input type='radio' value='one' id='mybox1' name='mybox' /> Inner text" +
+						"</label></div>" +
+						"<div class='radio disabled'><label>" +
+						"<input type='radio' value='2' checked='checked' disabled='disabled' name='mybox' id='mybox2' /> Short two" +
+						"</label></div>" +
+						"</div>"
 		);
 	}
 
