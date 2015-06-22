@@ -187,7 +187,7 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 	/**
 	 * @return new header builder
 	 */
-	public TableViewElementBuilder.Header createHeader() {
+	public static TableViewElementBuilder.Header createHeader() {
 		return new TableViewElementBuilder.Header();
 	}
 
@@ -220,7 +220,7 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 	/**
 	 * @return new body builder
 	 */
-	public TableViewElementBuilder.Body createBody() {
+	public static TableViewElementBuilder.Body createBody() {
 		return new TableViewElementBuilder.Body();
 	}
 
@@ -253,7 +253,7 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 	/**
 	 * @return new footer builder
 	 */
-	public TableViewElementBuilder.Footer createFooter() {
+	public static TableViewElementBuilder.Footer createFooter() {
 		return new TableViewElementBuilder.Footer();
 	}
 
@@ -290,7 +290,7 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 	/**
 	 * @return new caption builder
 	 */
-	public TableViewElementBuilder.Caption createCaption() {
+	public static TableViewElementBuilder.Caption createCaption() {
 		return new TableViewElementBuilder.Caption();
 	}
 

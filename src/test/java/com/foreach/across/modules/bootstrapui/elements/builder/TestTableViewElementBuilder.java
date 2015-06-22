@@ -83,9 +83,9 @@ public class TestTableViewElementBuilder extends AbstractViewElementBuilderTest<
 
 	@Test
 	public void detachedHeaderFooterAndBody() {
-		assertNotNull( builder.createHeader() );
-		assertNotNull( builder.createBody() );
-		assertNotNull( builder.createFooter() );
+		assertNotNull( TableViewElementBuilder.createHeader() );
+		assertNotNull( TableViewElementBuilder.createBody() );
+		assertNotNull( TableViewElementBuilder.createFooter() );
 
 		build();
 
@@ -127,7 +127,7 @@ public class TestTableViewElementBuilder extends AbstractViewElementBuilderTest<
 
 	@Test
 	public void detachedCaption() {
-		assertNotNull( builder.createCaption() );
+		assertNotNull( TableViewElementBuilder.createCaption() );
 
 		build();
 
