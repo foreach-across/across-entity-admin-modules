@@ -50,6 +50,8 @@ public class RadioFormElementNodeBuilder extends FormControlElementBuilderSuppor
 		attribute( checkbox, "checked", control.isChecked() );
 		applyProperties( control, arguments, checkbox );
 
+		label.addChild( checkbox );
+
 		if ( control.getLabel() != null ) {
 			text( label, " " + control.getLabel() );
 		}
@@ -60,7 +62,6 @@ public class RadioFormElementNodeBuilder extends FormControlElementBuilderSuppor
 			}
 		}
 
-		label.addChild( checkbox );
 		wrapper.addChild( label );
 
 		return Collections.singletonList( (Node) wrapper );

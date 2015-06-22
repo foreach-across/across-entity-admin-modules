@@ -36,10 +36,19 @@ public class SelectFormElementNodeBuilder extends FormControlElementBuilderSuppo
 
 			attribute( element, "disabled", control.isDisabled() );
 			attribute( element, "selected", control.isSelected() );
-			attribute( element, "label", control.getLabel() );
+
+			String text = control.getText();
+
+			if ( text != null ) {
+				attribute( element, "label", control.getLabel() );
+			}
+			else {
+				text = control.getLabel();
+			}
+
 			attribute( element, "value", control.getValue(), viewElementNodeFactory );
 
-			text( element, control.getText() );
+			text( element, text );
 
 			return element;
 		}

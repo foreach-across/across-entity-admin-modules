@@ -78,14 +78,20 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 		two.setSelected( true );
 		two.setDisabled( true );
 
+		SelectFormElement.Option three = new SelectFormElement.Option();
+		three.setValue( 123 );
+		three.setLabel( "Label only" );
+
 		box.add( one );
 		box.add( two );
+		box.add( three );
 
 		renderAndExpect(
 				box,
 				"<select class='form-control'>" +
 						"<option value='one'>Inner text</option>" +
 						"<option label='Short two' selected='selected' disabled='disabled'>Some text</option>" +
+						"<option value='123'>Label only</option>" +
 						"</select>"
 		);
 	}
