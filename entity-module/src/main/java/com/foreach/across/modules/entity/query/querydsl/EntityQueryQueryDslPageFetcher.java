@@ -48,5 +48,4 @@ public class EntityQueryQueryDslPageFetcher implements EntityQueryPageFetcher
 
 		return queryDslPredicateExecutor.findAll( predicate, pageable );
 	}
-
 }

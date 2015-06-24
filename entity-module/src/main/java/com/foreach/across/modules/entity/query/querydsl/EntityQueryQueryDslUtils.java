@@ -89,7 +89,7 @@ public abstract class EntityQueryQueryDslUtils
 			}
 		}
 
-		throw new IllegalArgumentException( "Unsupported operand for JPA query: " + condition.getOperand() );
+		throw new IllegalArgumentException( "Unsupported operand for QueryDsl query: " + condition.getOperand() );
 	}
 
 	private static Predicate buildQueryPredicate( EntityQuery query, PathBuilder pathBuilder ) {
