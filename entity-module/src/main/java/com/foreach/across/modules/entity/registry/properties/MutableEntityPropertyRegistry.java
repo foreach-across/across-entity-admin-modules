@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.bootstrapui.elements;
-
-import org.junit.Test;
+package com.foreach.across.modules.entity.registry.properties;
 
 /**
  * @author Arne Vandamme
  */
-public class TestStaticFormElement extends AbstractBootstrapViewElementTest
+public interface MutableEntityPropertyRegistry extends EntityPropertyRegistry
 {
-	@Test
-	public void simple() {
-		StaticFormElement box = new StaticFormElement();
-		box.setText( "somedude@example.com" );
-
-		renderAndExpect(
-				box,
-				"<p class='form-control-static'>somedude@example.com</p>"
-		);
-	}}
+	MutableEntityPropertyDescriptor getMutableProperty( String propertyName );
+}

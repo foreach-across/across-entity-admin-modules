@@ -13,34 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.bootstrapui.elements;
+package com.foreach.across.modules.entity.registry;
 
-import org.junit.Test;
+import java.util.Collection;
 
 /**
+ * Base interface for querying the registered entity types.
+ *
  * @author Arne Vandamme
+ * @see com.foreach.across.modules.entity.registry.MutableEntityRegistry
  */
-public class TestColumnViewElement extends AbstractBootstrapViewElementTest
+public interface EntityRegistry
 {
-	@Test
-	public void simple() {
-		ColumnViewElement column = new ColumnViewElement();
+	Collection<EntityConfiguration> getEntities();
 
-		renderAndExpect(
-				column,
-				"<div></div>"
-		);
-	}
+	boolean contains( Class<?> entityType );
 
-	@Test
-	public void deviceLayouts() {
-		ColumnViewElement column = new ColumnViewElement();
-		column.addLayout( Grid.Device.MEDIUM.width( Grid.Width.HALF ) );
-		column.addLayout( Grid.Device.XS.hidden() );
+	boolean contains( String entityName );
 
-		renderAndExpect(
-				column,
-				"<div class='col-md-6 hidden-xs'></div>"
-		);
-	}
+	<T> EntityConfiguration<T> getEntityConfiguration( Class<T> entityType );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( String entityName );
 }
