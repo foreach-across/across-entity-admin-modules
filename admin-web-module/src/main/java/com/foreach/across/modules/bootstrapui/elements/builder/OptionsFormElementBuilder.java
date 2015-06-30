@@ -231,7 +231,7 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 	 *
 	 * @return option builder
 	 */
-	public Option option() {
+	public Option createOption() {
 		return new Option();
 	}
 
