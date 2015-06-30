@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersis
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -90,9 +91,9 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			Class propertyType = descriptor.getPropertyType();
 
 			if ( propertyType != null ) {
-				/*if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) ) {
+				if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) ) {
 					return BootstrapUiElements.MULTI_CHECKBOX;
-				}*/
+				}
 
 				if ( propertyType.isEnum() ) {
 					return BootstrapUiElements.SELECT;

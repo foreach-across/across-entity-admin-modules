@@ -16,7 +16,6 @@
 package com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.FormControlElementBuilderSupport;
-import com.foreach.across.modules.entity.newviews.ValidationConstraintsBuilderProcessor;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 

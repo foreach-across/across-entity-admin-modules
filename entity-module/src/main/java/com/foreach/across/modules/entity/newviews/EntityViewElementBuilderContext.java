@@ -15,21 +15,21 @@
  */
 package com.foreach.across.modules.entity.newviews;
 
-import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 
 /**
- * todo: should delegate to the backing entity view instead
  * @author Arne Vandamme
  */
-public class EntityViewElementBuilderContext<T extends EntityView> extends AttributeSupport implements ViewElementBuilderContext
+public class EntityViewElementBuilderContext<T extends EntityView> extends ViewElementBuilderContextImpl
 {
 	public static final String ENTITY = "entity";
 
 	private final T entityView;
 
 	public EntityViewElementBuilderContext( T view ) {
+		super( view );
+
 		this.entityView = view;
 
 		setAttribute( ENTITY, view.getEntity() );

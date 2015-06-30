@@ -63,6 +63,11 @@ public class BootstrapUiConfiguration
 	}
 
 	@Bean
+	public OptionsFormElementBuilderFactory optionsFormElementBuilderFactory() {
+		return new OptionsFormElementBuilderFactory();
+	}
+
+	@Bean
 	public TextViewElementBuilderFactory textViewElementBuilderFactory() {
 		return new TextViewElementBuilderFactory();
 	}
