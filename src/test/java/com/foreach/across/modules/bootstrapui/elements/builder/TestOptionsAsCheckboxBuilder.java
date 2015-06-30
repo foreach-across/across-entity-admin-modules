@@ -75,10 +75,10 @@ public class TestOptionsAsCheckboxBuilder extends AbstractBootstrapViewElementTe
 		builder
 				.controlName( "mybox" )
 				.add(
-						builder.option().text( "Inner text" ).value( "one" )
+						builder.createOption().text( "Inner text" ).value( "one" )
 				)
 				.add(
-						builder.option().label( "Short two" ).text( "Some text" ).value( 2 ).selected().disabled()
+						builder.createOption().label( "Short two" ).text( "Some text" ).value( 2 ).selected().disabled()
 				);
 
 		expect(

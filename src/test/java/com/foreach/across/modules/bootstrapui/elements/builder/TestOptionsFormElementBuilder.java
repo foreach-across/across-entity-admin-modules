@@ -49,6 +49,6 @@ public class TestOptionsFormElementBuilder extends AbstractViewElementBuilderTes
 
 	@Test(expected = IllegalStateException.class)
 	public void optionCanOnlyBeUsedWithinOptionsBuilder() {
-		builder.option().build( builderContext );
+		builder.createOption().build( builderContext );
 	}
 }
