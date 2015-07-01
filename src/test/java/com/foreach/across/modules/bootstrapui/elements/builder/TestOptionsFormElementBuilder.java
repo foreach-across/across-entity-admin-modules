@@ -37,7 +37,7 @@ public class TestOptionsFormElementBuilder extends AbstractViewElementBuilderTes
 
 	@Override
 	protected Collection<String> nonBuilderReturningMethods() {
-		return Arrays.asList( "option" );
+		return Arrays.asList( "createOption" );
 	}
 
 	@Test(expected = IllegalStateException.class)
