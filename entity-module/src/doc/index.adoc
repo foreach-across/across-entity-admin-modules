@@ -73,7 +73,50 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 
 === Creating an EntityConfiguration manually
 
+==== Attributes to configure
+
+Some attributes are mandatory, others are optional but will often impact how much functionality is available
+ out of the box.  You can configure any attribute you like, see the section on [automatic-attributes] for a list
+ of common attributes provided by other registrars.
+
+==== EntityQueryExecutor
+
+In order for generated views to work automatically, an `EntityConfiguration` should have an `EntityQueryExecutor`
+  attribute.  The `EntityQueryExecutor` is a generic interface that supports the simple `EntityQuery` abstraction
+  for fetching entities from the backing repository. Default implementations exist for `JpaSpecificationExecutor`
+  and `QueryDslPredicateExecutor`.
+
 === Automatic registration of entity types
+
+[[automatic-attributes]]
+==== Registered EntityConfiguration attributes
+
+|===
+|Key |Value
+
+|`Repository.class`
+|In case of an entity registered through a Spring data repository.
+
+|`RepositoryFactoryInformation.class`
+|In case of an entity registered through a Spring data repository.
+
+|`PersistentEntity.class`
+|In case of an entity registered through a Spring data repository that exposed `PersistentEntity` information.
+
+|`EntityQueryExecutor.class`
+|Holds the `EntityQueryExecutor` that will be used for entity fetching.
+|===
+
+==== Registered EntityPropertyDescriptor attributes
+
+|===
+|Key |Value
+
+|`PersistentProperty.class`
+|In case of a property of a `PersistentEntity` registered through a Spring data repository.
+
+|===
+
 
 == Integration with other modules
 
