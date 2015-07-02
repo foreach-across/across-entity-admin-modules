@@ -20,8 +20,8 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.mockito.Mockito.when;
 
@@ -37,7 +37,7 @@ public class TestOptionsFormElementBuilder extends AbstractViewElementBuilderTes
 
 	@Override
 	protected Collection<String> nonBuilderReturningMethods() {
-		return Arrays.asList( "createOption" );
+		return Collections.singleton( "createOption" );
 	}
 
 	@Test(expected = IllegalStateException.class)
