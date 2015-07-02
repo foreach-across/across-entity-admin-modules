@@ -16,30 +16,38 @@
 package com.foreach.across.modules.entity.query.jpa;
 
 import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.List;
+
 /**
+ * Implementation of {@link EntityQueryExecutor} that runs against a {@link JpaSpecificationExecutor} instance.
+ *
  * @author Arne Vandamme
  */
-public class EntityQueryJpaPageFetcher implements EntityQueryPageFetcher
+public class EntityQueryJpaExecutor<T> implements EntityQueryExecutor<T>
 {
-	private final JpaSpecificationExecutor jpaSpecificationExecutor;
+	private final JpaSpecificationExecutor<T> jpaSpecificationExecutor;
 
-	public EntityQueryJpaPageFetcher( JpaSpecificationExecutor jpaSpecificationExecutor ) {
+	public EntityQueryJpaExecutor( JpaSpecificationExecutor<T> jpaSpecificationExecutor ) {
 		this.jpaSpecificationExecutor = jpaSpecificationExecutor;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Page fetchPage( EntityQuery query, Pageable pageable ) {
+	public Page<T> findAll( EntityQuery query, Pageable pageable ) {
 		if ( pageable == null ) {
-			return new PageImpl( jpaSpecificationExecutor.findAll( EntityQueryJpaUtils.toSpecification( query ) ) );
+			return new PageImpl<>( findAll( query ) );
 		}
 
-		return jpaSpecificationExecutor.findAll( EntityQueryJpaUtils.toSpecification( query ), pageable );
+		return jpaSpecificationExecutor.findAll( EntityQueryJpaUtils.<T>toSpecification( query ), pageable );
+	}
+
+	@Override
+	public List<T> findAll( EntityQuery query ) {
+		return jpaSpecificationExecutor.findAll( EntityQueryJpaUtils.<T>toSpecification( query ) );
 	}
 }

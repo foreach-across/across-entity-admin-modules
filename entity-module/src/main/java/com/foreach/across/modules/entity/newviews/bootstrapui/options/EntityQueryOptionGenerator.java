@@ -17,7 +17,7 @@ package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -33,12 +33,12 @@ import java.util.List;
 public class EntityQueryOptionGenerator implements ViewElementBuilder<ContainerViewElement>
 {
 	protected final EntityConfiguration entityConfiguration;
-	protected final EntityQueryPageFetcher entityQueryPageFetcher;
+	protected final EntityQueryExecutor entityQueryExecutor;
 
 	public EntityQueryOptionGenerator( EntityConfiguration entityConfiguration,
-	                                   EntityQueryPageFetcher entityQueryPageFetcher ) {
+	                                   EntityQueryExecutor entityQueryExecutor ) {
 		this.entityConfiguration = entityConfiguration;
-		this.entityQueryPageFetcher = entityQueryPageFetcher;
+		this.entityQueryExecutor = entityQueryExecutor;
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class EntityQueryOptionGenerator implements ViewElementBuilder<ContainerV
 
 		List<OptionsFormElementBuilder.Option> options = new ArrayList<>();
 
-		for ( Object entity : entityQueryPageFetcher.fetchPage( new EntityQuery(), null ).getContent() ) {
+		for ( Object entity : entityQueryExecutor.findAll( new EntityQuery(), null ).getContent() ) {
 			OptionsFormElementBuilder.Option option = new OptionsFormElementBuilder.Option();
 
 			option.label( entityConfiguration.getLabel( entity ) );

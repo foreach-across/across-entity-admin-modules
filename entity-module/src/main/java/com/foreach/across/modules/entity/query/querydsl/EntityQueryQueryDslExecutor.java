@@ -16,7 +16,7 @@
 package com.foreach.across.modules.entity.query.querydsl;
 
 import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.mysema.query.types.Predicate;
@@ -24,28 +24,41 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
+import java.util.List;
+
 /**
+ * Implementation of {@link EntityQueryExecutor} that runs against a {@link QueryDslPredicateExecutor} instance.
+ *
  * @author Arne Vandamme
  */
-public class EntityQueryQueryDslPageFetcher implements EntityQueryPageFetcher
+public class EntityQueryQueryDslExecutor<T> implements EntityQueryExecutor<T>
 {
-	private final QueryDslPredicateExecutor queryDslPredicateExecutor;
+	private final QueryDslPredicateExecutor<T> queryDslPredicateExecutor;
 	private final EntityConfiguration entityConfiguration;
 
-	public EntityQueryQueryDslPageFetcher( QueryDslPredicateExecutor queryDslPredicateExecutor,
-	                                       EntityConfiguration entityConfiguration ) {
+	public EntityQueryQueryDslExecutor( QueryDslPredicateExecutor<T> queryDslPredicateExecutor,
+	                                    EntityConfiguration entityConfiguration ) {
 		this.queryDslPredicateExecutor = queryDslPredicateExecutor;
 		this.entityConfiguration = entityConfiguration;
 	}
 
 	@Override
-	public Page fetchPage( EntityQuery query, Pageable pageable ) {
-		Predicate predicate = EntityQueryQueryDslUtils.toPredicate( query, entityConfiguration );
+	public List<T> findAll( EntityQuery query ) {
+		return EntityUtils.asList( queryDslPredicateExecutor.findAll( predicate( query ) ) );
+	}
+
+	@Override
+	public Page<T> findAll( EntityQuery query, Pageable pageable ) {
+		Predicate predicate = predicate( query );
 
 		if ( pageable == null ) {
-			return EntityUtils.createPage( queryDslPredicateExecutor.findAll( predicate ) );
+			return EntityUtils.asPage( queryDslPredicateExecutor.findAll( predicate ) );
 		}
 
 		return queryDslPredicateExecutor.findAll( predicate, pageable );
+	}
+
+	private Predicate predicate( EntityQuery query ) {
+		return EntityQueryQueryDslUtils.toPredicate( query, entityConfiguration );
 	}
 }

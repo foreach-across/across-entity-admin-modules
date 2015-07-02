@@ -18,13 +18,20 @@ package com.foreach.across.modules.entity.query;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
- * Interface supporting fetching data for a generic {@link com.foreach.across.modules.entity.query.EntityQuery}
- * instance, used as abstraction for JPA, QueryDsl repositories.
+ * Simple abstraction interface for defining simple generic queries (in the form of {@link EntityQuery})
+ * that can be used to fetch one or more entities.  Used as an additional abstraction for the specific
+ * JPA, QueryDsl repositories.
  *
  * @author Arne Vandamme
+ * @see com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor
+ * @see com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor
  */
-public interface EntityQueryPageFetcher
+public interface EntityQueryExecutor<T>
 {
-	Page fetchPage( EntityQuery query, Pageable pageable );
+	List<T> findAll( EntityQuery query );
+
+	Page<T> findAll( EntityQuery query, Pageable pageable );
 }

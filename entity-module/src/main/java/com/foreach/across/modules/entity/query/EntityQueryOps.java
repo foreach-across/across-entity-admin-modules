@@ -67,7 +67,7 @@ public enum EntityQueryOps
 		}
 	} );
 
-	private static interface OpsWriter
+	private interface OpsWriter
 	{
 		String toString( String propertyName, Object... arguments );
 	}

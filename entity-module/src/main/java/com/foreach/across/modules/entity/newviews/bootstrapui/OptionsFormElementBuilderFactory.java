@@ -25,7 +25,7 @@ import com.foreach.across.modules.entity.newviews.bootstrapui.options.EnumOption
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element.EntityPropertyControlPostProcessor;
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -96,10 +96,10 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			EntityConfiguration optionType = entityRegistry.getEntityConfiguration( memberType );
 
 			if ( optionType != null ) {
-				EntityQueryPageFetcher queryPageFetcher = optionType.getAttribute( EntityQueryPageFetcher.class );
+				EntityQueryExecutor queryExecutor = optionType.getAttribute( EntityQueryExecutor.class );
 
-				if ( queryPageFetcher != null ) {
-					options.add( new EntityQueryOptionGenerator( optionType, queryPageFetcher ) );
+				if ( queryExecutor != null ) {
+					options.add( new EntityQueryOptionGenerator( optionType, queryExecutor ) );
 				}
 			}
 		}
