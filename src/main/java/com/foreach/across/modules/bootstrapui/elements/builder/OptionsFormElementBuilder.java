@@ -93,14 +93,15 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 
 			NodeViewElementSupport option;
 
-			if ( options.type == Type.CHECKBOX ) {
-				option = createCheckboxOption( options );
-			}
-			else if ( options.type == Type.RADIO ) {
-				option = createRadioOption( options );
-			}
-			else {
-				option = createSelectOption( options );
+			switch ( options.getType() ) {
+				case CHECKBOX:
+					option = createCheckboxOption( options );
+					break;
+				case RADIO:
+					option = createRadioOption( options );
+					break;
+				default:
+					option = createSelectOption( options );
 			}
 
 			return apply( option, builderContext );
@@ -165,6 +166,30 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 
 	private boolean multiple = false;
 	private Type type = Type.SELECT;
+
+	public Boolean getDisabled() {
+		return disabled;
+	}
+
+	public Boolean getReadonly() {
+		return readonly;
+	}
+
+	public Boolean getRequired() {
+		return required;
+	}
+
+	public String getControlName() {
+		return controlName;
+	}
+
+	public boolean isMultiple() {
+		return multiple;
+	}
+
+	public Type getType() {
+		return type;
+	}
 
 	/**
 	 * Will allow multiple options to be selected.
