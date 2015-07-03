@@ -19,10 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElemen
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,21 +27,20 @@ import java.util.List;
 /**
  * @author Arne Vandamme
  */
-public class EntityQueryOptionGenerator implements ViewElementBuilder<ContainerViewElement>
+public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 {
-	protected final EntityConfiguration entityConfiguration;
+	protected final EntityConfiguration<Object> entityConfiguration;
 	protected final EntityQueryExecutor entityQueryExecutor;
 
-	public EntityQueryOptionGenerator( EntityConfiguration entityConfiguration,
-	                                   EntityQueryExecutor entityQueryExecutor ) {
+	@SuppressWarnings("unchecked")
+	public EntityQueryOptionIterableBuilder( EntityConfiguration entityConfiguration,
+	                                         EntityQueryExecutor entityQueryExecutor ) {
 		this.entityConfiguration = entityConfiguration;
 		this.entityQueryExecutor = entityQueryExecutor;
 	}
 
 	@Override
-	public ContainerViewElement build( ViewElementBuilderContext builderContext ) {
-		EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
-
+	public Iterable<OptionsFormElementBuilder.Option> buildOptions( ViewElementBuilderContext builderContext ) {
 		List<OptionsFormElementBuilder.Option> options = new ArrayList<>();
 
 		for ( Object entity : entityQueryExecutor.findAll( new EntityQuery(), null ).getContent() ) {
@@ -58,16 +54,6 @@ public class EntityQueryOptionGenerator implements ViewElementBuilder<ContainerV
 			options.add( option );
 		}
 
-//		if ( shouldBeSorted ) {
-//			//Collections.sort( options );
-//		}
-
-		ContainerViewElement container = new ContainerViewElement();
-
-		for ( OptionsFormElementBuilder.Option option : options ) {
-			container.add( option.build( builderContext ) );
-		}
-
-		return container;
+		return options;
 	}
 }

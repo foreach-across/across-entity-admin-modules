@@ -19,9 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElemen
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder.Option;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,26 +31,16 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
-public class EnumOptionGenerator implements ViewElementBuilder<ContainerViewElement>
+public class EnumOptionIterableBuilder implements OptionIterableBuilder
 {
 	protected final Class<? extends Enum> enumType;
 
-	private boolean shouldBeSorted = false;
-
-	public EnumOptionGenerator( Class<? extends Enum> enumType ) {
+	public EnumOptionIterableBuilder( Class<? extends Enum> enumType ) {
 		this.enumType = enumType;
 	}
 
-	public boolean isShouldBeSorted() {
-		return shouldBeSorted;
-	}
-
-	public void setShouldBeSorted( boolean shouldBeSorted ) {
-		this.shouldBeSorted = shouldBeSorted;
-	}
-
 	@Override
-	public ContainerViewElement build( ViewElementBuilderContext builderContext ) {
+	public Iterable<Option> buildOptions( ViewElementBuilderContext builderContext ) {
 		EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
 
 		Enum[] enumValues = enumType.getEnumConstants();
@@ -72,16 +60,6 @@ public class EnumOptionGenerator implements ViewElementBuilder<ContainerViewElem
 			options.add( option );
 		}
 
-		if ( shouldBeSorted ) {
-			//Collections.sort( options );
-		}
-
-		ContainerViewElement container = new ContainerViewElement();
-
-		for ( Option option : options ) {
-			container.add( option.build( builderContext ) );
-		}
-
-		return container;
+		return options;
 	}
 }

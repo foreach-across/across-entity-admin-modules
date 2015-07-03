@@ -20,8 +20,9 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
-import com.foreach.across.modules.entity.newviews.bootstrapui.options.EntityQueryOptionGenerator;
-import com.foreach.across.modules.entity.newviews.bootstrapui.options.EnumOptionGenerator;
+import com.foreach.across.modules.entity.newviews.bootstrapui.options.EntityQueryOptionIterableBuilder;
+import com.foreach.across.modules.entity.newviews.bootstrapui.options.EnumOptionIterableBuilder;
+import com.foreach.across.modules.entity.newviews.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element.EntityPropertyControlPostProcessor;
@@ -83,14 +84,17 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 					                            + descriptor.getName() );
 		}
 
-		OptionsFormElementBuilder options = bootstrapUi.options()
-		                                               .name( descriptor.getName() )
-		                                               .controlName(
-				                                               EntityPropertyControlPostProcessor.PREFIX + descriptor
-						                                               .getName() );
+		OptionsFormElementBuilder options
+				= bootstrapUi.options()
+				             .name( descriptor.getName() )
+				             .controlName( EntityPropertyControlPostProcessor.PREFIX + descriptor.getName() );
 
 		if ( memberType.isEnum() ) {
-			options.add( new EnumOptionGenerator( (Class<? extends Enum>) memberType ) );
+			OptionGenerator optionGenerator = new OptionGenerator();
+			optionGenerator.setOptions( new EnumOptionIterableBuilder( (Class<? extends Enum>) memberType ) );
+			optionGenerator.setSorted( true );
+
+			options.add( optionGenerator );
 		}
 		else {
 			EntityConfiguration optionType = entityRegistry.getEntityConfiguration( memberType );
@@ -99,7 +103,10 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 				EntityQueryExecutor queryExecutor = optionType.getAttribute( EntityQueryExecutor.class );
 
 				if ( queryExecutor != null ) {
-					options.add( new EntityQueryOptionGenerator( optionType, queryExecutor ) );
+					OptionGenerator optionGenerator = new OptionGenerator();
+					optionGenerator.setOptions( new EntityQueryOptionIterableBuilder( optionType, queryExecutor ) );
+
+					options.add( optionGenerator );
 				}
 			}
 		}
@@ -116,7 +123,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 //		                             entityPropertyRegistry,
 //		                             entityConfiguration ) );
 
-		//new EnumOptionGenerator(  )
+		//new EnumOptionIterableBuilder(  )
 
 		return options;
 	}
