@@ -25,6 +25,7 @@ import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Map;
 
@@ -35,147 +36,21 @@ import java.util.Map;
  */
 public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<NodeViewElementSupport, OptionsFormElementBuilder>
 {
-	public enum Type
-	{
-		SELECT,
-		CHECKBOX,
-		RADIO
-	}
+	private boolean disabled, readonly, required;
 
-	public static class Option extends NodeViewElementSupportBuilder<NodeViewElementSupport, Option>
-	{
-		private Boolean disabled, selected;
-		private String text, label;
-		private Object value;
-
-		public Option disabled() {
-			return disabled( true );
-		}
-
-		public Option disabled( boolean disabled ) {
-			this.disabled = disabled;
-			return this;
-		}
-
-		public Option selected() {
-			return selected( true );
-		}
-
-		public Option selected( boolean selected ) {
-			this.selected = selected;
-			return this;
-		}
-
-		public Option text( String text ) {
-			this.text = text;
-			return this;
-		}
-
-		public Option label( String label ) {
-			this.label = label;
-			return this;
-		}
-
-		public Option value( Object value ) {
-			this.value = value;
-			return this;
-		}
-
-		@Override
-		protected NodeViewElementSupport createElement( ViewElementBuilderContext builderContext ) {
-			OptionsFormElementBuilder options = builderContext.getAttribute( OptionsFormElementBuilder.class );
-
-			if ( options == null ) {
-				throw new IllegalStateException(
-						"OptionsFormElementBuilder.Option builders can only be used in the context of an OptionsFormElementBuilder. " +
-								"No attribute OptionsFormElementBuilder found on the builder context." );
-			}
-
-			NodeViewElementSupport option;
-
-			switch ( options.getType() ) {
-				case CHECKBOX:
-					option = createCheckboxOption( options );
-					break;
-				case RADIO:
-					option = createRadioOption( options );
-					break;
-				default:
-					option = createSelectOption( options );
-			}
-
-			return apply( option, builderContext );
-		}
-
-		private NodeViewElementSupport createCheckboxOption( OptionsFormElementBuilder builder ) {
-			return applyCheckboxAttributes( builder, new CheckboxFormElement() );
-		}
-
-		private NodeViewElementSupport createRadioOption( OptionsFormElementBuilder builder ) {
-			return applyCheckboxAttributes( builder, new RadioFormElement() );
-		}
-
-		private CheckboxFormElement applyCheckboxAttributes( OptionsFormElementBuilder builder,
-		                                                     CheckboxFormElement checkbox ) {
-			checkbox.setControlName( builder.controlName );
-
-			if ( text != null ) {
-				checkbox.setLabel( text );
-			}
-			if ( label != null ) {
-				checkbox.setLabel( label );
-			}
-			if ( value != null ) {
-				checkbox.setValue( value );
-			}
-			if ( selected != null ) {
-				checkbox.setChecked( selected );
-			}
-			if ( disabled != null ) {
-				checkbox.setDisabled( disabled );
-			}
-
-			return apply( checkbox );
-		}
-
-		private NodeViewElementSupport createSelectOption( OptionsFormElementBuilder builder ) {
-			SelectFormElement.Option option = new SelectFormElement.Option();
-
-			if ( text != null ) {
-				option.setText( text );
-			}
-			if ( label != null ) {
-				option.setLabel( label );
-			}
-			if ( value != null ) {
-				option.setValue( value );
-			}
-			if ( selected != null ) {
-				option.setSelected( selected );
-			}
-			if ( disabled != null ) {
-				option.setDisabled( disabled );
-			}
-
-			return option;
-		}
-	}
-
-	private Boolean disabled, readonly, required;
 	private String controlName;
-
 	private boolean multiple = false;
 	private Type type = Type.SELECT;
 
-	public Boolean getDisabled() {
+	public boolean isDisabled() {
 		return disabled;
 	}
 
-	public Boolean getReadonly() {
+	public boolean isReadonly() {
 		return readonly;
 	}
 
-	public Boolean getRequired() {
+	public boolean isRequired() {
 		return required;
 	}
 
@@ -388,20 +263,174 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 		if ( controlName != null ) {
 			select.setControlName( controlName );
 		}
-		if ( disabled != null ) {
-			select.setDisabled( disabled );
-		}
-		if ( readonly != null ) {
-			select.setReadonly( readonly );
-		}
-		if ( required != null ) {
-			select.setRequired( required );
-		}
+		select.setDisabled( disabled );
+		select.setReadonly( readonly );
+		select.setRequired( required );
 
 		return select;
 	}
 
 	private NodeViewElementSupport createBoxDiv() {
 		return NodeViewElement.forTag( "div" );
+	}
+
+	public enum Type
+	{
+		SELECT,
+		CHECKBOX,
+		RADIO
+	}
+
+	/**
+	 * Represents a single option.
+	 */
+	public static class Option extends NodeViewElementSupportBuilder<NodeViewElementSupport, Option>
+			implements Comparable<Option>
+	{
+		private Boolean disabled;
+		private boolean selected;
+		private String text, label;
+		private Object value;
+
+		public Boolean getDisabled() {
+			return disabled;
+		}
+
+		public boolean isSelected() {
+			return selected;
+		}
+
+		public String getText() {
+			return text;
+		}
+
+		public String getLabel() {
+			return label;
+		}
+
+		public Object getValue() {
+			return value;
+		}
+
+		public Option disabled() {
+			return disabled( true );
+		}
+
+		public Option disabled( boolean disabled ) {
+			this.disabled = disabled;
+			return this;
+		}
+
+		public Option selected() {
+			return selected( true );
+		}
+
+		public Option selected( boolean selected ) {
+			this.selected = selected;
+			return this;
+		}
+
+		public Option text( String text ) {
+			this.text = text;
+			return this;
+		}
+
+		public Option label( String label ) {
+			this.label = label;
+			return this;
+		}
+
+		public Option value( Object value ) {
+			this.value = value;
+			return this;
+		}
+
+		@Override
+		protected NodeViewElementSupport createElement( ViewElementBuilderContext builderContext ) {
+			OptionsFormElementBuilder options = builderContext.getAttribute( OptionsFormElementBuilder.class );
+
+			if ( options == null ) {
+				throw new IllegalStateException(
+						"OptionsFormElementBuilder.Option builders can only be used in the context of an OptionsFormElementBuilder. " +
+								"No attribute OptionsFormElementBuilder found on the builder context." );
+			}
+
+			NodeViewElementSupport option;
+
+			switch ( options.getType() ) {
+				case CHECKBOX:
+					option = createCheckboxOption( options );
+					break;
+				case RADIO:
+					option = createRadioOption( options );
+					break;
+				default:
+					option = createSelectOption( options );
+			}
+
+			return apply( option, builderContext );
+		}
+
+		private NodeViewElementSupport createCheckboxOption( OptionsFormElementBuilder builder ) {
+			return applyCheckboxAttributes( builder, new CheckboxFormElement() );
+		}
+
+		private NodeViewElementSupport createRadioOption( OptionsFormElementBuilder builder ) {
+			return applyCheckboxAttributes( builder, new RadioFormElement() );
+		}
+
+		private CheckboxFormElement applyCheckboxAttributes( OptionsFormElementBuilder builder,
+		                                                     CheckboxFormElement checkbox ) {
+			checkbox.setControlName( builder.controlName );
+
+			if ( text != null ) {
+				checkbox.setLabel( text );
+			}
+			if ( label != null ) {
+				checkbox.setLabel( label );
+			}
+			if ( value != null ) {
+				checkbox.setValue( value );
+			}
+			checkbox.setChecked( selected );
+
+			if ( disabled != null ) {
+				checkbox.setDisabled( disabled );
+			}
+
+			return apply( checkbox );
+		}
+
+		private NodeViewElementSupport createSelectOption( OptionsFormElementBuilder builder ) {
+			SelectFormElement.Option option = new SelectFormElement.Option();
+
+			if ( text != null ) {
+				option.setText( text );
+			}
+			if ( label != null ) {
+				option.setLabel( label );
+			}
+			if ( value != null ) {
+				option.setValue( value );
+			}
+			option.setSelected( selected );
+
+			if ( disabled != null ) {
+				option.setDisabled( disabled );
+			}
+
+			return option;
+		}
+
+		@Override
+		public int compareTo( Option o ) {
+			int comparison = ObjectUtils.compare( getLabel(), o.getLabel() );
+
+			if ( comparison == 0 ) {
+				comparison = ObjectUtils.compare( getText(), o.getText() );
+			}
+
+			return comparison;
+		}
 	}
 }
