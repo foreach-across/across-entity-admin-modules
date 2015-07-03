@@ -15,14 +15,18 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder.Option;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 /**
@@ -50,5 +54,35 @@ public class TestOptionsFormElementBuilder extends AbstractViewElementBuilderTes
 	@Test(expected = IllegalStateException.class)
 	public void optionCanOnlyBeUsedWithinOptionsBuilder() {
 		builder.createOption().build( builderContext );
+	}
+
+	@Test
+	public void sortOptionsOnTextOnly() {
+		List<Option> options = Arrays.asList( new Option().text( "bbb" ), new Option().text( "aaa" ) );
+		Collections.sort( options );
+
+		assertEquals( "aaa", options.get( 0 ).getText() );
+		assertEquals( "bbb", options.get( 1 ).getText() );
+	}
+
+	@Test
+	public void sortOptionsOnLabelOnly() {
+		List<Option> options = Arrays.asList( new Option().label( "bbb" ), new Option().label( "aaa" ) );
+		Collections.sort( options );
+
+		assertEquals( "aaa", options.get( 0 ).getLabel() );
+		assertEquals( "bbb", options.get( 1 ).getLabel() );
+	}
+
+	@Test
+	public void sortOptionsOnLabelBeforeText() {
+		List<Option> options = Arrays.asList(
+				new Option().label( "aaa" ).text( "bbb" ),
+				new Option().label( "bbb" ).text( "aaa" )
+		);
+		Collections.sort( options );
+
+		assertEquals( "aaa", options.get( 0 ).getLabel() );
+		assertEquals( "bbb", options.get( 1 ).getLabel() );
 	}
 }
