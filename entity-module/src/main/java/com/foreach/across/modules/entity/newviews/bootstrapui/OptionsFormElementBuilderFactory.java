@@ -71,6 +71,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	}
 
 	@Override
+	@SuppressWarnings( "unchecked" )
 	protected OptionsFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor,
 	                                                          EntityPropertyRegistry entityPropertyRegistry,
 	                                                          EntityConfiguration entityConfiguration,
@@ -91,7 +92,9 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 		if ( memberType.isEnum() ) {
 			OptionGenerator optionGenerator = new OptionGenerator();
-			optionGenerator.setOptions( new EnumOptionIterableBuilder( (Class<? extends Enum>) memberType ) );
+			optionGenerator.setOptions(
+					new EnumOptionIterableBuilder( (Class<? extends Enum>) memberType, descriptor.getValueFetcher() )
+			);
 			optionGenerator.setSorted( true );
 
 			options.add( optionGenerator );
