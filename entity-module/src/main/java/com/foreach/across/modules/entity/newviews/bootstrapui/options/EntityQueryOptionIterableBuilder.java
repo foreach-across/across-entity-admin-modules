@@ -16,42 +16,114 @@
 package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
+import com.foreach.across.modules.entity.newviews.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import org.springframework.util.Assert;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
+ * Generates {@link OptionsFormElementBuilder.Option}s for a particular entity type, where the list of options
+ * is fetched through an {@link EntityQueryExecutor} and custom {@link EntityQuery}.
+ * By default an {@link EntityQuery} without parameters will be used, resulting in all entities being returned.
+ *
  * @author Arne Vandamme
  */
-public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
+public class EntityQueryOptionIterableBuilder extends SelectedOptionIterableBuilderSupport
 {
-	protected final EntityConfiguration<Object> entityConfiguration;
-	protected final EntityQueryExecutor entityQueryExecutor;
+	private EntityModel<Object, Serializable> entityModel;
+	private EntityQueryExecutor<Object> entityQueryExecutor;
+	private EntityQuery entityQuery = EntityQuery.all();
+	private boolean selfOptionIncluded;
+
+	/**
+	 * Creates an {@link EntityQueryOptionIterableBuilder} for all entities of a particular {@link EntityConfiguration}.
+	 * By default the current entity being treated will not be provided as an option.
+	 *
+	 * @param entityConfiguration whose options to select
+	 * @return option builder
+	 */
+	public static EntityQueryOptionIterableBuilder forEntityConfiguration( EntityConfiguration entityConfiguration ) {
+		EntityQueryOptionIterableBuilder iterableBuilder = new EntityQueryOptionIterableBuilder();
+		iterableBuilder.setEntityModel( entityConfiguration.getEntityModel() );
+		iterableBuilder.setEntityQueryExecutor( entityConfiguration.getAttribute( EntityQueryExecutor.class ) );
+		iterableBuilder.setSelfOptionIncluded( false );
+
+		return iterableBuilder;
+	}
+
+	public EntityModel getEntityModel() {
+		return entityModel;
+	}
 
 	@SuppressWarnings("unchecked")
-	public EntityQueryOptionIterableBuilder( EntityConfiguration entityConfiguration,
-	                                         EntityQueryExecutor entityQueryExecutor ) {
-		this.entityConfiguration = entityConfiguration;
+	public void setEntityModel( EntityModel entityModel ) {
+		Assert.notNull( entityModel );
+		this.entityModel = entityModel;
+	}
+
+	public EntityQuery getEntityQuery() {
+		return entityQuery;
+	}
+
+	public void setEntityQuery( EntityQuery entityQuery ) {
+		Assert.notNull( entityQuery );
+		this.entityQuery = entityQuery;
+	}
+
+	public EntityQueryExecutor getEntityQueryExecutor() {
+		return entityQueryExecutor;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setEntityQueryExecutor( EntityQueryExecutor entityQueryExecutor ) {
+		Assert.notNull( entityQueryExecutor );
 		this.entityQueryExecutor = entityQueryExecutor;
+	}
+
+	public boolean isSelfOptionIncluded() {
+		return selfOptionIncluded;
+	}
+
+	/**
+	 * In case of options that are the same type as the entity being built, should the entity
+	 * itself be provided as an option.  Default value is {@code false}.
+	 *
+	 * @param selfOptionIncluded True when entity itself should be included.
+	 */
+	public void setSelfOptionIncluded( boolean selfOptionIncluded ) {
+		this.selfOptionIncluded = selfOptionIncluded;
 	}
 
 	@Override
 	public Iterable<OptionsFormElementBuilder.Option> buildOptions( ViewElementBuilderContext builderContext ) {
+		Assert.notNull( entityModel );
+		Assert.notNull( entityQuery );
+		Assert.notNull( entityQueryExecutor );
+
 		List<OptionsFormElementBuilder.Option> options = new ArrayList<>();
 
-		for ( Object entity : entityQueryExecutor.findAll( new EntityQuery(), null ).getContent() ) {
-			OptionsFormElementBuilder.Option option = new OptionsFormElementBuilder.Option();
+		Object entityBeingBuilt = EntityViewElementUtils.currentEntity( builderContext );
+		Collection selected = retrieveSelected( builderContext );
 
-			option.label( entityConfiguration.getLabel( entity ) );
-			option.value( entityConfiguration.getId( entity ).toString() );
+		for ( Object entityOption : entityQueryExecutor.findAll( entityQuery ) ) {
+			if ( selfOptionIncluded || !entityOption.equals( entityBeingBuilt ) ) {
+				OptionsFormElementBuilder.Option option = new OptionsFormElementBuilder.Option();
 
-			//option.selected(  )
+				option.label( entityModel.getLabel( entityOption ) );
+				option.value( entityModel.getId( entityOption ) );
 
-			options.add( option );
+				option.selected( selected.contains( entityOption ) );
+
+				options.add( option );
+			}
 		}
 
 		return options;

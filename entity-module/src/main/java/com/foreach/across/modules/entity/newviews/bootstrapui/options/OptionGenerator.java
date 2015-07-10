@@ -65,7 +65,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 	}
 
 	/**
-	 * @param emptyOption to include
+	 * @param emptyOption to include if none is selected or a value is not required
 	 */
 	public void setEmptyOption( Option emptyOption ) {
 		this.emptyOption = emptyOption;

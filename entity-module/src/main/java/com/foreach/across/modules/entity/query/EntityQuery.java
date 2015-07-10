@@ -101,6 +101,13 @@ public class EntityQuery implements EntityQueryExpression
 		return operand.toString( null, expressions.toArray() );
 	}
 
+	/**
+	 * @return EntityQuery that will return all entities.
+	 */
+	public static EntityQuery all() {
+		return new EntityQuery();
+	}
+
 	public static EntityQuery and( EntityQueryExpression... expressions ) {
 		return create( EntityQueryOps.AND, expressions );
 	}

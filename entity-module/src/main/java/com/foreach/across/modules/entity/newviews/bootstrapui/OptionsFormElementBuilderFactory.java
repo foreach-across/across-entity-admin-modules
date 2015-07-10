@@ -71,7 +71,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	}
 
 	@Override
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings("unchecked")
 	protected OptionsFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor,
 	                                                          EntityPropertyRegistry entityPropertyRegistry,
 	                                                          EntityConfiguration entityConfiguration,
@@ -90,29 +90,29 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 				             .name( descriptor.getName() )
 				             .controlName( EntityPropertyControlPostProcessor.PREFIX + descriptor.getName() );
 
-		if ( memberType.isEnum() ) {
-			OptionGenerator optionGenerator = new OptionGenerator();
-			optionGenerator.setOptions(
-					new EnumOptionIterableBuilder( (Class<? extends Enum>) memberType, descriptor.getValueFetcher() )
-			);
-			optionGenerator.setSorted( true );
+		OptionGenerator optionGenerator = new OptionGenerator();
+		optionGenerator.setSorted( true );
 
-			options.add( optionGenerator );
+		if ( memberType.isEnum() ) {
+			EnumOptionIterableBuilder iterableBuilder = new EnumOptionIterableBuilder();
+			iterableBuilder.setEnumType( (Class<? extends Enum>) memberType );
+			iterableBuilder.setValueFetcher( descriptor.getValueFetcher() );
+
+			optionGenerator.setOptions( iterableBuilder );
 		}
 		else {
 			EntityConfiguration optionType = entityRegistry.getEntityConfiguration( memberType );
 
-			if ( optionType != null ) {
-				EntityQueryExecutor queryExecutor = optionType.getAttribute( EntityQueryExecutor.class );
+			if ( optionType != null && optionType.hasAttribute( EntityQueryExecutor.class ) ) {
+				EntityQueryOptionIterableBuilder iterableBuilder =
+						EntityQueryOptionIterableBuilder.forEntityConfiguration( optionType );
+				iterableBuilder.setValueFetcher( descriptor.getValueFetcher() );
 
-				if ( queryExecutor != null ) {
-					OptionGenerator optionGenerator = new OptionGenerator();
-					optionGenerator.setOptions( new EntityQueryOptionIterableBuilder( optionType, queryExecutor ) );
-
-					options.add( optionGenerator );
-				}
+				optionGenerator.setOptions( iterableBuilder );
 			}
 		}
+
+		options.add( optionGenerator );
 
 		if ( isCollection ) {
 			options.checkbox().multiple( true );
@@ -132,8 +132,8 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	}
 
 	private boolean isCollection( EntityPropertyDescriptor descriptor ) {
-		return descriptor.getPropertyType().isArray() || Collection.class.isAssignableFrom(
-				descriptor.getPropertyType() );
+		return descriptor.getPropertyType().isArray()
+				|| Collection.class.isAssignableFrom( descriptor.getPropertyType() );
 	}
 
 	private Class determineCollectionMemberType( EntityPropertyDescriptor descriptor ) {

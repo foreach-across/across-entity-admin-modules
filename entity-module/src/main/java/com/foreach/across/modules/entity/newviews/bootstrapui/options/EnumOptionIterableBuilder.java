@@ -17,16 +17,12 @@ package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder.Option;
-import com.foreach.across.modules.entity.newviews.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,22 +32,22 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
-public class EnumOptionIterableBuilder implements OptionIterableBuilder
+public class EnumOptionIterableBuilder extends SelectedOptionIterableBuilderSupport
 {
-	protected final Class<? extends Enum> enumType;
-	protected final ValueFetcher<Object> valueFetcher;
+	private Class<? extends Enum> enumType;
 
-	@SuppressWarnings("unchecked")
-	public EnumOptionIterableBuilder( Class<? extends Enum> enumType,
-	                                  ValueFetcher<?> valueFetcher ) {
+	public Class<? extends Enum> getEnumType() {
+		return enumType;
+	}
+
+	public void setEnumType( Class<? extends Enum> enumType ) {
 		this.enumType = enumType;
-		this.valueFetcher = (ValueFetcher<Object>) valueFetcher;
 	}
 
 	@Override
 	public Iterable<Option> buildOptions( ViewElementBuilderContext builderContext ) {
 		EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
-		Collection selected = retrieveSelected( EntityViewElementUtils.currentEntity( builderContext ) );
+		Collection selected = retrieveSelected( builderContext );
 
 		Enum[] enumValues = enumType.getEnumConstants();
 		List<Option> options = new ArrayList<>( enumValues.length );
@@ -73,23 +69,4 @@ public class EnumOptionIterableBuilder implements OptionIterableBuilder
 		return options;
 	}
 
-	protected Collection retrieveSelected( Object entity ) {
-		if ( entity != null ) {
-			Object selected = valueFetcher.getValue( entity );
-
-			if ( selected != null ) {
-				if ( selected instanceof Collection ) {
-					return (Collection) selected;
-				}
-				else if ( selected.getClass().isArray() ) {
-					return CollectionUtils.arrayToList( selected );
-				}
-				else {
-					return Collections.singleton( selected );
-				}
-			}
-		}
-
-		return Collections.emptyList();
-	}
 }
