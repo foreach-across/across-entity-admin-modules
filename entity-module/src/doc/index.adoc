@@ -215,96 +215,58 @@ String path = associatedLinkBuilder.update( child );
 ----
 
 
-[[form-elements]]
-== Form elements
+== Customizing generated Entity views
+The following section gives an overview of common custimizations for generated entity views.
 
-Implementation is always disconnected from the selected value (entity).  Single form element could be used
-to render multiple entities.
-
-=== Form element types
-Every `FormElement` has a unique element type `getElementType()`, this type is a simple String property that can be
- used how the element should render and behave.
-
-.Common form element types
-|===
-|Element type |Description
-
-|textbox
-|
-
-|hidden
-|
-
-|select
-|
-
-|multi-checkbox
-|
-
-|checkbox
-|Renders a single checkbox.
+=== Changing entity names, property names or other labels
+Labels are resolved using a message code hierarchy.  Simply define one or more message sources specifying the properties
+  you want.  Unless custom `EntityMessageCodeResolver` instances are being used, message codes are generated as follows:
 
 |===
+|Message code|Description
 
-==== Type lookup strategy
+| enums.*EnumName*.*EnumValue*
+| Message code for a single enum value label. +
+Example: _enums.Numbers.ONE_
 
-.Default lookup strategy for common form element types
-|===
-|Property type |Form element type
+| *EntityPrefix*.name.singular
+| Label for an entity in singular form, for use outside or at the beginning of a sentence. +
+Example: _UserModule.entities.user.name.singular_
 
-| `String`, `Number`, `Date`
-| textbox
+| *EntityPrefix*.name.plural
+| Label for an entity in plural form, for use outside or at the beginning of a sentence. +
+Example: _UserModule.entities.user.name.plural_
 
-| `Boolean`
-| checkbox
+| *EntityPrefix*.name.singular.inline
+| Label for an entity in singular form, for use within a sentence. If not explicitly specified, the label is
+generated based by lower-casing the non-inline version. +
+Example: _UserModule.entities.user.name.singular.inline_
 
-| `Enum`
-| select
+| *EntityPrefix*.name.plural.inline
+| Label for an entity in plural form, for use within a sentence.  If not explicitly specified, the label is
+ generated based by lower-casing the non-inline version. +
+Example: _UserModule.entities.user.name.plural.inline_
 
-| `Collection<?>`, `Array`
-| multi-checkbox
+| *EntityPrefix*.properties.*propertyName*
+| Label for a single entity property. +
+Example: _UserModule.entities.user.properties.username_
+
+| actions.*
+|
+
+| pageTitle.*
+
+| validation
 
 |===
 
-==== Specifying the default type for a property
+* _Entity_ codes are camel cased
+* EntityPrefix: ModuleName.entities.entityName, or EntityModule.entities.entityName or simply entityName
+* Hierarchical lookups: entity can be removed, module can be replaced by EntityModule
 
-=== Form element factories
-hierarchy: assembler, builderfactory, builder, element (scopes)
-
-messagecoderesolver
-
-=== Common FormElement implementations
-==== Basic functionality
-label, value, required, print, customTemplate
-
-==== HiddenFormElement
-Renders a hidden HTML input type.
-
-==== CheckboxFormElement
-Renders a single checkbox, the `isChecked(Object)` method can be used to determine if the checkbox should be checked
-for the given entity.
-
-==== TextboxFormElement
-Renders either a text input type or a textarea depending on the `multiLine` property.
-Supports `maxLength` property to specify the maximum length of text the box should support.
-
-==== SelectFormElement
-This implementation is used for several element types and can be used to render any collection of selected values.
-The `options` property determines the list of possible values in the form of `SelectOption` instances.  The associated
-`SelectFormElementBuilder` takes a `SelectOptionGenerator` implementation that is used to generate the list of possible
-options when building the element.
-
-`SelectFormElement` provides a setter method for `elementType` because the base implementation can easily be used
-for different types of controls.  The default template renders both `select` and `multi-checkbox` element types
-from `SelectFormElement` instances.
-
-configuration:
-defining a custom view
-registering custom properties
-
-how to:
+== To be done:
 * view processor
-*
+
 
 
 
