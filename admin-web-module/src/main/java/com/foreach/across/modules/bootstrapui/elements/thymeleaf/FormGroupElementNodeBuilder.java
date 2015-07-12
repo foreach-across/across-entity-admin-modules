@@ -27,6 +27,7 @@ import org.thymeleaf.dom.Text;
 import org.thymeleaf.spring4.expression.Fields;
 import org.thymeleaf.spring4.expression.SpelVariableExpressionEvaluator;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,6 +48,10 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 
 		FormLayout layout = group.getFormLayout();
 
+		if ( layout == null ) {
+			layout = FormLayout.normal();
+		}
+
 		ViewElement label = group.getLabel();
 		if ( label != null ) {
 			List<Node> labelNodes = viewElementNodeFactory.buildNodes( label, arguments );
@@ -56,7 +61,7 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 				if ( group.isRequired() ) {
 					addRequiredIndicator( labelElement );
 				}
-				if ( layout != null && layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
+				if ( layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
 					labelElement.setAttribute( "class", "sr-only" );
 				}
 			}
@@ -66,25 +71,67 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 			}
 		}
 
+		ViewElement helpBlock = group.getHelpBlock();
+
+		List<Node> helpNodes;
+
+		if ( helpBlock != null ) {
+			helpNodes = viewElementNodeFactory.buildNodes( helpBlock, arguments );
+
+			if ( group.isRenderHelpBlockBeforeControl() ) {
+				for ( Node helpNode : helpNodes ) {
+					node.addChild( helpNode );
+				}
+			}
+		}
+		else {
+			helpNodes = Collections.emptyList();
+		}
+
 		ViewElement control = group.getControl();
 		if ( control != null ) {
 			List<Node> controlNodes = viewElementNodeFactory.buildNodes( control, arguments );
 
-			if ( control instanceof TextboxFormElement && layout != null
-					&& layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
-				Element controlElement = controlElement( controlNodes );
+			Element controlElement = controlElement( controlNodes );
 
-				if ( controlElement != null && label instanceof LabelFormElement ) {
-					String labelText = ( (LabelFormElement) label ).getText();
+			if ( controlElement != null ) {
+				if ( control instanceof TextboxFormElement
+						&& layout.getType() == FormLayout.Type.INLINE
+						&& !layout.isShowLabels() ) {
+					if ( label instanceof LabelFormElement ) {
+						String labelText = ( (LabelFormElement) label ).getText();
 
-					if ( labelText != null && !controlElement.hasAttribute( "placeholder" ) ) {
-						controlElement.setAttribute( "placeholder", labelText );
+						if ( labelText != null && !controlElement.hasAttribute( "placeholder" ) ) {
+							controlElement.setAttribute( "placeholder", labelText );
+						}
+					}
+				}
+
+				String controlId = controlElement.getAttributeValue( "id" );
+				String helpBlockId = controlId != null ? controlId + "-help" : null;
+
+				if ( helpBlockId != null ) {
+					Element helpElement = helpElement( helpNodes );
+
+					if ( helpElement != null ) {
+						helpElement.setAttribute( "id", helpBlockId );
+						controlElement.setAttribute( "aria-describedby", helpBlockId );
+
+						if ( layout.getType() == FormLayout.Type.INLINE ) {
+							attributeAppend( helpElement, "class", "sr-only" );
+						}
 					}
 				}
 			}
 
 			for ( Node childNode : controlNodes ) {
 				node.addChild( childNode );
+			}
+
+			if ( !group.isRenderHelpBlockBeforeControl() ) {
+				for ( Node helpNode : helpNodes ) {
+					node.addChild( helpNode );
+				}
 			}
 
 			if ( control instanceof FormControlElementSupport ) {
@@ -125,6 +172,16 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 				}
 			}
 		}
+	}
+
+	private Element helpElement( List<Node> helpNodes ) {
+		if ( !helpNodes.isEmpty() ) {
+			Node node = helpNodes.get( 0 );
+			if ( node instanceof Element ) {
+				return (Element) node;
+			}
+		}
+		return null;
 	}
 
 	private Element labelElement( List<Node> labelNodes ) {

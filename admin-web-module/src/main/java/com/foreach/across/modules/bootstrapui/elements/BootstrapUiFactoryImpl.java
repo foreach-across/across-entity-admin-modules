@@ -78,6 +78,16 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	}
 
 	@Override
+	public NodeViewElementBuilder helpBlock( String text ) {
+		return helpBlock().add( text( text ) );
+	}
+
+	@Override
+	public NodeViewElementBuilder helpBlock() {
+		return new NodeViewElementBuilder().tagName( "span" ).attribute( "class", "help-block" );
+	}
+
+	@Override
 	public OptionsFormElementBuilder options() {
 		return new OptionsFormElementBuilder();
 	}
