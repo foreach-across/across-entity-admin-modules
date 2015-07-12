@@ -37,6 +37,10 @@ public class FormLayout
 		this.grid = grid;
 	}
 
+	public static FormLayout normal() {
+		return new FormLayout();
+	}
+
 	public static FormLayout inline( boolean showLabels ) {
 		FormLayout layout = new FormLayout();
 		layout.setType( Type.INLINE );

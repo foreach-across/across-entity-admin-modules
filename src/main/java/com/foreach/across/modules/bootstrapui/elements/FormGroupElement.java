@@ -25,9 +25,9 @@ public class FormGroupElement extends NodeViewElementSupport
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM_GROUP;
 
-	private ViewElement label, control;
+	private ViewElement label, control, helpBlock;
 	private FormLayout formLayout;
-	private boolean required;
+	private boolean required, renderHelpBlockBeforeControl;
 
 	public FormGroupElement() {
 		super( ELEMENT_TYPE );
@@ -49,6 +49,29 @@ public class FormGroupElement extends NodeViewElementSupport
 
 	public void setControl( ViewElement control ) {
 		this.control = control;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <V extends ViewElement> V getHelpBlock() {
+		return (V) helpBlock;
+	}
+
+	/**
+	 * @param helpBlock view element
+	 */
+	public void setHelpBlock( ViewElement helpBlock ) {
+		this.helpBlock = helpBlock;
+	}
+
+	/**
+	 * @return true if helpBlock should be rendered before the control (default: false)
+	 */
+	public boolean isRenderHelpBlockBeforeControl() {
+		return renderHelpBlockBeforeControl;
+	}
+
+	public void setRenderHelpBlockBeforeControl( boolean renderHelpBlockBeforeControl ) {
+		this.renderHelpBlockBeforeControl = renderHelpBlockBeforeControl;
 	}
 
 	public FormLayout getFormLayout() {

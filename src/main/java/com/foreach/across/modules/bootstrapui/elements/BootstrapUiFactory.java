@@ -44,6 +44,10 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 
 	NodeViewElementBuilder row();
 
+	NodeViewElementBuilder helpBlock();
+
+	NodeViewElementBuilder helpBlock( String text );
+
 	OptionsFormElementBuilder options();
 
 	ColumnViewElementBuilder column( Grid.DeviceGridLayout... layouts );

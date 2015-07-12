@@ -20,6 +20,8 @@ import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
 import org.junit.Test;
 
@@ -75,5 +77,20 @@ public class TestFormGroupElementBuilder extends AbstractViewElementBuilderTest<
 		assertTrue( labelElement.hasTarget() );
 		assertNotNull( labelElement.getTargetAsElement() );
 		assertSame( labelElement.getTargetAsElement(), group.getControl() );
+	}
+
+	@Test
+	public void shortcutLabelAndHelpText() {
+		builder.label( "some label" ).helpBlock( "some help" );
+
+		FormGroupElement group = builder.build( builderContext );
+
+		LabelFormElement labelFormElement = group.getLabel();
+		assertNotNull( labelFormElement );
+		assertEquals( "some label", labelFormElement.getText() );
+
+		NodeViewElement node = group.getHelpBlock();
+		assertNotNull( node );
+		assertEquals( "some help", ( (TextViewElement) node.iterator().next() ).getText() );
 	}
 }

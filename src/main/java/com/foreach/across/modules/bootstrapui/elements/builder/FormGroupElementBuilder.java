@@ -15,10 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
-import com.foreach.across.modules.bootstrapui.elements.FormLayout;
-import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -29,9 +26,10 @@ import java.util.Map;
 
 public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormGroupElement, FormGroupElementBuilder>
 {
-	private ElementOrBuilder label, control;
+	private ElementOrBuilder label, control, helpBlock;
 	private FormLayout formLayout;
 	private Boolean required;
+	private boolean helpBlockBeforeControl;
 
 	public Boolean isRequired() {
 		return required;
@@ -39,6 +37,14 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 
 	public ElementOrBuilder getLabel() {
 		return label;
+	}
+
+	public ElementOrBuilder getHelpBlock() {
+		return helpBlock;
+	}
+
+	public boolean isHelpBlockBeforeControl() {
+		return helpBlockBeforeControl;
 	}
 
 	/**
@@ -87,6 +93,17 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 		return this;
 	}
 
+	/**
+	 * Quick create a basic label element and add it to the form group.
+	 *
+	 * @param text for the label
+	 * @return current builder
+	 */
+	public FormGroupElementBuilder label( String text ) {
+		label( new BootstrapUiFactoryImpl().label( text ) );
+		return this;
+	}
+
 	public FormGroupElementBuilder label( ViewElementBuilder labelBuilder ) {
 		this.label = ElementOrBuilder.wrap( labelBuilder );
 		return this;
@@ -99,6 +116,32 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 
 	public FormGroupElementBuilder control( ViewElementBuilder controlBuilder ) {
 		this.control = ElementOrBuilder.wrap( controlBuilder );
+		return this;
+	}
+
+	/**
+	 * Quick create a basic help block and add it to the form group.
+	 *
+	 * @param text for the help block
+	 * @return current builder
+	 */
+	public FormGroupElementBuilder helpBlock( String text ) {
+		helpBlock( new BootstrapUiFactoryImpl().helpBlock( text ) );
+		return this;
+	}
+
+	public FormGroupElementBuilder helpBlock( ViewElement helpBlock ) {
+		this.helpBlock = ElementOrBuilder.wrap( helpBlock );
+		return this;
+	}
+
+	public FormGroupElementBuilder helpBlock( ViewElementBuilder helpBlock ) {
+		this.helpBlock = ElementOrBuilder.wrap( helpBlock );
+		return this;
+	}
+
+	public FormGroupElementBuilder helpBlockRenderedBeforeControl( boolean helpBlockBeforeControl ) {
+		this.helpBlockBeforeControl = helpBlockBeforeControl;
 		return this;
 	}
 
@@ -190,6 +233,12 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 
 		if ( control != null ) {
 			group.setControl( control.get( builderContext ) );
+		}
+
+		group.setRenderHelpBlockBeforeControl( helpBlockBeforeControl );
+
+		if ( helpBlock != null ) {
+			group.setHelpBlock( helpBlock.get( builderContext ) );
 		}
 
 		if ( group.getLabel() instanceof LabelFormElement ) {

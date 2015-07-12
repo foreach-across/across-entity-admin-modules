@@ -67,19 +67,48 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
-	public void withHelpText() {
-		NodeViewElement help = NodeViewElement.forTag( "p" );
-		help.setAttribute( "class", "help-block" );
-		help.add( new TextViewElement( "example help text" ) );
+	public void customTagAppended() {
+		NodeViewElement div = NodeViewElement.forTag( "div" );
+		div.setAttribute( "class", "some-class" );
+		div.add( new TextViewElement( "appended div" ) );
 
-		group.add( help );
+		group.add( div );
 
 		renderAndExpect(
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' />" +
-						"<p class='help-block'>example help text</p>" +
+						"<div class='some-class'>appended div</div>" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void withHelpText() {
+		NodeViewElement help = NodeViewElement.forTag( "p" );
+		help.setAttribute( "class", "help-block" );
+		help.add( new TextViewElement( "example help text" ) );
+
+		group.setHelpBlock( help );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control-help' />" +
+						"<p class='help-block' id='control-help'>example help text</p>" +
+						"</div>"
+		);
+
+		group.setRenderHelpBlockBeforeControl( true );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<p class='help-block' id='control-help'>example help text</p>" +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control-help' />" +
 						"</div>"
 		);
 	}
@@ -124,6 +153,36 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group'>" +
 						"<label for='control' class='sr-only'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' placeholder='' />" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void inlineFormDoesNotVisuallyRenderHelp() {
+		NodeViewElement help = NodeViewElement.forTag( "p" );
+		help.setAttribute( "class", "help-block" );
+		help.add( new TextViewElement( "example help text" ) );
+
+		group.setHelpBlock( help );
+		group.setFormLayout( FormLayout.inline( true ) );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control-help' />" +
+						"<p class='help-block sr-only' id='control-help'>example help text</p>" +
+						"</div>"
+		);
+
+		group.setFormLayout( FormLayout.inline( false ) );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label for='control' class='sr-only'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control-help' placeholder='title' />" +
+						"<p class='help-block sr-only' id='control-help'>example help text</p>" +
 						"</div>"
 		);
 	}
