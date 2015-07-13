@@ -96,8 +96,8 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control-help' />" +
-						"<p class='help-block' id='control-help'>example help text</p>" +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"<p class='help-block' id='control.help'>example help text</p>" +
 						"</div>"
 		);
 
@@ -107,8 +107,23 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<p class='help-block' id='control-help'>example help text</p>" +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control-help' />" +
+						"<p class='help-block' id='control.help'>example help text</p>" +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"</div>"
+		);
+
+
+		SelectFormElement select = new SelectFormElement();
+		select.setName( "list" );
+
+		group.setControl( select );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<p class='help-block' id='list.help'>example help text</p>" +
+						"<select class='form-control' name='list' id='list' aria-describedby='list.help' />" +
 						"</div>"
 		);
 	}
@@ -170,8 +185,8 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control-help' />" +
-						"<p class='help-block sr-only' id='control-help'>example help text</p>" +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"<p class='help-block sr-only' id='control.help'>example help text</p>" +
 						"</div>"
 		);
 
@@ -181,8 +196,8 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='sr-only'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control-help' placeholder='title' />" +
-						"<p class='help-block sr-only' id='control-help'>example help text</p>" +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' placeholder='title' />" +
+						"<p class='help-block sr-only' id='control.help'>example help text</p>" +
 						"</div>"
 		);
 	}
