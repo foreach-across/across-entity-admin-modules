@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class FormViewElementNodeBuilder extends NestableNodeBuilderSupport<FormViewElement>
 {
-	public static final String VAR_CURRENT_BOOSTRAP_FORM = "_currentBootstrapForm";
+	public static final String VAR_CURRENT_BOOTSTRAP_FORM = "_currentBootstrapForm";
 
 	@Override
 	public List<Node> buildNodes( FormViewElement form,
@@ -59,7 +59,7 @@ public class FormViewElementNodeBuilder extends NestableNodeBuilderSupport<FormV
 
 	private Arguments buildFormArguments( FormViewElement form, Arguments original ) {
 		Arguments newArguments = original.addLocalVariables(
-				Collections.<String, Object>singletonMap( VAR_CURRENT_BOOSTRAP_FORM, form )
+				Collections.<String, Object>singletonMap( VAR_CURRENT_BOOTSTRAP_FORM, form )
 		);
 		newArguments.getExpressionObjects().putAll( original.getExpressionObjects() );
 

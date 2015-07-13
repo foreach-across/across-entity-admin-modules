@@ -108,7 +108,7 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 				}
 
 				String controlId = controlElement.getAttributeValue( "id" );
-				String helpBlockId = controlId != null ? controlId + "-help" : null;
+				String helpBlockId = controlId != null ? controlId + ".help" : null;
 
 				if ( helpBlockId != null ) {
 					Element helpElement = helpElement( helpNodes );
@@ -128,14 +128,14 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 				node.addChild( childNode );
 			}
 
+			if ( control instanceof FormControlElementSupport ) {
+				addFieldErrors( node, ( (FormControlElementSupport) control ).getControlName(), arguments );
+			}
+
 			if ( !group.isRenderHelpBlockBeforeControl() ) {
 				for ( Node helpNode : helpNodes ) {
 					node.addChild( helpNode );
 				}
-			}
-
-			if ( control instanceof FormControlElementSupport ) {
-				addFieldErrors( node, ( (FormControlElementSupport) control ).getControlName(), arguments );
 			}
 		}
 
@@ -151,9 +151,9 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 	}
 
 	private void addFieldErrors( Element node, String controlName, Arguments arguments ) {
-		if ( arguments.hasLocalVariable( FormViewElementNodeBuilder.VAR_CURRENT_BOOSTRAP_FORM ) ) {
+		if ( arguments.hasLocalVariable( FormViewElementNodeBuilder.VAR_CURRENT_BOOTSTRAP_FORM ) ) {
 			FormViewElement form = (FormViewElement) arguments.getLocalVariable(
-					FormViewElementNodeBuilder.VAR_CURRENT_BOOSTRAP_FORM
+					FormViewElementNodeBuilder.VAR_CURRENT_BOOTSTRAP_FORM
 			);
 
 			if ( form.getCommandAttribute() != null ) {
@@ -205,7 +205,8 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 				Element candidate = (Element) node;
 
 				if ( StringUtils.equals( candidate.getNormalizedName(), "input" )
-						|| StringUtils.equals( candidate.getNormalizedName(), "textarea" ) ) {
+						|| StringUtils.equals( candidate.getNormalizedName(), "textarea" )
+						|| StringUtils.equals( candidate.getNormalizedName(), "select" )) {
 					return candidate;
 				}
 			}
