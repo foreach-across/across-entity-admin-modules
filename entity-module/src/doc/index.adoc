@@ -251,6 +251,10 @@ Example: _UserModule.entities.user.name.plural.inline_
 | Label for a single entity property. +
 Example: _UserModule.entities.user.properties.username_
 
+| *EntityPrefix*.properties.*propertyName*.description
+| Description text for a property.  If not empty this will be rendered in a help block on forms. +
+Example: _UserModule.entities.user.properties.username.description_
+
 | actions.*
 |
 

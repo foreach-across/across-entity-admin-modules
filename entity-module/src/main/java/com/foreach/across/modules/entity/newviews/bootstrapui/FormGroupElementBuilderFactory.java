@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.newviews.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactorySupport;
@@ -26,7 +27,11 @@ import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -40,8 +45,14 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 	@Autowired
 	private BootstrapUiFactory bootstrapUi;
 
+	private boolean renderHelpBlockBeforeControl = true;
+
 	public FormGroupElementBuilderFactory() {
 		addProcessor( new FormGroupRequiredBuilderProcessor() );
+	}
+
+	public void setRenderHelpBlockBeforeControl( boolean renderHelpBlockBeforeControl ) {
+		this.renderHelpBlockBeforeControl = renderHelpBlockBeforeControl;
 	}
 
 	@Override
@@ -70,6 +81,38 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 				entityConfiguration, propertyDescriptor, controlMode
 		);
 
-		return bootstrapUi.formGroup( labelBuilder, controlBuilder );
+		return bootstrapUi.formGroup( labelBuilder, controlBuilder )
+		                  .helpBlockRenderedBeforeControl( renderHelpBlockBeforeControl )
+		                  .postProcessor( new DescriptionTextPostProcessor( bootstrapUi, propertyDescriptor ) );
+	}
+
+	/**
+	 * Attempts to resolve a property
+	 */
+	public static class DescriptionTextPostProcessor implements ViewElementPostProcessor<FormGroupElement>
+	{
+		private final BootstrapUiFactory bootstrapUi;
+		private final EntityPropertyDescriptor propertyDescriptor;
+
+		public DescriptionTextPostProcessor( BootstrapUiFactory bootstrapUi,
+		                                     EntityPropertyDescriptor propertyDescriptor ) {
+			this.bootstrapUi = bootstrapUi;
+			this.propertyDescriptor = propertyDescriptor;
+		}
+
+		@Override
+		public void postProcess( ViewElementBuilderContext builderContext, FormGroupElement element ) {
+			EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
+
+			if ( codeResolver != null ) {
+				String description = codeResolver.getMessageWithFallback(
+						"properties." + propertyDescriptor.getName() + ".description", ""
+				);
+
+				if ( !StringUtils.isBlank( description ) ) {
+					element.setHelpBlock( bootstrapUi.helpBlock( description ).build( builderContext ) );
+				}
+			}
+		}
 	}
 }
