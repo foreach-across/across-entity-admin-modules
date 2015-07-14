@@ -158,7 +158,6 @@ public void configure( EntitiesConfigurationBuilder configuration ) {
 }
 ----
 
-
 == Entity views
 
 === List views
@@ -255,18 +254,33 @@ Example: _UserModule.entities.user.properties.username_
 | Description text for a property.  If not empty this will be rendered in a help block on forms. +
 Example: _UserModule.entities.user.properties.username.description_
 
+| *EntityPrefix*.validation.*validatorKey*
+| Description text for a validation error message.  Optionally can be suffixed with the specific property name. +
+Example: _UserModule.entities.user.validation.NotBlank_,  _UserModule.entities.user.validation.alreadyExists.username_
+
+
 | actions.*
 |
 
 | pageTitle.*
 
-| validation
 
 |===
 
 * _Entity_ codes are camel cased
 * EntityPrefix: ModuleName.entities.entityName, or EntityModule.entities.entityName or simply entityName
 * Hierarchical lookups: entity can be removed, module can be replaced by EntityModule
+
+=== Customizing entity validation
+
+By default annotation validation is performed on all entities.  Customizing validation can be done by simply
+specifying a `Validator` bean that supports the specific entity type.  You can use the `EntityValidatorSupport` as
+  as base class to extend the default annotation based entity validation.
+
+If more than one `Validator` could be applied,
+you will manually have to set the `Validator.class` attribute on the `EntityConfiguration` to the correct one.
+
+
 
 == To be done:
 * view processor
