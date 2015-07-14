@@ -11,7 +11,6 @@
 		<dependency>
 			<groupId>across-standard-modules</groupId>
 			<artifactId>entity-module</artifactId>
-			<version>{across-version}</version>
 		</dependency>
 	</dependencies>
 ----

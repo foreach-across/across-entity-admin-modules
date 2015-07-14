@@ -48,7 +48,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.format.datetime.DateFormatterRegistrar;
-import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -60,37 +59,26 @@ public class EntityModuleConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityModuleConfiguration.class );
 
-	@Autowired(required = false)
-	private FormattingConversionService conversionService;
+	@Autowired
+	private FormattingConversionService mvcConversionService;
 
 	@PostConstruct
 	public void init() {
-		FormattingConversionService converterRegistry =
-				conversionService != null ? conversionService : entityConversionService();
-
 		EntityRegistry entityRegistry = entityRegistry();
 
-		converterRegistry.addConverter( new StringToEntityConfigurationConverter( entityRegistry ) );
-		converterRegistry.addConverter( new EntityConverter<>( converterRegistry, entityRegistry ) );
-		converterRegistry.addConverter( new EntityToStringConverter( entityRegistry ) );
+		mvcConversionService.addConverter( new StringToEntityConfigurationConverter( entityRegistry ) );
+		mvcConversionService.addConverter( new EntityConverter<>( mvcConversionService, entityRegistry ) );
+		mvcConversionService.addConverter( new EntityToStringConverter( entityRegistry ) );
 
 		DateFormatterRegistrar dateFormatterRegistrar = new DateFormatterRegistrar();
 		dateFormatterRegistrar.setFormatter( new DateFormatter() );
-		dateFormatterRegistrar.registerFormatters( conversionService );
-		conversionService.addFormatterForFieldAnnotation( new TemporalFormatterFactory() );
+		dateFormatterRegistrar.registerFormatters( mvcConversionService );
+		mvcConversionService.addFormatterForFieldAnnotation( new TemporalFormatterFactory() );
 	}
 
 	@Bean
 	public EntityRegistryImpl entityRegistry() {
 		return new EntityRegistryImpl();
-	}
-
-	@Bean
-	@Exposed
-	@AcrossCondition("not hasBeanOfType(T(org.springframework.core.convert.ConversionService))")
-	public FormattingConversionService entityConversionService() {
-		LOG.warn( "No ConversionService found in Across context - creating and exposing a ConversionService bean" );
-		return new DefaultFormattingConversionService();
 	}
 
 	@Bean(name = EntityModule.VALIDATOR)

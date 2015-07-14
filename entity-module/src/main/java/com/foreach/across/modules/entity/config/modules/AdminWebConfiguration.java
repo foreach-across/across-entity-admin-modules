@@ -48,7 +48,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class AdminWebConfiguration implements EntityConfigurer
 {
 	@Autowired
-	private ConversionService conversionService;
+	private ConversionService mvcConversionService;
 
 	@Autowired
 	private AdminWeb adminWeb;
@@ -123,15 +123,14 @@ public class AdminWebConfiguration implements EntityConfigurer
 				configuration.setAttribute(
 						EntityLinkBuilder.class,
 						new EntityConfigurationLinkBuilder(
-								EntityControllerAttributes.ROOT_PATH, configuration, conversionService,
-								servletContextResolver
+								EntityControllerAttributes.ROOT_PATH, configuration, mvcConversionService
 						)
 				);
 
 				for ( EntityAssociation association : configuration.getAssociations() ) {
 					MutableEntityAssociation mutable = configuration.association( association.getName() );
-					mutable.setAttribute( EntityLinkBuilder.class,
-					                      new EntityAssociationLinkBuilder( association, conversionService ) );
+					mutable.addAttribute( EntityLinkBuilder.class,
+					                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
 				}
 			}
 		} );
