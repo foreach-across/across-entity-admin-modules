@@ -123,13 +123,14 @@ public class AdminWebConfiguration implements EntityConfigurer
 				configuration.setAttribute(
 						EntityLinkBuilder.class,
 						new EntityConfigurationLinkBuilder(
-								EntityControllerAttributes.ROOT_PATH, configuration, mvcConversionService
+								EntityControllerAttributes.ROOT_PATH, configuration, mvcConversionService,
+								servletContextResolver
 						)
 				);
 
 				for ( EntityAssociation association : configuration.getAssociations() ) {
 					MutableEntityAssociation mutable = configuration.association( association.getName() );
-					mutable.addAttribute( EntityLinkBuilder.class,
+					mutable.setAttribute( EntityLinkBuilder.class,
 					                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
 				}
 			}
