@@ -77,6 +77,7 @@
 <script th:each="javascript : ${webResourceRegistry.getResources('javascript-page-end')}" th:src="@{${javascript.data}}"
         th:if="${javascript.location != 'inline'}"></script>
 
+<script th:replace="${childPage} :: javascript-page-end"></script>
 </body>
 </html>
 
