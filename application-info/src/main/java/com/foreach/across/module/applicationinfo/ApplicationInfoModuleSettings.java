@@ -1,16 +1,23 @@
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.foreach.across.module.applicationinfo;
 
 import com.foreach.across.core.AcrossModuleSettings;
 import com.foreach.across.core.AcrossModuleSettingsRegistry;
-import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.core.convert.ConversionFailedException;
-import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.support.ConfigurableConversionService;
-import org.springframework.core.env.ConfigurablePropertyResolver;
-import org.springframework.core.env.Environment;
 
-import java.text.ParseException;
 import java.util.Date;
 
 public class ApplicationInfoModuleSettings extends AcrossModuleSettings
@@ -25,34 +32,6 @@ public class ApplicationInfoModuleSettings extends AcrossModuleSettings
 	public static final String BUILD_DATE = "applicationInfo.buildDate";
 	public static final String HOSTNAME = "applicationInfo.hostName";
 	public static final String STARTUP_DATE = "applicationInfo.startupDate";
-
-	@Override
-	public void setEnvironment( Environment environment ) {
-		super.setEnvironment( environment );
-
-		if ( environment instanceof ConfigurablePropertyResolver ) {
-			configureDateConverterIfNecessary( ( (ConfigurablePropertyResolver) environment ).getConversionService() );
-		}
-	}
-
-	private void configureDateConverterIfNecessary( ConfigurableConversionService conversionService ) {
-		// TODO: remove once a ConversionService is set from the AcrossContext
-		conversionService.addConverter( new Converter<String, Date>()
-		{
-			@Override
-			public Date convert( String source ) {
-				try {
-					return DateUtils.parseDate( source,
-					                            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.SSS" );
-				}
-				catch ( ParseException pe ) {
-					throw new ConversionFailedException(
-							TypeDescriptor.forObject( source ), TypeDescriptor.valueOf( Date.class ), source, pe
-					);
-				}
-			}
-		} );
-	}
 
 	@Override
 	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
