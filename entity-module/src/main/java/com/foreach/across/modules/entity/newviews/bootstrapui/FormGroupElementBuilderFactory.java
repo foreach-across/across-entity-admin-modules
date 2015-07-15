@@ -106,7 +106,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 
 			if ( codeResolver != null ) {
 				String description = codeResolver.getMessageWithFallback(
-						"properties." + propertyDescriptor.getName() + ".description", ""
+						"properties." + propertyDescriptor.getName() + "[description]", ""
 				);
 
 				if ( !StringUtils.isBlank( description ) ) {

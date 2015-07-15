@@ -28,6 +28,10 @@ import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -80,7 +84,36 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 				                  new EntityPropertyValuePostProcessor<TextboxFormElement>( conversionService,
 				                                                                            propertyDescriptor )
 		                  )
-		                  .postProcessor( new EntityPropertyControlPostProcessor<TextboxFormElement>() );
+		                  .postProcessor( new EntityPropertyControlPostProcessor<TextboxFormElement>() )
+		                  .postProcessor( new TextboxPlaceholderProcessor( propertyDescriptor ) );
+
+	}
+
+	/**
+	 * Resolves placeholder text for a property.
+	 */
+	private class TextboxPlaceholderProcessor implements ViewElementPostProcessor<TextboxFormElement>
+	{
+		private final EntityPropertyDescriptor propertyDescriptor;
+
+		public TextboxPlaceholderProcessor( EntityPropertyDescriptor propertyDescriptor ) {
+			this.propertyDescriptor = propertyDescriptor;
+		}
+
+		@Override
+		public void postProcess( ViewElementBuilderContext builderContext, TextboxFormElement element ) {
+			EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
+
+			if ( codeResolver != null ) {
+				String placeholder = codeResolver.getMessageWithFallback(
+						"properties." + propertyDescriptor.getName() + "[placeholder]", ""
+				);
+
+				if ( !StringUtils.isBlank( placeholder ) ) {
+					element.setPlaceholder( placeholder );
+				}
+			}
+		}
 	}
 
 	/**

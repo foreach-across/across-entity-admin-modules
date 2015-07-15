@@ -249,9 +249,13 @@ Example: _UserModule.entities.user.name.plural.inline_
 | Label for a single entity property. +
 Example: _UserModule.entities.user.properties.username_
 
-| *EntityPrefix*.properties.*propertyName*.description
+| *EntityPrefix*.properties.*propertyName*[description]
 | Description text for a property.  If not empty this will be rendered in a help block on forms. +
-Example: _UserModule.entities.user.properties.username.description_
+Example: _UserModule.entities.user.properties.username[description]_
+
+| *EntityPrefix*.properties.*propertyName*[placeholder]
+| Placeholder text for a property.  Will be used for certain controle like textbox. +
+Example: _UserModule.entities.user.properties.username[placeholder]_
 
 | *EntityPrefix*.validation.*validatorKey*
 | Description text for a validation error message.  Optionally can be suffixed with the specific property name. +
