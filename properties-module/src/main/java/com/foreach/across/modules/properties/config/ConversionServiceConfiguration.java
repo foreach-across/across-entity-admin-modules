@@ -27,6 +27,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -91,7 +92,8 @@ public class ConversionServiceConfiguration
 
 	private ConversionService getConversionServiceBeanFromParent() {
 		try {
-			return applicationContext.getParent().getBean( ConversionService.class );
+			return applicationContext.getBean( ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,
+			                                   ConversionService.class );
 		}
 		catch ( BeansException be ) {
 			return null;
