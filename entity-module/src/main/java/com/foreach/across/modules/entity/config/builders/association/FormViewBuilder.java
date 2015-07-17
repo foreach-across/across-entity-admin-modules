@@ -18,7 +18,9 @@ package com.foreach.across.modules.entity.config.builders.association;
 import com.foreach.across.modules.entity.config.builders.AbstractEntityFormViewBuilder;
 import com.foreach.across.modules.entity.config.builders.AbstractEntityPropertyDescriptorBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityAssociationBuilder;
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 
 public class FormViewBuilder extends AbstractEntityFormViewBuilder<FormViewBuilder>
 {
@@ -51,6 +53,39 @@ public class FormViewBuilder extends AbstractEntityFormViewBuilder<FormViewBuild
 			@Override
 			public PropertyDescriptorBuilder valueFetcher( ValueFetcher valueFetcher ) {
 				return super.valueFetcher( valueFetcher );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder writable( boolean writable ) {
+				return super.writable( writable );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder readable( boolean readable ) {
+				return super.readable( readable );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder hidden( boolean hidden ) {
+				return super.hidden( hidden );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder viewElementMode( ViewElementMode mode,
+			                                                  boolean cacheable ) {
+				return super.viewElementMode( mode, cacheable );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder viewElementType( ViewElementMode mode,
+			                                                  String viewElementType ) {
+				return super.viewElementType( mode, viewElementType );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder viewElementBuilder( ViewElementMode mode,
+			                                                     ViewElementBuilder viewElementBuilder ) {
+				return super.viewElementBuilder( mode, viewElementBuilder );
 			}
 
 			@Override

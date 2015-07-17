@@ -39,7 +39,24 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 	public ViewElementBuilder getElementBuilder( EntityConfiguration entityConfiguration,
 	                                             EntityPropertyDescriptor descriptor,
 	                                             ViewElementMode mode ) {
-		// One registered on descriptor?
+		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+
+		if ( lookupRegistry != null ) {
+			ViewElementBuilder builder = lookupRegistry.getViewElementBuilder( mode );
+
+			if ( builder != null ) {
+				return builder;
+			}
+			else {
+				builder = createElementBuilder( entityConfiguration, descriptor, mode );
+				if ( builder != null && lookupRegistry.isCacheable( mode ) ) {
+					lookupRegistry.setViewElementBuilder( mode, builder );
+				}
+
+				return builder;
+			}
+		}
+
 		return createElementBuilder( entityConfiguration, descriptor, mode );
 	}
 
@@ -71,17 +88,25 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 	public String getElementType( EntityConfiguration entityConfiguration,
 	                              EntityPropertyDescriptor descriptor,
 	                              ViewElementMode mode ) {
-		// descriptor has one configured? use it
+		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 
-		// if not, fetch one
-		for ( ViewElementTypeLookupStrategy lookupStrategy : elementTypeLookupStrategies ) {
-			String elementType = lookupStrategy.findElementType( entityConfiguration, descriptor, mode );
+		String elementType = lookupRegistry != null ? lookupRegistry.getViewElementType( mode ) : null;
 
-			if ( elementType != null ) {
-				return elementType;
+		if ( elementType == null ) {
+			// if not, fetch one
+			for ( ViewElementTypeLookupStrategy lookupStrategy : elementTypeLookupStrategies ) {
+				elementType = lookupStrategy.findElementType( entityConfiguration, descriptor, mode );
+
+				if ( elementType != null ) {
+					break;
+				}
 			}
 		}
 
-		return null;
+		if ( elementType != null && lookupRegistry != null ) {
+			lookupRegistry.setViewElementType( mode, elementType );
+		}
+
+		return elementType;
 	}
 }

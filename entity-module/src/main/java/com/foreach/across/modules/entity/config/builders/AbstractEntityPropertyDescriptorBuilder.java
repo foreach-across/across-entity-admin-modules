@@ -15,12 +15,16 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.newviews.ViewElementLookupRegistry;
+import com.foreach.across.modules.entity.newviews.ViewElementLookupRegistryImpl;
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.springframework.util.Assert;
 
 import java.util.HashMap;
@@ -29,14 +33,12 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends AbstractEntityPropertyDescriptorBuilder>
 {
+	private final Map<String, Object> attributes = new HashMap<>();
+	private final ViewElementLookupRegistryImpl viewElementLookupRegistry = new ViewElementLookupRegistryImpl();
 	private String name;
-
 	private String displayName;
 	private ValueFetcher valueFetcher;
-
 	private Boolean hidden, writable, readable;
-
-	private final Map<String, Object> attributes = new HashMap<>();
 
 	protected void setName( String name ) {
 		this.name = name;
@@ -124,6 +126,42 @@ public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends Abstr
 	}
 
 	/**
+	 * Set the caching mode for a particular {@link ViewElementMode}.  By default caching is enabled.
+	 *
+	 * @param mode      to set the caching option for
+	 * @param cacheable true if {@link ViewElementBuilder}s should be cached
+	 * @return current builder
+	 */
+	public SELF viewElementMode( ViewElementMode mode, boolean cacheable ) {
+		viewElementLookupRegistry.setCacheable( mode, cacheable );
+		return (SELF) this;
+	}
+
+	/**
+	 * Set the {@link com.foreach.across.modules.web.ui.ViewElement} type of a particular {@link ViewElementMode}.
+	 *
+	 * @param mode            to set the type for
+	 * @param viewElementType to use
+	 * @return current builder
+	 */
+	public SELF viewElementType( ViewElementMode mode, String viewElementType ) {
+		viewElementLookupRegistry.setViewElementType( mode, viewElementType );
+		return (SELF) this;
+	}
+
+	/**
+	 * Set the {@link ViewElementBuilder} to use for a particular {@link ViewElementMode}.
+	 *
+	 * @param mode               to set the builder for
+	 * @param viewElementBuilder to use
+	 * @return current builder
+	 */
+	public SELF viewElementBuilder( ViewElementMode mode, ViewElementBuilder viewElementBuilder ) {
+		viewElementLookupRegistry.setViewElementBuilder( mode, viewElementBuilder );
+		return (SELF) this;
+	}
+
+	/**
 	 * @return parent builder
 	 */
 	public abstract Object and();
@@ -168,6 +206,15 @@ public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends Abstr
 		}
 
 		descriptor.setAttributes( attributes );
+
+		ViewElementLookupRegistry existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+
+		if ( existingLookupRegistry != null ) {
+			viewElementLookupRegistry.mergeInto( existingLookupRegistry );
+		}
+		else {
+			descriptor.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry );
+		}
 
 		// There was an existing descriptor, but not mutable, we created a custom merge
 		if ( existing != null && !( existing instanceof MutableEntityPropertyDescriptor ) ) {
