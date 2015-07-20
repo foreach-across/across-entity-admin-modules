@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class EntitiesConfigurationBuilder extends AbstractAttributesAndViewsBuilder<EntitiesConfigurationBuilder, MutableEntityConfiguration<?>>
 {
-	private final Map<Class<?>, EntityConfigurationBuilder> builders = new LinkedHashMap<>();
+	private final Map<String, EntityConfigurationBuilder> builders = new LinkedHashMap<>();
 
 	@Override
 	public ViewBuilder view( String name ) {
@@ -80,11 +80,31 @@ public class EntitiesConfigurationBuilder extends AbstractAttributesAndViewsBuil
 	public synchronized <V> EntityConfigurationBuilder<V> entity( Class<V> entityType ) {
 		Assert.notNull( entityType );
 
-		EntityConfigurationBuilder<V> builder = (EntityConfigurationBuilder<V>) builders.get( entityType );
+		EntityConfigurationBuilder<V> builder = (EntityConfigurationBuilder<V>) builders.get( entityType.getName() );
 
 		if ( builder == null ) {
-			builder = new EntityConfigurationBuilder<>( entityType, this );
-			builders.put( entityType, builder );
+			builder = new EntityConfigurationBuilder<>( entityType, false, this );
+			builders.put( entityType.getName(), builder );
+		}
+
+		return builder;
+	}
+
+	/**
+	 * Retrieve a builder for all entities that can be assigned to the specific parent type or interface.
+	 *
+	 * @param entityType that entities can be assigned to
+	 * @return entity builder instance
+	 */
+	public synchronized <V> EntityConfigurationBuilder<V> assignableTo( Class<V> entityType ) {
+		Assert.notNull( entityType );
+
+		String entityName = "assignableTo:" + entityType.getName();
+		EntityConfigurationBuilder<V> builder = (EntityConfigurationBuilder<V>) builders.get( entityName );
+
+		if ( builder == null ) {
+			builder = new EntityConfigurationBuilder<>( entityType, true, this );
+			builders.put( entityName, builder );
 		}
 
 		return builder;

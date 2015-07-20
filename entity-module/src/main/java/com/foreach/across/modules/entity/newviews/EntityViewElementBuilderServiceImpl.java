@@ -50,7 +50,7 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 			else {
 				builder = createElementBuilder( entityConfiguration, descriptor, mode );
 				if ( builder != null && lookupRegistry.isCacheable( mode ) ) {
-					lookupRegistry.setViewElementBuilder( mode, builder );
+					lookupRegistry.cacheViewElementBuilder( mode, builder );
 				}
 
 				return builder;

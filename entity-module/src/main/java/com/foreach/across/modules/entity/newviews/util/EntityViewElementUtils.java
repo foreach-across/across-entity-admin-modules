@@ -39,14 +39,32 @@ public class EntityViewElementUtils
 	 * @return entity or null if none found
 	 */
 	public static Object currentEntity( ViewElementBuilderContext builderContext ) {
+		return currentEntity( builderContext, Object.class );
+	}
+
+	/**
+	 * <p>Retrieve the current entity being processed in the builder context.  In case of a
+	 * {@link IteratorViewElementBuilderContext} the entity of the iterator will be returned,
+	 * in all other cases the attribute {@link EntityViewElementBuilderContext#ENTITY}.</p>
+	 * <p>Will return null if no entity can be found or if the entity is not of the expected type.</p>
+	 *
+	 * @param builderContext curret builder context
+	 * @return entity or null if none found or not of the expected type
+	 */
+	public static <U> U currentEntity( ViewElementBuilderContext builderContext, Class<U> expectedType ) {
 		if ( builderContext == null ) {
 			return null;
 		}
 
+		Object value = null;
+
 		if ( builderContext instanceof IteratorViewElementBuilderContext ) {
-			return ( (IteratorViewElementBuilderContext) builderContext ).getItem();
+			value = ( (IteratorViewElementBuilderContext) builderContext ).getItem();
+		}
+		else {
+			value = builderContext.getAttribute( EntityViewElementBuilderContext.ENTITY );
 		}
 
-		return builderContext.getAttribute( EntityViewElementBuilderContext.ENTITY );
+		return expectedType.isInstance( value ) ? (U) value : null;
 	}
 }

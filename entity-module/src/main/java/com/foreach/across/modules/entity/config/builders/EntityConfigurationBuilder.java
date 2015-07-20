@@ -21,9 +21,7 @@ import com.foreach.across.modules.entity.config.builders.configuration.FormViewB
 import com.foreach.across.modules.entity.config.builders.configuration.ListViewBuilder;
 import com.foreach.across.modules.entity.config.builders.configuration.ViewBuilder;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
-import com.foreach.across.modules.entity.registry.EntityConfigurationImpl;
-import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityListView;
@@ -32,120 +30,26 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.Assert;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Arne Vandamme
  */
 public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBuilder<EntityConfigurationBuilder, MutableEntityConfiguration<T>>
 {
-	@SuppressWarnings("unchecked")
-	public class PropertyRegistryBuilder
-			extends AbstractEntityPropertyRegistryBuilder<PropertyRegistryBuilder>
-	{
-		public class PropertyDescriptorBuilder extends AbstractEntityPropertyDescriptorBuilder<PropertyDescriptorBuilder>
-		{
-			@Override
-			public PropertyDescriptorBuilder attribute( String name, Object value ) {
-				return super.attribute( name, value );
-			}
-
-			@Override
-			public <S> PropertyDescriptorBuilder attribute( Class<S> type, S value ) {
-				return super.attribute( type, value );
-			}
-
-			@Override
-			public PropertyDescriptorBuilder displayName( String displayName ) {
-				return super.displayName( displayName );
-			}
-
-			@Override
-			public PropertyDescriptorBuilder spelValueFetcher( String expression ) {
-				return super.spelValueFetcher( expression );
-			}
-
-			@Override
-			public PropertyDescriptorBuilder valueFetcher( ValueFetcher valueFetcher ) {
-				return super.valueFetcher( valueFetcher );
-			}
-
-			@Override
-			public PropertyDescriptorBuilder writable( boolean writable ) {
-				return super.writable( writable );
-			}
-
-			@Override
-			public PropertyDescriptorBuilder readable( boolean readable ) {
-				return super.readable( readable );
-			}
-
-			@Override
-			public PropertyDescriptorBuilder hidden( boolean hidden ) {
-				return super.hidden( hidden );
-			}
-
-			@Override
-			public PropertyDescriptorBuilder viewElementMode( ViewElementMode mode,
-			                                                  boolean cacheable ) {
-				return super.viewElementMode( mode, cacheable );
-			}
-
-			@Override
-			public PropertyDescriptorBuilder viewElementType( ViewElementMode mode,
-			                                                  String viewElementType ) {
-				return super.viewElementType( mode, viewElementType );
-			}
-
-			@Override
-			public PropertyDescriptorBuilder viewElementBuilder(
-					ViewElementMode mode,
-					ViewElementBuilder viewElementBuilder ) {
-				return super.viewElementBuilder( mode, viewElementBuilder );
-			}
-
-			@Override
-			public PropertyRegistryBuilder and() {
-				return propertyRegistryBuilder;
-			}
-		}
-
-		private final PropertyRegistryBuilder propertyRegistryBuilder;
-
-		public PropertyRegistryBuilder() {
-			this.propertyRegistryBuilder = this;
-		}
-
-		@Override
-		public synchronized PropertyDescriptorBuilder property( String name ) {
-			return (PropertyDescriptorBuilder) super.property( name );
-		}
-
-		@Override
-		protected PropertyDescriptorBuilder createDescriptorBuilder( String name ) {
-			return new PropertyDescriptorBuilder();
-		}
-
-		@Override
-		public EntityConfigurationBuilder and() {
-			return configurationBuilder;
-		}
-	}
-
 	private final EntityConfigurationBuilder configurationBuilder;
 	private final Class<T> entityType;
+	private final boolean assignableTo;
 	private final EntitiesConfigurationBuilder parent;
-
-	private PropertyRegistryBuilder propertyRegistryBuilder;
 	private final Map<String, EntityAssociationBuilder> associations = new HashMap<>();
 
+	private PropertyRegistryBuilder propertyRegistryBuilder;
 	private EntityConfigurationAllowableActionsBuilder allowableActionsBuilder;
-
 	private Boolean hidden;
 
-	EntityConfigurationBuilder( Class<T> entityType, EntitiesConfigurationBuilder parent ) {
+	EntityConfigurationBuilder( Class<T> entityType, boolean assignableTo, EntitiesConfigurationBuilder parent ) {
 		this.entityType = entityType;
+		this.assignableTo = assignableTo;
 		this.parent = parent;
 		this.configurationBuilder = this;
 	}
@@ -249,43 +153,156 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 	}
 
 	void apply( MutableEntityRegistry entityRegistry, AutowireCapableBeanFactory beanFactory ) {
-		MutableEntityConfiguration configuration = entityRegistry.getMutableEntityConfiguration( entityType );
+		for ( Class<T> entityType : entityTypesToHandle( entityRegistry ) ) {
+			MutableEntityConfiguration configuration
+					= entityRegistry.getMutableEntityConfiguration( entityType );
 
-		if ( configuration == null ) {
-			configuration = new EntityConfigurationImpl<>( entityType );
-			configuration.setPropertyRegistry( new DefaultEntityPropertyRegistry( entityType ) );
-			entityRegistry.register( configuration );
-		}
+			if ( configuration == null ) {
+				configuration = new EntityConfigurationImpl<>( entityType );
+				configuration.setPropertyRegistry( new DefaultEntityPropertyRegistry( entityType ) );
+				entityRegistry.register( configuration );
+			}
 
-		if ( propertyRegistryBuilder != null ) {
-			propertyRegistryBuilder.apply( configuration.getPropertyRegistry() );
-		}
+			if ( propertyRegistryBuilder != null ) {
+				propertyRegistryBuilder.apply( configuration.getPropertyRegistry() );
+			}
 
-		if ( hidden != null ) {
-			configuration.setHidden( hidden );
-		}
+			if ( hidden != null ) {
+				configuration.setHidden( hidden );
+			}
 
-		if ( allowableActionsBuilder != null ) {
-			configuration.setAllowableActionsBuilder( allowableActionsBuilder );
-		}
+			if ( allowableActionsBuilder != null ) {
+				configuration.setAllowableActionsBuilder( allowableActionsBuilder );
+			}
 
-		applyAttributes( configuration );
-		applyViewBuilders( configuration, beanFactory );
+			applyAttributes( configuration );
+			applyViewBuilders( configuration, beanFactory );
 
-		for ( EntityAssociationBuilder associationBuilder : associations.values() ) {
-			associationBuilder.apply( configuration, entityRegistry, beanFactory );
+			for ( EntityAssociationBuilder associationBuilder : associations.values() ) {
+				associationBuilder.apply( configuration, entityRegistry, beanFactory );
+			}
 		}
 	}
 
 	void postProcess( MutableEntityRegistry entityRegistry ) {
-		MutableEntityConfiguration<T> configuration = entityRegistry.getMutableEntityConfiguration( entityType );
+		for ( Class<T> entityType : entityTypesToHandle( entityRegistry ) ) {
+			MutableEntityConfiguration configuration
+					= entityRegistry.getMutableEntityConfiguration( entityType );
 
-		for ( PostProcessor<MutableEntityConfiguration<T>> postProcessor : postProcessors() ) {
-			postProcessor.process( configuration );
+			for ( PostProcessor<MutableEntityConfiguration<T>> postProcessor : postProcessors() ) {
+				postProcessor.process( configuration );
+			}
+
+			for ( EntityAssociationBuilder associationBuilder : associations.values() ) {
+				associationBuilder.postProcess( configuration );
+			}
+		}
+	}
+
+	private Collection<Class<T>> entityTypesToHandle( EntityRegistry entityRegistry ) {
+		if ( assignableTo ) {
+			List<Class<T>> entityTypes = new ArrayList<>();
+			for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
+				if ( entityType.isAssignableFrom( entityConfiguration.getEntityType() ) ) {
+					entityTypes.add( entityConfiguration.getEntityType() );
+				}
+			}
+			return entityTypes;
 		}
 
-		for ( EntityAssociationBuilder associationBuilder : associations.values() ) {
-			associationBuilder.postProcess( configuration );
+		return Collections.singleton( entityType );
+	}
+
+	@SuppressWarnings("unchecked")
+	public class PropertyRegistryBuilder
+			extends AbstractEntityPropertyRegistryBuilder<PropertyRegistryBuilder>
+	{
+		private final PropertyRegistryBuilder propertyRegistryBuilder;
+
+		public PropertyRegistryBuilder() {
+			this.propertyRegistryBuilder = this;
+		}
+
+		@Override
+		public synchronized PropertyDescriptorBuilder property( String name ) {
+			return (PropertyDescriptorBuilder) super.property( name );
+		}
+
+		@Override
+		protected PropertyDescriptorBuilder createDescriptorBuilder( String name ) {
+			return new PropertyDescriptorBuilder();
+		}
+
+		@Override
+		public EntityConfigurationBuilder and() {
+			return configurationBuilder;
+		}
+
+		public class PropertyDescriptorBuilder extends AbstractEntityPropertyDescriptorBuilder<PropertyDescriptorBuilder>
+		{
+			@Override
+			public PropertyDescriptorBuilder attribute( String name, Object value ) {
+				return super.attribute( name, value );
+			}
+
+			@Override
+			public <S> PropertyDescriptorBuilder attribute( Class<S> type, S value ) {
+				return super.attribute( type, value );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder displayName( String displayName ) {
+				return super.displayName( displayName );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder spelValueFetcher( String expression ) {
+				return super.spelValueFetcher( expression );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder valueFetcher( ValueFetcher valueFetcher ) {
+				return super.valueFetcher( valueFetcher );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder writable( boolean writable ) {
+				return super.writable( writable );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder readable( boolean readable ) {
+				return super.readable( readable );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder hidden( boolean hidden ) {
+				return super.hidden( hidden );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder viewElementModeCaching( ViewElementMode mode,
+			                                                         boolean cacheable ) {
+				return super.viewElementModeCaching( mode, cacheable );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder viewElementType( ViewElementMode mode,
+			                                                  String viewElementType ) {
+				return super.viewElementType( mode, viewElementType );
+			}
+
+			@Override
+			public PropertyDescriptorBuilder viewElementBuilder(
+					ViewElementMode mode,
+					ViewElementBuilder viewElementBuilder ) {
+				return super.viewElementBuilder( mode, viewElementBuilder );
+			}
+
+			@Override
+			public PropertyRegistryBuilder and() {
+				return propertyRegistryBuilder;
+			}
 		}
 	}
 }

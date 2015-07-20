@@ -26,10 +26,11 @@ import java.util.Map;
 public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 {
 	private final Map<ViewElementMode, String> viewElementTypes = new HashMap<>();
-	private final Map<ViewElementMode, ViewElementBuilder> viewElementBuilders = new HashMap<>();
+	private final Map<ViewElementMode, ViewElementBuilder> viewElementBuilderCache = new HashMap<>();
+	private final Map<ViewElementMode, ViewElementBuilder> fixedViewElementBuilders = new HashMap<>();
 	private final Map<ViewElementMode, Boolean> cacheableStatus = new HashMap<>();
 
-	private boolean defaultCacheable;
+	private boolean defaultCacheable = true;
 
 	public boolean isDefaultCacheable() {
 		return defaultCacheable;
@@ -40,9 +41,19 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 	}
 
 	@Override
-	public boolean setViewElementBuilder( ViewElementMode mode, ViewElementBuilder builder ) {
+	public void setViewElementBuilder( ViewElementMode mode, ViewElementBuilder builder ) {
+		if ( builder != null ) {
+			fixedViewElementBuilders.put( mode, builder );
+		}
+		else {
+			fixedViewElementBuilders.remove( mode );
+		}
+	}
+
+	@Override
+	public boolean cacheViewElementBuilder( ViewElementMode mode, ViewElementBuilder builder ) {
 		if ( isCacheable( mode ) ) {
-			viewElementBuilders.put( mode, builder );
+			viewElementBuilderCache.put( mode, builder );
 			return true;
 		}
 
@@ -69,12 +80,13 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 
 	@Override
 	public void reset( ViewElementMode mode ) {
-		viewElementBuilders.remove( mode );
+		viewElementBuilderCache.remove( mode );
 	}
 
 	@Override
 	public ViewElementBuilder getViewElementBuilder( ViewElementMode mode ) {
-		return viewElementBuilders.get( mode );
+		ViewElementBuilder fixed = fixedViewElementBuilders.get( mode );
+		return fixed != null ? fixed : viewElementBuilderCache.get( mode );
 	}
 
 	@Override
@@ -95,8 +107,11 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 		for ( Map.Entry<ViewElementMode, String> type : viewElementTypes.entrySet() ) {
 			existing.setViewElementType( type.getKey(), type.getValue() );
 		}
-		for ( Map.Entry<ViewElementMode, ViewElementBuilder> type : viewElementBuilders.entrySet() ) {
+		for ( Map.Entry<ViewElementMode, ViewElementBuilder> type : fixedViewElementBuilders.entrySet() ) {
 			existing.setViewElementBuilder( type.getKey(), type.getValue() );
+		}
+		for ( Map.Entry<ViewElementMode, ViewElementBuilder> type : viewElementBuilderCache.entrySet() ) {
+			existing.cacheViewElementBuilder( type.getKey(), type.getValue() );
 		}
 	}
 }

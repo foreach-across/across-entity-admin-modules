@@ -71,9 +71,9 @@ public class ListViewBuilder extends AbstractEntityListViewBuilder<ListViewBuild
 			}
 
 			@Override
-			public PropertyDescriptorBuilder viewElementMode( ViewElementMode mode,
-			                                                  boolean cacheable ) {
-				return super.viewElementMode( mode, cacheable );
+			public PropertyDescriptorBuilder viewElementModeCaching( ViewElementMode mode,
+			                                                         boolean cacheable ) {
+				return super.viewElementModeCaching( mode, cacheable );
 			}
 
 			@Override

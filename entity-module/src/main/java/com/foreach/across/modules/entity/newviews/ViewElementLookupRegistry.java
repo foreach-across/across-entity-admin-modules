@@ -29,18 +29,25 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 public interface ViewElementLookupRegistry
 {
 	/**
-	 * Set the {@link ViewElementBuilder} for subsequent lookup.  If {@link #isCacheable(ViewElementMode)} returns
-	 * {@code false} this call will have no effect and return value should also be {@code false}.
+	 * Set the fixed {@link ViewElementBuilder} for lookups.  If set, this builder will always be returned.
+	 *
+	 * @param mode    to register the builder for
+	 * @param builder instance to store
+	 */
+	void setViewElementBuilder( ViewElementMode mode, ViewElementBuilder builder );
+
+	/**
+	 * If {@link #isCacheable(ViewElementMode)} returns{@code false} this call will have no effect
+	 * and return value should also be {@code false}.
 	 *
 	 * @param mode    to register the builder for
 	 * @param builder instance to store
 	 * @return true if the builder was actually stored
 	 */
-	boolean setViewElementBuilder( ViewElementMode mode, ViewElementBuilder builder );
+	boolean cacheViewElementBuilder( ViewElementMode mode, ViewElementBuilder builder );
 
 	/**
-	 * Set the view element type for subsequent lookup.  Should usually only be called
-	 * if the {@link #isCacheable(ViewElementMode)} returns {@code true}.
+	 * Set the view element type for subsequent lookup.
 	 *
 	 * @param mode            to register the type for
 	 * @param viewElementType to store
@@ -48,8 +55,7 @@ public interface ViewElementLookupRegistry
 	void setViewElementType( ViewElementMode mode, String viewElementType );
 
 	/**
-	 * Sets the cacheable status for a given mode.  In case of setting to {@code false}
-	 * an additional {@link #reset(ViewElementMode)} call should happen.
+	 * Sets the cacheable status for a given mode.
 	 *
 	 * @param mode      to set the status for
 	 * @param cacheable true if subsequent calls can be cached

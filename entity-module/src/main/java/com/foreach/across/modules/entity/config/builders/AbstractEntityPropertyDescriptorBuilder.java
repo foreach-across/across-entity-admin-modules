@@ -132,7 +132,7 @@ public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends Abstr
 	 * @param cacheable true if {@link ViewElementBuilder}s should be cached
 	 * @return current builder
 	 */
-	public SELF viewElementMode( ViewElementMode mode, boolean cacheable ) {
+	public SELF viewElementModeCaching( ViewElementMode mode, boolean cacheable ) {
 		viewElementLookupRegistry.setCacheable( mode, cacheable );
 		return (SELF) this;
 	}
