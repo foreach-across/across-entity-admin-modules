@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.test.modules.spring.security.acl;
+package com.foreach.across.modules.entity.registry;
 
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.modules.spring.security.acl.SpringSecurityAclModule;
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+import java.util.Collection;
 
 /**
+ * Base interface for querying the registered entity types.
+ *
  * @author Arne Vandamme
+ * @see com.foreach.across.modules.entity.registry.MutableEntityRegistry
  */
-public class TestSpringSecurityAclModuleConventions extends AbstractAcrossModuleConventionsTest
+public interface EntityRegistry
 {
-	@Override
-	protected boolean hasSettings() {
-		return false;
-	}
+	Collection<EntityConfiguration> getEntities();
 
-	@Override
-	protected AcrossModule createModule() {
-		return new SpringSecurityAclModule();
-	}
+	boolean contains( Class<?> entityType );
+
+	boolean contains( String entityName );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( Class<T> entityType );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( String entityName );
 }
