@@ -20,6 +20,11 @@ import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import org.springframework.core.convert.ConversionService;
+
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * <p>Custom {@link ViewElementBuilder} for created and last modified properties of any
@@ -32,15 +37,53 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
  */
 public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 {
+	private boolean forLastModifiedProperty;
+	private ConversionService conversionService;
+
+	/**
+	 * Configure the builder for the last modified property instead of the creation property.
+	 *
+	 * @param forLastModifiedProperty true if the last modified property should be used
+	 */
+	public void setForLastModifiedProperty( boolean forLastModifiedProperty ) {
+		this.forLastModifiedProperty = forLastModifiedProperty;
+	}
+
+	/**
+	 * Set the {@link ConversionService} to be used for formatting dates.
+	 * Can be {@code null} in case a {@link org.springframework.format.Printer} is provided.
+	 *
+	 * @param conversionService to use
+	 */
+	public void setConversionService( ConversionService conversionService ) {
+		this.conversionService = conversionService;
+	}
+
 	@Override
 	public ViewElement build( ViewElementBuilderContext builderContext ) {
 		Auditable auditable = EntityViewElementUtils.currentEntity( builderContext, Auditable.class );
 
 		if ( auditable != null ) {
+			String principal = Objects.toString( auditable.getCreatedBy() );
+			Date date = auditable.getCreatedDate();
 
+			if ( forLastModifiedProperty ) {
+				principal = Objects.toString( auditable.getLastModifiedBy() );
+				date = auditable.getLastModifiedDate();
+			}
+
+			return new TextViewElement( convertToString( date ) + " by " + principal );
 		}
 
 		return null;
+	}
+
+	private String convertToString( Date date ) {
+		if ( conversionService != null ) {
+			return conversionService.convert( date, String.class );
+		}
+
+		return "";
 	}
 }
 

@@ -16,12 +16,10 @@
 package com.foreach.across.modules.entity.config;
 
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.newviews.util.EntityViewElementUtils;
+import com.foreach.across.modules.entity.newviews.ViewElementMode;
+import com.foreach.across.modules.entity.newviews.bootstrapui.elements.builder.AuditablePropertyViewElementBuilder;
 import com.foreach.across.modules.hibernate.business.Auditable;
-import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,35 +39,29 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
-//		configuration.assignableTo( Auditable.class )
-//		             .properties()
-//		             .property( "createdDate" )
-//		             .viewElementBuilder( ViewElementMode.LIST_VALUE, createdValueBuilder() )
-//		             .and()
-//		             .property( "lastModifiedDate" )
-//		             .viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedValueBuilder() );
+		configuration.assignableTo( Auditable.class )
+		             .properties()
+		             .property( "createdDate" )
+		             .viewElementBuilder( ViewElementMode.LIST_VALUE, createdValueBuilder() )
+		             .and()
+		             .property( "lastModifiedDate" )
+		             .viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedValueBuilder() );
 	}
 
 	@Bean
 	public ViewElementBuilder createdValueBuilder() {
-		return new ViewElementBuilder()
-		{
-			@Override
-			public ViewElement build( ViewElementBuilderContext viewElementBuilderContext ) {
-				return new TextViewElement( "fok this!" );
-			}
-		};
+		AuditablePropertyViewElementBuilder builder = new AuditablePropertyViewElementBuilder();
+		builder.setConversionService( mvcConversionService );
+
+		return builder;
 	}
 
 	@Bean
 	public ViewElementBuilder lastModifiedValueBuilder() {
-		return new ViewElementBuilder()
-		{
-			@Override
-			public ViewElement build( ViewElementBuilderContext viewElementBuilderContext ) {
-				Auditable auditable = (Auditable) EntityViewElementUtils.currentEntity( viewElementBuilderContext );
-				return new TextViewElement( "modify this: " + auditable.getLastModifiedDate() );
-			}
-		};
+		AuditablePropertyViewElementBuilder builder = new AuditablePropertyViewElementBuilder();
+		builder.setConversionService( mvcConversionService );
+		builder.setForLastModifiedProperty( true );
+
+		return builder;
 	}
 }
