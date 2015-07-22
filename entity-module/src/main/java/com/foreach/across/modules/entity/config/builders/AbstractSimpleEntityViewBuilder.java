@@ -18,10 +18,7 @@ package com.foreach.across.modules.entity.config.builders;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityViewRegistry;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilter;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.MergingEntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.EntityViewViewFactory;
@@ -47,6 +44,8 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 		@SuppressWarnings("unchecked")
 		public MYSELF filter( String... propertyNames ) {
 			and().viewPropertyFilter = EntityPropertyFilters.include( propertyNames );
+			and().viewPropertyOrder = EntityPropertyComparators.ordered( propertyNames );
+
 			return (MYSELF) this;
 		}
 
@@ -63,6 +62,7 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 	private Collection<EntityViewProcessor> processors = new ArrayList<>();
 
 	protected EntityPropertyFilter viewPropertyFilter;
+	protected EntityPropertyComparators.Ordered viewPropertyOrder;
 
 	@SuppressWarnings("unchecked")
 	public AbstractSimpleEntityViewBuilder() {
@@ -150,6 +150,11 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 		if ( viewPropertyFilter != null ) {
 			factory.setPropertyFilter( viewPropertyFilter );
 		}
+
+		if ( viewPropertyOrder != null ) {
+			factory.setPropertyComparator( viewPropertyOrder );
+		}
+
 	}
 
 	private <V> Collection<V> merge( Collection<V> original, Collection<V> additional ) {
