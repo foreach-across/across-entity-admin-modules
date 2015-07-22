@@ -57,6 +57,11 @@ public class ViewBuilder extends AbstractSimpleEntityViewBuilder<ConfigurablePro
 			}
 
 			@Override
+			public PropertyDescriptorBuilder order( int order ) {
+				return super.order( order );
+			}
+
+			@Override
 			public PropertyDescriptorBuilder writable( boolean writable ) {
 				return super.writable( writable );
 			}

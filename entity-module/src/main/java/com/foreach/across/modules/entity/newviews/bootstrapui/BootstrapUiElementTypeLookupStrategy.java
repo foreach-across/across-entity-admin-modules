@@ -41,11 +41,16 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	public String findElementType( EntityConfiguration entityConfiguration,
 	                               EntityPropertyDescriptor descriptor,
 	                               ViewElementMode viewElementMode ) {
-		// todo: preferred type for mode!
+		boolean isForWriting
+				= ViewElementMode.FORM_WRITE.equals( viewElementMode ) || ViewElementMode.isControl( viewElementMode );
+		boolean isForReading
+				= ViewElementMode.FORM_READ.equals( viewElementMode ) || ViewElementMode.isValue( viewElementMode );
 
-		if ( descriptor.isHidden()
-				|| ( ViewElementMode.FORM_READ.equals( viewElementMode ) && !descriptor.isReadable() )
-				|| ( ViewElementMode.FORM_WRITE.equals( viewElementMode ) && !descriptor.isWritable() ) ) {
+		if ( !descriptor.isWritable() && isForWriting ) {
+			return null;
+		}
+
+		if ( !descriptor.isReadable() && isForReading ) {
 			return null;
 		}
 
@@ -62,23 +67,6 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			return BootstrapUiElements.LABEL;
 		}
 
-/*
-		if ( viewElementMode == ViewElementMode.FOR_READING ) {
-			String preferredType = descriptor.getAttribute( EntityAttributes.ELEMENT_TYPE_READABLE );
-
-			if ( preferredType != null ) {
-				return preferredType;
-			}
-
-			return CommonViewElements.TEXT;
-		}
-
-		String preferredType = descriptor.getAttribute( EntityAttributes.ELEMENT_TYPE_WRITABLE );
-
-		if ( preferredType != null ) {
-			return preferredType;
-		}
-*/
 		PropertyPersistenceMetadata metadata = descriptor.getAttribute(
 				EntityAttributes.PROPERTY_PERSISTENCE_METADATA, PropertyPersistenceMetadata.class );
 

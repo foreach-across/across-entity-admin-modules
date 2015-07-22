@@ -89,6 +89,10 @@ public class ViewElementMode
 		return Objects.hash( type );
 	}
 
+	public static boolean isList( ViewElementMode mode ) {
+		return LIST_LABEL.equals( mode ) || LIST_VALUE.equals( mode );
+	}
+
 	public static boolean isLabel( ViewElementMode mode ) {
 		return LABEL.equals( mode ) || LIST_LABEL.equals( mode );
 	}

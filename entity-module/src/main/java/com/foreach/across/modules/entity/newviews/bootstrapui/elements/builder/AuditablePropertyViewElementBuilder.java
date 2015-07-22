@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.elements.builder;
 
+import com.foreach.across.modules.entity.config.entities.AuditableEntityUiConfiguration;
 import com.foreach.across.modules.entity.newviews.util.EntityViewElementUtils;
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -33,7 +34,7 @@ import java.util.Objects;
  * <p>Usually set for {@link com.foreach.across.modules.entity.newviews.ViewElementMode#LIST_VALUE}.</p>
  *
  * @author Arne Vandamme
- * @see com.foreach.across.modules.entity.config.AuditableEntityUiConfiguration
+ * @see AuditableEntityUiConfiguration
  */
 public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 {

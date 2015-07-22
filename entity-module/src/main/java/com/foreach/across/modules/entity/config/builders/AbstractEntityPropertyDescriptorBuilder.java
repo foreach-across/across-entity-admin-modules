@@ -18,26 +18,30 @@ package com.foreach.across.modules.entity.config.builders;
 import com.foreach.across.modules.entity.newviews.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.newviews.ViewElementLookupRegistryImpl;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends AbstractEntityPropertyDescriptorBuilder>
 {
+	protected final Logger LOG = LoggerFactory.getLogger( getClass() );
+
 	private final Map<String, Object> attributes = new HashMap<>();
 	private final ViewElementLookupRegistryImpl viewElementLookupRegistry = new ViewElementLookupRegistryImpl();
 	private String name;
 	private String displayName;
 	private ValueFetcher valueFetcher;
+	private Integer order;
 	private Boolean hidden, writable, readable;
 
 	protected void setName( String name ) {
@@ -95,6 +99,15 @@ public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends Abstr
 	 */
 	public SELF valueFetcher( ValueFetcher valueFetcher ) {
 		this.valueFetcher = valueFetcher;
+		return (SELF) this;
+	}
+
+	/**
+	 * @param order of the property
+	 * @return current builder
+	 */
+	public SELF order( int order ) {
+		this.order = order;
 		return (SELF) this;
 	}
 
@@ -222,5 +235,24 @@ public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends Abstr
 		}
 
 		entityPropertyRegistry.register( descriptor );
+
+		if ( order != null ) {
+			Comparator<EntityPropertyDescriptor> defaultOrder = entityPropertyRegistry.getDefaultOrder();
+
+			if ( defaultOrder == null ) {
+				defaultOrder = EntityPropertyComparators.ordered();
+				entityPropertyRegistry.setDefaultOrder( defaultOrder );
+			}
+
+			if ( defaultOrder instanceof EntityPropertyComparators.Ordered ) {
+				EntityPropertyComparators.Ordered propertyOrder
+						= ( (EntityPropertyComparators.Ordered) defaultOrder );
+				propertyOrder.put( name, order );
+			}
+			else {
+				LOG.warn( "Unable to register a property order as the used comparator is of type {} instead of {}",
+				          ClassUtils.getUserClass( defaultOrder ), EntityPropertyComparators.Ordered.class );
+			}
+		}
 	}
 }

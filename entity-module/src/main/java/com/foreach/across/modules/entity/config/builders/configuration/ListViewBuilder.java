@@ -56,6 +56,11 @@ public class ListViewBuilder extends AbstractEntityListViewBuilder<ListViewBuild
 			}
 
 			@Override
+			public PropertyDescriptorBuilder order( int order ) {
+				return super.order( order );
+			}
+
+			@Override
 			public PropertyDescriptorBuilder writable( boolean writable ) {
 				return super.writable( writable );
 			}

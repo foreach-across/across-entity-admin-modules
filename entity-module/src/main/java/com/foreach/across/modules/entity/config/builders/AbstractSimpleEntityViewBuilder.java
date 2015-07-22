@@ -46,7 +46,7 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 	{
 		@SuppressWarnings("unchecked")
 		public MYSELF filter( String... propertyNames ) {
-			and().viewPropertyFilter = EntityPropertyFilters.includeOrdered( propertyNames );
+			and().viewPropertyFilter = EntityPropertyFilters.include( propertyNames );
 			return (MYSELF) this;
 		}
 

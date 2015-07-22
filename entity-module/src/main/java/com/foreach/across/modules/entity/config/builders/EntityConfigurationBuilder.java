@@ -271,6 +271,11 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 			}
 
 			@Override
+			public PropertyDescriptorBuilder order( int order ) {
+				return super.order( order );
+			}
+
+			@Override
 			public PropertyDescriptorBuilder readable( boolean readable ) {
 				return super.readable( readable );
 			}

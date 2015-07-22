@@ -70,6 +70,23 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 }
 ----
 
+=== Configuring properties
+Properties for an entity can be configured through the builders as well.  New properties can be added or the default
+properties can modified.  How properties are configured determines how they will be rendered on the generated forms.
+
+hidden:: A hidden property will by default not be returned when requesting all properties from an `EntityPropertyRegistry`.
+You can still get this property directly however, the `hidden` state means a property will not advertise itself, you must
+know of its existence.
+
+readable:: Any readable property can be rendered in all views.  This state means that a form control can always be generated,
+ even though it might very well be readonly if the property is not `writable`.
+
+writable::  A writable property can be rendered in form views.  In case a property is writable but not readable, the
+ property can only be included in forms but not in other views.
+
+WARNING: The `hidden` state has no correlation with a hidden form control.  Setting a property to be rendered as a hidden
+form control can only be done through configuring the right `ViewElement` information for that property.
+
 === Creating an EntityConfiguration manually
 
 ==== Attributes to configure
