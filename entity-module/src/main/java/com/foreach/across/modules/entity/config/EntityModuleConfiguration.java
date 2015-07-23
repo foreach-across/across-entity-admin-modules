@@ -85,7 +85,9 @@ public class EntityModuleConfiguration
 	@Exposed
 	@AcrossCondition("not hasBean('" + EntityModule.VALIDATOR + "')")
 	public SmartValidator entityValidator() {
-		return new LocalValidatorFactoryBean();
+		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+		localValidatorFactoryBean.setValidationMessageSource( messageSource() );
+		return localValidatorFactoryBean;
 	}
 
 	/**
