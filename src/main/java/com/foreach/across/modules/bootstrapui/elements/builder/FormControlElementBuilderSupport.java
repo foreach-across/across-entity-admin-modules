@@ -25,6 +25,22 @@ public abstract class FormControlElementBuilderSupport<T extends FormControlElem
 	private Boolean disabled, readonly, required;
 	private String controlName;
 
+	public Boolean getDisabled() {
+		return disabled;
+	}
+
+	public Boolean getReadonly() {
+		return readonly;
+	}
+
+	public Boolean getRequired() {
+		return required;
+	}
+
+	public String getControlName() {
+		return controlName;
+	}
+
 	@SuppressWarnings("unchecked")
 	public SELF controlName( String controlName ) {
 		this.controlName = controlName;

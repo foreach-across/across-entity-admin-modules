@@ -74,15 +74,16 @@ public class TestOptionsAsRadioBuilder extends AbstractBootstrapViewElementTest
 	public void options() {
 		builder
 				.controlName( "mybox" )
-				.add( builder.createOption().text( "Inner text" ).value( "one" ) )
-				.add( builder.createOption().label( "Short two" ).text( "Some text" ).value( 2 ).selected().disabled() );
+				.add( new OptionFormElementBuilder().text( "Inner text" ).value( "one" ) )
+				.add( new OptionFormElementBuilder().label( "Short two" ).text( "Some text" ).value( 2 ).selected()
+				                                    .disabled() );
 
 		expect(
 				"<div id='mybox'>" +
-						"<div class='radio'><label>" +
+						"<div class='radio'><label for='mybox1'>" +
 						"<input type='radio' value='one' id='mybox1' name='mybox' /> Inner text" +
 						"</label></div>" +
-						"<div class='radio disabled'><label>" +
+						"<div class='radio disabled'><label for='mybox2'>" +
 						"<input type='radio' value='2' checked='checked' disabled='disabled' name='mybox' id='mybox2' /> Short two" +
 						"</label></div>" +
 						"</div>"
