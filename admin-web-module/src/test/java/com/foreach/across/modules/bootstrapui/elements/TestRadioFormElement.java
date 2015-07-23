@@ -31,8 +31,8 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='radio'><label>" +
-				"<input type='radio' id='boxName' name='boxName' value='123' /> label text" +
+				"<div class='radio'><label for='boxName'>" +
+				"<input type='radio' id='boxName' name='boxName' value='123' />label text" +
 						"</label></div>"
 		);
 	}
