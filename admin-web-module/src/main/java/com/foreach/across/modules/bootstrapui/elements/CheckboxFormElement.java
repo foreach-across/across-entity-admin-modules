@@ -15,12 +15,14 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+
 /**
  * Represents a HTML checkbox element.
  *
  * @author Arne Vandamme
  */
-public class CheckboxFormElement extends FormControlElementSupport
+public class CheckboxFormElement extends FormControlElementSupport implements ConfigurableTextViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.CHECKBOX;
 
@@ -41,11 +43,13 @@ public class CheckboxFormElement extends FormControlElementSupport
 		this.checked = checked;
 	}
 
-	public String getLabel() {
+	@Override
+	public String getText() {
 		return label;
 	}
 
-	public void setLabel( String label ) {
+	@Override
+	public void setText( String label ) {
 		this.label = label;
 	}
 
@@ -56,4 +60,5 @@ public class CheckboxFormElement extends FormControlElementSupport
 	public void setValue( Object value ) {
 		this.value = value;
 	}
+
 }

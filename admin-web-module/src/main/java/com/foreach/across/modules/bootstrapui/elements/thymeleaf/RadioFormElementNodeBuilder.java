@@ -54,8 +54,8 @@ public class RadioFormElementNodeBuilder extends FormControlElementBuilderSuppor
 
 		label.addChild( radio );
 
-		if ( control.getLabel() != null ) {
-			text( label, control.getLabel() );
+		if ( control.getText() != null ) {
+			text( label, control.getText() );
 		}
 
 		for ( ViewElement child : control ) {

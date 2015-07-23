@@ -93,6 +93,21 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	}
 
 	@Override
+	public OptionFormElementBuilder<CheckboxFormElement> checkbox() {
+		return new OptionFormElementBuilder<CheckboxFormElement>().checkbox();
+	}
+
+	@Override
+	public OptionFormElementBuilder<RadioFormElement> radio() {
+		return new OptionFormElementBuilder<RadioFormElement>().radio();
+	}
+
+	@Override
+	public OptionFormElementBuilder option() {
+		return new OptionFormElementBuilder();
+	}
+
+	@Override
 	public ColumnViewElementBuilder column( Grid.DeviceGridLayout... layouts ) {
 		return new ColumnViewElementBuilder().layout( layouts );
 	}

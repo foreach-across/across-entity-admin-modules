@@ -73,9 +73,9 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 	@Test
 	public void options() {
 		builder
-				.add( builder.createOption().text( "Inner text" ).value( "one" ) )
-				.add( builder.createOption().label( "Only label" ).value( 123 ) )
-				.add( builder.createOption().label( "Short two" ).text( "Some text" ).selected().disabled() );
+				.add( new OptionFormElementBuilder().text( "Inner text" ).value( "one" ) )
+				.add( new OptionFormElementBuilder().label( "Only label" ).value( 123 ) )
+				.add( new OptionFormElementBuilder().label( "Short two" ).text( "Some text" ).selected().disabled() );
 
 		expect(
 				"<select class='form-control'>" +

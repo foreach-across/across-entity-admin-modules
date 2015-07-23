@@ -46,6 +46,13 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 			attributeAppend( node, "class", "required" );
 		}
 
+		if ( isCheckboxGroup( group ) ) {
+			attributeAppend( node, "class", "checkbox" );
+		}
+		else if ( isRadioGroup( group ) ) {
+			attributeAppend( node, "class", "radio" );
+		}
+
 		FormLayout layout = group.getFormLayout();
 
 		if ( layout == null ) {
@@ -206,7 +213,7 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 
 				if ( StringUtils.equals( candidate.getNormalizedName(), "input" )
 						|| StringUtils.equals( candidate.getNormalizedName(), "textarea" )
-						|| StringUtils.equals( candidate.getNormalizedName(), "select" )) {
+						|| StringUtils.equals( candidate.getNormalizedName(), "select" ) ) {
 					return candidate;
 				}
 			}
@@ -215,7 +222,10 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 	}
 
 	private boolean isCheckboxGroup( FormGroupElement group ) {
-		return group.getLabel() instanceof LabelFormElement
-				&& group.getControl() instanceof CheckboxFormElement;
+		return group.getControl() instanceof CheckboxFormElement;
+	}
+
+	private boolean isRadioGroup( FormGroupElement group ) {
+		return group.getControl() instanceof RadioFormElement;
 	}
 }

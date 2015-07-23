@@ -50,5 +50,11 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 
 	OptionsFormElementBuilder options();
 
+	OptionFormElementBuilder option();
+
+	OptionFormElementBuilder<CheckboxFormElement> checkbox();
+
+	OptionFormElementBuilder<RadioFormElement> radio();
+
 	ColumnViewElementBuilder column( Grid.DeviceGridLayout... layouts );
 }

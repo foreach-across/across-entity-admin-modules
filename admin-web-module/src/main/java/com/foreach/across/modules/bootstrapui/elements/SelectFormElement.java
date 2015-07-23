@@ -28,22 +28,14 @@ public class SelectFormElement extends FormControlElementSupport
 	/**
 	 * Single option.
 	 */
-	public static class Option extends NodeViewElementSupport implements ConfigurableTextViewElement
+	public static class Option extends FormControlElementSupport implements ConfigurableTextViewElement
 	{
-		private boolean disabled, selected;
+		private boolean selected;
 		private String text, label;
 		private Object value;
 
 		public Option() {
 			super( SelectFormElement.ELEMENT_TYPE + ".option" );
-		}
-
-		public boolean isDisabled() {
-			return disabled;
-		}
-
-		public void setDisabled( boolean disabled ) {
-			this.disabled = disabled;
 		}
 
 		public boolean isSelected() {

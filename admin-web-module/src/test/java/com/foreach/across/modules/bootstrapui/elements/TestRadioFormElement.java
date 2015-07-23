@@ -26,7 +26,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 	public void simple() {
 		RadioFormElement box = new RadioFormElement();
 		box.setControlName( "boxName" );
-		box.setLabel( "label text" );
+		box.setText( "label text" );
 		box.setValue( 123 );
 
 		renderAndExpect(

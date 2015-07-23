@@ -28,7 +28,7 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 		CheckboxFormElement box = new CheckboxFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
-		box.setLabel( "label text" );
+		box.setText( "label text" );
 
 		renderAndExpect(
 				box,
@@ -83,7 +83,7 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 		CheckboxFormElement box = new CheckboxFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
-		box.setLabel( "label text" );
+		box.setText( "label text" );
 		box.add( NodeViewElement.forTag( "strong" ) );
 
 		renderAndExpect(
