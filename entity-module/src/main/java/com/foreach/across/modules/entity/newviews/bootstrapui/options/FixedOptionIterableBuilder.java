@@ -15,30 +15,30 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder.Option;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 
 import java.util.Arrays;
 
 /**
- * Simple implementation that always returns the same (constant) collection of {@link Option}s.
+ * Simple implementation that always returns the same (constant) collection of {@link OptionFormElementBuilder}s.
  *
  * @author Arne Vandamme
  */
 public class FixedOptionIterableBuilder implements OptionIterableBuilder
 {
-	private final Iterable<Option> options;
+	private final Iterable<OptionFormElementBuilder> options;
 
-	public FixedOptionIterableBuilder( Option... options ) {
+	public FixedOptionIterableBuilder( OptionFormElementBuilder... options ) {
 		this( Arrays.asList( options ) );
 	}
 
-	public FixedOptionIterableBuilder( Iterable<Option> options ) {
+	public FixedOptionIterableBuilder( Iterable<OptionFormElementBuilder> options ) {
 		this.options = options;
 	}
 
 	@Override
-	public Iterable<Option> buildOptions( ViewElementBuilderContext builderContext ) {
+	public Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext ) {
 		return options;
 	}
 }

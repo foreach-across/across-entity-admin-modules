@@ -117,16 +117,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		if ( isCollection ) {
 			options.checkbox().multiple( true );
 		}
-//		else if ( CommonViewElements.RADIO.equals( descriptor.getAttribute(
-//				EntityAttributes.ELEMENT_TYPE_WRITABLE ) ) ) {
-//			template.setElementType( CommonViewElements.RADIO );
-//		}
-//
-//		.add( buildOptionsGenerator( propertyDescriptor,
-//		                             entityPropertyRegistry,
-//		                             entityConfiguration ) );
-
-		//new EnumOptionIterableBuilder(  )
 
 		return options;
 	}

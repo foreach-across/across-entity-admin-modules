@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element.EntityPropertyControlPostProcessor;
-import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element.EntityPropertyValuePostProcessor;
+import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element.EntityPropertyValueTextPostProcessor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -81,7 +81,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		                  .controlName( propertyDescriptor.getName() )
 		                  .multiLine( String.class.equals( propertyDescriptor.getPropertyType() ) )
 		                  .postProcessor(
-				                  new EntityPropertyValuePostProcessor<TextboxFormElement>( conversionService,
+				                  new EntityPropertyValueTextPostProcessor<TextboxFormElement>( conversionService,
 				                                                                            propertyDescriptor )
 		                  )
 		                  .postProcessor( new EntityPropertyControlPostProcessor<TextboxFormElement>() )

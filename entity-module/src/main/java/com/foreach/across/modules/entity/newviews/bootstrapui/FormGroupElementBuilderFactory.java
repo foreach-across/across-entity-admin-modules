@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
@@ -65,12 +66,6 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 	                                                        EntityPropertyRegistry entityPropertyRegistry,
 	                                                        EntityConfiguration entityConfiguration,
 	                                                        ViewElementMode viewElementMode ) {
-		ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder(
-				entityConfiguration, propertyDescriptor, ViewElementMode.LABEL
-		);
-
-		LabelFormElementBuilder labelBuilder = bootstrapUi.label().add( labelText );
-
 		ViewElementMode controlMode = ViewElementMode.CONTROL;
 
 		if ( !propertyDescriptor.isWritable() || ViewElementMode.FORM_READ.equals( viewElementMode ) ) {
@@ -81,9 +76,27 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 				entityConfiguration, propertyDescriptor, controlMode
 		);
 
-		return bootstrapUi.formGroup( labelBuilder, controlBuilder )
-		                  .helpBlockRenderedBeforeControl( renderHelpBlockBeforeControl )
-		                  .postProcessor( new DescriptionTextPostProcessor( bootstrapUi, propertyDescriptor ) );
+		FormGroupElementBuilder formGroup
+				= bootstrapUi.formGroup()
+				             .control( controlBuilder )
+				             .postProcessor( new DescriptionTextPostProcessor( bootstrapUi,
+				                                                               propertyDescriptor ) );
+
+		if ( controlBuilder instanceof OptionFormElementBuilder ) {
+			// Form groups for checkbox and radio buttons are different
+			formGroup.helpBlockRenderedBeforeControl( false );
+		}
+		else {
+			ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder(
+					entityConfiguration, propertyDescriptor, ViewElementMode.LABEL
+			);
+
+			LabelFormElementBuilder labelBuilder = bootstrapUi.label().add( labelText );
+
+			formGroup.label( labelBuilder ).helpBlockRenderedBeforeControl( renderHelpBlockBeforeControl );
+		}
+
+		return formGroup;
 	}
 
 	/**

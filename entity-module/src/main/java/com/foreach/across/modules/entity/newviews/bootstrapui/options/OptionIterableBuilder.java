@@ -15,11 +15,11 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 
 /**
- * Interface for delegating building of {@link OptionsFormElementBuilder.Option} items until
+ * Interface for delegating building of {@link OptionFormElementBuilder} items until
  * a {@link ViewElementBuilderContext} is available.  Responsible for creating an {@link Iterable}.
  *
  * @author Arne Vandamme
@@ -29,5 +29,5 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
  */
 public interface OptionIterableBuilder
 {
-	Iterable<OptionsFormElementBuilder.Option> buildOptions( ViewElementBuilderContext builderContext );
+	Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext );
 }

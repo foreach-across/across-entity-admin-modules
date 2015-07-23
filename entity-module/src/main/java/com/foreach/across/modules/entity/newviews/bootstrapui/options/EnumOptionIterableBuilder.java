@@ -15,8 +15,7 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder.Option;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -26,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Generates {@link OptionsFormElementBuilder.Option} options for an enum.
+ * Generates {@link OptionFormElementBuilder}s for an enum.
  * Requires an {@link com.foreach.across.modules.entity.support.EntityMessageCodeResolver} attribute to be
  * present when building.  A message code of the form <em>enums.ENUM_NAME.ENUM_VALUE</em> will be looked up.
  *
@@ -45,15 +44,15 @@ public class EnumOptionIterableBuilder extends SelectedOptionIterableBuilderSupp
 	}
 
 	@Override
-	public Iterable<Option> buildOptions( ViewElementBuilderContext builderContext ) {
+	public Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext ) {
 		EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
 		Collection selected = retrieveSelected( builderContext );
 
 		Enum[] enumValues = enumType.getEnumConstants();
-		List<Option> options = new ArrayList<>( enumValues.length );
+		List<OptionFormElementBuilder> options = new ArrayList<>( enumValues.length );
 
 		for ( Enum enumValue : enumValues ) {
-			Option option = new OptionsFormElementBuilder.Option();
+			OptionFormElementBuilder option = new OptionFormElementBuilder();
 
 			String messageCode = "enums." + enumType.getSimpleName() + "." + enumValue.name();
 			String defaultLabel = EntityUtils.generateDisplayName( enumValue.name() );

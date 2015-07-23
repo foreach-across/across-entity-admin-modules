@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Generates {@link OptionsFormElementBuilder.Option}s for a particular entity type, where the list of options
+ * Generates {@link OptionFormElementBuilder}s for a particular entity type, where the list of options
  * is fetched through an {@link EntityQueryExecutor} and custom {@link EntityQuery}.
  * By default an {@link EntityQuery} without parameters will be used, resulting in all entities being returned.
  *
@@ -103,19 +103,19 @@ public class EntityQueryOptionIterableBuilder extends SelectedOptionIterableBuil
 	}
 
 	@Override
-	public Iterable<OptionsFormElementBuilder.Option> buildOptions( ViewElementBuilderContext builderContext ) {
+	public Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext ) {
 		Assert.notNull( entityModel );
 		Assert.notNull( entityQuery );
 		Assert.notNull( entityQueryExecutor );
 
-		List<OptionsFormElementBuilder.Option> options = new ArrayList<>();
+		List<OptionFormElementBuilder> options = new ArrayList<>();
 
 		Object entityBeingBuilt = EntityViewElementUtils.currentEntity( builderContext );
 		Collection selected = retrieveSelected( builderContext );
 
 		for ( Object entityOption : entityQueryExecutor.findAll( entityQuery ) ) {
 			if ( selfOptionIncluded || !entityOption.equals( entityBeingBuilt ) ) {
-				OptionsFormElementBuilder.Option option = new OptionsFormElementBuilder.Option();
+				OptionFormElementBuilder option = new OptionFormElementBuilder();
 
 				option.label( entityModel.getLabel( entityOption ) );
 				option.value( entityModel.getId( entityOption ) );

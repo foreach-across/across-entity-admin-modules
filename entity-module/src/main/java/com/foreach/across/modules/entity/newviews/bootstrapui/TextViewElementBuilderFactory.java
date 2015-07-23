@@ -19,7 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
-import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element.EntityPropertyValuePostProcessor;
+import com.foreach.across.modules.entity.newviews.bootstrapui.processors.element.EntityPropertyValueTextPostProcessor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -53,7 +53,7 @@ public class TextViewElementBuilderFactory extends EntityViewElementBuilderFacto
 	                                                       ViewElementMode viewElementMode ) {
 		return bootstrapUi.text()
 		                  .postProcessor(
-				                  new EntityPropertyValuePostProcessor<TextViewElement>( conversionService,
+				                  new EntityPropertyValueTextPostProcessor<TextViewElement>( conversionService,
 				                                                                         propertyDescriptor )
 		                  );
 	}

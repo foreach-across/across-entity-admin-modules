@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BootstrapUiConfiguration
 {
-	// todo: this is not boostrap dependant
+	// todo: this is not bootstrap dependant
 	@Bean
 	public EntityViewElementBuilderService entityViewElementBuilderService() {
 		return new EntityViewElementBuilderServiceImpl();
@@ -70,5 +70,10 @@ public class BootstrapUiConfiguration
 	@Bean
 	public TextViewElementBuilderFactory textViewElementBuilderFactory() {
 		return new TextViewElementBuilderFactory();
+	}
+
+	@Bean
+	public CheckboxFormElementBuilderFactory checkboxFormElementBuilderFactory() {
+		return new CheckboxFormElementBuilderFactory();
 	}
 }

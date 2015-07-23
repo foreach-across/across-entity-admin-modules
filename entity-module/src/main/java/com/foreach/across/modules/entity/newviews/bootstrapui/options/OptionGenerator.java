@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.options;
 
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder.Option;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -29,12 +29,12 @@ import java.util.List;
 /**
  * <p>Wrapper that generates the children of an {@link OptionsFormElementBuilder}.
  * Requires an {@link OptionIterableBuilder} that is responsible for creating
- * the initial collection of {@link Option}s.</p>
+ * the initial collection of {@link OptionFormElementBuilder}s.</p>
  * <p>When the {@link #setSorted(boolean)}</p> property is true, the options will be sorted by label and text
  * in the resulting set.</p>
  * <p>In case of a resulting {@link com.foreach.across.modules.bootstrapui.elements.SelectFormElement} an
  * empty option will be added if none is selected or if the element is not required.  The empty
- * option can be overridden (and set to null) using {@link #setEmptyOption(Option)}.</p>
+ * option can be overridden (and set to null) using {@link #setEmptyOption(OptionFormElementBuilder)}.</p>
  *
  * @author Arne Vandamme
  * @see OptionsFormElementBuilder
@@ -44,10 +44,10 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 {
 	private OptionIterableBuilder options;
 	private boolean sorted;
-	private Option emptyOption;
+	private OptionFormElementBuilder emptyOption;
 
 	public OptionGenerator() {
-		emptyOption = new Option().label( "" ).value( "" );
+		emptyOption = new OptionFormElementBuilder().label( "" ).value( "" );
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 	/**
 	 * @param emptyOption to include if none is selected or a value is not required
 	 */
-	public void setEmptyOption( Option emptyOption ) {
+	public void setEmptyOption( OptionFormElementBuilder emptyOption ) {
 		this.emptyOption = emptyOption;
 	}
 
@@ -79,10 +79,10 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		Assert.notNull( optionsBuilder );
 
 		boolean hasSelected = false;
-		List<Option> actual = new ArrayList<>();
+		List<OptionFormElementBuilder> actual = new ArrayList<>();
 
 		if ( options != null ) {
-			for ( Option option : options.buildOptions( builderContext ) ) {
+			for ( OptionFormElementBuilder option : options.buildOptions( builderContext ) ) {
 				actual.add( option );
 				hasSelected |= option.isSelected();
 			}
@@ -100,7 +100,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 			container.add( emptyOption.build( builderContext ) );
 		}
 
-		for ( Option option : actual ) {
+		for ( OptionFormElementBuilder option : actual ) {
 			container.add( option.build( builderContext ) );
 		}
 

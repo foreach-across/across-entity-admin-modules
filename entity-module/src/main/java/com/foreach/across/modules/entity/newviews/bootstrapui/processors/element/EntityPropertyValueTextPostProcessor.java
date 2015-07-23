@@ -27,7 +27,7 @@ import org.springframework.core.convert.TypeDescriptor;
 /**
  * Responsible for fetching the property value and setting it as text property on a {@link ConfigurableTextViewElement}.
  */
-public class EntityPropertyValuePostProcessor<T extends ConfigurableTextViewElement>
+public class EntityPropertyValueTextPostProcessor<T extends ConfigurableTextViewElement>
 		implements ViewElementPostProcessor<T>
 {
 	private static final TypeDescriptor STRING_TYPE = TypeDescriptor.valueOf( String.class );
@@ -35,8 +35,8 @@ public class EntityPropertyValuePostProcessor<T extends ConfigurableTextViewElem
 	private final ConversionService conversionService;
 	private final EntityPropertyDescriptor propertyDescriptor;
 
-	public EntityPropertyValuePostProcessor( ConversionService conversionService,
-	                                         EntityPropertyDescriptor propertyDescriptor ) {
+	public EntityPropertyValueTextPostProcessor( ConversionService conversionService,
+	                                             EntityPropertyDescriptor propertyDescriptor ) {
 		this.conversionService = conversionService;
 		this.propertyDescriptor = propertyDescriptor;
 	}
