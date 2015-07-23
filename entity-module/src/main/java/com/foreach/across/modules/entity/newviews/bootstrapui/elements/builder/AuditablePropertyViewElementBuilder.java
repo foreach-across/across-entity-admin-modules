@@ -25,7 +25,6 @@ import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.springframework.core.convert.ConversionService;
 
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * <p>Custom {@link ViewElementBuilder} for created and last modified properties of any
@@ -65,15 +64,17 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 		Auditable auditable = EntityViewElementUtils.currentEntity( builderContext, Auditable.class );
 
 		if ( auditable != null ) {
-			String principal = Objects.toString( auditable.getCreatedBy() );
+			Object principal = auditable.getCreatedBy();
 			Date date = auditable.getCreatedDate();
 
 			if ( forLastModifiedProperty ) {
-				principal = Objects.toString( auditable.getLastModifiedBy() );
+				principal = auditable.getLastModifiedBy();
 				date = auditable.getLastModifiedDate();
 			}
 
-			return new TextViewElement( convertToString( date ) + " by " + principal );
+			return new TextViewElement( convertToString( date )
+					                            + ( principal != null ? " by " + principal : "" )
+			);
 		}
 
 		return null;
