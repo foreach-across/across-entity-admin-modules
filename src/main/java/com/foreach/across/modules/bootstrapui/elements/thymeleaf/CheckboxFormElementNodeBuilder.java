@@ -45,7 +45,9 @@ public class CheckboxFormElementNodeBuilder extends FormControlElementBuilderSup
 		Element checkbox = new Element( "input" );
 		checkbox.setAttribute( "type", "checkbox" );
 
-		attribute( checkbox, "id", retrieveHtmlId( arguments, control ) );
+		String checkboxId = retrieveHtmlId( arguments, control );
+		attribute( checkbox, "id", checkboxId );
+		attribute( label, "for", checkboxId );
 		attribute( checkbox, "value", control.getValue(), viewElementNodeFactory );
 		attribute( checkbox, "checked", control.isChecked() );
 		applyProperties( control, arguments, checkbox );
@@ -53,7 +55,7 @@ public class CheckboxFormElementNodeBuilder extends FormControlElementBuilderSup
 		label.addChild( checkbox );
 
 		if ( control.getLabel() != null ) {
-			text( label, " " + control.getLabel() );
+			text( label, control.getLabel() );
 		}
 
 		for ( ViewElement child : control ) {

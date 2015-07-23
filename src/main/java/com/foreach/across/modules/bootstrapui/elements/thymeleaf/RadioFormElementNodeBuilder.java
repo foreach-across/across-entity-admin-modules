@@ -42,18 +42,20 @@ public class RadioFormElementNodeBuilder extends FormControlElementBuilderSuppor
 		}
 
 		Element label = new Element( "label" );
-		Element checkbox = new Element( "input" );
-		checkbox.setAttribute( "type", "radio" );
+		Element radio = new Element( "input" );
+		radio.setAttribute( "type", "radio" );
 
-		attribute( checkbox, "id", retrieveHtmlId( arguments, control ) );
-		attribute( checkbox, "value", control.getValue(), viewElementNodeFactory );
-		attribute( checkbox, "checked", control.isChecked() );
-		applyProperties( control, arguments, checkbox );
+		String radioHtmlId = retrieveHtmlId( arguments, control );
+		attribute( radio, "id", radioHtmlId );
+		attribute( label, "for", radioHtmlId );
+		attribute( radio, "value", control.getValue(), viewElementNodeFactory );
+		attribute( radio, "checked", control.isChecked() );
+		applyProperties( control, arguments, radio );
 
-		label.addChild( checkbox );
+		label.addChild( radio );
 
 		if ( control.getLabel() != null ) {
-			text( label, " " + control.getLabel() );
+			text( label, control.getLabel() );
 		}
 
 		for ( ViewElement child : control ) {

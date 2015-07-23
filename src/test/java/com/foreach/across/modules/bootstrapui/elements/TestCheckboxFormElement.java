@@ -32,8 +32,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox'><label>" +
-						"<input type='checkbox' id='boxName' name='boxName' value='123' /> label text" +
+				"<div class='checkbox'><label for='boxName'>" +
+						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text" +
 						"</label>" +
 						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
@@ -88,8 +88,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox'><label>" +
-						"<input type='checkbox' id='boxName' name='boxName' value='123' /> label text<strong></strong>" +
+				"<div class='checkbox'><label for='boxName'>" +
+						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text<strong></strong>" +
 						"</label>" +
 						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
