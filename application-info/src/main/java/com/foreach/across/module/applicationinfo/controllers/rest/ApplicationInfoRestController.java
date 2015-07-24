@@ -5,6 +5,7 @@ import com.foreach.across.module.applicationinfo.controllers.ApplicationInfoCont
 import com.foreach.across.modules.debugweb.mvc.DebugWebController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,7 +22,7 @@ public class ApplicationInfoRestController
 	@Autowired
 	private AcrossApplicationInfo applicationInfo;
 
-	@RequestMapping(PATH_REST_PREFIX + ApplicationInfoController.PATH)
+	@RequestMapping( value = PATH_REST_PREFIX + ApplicationInfoController.PATH, produces = MediaType.APPLICATION_JSON_VALUE )
 	@ResponseBody
 	public ResponseEntity<AcrossApplicationInfo> getApplicationInfoAsJson() {
 		return new ResponseEntity<>( applicationInfo, HttpStatus.OK );
