@@ -1,5 +1,6 @@
 package com.foreach.across.module.applicationinfo.controllers.rest;
 
+import com.foreach.across.core.annotations.Refreshable;
 import com.foreach.across.module.applicationinfo.business.AcrossApplicationInfo;
 import com.foreach.across.module.applicationinfo.controllers.ApplicationInfoController;
 import com.foreach.across.modules.debugweb.mvc.DebugWebController;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author niels
  * @since 24/07/2015
  */
+@Refreshable
 @DebugWebController
 public class ApplicationInfoRestController
 {
