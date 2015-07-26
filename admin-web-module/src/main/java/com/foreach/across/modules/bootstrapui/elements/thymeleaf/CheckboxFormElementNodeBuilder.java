@@ -34,15 +34,15 @@ public class CheckboxFormElementNodeBuilder extends FormControlElementBuilderSup
 	public List<Node> buildNodes( CheckboxFormElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element wrapper = new Element( "div" );
+		Element wrapper = createElement( "div" );
 		wrapper.setAttribute( "class", "checkbox" );
 
 		if ( control.isDisabled() ) {
 			wrapper.setAttribute( "class", wrapper.getAttributeValue( "class" ) + " disabled" );
 		}
 
-		Element label = new Element( "label" );
-		Element checkbox = new Element( "input" );
+		Element label = createElement( "label" );
+		Element checkbox = createElement( "input" );
 		checkbox.setAttribute( "type", "checkbox" );
 
 		String checkboxId = retrieveHtmlId( arguments, control );
@@ -67,7 +67,7 @@ public class CheckboxFormElementNodeBuilder extends FormControlElementBuilderSup
 		wrapper.addChild( label );
 
 		if ( control.getControlName() != null ) {
-			Element hidden = new Element( "input" );
+			Element hidden = createElement( "input" );
 			hidden.setAttribute( "type", "hidden" );
 			hidden.setAttribute( "name", "_" + control.getControlName() );
 			hidden.setAttribute( "value", "on" );

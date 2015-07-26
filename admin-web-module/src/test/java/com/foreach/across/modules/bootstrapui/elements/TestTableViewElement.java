@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Test;
 
@@ -36,6 +37,22 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void customTemplate() {
+		TableViewElement table = new TableViewElement();
+		table.setCustomTemplate( CUSTOM_TEMPLATE );
+
+		renderAndExpect( table, CUSTOM_TEMPLATE_OUTPUT );
+	}
+
+	@Test
+	public void customTemplateChild() {
+		TableViewElement table = new TableViewElement();
+		table.add( new TemplateViewElement( CUSTOM_TEMPLATE ) );
+
+		renderAndExpect( table, "<table class='table'>" + CUSTOM_TEMPLATE_OUTPUT + "</table>" );
+	}
+
+	@Test
 	public void responsive() {
 		TableViewElement table = new TableViewElement();
 		table.setAttribute( "data-test", "test" );
@@ -43,7 +60,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				table,
-		        "<div class='table-responsive'><table class='table' data-test='test'></table></div>"
+				"<div class='table-responsive'><table class='table' data-test='test'></table></div>"
 		);
 	}
 

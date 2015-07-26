@@ -34,15 +34,15 @@ public class RadioFormElementNodeBuilder extends FormControlElementBuilderSuppor
 	public List<Node> buildNodes( RadioFormElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element wrapper = new Element( "div" );
+		Element wrapper = createElement( "div" );
 		wrapper.setAttribute( "class", "radio" );
 
 		if ( control.isDisabled() ) {
 			wrapper.setAttribute( "class", wrapper.getAttributeValue( "class" ) + " disabled" );
 		}
 
-		Element label = new Element( "label" );
-		Element radio = new Element( "input" );
+		Element label = createElement( "label" );
+		Element radio = createElement( "input" );
 		radio.setAttribute( "type", "radio" );
 
 		String radioHtmlId = retrieveHtmlId( arguments, control );

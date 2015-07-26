@@ -70,7 +70,7 @@ public class FormViewElementNodeBuilder extends NestableNodeBuilderSupport<FormV
 	protected Element createNode( FormViewElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element node = new Element( "form" );
+		Element node = createElement( "form" );
 
 		// Support request data value processing - CSRF tokens
 		final Map<String, String> extraHiddenFields =
