@@ -21,6 +21,9 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -30,6 +33,7 @@ import org.springframework.core.convert.TypeDescriptor;
 public class EntityPropertyValueTextPostProcessor<T extends ConfigurableTextViewElement>
 		implements ViewElementPostProcessor<T>
 {
+	private static final Logger LOG = LoggerFactory.getLogger( EntityPropertyValueTextPostProcessor.class );
 	private static final TypeDescriptor STRING_TYPE = TypeDescriptor.valueOf( String.class );
 
 	private final ConversionService conversionService;
@@ -55,9 +59,13 @@ public class EntityPropertyValueTextPostProcessor<T extends ConfigurableTextView
 				sourceType = TypeDescriptor.forObject( propertyValue );
 			}
 
-			String text = (String) conversionService.convert( propertyValue, sourceType, STRING_TYPE );
-
-			element.setText( text );
+			try {
+				String text = (String) conversionService.convert( propertyValue, sourceType, STRING_TYPE );
+				element.setText( text );
+			}
+			catch ( ConversionException ce ) {
+				LOG.warn( "Unable to convert {} to string", sourceType, ce );
+			}
 		}
 	}
 }

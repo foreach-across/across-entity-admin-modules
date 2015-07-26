@@ -43,10 +43,20 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	                               ViewElementMode viewElementMode ) {
 		boolean isForWriting
 				= ViewElementMode.FORM_WRITE.equals( viewElementMode ) || ViewElementMode.isControl( viewElementMode );
+
+		if ( isForWriting && !descriptor.isWritable() && descriptor.isReadable() ) {
+			if ( ViewElementMode.FORM_WRITE.equals( viewElementMode ) ) {
+				viewElementMode = ViewElementMode.FORM_READ;
+			}
+			else {
+				viewElementMode = ViewElementMode.VALUE;
+			}
+		}
+
 		boolean isForReading
 				= ViewElementMode.FORM_READ.equals( viewElementMode ) || ViewElementMode.isValue( viewElementMode );
 
-		if ( !descriptor.isWritable() && isForWriting ) {
+		if ( ( !descriptor.isWritable() && !descriptor.isReadable() ) && isForWriting ) {
 			return null;
 		}
 

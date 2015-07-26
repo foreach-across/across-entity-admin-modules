@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.newviews.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
@@ -81,6 +82,19 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 				             .control( controlBuilder )
 				             .postProcessor( new DescriptionTextPostProcessor( bootstrapUi,
 				                                                               propertyDescriptor ) );
+
+		// todo: clean this up, work with separate control (?) allow list value to be without link, but other to be with
+		if ( controlMode.equals( ViewElementMode.VALUE ) ) {
+			formGroup.postProcessor( new ViewElementPostProcessor<FormGroupElement>()
+			{
+				@Override
+				public void postProcess( ViewElementBuilderContext builderContext, FormGroupElement element ) {
+					StaticFormElement staticFormElement = new StaticFormElement();
+					staticFormElement.add( element.getControl() );
+					element.setControl( staticFormElement );
+				}
+			} );
+		}
 
 		if ( controlBuilder instanceof OptionFormElementBuilder ) {
 			// Form groups for checkbox and radio buttons are different
