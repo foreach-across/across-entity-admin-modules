@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
@@ -149,6 +150,17 @@ public class TestFormViewElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				form,
 				"<form role='form' method='post' autocomplete='off'></form>"
+		);
+	}
+
+	@Test
+	public void customTemplatesInNestedElementsAreTreated() {
+		FormViewElement form = new FormViewElement();
+		form.add( new TemplateViewElement( CUSTOM_TEMPLATE ) );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post'>" + CUSTOM_TEMPLATE_OUTPUT + "</form>"
 		);
 	}
 }

@@ -67,3 +67,26 @@ label.control-label > sup.required {
     margin-right: 8px;
 }
 
+.form-horizontal .form-group {
+    margin-bottom: 0;
+}
+
+.form-horizontal .control-label.text-left {
+    text-align: left;
+}
+
+th.result-number {
+    width: 40px;
+    text-align: center;
+}
+td.result-number {
+    text-align: center;
+}
+
+th[data-tbl-field='day'] {
+    text-align: right;
+}
+td[data-tbl-field='day'] {
+    width: 110px;
+    text-align: right;
+}
