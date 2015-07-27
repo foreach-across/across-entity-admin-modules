@@ -15,7 +15,12 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryLabelPropertyBuilder;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import java.util.HashMap;
@@ -26,9 +31,30 @@ import java.util.Map;
  */
 public abstract class AbstractEntityPropertyRegistryBuilder<SELF extends AbstractEntityPropertyRegistryBuilder>
 {
-	private final Map<String, AbstractEntityPropertyDescriptorBuilder> builders = new HashMap<>();
+	private final Logger LOG = LoggerFactory.getLogger( getClass() );
 
-	@SuppressWarnings( "unchecked" )
+	private final Map<String, AbstractEntityPropertyDescriptorBuilder> builders = new HashMap<>();
+	private String labelBaseProperty;
+
+	/**
+	 * Get the builder for the label property after setting it based on the existing property.
+	 *
+	 * @param property that should be the basis for the label property
+	 * @return builder for the label property
+	 */
+	public AbstractEntityPropertyDescriptorBuilder label( String property ) {
+		labelBaseProperty = property;
+		return label();
+	}
+
+	/**
+	 * @return builder for the label property
+	 */
+	public AbstractEntityPropertyDescriptorBuilder label() {
+		return property( EntityPropertyRegistry.LABEL );
+	}
+
+	@SuppressWarnings("unchecked")
 	public synchronized AbstractEntityPropertyDescriptorBuilder property( String name ) {
 		Assert.notNull( name );
 
@@ -51,8 +77,34 @@ public abstract class AbstractEntityPropertyRegistryBuilder<SELF extends Abstrac
 	public abstract Object and();
 
 	protected void apply( EntityPropertyRegistry entityPropertyRegistry ) {
-		for ( AbstractEntityPropertyDescriptorBuilder builder : builders.values() ) {
-			builder.apply( entityPropertyRegistry );
+		AbstractEntityPropertyDescriptorBuilder labelBuilder = null;
+
+		for ( Map.Entry<String, AbstractEntityPropertyDescriptorBuilder> builder : builders.entrySet() ) {
+			if ( EntityPropertyRegistry.LABEL.equals( builder.getKey() ) ) {
+				labelBuilder = builder.getValue();
+			}
+			else {
+				builder.getValue().apply( entityPropertyRegistry );
+			}
+		}
+
+		// Set the base property for the label
+		if ( labelBaseProperty != null ) {
+			EntityPropertyDescriptor label = entityPropertyRegistry.getProperty( EntityPropertyRegistry.LABEL );
+			EntityPropertyDescriptor base = entityPropertyRegistry.getProperty( labelBaseProperty );
+
+			if ( base != null && label instanceof MutableEntityPropertyDescriptor ) {
+				LOG.warn( "Unable to modify the {} property no MutableEntityPropertyDescriptor",
+				          EntityPropertyRegistry.LABEL );
+
+				MutableEntityPropertyDescriptor mutableLabel =(MutableEntityPropertyDescriptor) label;
+				EntityPropertyRegistryLabelPropertyBuilder.copyPropertyToLabel( base, mutableLabel );
+			}
+		}
+
+		// Finally apply the label builder if there is one
+		if ( labelBuilder != null ) {
+			labelBuilder.apply( entityPropertyRegistry );
 		}
 	}
 }

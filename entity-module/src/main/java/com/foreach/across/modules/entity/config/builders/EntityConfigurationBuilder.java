@@ -105,6 +105,17 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 	}
 
 	/**
+	 * Configure the label property based on another registered property.
+	 * This is a shortcut for {@link #properties()#label(java.lang.String)#and()#and}.
+	 *
+	 * @param propertyName of the registered property to use as a base of the label
+	 * @return current builder
+	 */
+	public EntityConfigurationBuilder<T> label( String propertyName ) {
+		return properties().label( propertyName ).and().and();
+	}
+
+	/**
 	 * @return the parent builder
 	 */
 	public EntitiesConfigurationBuilder and() {
@@ -221,6 +232,16 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 
 		public PropertyRegistryBuilder() {
 			this.propertyRegistryBuilder = this;
+		}
+
+		@Override
+		public PropertyDescriptorBuilder label( String property ) {
+			return (PropertyDescriptorBuilder) super.label( property );
+		}
+
+		@Override
+		public PropertyDescriptorBuilder label() {
+			return (PropertyDescriptorBuilder) super.label();
 		}
 
 		@Override

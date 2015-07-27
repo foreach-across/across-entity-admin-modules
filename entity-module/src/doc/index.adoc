@@ -87,6 +87,37 @@ writable::  A writable property can be rendered in form views.  In case a proper
 WARNING: The `hidden` state has no correlation with a hidden form control.  Setting a property to be rendered as a hidden
 form control can only be done through configuring the right `ViewElement` information for that property.
 
+==== Configuring a label
+An entity with a corresponding `EntityConfiguration` always has a label, this is a textual representation of the entity
+ in for example lists.  This could be the *name* or the * title* property for example.  By default the label corresponds
+ to a custom generated property *#label* that defaults to calling `toString()` on the entity.
+
+You can configure the label using the `label()` method on a `PropertyDescriptorBuilder`.  This is equivalent to calling
+   `property("#label")`.  If you want to use another property as the base for label generation, you can configure this
+   on the `EntityConfigurationBuilder` by calling `label("propertyName")`.  This will copy all settings from the source
+   property to the *#label* property, but keep in mind it still is a separate property that can be customized.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@Override
+public void configure( EntitiesConfigurationBuilder configuration ) {
+    // Configure the username to be used as label for a User entity
+    configuration.entity( User.class ).label( "username" );
+
+    // Configure the group name to be used as base label, but modify the value fetcher so
+    // the label is prefixed with Group
+    configuration.entity( Group.class )
+                    .properties().label( "name" ).spelValueFetcher( "'Group: ' + name" );
+}
+----
+
+If you do not wish to use the *#label* property at all as default entity label, you can customize the `Printer` used for label
+ generation by modifying the `EntityModel`.
+
+NOTE: As *#label* is a generated property, sorting is not enabled by default.  If you configure the label using an existing
+property, the sortable attribute will be copied as well and sorting on label will be possible.
+
 === Creating an EntityConfiguration manually
 
 ==== Attributes to configure
@@ -130,6 +161,10 @@ In order for generated views to work automatically, an `EntityConfiguration` sho
 
 |`PersistentProperty.class`
 |In case of a property of a `PersistentEntity` registered through a Spring data repository.
+
+|`EntityAttributes.SORTABLE_PROPERTY`
+|Contains the name of the property that can be sorted on when sorting is enabled on this property.  In case
+of a `PersistentProperty`, this will be the name of that `PersistentProperty`.
 
 |===
 

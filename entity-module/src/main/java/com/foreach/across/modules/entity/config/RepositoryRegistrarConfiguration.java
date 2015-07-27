@@ -19,6 +19,7 @@ import com.foreach.across.modules.entity.registrars.repository.*;
 import com.foreach.across.modules.entity.registrars.repository.associations.ManyToManyEntityAssociationBuilder;
 import com.foreach.across.modules.entity.registrars.repository.associations.ManyToOneEntityAssociationBuilder;
 import com.foreach.across.modules.entity.registrars.repository.associations.OneToManyEntityAssociationBuilder;
+import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryLabelPropertyBuilder;
 import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryMappingMetaDataBuilder;
 import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryValidationMetaDataBuilder;
 import org.springframework.context.annotation.Bean;
@@ -74,12 +75,17 @@ public class RepositoryRegistrarConfiguration
 	}
 
 	@Bean
-	protected EntityPropertyRegistryMappingMetaDataBuilder entityPropertyMappingMetaDataBuilder() {
+	protected EntityPropertyRegistryLabelPropertyBuilder entityPropertyRegistryLabelPropertyBuilder() {
+		return new EntityPropertyRegistryLabelPropertyBuilder();
+	}
+
+	@Bean
+	protected EntityPropertyRegistryMappingMetaDataBuilder entityPropertyRegistryMappingMetaDataBuilder() {
 		return new EntityPropertyRegistryMappingMetaDataBuilder();
 	}
 
 	@Bean
-	public EntityPropertyRegistryValidationMetaDataBuilder entityPropertyValidationMetaDataBuilder() {
+	public EntityPropertyRegistryValidationMetaDataBuilder entityPropertyRegistryValidationMetaDataBuilder() {
 		return new EntityPropertyRegistryValidationMetaDataBuilder();
 	}
 }

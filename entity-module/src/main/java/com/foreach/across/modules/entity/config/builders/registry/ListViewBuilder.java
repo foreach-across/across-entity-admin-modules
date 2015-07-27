@@ -24,10 +24,62 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 
 public class ListViewBuilder extends AbstractEntityListViewBuilder<ListViewBuilder>
 {
+	@Override
+	public PropertyRegistryBuilder properties() {
+		return (PropertyRegistryBuilder) super.properties();
+	}
+
+	@Override
+	public PropertyRegistryBuilder properties( String... propertyNames ) {
+		return (PropertyRegistryBuilder) super.properties( propertyNames );
+	}
+
+	@Override
+	protected PropertyRegistryBuilder createPropertiesBuilder() {
+		return new PropertyRegistryBuilder( this );
+	}
+
+	@Override
+	public EntitiesConfigurationBuilder and() {
+		return (EntitiesConfigurationBuilder) parent;
+	}
+
 	@SuppressWarnings("unchecked")
 	public class PropertyRegistryBuilder
 			extends EntityViewPropertyRegistryBuilder<PropertyRegistryBuilder>
 	{
+		private final PropertyRegistryBuilder propertyRegistryBuilder;
+		private final ListViewBuilder parent;
+		public PropertyRegistryBuilder( ListViewBuilder parent ) {
+			this.propertyRegistryBuilder = this;
+			this.parent = parent;
+		}
+
+		@Override
+		public PropertyDescriptorBuilder label( String property ) {
+			return (PropertyDescriptorBuilder) super.label( property );
+		}
+
+		@Override
+		public PropertyDescriptorBuilder label() {
+			return (PropertyDescriptorBuilder) super.label();
+		}
+
+		@Override
+		public synchronized PropertyDescriptorBuilder property( String name ) {
+			return (PropertyDescriptorBuilder) super.property( name );
+		}
+
+		@Override
+		protected PropertyDescriptorBuilder createDescriptorBuilder( String name ) {
+			return new PropertyDescriptorBuilder();
+		}
+
+		@Override
+		public ListViewBuilder and() {
+			return parent;
+		}
+
 		public class PropertyDescriptorBuilder extends AbstractEntityPropertyDescriptorBuilder<PropertyDescriptorBuilder>
 		{
 			@Override
@@ -98,48 +150,5 @@ public class ListViewBuilder extends AbstractEntityListViewBuilder<ListViewBuild
 				return propertyRegistryBuilder;
 			}
 		}
-
-		private final PropertyRegistryBuilder propertyRegistryBuilder;
-		private final ListViewBuilder parent;
-
-		public PropertyRegistryBuilder( ListViewBuilder parent ) {
-			this.propertyRegistryBuilder = this;
-			this.parent = parent;
-		}
-
-		@Override
-		public synchronized PropertyDescriptorBuilder property( String name ) {
-			return (PropertyDescriptorBuilder) super.property( name );
-		}
-
-		@Override
-		protected PropertyDescriptorBuilder createDescriptorBuilder( String name ) {
-			return new PropertyDescriptorBuilder();
-		}
-
-		@Override
-		public ListViewBuilder and() {
-			return parent;
-		}
-	}
-
-	@Override
-	public PropertyRegistryBuilder properties() {
-		return (PropertyRegistryBuilder) super.properties();
-	}
-
-	@Override
-	public PropertyRegistryBuilder properties( String... propertyNames ) {
-		return (PropertyRegistryBuilder) super.properties( propertyNames );
-	}
-
-	@Override
-	protected PropertyRegistryBuilder createPropertiesBuilder() {
-		return new PropertyRegistryBuilder( this );
-	}
-
-	@Override
-	public EntitiesConfigurationBuilder and() {
-		return (EntitiesConfigurationBuilder) parent;
 	}
 }

@@ -109,6 +109,16 @@ public class ViewBuilder extends AbstractSimpleEntityViewBuilder<ConfigurablePro
 		}
 
 		@Override
+		public PropertyDescriptorBuilder label( String property ) {
+			return (PropertyDescriptorBuilder) super.label( property );
+		}
+
+		@Override
+		public PropertyDescriptorBuilder label() {
+			return (PropertyDescriptorBuilder) super.label();
+		}
+
+		@Override
 		public synchronized PropertyDescriptorBuilder property( String name ) {
 			return (PropertyDescriptorBuilder) super.property( name );
 		}

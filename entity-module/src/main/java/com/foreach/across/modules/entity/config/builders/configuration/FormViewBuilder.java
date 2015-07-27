@@ -24,10 +24,63 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 
 public class FormViewBuilder extends AbstractEntityFormViewBuilder<FormViewBuilder>
 {
+	@Override
+	public PropertyRegistryBuilder properties() {
+		return (PropertyRegistryBuilder) super.properties();
+	}
+
+	@Override
+	public PropertyRegistryBuilder properties( String... propertyNames ) {
+		return (PropertyRegistryBuilder) super.properties( propertyNames );
+	}
+
+	@Override
+	protected PropertyRegistryBuilder createPropertiesBuilder() {
+		return new PropertyRegistryBuilder( this );
+	}
+
+	@Override
+	public EntityConfigurationBuilder and() {
+		return (EntityConfigurationBuilder) parent;
+	}
+
 	@SuppressWarnings("unchecked")
 	public class PropertyRegistryBuilder
 			extends EntityViewPropertyRegistryBuilder<PropertyRegistryBuilder>
 	{
+		private final PropertyRegistryBuilder propertyRegistryBuilder;
+		private final FormViewBuilder parent;
+
+		public PropertyRegistryBuilder( FormViewBuilder parent ) {
+			this.propertyRegistryBuilder = this;
+			this.parent = parent;
+		}
+
+		@Override
+		public PropertyDescriptorBuilder label( String property ) {
+			return (PropertyDescriptorBuilder) super.label( property );
+		}
+
+		@Override
+		public PropertyDescriptorBuilder label() {
+			return (PropertyDescriptorBuilder) super.label();
+		}
+
+		@Override
+		public synchronized PropertyDescriptorBuilder property( String name ) {
+			return (PropertyDescriptorBuilder) super.property( name );
+		}
+
+		@Override
+		protected PropertyDescriptorBuilder createDescriptorBuilder( String name ) {
+			return new PropertyDescriptorBuilder();
+		}
+
+		@Override
+		public FormViewBuilder and() {
+			return parent;
+		}
+
 		public class PropertyDescriptorBuilder extends AbstractEntityPropertyDescriptorBuilder<PropertyDescriptorBuilder>
 		{
 			@Override
@@ -98,48 +151,5 @@ public class FormViewBuilder extends AbstractEntityFormViewBuilder<FormViewBuild
 				return propertyRegistryBuilder;
 			}
 		}
-
-		private final PropertyRegistryBuilder propertyRegistryBuilder;
-		private final FormViewBuilder parent;
-
-		public PropertyRegistryBuilder( FormViewBuilder parent ) {
-			this.propertyRegistryBuilder = this;
-			this.parent = parent;
-		}
-
-		@Override
-		public synchronized PropertyDescriptorBuilder property( String name ) {
-			return (PropertyDescriptorBuilder) super.property( name );
-		}
-
-		@Override
-		protected PropertyDescriptorBuilder createDescriptorBuilder( String name ) {
-			return new PropertyDescriptorBuilder();
-		}
-
-		@Override
-		public FormViewBuilder and() {
-			return parent;
-		}
-	}
-
-	@Override
-	public PropertyRegistryBuilder properties() {
-		return (PropertyRegistryBuilder) super.properties();
-	}
-
-	@Override
-	public PropertyRegistryBuilder properties( String... propertyNames ) {
-		return (PropertyRegistryBuilder) super.properties( propertyNames );
-	}
-
-	@Override
-	protected PropertyRegistryBuilder createPropertiesBuilder() {
-		return new PropertyRegistryBuilder( this );
-	}
-
-	@Override
-	public EntityConfigurationBuilder and() {
-		return (EntityConfigurationBuilder) parent;
 	}
 }
