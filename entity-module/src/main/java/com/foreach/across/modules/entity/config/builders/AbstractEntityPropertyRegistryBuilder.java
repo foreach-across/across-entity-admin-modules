@@ -93,12 +93,16 @@ public abstract class AbstractEntityPropertyRegistryBuilder<SELF extends Abstrac
 			EntityPropertyDescriptor label = entityPropertyRegistry.getProperty( EntityPropertyRegistry.LABEL );
 			EntityPropertyDescriptor base = entityPropertyRegistry.getProperty( labelBaseProperty );
 
-			if ( base != null && label instanceof MutableEntityPropertyDescriptor ) {
-				LOG.warn( "Unable to modify the {} property no MutableEntityPropertyDescriptor",
-				          EntityPropertyRegistry.LABEL );
+			if ( base != null ) {
+				if ( label instanceof MutableEntityPropertyDescriptor ) {
 
-				MutableEntityPropertyDescriptor mutableLabel =(MutableEntityPropertyDescriptor) label;
-				EntityPropertyRegistryLabelPropertyBuilder.copyPropertyToLabel( base, mutableLabel );
+					MutableEntityPropertyDescriptor mutableLabel = (MutableEntityPropertyDescriptor) label;
+					EntityPropertyRegistryLabelPropertyBuilder.copyPropertyToLabel( base, mutableLabel );
+				}
+				else {
+					LOG.warn( "Unable to modify the {} property: not a MutableEntityPropertyDescriptor",
+					          EntityPropertyRegistry.LABEL );
+				}
 			}
 		}
 
