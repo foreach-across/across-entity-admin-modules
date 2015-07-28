@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
-
-import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+package com.foreach.across.modules.entity.views.elements.container;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
  */
-public interface RepresentativeRepository extends JpaRepository<Representative, String>, JpaSpecificationExecutor<Representative>
+public class ColumnsViewElement extends ContainerViewElement
 {
+	public ColumnsViewElement() {
+	}
+
+	public ColumnsViewElement( String name ) {
+		super( name );
+	}
+
+	@Override
+	public String getElementType() {
+		return "columns";
+	}
 }

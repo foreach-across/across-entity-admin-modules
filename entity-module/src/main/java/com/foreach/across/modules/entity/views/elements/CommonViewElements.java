@@ -13,15 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
-
-import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+package com.foreach.across.modules.entity.views.elements;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
  */
-public interface RepresentativeRepository extends JpaRepository<Representative, String>, JpaSpecificationExecutor<Representative>
+public interface CommonViewElements
 {
+	String CONTAINER = "container";
+
+	String TEXTBOX = "textbox";
+	String HIDDEN = "hidden";
+	String SELECT = "select";
+	String RADIO = "radio";
+	String MULTI_CHECKBOX = "multi-checkbox";
+	String CHECKBOX = "checkbox";
+	String DATE = "date";
+	String FIELDSET = "fieldset";
+	String TEXT = "text";
+
+	String BUTTON = "button";
+	String SUBMIT_BUTTON = "submit";
+	String LINK_BUTTON = "link-button";
+	String LINK = "link";
 }

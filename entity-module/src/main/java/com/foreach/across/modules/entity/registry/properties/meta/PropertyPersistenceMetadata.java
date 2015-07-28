@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
-
-import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+package com.foreach.across.modules.entity.registry.properties.meta;
 
 /**
- * @author Andy Somers
+ * @author niels
+ * @since 4/02/2015
  */
-public interface RepresentativeRepository extends JpaRepository<Representative, String>, JpaSpecificationExecutor<Representative>
+@Deprecated
+public class PropertyPersistenceMetadata
 {
+
+	private boolean embedded;
+
+	public void setEmbedded( boolean embedded ) {
+		this.embedded = embedded;
+	}
+
+	public boolean isEmbedded() {
+		return embedded;
+	}
 }

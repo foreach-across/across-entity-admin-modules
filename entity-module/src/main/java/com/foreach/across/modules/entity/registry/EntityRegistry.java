@@ -13,15 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
+package com.foreach.across.modules.entity.registry;
 
-import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import java.util.Collection;
 
 /**
- * @author Andy Somers
+ * Base interface for querying the registered entity types.
+ *
+ * @author Arne Vandamme
+ * @see com.foreach.across.modules.entity.registry.MutableEntityRegistry
  */
-public interface RepresentativeRepository extends JpaRepository<Representative, String>, JpaSpecificationExecutor<Representative>
+public interface EntityRegistry
 {
+	Collection<EntityConfiguration> getEntities();
+
+	boolean contains( Class<?> entityType );
+
+	boolean contains( String entityName );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( Class<T> entityType );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( String entityName );
 }
