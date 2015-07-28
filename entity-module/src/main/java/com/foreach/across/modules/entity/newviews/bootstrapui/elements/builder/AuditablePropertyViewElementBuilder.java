@@ -22,9 +22,11 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * <p>Custom {@link ViewElementBuilder} for created and last modified properties of any
@@ -72,8 +74,11 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 				date = auditable.getLastModifiedDate();
 			}
 
-			return new TextViewElement( convertToString( date )
-					                            + ( principal != null ? " by " + principal : "" )
+			String principalString = Objects.toString( principal, "" );
+
+			return new TextViewElement(
+					convertToString( date )
+							+ ( !StringUtils.isBlank( principalString ) ? " by " + principalString : "" )
 			);
 		}
 

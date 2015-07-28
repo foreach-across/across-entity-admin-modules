@@ -18,7 +18,9 @@ package com.foreach.across.modules.entity.config.builders;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityViewRegistry;
-import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.MergingEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.EntityViewViewFactory;
@@ -38,32 +40,12 @@ import java.util.List;
 public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurablePropertiesEntityViewFactorySupport, SELF extends AbstractSimpleEntityViewBuilder>
 		extends AbstractEntityViewBuilder<T, SELF>
 {
-	public abstract class EntityViewPropertyRegistryBuilder<MYSELF extends EntityViewPropertyRegistryBuilder>
-			extends AbstractEntityPropertyRegistryBuilder<MYSELF>
-	{
-		@SuppressWarnings("unchecked")
-		public MYSELF filter( String... propertyNames ) {
-			and().viewPropertyFilter = EntityPropertyFilters.include( propertyNames );
-			and().viewPropertyOrder = EntityPropertyComparators.ordered( propertyNames );
-
-			return (MYSELF) this;
-		}
-
-		@Override
-		public SELF and() {
-			return viewBuilder;
-		}
-	}
-
 	private final SELF viewBuilder;
-
+	protected String[] viewPropertySelectorRule;
+	protected EntityPropertyComparators.Ordered viewPropertyOrder;
 	private String template;
 	private EntityViewPropertyRegistryBuilder propertyRegistryBuilder;
 	private Collection<EntityViewProcessor> processors = new ArrayList<>();
-
-	protected EntityPropertyFilter viewPropertyFilter;
-	protected EntityPropertyComparators.Ordered viewPropertyOrder;
-
 	@SuppressWarnings("unchecked")
 	public AbstractSimpleEntityViewBuilder() {
 		this.viewBuilder = (SELF) this;
@@ -147,8 +129,8 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 			propertyRegistryBuilder.apply( registry );
 		}
 
-		if ( viewPropertyFilter != null ) {
-			factory.setPropertyFilter( viewPropertyFilter );
+		if ( viewPropertySelectorRule != null ) {
+			factory.getPropertySelector().configure( viewPropertySelectorRule );
 		}
 
 		if ( viewPropertyOrder != null ) {
@@ -163,5 +145,22 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 		total.addAll( additional );
 
 		return total;
+	}
+
+	public abstract class EntityViewPropertyRegistryBuilder<MYSELF extends EntityViewPropertyRegistryBuilder>
+			extends AbstractEntityPropertyRegistryBuilder<MYSELF>
+	{
+		@SuppressWarnings("unchecked")
+		public MYSELF filter( String... propertyNames ) {
+			and().viewPropertySelectorRule = propertyNames;
+			and().viewPropertyOrder = EntityPropertyComparators.ordered( propertyNames );
+
+			return (MYSELF) this;
+		}
+
+		@Override
+		public SELF and() {
+			return viewBuilder;
+		}
 	}
 }

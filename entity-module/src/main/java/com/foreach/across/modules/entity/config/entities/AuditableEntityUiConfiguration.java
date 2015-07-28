@@ -62,17 +62,23 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 		// Create aggregated properties that sort on the dates - these are not hidden by default
 		properties.property( "created" )
 		          .displayName( "Created" )
-		          .writable( false ).readable( true ).order( 1005 )
+		          .writable( false ).readable( true ).hidden( true ).order( 1005 )
 		          .attribute( EntityAttributes.SORTABLE_PROPERTY, "createdDate" )
 		          .viewElementBuilder( ViewElementMode.VALUE, createdValueBuilder() )
 		          .viewElementBuilder( ViewElementMode.LIST_VALUE, createdValueBuilder() );
 
 		properties.property( "lastModified" )
 		          .displayName( "Last modified" )
-		          .writable( false ).readable( true ).order( 1006 )
+		          .writable( false ).readable( true ).hidden( true ).order( 1006 )
 		          .attribute( EntityAttributes.SORTABLE_PROPERTY, "lastModifiedDate" )
 		          .viewElementBuilder( ViewElementMode.VALUE, lastModifiedValueBuilder() )
 		          .viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedValueBuilder() );
+
+		builder.listView()
+		       .properties( ".", "lastModified" );
+
+		builder.updateFormView()
+		       .properties( ".", "created", "lastModified" );
 
 		// Add default sort to list views if no default sort configured
 		builder.addPostProcessor( new PostProcessor<MutableEntityConfiguration<Auditable>>()
