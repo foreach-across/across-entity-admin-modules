@@ -24,7 +24,7 @@ import com.foreach.across.modules.web.AcrossWebModule;
 
 @AcrossDepends(
 		required = { AcrossWebModule.NAME, SpringSecurityModule.NAME, BootstrapUiModule.NAME },
-		optional = { "AcrossHibernateModule" }
+		optional = { "AcrossHibernateModule", "ApplicationInfoModule" }
 )
 public class AdminWebModule extends AcrossModule
 {
