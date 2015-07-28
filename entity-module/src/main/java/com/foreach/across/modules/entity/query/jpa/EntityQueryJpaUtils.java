@@ -19,6 +19,7 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryExpression;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
@@ -58,15 +59,27 @@ public abstract class EntityQueryJpaUtils
 	                                                      CriteriaBuilder cb ) {
 		switch ( condition.getOperand() ) {
 			case EQ:
-				return cb.equal( root.get( condition.getProperty() ), condition.getFirstArgument() );
+				return cb.equal( resolveProperty( root, condition.getProperty() ), condition.getFirstArgument() );
 			case NEQ:
-				return cb.notEqual( root.get( condition.getProperty() ), condition.getFirstArgument() );
+				return cb.notEqual( resolveProperty( root, condition.getProperty() ), condition.getFirstArgument() );
 			case CONTAINS:
 				Expression<Collection> collection = root.get( condition.getProperty() );
 				return cb.isMember( condition.getFirstArgument(), collection );
 		}
 
 		throw new IllegalArgumentException( "Unsupported operand for JPA query: " + condition.getOperand() );
+	}
+
+	private static <V> Path<V> resolveProperty( Path<V> path, String propertyName ) {
+		int ix = propertyName.indexOf( "." );
+		if ( ix >= 0 ) {
+			String name = StringUtils.left( propertyName, ix );
+			String remainder = StringUtils.substring( propertyName, ix + 1 );
+
+			return resolveProperty( path.<V>get( name ), remainder );
+		}
+
+		return path.get( propertyName );
 	}
 
 	private static <V> Predicate buildQueryPredicate( EntityQuery query, Root<V> root, CriteriaBuilder cb ) {
