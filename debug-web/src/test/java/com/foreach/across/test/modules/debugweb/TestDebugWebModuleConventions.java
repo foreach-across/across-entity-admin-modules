@@ -13,13 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
+package com.foreach.across.test.modules.debugweb;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.modules.debugweb.DebugWebModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
-@Exposed
-public interface ClientRepository extends IdBasedEntityJpaRepository<Client>
+/**
+ * @author Arne Vandamme
+ */
+public class TestDebugWebModuleConventions extends AbstractAcrossModuleConventionsTest
 {
+	@Override
+	protected boolean hasSettings() {
+		return true;
+	}
+
+	@Override
+	protected AcrossModule createModule() {
+		return new DebugWebModule();
+	}
 }

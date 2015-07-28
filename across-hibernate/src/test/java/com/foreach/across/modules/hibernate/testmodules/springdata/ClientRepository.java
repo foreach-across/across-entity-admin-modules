@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
+package com.foreach.across.modules.hibernate.testmodules.springdata;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 @Exposed
-public interface ClientRepository extends IdBasedEntityJpaRepository<Client>
+@Repository
+public interface ClientRepository extends JpaRepository<Client, Long>
 {
 }

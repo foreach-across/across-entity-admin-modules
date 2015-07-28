@@ -13,13 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
+package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import org.junit.Test;
 
-@Exposed
-public interface ClientRepository extends IdBasedEntityJpaRepository<Client>
+/**
+ * @author Arne Vandamme
+ */
+public class TestStaticFormElement extends AbstractBootstrapViewElementTest
 {
-}
+	@Test
+	public void simple() {
+		StaticFormElement box = new StaticFormElement();
+		box.setText( "somedude@example.com" );
+
+		renderAndExpect(
+				box,
+				"<p class='form-control-static'>somedude@example.com</p>"
+		);
+	}}
