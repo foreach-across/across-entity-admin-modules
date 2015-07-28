@@ -59,7 +59,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 				.property( "lastModifiedBy" ).writable( false ).hidden( true ).order( 1003 ).and()
 				.property( "lastModifiedDate" ).writable( false ).hidden( true ).order( 1004 );
 
-		// Create aggregated properties that sort on the dates - these are not hidden by default
+		// Create aggregated properties that sort on the dates
 		properties.property( "created" )
 		          .displayName( "Created" )
 		          .writable( false ).readable( true ).hidden( true ).order( 1005 )
@@ -74,6 +74,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 		          .viewElementBuilder( ViewElementMode.VALUE, lastModifiedValueBuilder() )
 		          .viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedValueBuilder() );
 
+		// Add aggregated properties to views
 		builder.listView()
 		       .properties( ".", "lastModified" );
 

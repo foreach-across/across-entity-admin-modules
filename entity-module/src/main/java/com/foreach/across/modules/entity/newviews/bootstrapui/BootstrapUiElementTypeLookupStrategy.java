@@ -16,7 +16,6 @@
 package com.foreach.across.modules.entity.newviews.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.newviews.ViewElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -66,6 +65,10 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 		if ( ViewElementMode.FORM_WRITE.equals( viewElementMode )
 				|| ViewElementMode.FORM_READ.equals( viewElementMode ) ) {
+			if ( PropertyPersistenceMetadata.isEmbeddedProperty( descriptor ) ) {
+				return BootstrapUiElements.FIELDSET;
+			}
+
 			return BootstrapUiElements.FORM_GROUP;
 		}
 
@@ -76,14 +79,6 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		if ( ViewElementMode.isLabel( viewElementMode ) ) {
 			return BootstrapUiElements.LABEL;
 		}
-
-		PropertyPersistenceMetadata metadata = descriptor.getAttribute(
-				EntityAttributes.PROPERTY_PERSISTENCE_METADATA, PropertyPersistenceMetadata.class );
-
-		/*
-		if ( metadata != null && metadata.isEmbedded() ) {
-			return BootstrapUiElements.FIELDSET;
-		}*/
 
 		if ( descriptor.isWritable() ) {
 			Class propertyType = descriptor.getPropertyType();
