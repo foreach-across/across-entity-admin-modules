@@ -58,6 +58,16 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	}
 
 	@Override
+	public FieldsetFormElementBuilder fieldset() {
+		return new FieldsetFormElementBuilder();
+	}
+
+	@Override
+	public FieldsetFormElementBuilder fieldset( String legendText ) {
+		return new FieldsetFormElementBuilder().legend( legendText );
+	}
+
+	@Override
 	public TextboxFormElementBuilder textarea() {
 		return textbox().multiLine();
 	}
