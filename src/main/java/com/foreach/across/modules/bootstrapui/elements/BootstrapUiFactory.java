@@ -40,6 +40,10 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 
 	TextboxFormElementBuilder password();
 
+	FieldsetFormElementBuilder fieldset();
+
+	FieldsetFormElementBuilder fieldset( String legendText );
+
 	TableViewElementBuilder table();
 
 	NodeViewElementBuilder row();
