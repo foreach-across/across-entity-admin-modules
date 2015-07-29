@@ -76,4 +76,9 @@ public class BootstrapUiConfiguration
 	public CheckboxFormElementBuilderFactory checkboxFormElementBuilderFactory() {
 		return new CheckboxFormElementBuilderFactory();
 	}
+
+	@Bean
+	public FieldsetFormElementBuilderFactory fieldsetFormElementBuilderFactory() {
+		return new FieldsetFormElementBuilderFactory();
+	}
 }

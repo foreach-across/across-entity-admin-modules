@@ -63,13 +63,19 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			return null;
 		}
 
+		boolean isEmbedded = PropertyPersistenceMetadata.isEmbeddedProperty( descriptor );
+
 		if ( ViewElementMode.FORM_WRITE.equals( viewElementMode )
 				|| ViewElementMode.FORM_READ.equals( viewElementMode ) ) {
-			if ( PropertyPersistenceMetadata.isEmbeddedProperty( descriptor ) ) {
+			if ( isEmbedded ) {
 				return BootstrapUiElements.FIELDSET;
 			}
 
 			return BootstrapUiElements.FORM_GROUP;
+		}
+
+		if ( isEmbedded ) {
+			return null;
 		}
 
 		if ( ViewElementMode.isValue( viewElementMode ) ) {
