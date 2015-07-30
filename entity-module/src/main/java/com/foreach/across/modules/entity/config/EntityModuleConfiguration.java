@@ -27,7 +27,10 @@ import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistries;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactory;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactoryImpl;
 import com.foreach.across.modules.entity.services.EntityFormService;
 import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
@@ -100,8 +103,13 @@ public class EntityModuleConfiguration
 
 	@Bean
 	@Exposed
-	public EntityPropertyRegistries entityPropertyRegistries() {
-		return new EntityPropertyRegistries();
+	public EntityPropertyRegistryFactory entityPropertyRegistryFactory() {
+		return new EntityPropertyRegistryFactoryImpl();
+	}
+
+	@Bean
+	public EntityPropertyDescriptorFactory entityPropertyDescriptorFactory() {
+		return new EntityPropertyDescriptorFactoryImpl();
 	}
 
 	@Bean

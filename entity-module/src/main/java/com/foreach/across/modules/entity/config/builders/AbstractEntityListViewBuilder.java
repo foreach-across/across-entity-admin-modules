@@ -94,8 +94,10 @@ public abstract class AbstractEntityListViewBuilder<SELF extends AbstractSimpleE
 	}
 
 	@Override
-	protected void applyToFactory( EntityViewRegistry viewRegistry, EntityListViewFactory factory ) {
-		super.applyToFactory( viewRegistry, factory );
+	protected void applyToViewFactory( AutowireCapableBeanFactory beanFactory,
+	                                   EntityViewRegistry viewRegistry,
+	                                   EntityListViewFactory factory ) {
+		super.applyToViewFactory( beanFactory, viewRegistry, factory );
 
 		if ( pageFetcher != null ) {
 			factory.setPageFetcher( pageFetcher );

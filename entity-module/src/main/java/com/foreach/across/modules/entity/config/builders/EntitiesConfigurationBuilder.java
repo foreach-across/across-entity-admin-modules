@@ -45,26 +45,31 @@ public class EntitiesConfigurationBuilder extends AbstractAttributesAndViewsBuil
 		return view( name, ViewBuilder.class );
 	}
 
+	@Deprecated
 	@Override
 	public ListViewBuilder listView() {
 		return listView( EntityListView.VIEW_NAME );
 	}
 
+	@Deprecated
 	@Override
 	public ListViewBuilder listView( String name ) {
 		return view( name, ListViewBuilder.class );
 	}
 
+	@Deprecated
 	@Override
 	public FormViewBuilder createFormView() {
 		return formView( EntityFormView.CREATE_VIEW_NAME );
 	}
 
+	@Deprecated
 	@Override
 	public FormViewBuilder updateFormView() {
 		return formView( EntityFormView.UPDATE_VIEW_NAME );
 	}
 
+	@Deprecated
 	@Override
 	public FormViewBuilder formView( String name ) {
 		return view( name, FormViewBuilder.class );

@@ -25,9 +25,9 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
  */
 public abstract class AbstractEntityViewBuilder<T extends EntityViewFactory, SELF>
 {
+	protected Object parent;
 	private String name;
 	private T factory;
-	protected Object parent;
 
 	protected void setName( String name ) {
 		this.name = name;
@@ -52,10 +52,12 @@ public abstract class AbstractEntityViewBuilder<T extends EntityViewFactory, SEL
 			viewRegistry.registerView( name, configuredFactory );
 		}
 
-		applyToFactory( viewRegistry, configuredFactory );
+		applyToViewFactory( beanFactory, viewRegistry, configuredFactory );
 	}
 
 	protected abstract T createFactoryInstance( AutowireCapableBeanFactory beanFactory );
 
-	protected abstract void applyToFactory( EntityViewRegistry viewRegistry, T factory );
+	protected abstract void applyToViewFactory( AutowireCapableBeanFactory beanFactory,
+	                                            EntityViewRegistry viewRegistry,
+	                                            T factory );
 }

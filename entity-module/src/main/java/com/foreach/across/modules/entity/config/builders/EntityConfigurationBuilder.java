@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.config.builders.configuration.ListViewB
 import com.foreach.across.modules.entity.config.builders.configuration.ViewBuilder;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.registry.*;
-import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
@@ -170,7 +170,9 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 
 			if ( configuration == null ) {
 				configuration = new EntityConfigurationImpl<>( entityType );
-				configuration.setPropertyRegistry( new DefaultEntityPropertyRegistry( entityType ) );
+				configuration.setPropertyRegistry(
+						beanFactory.getBean( EntityPropertyRegistryFactory.class ).getOrCreate( entityType )
+				);
 				entityRegistry.register( configuration );
 			}
 

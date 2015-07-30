@@ -230,9 +230,9 @@ public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends Abstr
 		}
 
 		// There was an existing descriptor, but not mutable, we created a custom merge
-		if ( existing != null && !( existing instanceof MutableEntityPropertyDescriptor ) ) {
-			descriptor = (MutableEntityPropertyDescriptor) existing.merge( descriptor );
-		}
+//		if ( existing != null && !( existing instanceof MutableEntityPropertyDescriptor ) ) {
+//			descriptor = (MutableEntityPropertyDescriptor) existing.merge( descriptor );
+//		}
 
 		entityPropertyRegistry.register( descriptor );
 

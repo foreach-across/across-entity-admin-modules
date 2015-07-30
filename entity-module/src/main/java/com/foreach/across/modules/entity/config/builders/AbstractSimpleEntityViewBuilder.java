@@ -20,7 +20,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.MergingEntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
 import com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.EntityViewViewFactory;
@@ -46,6 +46,7 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 	private String template;
 	private EntityViewPropertyRegistryBuilder propertyRegistryBuilder;
 	private Collection<EntityViewProcessor> processors = new ArrayList<>();
+
 	@SuppressWarnings("unchecked")
 	public AbstractSimpleEntityViewBuilder() {
 		this.viewBuilder = (SELF) this;
@@ -100,8 +101,8 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 
 	@Override
 	@SuppressWarnings("unchecked")
-	protected void applyToFactory( EntityViewRegistry viewRegistry,
-	                               T factory ) {
+	protected void applyToViewFactory( AutowireCapableBeanFactory beanFactory, EntityViewRegistry viewRegistry,
+	                                   T factory ) {
 		if ( template != null ) {
 			factory.setTemplate( template );
 		}
@@ -113,13 +114,16 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 		EntityPropertyRegistry registry = factory.getPropertyRegistry();
 
 		if ( registry == null ) {
+			EntityPropertyRegistryFactory registryFactory = beanFactory.getBean( EntityPropertyRegistryFactory.class );
 			if ( viewRegistry instanceof EntityConfiguration ) {
-				registry = new MergingEntityPropertyRegistry(
-						( (EntityConfiguration) viewRegistry ).getPropertyRegistry() );
+				registry = registryFactory.createWithParent(
+						( (EntityConfiguration) viewRegistry ).getPropertyRegistry()
+				);
 			}
 			else if ( viewRegistry instanceof EntityAssociation ) {
-				registry = new MergingEntityPropertyRegistry(
-						( (EntityAssociation) viewRegistry ).getTargetEntityConfiguration().getPropertyRegistry() );
+				registry = registryFactory.createWithParent(
+						( (EntityAssociation) viewRegistry ).getTargetEntityConfiguration().getPropertyRegistry()
+				);
 			}
 
 			factory.setPropertyRegistry( registry );
