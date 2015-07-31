@@ -79,7 +79,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 		       .properties( ".", "lastModified" );
 
 		builder.updateFormView()
-		       .properties( ".", "created", "lastModified" );
+		       .properties( ".", "created", "lastModified" ).and();
 
 		// Add default sort to list views if no default sort configured
 		builder.addPostProcessor( new PostProcessor<MutableEntityConfiguration<Auditable>>()

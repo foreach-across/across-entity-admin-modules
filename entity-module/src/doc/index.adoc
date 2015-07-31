@@ -326,6 +326,11 @@ Example: _UserModule.entities.user.validation.NotBlank_,  _UserModule.entities.u
 * EntityPrefix: ModuleName.entities.entityName, or EntityModule.entities.entityName or simply entityName
 * Hierarchical lookups: entity can be removed, module can be replaced by EntityModule
 
+=== Selecting properties
+`EntityPropertySelector`, incremental builders, keep current, select all, select all without default filter, exclude
+
+=== Customizing fieldsets
+
 === Customizing entity validation
 
 By default annotation validation is performed on all entities.  Customizing validation can be done by simply
@@ -334,7 +339,6 @@ specifying a `Validator` bean that supports the specific entity type.  You can u
 
 If more than one `Validator` could be applied,
 you will manually have to set the `Validator.class` attribute on the `EntityConfiguration` to the correct one.
-
 
 
 == To be done:
