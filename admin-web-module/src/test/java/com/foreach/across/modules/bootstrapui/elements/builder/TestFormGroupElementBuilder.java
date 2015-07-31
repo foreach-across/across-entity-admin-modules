@@ -72,7 +72,7 @@ public class TestFormGroupElementBuilder extends AbstractViewElementBuilderTest<
 		builder.control( textbox ).label( label );
 
 		FormGroupElement group = builder.build( builderContext );
-		LabelFormElement labelElement = group.getLabel();
+		LabelFormElement labelElement = group.getLabel( LabelFormElement.class );
 
 		assertTrue( labelElement.hasTarget() );
 		assertNotNull( labelElement.getTargetAsElement() );
@@ -85,11 +85,11 @@ public class TestFormGroupElementBuilder extends AbstractViewElementBuilderTest<
 
 		FormGroupElement group = builder.build( builderContext );
 
-		LabelFormElement labelFormElement = group.getLabel();
+		LabelFormElement labelFormElement = group.getLabel( LabelFormElement.class );
 		assertNotNull( labelFormElement );
 		assertEquals( "some label", labelFormElement.getText() );
 
-		NodeViewElement node = group.getHelpBlock();
+		NodeViewElement node = group.getHelpBlock( NodeViewElement.class );
 		assertNotNull( node );
 		assertEquals( "some help", ( (TextViewElement) node.iterator().next() ).getText() );
 	}

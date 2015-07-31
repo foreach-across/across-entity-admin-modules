@@ -33,27 +33,32 @@ public class FormGroupElement extends NodeViewElementSupport
 		super( ELEMENT_TYPE );
 	}
 
-	@SuppressWarnings("unchecked")
-	public <V extends ViewElement> V getLabel() {
-		return (V) label;
+	public ViewElement getLabel() {
+		return label;
 	}
 
 	public void setLabel( ViewElement label ) {
 		this.label = label;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <V extends ViewElement> V getControl() {
-		return (V) control;
+	public <V extends ViewElement> V getLabel( Class<V> elementType ) {
+		return returnIfType( label, elementType );
+	}
+
+	public ViewElement getControl() {
+		return getControl( ViewElement.class );
 	}
 
 	public void setControl( ViewElement control ) {
 		this.control = control;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <V extends ViewElement> V getHelpBlock() {
-		return (V) helpBlock;
+	public <V extends ViewElement> V getControl( Class<V> elementType ) {
+		return returnIfType( control, elementType );
+	}
+
+	public ViewElement getHelpBlock() {
+		return getHelpBlock( ViewElement.class );
 	}
 
 	/**
@@ -61,6 +66,10 @@ public class FormGroupElement extends NodeViewElementSupport
 	 */
 	public void setHelpBlock( ViewElement helpBlock ) {
 		this.helpBlock = helpBlock;
+	}
+
+	public <V extends ViewElement> V getHelpBlock( Class<V> elementType ) {
+		return returnIfType( helpBlock, elementType );
 	}
 
 	/**
@@ -88,5 +97,13 @@ public class FormGroupElement extends NodeViewElementSupport
 
 	public void setRequired( boolean required ) {
 		this.required = required;
+	}
+
+	private <V extends ViewElement> V returnIfType( ViewElement element, Class<V> elementType ) {
+		if ( !elementType.isInstance( element ) ) {
+			return null;
+		}
+
+		return (V) element;
 	}
 }
