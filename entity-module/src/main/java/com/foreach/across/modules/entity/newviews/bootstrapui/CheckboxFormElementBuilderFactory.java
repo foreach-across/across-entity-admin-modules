@@ -17,7 +17,6 @@ package com.foreach.across.modules.entity.newviews.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
@@ -53,10 +52,10 @@ public class CheckboxFormElementBuilderFactory implements EntityViewElementBuild
 		                  .name( descriptor.getName() )
 		                  .text( descriptor.getDisplayName() )
 		                  .value( "on" )
-		                  .postProcessor( new EntityPropertyControlPostProcessor<CheckboxFormElement>() )
+		                  .postProcessor( new EntityPropertyControlPostProcessor<>() )
 		                  .postProcessor( new EntityPropertyValueCheckboxPostProcessor( descriptor ) )
 		                  .postProcessor(
-				                  new TextCodeResolverPostProcessor<CheckboxFormElement>(
+				                  new TextCodeResolverPostProcessor<>(
 						                  "properties." + descriptor.getName(),
 						                  entityConfiguration.getEntityMessageCodeResolver()
 				                  )

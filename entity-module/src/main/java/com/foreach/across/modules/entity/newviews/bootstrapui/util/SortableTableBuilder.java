@@ -136,7 +136,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 
 	/**
 	 * Limit the properties that can be sorted on by specifiying them explicitly.  If the collection
-	 * is null than all properties that have a {@link EntityAttributes#SORTABLE_PROPERTY} attribute will
+	 * is null then all properties that have a {@link EntityAttributes#SORTABLE_PROPERTY} attribute will
 	 * be sortable.
 	 *
 	 * @param sortableProperties collection of property names that can be sorted on

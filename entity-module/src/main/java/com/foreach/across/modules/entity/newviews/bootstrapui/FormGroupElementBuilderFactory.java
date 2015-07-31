@@ -77,11 +77,13 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 				entityConfiguration, propertyDescriptor, controlMode
 		);
 
+		DescriptionTextPostProcessor descriptionTextPostProcessor
+				= new DescriptionTextPostProcessor( bootstrapUi, propertyDescriptor );
+
 		FormGroupElementBuilder formGroup
 				= bootstrapUi.formGroup()
 				             .control( controlBuilder )
-				             .postProcessor( new DescriptionTextPostProcessor( bootstrapUi,
-				                                                               propertyDescriptor ) );
+				             .postProcessor( descriptionTextPostProcessor );
 
 		// todo: clean this up, work with separate control (?) allow list value to be without link, but other to be with
 		if ( controlMode.equals( ViewElementMode.VALUE ) ) {
@@ -120,6 +122,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 	{
 		private final BootstrapUiFactory bootstrapUi;
 		private final EntityPropertyDescriptor propertyDescriptor;
+		private EntityMessageCodeResolver defaultMessageCodeResolver;
 
 		public DescriptionTextPostProcessor( BootstrapUiFactory bootstrapUi,
 		                                     EntityPropertyDescriptor propertyDescriptor ) {
@@ -127,9 +130,17 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 			this.propertyDescriptor = propertyDescriptor;
 		}
 
+		public void setDefaultMessageCodeResolver( EntityMessageCodeResolver defaultMessageCodeResolver ) {
+			this.defaultMessageCodeResolver = defaultMessageCodeResolver;
+		}
+
 		@Override
 		public void postProcess( ViewElementBuilderContext builderContext, FormGroupElement element ) {
 			EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
+
+			if ( codeResolver != null ) {
+				codeResolver = defaultMessageCodeResolver;
+			}
 
 			if ( codeResolver != null ) {
 				String description = codeResolver.getMessageWithFallback(
