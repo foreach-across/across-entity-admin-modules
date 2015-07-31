@@ -242,7 +242,7 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 		}
 
 		if ( group.getLabel() instanceof LabelFormElement ) {
-			LabelFormElement label = group.getLabel();
+			LabelFormElement label = group.getLabel( LabelFormElement.class );
 
 			if ( !label.hasTarget() && group.getControl() instanceof FormControlElementSupport ) {
 				label.setTarget( group.getControl() );

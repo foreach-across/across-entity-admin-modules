@@ -112,7 +112,6 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"</div>"
 		);
 
-
 		SelectFormElement select = new SelectFormElement();
 		select.setName( "list" );
 
@@ -153,7 +152,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"</div>"
 		);
 
-		group.<TextboxFormElement>getControl().setPlaceholder( "some placeholder" );
+		group.getControl( TextboxFormElement.class ).setPlaceholder( "some placeholder" );
 		renderAndExpect(
 				group,
 				"<div class='form-group'>" +
@@ -162,7 +161,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"</div>"
 		);
 
-		group.<TextboxFormElement>getControl().setPlaceholder( "" );
+		group.getControl( TextboxFormElement.class ).setPlaceholder( "" );
 		renderAndExpect(
 				group,
 				"<div class='form-group'>" +
