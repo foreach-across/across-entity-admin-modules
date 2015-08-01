@@ -76,7 +76,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row element ) {
 			if ( builderContext instanceof IteratorViewElementBuilderContext ) {
 				boolean even = ( ( (IteratorViewElementBuilderContext) builderContext ).getIndex() + 1 ) % 2 == 0;
-				element.setAttribute( "class", even ? "even" : "odd" );
+				element.addCssClass( even ? "even" : "odd" );
 			}
 		}
 	};
