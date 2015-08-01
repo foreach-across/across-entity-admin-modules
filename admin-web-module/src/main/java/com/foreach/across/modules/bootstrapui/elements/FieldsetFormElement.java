@@ -15,12 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.core.support.SingletonIterator;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import org.springframework.util.CompositeIterator;
 
-import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -45,7 +45,7 @@ public class FieldsetFormElement extends AbstractNodeViewElement
 	}
 
 	public String getFieldsetName() {
-		return getAttribute( "name" );
+		return getAttribute( "name", String.class );
 	}
 
 	public void setFieldsetName( String name ) {
@@ -72,7 +72,7 @@ public class FieldsetFormElement extends AbstractNodeViewElement
 	}
 
 	public String getFormId() {
-		return getAttribute( "form" );
+		return getAttribute( "form", String.class );
 	}
 
 	public void setFormId( String formId ) {
@@ -102,7 +102,7 @@ public class FieldsetFormElement extends AbstractNodeViewElement
 		}
 
 		CompositeIterator<ViewElement> elements = new CompositeIterator<>();
-		elements.add( Collections.singleton( (ViewElement) legend ).iterator() );
+		elements.add( new SingletonIterator<>( legend ) );
 		elements.add( super.iterator() );
 
 		return elements;

@@ -98,12 +98,4 @@ public class FormGroupElement extends NodeViewElementSupport
 	public void setRequired( boolean required ) {
 		this.required = required;
 	}
-
-	private <V extends ViewElement> V returnIfType( ViewElement element, Class<V> elementType ) {
-		if ( !elementType.isInstance( element ) ) {
-			return null;
-		}
-
-		return (V) element;
-	}
 }

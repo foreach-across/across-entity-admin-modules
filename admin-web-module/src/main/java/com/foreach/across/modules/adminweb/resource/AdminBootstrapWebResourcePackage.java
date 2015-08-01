@@ -48,14 +48,26 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
                                                              WebResource.VIEWS ),
                                             new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
                                                              "/js/adminweb/ie10-viewport-bug-workaround.js",
-                                                             WebResource.VIEWS )
-			                 )
+                                                             WebResource.VIEWS ),
+                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-momentjs",
+                                                             "//cdn.jsdelivr.net/webjars/momentjs/2.10.6/moment.js",
+                                                             WebResource.VIEWS ),
+                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-datetimepicker",
+                                                             "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.min.js",
+                                                             WebResource.VIEWS ),
+                                            new WebResource( WebResource.CSS, NAME + "-datetimepicker-css",
+                                                             "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.css",
+                                                             WebResource.EXTERNAL )
+			                                )
 			);
 		}
 		else {
 			setWebResources( Arrays.asList( new WebResource( WebResource.CSS, NAME,
 			                                                 "/css/adminweb/fe_bootstrap-1.0.css",
 			                                                 WebResource.VIEWS ),
+			                                new WebResource( WebResource.CSS, NAME + "-datetimepicker-css",
+			                                                 "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.css",
+			                                                 WebResource.EXTERNAL ),
 //			                                new WebResource( WebResource.CSS, NAME + "-theme",
 //			                                                 "//netdna.bootstrapcdn.com/bootstrap/" + version + "/css/bootstrap-theme.css",
 //			                                                 WebResource.EXTERNAL ),
@@ -67,10 +79,17 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
                                                              WebResource.VIEWS ),
                                             new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
                                                              "/js/adminweb/ie10-viewport-bug-workaround.js",
-                                                             WebResource.VIEWS )
+                                                             WebResource.VIEWS ),
+                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-momentjs",
+                                                             "//cdn.jsdelivr.net/webjars/momentjs/2.10.6/moment.js",
+                                                             WebResource.EXTERNAL ),
+                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-datetimepicker",
+                                                             "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.min.js",
+                                                             WebResource.EXTERNAL )
 			                 )
 			);
 		}
+
 	}
 
 	@Override

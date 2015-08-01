@@ -54,7 +54,7 @@ public class FormViewElement extends NodeViewElementSupport
 	}
 
 	/**
-	 * Set the attribute name of the command object that this form is for.  All form group
+	 * Set the attribute name of the command object that this form is for.  All form groups
 	 * within this form will have the control names prefixed and field errors bound.
 	 *
 	 * @param commandAttribute instance
@@ -88,7 +88,7 @@ public class FormViewElement extends NodeViewElementSupport
 	}
 
 	public String getAction() {
-		return getAttribute( "action" );
+		return getAttribute( "action", String.class );
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class FormViewElement extends NodeViewElementSupport
 	 * @return name attribute of the form
 	 */
 	public String getFormName() {
-		return getAttribute( "name" );
+		return getAttribute( "name", String.class );
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class FormViewElement extends NodeViewElementSupport
 	}
 
 	public String getEncType() {
-		return getAttribute( "enctype" );
+		return getAttribute( "enctype", String.class );
 	}
 
 	public void setAcceptCharSet( String charSet ) {
@@ -134,7 +134,7 @@ public class FormViewElement extends NodeViewElementSupport
 	}
 
 	public String getAcceptCharSet() {
-		return getAttribute( "accept-charset" );
+		return getAttribute( "accept-charset", String.class );
 	}
 
 	public void setAutoComplete( boolean autoComplete ) {
