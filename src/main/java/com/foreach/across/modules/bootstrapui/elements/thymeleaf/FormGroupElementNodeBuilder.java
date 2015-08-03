@@ -27,6 +27,7 @@ import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.spring4.expression.Fields;
 import org.thymeleaf.spring4.expression.SpelVariableExpressionEvaluator;
+import org.thymeleaf.spring4.naming.SpringContextVariableNames;
 
 import java.util.Collections;
 import java.util.List;
@@ -89,7 +90,7 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 
 		Element controlParent = node;
 
-		if( layout.getType() == FormLayout.Type.HORIZONTAL ) {
+		if ( layout.getType() == FormLayout.Type.HORIZONTAL ) {
 			controlParent = createElement( "div" );
 			node.addChild( controlParent );
 			attribute( controlParent, "class", layout.getGrid().get( 1 ).toString() );
@@ -176,6 +177,22 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 	}
 
 	private void addFieldErrors( Element node, String controlName, Arguments arguments ) {
+		if ( arguments.hasLocalVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION ) ) {
+			Fields fields = (Fields) arguments.getExpressionObjects()
+			                                  .get( SpelVariableExpressionEvaluator.FIELDS_EVALUATION_VARIABLE_NAME );
+
+			if ( fields != null && fields.hasErrors( controlName ) ) {
+				attributeAppend( node, "class", "has-error" );
+
+				Element errors = new Element( "div" );
+				errors.setAttribute( "class", "small text-danger" );
+				errors.addChild( new Text( "" + StringUtils.join( fields.errors( controlName ), " " ) ) );
+
+				node.addChild( errors );
+			}
+		}
+
+		/*
 		if ( arguments.hasLocalVariable( FormViewElementNodeBuilder.VAR_CURRENT_BOOTSTRAP_FORM ) ) {
 			FormViewElement form = (FormViewElement) arguments.getLocalVariable(
 					FormViewElementNodeBuilder.VAR_CURRENT_BOOTSTRAP_FORM
@@ -197,6 +214,7 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 				}
 			}
 		}
+		*/
 	}
 
 	private Element helpElement( List<Node> helpNodes ) {
