@@ -67,9 +67,10 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 		}
 
 		ViewElement label = group.getLabel();
+		Element labelElement = null;
 		if ( label != null ) {
 			List<Node> labelNodes = viewElementNodeFactory.buildNodes( label, arguments );
-			Element labelElement = labelElement( labelNodes );
+			labelElement = labelElement( labelNodes );
 
 			if ( labelElement != null ) {
 				if ( group.isRequired() ) {
@@ -94,6 +95,10 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 			controlParent = createElement( "div" );
 			node.addChild( controlParent );
 			attribute( controlParent, "class", layout.getGrid().get( 1 ).toString() );
+
+			if ( labelElement == null ) {
+				attributeAppend( controlParent, "class", layout.getGrid().get( 0 ).asOffset().toString() );
+			}
 		}
 
 		ViewElement helpBlock = group.getHelpBlock();
@@ -191,30 +196,6 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 				node.addChild( errors );
 			}
 		}
-
-		/*
-		if ( arguments.hasLocalVariable( FormViewElementNodeBuilder.VAR_CURRENT_BOOTSTRAP_FORM ) ) {
-			FormViewElement form = (FormViewElement) arguments.getLocalVariable(
-					FormViewElementNodeBuilder.VAR_CURRENT_BOOTSTRAP_FORM
-			);
-
-			if ( form.getCommandAttribute() != null ) {
-				Fields fields = (Fields) arguments.getExpressionObjects()
-				                                  .get( SpelVariableExpressionEvaluator.FIELDS_EVALUATION_VARIABLE_NAME );
-
-				String fullControlName = form.getCommandAttribute() + "." + controlName;
-				if ( fields != null && fields.hasErrors( fullControlName ) ) {
-					attributeAppend( node, "class", "has-error" );
-
-					Element errors = new Element( "div" );
-					errors.setAttribute( "class", "small text-danger" );
-					errors.addChild( new Text( "" + StringUtils.join( fields.errors( fullControlName ), " " ) ) );
-
-					node.addChild( errors );
-				}
-			}
-		}
-		*/
 	}
 
 	private Element helpElement( List<Node> helpNodes ) {

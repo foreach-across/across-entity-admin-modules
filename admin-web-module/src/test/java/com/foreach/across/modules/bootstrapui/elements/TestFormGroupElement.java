@@ -383,6 +383,28 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void horizontalFormLayoutWithoutLabel() {
+		CheckboxFormElement checkbox = new CheckboxFormElement();
+		checkbox.setText( "checkbox value" );
+
+		group = new FormGroupElement();
+		group.setFormLayout( FormLayout.horizontal( 2 ) );
+		group.setControl( checkbox );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group checkbox'>" +
+						"<div class='col-md-10 col-md-offset-2'>" +
+						"<div class='checkbox'><label>" +
+						"<input type='checkbox' />checkbox value" +
+						"</label>" +
+						"</div>" +
+						"</div>" +
+						"</div>"
+		);
+	}
+
+	@Test
 	public void errorFromBoundObject() {
 		ContainerViewElement container = new ContainerViewElement();
 		container.setCustomTemplate( "th/test/formObject" );

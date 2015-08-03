@@ -186,6 +186,21 @@ public class Grid extends ArrayList<Grid.Position>
 			super( 4 );
 		}
 
+		/**
+		 * Convert all column positions to an offset. Ignores all others.
+		 */
+		public Position asOffset() {
+			Position position = new Position();
+
+			for ( DeviceGridLayout layout : this ) {
+				if ( layout instanceof Column ) {
+					position.add( ( (Column) layout ).asOffset() );
+				}
+			}
+
+			return position;
+		}
+
 		@Override
 		public String toString() {
 			List<String> strings = new ArrayList<>( size() );
