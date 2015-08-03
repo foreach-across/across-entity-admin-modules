@@ -64,24 +64,32 @@ public class FormViewElementNodeBuilder extends NestableNodeBuilderSupport<FormV
 	}
 
 	private Arguments buildFormArguments( FormViewElement form, Arguments original ) {
-		Configuration configuration = original.getConfiguration();
-		IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser( configuration );
-
-		VariableExpression varExpression =
-				(VariableExpression) expressionParser.parseExpression(
-						original.getConfiguration(), original, commandAttributeName( form.getCommandAttribute() )
-				);
+		String commandAttribute = form.getCommandAttribute();
 
 		Map<String, Object> newVariables = new HashMap<>();
 		newVariables.put( VAR_CURRENT_BOOTSTRAP_FORM, form );
-		newVariables.put( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION, varExpression );
+
+		if ( commandAttribute != null ) {
+			Configuration configuration = original.getConfiguration();
+			IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser( configuration );
+
+			VariableExpression varExpression =
+					(VariableExpression) expressionParser.parseExpression(
+							original.getConfiguration(), original, commandAttributeName( commandAttribute )
+					);
+
+			newVariables.put( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION, varExpression );
+		}
 
 		Arguments newArguments = original.addLocalVariables( newVariables );
 		newArguments.getExpressionObjects().putAll( original.getExpressionObjects() );
-		newArguments.getExpressionObjects().putAll(
-				SpelVariableExpressionEvaluator.INSTANCE
-						.computeExpressionObjects( newArguments.getConfiguration(), newArguments )
-		);
+
+		if ( commandAttribute != null ) {
+			newArguments.getExpressionObjects().putAll(
+					SpelVariableExpressionEvaluator.INSTANCE
+							.computeExpressionObjects( newArguments.getConfiguration(), newArguments )
+			);
+		}
 
 		return newArguments;
 	}

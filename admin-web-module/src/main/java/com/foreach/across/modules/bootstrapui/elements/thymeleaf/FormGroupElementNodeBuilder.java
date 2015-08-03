@@ -182,7 +182,8 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 	}
 
 	private void addFieldErrors( Element node, String controlName, Arguments arguments ) {
-		if ( arguments.hasLocalVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION ) ) {
+		if ( controlName != null
+				&& arguments.hasLocalVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION ) ) {
 			Fields fields = (Fields) arguments.getExpressionObjects()
 			                                  .get( SpelVariableExpressionEvaluator.FIELDS_EVALUATION_VARIABLE_NAME );
 
