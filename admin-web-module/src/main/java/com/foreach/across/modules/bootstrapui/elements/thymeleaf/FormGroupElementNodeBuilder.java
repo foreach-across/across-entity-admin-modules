@@ -16,6 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
@@ -96,13 +97,14 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 		}
 
 		ViewElement control = group.getControl();
+		FormControlElementSupport formControl = BootstrapElementUtils.getFormControl( group );
 		if ( control != null ) {
 			List<Node> controlNodes = viewElementNodeFactory.buildNodes( control, arguments );
 
 			Element controlElement = controlElement( controlNodes );
 
 			if ( controlElement != null ) {
-				if ( control instanceof TextboxFormElement
+				if ( formControl instanceof TextboxFormElement
 						&& layout.getType() == FormLayout.Type.INLINE
 						&& !layout.isShowLabels() ) {
 					if ( label instanceof LabelFormElement ) {
@@ -207,14 +209,24 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 
 	private Element controlElement( List<Node> controlNodes ) {
 		if ( !controlNodes.isEmpty() ) {
-			Node node = controlNodes.get( 0 );
-			if ( node instanceof Element ) {
-				Element candidate = (Element) node;
+			for ( Node node : controlNodes ) {
+				if ( node instanceof Element ) {
+					Element candidate = (Element) node;
 
-				if ( StringUtils.equals( candidate.getNormalizedName(), "input" )
-						|| StringUtils.equals( candidate.getNormalizedName(), "textarea" )
-						|| StringUtils.equals( candidate.getNormalizedName(), "select" ) ) {
-					return candidate;
+					if ( StringUtils.equals( candidate.getNormalizedName(), "input" )
+							|| StringUtils.equals( candidate.getNormalizedName(), "textarea" )
+							|| StringUtils.equals( candidate.getNormalizedName(), "select" ) ) {
+						return candidate;
+					}
+					else {
+						if ( candidate.hasChildren() ) {
+							candidate = controlElement( candidate.getChildren() );
+
+							if ( candidate != null ) {
+								return candidate;
+							}
+						}
+					}
 				}
 			}
 		}

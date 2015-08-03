@@ -43,7 +43,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void inputGroupWithOnlyControl() {
-		inputGroup.add( new TextboxFormElement() );
+		inputGroup.setControl( new TextboxFormElement() );
 
 		renderAndExpect(
 				inputGroup,
@@ -56,7 +56,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void simpleAddonBefore() {
 		inputGroup.setAddonBefore( new GlyphIcon( GlyphIcon.CALENDAR ) );
-		inputGroup.add( new TextboxFormElement() );
+		inputGroup.setControl( new TextboxFormElement() );
 
 		assertNull( inputGroup.getAddonAfter() );
 		assertNotNull( inputGroup.getAddonBefore() );
@@ -77,7 +77,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void simpleAddonAfter() {
 		inputGroup.setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
-		inputGroup.add( new TextboxFormElement() );
+		inputGroup.setControl( new TextboxFormElement() );
 
 		assertNull( inputGroup.getAddonBefore() );
 		assertNotNull( inputGroup.getAddonAfter() );
@@ -99,7 +99,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 	public void buttonBefore() {
 		inputGroup.setAddonBefore( new ButtonViewElement() );
 		inputGroup.setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
-		inputGroup.add( new TextboxFormElement() );
+		inputGroup.setControl( new TextboxFormElement() );
 
 		renderAndExpect(
 				inputGroup,
@@ -119,7 +119,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 	public void buttonAfter() {
 		inputGroup.setAddonAfter( new ButtonViewElement() );
 		inputGroup.setAddonBefore( new GlyphIcon( GlyphIcon.CALENDAR ) );
-		inputGroup.add( new TextboxFormElement() );
+		inputGroup.setControl( new TextboxFormElement() );
 
 		renderAndExpect(
 				inputGroup,

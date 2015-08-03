@@ -61,4 +61,8 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 	OptionFormElementBuilder<RadioFormElement> radio();
 
 	ColumnViewElementBuilder column( Grid.DeviceGridLayout... layouts );
+
+	InputGroupFormElementBuilder inputGroup();
+
+	InputGroupFormElementBuilder inputGroup( ViewElementBuilder control );
 }
