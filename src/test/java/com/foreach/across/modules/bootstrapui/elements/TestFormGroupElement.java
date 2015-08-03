@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Before;
@@ -25,7 +26,11 @@ import org.junit.Test;
  */
 public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 {
-	private FormGroupElement group;
+	private static final String INPUT_GROUP_ADDON = "<span class='input-group-addon'>" +
+			"<span aria-hidden='true' class='glyphicon glyphicon-alert'></span>" +
+			"</span>";
+
+	private FormGroupElement group, groupWithInputGroup;
 
 	@Before
 	public void before() {
@@ -40,6 +45,15 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 		group.setLabel( label );
 		group.setControl( textbox );
+
+		groupWithInputGroup = new FormGroupElement();
+
+		InputGroupFormElement inputGroupFormElement = new InputGroupFormElement();
+		inputGroupFormElement.setControl( textbox );
+		inputGroupFormElement.setAddonBefore( new GlyphIcon( GlyphIcon.ALERT ) );
+
+		groupWithInputGroup.setLabel( label );
+		groupWithInputGroup.setControl( inputGroupFormElement );
 	}
 
 	@Test
@@ -49,6 +63,20 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void formGroupWithInputGroup() {
+		renderAndExpect(
+				groupWithInputGroup,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<div class='input-group'>" +
+						INPUT_GROUP_ADDON +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>" +
 						"</div>"
 		);
 	}
@@ -67,6 +95,22 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void requiredGroupWithInputGroup() {
+		groupWithInputGroup.setRequired( true );
+
+		renderAndExpect(
+				groupWithInputGroup,
+				"<div class='form-group required'>" +
+						"<label for='control' class='control-label'>title<sup class='required'>*</sup></label>" +
+						"<div class='input-group'>" +
+						INPUT_GROUP_ADDON +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>" +
+						"</div>"
+		);
+	}
+
+	@Test
 	public void customTagAppended() {
 		NodeViewElement div = NodeViewElement.forTag( "div" );
 		div.setAttribute( "class", "some-class" );
@@ -79,6 +123,20 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<div class='some-class'>appended div</div>" +
+						"</div>"
+		);
+
+		groupWithInputGroup.add( div );
+
+		renderAndExpect(
+				groupWithInputGroup,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<div class='input-group'>" +
+						INPUT_GROUP_ADDON +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>" +
 						"<div class='some-class'>appended div</div>" +
 						"</div>"
 		);
@@ -125,6 +183,34 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<select class='form-control' name='list' id='list' aria-describedby='list.help' />" +
 						"</div>"
 		);
+
+		groupWithInputGroup.setHelpBlock( help );
+
+		renderAndExpect(
+				groupWithInputGroup,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<div class='input-group'>" +
+						INPUT_GROUP_ADDON +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"</div>" +
+						"<p class='help-block' id='control.help'>example help text</p>" +
+						"</div>"
+		);
+
+		group.setRenderHelpBlockBeforeControl( true );
+
+		renderAndExpect(
+				groupWithInputGroup,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<p class='help-block' id='control.help'>example help text</p>" +
+						"<div class='input-group'>" +
+						INPUT_GROUP_ADDON +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"</div>" +
+						"</div>"
+		);
 	}
 
 	@Test
@@ -136,6 +222,19 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>"
+		);
+
+		groupWithInputGroup.setFormLayout( FormLayout.inline( true ) );
+
+		renderAndExpect(
+				groupWithInputGroup,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<div class='input-group'>" +
+						INPUT_GROUP_ADDON +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>" +
 						"</div>"
 		);
 	}
@@ -167,6 +266,49 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group'>" +
 						"<label for='control' class='sr-only'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' placeholder='' />" +
+						"</div>"
+		);
+
+		groupWithInputGroup.setFormLayout( FormLayout.inline( false ) );
+		groupWithInputGroup.getControl( InputGroupFormElement.class )
+		                   .getControl( TextboxFormElement.class )
+		                   .setPlaceholder( null );
+		renderAndExpect(
+				groupWithInputGroup,
+				"<div class='form-group'>" +
+						"<label for='control' class='sr-only'>title</label>" +
+						"<div class='input-group'>" +
+						INPUT_GROUP_ADDON +
+						"<input type='text' class='form-control' name='control' id='control' placeholder='title' />" +
+						"</div>" +
+						"</div>"
+		);
+
+		BootstrapElementUtils.getFormControl( groupWithInputGroup, TextboxFormElement.class )
+		                     .setPlaceholder( "some placeholder" );
+
+		renderAndExpect(
+				groupWithInputGroup,
+				"<div class='form-group'>" +
+						"<label for='control' class='sr-only'>title</label>" +
+						"<div class='input-group'>" +
+						INPUT_GROUP_ADDON +
+						"<input type='text' class='form-control' name='control' id='control' placeholder='some placeholder' />" +
+						"</div>" +
+						"</div>"
+		);
+
+		BootstrapElementUtils.getFormControl( groupWithInputGroup, TextboxFormElement.class )
+		                     .setPlaceholder( "" );
+
+		renderAndExpect(
+				groupWithInputGroup,
+				"<div class='form-group'>" +
+						"<label for='control' class='sr-only'>title</label>" +
+						"<div class='input-group'>" +
+						INPUT_GROUP_ADDON +
+						"<input type='text' class='form-control' name='control' id='control' placeholder='' />" +
+						"</div>" +
 						"</div>"
 		);
 	}

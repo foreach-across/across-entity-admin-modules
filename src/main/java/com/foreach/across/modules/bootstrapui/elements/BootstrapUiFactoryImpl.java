@@ -121,4 +121,15 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	public ColumnViewElementBuilder column( Grid.DeviceGridLayout... layouts ) {
 		return new ColumnViewElementBuilder().layout( layouts );
 	}
+
+	@Override
+	public InputGroupFormElementBuilder inputGroup( ViewElementBuilder control ) {
+		return inputGroup().control( control );
+	}
+
+	@Override
+	public InputGroupFormElementBuilder inputGroup() {
+		return new InputGroupFormElementBuilder();
+	}
+
 }

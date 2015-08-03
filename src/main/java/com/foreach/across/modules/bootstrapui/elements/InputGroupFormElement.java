@@ -26,21 +26,12 @@ import java.util.Iterator;
  * <p>Represents a bootstrap input group, wrapping a control and allowing left or right addon.
  * The main control should be added as a child to the input group, the addons can be set through properties
  * and the corresponding addon class ({@code input-group-addon} of {@code input-group-btn} will be set.</p>
- * <p>An input group is considered empty as long as it does not have a control (at least one child).</p>
  *
  * @author Arne Vandamme
  */
 public class InputGroupFormElement extends AbstractNodeViewElement
 {
-	public static class Addon extends AbstractNodeViewElement
-	{
-		public Addon( boolean forButton ) {
-			super( "span" );
-			addCssClass( forButton ? "input-group-btn" : "input-group-addon" );
-		}
-	}
-
-	private ViewElement addonBefore, addonAfter;
+	private ViewElement addonBefore, addonAfter, control;
 
 	public InputGroupFormElement() {
 		super( "div" );
@@ -51,35 +42,50 @@ public class InputGroupFormElement extends AbstractNodeViewElement
 		return addonBefore;
 	}
 
-	public <V extends ViewElement> V getAddonBefore( Class<V> addonType ) {
-		return returnIfType( addonBefore, addonType );
-	}
-
 	public void setAddonBefore( ViewElement addonBefore ) {
 		this.addonBefore = addonBefore;
+	}
+
+	public <V extends ViewElement> V getAddonBefore( Class<V> addonType ) {
+		return returnIfType( addonBefore, addonType );
 	}
 
 	public ViewElement getAddonAfter() {
 		return addonAfter;
 	}
 
-	public <V extends ViewElement> V getAddonAfter( Class<V> addonType ) {
-		return returnIfType( addonAfter, addonType );
-	}
-
 	public void setAddonAfter( ViewElement addonAfter ) {
 		this.addonAfter = addonAfter;
 	}
 
+	public <V extends ViewElement> V getAddonAfter( Class<V> addonType ) {
+		return returnIfType( addonAfter, addonType );
+	}
+
+	public ViewElement getControl() {
+		return control;
+	}
+
+	public void setControl( ViewElement control ) {
+		this.control = control;
+	}
+
+	public <V extends ViewElement> V getControl( Class<V> controlType ) {
+		return returnIfType( control, controlType );
+	}
+
 	@Override
 	public Iterator<ViewElement> iterator() {
-		if ( addonBefore == null && addonAfter == null ) {
+		if ( control == null && addonBefore == null && addonAfter == null ) {
 			return super.iterator();
 		}
 
 		CompositeIterator<ViewElement> elements = new CompositeIterator<>();
 		if ( addonBefore != null ) {
 			elements.add( new SingletonIterator<>( createAddon( addonBefore ) ) );
+		}
+		if ( control != null ) {
+			elements.add( new SingletonIterator<>( control ) );
 		}
 		elements.add( super.iterator() );
 		if ( addonAfter != null ) {
@@ -89,9 +95,30 @@ public class InputGroupFormElement extends AbstractNodeViewElement
 		return elements;
 	}
 
+	@Override
+	public boolean isEmpty() {
+		return super.isEmpty() && addonBefore == null && addonAfter == null && control == null;
+	}
+
+	@Override
+	public int size() {
+		return super.size()
+				+ ( addonBefore != null ? 1 : 0 )
+				+ ( control != null ? 1 : 0 )
+				+ ( addonAfter != null ? 1 : 0 );
+	}
+
 	private ViewElement createAddon( ViewElement child ) {
 		Addon addon = new Addon( child instanceof ButtonViewElement );
 		addon.add( child );
 		return addon;
+	}
+
+	public static class Addon extends AbstractNodeViewElement
+	{
+		public Addon( boolean forButton ) {
+			super( "span" );
+			addCssClass( forButton ? "input-group-btn" : "input-group-addon" );
+		}
 	}
 }
