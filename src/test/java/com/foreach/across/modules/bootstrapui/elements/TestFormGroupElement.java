@@ -16,10 +16,14 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 
 /**
  * @author Arne Vandamme
@@ -377,5 +381,46 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"</div>" +
 						"</div>"
 		);
+	}
+
+	@Test
+	@Ignore
+	public void feedback() {
+		ContainerViewElement container = new ContainerViewElement();
+		container.setCustomTemplate( "th/test/formObject" );
+
+		renderAndExpect(
+				container,
+				model -> {
+					TestClass target = new TestClass( "test value" );
+					BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+					errors.rejectValue( "control", "broken" );
+
+					model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
+					model.addAttribute( "item", target );
+					model.addAttribute( "formGroup", group );
+				},
+				"<div class='form-group has-error'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>"
+		);
+	}
+
+	public static class TestClass
+	{
+		private String control;
+
+		public TestClass( String control ) {
+			this.control = control;
+		}
+
+		public String getControl() {
+			return control;
+		}
+
+		public void setControl( String control ) {
+			this.control = control;
+		}
 	}
 }
