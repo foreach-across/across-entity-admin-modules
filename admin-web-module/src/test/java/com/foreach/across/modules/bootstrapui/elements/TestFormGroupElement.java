@@ -20,7 +20,6 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -384,8 +383,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
-	@Ignore
-	public void feedback() {
+	public void errorFromBoundObject() {
 		ContainerViewElement container = new ContainerViewElement();
 		container.setCustomTemplate( "th/test/formObject" );
 
@@ -394,7 +392,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				model -> {
 					TestClass target = new TestClass( "test value" );
 					BindingResult errors = new BeanPropertyBindingResult( target, "item" );
-					errors.rejectValue( "control", "broken" );
+					errors.rejectValue( "control", "broken", "broken" );
 
 					model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
 					model.addAttribute( "item", target );
@@ -403,7 +401,35 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<div class='small text-danger'>broken</div>" +
 						"</div>"
+		);
+	}
+
+	@Test
+	public void errorFromFormCommand() {
+		TestClass target = new TestClass( "test value" );
+
+		FormViewElement form = new FormViewElement();
+		form.setCommandAttribute( "item" );
+		form.add( group );
+
+		renderAndExpect(
+				form,
+				model -> {
+					BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+					errors.rejectValue( "control", "broken", "broken" );
+
+					model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
+					model.addAttribute( "item", target );
+				},
+				"<form role='form' method='post'>" +
+						"<div class='form-group has-error'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<div class='small text-danger'>broken</div>" +
+						"</div>" +
+						"</form>"
 		);
 	}
 

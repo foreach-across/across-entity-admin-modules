@@ -56,6 +56,7 @@ public class FormViewElement extends NodeViewElementSupport
 	/**
 	 * Set the attribute name of the command object that this form is for.  All form groups
 	 * within this form will have the control names prefixed and field errors bound.
+	 * This is basically the equivalent of putting a {@code th:object} attribute on an element in Thymeleaf.
 	 *
 	 * @param commandAttribute instance
 	 */
