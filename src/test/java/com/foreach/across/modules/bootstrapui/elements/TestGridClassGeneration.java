@@ -47,6 +47,15 @@ public class TestGridClassGeneration
 	}
 
 	@Test
+	public void positionAsOffset() {
+		Grid.Position position = Grid.position(
+				Device.MD.width( 2 ), Device.SM.hidden(), Device.LARGE.width( 6 ).asPull(), Device.XS.width( 5 )
+		);
+
+		assertEquals( "col-md-offset-2 col-xs-offset-5", position.asOffset().toString() );
+	}
+
+	@Test
 	public void createGrid() {
 		Grid grid = Grid.create(
 				Grid.position( Device.MD.hidden(), Device.LG.width( Width.QUARTER ).asOffset() ),
