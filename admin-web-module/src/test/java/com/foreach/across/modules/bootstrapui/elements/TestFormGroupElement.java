@@ -342,4 +342,40 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"</div>"
 		);
 	}
+
+	@Test
+	public void horizontalFormLayout() {
+		NodeViewElement help = NodeViewElement.forTag( "p" );
+		help.setAttribute( "class", "help-block" );
+		help.add( new TextViewElement( "example help text" ) );
+
+		group.setFormLayout( FormLayout.horizontal( 2 ) );
+		group.setHelpBlock( help );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label col-md-2'>title</label>" +
+						"<div class='col-md-10'>" +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"<p class='help-block' id='control.help'>example help text</p>" +
+						"</div>" +
+						"</div>"
+		);
+
+		groupWithInputGroup.setFormLayout( FormLayout.horizontal( 6 ) );
+
+		renderAndExpect(
+				groupWithInputGroup,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label col-md-6'>title</label>" +
+						"<div class='col-md-6'>" +
+						"<div class='input-group'>" +
+						INPUT_GROUP_ADDON +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>" +
+						"</div>" +
+						"</div>"
+		);
+	}
 }

@@ -59,6 +59,11 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 		if ( layout == null ) {
 			layout = FormLayout.normal();
 		}
+		else if ( layout.getType() == FormLayout.Type.HORIZONTAL ) {
+			if ( layout.getGrid().size() != 2 ) {
+				throw new IllegalStateException( "Horizontal form requires a grid layout of 2 positions." );
+			}
+		}
 
 		ViewElement label = group.getLabel();
 		if ( label != null ) {
@@ -72,11 +77,22 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 				if ( layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
 					labelElement.setAttribute( "class", "sr-only" );
 				}
+				else if ( layout.getType() == FormLayout.Type.HORIZONTAL ) {
+					attributeAppend( labelElement, "class", layout.getGrid().get( 0 ).toString() );
+				}
 			}
 
 			for ( Node childNode : labelNodes ) {
 				node.addChild( childNode );
 			}
+		}
+
+		Element controlParent = node;
+
+		if( layout.getType() == FormLayout.Type.HORIZONTAL ) {
+			controlParent = createElement( "div" );
+			node.addChild( controlParent );
+			attribute( controlParent, "class", layout.getGrid().get( 1 ).toString() );
 		}
 
 		ViewElement helpBlock = group.getHelpBlock();
@@ -88,7 +104,7 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 
 			if ( group.isRenderHelpBlockBeforeControl() ) {
 				for ( Node helpNode : helpNodes ) {
-					node.addChild( helpNode );
+					controlParent.addChild( helpNode );
 				}
 			}
 		}
@@ -134,16 +150,16 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 			}
 
 			for ( Node childNode : controlNodes ) {
-				node.addChild( childNode );
+				controlParent.addChild( childNode );
 			}
 
-			if ( control instanceof FormControlElementSupport ) {
-				addFieldErrors( node, ( (FormControlElementSupport) control ).getControlName(), arguments );
+			if ( formControl != null ) {
+				addFieldErrors( node, formControl.getControlName(), arguments );
 			}
 
 			if ( !group.isRenderHelpBlockBeforeControl() ) {
 				for ( Node helpNode : helpNodes ) {
-					node.addChild( helpNode );
+					controlParent.addChild( helpNode );
 				}
 			}
 		}
