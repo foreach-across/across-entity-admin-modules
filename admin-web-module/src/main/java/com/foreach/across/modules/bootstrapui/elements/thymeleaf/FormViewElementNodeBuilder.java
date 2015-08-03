@@ -49,9 +49,7 @@ public class FormViewElementNodeBuilder extends NestableNodeBuilderSupport<FormV
 		Arguments newArguments = buildFormArguments( form, arguments );
 
 		for ( ViewElement child : form ) {
-			for ( Node childNode : viewElementNodeFactory.buildNodes( child, newArguments ) ) {
-				node.addChild( childNode );
-			}
+			viewElementNodeFactory.buildNodes( child, newArguments ).forEach( node::addChild );
 		}
 
 		return Collections.singletonList( (Node) node );
