@@ -455,6 +455,34 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		);
 	}
 
+	@Test
+	public void errorOnHorizontalForm() {
+		ContainerViewElement container = new ContainerViewElement();
+		container.setCustomTemplate( "th/test/formObject" );
+
+		group.setFormLayout( FormLayout.horizontal( 2 ) );
+
+		renderAndExpect(
+				container,
+				model -> {
+					TestClass target = new TestClass( "test value" );
+					BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+					errors.rejectValue( "control", "broken", "broken" );
+
+					model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
+					model.addAttribute( "item", target );
+					model.addAttribute( "formGroup", group );
+				},
+				"<div class='form-group has-error'>" +
+						"<label for='control' class='control-label col-md-2'>title</label>" +
+						"<div class='col-md-10'>" +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<div class='small text-danger'>broken</div>" +
+						"</div>" +
+						"</div>"
+		);
+	}
+
 	public static class TestClass
 	{
 		private String control;

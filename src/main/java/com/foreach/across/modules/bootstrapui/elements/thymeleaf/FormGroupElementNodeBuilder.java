@@ -160,7 +160,7 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 			}
 
 			if ( formControl != null ) {
-				addFieldErrors( node, formControl.getControlName(), arguments );
+				addFieldErrors( node, controlParent, formControl.getControlName(), arguments );
 			}
 
 			if ( !group.isRenderHelpBlockBeforeControl() ) {
@@ -181,20 +181,20 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 		labelElement.addChild( indicator );
 	}
 
-	private void addFieldErrors( Element node, String controlName, Arguments arguments ) {
+	private void addFieldErrors( Element groupNode, Element controlParent, String controlName, Arguments arguments ) {
 		if ( controlName != null
 				&& arguments.hasLocalVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION ) ) {
 			Fields fields = (Fields) arguments.getExpressionObjects()
 			                                  .get( SpelVariableExpressionEvaluator.FIELDS_EVALUATION_VARIABLE_NAME );
 
 			if ( fields != null && fields.hasErrors( controlName ) ) {
-				attributeAppend( node, "class", "has-error" );
+				attributeAppend( groupNode, "class", "has-error" );
 
 				Element errors = new Element( "div" );
 				errors.setAttribute( "class", "small text-danger" );
 				errors.addChild( new Text( "" + StringUtils.join( fields.errors( controlName ), " " ) ) );
 
-				node.addChild( errors );
+				controlParent.addChild( errors );
 			}
 		}
 	}
