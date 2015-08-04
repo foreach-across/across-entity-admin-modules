@@ -87,4 +87,9 @@ public class BootstrapUiConfiguration
 	public FieldsetFormElementBuilderFactory fieldsetFormElementBuilderFactory() {
 		return new FieldsetFormElementBuilderFactory();
 	}
+
+	@Bean
+	public DateTimeFormElementBuilderFactory dateTimeFormElementBuilderFactory() {
+		return new DateTimeFormElementBuilderFactory();
+	}
 }

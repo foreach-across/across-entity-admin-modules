@@ -26,6 +26,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -111,9 +112,9 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 					return BootstrapUiElements.CHECKBOX;
 				}
 
-				/*if ( ClassUtils.isAssignable( Date.class, propertyType ) ) {
-					return BootstrapUiElements.DATE;
-				}*/
+				if ( ClassUtils.isAssignable( Date.class, propertyType ) ) {
+					return BootstrapUiElements.DATETIME;
+				}
 
 				return BootstrapUiElements.TEXTBOX;
 			}

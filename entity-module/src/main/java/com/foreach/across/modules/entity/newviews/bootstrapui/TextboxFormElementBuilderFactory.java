@@ -82,7 +82,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		                  .multiLine( String.class.equals( propertyDescriptor.getPropertyType() ) )
 		                  .postProcessor(
 				                  new EntityPropertyValueTextPostProcessor<TextboxFormElement>( conversionService,
-				                                                                            propertyDescriptor )
+				                                                                                propertyDescriptor )
 		                  )
 		                  .postProcessor( new EntityPropertyControlPostProcessor<TextboxFormElement>() )
 		                  .postProcessor( new TextboxPlaceholderProcessor( propertyDescriptor ) );
@@ -92,7 +92,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	/**
 	 * Resolves placeholder text for a property.
 	 */
-	private class TextboxPlaceholderProcessor implements ViewElementPostProcessor<TextboxFormElement>
+	public static class TextboxPlaceholderProcessor implements ViewElementPostProcessor<TextboxFormElement>
 	{
 		private final EntityPropertyDescriptor propertyDescriptor;
 
