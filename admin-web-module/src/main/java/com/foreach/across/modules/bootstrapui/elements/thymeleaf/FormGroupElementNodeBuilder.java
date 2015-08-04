@@ -187,12 +187,16 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 			Fields fields = (Fields) arguments.getExpressionObjects()
 			                                  .get( SpelVariableExpressionEvaluator.FIELDS_EVALUATION_VARIABLE_NAME );
 
-			if ( fields != null && fields.hasErrors( controlName ) ) {
+			String propertyName = StringUtils.startsWith( controlName, "_" )
+					? StringUtils.substring( controlName, 1 )
+					: controlName;
+
+			if ( fields != null && fields.hasErrors( propertyName ) ) {
 				attributeAppend( groupNode, "class", "has-error" );
 
 				Element errors = new Element( "div" );
 				errors.setAttribute( "class", "small text-danger" );
-				errors.addChild( new Text( "" + StringUtils.join( fields.errors( controlName ), " " ) ) );
+				errors.addChild( new Text( "" + StringUtils.join( fields.errors( propertyName ), " " ) ) );
 
 				controlParent.addChild( errors );
 			}
