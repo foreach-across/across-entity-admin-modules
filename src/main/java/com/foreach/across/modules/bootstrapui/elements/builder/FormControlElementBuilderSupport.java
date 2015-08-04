@@ -15,11 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
+import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
 
-public abstract class FormControlElementBuilderSupport<T extends FormControlElementSupport, SELF extends FormControlElementBuilderSupport<T, SELF>>
+public abstract class FormControlElementBuilderSupport<T extends NodeViewElementSupport & FormControlElement, SELF extends FormControlElementBuilderSupport<T, SELF>>
 		extends NodeViewElementSupportBuilder<T, SELF>
 {
 	private Boolean disabled, readonly, required;

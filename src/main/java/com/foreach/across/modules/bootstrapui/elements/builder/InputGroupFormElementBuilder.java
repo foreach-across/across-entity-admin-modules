@@ -123,7 +123,7 @@ public class InputGroupFormElementBuilder extends NodeViewElementSupportBuilder<
 
 	@Override
 	protected InputGroupFormElement createElement( ViewElementBuilderContext builderContext ) {
-		InputGroupFormElement group = apply( new InputGroupFormElement(), builderContext );
+		InputGroupFormElement group = apply( create(), builderContext );
 
 		if ( control != null ) {
 			group.setControl( control.get( builderContext ) );
@@ -136,5 +136,9 @@ public class InputGroupFormElementBuilder extends NodeViewElementSupportBuilder<
 		}
 
 		return group;
+	}
+
+	protected InputGroupFormElement create() {
+		return new InputGroupFormElement();
 	}
 }

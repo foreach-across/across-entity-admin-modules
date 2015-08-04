@@ -20,7 +20,7 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 /**
  * @author Arne Vandamme
  */
-public abstract class FormControlElementSupport extends NodeViewElementSupport
+public abstract class FormControlElementSupport extends NodeViewElementSupport implements FormControlElement
 {
 	private boolean disabled, readonly, required;
 	private String controlName;
