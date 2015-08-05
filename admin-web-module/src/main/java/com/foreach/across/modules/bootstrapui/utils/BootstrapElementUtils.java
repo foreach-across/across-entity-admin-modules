@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.utils;
 
-import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
+import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -30,22 +30,22 @@ public final class BootstrapElementUtils
 	}
 
 	/**
-	 * Will get the first {@link FormControlElementSupport} instance.  If the {@link ViewElement} is
-	 * a {@link FormControlElementSupport} it will be returned.  If it is a
+	 * Will get the first {@link FormControlElement} instance.  If the {@link ViewElement} is
+	 * a {@link FormControlElement} it will be returned.  If it is a
 	 * {@link com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement} the input group control will
 	 * be returned instead if it matches.  If the {@link ViewElement} is a
 	 * {@link com.foreach.across.modules.web.ui.ViewElementCollection} then a recursive search will happen
-	 * until the first element extending {@link FormControlElementSupport} is returned.
+	 * until the first element extending {@link FormControlElement} is returned.
 	 *
 	 * @param viewElement instance
 	 * @return form control instance, or {@code null} if not found
 	 */
-	public static FormControlElementSupport getFormControl( ViewElement viewElement ) {
-		return getFormControl( viewElement, FormControlElementSupport.class );
+	public static FormControlElement getFormControl( ViewElement viewElement ) {
+		return getFormControl( viewElement, FormControlElement.class );
 	}
 
 	/**
-	 * Will get the first {@link FormControlElementSupport} instance matching the expected type.
+	 * Will get the first {@link FormControlElement} instance matching the expected type.
 	 * If the {@link ViewElement} is of the expected type it will be returned.  If it isIf it is a
 	 * {@link com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement} the input group control will
 	 * be returned instead if it matches.  If the {@link ViewElement} is a
@@ -56,8 +56,8 @@ public final class BootstrapElementUtils
 	 * @param expectedType the control should have
 	 * @return form control instance, or {@code null} if not found
 	 */
-	public static <V extends FormControlElementSupport> V getFormControl( ViewElement viewElement,
-	                                                                      Class<V> expectedType ) {
+	public static <V extends FormControlElement> V getFormControl( ViewElement viewElement,
+	                                                               Class<V> expectedType ) {
 		ViewElement target = viewElement;
 
 		if ( expectedType.isInstance( viewElement ) ) {
@@ -67,7 +67,7 @@ public final class BootstrapElementUtils
 		V control = null;
 
 		if ( target instanceof FormGroupElement ) {
-			ViewElement candidate =  ( (FormGroupElement) target ).getControl();
+			ViewElement candidate = ( (FormGroupElement) target ).getControl();
 			if ( candidate != null ) {
 				if ( expectedType.isInstance( candidate ) ) {
 					control = (V) candidate;
