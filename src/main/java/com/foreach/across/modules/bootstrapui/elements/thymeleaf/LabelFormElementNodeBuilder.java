@@ -16,8 +16,10 @@
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.thymeleaf.HtmlIdStore;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
@@ -46,7 +48,13 @@ public class LabelFormElementNodeBuilder extends NestableNodeBuilderSupport<Labe
 				return label.getTargetAsId();
 			}
 
-			return HtmlIdStore.fetch( arguments ).retrieveHtmlId( label.getTargetAsElement() );
+			ViewElement target = BootstrapElementUtils.getFormControl( label.getTargetAsElement() );
+
+			if ( target == null ) {
+				target = label.getTargetAsElement();
+			}
+
+			return HtmlIdStore.fetch( arguments ).retrieveHtmlId( target );
 		}
 
 		return null;

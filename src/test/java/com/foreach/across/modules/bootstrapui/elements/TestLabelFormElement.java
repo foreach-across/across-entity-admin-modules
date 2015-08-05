@@ -62,6 +62,24 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void targetInputGroup() {
+		TextboxFormElement textbox = new TextboxFormElement();
+		textbox.setName( "name" );
+
+		InputGroupFormElement inputGroup = new InputGroupFormElement();
+		inputGroup.setControl( textbox );
+
+		LabelFormElement label = new LabelFormElement();
+		label.setTarget( inputGroup );
+		label.setText( "InputGroup title" );
+
+		renderAndExpect(
+				label,
+				"<label for='name' class='control-label'>InputGroup title</label>"
+		);
+	}
+
+	@Test
 	public void targetFormElementRenderedBefore() {
 		TextboxFormElement textbox = new TextboxFormElement();
 		textbox.setName( "name" );

@@ -119,7 +119,7 @@ public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<Form
 		}
 
 		ViewElement control = group.getControl();
-		FormControlElementSupport formControl = BootstrapElementUtils.getFormControl( group );
+		FormControlElement formControl = BootstrapElementUtils.getFormControl( group );
 		if ( control != null ) {
 			List<Node> controlNodes = viewElementNodeFactory.buildNodes( control, arguments );
 
