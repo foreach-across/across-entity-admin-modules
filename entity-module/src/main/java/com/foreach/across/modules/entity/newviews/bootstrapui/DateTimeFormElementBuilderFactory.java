@@ -31,7 +31,6 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -78,10 +77,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 											           propertyValue = new Date();
 										           }
 
-										           textbox.setText(
-												           new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSSZ" )
-														           .format( propertyValue )
-										           );
+										           textbox.setText( "" + propertyValue.getTime() );
 									           }
 								           }
 						           )

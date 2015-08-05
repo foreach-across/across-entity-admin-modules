@@ -107,7 +107,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 					entityConfiguration, propertyDescriptor, ViewElementMode.LABEL
 			);
 
-			LabelFormElementBuilder labelBuilder = bootstrapUi.label().add( labelText );
+			LabelFormElementBuilder labelBuilder = bootstrapUi.label().text( labelText );
 
 			formGroup.label( labelBuilder ).helpBlockRenderedBeforeControl( renderHelpBlockBeforeControl );
 		}
