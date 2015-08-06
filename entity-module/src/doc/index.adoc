@@ -340,6 +340,12 @@ specifying a `Validator` bean that supports the specific entity type.  You can u
 If more than one `Validator` could be applied,
 you will manually have to set the `Validator.class` attribute on the `EntityConfiguration` to the correct one.
 
+=== Customizing textbox elements
+
+`TextboxFormElement.Type` can be set as an attribute on the `EntityPropertyDescriptor`.  If set and the property is
+generated as a `TextboxFormElement`, that type will be used.
+
+You can add default post processors to the `TextboxFormElementBuilderFactory` to customize the autodetection.
 
 == To be done:
 * view processor

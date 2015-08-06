@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactorySupport;
+import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
@@ -32,6 +33,7 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -59,6 +61,8 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	public TextboxFormElementBuilderFactory() {
 		addProcessor( new FormControlRequiredBuilderProcessor<>() );
 		addProcessor( new TextboxConstraintsProcessor() );
+		addProcessor( new EmailTypeDetectionProcessor() );
+		addProcessor( new PasswordTypeDetectionProcessor() );
 	}
 
 	public void setMaximumSingleLineLength( int maximumSingleLineLength ) {
@@ -76,16 +80,24 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	                                                          EntityPropertyRegistry entityPropertyRegistry,
 	                                                          EntityConfiguration entityConfiguration,
 	                                                          ViewElementMode viewElementMode ) {
-		return bootstrapUi.textbox()
-		                  .name( propertyDescriptor.getName() )
-		                  .controlName( propertyDescriptor.getName() )
-		                  .multiLine( String.class.equals( propertyDescriptor.getPropertyType() ) )
-		                  .postProcessor(
-				                  new EntityPropertyValueTextPostProcessor<>( conversionService,
-				                                                                                propertyDescriptor )
-		                  )
-		                  .postProcessor( new EntityPropertyControlPostProcessor<>() )
-		                  .postProcessor( new TextboxPlaceholderProcessor( propertyDescriptor ) );
+		TextboxFormElementBuilder textboxBuilder
+				= bootstrapUi.textbox()
+				             .name( propertyDescriptor.getName() )
+				             .controlName( propertyDescriptor.getName() )
+				             .postProcessor(
+						             new EntityPropertyValueTextPostProcessor<>( conversionService, propertyDescriptor )
+				             )
+				             .postProcessor( new EntityPropertyControlPostProcessor<>() )
+				             .postProcessor( new TextboxPlaceholderProcessor( propertyDescriptor ) );
+
+		if ( propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
+			textboxBuilder.type( propertyDescriptor.getAttribute( TextboxFormElement.Type.class ) );
+		}
+		else {
+			textboxBuilder.multiLine( String.class.equals( propertyDescriptor.getPropertyType() ) );
+		}
+
+		return textboxBuilder;
 	}
 
 	/**
@@ -110,6 +122,56 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 				if ( !StringUtils.isBlank( placeholder ) ) {
 					element.setPlaceholder( placeholder );
+				}
+			}
+		}
+	}
+
+	/**
+	 * Detects email types based on the {@link Email} annotation presence.  Only if there was no specific type
+	 * set as attribute.
+	 */
+	public static class EmailTypeDetectionProcessor extends ValidationConstraintsBuilderProcessor<TextboxFormElementBuilder>
+	{
+		@Override
+		public void process( EntityPropertyDescriptor propertyDescriptor,
+		                     EntityPropertyRegistry entityPropertyRegistry,
+		                     EntityConfiguration entityConfiguration,
+		                     ViewElementMode viewElementMode,
+		                     TextboxFormElementBuilder builder ) {
+			if ( !propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
+				super.process( propertyDescriptor, entityPropertyRegistry, entityConfiguration, viewElementMode,
+				               builder );
+			}
+		}
+
+		@Override
+		protected void handleConstraint( TextboxFormElementBuilder builder,
+		                                 Annotation annotation,
+		                                 Map<String, Object> annotationAttributes,
+		                                 ConstraintDescriptor constraint ) {
+			if ( isOfType( annotation, Email.class ) ) {
+				builder.type( TextboxFormElement.Type.EMAIL );
+			}
+		}
+	}
+
+	/**
+	 * Any property named password is considered a password property.  This will also clear the set text
+	 * so no password is communicated back to the user.
+	 */
+	public static class PasswordTypeDetectionProcessor implements EntityViewElementBuilderProcessor<TextboxFormElementBuilder>
+	{
+		@Override
+		public void process( EntityPropertyDescriptor propertyDescriptor,
+		                     EntityPropertyRegistry entityPropertyRegistry,
+		                     EntityConfiguration entityConfiguration,
+		                     ViewElementMode viewElementMode,
+		                     TextboxFormElementBuilder builder ) {
+			if ( !propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
+				if ( "password".equals( propertyDescriptor.getName() ) ) {
+					builder.type( TextboxFormElement.Type.PASSWORD )
+					       .postProcessor( ( builderContext, element ) -> element.setText( null ) );
 				}
 			}
 		}
