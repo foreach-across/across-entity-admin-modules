@@ -17,9 +17,11 @@ package com.foreach.across.modules.entity;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.web.AcrossWebModule;
 
 @AcrossDepends(
-		optional = { "AcrossWebModule", "AdminWebModule" }
+		required = AcrossWebModule.NAME,
+		optional = "AdminWebModule"
 )
 public class EntityModule extends AcrossModule
 {
