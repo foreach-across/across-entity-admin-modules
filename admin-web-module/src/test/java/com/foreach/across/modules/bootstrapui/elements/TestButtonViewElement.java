@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import org.junit.Test;
 
 /**
@@ -66,6 +68,19 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		button.setType( ButtonViewElement.Type.LINK );
 		button.setStyle( Style.Button.LINK );
 		renderAndExpect( button, "<a class='btn btn-link' href='#' role='button'>Link button</a>" );
+	}
+
+	@Test
+	public void buttonStylesWithBuilder() {
+		ButtonViewElement button = new ButtonViewElementBuilder()
+				.style( Style.DANGER )
+				.css( "test", "extra-css" )
+				.build( new ViewElementBuilderContextImpl() );
+
+		renderAndExpect(
+			button,
+		    "<button type='button' class='test extra-css btn btn-danger' />"
+		);
 	}
 
 	@Test
