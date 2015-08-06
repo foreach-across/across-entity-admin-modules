@@ -13,29 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.bootstrapui.elements;
+package com.foreach.across.modules.bootstrapui;
 
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
 /**
  * @author Arne Vandamme
  */
-public class StaticFormElement extends AbstractNodeViewElement
+public class TestBootstrapUiModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-	public static final String ELEMENT_TYPE = BootstrapUiElements.STATIC_CONTROL;
-
-	private String text;
-
-	public StaticFormElement() {
-		super( "div" );
-		setElementType( ELEMENT_TYPE );
+	@Override
+	protected boolean hasSettings() {
+		return false;
 	}
 
-	public String getText() {
-		return text;
-	}
-
-	public void setText( String text ) {
-		this.text = text;
+	@Override
+	protected BootstrapUiModule createModule() {
+		return new BootstrapUiModule();
 	}
 }

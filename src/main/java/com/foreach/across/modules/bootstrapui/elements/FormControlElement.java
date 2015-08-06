@@ -15,17 +15,11 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.ViewElement;
-
 /**
  * @author Arne Vandamme
  */
-public interface FormControlElement extends ViewElement
+public interface FormControlElement extends FormInputElement
 {
-	boolean isDisabled();
-
-	void setDisabled( boolean disabled );
-
 	boolean isReadonly();
 
 	void setReadonly( boolean readonly );
@@ -33,8 +27,4 @@ public interface FormControlElement extends ViewElement
 	boolean isRequired();
 
 	void setRequired( boolean required );
-
-	String getControlName();
-
-	void setControlName( String controlName );
 }

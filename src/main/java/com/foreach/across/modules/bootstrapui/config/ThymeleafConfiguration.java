@@ -26,45 +26,46 @@ import javax.annotation.PostConstruct;
 /**
  * @author Arne Vandamme
  */
-// todo: check Thymeleaf is enabled
 @Configuration
-public class ViewElementsConfiguration
+// todo: check Thymeleaf is enabled
+public class ThymeleafConfiguration
 {
 	@Autowired
 	private ViewElementNodeBuilderRegistry viewElementNodeBuilderRegistry;
 
 	@PostConstruct
 	public void registerViewElements() {
-		viewElementNodeBuilderRegistry.registerNodeBuilder( IconViewElement.ELEMENT_TYPE, new IconViewElementNodeBuilder() );
+		viewElementNodeBuilderRegistry.registerNodeBuilder( IconViewElement.ELEMENT_TYPE,
+		                                                    new IconViewElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( ButtonViewElement.class,
-		                                                    new ButtonViewElementNodeBuilder() );
+		                                                    new ButtonViewElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( FormViewElement.class,
-		                                                    new FormViewElementNodeBuilder() );
+		                                                    new FormViewElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( TextboxFormElement.class,
-		                                                    new TextboxFormElementNodeBuilder() );
+		                                                    new TextboxFormElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( TextareaFormElement.class,
-		                                                    new TextareaFormElementNodeBuilder() );
+		                                                    new TextareaFormElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( CheckboxFormElement.class,
-		                                                    new CheckboxFormElementNodeBuilder() );
+		                                                    new CheckboxFormElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( RadioFormElement.class,
-		                                                    new RadioFormElementNodeBuilder() );
+		                                                    new RadioFormElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( SelectFormElement.class,
-		                                                    new SelectFormElementNodeBuilder() );
+		                                                    new SelectFormElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( SelectFormElement.Option.class,
-		                                                    new SelectFormElementNodeBuilder.OptionBuilder() );
+		                                                    new SelectFormElementThymeleafBuilder.OptionBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( SelectFormElement.OptionGroup.class,
-		                                                    new SelectFormElementNodeBuilder.OptionGroupBuilder() );
+		                                                    new SelectFormElementThymeleafBuilder.OptionGroupBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( StaticFormElement.class,
-		                                                    new StaticFormElementNodeBuilder() );
+		                                                    new StaticFormElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( LabelFormElement.class,
 		                                                    new LabelFormElementNodeBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( FormGroupElement.class,
-		                                                    new FormGroupElementNodeBuilder() );
+		                                                    new FormGroupElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( TableViewElement.class,
-		                                                    new TableViewElementNodeBuilder() );
+		                                                    new TableViewElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( TableViewElement.Row.class,
-		                                                    new TableViewElementNodeBuilder.RowElementNodeBuilder() );
+		                                                    new TableViewElementThymeleafBuilder.RowElementThymeleafBuilder() );
 		viewElementNodeBuilderRegistry.registerNodeBuilder( TableViewElement.Cell.class,
-		                                                    new TableViewElementNodeBuilder.CellElementNodeBuilder() );
+		                                                    new TableViewElementThymeleafBuilder.CellElementThymeleafBuilder() );
 	}
 }

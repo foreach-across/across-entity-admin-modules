@@ -15,31 +15,26 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
-import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.HtmlViewElementThymeleafSupport;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
  * @author Arne Vandamme
  */
-public class TextboxFormElementNodeBuilder extends FormControlElementBuilderSupport<TextboxFormElement>
+public class StaticFormElementThymeleafBuilder extends HtmlViewElementThymeleafSupport<StaticFormElement>
 {
 	@Override
-	protected Element createNode( TextboxFormElement control,
+	protected Element createNode( StaticFormElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element node = new Element( "input" );
-		node.setAttribute( "type", control.getType().getName() );
-		node.setAttribute( "class", "form-control" );
+		Element element = new Element( "p" );
+		element.setAttribute( "class", "form-control-static" );
 
-		attribute( node, "placeholder", control.getPlaceholder() );
-		attribute( node, "value", control.getText() );
+		text( element, control.getText() );
 
-		if ( control.getMaxLength() != null ) {
-			attribute( node, "maxlength", control.getMaxLength().toString() );
-		}
-
-		return node;
+		return element;
 	}
 }

@@ -16,18 +16,13 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
-
-import java.util.Map;
+import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
 /**
  * @author Arne Vandamme
  */
-public class FieldsetFormElementBuilder extends NodeViewElementSupportBuilder<FieldsetFormElement, FieldsetFormElementBuilder>
+public class FieldsetFormElementBuilder extends AbstractNodeViewElementBuilder<FieldsetFormElement, FieldsetFormElementBuilder>
 {
 	private String formId, fieldsetName;
 	private boolean disabled;
@@ -56,66 +51,6 @@ public class FieldsetFormElementBuilder extends NodeViewElementSupportBuilder<Fi
 		return legend().text( legendText ).and();
 	}
 
-	@Override
-	public FieldsetFormElementBuilder htmlId( String htmlId ) {
-		return super.htmlId( htmlId );
-	}
-
-	@Override
-	public FieldsetFormElementBuilder attribute( String name, Object value ) {
-		return super.attribute( name, value );
-	}
-
-	@Override
-	public FieldsetFormElementBuilder attributes( Map<String, Object> attributes ) {
-		return super.attributes( attributes );
-	}
-
-	@Override
-	public FieldsetFormElementBuilder removeAttribute( String name ) {
-		return super.removeAttribute( name );
-	}
-
-	@Override
-	public FieldsetFormElementBuilder clearAttributes() {
-		return super.clearAttributes();
-	}
-
-	@Override
-	public FieldsetFormElementBuilder add( ViewElement... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public FieldsetFormElementBuilder add( ViewElementBuilder... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public FieldsetFormElementBuilder addAll( Iterable<?> viewElements ) {
-		return super.addAll( viewElements );
-	}
-
-	@Override
-	public FieldsetFormElementBuilder sort( String... elementNames ) {
-		return super.sort( elementNames );
-	}
-
-	@Override
-	public FieldsetFormElementBuilder name( String name ) {
-		return super.name( name );
-	}
-
-	@Override
-	public FieldsetFormElementBuilder customTemplate( String template ) {
-		return super.customTemplate( template );
-	}
-
-	@Override
-	public FieldsetFormElementBuilder postProcessor( ViewElementPostProcessor<FieldsetFormElement> postProcessor ) {
-		return super.postProcessor( postProcessor );
-	}
-
 	public Legend legend() {
 		if ( legendBuilder == null ) {
 			legendBuilder = new Legend( this );
@@ -142,7 +77,7 @@ public class FieldsetFormElementBuilder extends NodeViewElementSupportBuilder<Fi
 		return fieldset;
 	}
 
-	public static class Legend extends NodeViewElementSupportBuilder<FieldsetFormElement.Legend, Legend>
+	public static class Legend extends AbstractNodeViewElementBuilder<FieldsetFormElement.Legend, Legend>
 	{
 		private final FieldsetFormElementBuilder fieldset;
 

@@ -23,7 +23,7 @@ import org.thymeleaf.dom.Element;
 /**
  * @author Arne Vandamme
  */
-public class TextareaFormElementNodeBuilder extends FormControlElementBuilderSupport<TextareaFormElement>
+public class TextareaFormElementThymeleafBuilder extends FormControlElementBuilderSupport<TextareaFormElement>
 {
 	@Override
 	protected Element createNode( TextareaFormElement control,

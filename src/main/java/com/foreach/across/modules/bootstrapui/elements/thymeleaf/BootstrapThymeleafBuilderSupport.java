@@ -16,8 +16,8 @@
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.Style;
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.HtmlViewElementThymeleafSupport;
 import org.thymeleaf.dom.Element;
 
 import java.util.Collection;
@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
  * @author Arne Vandamme
  */
-public abstract class BootstrapNodeBuilderSupport<T extends NodeViewElementSupport> extends NestableNodeBuilderSupport<T>
+public abstract class BootstrapThymeleafBuilderSupport<T extends HtmlViewElement> extends HtmlViewElementThymeleafSupport<T>
 {
 	protected void style( Element node, Collection<Style> styles ) {
 		style( node, "", styles );

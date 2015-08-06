@@ -115,7 +115,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void customTagAppended() {
-		NodeViewElement div = NodeViewElement.forTag( "div" );
+		NodeViewElement div = new NodeViewElement( "div" );
 		div.setAttribute( "class", "some-class" );
 		div.add( new TextViewElement( "appended div" ) );
 
@@ -147,7 +147,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void withHelpText() {
-		NodeViewElement help = NodeViewElement.forTag( "p" );
+		NodeViewElement help = new NodeViewElement( "p" );
 		help.setAttribute( "class", "help-block" );
 		help.add( new TextViewElement( "example help text" ) );
 
@@ -318,7 +318,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void inlineFormDoesNotVisuallyRenderHelp() {
-		NodeViewElement help = NodeViewElement.forTag( "p" );
+		NodeViewElement help = new NodeViewElement( "p" );
 		help.setAttribute( "class", "help-block" );
 		help.add( new TextViewElement( "example help text" ) );
 
@@ -348,7 +348,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void horizontalFormLayout() {
-		NodeViewElement help = NodeViewElement.forTag( "p" );
+		NodeViewElement help = new NodeViewElement( "p" );
 		help.setAttribute( "class", "help-block" );
 		help.add( new TextViewElement( "example help text" ) );
 

@@ -17,7 +17,7 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.IconViewElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
-import com.foreach.across.modules.web.ui.thymeleaf.ViewElementNodeBuilder;
+import com.foreach.across.modules.web.ui.thymeleaf.ViewElementThymeleafBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
@@ -30,7 +30,7 @@ import java.util.Objects;
 /**
  * @author Arne Vandamme
  */
-public class IconViewElementNodeBuilder implements ViewElementNodeBuilder<IconViewElement>
+public class IconViewElementThymeleafBuilder implements ViewElementThymeleafBuilder<IconViewElement>
 {
 	@Override
 	public List<Node> buildNodes( IconViewElement viewElement,

@@ -15,27 +15,21 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
+ * Basic support for a typical form input element.  A form control with limited
+ * attributes like control name and disabled.
+ *
  * @author Arne Vandamme
  */
-public class StaticFormElement extends AbstractNodeViewElement
+public interface FormInputElement extends ViewElement
 {
-	public static final String ELEMENT_TYPE = BootstrapUiElements.STATIC_CONTROL;
+	String getControlName();
 
-	private String text;
+	void setControlName( String controlName );
 
-	public StaticFormElement() {
-		super( "div" );
-		setElementType( ELEMENT_TYPE );
-	}
+	boolean isDisabled();
 
-	public String getText() {
-		return text;
-	}
-
-	public void setText( String text ) {
-		this.text = text;
-	}
+	void setDisabled( boolean disabled );
 }

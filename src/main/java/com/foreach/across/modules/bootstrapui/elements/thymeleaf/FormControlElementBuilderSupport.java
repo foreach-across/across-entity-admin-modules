@@ -16,7 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.HtmlViewElementThymeleafSupport;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
@@ -24,7 +24,7 @@ import org.thymeleaf.dom.Element;
  * @author Arne Vandamme
  */
 public abstract class FormControlElementBuilderSupport<T extends FormControlElementSupport>
-		extends NestableNodeBuilderSupport<T>
+		extends HtmlViewElementThymeleafSupport<T>
 {
 	@Override
 	protected void applyProperties( T control, Arguments arguments, Element node ) {

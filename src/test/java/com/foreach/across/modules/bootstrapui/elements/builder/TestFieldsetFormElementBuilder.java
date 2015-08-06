@@ -21,9 +21,6 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import static org.junit.Assert.*;
 
 /**
@@ -34,11 +31,6 @@ public class TestFieldsetFormElementBuilder extends AbstractViewElementBuilderTe
 	@Override
 	protected FieldsetFormElementBuilder createBuilder( ViewElementBuilderFactory builderFactory ) {
 		return new FieldsetFormElementBuilder();
-	}
-
-	@Override
-	protected Collection<String> nonBuilderReturningMethods() {
-		return Collections.singleton( "legend" );
 	}
 
 	@Test

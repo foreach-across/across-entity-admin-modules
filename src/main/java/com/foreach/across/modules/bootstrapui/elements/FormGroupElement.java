@@ -16,12 +16,12 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 
 /**
  * @author Arne Vandamme
  */
-public class FormGroupElement extends NodeViewElementSupport
+public class FormGroupElement extends AbstractNodeViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM_GROUP;
 
@@ -30,7 +30,8 @@ public class FormGroupElement extends NodeViewElementSupport
 	private boolean required, renderHelpBlockBeforeControl;
 
 	public FormGroupElement() {
-		super( ELEMENT_TYPE );
+		super( "div" );
+		setElementType( ELEMENT_TYPE );
 	}
 
 	public ViewElement getLabel() {

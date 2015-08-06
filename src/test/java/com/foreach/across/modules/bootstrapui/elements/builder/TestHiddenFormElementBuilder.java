@@ -15,27 +15,34 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
+import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
 import org.junit.Test;
 
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
  */
-public class TestOptionsFormElementBuilder extends AbstractViewElementBuilderTest<OptionsFormElementBuilder, AbstractNodeViewElement>
+public class TestHiddenFormElementBuilder extends AbstractViewElementBuilderTest<HiddenFormElementBuilder, HiddenFormElement>
 {
 	@Override
-	protected OptionsFormElementBuilder createBuilder( ViewElementBuilderFactory builderFactory ) {
-		return new OptionsFormElementBuilder();
+	protected HiddenFormElementBuilder createBuilder( ViewElementBuilderFactory builderFactory ) {
+		return new HiddenFormElementBuilder();
 	}
 
-	@Test(expected = IllegalStateException.class)
-	public void noNestingOfOptionsFormElementBuilders() {
-		when( builderContext.hasAttribute( OptionsFormElementBuilder.class ) ).thenReturn( true );
+	@Test
+	public void attributes() {
+		build();
+		assertFalse( element.isDisabled() );
+		assertNull( element.getValue() );
+
+		builder.controlName( "hiddenInput" ).disabled().value( 123L );
 
 		build();
+		assertEquals( "hiddenInput", element.getControlName() );
+		assertTrue( element.isDisabled() );
+		assertEquals( 123L, element.getValue() );
 	}
 }

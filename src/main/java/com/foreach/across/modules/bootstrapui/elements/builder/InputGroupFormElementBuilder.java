@@ -19,15 +19,12 @@ import com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
-
-import java.util.Map;
+import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
 /**
  * @author Arne Vandamme
  */
-public class InputGroupFormElementBuilder extends NodeViewElementSupportBuilder<InputGroupFormElement, InputGroupFormElementBuilder>
+public class InputGroupFormElementBuilder extends AbstractNodeViewElementBuilder<InputGroupFormElement, InputGroupFormElementBuilder>
 {
 	private ElementOrBuilder addonBefore, addonAfter, control;
 
@@ -59,66 +56,6 @@ public class InputGroupFormElementBuilder extends NodeViewElementSupportBuilder<
 	public InputGroupFormElementBuilder control( ViewElementBuilder element ) {
 		control = element != null ? ElementOrBuilder.wrap( element ) : null;
 		return this;
-	}
-
-	@Override
-	public InputGroupFormElementBuilder htmlId( String htmlId ) {
-		return super.htmlId( htmlId );
-	}
-
-	@Override
-	public InputGroupFormElementBuilder attribute( String name, Object value ) {
-		return super.attribute( name, value );
-	}
-
-	@Override
-	public InputGroupFormElementBuilder attributes( Map<String, Object> attributes ) {
-		return super.attributes( attributes );
-	}
-
-	@Override
-	public InputGroupFormElementBuilder removeAttribute( String name ) {
-		return super.removeAttribute( name );
-	}
-
-	@Override
-	public InputGroupFormElementBuilder clearAttributes() {
-		return super.clearAttributes();
-	}
-
-	@Override
-	public InputGroupFormElementBuilder add( ViewElement... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public InputGroupFormElementBuilder add( ViewElementBuilder... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public InputGroupFormElementBuilder addAll( Iterable<?> viewElements ) {
-		return super.addAll( viewElements );
-	}
-
-	@Override
-	public InputGroupFormElementBuilder sort( String... elementNames ) {
-		return super.sort( elementNames );
-	}
-
-	@Override
-	public InputGroupFormElementBuilder name( String name ) {
-		return super.name( name );
-	}
-
-	@Override
-	public InputGroupFormElementBuilder customTemplate( String template ) {
-		return super.customTemplate( template );
-	}
-
-	@Override
-	public InputGroupFormElementBuilder postProcessor( ViewElementPostProcessor<InputGroupFormElement> postProcessor ) {
-		return super.postProcessor( postProcessor );
 	}
 
 	@Override

@@ -17,112 +17,18 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * @author Arne Vandamme
  */
-public class TableViewElementBuilder extends NodeViewElementSupportBuilder<TableViewElement, TableViewElementBuilder>
+public class TableViewElementBuilder extends AbstractNodeViewElementBuilder<TableViewElement, TableViewElementBuilder>
 {
-	public static class Caption extends NodeViewElementSupportBuilder<TableViewElement.Caption, Caption>
-	{
-		private String text;
-
-		public Caption text( String text ) {
-			this.text = text;
-			return this;
-		}
-
-		@Override
-		protected TableViewElement.Caption createElement( ViewElementBuilderContext builderContext ) {
-			TableViewElement.Caption caption = apply( new TableViewElement.Caption(), builderContext );
-
-			if ( text != null ) {
-				caption.setText( text );
-			}
-
-			return caption;
-		}
-	}
-
-	public static class Body extends NodeViewElementSupportBuilder<TableViewElement.Body, Body>
-	{
-		@Override
-		protected TableViewElement.Body createElement( ViewElementBuilderContext builderContext ) {
-			return apply( new TableViewElement.Body(), builderContext );
-		}
-	}
-
-	public static class Header extends NodeViewElementSupportBuilder<TableViewElement.Header, Header>
-	{
-		@Override
-		protected TableViewElement.Header createElement( ViewElementBuilderContext builderContext ) {
-			return apply( new TableViewElement.Header(), builderContext );
-		}
-	}
-
-	public static class Footer extends NodeViewElementSupportBuilder<TableViewElement.Footer, Footer>
-	{
-		@Override
-		protected TableViewElement.Footer createElement( ViewElementBuilderContext builderContext ) {
-			return apply( new TableViewElement.Footer(), builderContext );
-		}
-	}
-
-	public static class Row extends NodeViewElementSupportBuilder<TableViewElement.Row, Row>
-	{
-		@Override
-		protected TableViewElement.Row createElement( ViewElementBuilderContext builderContext ) {
-			return apply( new TableViewElement.Row(), builderContext );
-		}
-	}
-
-	public static class Cell extends NodeViewElementSupportBuilder<TableViewElement.Cell, Cell>
-	{
-		private boolean heading;
-		private Integer columnSpan;
-		private String text;
-
-		public Cell heading( boolean heading ) {
-			this.heading = heading;
-			return this;
-		}
-
-		public Cell text( String text ) {
-			this.text = text;
-			return this;
-		}
-
-		public Cell columnSpan( Integer columnSpan ) {
-			this.columnSpan = columnSpan;
-			return this;
-		}
-
-		@Override
-		protected TableViewElement.Cell createElement( ViewElementBuilderContext builderContext ) {
-			TableViewElement.Cell cell = apply( new TableViewElement.Cell(), builderContext );
-			cell.setHeading( heading );
-
-			if ( columnSpan != null ) {
-				cell.setColumnSpan( columnSpan );
-			}
-			if ( text != null ) {
-				cell.setText( text );
-			}
-
-			return cell;
-		}
-	}
-
 	private Boolean responsive;
 	private Set<Style> styles = new HashSet<>();
 	private TableViewElementBuilder.Header header;
@@ -142,6 +48,7 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 
 	/**
 	 * Will make the table responsive.
+	 *
 	 * @return current builder
 	 */
 	public TableViewElementBuilder responsive() {
@@ -150,6 +57,7 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 
 	/**
 	 * Determine if the table should be responsive or not.
+	 *
 	 * @param responsive true if the table should be responsive
 	 * @return current builder
 	 */
@@ -185,13 +93,6 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 	}
 
 	/**
-	 * @return new header builder
-	 */
-	public static TableViewElementBuilder.Header createHeader() {
-		return new TableViewElementBuilder.Header();
-	}
-
-	/**
 	 * Creates a body builder and adds it to the table.  If a body builder is already attached, the
 	 * existing instance is returned.  Use {@link #createBody()} if you want to create a new detached
 	 * body builder.
@@ -218,13 +119,6 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 	}
 
 	/**
-	 * @return new body builder
-	 */
-	public static TableViewElementBuilder.Body createBody() {
-		return new TableViewElementBuilder.Body();
-	}
-
-	/**
 	 * Creates a footer builder and adds it to the table.  If a footer builder is already attached, the
 	 * existing instance is returned.  Use {@link #createFooter()} if you want to create a new detached
 	 * footer builder.
@@ -248,13 +142,6 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 	public TableViewElementBuilder footer( TableViewElementBuilder.Footer footer ) {
 		this.footer = footer;
 		return this;
-	}
-
-	/**
-	 * @return new footer builder
-	 */
-	public static TableViewElementBuilder.Footer createFooter() {
-		return new TableViewElementBuilder.Footer();
 	}
 
 	/**
@@ -288,13 +175,6 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 	}
 
 	/**
-	 * @return new caption builder
-	 */
-	public static TableViewElementBuilder.Caption createCaption() {
-		return new TableViewElementBuilder.Caption();
-	}
-
-	/**
 	 * @return new row builder
 	 */
 	public TableViewElementBuilder.Row row() {
@@ -313,71 +193,6 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 	 */
 	public TableViewElementBuilder.Cell heading() {
 		return new TableViewElementBuilder.Cell().heading( true );
-	}
-
-	@Override
-	public TableViewElementBuilder htmlId( String htmlId ) {
-		return super.htmlId( htmlId );
-	}
-
-	@Override
-	public TableViewElementBuilder attribute( String name, Object value ) {
-		return super.attribute( name, value );
-	}
-
-	@Override
-	public TableViewElementBuilder attributes( Map<String, Object> attributes ) {
-		return super.attributes( attributes );
-	}
-
-	@Override
-	public TableViewElementBuilder removeAttribute( String name ) {
-		return super.removeAttribute( name );
-	}
-
-	@Override
-	public TableViewElementBuilder clearAttributes() {
-		return super.clearAttributes();
-	}
-
-	@Override
-	protected TableViewElement apply( TableViewElement viewElement, ViewElementBuilderContext builderContext ) {
-		return super.apply( viewElement, builderContext );
-	}
-
-	@Override
-	public TableViewElementBuilder add( ViewElement... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public TableViewElementBuilder add( ViewElementBuilder... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public TableViewElementBuilder addAll( Iterable<?> viewElements ) {
-		return super.addAll( viewElements );
-	}
-
-	@Override
-	public TableViewElementBuilder sort( String... elementNames ) {
-		return super.sort( elementNames );
-	}
-
-	@Override
-	public TableViewElementBuilder name( String name ) {
-		return super.name( name );
-	}
-
-	@Override
-	public TableViewElementBuilder customTemplate( String template ) {
-		return super.customTemplate( template );
-	}
-
-	@Override
-	public TableViewElementBuilder postProcessor( ViewElementPostProcessor<TableViewElement> postProcessor ) {
-		return super.postProcessor( postProcessor );
 	}
 
 	@Override
@@ -402,5 +217,123 @@ public class TableViewElementBuilder extends NodeViewElementSupportBuilder<Table
 		}
 
 		return table;
+	}
+
+	/**
+	 * @return new header builder
+	 */
+	public static TableViewElementBuilder.Header createHeader() {
+		return new TableViewElementBuilder.Header();
+	}
+
+	/**
+	 * @return new body builder
+	 */
+	public static TableViewElementBuilder.Body createBody() {
+		return new TableViewElementBuilder.Body();
+	}
+
+	/**
+	 * @return new footer builder
+	 */
+	public static TableViewElementBuilder.Footer createFooter() {
+		return new TableViewElementBuilder.Footer();
+	}
+
+	/**
+	 * @return new caption builder
+	 */
+	public static TableViewElementBuilder.Caption createCaption() {
+		return new TableViewElementBuilder.Caption();
+	}
+
+	public static class Caption extends AbstractNodeViewElementBuilder<TableViewElement.Caption, Caption>
+	{
+		private String text;
+
+		public Caption text( String text ) {
+			this.text = text;
+			return this;
+		}
+
+		@Override
+		protected TableViewElement.Caption createElement( ViewElementBuilderContext builderContext ) {
+			TableViewElement.Caption caption = apply( new TableViewElement.Caption(), builderContext );
+
+			if ( text != null ) {
+				caption.setText( text );
+			}
+
+			return caption;
+		}
+	}
+
+	public static class Body extends AbstractNodeViewElementBuilder<TableViewElement.Body, Body>
+	{
+		@Override
+		protected TableViewElement.Body createElement( ViewElementBuilderContext builderContext ) {
+			return apply( new TableViewElement.Body(), builderContext );
+		}
+	}
+
+	public static class Header extends AbstractNodeViewElementBuilder<TableViewElement.Header, Header>
+	{
+		@Override
+		protected TableViewElement.Header createElement( ViewElementBuilderContext builderContext ) {
+			return apply( new TableViewElement.Header(), builderContext );
+		}
+	}
+
+	public static class Footer extends AbstractNodeViewElementBuilder<TableViewElement.Footer, Footer>
+	{
+		@Override
+		protected TableViewElement.Footer createElement( ViewElementBuilderContext builderContext ) {
+			return apply( new TableViewElement.Footer(), builderContext );
+		}
+	}
+
+	public static class Row extends AbstractNodeViewElementBuilder<TableViewElement.Row, Row>
+	{
+		@Override
+		protected TableViewElement.Row createElement( ViewElementBuilderContext builderContext ) {
+			return apply( new TableViewElement.Row(), builderContext );
+		}
+	}
+
+	public static class Cell extends AbstractNodeViewElementBuilder<TableViewElement.Cell, Cell>
+	{
+		private boolean heading;
+		private Integer columnSpan;
+		private String text;
+
+		public Cell heading( boolean heading ) {
+			this.heading = heading;
+			return this;
+		}
+
+		public Cell text( String text ) {
+			this.text = text;
+			return this;
+		}
+
+		public Cell columnSpan( Integer columnSpan ) {
+			this.columnSpan = columnSpan;
+			return this;
+		}
+
+		@Override
+		protected TableViewElement.Cell createElement( ViewElementBuilderContext builderContext ) {
+			TableViewElement.Cell cell = apply( new TableViewElement.Cell(), builderContext );
+			cell.setHeading( heading );
+
+			if ( columnSpan != null ) {
+				cell.setColumnSpan( columnSpan );
+			}
+			if ( text != null ) {
+				cell.setText( text );
+			}
+
+			return cell;
+		}
 	}
 }

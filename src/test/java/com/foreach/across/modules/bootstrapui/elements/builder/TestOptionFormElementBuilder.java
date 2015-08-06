@@ -24,7 +24,6 @@ import com.foreach.across.test.support.AbstractViewElementBuilderTest;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,11 +39,6 @@ public class TestOptionFormElementBuilder
 	@Override
 	protected OptionFormElementBuilder createBuilder( ViewElementBuilderFactory builderFactory ) {
 		return new OptionFormElementBuilder();
-	}
-
-	@Override
-	protected Collection<String> nonBuilderReturningMethods() {
-		return Collections.singleton( "compareTo" );
 	}
 
 	@Test
