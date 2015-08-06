@@ -1,3 +1,18 @@
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
@@ -6,12 +21,9 @@ import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
-import java.util.Map;
-
-public class ButtonViewElementBuilder extends NodeViewElementSupportBuilder<ButtonViewElement, ButtonViewElementBuilder>
+public class ButtonViewElementBuilder extends AbstractNodeViewElementBuilder<ButtonViewElement, ButtonViewElementBuilder>
 {
 	private String text, title, url;
 	private ButtonViewElement.Type type;
@@ -188,66 +200,6 @@ public class ButtonViewElementBuilder extends NodeViewElementSupportBuilder<Butt
 	public ButtonViewElementBuilder size( Size size ) {
 		this.size = size;
 		return this;
-	}
-
-	@Override
-	public ButtonViewElementBuilder htmlId( String htmlId ) {
-		return super.htmlId( htmlId );
-	}
-
-	@Override
-	public ButtonViewElementBuilder attribute( String name, Object value ) {
-		return super.attribute( name, value );
-	}
-
-	@Override
-	public ButtonViewElementBuilder attributes( Map<String, Object> attributes ) {
-		return super.attributes( attributes );
-	}
-
-	@Override
-	public ButtonViewElementBuilder removeAttribute( String name ) {
-		return super.removeAttribute( name );
-	}
-
-	@Override
-	public ButtonViewElementBuilder clearAttributes() {
-		return super.clearAttributes();
-	}
-
-	@Override
-	public ButtonViewElementBuilder add( ViewElement... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public ButtonViewElementBuilder add( ViewElementBuilder... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public ButtonViewElementBuilder addAll( Iterable<?> viewElements ) {
-		return super.addAll( viewElements );
-	}
-
-	@Override
-	public ButtonViewElementBuilder sort( String... elementNames ) {
-		return super.sort( elementNames );
-	}
-
-	@Override
-	public ButtonViewElementBuilder name( String name ) {
-		return super.name( name );
-	}
-
-	@Override
-	public ButtonViewElementBuilder customTemplate( String template ) {
-		return super.customTemplate( template );
-	}
-
-	@Override
-	public ButtonViewElementBuilder postProcessor( ViewElementPostProcessor<ButtonViewElement> postProcessor ) {
-		return super.postProcessor( postProcessor );
 	}
 
 	@Override

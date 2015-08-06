@@ -23,9 +23,9 @@ import org.thymeleaf.dom.Element;
 /**
  * @author Arne Vandamme
  */
-public class TableViewElementNodeBuilder extends BootstrapNodeBuilderSupport<TableViewElement>
+public class TableViewElementThymeleafBuilder extends BootstrapThymeleafBuilderSupport<TableViewElement>
 {
-	public static class RowElementNodeBuilder extends BootstrapNodeBuilderSupport<TableViewElement.Row>
+	public static class RowElementThymeleafBuilder extends BootstrapThymeleafBuilderSupport<TableViewElement.Row>
 	{
 		@Override
 		protected Element createNode( TableViewElement.Row row,
@@ -38,7 +38,7 @@ public class TableViewElementNodeBuilder extends BootstrapNodeBuilderSupport<Tab
 		}
 	}
 
-	public static class CellElementNodeBuilder extends BootstrapNodeBuilderSupport<TableViewElement.Cell>
+	public static class CellElementThymeleafBuilder extends BootstrapThymeleafBuilderSupport<TableViewElement.Cell>
 	{
 		@Override
 		protected Element createNode( TableViewElement.Cell cell,

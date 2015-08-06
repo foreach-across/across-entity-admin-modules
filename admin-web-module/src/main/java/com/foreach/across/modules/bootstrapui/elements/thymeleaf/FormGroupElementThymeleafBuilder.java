@@ -19,7 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.HtmlViewElementThymeleafSupport;
 import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * @author Arne Vandamme
  */
-public class FormGroupElementNodeBuilder extends NestableNodeBuilderSupport<FormGroupElement>
+public class FormGroupElementThymeleafBuilder extends HtmlViewElementThymeleafSupport<FormGroupElement>
 {
 	@Override
 	protected Element createNode( FormGroupElement group,

@@ -16,15 +16,10 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
-
-import java.util.Map;
+import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
 /**
  * Responsible for building option lists as SELECT, RADIO or MULTI CHECKBOX.
@@ -34,7 +29,7 @@ import java.util.Map;
  * @author Arne Vandamme
  * @see OptionFormElementBuilder
  */
-public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<NodeViewElementSupport, OptionsFormElementBuilder>
+public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<AbstractNodeViewElement, OptionsFormElementBuilder>
 {
 	private boolean disabled, readonly, required;
 
@@ -159,67 +154,7 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 	}
 
 	@Override
-	public OptionsFormElementBuilder htmlId( String htmlId ) {
-		return super.htmlId( htmlId );
-	}
-
-	@Override
-	public OptionsFormElementBuilder attribute( String name, Object value ) {
-		return super.attribute( name, value );
-	}
-
-	@Override
-	public OptionsFormElementBuilder attributes( Map<String, Object> attributes ) {
-		return super.attributes( attributes );
-	}
-
-	@Override
-	public OptionsFormElementBuilder removeAttribute( String name ) {
-		return super.removeAttribute( name );
-	}
-
-	@Override
-	public OptionsFormElementBuilder clearAttributes() {
-		return super.clearAttributes();
-	}
-
-	@Override
-	public OptionsFormElementBuilder add( ViewElement... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public OptionsFormElementBuilder add( ViewElementBuilder... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public OptionsFormElementBuilder addAll( Iterable<?> viewElements ) {
-		return super.addAll( viewElements );
-	}
-
-	@Override
-	public OptionsFormElementBuilder sort( String... elementNames ) {
-		return super.sort( elementNames );
-	}
-
-	@Override
-	public OptionsFormElementBuilder name( String name ) {
-		return super.name( name );
-	}
-
-	@Override
-	public OptionsFormElementBuilder customTemplate( String template ) {
-		return super.customTemplate( template );
-	}
-
-	@Override
-	public OptionsFormElementBuilder postProcessor( ViewElementPostProcessor<NodeViewElementSupport> postProcessor ) {
-		return super.postProcessor( postProcessor );
-	}
-
-	@Override
-	protected NodeViewElementSupport createElement( ViewElementBuilderContext builderContext ) {
+	protected AbstractNodeViewElement createElement( ViewElementBuilderContext builderContext ) {
 		if ( builderContext.hasAttribute( OptionsFormElementBuilder.class ) ) {
 			throw new IllegalStateException( "Nesting multiple OptionsFormElementBuilder instances is not supported." );
 		}
@@ -227,7 +162,7 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 		builderContext.setAttribute( OptionsFormElementBuilder.class, this );
 
 		try {
-			NodeViewElementSupport control;
+			AbstractNodeViewElement control;
 
 			if ( type == Type.CHECKBOX || type == Type.RADIO ) {
 				control = createBoxDiv();
@@ -247,7 +182,7 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 		}
 	}
 
-	private NodeViewElementSupport createSelect() {
+	private AbstractNodeViewElement createSelect() {
 		SelectFormElement select = new SelectFormElement();
 		select.setMultiple( multiple );
 
@@ -261,8 +196,8 @@ public class OptionsFormElementBuilder extends NodeViewElementSupportBuilder<Nod
 		return select;
 	}
 
-	private NodeViewElementSupport createBoxDiv() {
-		return NodeViewElement.forTag( "div" );
+	private AbstractNodeViewElement createBoxDiv() {
+		return new NodeViewElement( "div" );
 	}
 
 	public enum Type

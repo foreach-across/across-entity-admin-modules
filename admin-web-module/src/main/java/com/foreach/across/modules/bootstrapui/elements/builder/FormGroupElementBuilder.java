@@ -19,12 +19,9 @@ import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
-import java.util.Map;
-
-public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormGroupElement, FormGroupElementBuilder>
+public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<FormGroupElement, FormGroupElementBuilder>
 {
 	private ElementOrBuilder label, control, helpBlock;
 	private FormLayout formLayout;
@@ -157,66 +154,6 @@ public class FormGroupElementBuilder extends NodeViewElementSupportBuilder<FormG
 	public FormGroupElementBuilder required( boolean required ) {
 		this.required = required;
 		return this;
-	}
-
-	@Override
-	public FormGroupElementBuilder htmlId( String htmlId ) {
-		return super.htmlId( htmlId );
-	}
-
-	@Override
-	public FormGroupElementBuilder attribute( String name, Object value ) {
-		return super.attribute( name, value );
-	}
-
-	@Override
-	public FormGroupElementBuilder attributes( Map<String, Object> attributes ) {
-		return super.attributes( attributes );
-	}
-
-	@Override
-	public FormGroupElementBuilder removeAttribute( String name ) {
-		return super.removeAttribute( name );
-	}
-
-	@Override
-	public FormGroupElementBuilder clearAttributes() {
-		return super.clearAttributes();
-	}
-
-	@Override
-	public FormGroupElementBuilder add( ViewElement... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public FormGroupElementBuilder add( ViewElementBuilder... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public FormGroupElementBuilder addAll( Iterable<?> viewElements ) {
-		return super.addAll( viewElements );
-	}
-
-	@Override
-	public FormGroupElementBuilder sort( String... elementNames ) {
-		return super.sort( elementNames );
-	}
-
-	@Override
-	public FormGroupElementBuilder name( String name ) {
-		return super.name( name );
-	}
-
-	@Override
-	public FormGroupElementBuilder customTemplate( String template ) {
-		return super.customTemplate( template );
-	}
-
-	@Override
-	public FormGroupElementBuilder postProcessor( ViewElementPostProcessor<FormGroupElement> postProcessor ) {
-		return super.postProcessor( postProcessor );
 	}
 
 	@Override

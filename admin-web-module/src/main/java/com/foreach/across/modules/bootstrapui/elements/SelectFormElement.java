@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 
 /**
  * Represents a HTML select element.
@@ -25,6 +25,21 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
  */
 public class SelectFormElement extends FormControlElementSupport
 {
+	public static final String ELEMENT_TYPE = BootstrapUiElements.SELECT;
+	private boolean multiple;
+
+	public SelectFormElement() {
+		super( ELEMENT_TYPE );
+	}
+
+	public boolean isMultiple() {
+		return multiple;
+	}
+
+	public void setMultiple( boolean multiple ) {
+		this.multiple = multiple;
+	}
+
 	/**
 	 * Single option.
 	 */
@@ -76,13 +91,14 @@ public class SelectFormElement extends FormControlElementSupport
 	/**
 	 * Optgroup.
 	 */
-	public static class OptionGroup extends NodeViewElementSupport
+	public static class OptionGroup extends AbstractNodeViewElement
 	{
 		private boolean disabled;
 		private String label;
 
 		public OptionGroup() {
-			super( SelectFormElement.ELEMENT_TYPE + ".optgroup" );
+			super( "optgroup" );
+			setElementType( SelectFormElement.ELEMENT_TYPE + ".optgroup" );
 		}
 
 		public boolean isDisabled() {
@@ -100,21 +116,5 @@ public class SelectFormElement extends FormControlElementSupport
 		public void setLabel( String label ) {
 			this.label = label;
 		}
-	}
-
-	public static final String ELEMENT_TYPE = BootstrapUiElements.SELECT;
-
-	private boolean multiple;
-
-	public SelectFormElement() {
-		super( ELEMENT_TYPE );
-	}
-
-	public boolean isMultiple() {
-		return multiple;
-	}
-
-	public void setMultiple( boolean multiple ) {
-		this.multiple = multiple;
 	}
 }

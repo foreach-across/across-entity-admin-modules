@@ -35,7 +35,7 @@ public class DateTimeFormElement extends InputGroupFormElement implements FormCo
 	public DateTimeFormElement() {
 		setControl( new TextboxFormElement() );
 
-		hidden = NodeViewElement.forTag( "input" );
+		hidden = new NodeViewElement( "input" );
 		hidden.setAttribute( "type", "hidden" );
 
 		setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );

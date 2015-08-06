@@ -15,26 +15,31 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
-import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
+import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
  * @author Arne Vandamme
  */
-public class StaticFormElementNodeBuilder extends NestableNodeBuilderSupport<StaticFormElement>
+public class TextboxFormElementThymeleafBuilder extends FormControlElementBuilderSupport<TextboxFormElement>
 {
 	@Override
-	protected Element createNode( StaticFormElement control,
+	protected Element createNode( TextboxFormElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element element = new Element( "p" );
-		element.setAttribute( "class", "form-control-static" );
+		Element node = new Element( "input" );
+		node.setAttribute( "type", control.getType().getName() );
+		node.setAttribute( "class", "form-control" );
 
-		text( element, control.getText() );
+		attribute( node, "placeholder", control.getPlaceholder() );
+		attribute( node, "value", control.getText() );
 
-		return element;
+		if ( control.getMaxLength() != null ) {
+			attribute( node, "maxlength", control.getMaxLength().toString() );
+		}
+
+		return node;
 	}
 }

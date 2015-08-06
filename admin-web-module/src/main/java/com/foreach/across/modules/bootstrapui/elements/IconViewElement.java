@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.elements.SingleNodeViewElementSupport;
+import com.foreach.across.modules.web.ui.elements.AbstractVoidNodeViewElement;
 
 /**
  * Represents a simple icon element that does not support child elements.
@@ -23,15 +23,15 @@ import com.foreach.across.modules.web.ui.elements.SingleNodeViewElementSupport;
  * @author Arne Vandamme
  * @see GlyphIcon
  */
-public abstract class IconViewElement extends SingleNodeViewElementSupport
+public abstract class IconViewElement extends AbstractVoidNodeViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.ICON;
 
 	private String iconCss;
 
 	public IconViewElement() {
-		super( ELEMENT_TYPE, "span" );
-
+		super( "span" );
+		setElementType( ELEMENT_TYPE );
 		setAttribute( "aria-hidden", "true" );
 	}
 

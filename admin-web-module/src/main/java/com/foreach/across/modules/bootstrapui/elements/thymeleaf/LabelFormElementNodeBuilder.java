@@ -20,14 +20,14 @@ import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.thymeleaf.HtmlIdStore;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.HtmlViewElementThymeleafSupport;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
  * @author Arne Vandamme
  */
-public class LabelFormElementNodeBuilder extends NestableNodeBuilderSupport<LabelFormElement>
+public class LabelFormElementNodeBuilder extends HtmlViewElementThymeleafSupport<LabelFormElement>
 {
 	@Override
 	protected Element createNode( LabelFormElement control,

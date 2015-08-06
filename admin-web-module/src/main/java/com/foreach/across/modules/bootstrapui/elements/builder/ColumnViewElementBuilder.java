@@ -17,20 +17,16 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.ColumnViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * @author Arne Vandamme
  */
-public class ColumnViewElementBuilder extends NodeViewElementSupportBuilder<ColumnViewElement, ColumnViewElementBuilder>
+public class ColumnViewElementBuilder extends AbstractNodeViewElementBuilder<ColumnViewElement, ColumnViewElementBuilder>
 {
 	private Grid.Position position = new Grid.Position();
 
@@ -43,66 +39,6 @@ public class ColumnViewElementBuilder extends NodeViewElementSupportBuilder<Colu
 	public ColumnViewElementBuilder layout( Grid.DeviceGridLayout... layouts ) {
 		position.addAll( Arrays.asList( layouts ) );
 		return this;
-	}
-
-	@Override
-	public ColumnViewElementBuilder htmlId( String htmlId ) {
-		return super.htmlId( htmlId );
-	}
-
-	@Override
-	public ColumnViewElementBuilder attribute( String name, Object value ) {
-		return super.attribute( name, value );
-	}
-
-	@Override
-	public ColumnViewElementBuilder attributes( Map<String, Object> attributes ) {
-		return super.attributes( attributes );
-	}
-
-	@Override
-	public ColumnViewElementBuilder removeAttribute( String name ) {
-		return super.removeAttribute( name );
-	}
-
-	@Override
-	public ColumnViewElementBuilder clearAttributes() {
-		return super.clearAttributes();
-	}
-
-	@Override
-	public ColumnViewElementBuilder add( ViewElement... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public ColumnViewElementBuilder add( ViewElementBuilder... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public ColumnViewElementBuilder addAll( Iterable<?> viewElements ) {
-		return super.addAll( viewElements );
-	}
-
-	@Override
-	public ColumnViewElementBuilder sort( String... elementNames ) {
-		return super.sort( elementNames );
-	}
-
-	@Override
-	public ColumnViewElementBuilder name( String name ) {
-		return super.name( name );
-	}
-
-	@Override
-	public ColumnViewElementBuilder customTemplate( String template ) {
-		return super.customTemplate( template );
-	}
-
-	@Override
-	public ColumnViewElementBuilder postProcessor( ViewElementPostProcessor<ColumnViewElement> postProcessor ) {
-		return super.postProcessor( postProcessor );
 	}
 
 	@Override

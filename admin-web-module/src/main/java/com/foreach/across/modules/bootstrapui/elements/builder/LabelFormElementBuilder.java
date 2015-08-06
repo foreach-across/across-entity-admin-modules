@@ -19,76 +19,13 @@ import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementSupportBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
-import java.util.Map;
-
-public class LabelFormElementBuilder extends NodeViewElementSupportBuilder<LabelFormElement, LabelFormElementBuilder>
+public class LabelFormElementBuilder extends AbstractNodeViewElementBuilder<LabelFormElement, LabelFormElementBuilder>
 {
 	private Object text;
 	private Object target;
-
-	@Override
-	public LabelFormElementBuilder htmlId( String htmlId ) {
-		return super.htmlId( htmlId );
-	}
-
-	@Override
-	public LabelFormElementBuilder attribute( String name, Object value ) {
-		return super.attribute( name, value );
-	}
-
-	@Override
-	public LabelFormElementBuilder attributes( Map<String, Object> attributes ) {
-		return super.attributes( attributes );
-	}
-
-	@Override
-	public LabelFormElementBuilder removeAttribute( String name ) {
-		return super.removeAttribute( name );
-	}
-
-	@Override
-	public LabelFormElementBuilder clearAttributes() {
-		return super.clearAttributes();
-	}
-
-	@Override
-	public LabelFormElementBuilder add( ViewElement... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public LabelFormElementBuilder add( ViewElementBuilder... viewElements ) {
-		return super.add( viewElements );
-	}
-
-	@Override
-	public LabelFormElementBuilder addAll( Iterable<?> viewElements ) {
-		return super.addAll( viewElements );
-	}
-
-	@Override
-	public LabelFormElementBuilder sort( String... elementNames ) {
-		return super.sort( elementNames );
-	}
-
-	@Override
-	public LabelFormElementBuilder name( String name ) {
-		return super.name( name );
-	}
-
-	@Override
-	public LabelFormElementBuilder customTemplate( String template ) {
-		return super.customTemplate( template );
-	}
-
-	@Override
-	public LabelFormElementBuilder postProcessor( ViewElementPostProcessor<LabelFormElement> postProcessor ) {
-		return super.postProcessor( postProcessor );
-	}
 
 	public LabelFormElementBuilder text( String text ) {
 		this.text = text;
@@ -140,7 +77,7 @@ public class LabelFormElementBuilder extends NodeViewElementSupportBuilder<Label
 				if ( textElement instanceof TextViewElement ) {
 					TextViewElement textViewElement = (TextViewElement) textElement;
 
-					if ( textViewElement.isEscapeXml() && textViewElement.getCustomTemplate() ==null ) {
+					if ( textViewElement.isEscapeXml() && textViewElement.getCustomTemplate() == null ) {
 						label.setText( textViewElement.getText() );
 						addAsChild = false;
 					}

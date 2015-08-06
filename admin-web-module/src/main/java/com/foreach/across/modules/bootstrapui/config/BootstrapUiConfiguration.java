@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.solr.repositories;
+package com.foreach.across.modules.bootstrapui.config;
 
-import com.foreach.across.modules.entity.testmodules.solr.business.Product;
-import org.springframework.data.solr.repository.SolrCrudRepository;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Arne Vandamme
  */
-public interface ProductRepository extends SolrCrudRepository<Product, String>
+@Configuration
+public class BootstrapUiConfiguration
 {
+	@Bean
+	public BootstrapUiFactory bootstrapUiFactory() {
+		return new BootstrapUiFactoryImpl();
+	}
 }

@@ -23,7 +23,6 @@ import com.foreach.across.test.support.AbstractViewElementBuilderTest;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 
 import static org.junit.Assert.*;
@@ -36,12 +35,6 @@ public class TestTableViewElementBuilder extends AbstractViewElementBuilderTest<
 	@Override
 	protected TableViewElementBuilder createBuilder( ViewElementBuilderFactory builderFactory ) {
 		return new TableViewElementBuilder();
-	}
-
-	@Override
-	protected Collection<String> nonBuilderReturningMethods() {
-		return Arrays.asList( "header", "createHeader", "footer", "createFooter", "body", "createBody", "caption",
-		                      "createCaption", "cell", "heading", "row" );
 	}
 
 	@Test

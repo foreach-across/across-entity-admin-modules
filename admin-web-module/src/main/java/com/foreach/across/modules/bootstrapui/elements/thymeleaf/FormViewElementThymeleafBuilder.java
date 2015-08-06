@@ -18,7 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 import com.foreach.across.modules.bootstrapui.elements.FormViewElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.HtmlViewElementThymeleafSupport;
 import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
-public class FormViewElementNodeBuilder extends NestableNodeBuilderSupport<FormViewElement>
+public class FormViewElementThymeleafBuilder extends HtmlViewElementThymeleafSupport<FormViewElement>
 {
 	public static final String VAR_CURRENT_BOOTSTRAP_FORM = "_currentBootstrapForm";
 

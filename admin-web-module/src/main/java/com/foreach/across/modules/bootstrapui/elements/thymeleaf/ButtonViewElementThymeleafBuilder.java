@@ -26,7 +26,7 @@ import org.thymeleaf.dom.Text;
 /**
  * @author Arne Vandamme
  */
-public class ButtonViewElementNodeBuilder extends BootstrapNodeBuilderSupport<ButtonViewElement>
+public class ButtonViewElementThymeleafBuilder extends BootstrapThymeleafBuilderSupport<ButtonViewElement>
 {
 	@Override
 	protected Element createNode( ButtonViewElement button,

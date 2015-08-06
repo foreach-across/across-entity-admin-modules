@@ -15,12 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 
 /**
  * @author Arne Vandamme
  */
-public abstract class FormControlElementSupport extends NodeViewElementSupport implements FormControlElement
+public abstract class FormControlElementSupport extends AbstractNodeViewElement implements FormControlElement
 {
 	private boolean disabled, readonly, required;
 	private String controlName;
@@ -28,7 +28,8 @@ public abstract class FormControlElementSupport extends NodeViewElementSupport i
 	private boolean htmlIdSpecified;
 
 	protected FormControlElementSupport( String elementType ) {
-		super( elementType );
+		super( "input" );
+		setElementType( elementType );
 	}
 
 	public boolean isDisabled() {

@@ -17,16 +17,16 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.NestableNodeBuilderSupport;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.HtmlViewElementThymeleafSupport;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
  * @author Arne Vandamme
  */
-public class SelectFormElementNodeBuilder extends FormControlElementBuilderSupport<SelectFormElement>
+public class SelectFormElementThymeleafBuilder extends FormControlElementBuilderSupport<SelectFormElement>
 {
-	public static class OptionBuilder extends NestableNodeBuilderSupport<SelectFormElement.Option>
+	public static class OptionBuilder extends HtmlViewElementThymeleafSupport<SelectFormElement.Option>
 	{
 		@Override
 		protected Element createNode( SelectFormElement.Option control,
@@ -54,7 +54,7 @@ public class SelectFormElementNodeBuilder extends FormControlElementBuilderSuppo
 		}
 	}
 
-	public static class OptionGroupBuilder extends NestableNodeBuilderSupport<SelectFormElement.OptionGroup>
+	public static class OptionGroupBuilder extends HtmlViewElementThymeleafSupport<SelectFormElement.OptionGroup>
 	{
 		@Override
 		protected Element createNode( SelectFormElement.OptionGroup control,

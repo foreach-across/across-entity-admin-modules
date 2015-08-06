@@ -22,6 +22,14 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
 
 public interface BootstrapUiFactory extends ViewElementBuilderFactory
 {
+	HiddenFormElementBuilder hidden();
+
+	NodeViewElementBuilder div();
+
+	NodeViewElementBuilder span();
+
+	NodeViewElementBuilder paragraph();
+
 	FormViewElementBuilder form();
 
 	LabelFormElementBuilder label();

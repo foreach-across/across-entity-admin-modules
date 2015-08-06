@@ -16,8 +16,8 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 import org.springframework.util.Assert;
 
 /**
@@ -25,34 +25,15 @@ import org.springframework.util.Assert;
  *
  * @author Arne Vandamme
  */
-public class ButtonViewElement extends NodeViewElementSupport implements ConfigurableTextViewElement
+public class ButtonViewElement extends AbstractNodeViewElement implements ConfigurableTextViewElement
 {
-	public enum Type
-	{
-		BUTTON,
-		BUTTON_SUBMIT,
-		BUTTON_RESET,
-		INPUT,
-		INPUT_SUBMIT,
-		INPUT_RESET,
-		LINK
-	}
-
-	public enum State
-	{
-		ACTIVE,
-		DISABLED
-	}
-
 	public static final String ELEMENT_TYPE = BootstrapUiElements.BUTTON;
-
 	private String text, title, url = "#";
 	private Style style = Style.Button.DEFAULT;
 	private Type type = Type.BUTTON;
 	private State state;
 	private Size size;
 	private ViewElement icon;
-
 	public ButtonViewElement() {
 		super( ELEMENT_TYPE );
 	}
@@ -132,5 +113,22 @@ public class ButtonViewElement extends NodeViewElementSupport implements Configu
 
 	public void setUrl( String url ) {
 		this.url = url;
+	}
+
+	public enum Type
+	{
+		BUTTON,
+		BUTTON_SUBMIT,
+		BUTTON_RESET,
+		INPUT,
+		INPUT_SUBMIT,
+		INPUT_RESET,
+		LINK
+	}
+
+	public enum State
+	{
+		ACTIVE,
+		DISABLED
 	}
 }

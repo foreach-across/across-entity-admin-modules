@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
  *
  * @author Arne Vandamme
  */
-public class FormViewElement extends NodeViewElementSupport
+public class FormViewElement extends AbstractNodeViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM;
 
@@ -38,7 +38,8 @@ public class FormViewElement extends NodeViewElementSupport
 	private String commandAttribute;
 
 	public FormViewElement() {
-		super( ELEMENT_TYPE );
+		super( "form" );
+		setElementType( ELEMENT_TYPE );
 
 		setAttribute( "role", "form" );
 
@@ -47,6 +48,16 @@ public class FormViewElement extends NodeViewElementSupport
 
 	public FormLayout getFormLayout() {
 		return formLayout;
+	}
+
+	/**
+	 * Set the {@link FormLayout} that should be applied to all {@link FormGroupElement} members
+	 * of this form.
+	 *
+	 * @param formLayout instance
+	 */
+	public void setFormLayout( FormLayout formLayout ) {
+		this.formLayout = formLayout;
 	}
 
 	public String getCommandAttribute() {
@@ -64,14 +75,8 @@ public class FormViewElement extends NodeViewElementSupport
 		this.commandAttribute = commandAttribute;
 	}
 
-	/**
-	 * Set the {@link FormLayout} that should be applied to all {@link FormGroupElement} members
-	 * of this form.
-	 *
-	 * @param formLayout instance
-	 */
-	public void setFormLayout( FormLayout formLayout ) {
-		this.formLayout = formLayout;
+	public HttpMethod getMethod() {
+		return HttpMethod.valueOf( StringUtils.upperCase( (String) getAttribute( "method" ) ) );
 	}
 
 	public void setMethod( HttpMethod httpMethod ) {
@@ -80,16 +85,12 @@ public class FormViewElement extends NodeViewElementSupport
 		setAttribute( "method", StringUtils.lowerCase( httpMethod.toString() ) );
 	}
 
-	public HttpMethod getMethod() {
-		return HttpMethod.valueOf( StringUtils.upperCase( (String) getAttribute( "method" ) ) );
+	public String getAction() {
+		return getAttribute( "action", String.class );
 	}
 
 	public void setAction( String url ) {
 		setAttribute( "action", url );
-	}
-
-	public String getAction() {
-		return getAttribute( "action", String.class );
 	}
 
 	@Override
@@ -102,6 +103,13 @@ public class FormViewElement extends NodeViewElementSupport
 	}
 
 	/**
+	 * @return name attribute of the form
+	 */
+	public String getFormName() {
+		return getAttribute( "name", String.class );
+	}
+
+	/**
 	 * Set the HTML name attribute of this form.  Defaults to {@link #getName()}.
 	 *
 	 * @param name attribute to use
@@ -110,11 +118,8 @@ public class FormViewElement extends NodeViewElementSupport
 		setAttribute( "name", name );
 	}
 
-	/**
-	 * @return name attribute of the form
-	 */
-	public String getFormName() {
-		return getAttribute( "name", String.class );
+	public String getEncType() {
+		return getAttribute( "enctype", String.class );
 	}
 
 	/**
@@ -126,24 +131,24 @@ public class FormViewElement extends NodeViewElementSupport
 		setAttribute( "enctype", encType );
 	}
 
-	public String getEncType() {
-		return getAttribute( "enctype", String.class );
+	public String getAcceptCharSet() {
+		return getAttribute( "accept-charset", String.class );
 	}
 
 	public void setAcceptCharSet( String charSet ) {
 		setAttribute( "accept-charset", charSet );
 	}
 
-	public String getAcceptCharSet() {
-		return getAttribute( "accept-charset", String.class );
+	public boolean isAutoComplete() {
+		return !hasAttribute( "autocomplete" ) || StringUtils.equals( (String) getAttribute( "autocomplete" ), "on" );
 	}
 
 	public void setAutoComplete( boolean autoComplete ) {
 		setAttribute( "autocomplete", autoComplete ? "on" : "off" );
 	}
 
-	public boolean isAutoComplete() {
-		return !hasAttribute( "autocomplete" ) || StringUtils.equals( (String) getAttribute( "autocomplete" ), "on" );
+	public boolean isNoValidate() {
+		return hasAttribute( "novalidate" );
 	}
 
 	public void setNoValidate( boolean noValidate ) {
@@ -153,10 +158,6 @@ public class FormViewElement extends NodeViewElementSupport
 		else {
 			removeAttribute( "novalidate" );
 		}
-	}
-
-	public boolean isNoValidate() {
-		return hasAttribute( "novalidate" );
 	}
 
 	//form-inline

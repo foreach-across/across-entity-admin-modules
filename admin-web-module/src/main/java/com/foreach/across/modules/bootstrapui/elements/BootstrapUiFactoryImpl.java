@@ -19,9 +19,31 @@ import com.foreach.across.modules.bootstrapui.elements.builder.*;
 import com.foreach.across.modules.web.ui.StandardViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory implements BootstrapUiFactory
 {
+	@Override
+	public HiddenFormElementBuilder hidden() {
+		return new HiddenFormElementBuilder();
+	}
+
+	@Override
+	public NodeViewElementBuilder div() {
+		return node( "div" );
+	}
+
+	@Override
+	public NodeViewElementBuilder span() {
+		return node( "span" );
+	}
+
+	@Override
+	public NodeViewElementBuilder paragraph() {
+		return node( "p" );
+	}
+
 	@Override
 	public FormViewElementBuilder form() {
 		return new FormViewElementBuilder();
@@ -84,7 +106,7 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 
 	@Override
 	public NodeViewElementBuilder row() {
-		return new NodeViewElementBuilder().tagName( "div" ).attribute( "class", "row" );
+		return new NodeViewElementBuilder( "div" ).attribute( "class", "row" );
 	}
 
 	@Override
@@ -94,7 +116,7 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 
 	@Override
 	public NodeViewElementBuilder helpBlock() {
-		return new NodeViewElementBuilder().tagName( "span" ).attribute( "class", "help-block" );
+		return new NodeViewElementBuilder( "span" ).attribute( "class", "help-block" );
 	}
 
 	@Override

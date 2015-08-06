@@ -13,36 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.testmodules.springdata.business;
+package com.foreach.across.modules.bootstrapui.elements;
 
-import org.hibernate.validator.constraints.Length;
-
-import javax.persistence.Embeddable;
+import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
+ * Basic support for a typical form input element.  A form control with limited
+ * attributes like control name and disabled.
+ *
  * @author Arne Vandamme
  */
-@Embeddable
-public class Address
+public interface FormInputElement extends ViewElement
 {
-	@Length(max = 100)
-	private String street;
+	String getControlName();
 
-	private int zipCode;
+	void setControlName( String controlName );
 
-	public String getStreet() {
-		return street;
-	}
+	boolean isDisabled();
 
-	public void setStreet( String street ) {
-		this.street = street;
-	}
-
-	public int getZipCode() {
-		return zipCode;
-	}
-
-	public void setZipCode( int zipCode ) {
-		this.zipCode = zipCode;
-	}
+	void setDisabled( boolean disabled );
 }

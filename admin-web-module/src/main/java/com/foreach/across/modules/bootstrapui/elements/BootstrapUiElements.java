@@ -22,6 +22,8 @@ import com.foreach.across.modules.web.ui.StandardViewElements;
  */
 public interface BootstrapUiElements extends StandardViewElements
 {
+	String HIDDEN = "bootstrapHidden";
+
 	String ICON = "bootstrapIcon";
 	String BUTTON = "bootstrapButton";
 	String TEXTBOX = "bootstrapTextbox";

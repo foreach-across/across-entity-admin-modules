@@ -16,13 +16,13 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElementSupport;
 
 /**
  * @author Arne Vandamme
  */
-public class LabelFormElement extends NodeViewElementSupport implements ConfigurableTextViewElement
+public class LabelFormElement extends AbstractNodeViewElement implements ConfigurableTextViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.LABEL;
 
@@ -30,7 +30,8 @@ public class LabelFormElement extends NodeViewElementSupport implements Configur
 	private Object forTarget;
 
 	public LabelFormElement() {
-		super( ELEMENT_TYPE );
+		super( "label" );
+		setElementType( ELEMENT_TYPE );
 	}
 
 	@Override
