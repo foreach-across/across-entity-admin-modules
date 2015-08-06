@@ -57,7 +57,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	private int maximumSingleLineLength = 300;
 
 	public TextboxFormElementBuilderFactory() {
-		addProcessor( new FormControlRequiredBuilderProcessor<TextboxFormElementBuilder>() );
+		addProcessor( new FormControlRequiredBuilderProcessor<>() );
 		addProcessor( new TextboxConstraintsProcessor() );
 	}
 
@@ -81,12 +81,11 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		                  .controlName( propertyDescriptor.getName() )
 		                  .multiLine( String.class.equals( propertyDescriptor.getPropertyType() ) )
 		                  .postProcessor(
-				                  new EntityPropertyValueTextPostProcessor<TextboxFormElement>( conversionService,
+				                  new EntityPropertyValueTextPostProcessor<>( conversionService,
 				                                                                                propertyDescriptor )
 		                  )
-		                  .postProcessor( new EntityPropertyControlPostProcessor<TextboxFormElement>() )
+		                  .postProcessor( new EntityPropertyControlPostProcessor<>() )
 		                  .postProcessor( new TextboxPlaceholderProcessor( propertyDescriptor ) );
-
 	}
 
 	/**

@@ -16,8 +16,6 @@
 package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderHelpers;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderServiceImpl;
@@ -46,11 +44,6 @@ public class BootstrapUiConfiguration
 	@Bean
 	public BootstrapUiElementTypeLookupStrategy bootstrapUiElementTypeLookupStrategy() {
 		return new BootstrapUiElementTypeLookupStrategy();
-	}
-
-	@Bean
-	public BootstrapUiFactory bootstrapUiFactory() {
-		return new BootstrapUiFactoryImpl();
 	}
 
 	@Bean
@@ -91,5 +84,10 @@ public class BootstrapUiConfiguration
 	@Bean
 	public DateTimeFormElementBuilderFactory dateTimeFormElementBuilderFactory() {
 		return new DateTimeFormElementBuilderFactory();
+	}
+
+	@Bean
+	public HiddenFormElementBuilderFactory hiddenFormElementBuilderFactory(){
+		return new HiddenFormElementBuilderFactory();
 	}
 }

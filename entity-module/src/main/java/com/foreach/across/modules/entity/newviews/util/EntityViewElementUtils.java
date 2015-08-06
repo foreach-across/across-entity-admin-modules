@@ -16,8 +16,8 @@
 package com.foreach.across.modules.entity.newviews.util;
 
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext;
 
 /**
  * Contains utility methods related to view elements and view building in an entity context.

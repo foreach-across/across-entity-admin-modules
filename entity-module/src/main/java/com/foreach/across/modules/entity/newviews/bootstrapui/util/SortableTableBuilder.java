@@ -25,7 +25,6 @@ import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderServic
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.*;
-import com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,28 +44,6 @@ import static com.foreach.across.modules.entity.newviews.ViewElementMode.LIST_VA
 public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 {
 	/**
-	 * Sets the position of the item being processed (in an
-	 * {@link com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext}) as the
-	 * text of a {@link TextViewElement}.
-	 */
-	public static class ResultNumberProcessor implements ViewElementPostProcessor<TextViewElement>
-	{
-		private final int startIndex;
-
-		public ResultNumberProcessor( int startIndex ) {
-			this.startIndex = startIndex;
-		}
-
-		@Override
-		public void postProcess( ViewElementBuilderContext builderContext, TextViewElement element ) {
-			if ( builderContext instanceof IteratorViewElementBuilderContext ) {
-				IteratorViewElementBuilderContext ctx = (IteratorViewElementBuilderContext) builderContext;
-				element.setText( String.valueOf( ctx.getIndex() + 1 + startIndex ) );
-			}
-		}
-	}
-
-	/**
 	 * Sets an 'odd' or 'even' class on a table row depending on the iterator index.
 	 */
 	public static final ViewElementPostProcessor<TableViewElement.Row> CSS_ODD_EVEN_ROW_PROCESSOR
@@ -80,7 +57,6 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 			}
 		}
 	};
-
 	public static String DATA_ATTR_FIELD = "data-tbl-field";
 	public static String DATA_ATTR_TABLE_NAME = "data-tbl";
 	public static String DATA_ATTR_TABLE_TYPE = "data-tbl-type";
@@ -91,94 +67,24 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	public static String DATA_ATTR_PAGE_SIZE = "data-tbl-size";
 	public static String DATA_ATTR_SORT = "data-tbl-sort";
 	public static String DATA_ATTR_SORT_PROPERTY = "data-tbl-sort-property";
-
 	protected final EntityViewElementBuilderService viewElementBuilderService;
 	protected final BootstrapUiFactory bootstrapUi;
-
 	private String tableName = "sortableTable";
-
 	private EntityConfiguration entityConfiguration;
 	private Collection<String> sortableProperties;
 	private Collection<EntityPropertyDescriptor> propertyDescriptors;
-
 	private boolean tableOnly, showResultNumber = true;
 	private Page<Object> page;
-
 	private Style[] tableStyles = new Style[] { Style.Table.HOVER };
 	private PagingMessages pagingMessages;
-
 	private ViewElementBuilderSupport.ElementOrBuilder noResultsElement;
-
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors = new ArrayList<>();
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors = new ArrayList<>();
-
 	@Autowired
 	public SortableTableBuilder( EntityViewElementBuilderService viewElementBuilderService,
 	                             BootstrapUiFactory bootstrapUi ) {
 		this.viewElementBuilderService = viewElementBuilderService;
 		this.bootstrapUi = bootstrapUi;
-	}
-
-	/**
-	 * @param tableName to be used both internally and as data attribute on the resulting html table
-	 */
-	public void setTableName( String tableName ) {
-		this.tableName = tableName;
-	}
-
-	public void setEntityConfiguration( EntityConfiguration entityConfiguration ) {
-		this.entityConfiguration = entityConfiguration;
-	}
-
-	public void setPropertyDescriptors( Collection<EntityPropertyDescriptor> propertyDescriptors ) {
-		this.propertyDescriptors = propertyDescriptors;
-	}
-
-	/**
-	 * Limit the properties that can be sorted on by specifiying them explicitly.  If the collection
-	 * is null then all properties that have a {@link EntityAttributes#SORTABLE_PROPERTY} attribute will
-	 * be sortable.
-	 *
-	 * @param sortableProperties collection of property names that can be sorted on
-	 */
-	public void setSortableProperties( Collection<String> sortableProperties ) {
-		this.sortableProperties = sortableProperties;
-	}
-
-	/**
-	 * @param pagingMessages to be used for the result text
-	 */
-	public void setPagingMessages( PagingMessages pagingMessages ) {
-		this.pagingMessages = pagingMessages;
-	}
-
-	/**
-	 * @param tableOnly true if only the table should be returned (no panel)
-	 */
-	public void setTableOnly( boolean tableOnly ) {
-		this.tableOnly = tableOnly;
-	}
-
-	/**
-	 * @param showResultNumber true if result number should be included
-	 */
-	public void setShowResultNumber( boolean showResultNumber ) {
-		this.showResultNumber = showResultNumber;
-	}
-
-	/**
-	 * @param tableStyles that should be applied to the generated table
-	 */
-	public void setTableStyles( Style... tableStyles ) {
-		this.tableStyles = tableStyles;
-	}
-
-	/**
-	 * @param page of data items to be shown
-	 */
-	@SuppressWarnings("unchecked")
-	public void setPage( Page page ) {
-		this.page = page;
 	}
 
 	/**
@@ -200,16 +106,6 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		this.noResultsElement = ViewElementBuilderSupport.ElementOrBuilder.wrap( builder );
 	}
 
-	public void setHeaderRowProcessors( Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors ) {
-		this.headerRowProcessors.clear();
-		this.headerRowProcessors.addAll( headerRowProcessors );
-	}
-
-	public void setValueRowProcessors( Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors ) {
-		this.valueRowProcessors.clear();
-		this.valueRowProcessors.addAll( valueRowProcessors );
-	}
-
 	public void addHeaderRowProcessor( ViewElementPostProcessor<TableViewElement.Row> processor ) {
 		headerRowProcessors.add( processor );
 	}
@@ -222,44 +118,116 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		return tableName;
 	}
 
+	/**
+	 * @param tableName to be used both internally and as data attribute on the resulting html table
+	 */
+	public void setTableName( String tableName ) {
+		this.tableName = tableName;
+	}
+
 	public EntityConfiguration getEntityConfiguration() {
 		return entityConfiguration;
+	}
+
+	public void setEntityConfiguration( EntityConfiguration entityConfiguration ) {
+		this.entityConfiguration = entityConfiguration;
 	}
 
 	public Collection<EntityPropertyDescriptor> getPropertyDescriptors() {
 		return propertyDescriptors;
 	}
 
+	public void setPropertyDescriptors( Collection<EntityPropertyDescriptor> propertyDescriptors ) {
+		this.propertyDescriptors = propertyDescriptors;
+	}
+
 	public boolean isTableOnly() {
 		return tableOnly;
+	}
+
+	/**
+	 * @param tableOnly true if only the table should be returned (no panel)
+	 */
+	public void setTableOnly( boolean tableOnly ) {
+		this.tableOnly = tableOnly;
 	}
 
 	public Page getPage() {
 		return page;
 	}
 
+	/**
+	 * @param page of data items to be shown
+	 */
+	@SuppressWarnings("unchecked")
+	public void setPage( Page page ) {
+		this.page = page;
+	}
+
 	public boolean isShowResultNumber() {
 		return showResultNumber;
+	}
+
+	/**
+	 * @param showResultNumber true if result number should be included
+	 */
+	public void setShowResultNumber( boolean showResultNumber ) {
+		this.showResultNumber = showResultNumber;
 	}
 
 	public Style[] getTableStyles() {
 		return tableStyles;
 	}
 
+	/**
+	 * @param tableStyles that should be applied to the generated table
+	 */
+	public void setTableStyles( Style... tableStyles ) {
+		this.tableStyles = tableStyles;
+	}
+
 	public PagingMessages getPagingMessages() {
 		return pagingMessages;
+	}
+
+	/**
+	 * @param pagingMessages to be used for the result text
+	 */
+	public void setPagingMessages( PagingMessages pagingMessages ) {
+		this.pagingMessages = pagingMessages;
 	}
 
 	public Collection<String> getSortableProperties() {
 		return sortableProperties;
 	}
 
+	/**
+	 * Limit the properties that can be sorted on by specifiying them explicitly.  If the collection
+	 * is null then all properties that have a {@link EntityAttributes#SORTABLE_PROPERTY} attribute will
+	 * be sortable.
+	 *
+	 * @param sortableProperties collection of property names that can be sorted on
+	 */
+	public void setSortableProperties( Collection<String> sortableProperties ) {
+		this.sortableProperties = sortableProperties;
+	}
+
 	public Collection<ViewElementPostProcessor<TableViewElement.Row>> getHeaderRowProcessors() {
 		return Collections.unmodifiableCollection( headerRowProcessors );
 	}
 
+	public void setHeaderRowProcessors( Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors ) {
+		this.headerRowProcessors.clear();
+		this.headerRowProcessors.addAll( headerRowProcessors );
+	}
+
 	public Collection<ViewElementPostProcessor<TableViewElement.Row>> getValueRowProcessors() {
 		return Collections.unmodifiableCollection( valueRowProcessors );
+	}
+
+	public void setValueRowProcessors( Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors ) {
+		this.valueRowProcessors.clear();
+		this.valueRowProcessors.addAll( valueRowProcessors );
 	}
 
 	/**
@@ -492,5 +460,27 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		}
 
 		return pager;
+	}
+
+	/**
+	 * Sets the position of the item being processed (in an
+	 * {@link com.foreach.across.modules.web.ui.elements.IteratorViewElementBuilderContext}) as the
+	 * text of a {@link TextViewElement}.
+	 */
+	public static class ResultNumberProcessor implements ViewElementPostProcessor<TextViewElement>
+	{
+		private final int startIndex;
+
+		public ResultNumberProcessor( int startIndex ) {
+			this.startIndex = startIndex;
+		}
+
+		@Override
+		public void postProcess( ViewElementBuilderContext builderContext, TextViewElement element ) {
+			if ( builderContext instanceof IteratorViewElementBuilderContext ) {
+				IteratorViewElementBuilderContext ctx = (IteratorViewElementBuilderContext) builderContext;
+				element.setText( String.valueOf( ctx.getIndex() + 1 + startIndex ) );
+			}
+		}
 	}
 }

@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
+import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 
@@ -24,13 +24,13 @@ import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
  *
  * @author Arne Vandamme
  */
-public class EntityPropertyControlPostProcessor<T extends FormControlElementSupport>
+public class EntityPropertyControlPostProcessor<T extends FormInputElement>
 		implements ViewElementPostProcessor<T>
 {
 	public static final String PREFIX = "entity.";
 
 	@Override
-	public void postProcess( ViewElementBuilderContext builderContext, FormControlElementSupport element ) {
+	public void postProcess( ViewElementBuilderContext builderContext, FormInputElement element ) {
 		String controlName = element.getControlName();
 
 		if ( controlName != null ) {
