@@ -33,13 +33,10 @@ public class ButtonViewElementThymeleafBuilder extends BootstrapThymeleafBuilder
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
 		Element node = basicNode( button );
-		style( button, node );
 
 		addChild( node, button.getIcon(), arguments, viewElementNodeFactory );
 
 		text( button, node );
-		size( button, node );
-		state( button, node );
 		attribute( node, "title", button.getTitle() );
 
 		if ( button.getType() == ButtonViewElement.Type.LINK ) {
@@ -52,8 +49,20 @@ public class ButtonViewElementThymeleafBuilder extends BootstrapThymeleafBuilder
 		return node;
 	}
 
+	@Override
+	protected Element postProcess( Element node,
+	                               ButtonViewElement button,
+	                               Arguments arguments,
+	                               ViewElementNodeFactory viewElementNodeFactory ) {
+		style( button, node );
+		size( button, node );
+		state( button, node );
+
+		return node;
+	}
+
 	private void style( ButtonViewElement button, Element node ) {
-		attribute( node, "class", "btn" );
+		attributeAppend( node, "class", "btn" );
 		style( node, "btn", button.getStyle() );
 	}
 
