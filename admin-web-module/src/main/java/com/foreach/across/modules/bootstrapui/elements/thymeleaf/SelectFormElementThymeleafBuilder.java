@@ -24,7 +24,7 @@ import org.thymeleaf.dom.Element;
 /**
  * @author Arne Vandamme
  */
-public class SelectFormElementThymeleafBuilder extends FormControlElementBuilderSupport<SelectFormElement>
+public class SelectFormElementThymeleafBuilder extends FormControlElementThymleafSupport<SelectFormElement>
 {
 	public static class OptionBuilder extends HtmlViewElementThymeleafSupport<SelectFormElement.Option>
 	{

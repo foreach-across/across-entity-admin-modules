@@ -23,7 +23,7 @@ import org.thymeleaf.dom.Element;
 /**
  * @author Arne Vandamme
  */
-public abstract class FormControlElementBuilderSupport<T extends FormControlElementSupport>
+public abstract class FormControlElementThymleafSupport<T extends FormControlElementSupport>
 		extends HtmlViewElementThymeleafSupport<T>
 {
 	@Override

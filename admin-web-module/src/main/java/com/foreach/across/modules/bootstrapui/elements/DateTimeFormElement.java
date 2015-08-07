@@ -15,10 +15,14 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.core.support.SingletonIterator;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.mysema.commons.lang.Assert;
+import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
+import org.springframework.util.CompositeIterator;
 
+import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -30,17 +34,21 @@ import java.util.Iterator;
  */
 public class DateTimeFormElement extends InputGroupFormElement implements FormControlElement
 {
-	private NodeViewElement hidden;
+	public static final String ATTRIBUTE_DATA_DATEPICKER = "data-datetimepicker";
+
+	public static final String CSS_JS_CONTROL = "js-form-datetimepicker";
+	public static final String CSS_DATE = "date";
+
+	private final HiddenFormElement hidden = new HiddenFormElement();
+
+	private Date value;
 
 	public DateTimeFormElement() {
 		setControl( new TextboxFormElement() );
 
-		hidden = new NodeViewElement( "input" );
-		hidden.setAttribute( "type", "hidden" );
-
 		setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
-		addCssClass( "date" );
-		add( hidden );
+		addCssClass( CSS_JS_CONTROL, CSS_DATE );
+		setAttribute( ATTRIBUTE_DATA_DATEPICKER, new DateTimeFormElementConfiguration() );
 	}
 
 	@Override
@@ -89,10 +97,46 @@ public class DateTimeFormElement extends InputGroupFormElement implements FormCo
 		getControl( FormControlElement.class ).setControlName( controlName );
 	}
 
+	public DateTimeFormElementConfiguration getConfiguration() {
+		return getAttribute( ATTRIBUTE_DATA_DATEPICKER, DateTimeFormElementConfiguration.class );
+	}
+
+	public void setConfiguration( DateTimeFormElementConfiguration configuration ) {
+		Assert.notNull( configuration );
+		setAttribute( ATTRIBUTE_DATA_DATEPICKER, configuration );
+	}
+
+	public Date getValue() {
+		return value;
+	}
+
+	public void setValue( Date value ) {
+		this.value = value;
+	}
+
 	@Override
 	public Iterator<ViewElement> iterator() {
-		hidden.setAttribute( "name", getControl( FormControlElement.class ).getControlName() );
-		getControl( FormControlElement.class ).setControlName( "_" + hidden.getAttribute( "name" ) );
-		return super.iterator();
+		FormControlElement controlElement = getControl( FormControlElement.class );
+		String controlName = controlElement.getControlName();
+
+		if ( controlName != null && !StringUtils.equals( "_" + hidden.getControlName(), controlName ) ) {
+			hidden.setAttribute( "name", controlName );
+			controlElement.setControlName( "_" + controlName );
+		}
+
+		if ( value != null ) {
+			String dateAsString = DateTimeFormElementConfiguration.JAVA_FORMATTER.format( value );
+			hidden.setValue( dateAsString );
+
+			if ( controlElement instanceof ConfigurableTextViewElement ) {
+				( (ConfigurableTextViewElement) controlElement ).setText( dateAsString );
+			}
+		}
+
+		CompositeIterator<ViewElement> elements = new CompositeIterator<>();
+		elements.add( super.iterator() );
+		elements.add( new SingletonIterator<>( hidden ) );
+
+		return elements;
 	}
 }

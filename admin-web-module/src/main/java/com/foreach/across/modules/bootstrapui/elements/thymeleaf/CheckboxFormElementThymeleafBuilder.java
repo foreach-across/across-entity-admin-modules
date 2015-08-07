@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @author Arne Vandamme
  */
-public class CheckboxFormElementThymeleafBuilder extends FormControlElementBuilderSupport<CheckboxFormElement>
+public class CheckboxFormElementThymeleafBuilder extends FormControlElementThymleafSupport<CheckboxFormElement>
 {
 	@Override
 	public List<Node> buildNodes( CheckboxFormElement control,
