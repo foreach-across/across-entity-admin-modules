@@ -51,7 +51,8 @@ public abstract class PersistenceAnnotationBuilderProcessor<T extends ViewElemen
 				ManyToOne.class,
 				Embedded.class,
 				Id.class,
-				EmbeddedId.class
+				EmbeddedId.class,
+		        Temporal.class
 		);
 	}
 
