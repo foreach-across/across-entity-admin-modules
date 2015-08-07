@@ -16,116 +16,124 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElement;
-import com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement;
+import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
+import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 
-import java.util.Map;
+import java.util.Date;
 
 /**
  * @author Arne Vandamme
  */
-public class DateTimeFormElementBuilder extends InputGroupFormElementBuilder
+public class DateTimeFormElementBuilder extends FormControlElementBuilderSupport<DateTimeFormElement, DateTimeFormElementBuilder>
 {
-	@Override
+	private ElementOrBuilder addonBefore, addonAfter, control;
+	private Date value;
+	private DateTimeFormElementConfiguration configuration;
+
+	public DateTimeFormElementConfiguration getConfiguration() {
+		return configuration;
+	}
+
 	public DateTimeFormElementBuilder addonBefore( ViewElement element ) {
-		return (DateTimeFormElementBuilder) super.addonBefore( element );
+		addonBefore = element != null ? ElementOrBuilder.wrap( element ) : null;
+		return this;
 	}
 
-	@Override
 	public DateTimeFormElementBuilder addonBefore( ViewElementBuilder element ) {
-		return (DateTimeFormElementBuilder) super.addonBefore( element );
+		addonBefore = element != null ? ElementOrBuilder.wrap( element ) : null;
+		return this;
 	}
 
-	@Override
 	public DateTimeFormElementBuilder addonAfter( ViewElement element ) {
-		return (DateTimeFormElementBuilder) super.addonAfter( element );
+		addonAfter = element != null ? ElementOrBuilder.wrap( element ) : null;
+		return this;
 	}
 
-	@Override
 	public DateTimeFormElementBuilder addonAfter( ViewElementBuilder element ) {
-		return (DateTimeFormElementBuilder) super.addonAfter( element );
+		addonAfter = element != null ? ElementOrBuilder.wrap( element ) : null;
+		return this;
 	}
 
-	@Override
 	public DateTimeFormElementBuilder control( ViewElement element ) {
-		return (DateTimeFormElementBuilder) super.control( element );
+		control = element != null ? ElementOrBuilder.wrap( element ) : null;
+		return this;
 	}
 
-	@Override
 	public DateTimeFormElementBuilder control( ViewElementBuilder element ) {
-		return (DateTimeFormElementBuilder) super.control( element );
+		control = element != null ? ElementOrBuilder.wrap( element ) : null;
+		return this;
 	}
 
-	@Override
-	public DateTimeFormElementBuilder htmlId( String htmlId ) {
-		return (DateTimeFormElementBuilder) super.htmlId( htmlId );
+	public DateTimeFormElementBuilder value( Date value ) {
+		this.value = value;
+		return this;
 	}
 
-	@Override
-	public DateTimeFormElementBuilder attribute( String name, Object value ) {
-		return (DateTimeFormElementBuilder) super.attribute( name, value );
+	public DateTimeFormElementBuilder datetime() {
+		return format( DateTimeFormElementConfiguration.Format.DATETIME );
 	}
 
-	@Override
-	public DateTimeFormElementBuilder attributes( Map<String, Object> attributes ) {
-		return (DateTimeFormElementBuilder) super.attributes( attributes );
+	public DateTimeFormElementBuilder date() {
+		return format( DateTimeFormElementConfiguration.Format.DATE );
 	}
 
-	@Override
-	public DateTimeFormElementBuilder removeAttribute( String name ) {
-		return (DateTimeFormElementBuilder) super.removeAttribute( name );
+	public DateTimeFormElementBuilder time() {
+		return format( DateTimeFormElementConfiguration.Format.TIME );
 	}
 
-	@Override
-	public DateTimeFormElementBuilder clearAttributes() {
-		return (DateTimeFormElementBuilder) super.clearAttributes();
+	/**
+	 * Sets a default configuration for the format.
+	 */
+	public DateTimeFormElementBuilder format( DateTimeFormElementConfiguration.Format format ) {
+		if ( configuration == null ) {
+			configuration = new DateTimeFormElementConfiguration( format );
+		}
+		else {
+			configuration.setFormat( format );
+		}
+
+		if ( format == DateTimeFormElementConfiguration.Format.TIME ) {
+			addonAfter( new GlyphIcon( GlyphIcon.TIME ) );
+		}
+		else {
+			addonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
+		}
+		return this;
 	}
 
-	@Override
-	public DateTimeFormElementBuilder add( ViewElement... viewElements ) {
-		return (DateTimeFormElementBuilder) super.add( viewElements );
-	}
-
-	@Override
-	public DateTimeFormElementBuilder add( ViewElementBuilder... viewElements ) {
-		return (DateTimeFormElementBuilder) super.add( viewElements );
-	}
-
-	@Override
-	public DateTimeFormElementBuilder addAll( Iterable<?> viewElements ) {
-		return (DateTimeFormElementBuilder) super.addAll( viewElements );
-	}
-
-	@Override
-	public DateTimeFormElementBuilder sort( String... elementNames ) {
-		return (DateTimeFormElementBuilder) super.sort( elementNames );
-	}
-
-	@Override
-	public DateTimeFormElementBuilder name( String name ) {
-		return (DateTimeFormElementBuilder) super.name( name );
-	}
-
-	@Override
-	public DateTimeFormElementBuilder customTemplate( String template ) {
-		return (DateTimeFormElementBuilder) super.customTemplate( template );
-	}
-
-	@Override
-	public DateTimeFormElementBuilder postProcessor( ViewElementPostProcessor<InputGroupFormElement> postProcessor ) {
-		return (DateTimeFormElementBuilder) super.postProcessor( postProcessor );
+	public DateTimeFormElementBuilder configuration( DateTimeFormElementConfiguration configuration ) {
+		this.configuration = configuration;
+		return this;
 	}
 
 	@Override
 	protected DateTimeFormElement createElement( ViewElementBuilderContext builderContext ) {
-		return (DateTimeFormElement) super.createElement( builderContext );
-	}
+		DateTimeFormElement datetime = new DateTimeFormElement();
 
-	@Override
-	protected DateTimeFormElement create() {
-		return new DateTimeFormElement();
+		// Set controls first
+		if ( control != null ) {
+			datetime.setControl( control.get( builderContext ) );
+		}
+		if ( addonBefore != null ) {
+			datetime.setAddonBefore( addonBefore.get( builderContext ) );
+		}
+		if ( addonAfter != null ) {
+			datetime.setAddonAfter( addonAfter.get( builderContext ) );
+		}
+
+		// Then apply regular form control properties so they are dispatched to the backing control
+		datetime = apply( datetime, builderContext );
+
+		if ( configuration != null ) {
+			datetime.setConfiguration( new DateTimeFormElementConfiguration( configuration ) );
+		}
+		if ( value != null ) {
+			datetime.setValue( value );
+		}
+
+		return datetime;
 	}
 }

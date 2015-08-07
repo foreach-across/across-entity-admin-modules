@@ -73,4 +73,6 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 	InputGroupFormElementBuilder inputGroup();
 
 	InputGroupFormElementBuilder inputGroup( ViewElementBuilder control );
+
+	DateTimeFormElementBuilder datetime();
 }

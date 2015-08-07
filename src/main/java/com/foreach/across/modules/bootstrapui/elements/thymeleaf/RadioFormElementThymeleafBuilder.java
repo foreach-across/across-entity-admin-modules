@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @author Arne Vandamme
  */
-public class RadioFormElementThymeleafBuilder extends FormControlElementBuilderSupport<RadioFormElement>
+public class RadioFormElementThymeleafBuilder extends FormControlElementThymleafSupport<RadioFormElement>
 {
 	@Override
 	public List<Node> buildNodes( RadioFormElement control,

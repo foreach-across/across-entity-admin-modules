@@ -79,7 +79,7 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 		Locale defaultLocale = settings.getDefaultLocale();
 
 		if ( defaultLocale == null ) {
-			defaultLocale = Locale.US;
+			defaultLocale = Locale.UK;
 		}
 
 		cookieLocaleResolver.setDefaultLocale( defaultLocale );
