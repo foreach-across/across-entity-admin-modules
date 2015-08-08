@@ -37,16 +37,6 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 	public void emptyInputGroup() {
 		renderAndExpect(
 				inputGroup,
-				"<div class='input-group' />"
-		);
-	}
-
-	@Test
-	public void inputGroupWithOnlyControl() {
-		inputGroup.setControl( new TextboxFormElement() );
-
-		renderAndExpect(
-				inputGroup,
 				"<div class='input-group'>"
 						+ "<input type='text' class='form-control' />"
 						+ "</div>"
@@ -54,9 +44,20 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void inputGroupWithOnlyControl() {
+		inputGroup.setControl( new SelectFormElement() );
+
+		renderAndExpect(
+				inputGroup,
+				"<div class='input-group'>"
+						+ "<select class='form-control' />"
+						+ "</div>"
+		);
+	}
+
+	@Test
 	public void simpleAddonBefore() {
 		inputGroup.setAddonBefore( new GlyphIcon( GlyphIcon.CALENDAR ) );
-		inputGroup.setControl( new TextboxFormElement() );
 
 		assertNull( inputGroup.getAddonAfter() );
 		assertNotNull( inputGroup.getAddonBefore() );
@@ -77,7 +78,6 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void simpleAddonAfter() {
 		inputGroup.setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
-		inputGroup.setControl( new TextboxFormElement() );
 
 		assertNull( inputGroup.getAddonBefore() );
 		assertNotNull( inputGroup.getAddonAfter() );

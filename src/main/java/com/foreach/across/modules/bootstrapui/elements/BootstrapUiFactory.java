@@ -70,9 +70,9 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 
 	ColumnViewElementBuilder column( Grid.DeviceGridLayout... layouts );
 
-	InputGroupFormElementBuilder inputGroup();
+	InputGroupFormElementBuilderSupport inputGroup();
 
-	InputGroupFormElementBuilder inputGroup( ViewElementBuilder control );
+	InputGroupFormElementBuilderSupport inputGroup( ViewElementBuilder control );
 
 	DateTimeFormElementBuilder datetime();
 }

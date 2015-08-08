@@ -30,16 +30,22 @@ import java.util.*;
  */
 public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 {
-	public static final String FMT_EXCHANGE_JAVA = "yyyy-MM-dd HH:mm:ss";
-	public static final String FMT_EXCHANGE_MOMENT = "YYYY-MM-DD HH:mm:ss";
+	public static final String FMT_EXPORT_JAVA = "yyyy-MM-dd HH:mm";
+	public static final String FMT_EXPORT_MOMENT_DATE = "YYYY-MM-DD";
+	public static final String FMT_EXPORT_MOMENT_TIME = "HH:mm";
+	public static final String FMT_EXPORT_MOMENT_DATETIME = "YYYY-MM-DD HH:mm";
 
 	public static final String FMT_PATTERN_DATE = "L";
+	public static final String FMT_PATTERN_DATE_FULL = "LL";
 	public static final String FMT_PATTERN_TIME = "LT";
 	public static final String FMT_PATTERN_DATETIME = "L LT";
+	public static final String FMT_PATTERN_DATETIME_FULL = "LLL";
+
+	public static final String FMT_EXTRA_PATTERN_DATE = "YYYY-MM-DD";
 
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
 
-	public static final FastDateFormat JAVA_FORMATTER = FastDateFormat.getInstance( FMT_EXCHANGE_JAVA );
+	public static final FastDateFormat JAVA_FORMATTER = FastDateFormat.getInstance( FMT_EXPORT_JAVA );
 
 	@JsonIgnore
 	private Format format;
@@ -48,7 +54,6 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 		setFormat( Format.DATETIME );
 		setLocale( DEFAULT_LOCALE );
 		put( "datepickerInput", "input[type=text]" );
-		put( "extraFormats", new String[] { FMT_EXCHANGE_MOMENT, "L" } );
 	}
 
 	public DateTimeFormElementConfiguration( Format format ) {
@@ -89,15 +94,66 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 
 		switch ( format ) {
 			case DATE:
-				put( "format", FMT_PATTERN_DATE );
+				setPattern( FMT_PATTERN_DATE );
+				setExtraPatterns( FMT_EXPORT_MOMENT_DATETIME, FMT_EXTRA_PATTERN_DATE );
+				setExportPattern( FMT_EXPORT_MOMENT_DATE );
+				break;
+			case DATE_FULL:
+				setPattern( FMT_PATTERN_DATE_FULL );
+				setExtraPatterns( FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_EXTRA_PATTERN_DATE );
+				setExportPattern( FMT_EXPORT_MOMENT_DATE );
 				break;
 			case TIME:
-				put( "format", FMT_PATTERN_TIME );
+				setPattern( FMT_PATTERN_TIME );
+				setExtraPatterns( FMT_EXPORT_MOMENT_DATETIME );
+				setExportPattern( FMT_EXPORT_MOMENT_TIME );
+				break;
+			case DATETIME_FULL:
+				setPattern( FMT_PATTERN_DATETIME_FULL );
+				setExtraPatterns( FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_PATTERN_DATETIME,
+				                  FMT_EXTRA_PATTERN_DATE );
+				setExportPattern( FMT_EXPORT_MOMENT_DATETIME );
 				break;
 			default:
-				put( "format", FMT_PATTERN_DATETIME );
+				setPattern( FMT_PATTERN_DATETIME );
+				setExtraPatterns( FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_EXTRA_PATTERN_DATE );
+				setExportPattern( FMT_EXPORT_MOMENT_DATETIME );
 				break;
 		}
+	}
+
+	/**
+	 * Set the primary input/output pattern in moment js format.
+	 * Only use this method if you manually want to change the patterns, usually
+	 * {@link #setFormat(Format)} would suffice.
+	 *
+	 * @param pattern in moment js format
+	 */
+	public void setPattern( String pattern ) {
+		put( "format", pattern );
+	}
+
+	/**
+	 * Set extra input patterns that should be supported (in moment js format).
+	 * Only use this method if you manually want to change the patterns, usually
+	 * {@link #setFormat(Format)} would suffice.  Note that you should always
+	 * add the {@link #setExportPattern(String)} to the list of extra patterns as well.
+	 *
+	 * @param patterns in moment js format
+	 */
+	public void setExtraPatterns( String... patterns ) {
+		put( "extraFormats", patterns );
+	}
+
+	/**
+	 * Set the serialization format that should be used.  The value posted back
+	 * will be in this format.  Only use this method if you manually want to change the patterns,
+	 * usually {@link #setFormat(Format)} would suffice.
+	 *
+	 * @param pattern in moment js format
+	 */
+	public void setExportPattern( String pattern ) {
+		put( "exportFormat", pattern );
 	}
 
 	public void setLocale( Locale locale ) {
@@ -251,7 +307,9 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	public enum Format
 	{
 		DATE,
+		DATE_FULL,
 		TIME,
-		DATETIME
+		DATETIME,
+		DATETIME_FULL
 	}
 }

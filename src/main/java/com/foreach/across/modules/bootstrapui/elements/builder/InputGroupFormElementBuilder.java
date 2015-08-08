@@ -16,66 +16,15 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
 /**
  * @author Arne Vandamme
  */
-public class InputGroupFormElementBuilder extends AbstractNodeViewElementBuilder<InputGroupFormElement, InputGroupFormElementBuilder>
+public class InputGroupFormElementBuilder extends InputGroupFormElementBuilderSupport<InputGroupFormElement, InputGroupFormElementBuilder>
 {
-	private ElementOrBuilder addonBefore, addonAfter, control;
-
-	public InputGroupFormElementBuilder addonBefore( ViewElement element ) {
-		addonBefore = element != null ? ElementOrBuilder.wrap( element ) : null;
-		return this;
-	}
-
-	public InputGroupFormElementBuilder addonBefore( ViewElementBuilder element ) {
-		addonBefore = element != null ? ElementOrBuilder.wrap( element ) : null;
-		return this;
-	}
-
-	public InputGroupFormElementBuilder addonAfter( ViewElement element ) {
-		addonAfter = element != null ? ElementOrBuilder.wrap( element ) : null;
-		return this;
-	}
-
-	public InputGroupFormElementBuilder addonAfter( ViewElementBuilder element ) {
-		addonAfter = element != null ? ElementOrBuilder.wrap( element ) : null;
-		return this;
-	}
-
-	public InputGroupFormElementBuilder control( ViewElement element ) {
-		control = element != null ? ElementOrBuilder.wrap( element ) : null;
-		return this;
-	}
-
-	public InputGroupFormElementBuilder control( ViewElementBuilder element ) {
-		control = element != null ? ElementOrBuilder.wrap( element ) : null;
-		return this;
-	}
-
 	@Override
 	protected InputGroupFormElement createElement( ViewElementBuilderContext builderContext ) {
-		InputGroupFormElement group = apply( create(), builderContext );
-
-		if ( control != null ) {
-			group.setControl( control.get( builderContext ) );
-		}
-		if ( addonBefore != null ) {
-			group.setAddonBefore( addonBefore.get( builderContext ) );
-		}
-		if ( addonAfter != null ) {
-			group.setAddonAfter( addonAfter.get( builderContext ) );
-		}
-
-		return group;
-	}
-
-	protected InputGroupFormElement create() {
-		return new InputGroupFormElement();
+		return apply( new InputGroupFormElement(), builderContext );
 	}
 }

@@ -32,7 +32,7 @@ import java.util.Iterator;
  *
  * @author Arne Vandamme
  */
-public class DateTimeFormElement extends InputGroupFormElement implements FormControlElement
+public class DateTimeFormElement extends InputGroupFormElement
 {
 	public static final String ATTRIBUTE_DATA_DATEPICKER = "data-datetimepicker";
 
@@ -44,57 +44,9 @@ public class DateTimeFormElement extends InputGroupFormElement implements FormCo
 	private Date value;
 
 	public DateTimeFormElement() {
-		setControl( new TextboxFormElement() );
-
 		setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
 		addCssClass( CSS_JS_CONTROL, CSS_DATE );
 		setAttribute( ATTRIBUTE_DATA_DATEPICKER, new DateTimeFormElementConfiguration() );
-	}
-
-	@Override
-	public void setControl( ViewElement control ) {
-		Assert.isTrue( control instanceof FormControlElement, "Only FormControlElement implementations are allowed." );
-		super.setControl( control );
-	}
-
-	@Override
-	public boolean isDisabled() {
-		return getControl( FormControlElement.class ).isDisabled();
-	}
-
-	@Override
-	public void setDisabled( boolean disabled ) {
-		getControl( FormControlElement.class ).setDisabled( disabled );
-	}
-
-	@Override
-	public boolean isReadonly() {
-		return getControl( FormControlElement.class ).isReadonly();
-	}
-
-	@Override
-	public void setReadonly( boolean readonly ) {
-		getControl( FormControlElement.class ).setReadonly( readonly );
-	}
-
-	@Override
-	public boolean isRequired() {
-		return getControl( FormControlElement.class ).isRequired();
-	}
-
-	@Override
-	public void setRequired( boolean required ) {
-		getControl( FormControlElement.class ).setRequired( required );
-	}
-
-	@Override
-	public String getControlName() {
-		return getControl( FormControlElement.class ).getControlName();
-	}
-
-	@Override
-	public void setControlName( String controlName ) {
-		getControl( FormControlElement.class ).setControlName( controlName );
 	}
 
 	public DateTimeFormElementConfiguration getConfiguration() {
