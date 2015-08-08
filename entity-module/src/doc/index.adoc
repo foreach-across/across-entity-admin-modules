@@ -347,6 +347,37 @@ generated as a `TextboxFormElement`, that type will be used.
 
 You can add default post processors to the `TextboxFormElementBuilderFactory` to customize the autodetection.
 
+=== Customizing datetime picker elements
+
+By default all `Date` properties will result in a `DateTimeFormElement` which is rendered as a date time picker.
+The form element can be customized through the `DateTimeFormElementConfiguration` class.  The default configuration
+  is determined based on the presence of `@Temporal` annotations on the property.  The date picker supports 3 major
+  modes: *date*, *time* and *timestamp* (date + time) with seconds being the maximum resolution.  The presence
+  of `@Past` and `@Future` validation annotations will additionally restrict the dates the are selectable.
+
+A specific date picker format can easily be specified by putting a `DateTimeFormElementConfiguration.Format` attribute.
+Advanced customization can be done by setting a `DateTimeFormElementConfiguration` as attribute.  Dynamic configuration
+(fi setting the min date relative to the current date) can only be done by specifying a `DateTimeFormElementBuilder`
+manually and adding a custom post processor.  A `DateTimeFormElementConfiguration` is always duplicated when creating
+an element so it is safe for post processors to modify the instance.
+
+.Using dates with `TemporalType.TIME` and JPA
+A property of type `java.util.Date` but with `@Temporal(TemporalType.TIME)` specified will result in a only time selection
+being available.  However the `@Temporal` annotation also influences how JPA will persist the data type.  If you type
+ was created as a timestamp in the database schema, this might result in conversion errors.  With Hibernate you can
+ resolve this by additionally specifying a `@Type` annotation forcing the type be written as timestamp.
+
+.Example of a required time property that is written as a date relative to start of epoch time in the database
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@NotNull
+@Column(name = "arrival_time")
+@Temporal(TemporalType.TIME)
+@Type( type = "timestamp")
+private Date arrivalTime;
+----
+
 == To be done:
 * view processor
 

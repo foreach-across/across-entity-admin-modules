@@ -31,6 +31,7 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class FormGroupRequiredBuilderProcessor extends ValidationConstraintsBuilderProcessor<FormGroupElementBuilder>
 {
 	@Override

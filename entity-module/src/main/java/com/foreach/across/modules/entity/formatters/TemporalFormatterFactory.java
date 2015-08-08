@@ -64,8 +64,6 @@ public class TemporalFormatterFactory implements AnnotationFormatterFactory<Temp
 			dateTimeFormats.add( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) );
 			dateTimeFormats.add( new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" ) );
 			timeFormats.add( new SimpleDateFormat( "HH:mm" ) );
-			timeFormats.add( new SimpleDateFormat( "HH:mm" ) );
-			timeFormats.add( new SimpleDateFormat( "HH:mm:ss" ) );
 			timeFormats.add( new SimpleDateFormat( "HH:mm:ss" ) );
 		}
 

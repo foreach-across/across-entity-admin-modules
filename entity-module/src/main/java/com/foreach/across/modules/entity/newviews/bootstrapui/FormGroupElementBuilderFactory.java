@@ -15,17 +15,13 @@
  */
 package com.foreach.across.modules.entity.newviews.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
-import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.newviews.ViewElementMode;
-import com.foreach.across.modules.entity.newviews.bootstrapui.processors.builder.FormGroupRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -50,7 +46,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 	private boolean renderHelpBlockBeforeControl = true;
 
 	public FormGroupElementBuilderFactory() {
-		addProcessor( new FormGroupRequiredBuilderProcessor() );
+		//addProcessor( new FormGroupRequiredBuilderProcessor() );
 	}
 
 	public void setRenderHelpBlockBeforeControl( boolean renderHelpBlockBeforeControl ) {
@@ -83,7 +79,14 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		FormGroupElementBuilder formGroup
 				= bootstrapUi.formGroup()
 				             .control( controlBuilder )
-				             .postProcessor( descriptionTextPostProcessor );
+				             .postProcessor( descriptionTextPostProcessor )
+				             .postProcessor( ( builderContext, element ) -> {
+					             FormControlElement control = element.getControl( FormControlElement.class );
+
+					             if ( control != null && control.isRequired() ) {
+						             element.setRequired( true );
+					             }
+				             } );
 
 		// todo: clean this up, work with separate control (?) allow list value to be without link, but other to be with
 		if ( controlMode.equals( ViewElementMode.VALUE ) ) {
@@ -116,7 +119,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 	}
 
 	/**
-	 * Attempts to resolve a property
+	 * Attempts to resolve a property description (help block).
 	 */
 	public static class DescriptionTextPostProcessor implements ViewElementPostProcessor<FormGroupElement>
 	{
@@ -138,7 +141,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		public void postProcess( ViewElementBuilderContext builderContext, FormGroupElement element ) {
 			EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
 
-			if ( codeResolver != null ) {
+			if ( codeResolver == null ) {
 				codeResolver = defaultMessageCodeResolver;
 			}
 
