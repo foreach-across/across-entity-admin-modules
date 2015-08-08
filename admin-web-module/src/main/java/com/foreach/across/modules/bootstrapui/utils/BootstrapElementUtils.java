@@ -30,12 +30,10 @@ public final class BootstrapElementUtils
 	}
 
 	/**
-	 * Will get the first {@link FormControlElement} instance.  If the {@link ViewElement} is
-	 * a {@link FormControlElement} it will be returned.  If it is a
-	 * {@link com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement} the input group control will
-	 * be returned instead if it matches.  If the {@link ViewElement} is a
-	 * {@link com.foreach.across.modules.web.ui.ViewElementCollection} then a recursive search will happen
-	 * until the first element extending {@link FormControlElement} is returned.
+	 * Will search for the first {@link FormControlElement} instance that is not an {@link InputGroupFormElement}.
+	 * It is possible that the instance itself is returned.  This method will recurse through
+	 * {@link InputGroupFormElement}, {@link FormGroupElement} and {@link ViewElementCollection} types until
+	 * an instance is returned.
 	 *
 	 * @param viewElement instance
 	 * @return form control instance, or {@code null} if not found
@@ -45,12 +43,10 @@ public final class BootstrapElementUtils
 	}
 
 	/**
-	 * Will get the first {@link FormControlElement} instance matching the expected type.
-	 * If the {@link ViewElement} is of the expected type it will be returned.  If it isIf it is a
-	 * {@link com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement} the input group control will
-	 * be returned instead if it matches.  If the {@link ViewElement} is a
-	 * {@link com.foreach.across.modules.web.ui.ViewElementCollection} then a recursive search will happen
-	 * until the first element matching the type is returned.
+	 * Will search for the first {@link FormControlElement} instance that matches the expected type.
+	 * It is possible that the instance itself is returned.  This method will recurse through
+	 * {@link InputGroupFormElement}, {@link FormGroupElement} and {@link ViewElementCollection} types until
+	 * an instance is returned.
 	 *
 	 * @param viewElement  instance
 	 * @param expectedType the control should have
@@ -58,31 +54,27 @@ public final class BootstrapElementUtils
 	 */
 	public static <V extends FormControlElement> V getFormControl( ViewElement viewElement,
 	                                                               Class<V> expectedType ) {
-		ViewElement target = viewElement;
-
-		if ( expectedType.isInstance( viewElement ) ) {
-			return (V) viewElement;
-		}
-
 		V control = null;
 
-		if ( target instanceof FormGroupElement ) {
-			ViewElement candidate = ( (FormGroupElement) target ).getControl();
+		if ( viewElement instanceof FormGroupElement ) {
+			ViewElement candidate = ( (FormGroupElement) viewElement ).getControl();
+
 			if ( candidate != null ) {
-				if ( expectedType.isInstance( candidate ) ) {
-					control = (V) candidate;
-				}
-				else {
-					target = candidate;
-				}
+				control = getFormControl( candidate, expectedType );
 			}
 		}
+		else if ( viewElement instanceof InputGroupFormElement ) {
+			ViewElement candidate = ( (InputGroupFormElement) viewElement ).getControl();
 
-		if ( control == null && target instanceof InputGroupFormElement ) {
-			control = ( (InputGroupFormElement) target ).getControl( expectedType );
+			if ( candidate != null ) {
+				control = getFormControl( candidate, expectedType );
+			}
+		}
+		else if ( expectedType.isInstance( viewElement ) ) {
+			control = (V) viewElement;
 		}
 
-		if ( control == null && target instanceof ViewElementCollection ) {
+		if ( control == null && viewElement instanceof ViewElementCollection ) {
 			for ( ViewElement child : (ViewElementCollection<ViewElement>) viewElement ) {
 				control = getFormControl( child, expectedType );
 

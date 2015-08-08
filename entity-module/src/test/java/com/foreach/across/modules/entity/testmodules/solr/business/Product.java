@@ -13,18 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.bootstrapui.elements.builder;
+package com.foreach.across.modules.entity.testmodules.solr.business;
 
-import com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.solr.core.mapping.Indexed;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Arne Vandamme
  */
-public class InputGroupFormElementBuilder extends InputGroupFormElementBuilderSupport<InputGroupFormElement, InputGroupFormElementBuilder>
+public class Product
 {
-	@Override
-	protected InputGroupFormElement createElement( ViewElementBuilderContext builderContext ) {
-		return apply( new InputGroupFormElement(), builderContext );
-	}
+	@Id
+	@Field
+	private String simpleProperty;
+
+	@Field("somePropertyName")
+	private String namedPropery;
+
+	@Field
+	private List<String> listOfValues;
+
+	@Indexed(readonly = true)
+	@Field("property_*")
+	private List<String> ignoredFromWriting;
+
+	@Field("mappedField_*")
+	private Map<String, List<String>> mappedFieldValues;
 }

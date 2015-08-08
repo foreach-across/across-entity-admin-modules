@@ -16,6 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -181,8 +182,12 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 		if ( group.getLabel() instanceof LabelFormElement ) {
 			LabelFormElement label = group.getLabel( LabelFormElement.class );
 
-			if ( !label.hasTarget() && group.getControl() instanceof FormControlElementSupport ) {
-				label.setTarget( group.getControl() );
+			if ( !label.hasTarget() ) {
+				FormControlElement formControlElement = BootstrapElementUtils.getFormControl( group.getControl() );
+
+				if ( formControlElement != null ) {
+					label.setTarget( formControlElement );
+				}
 			}
 		}
 

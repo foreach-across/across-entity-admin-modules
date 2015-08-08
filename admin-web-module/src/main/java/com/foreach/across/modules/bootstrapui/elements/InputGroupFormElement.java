@@ -26,16 +26,22 @@ import java.util.Iterator;
  * <p>Represents a bootstrap input group, wrapping a control and allowing left or right addon.
  * The main control should be added as a child to the input group, the addons can be set through properties
  * and the corresponding addon class ({@code input-group-addon} of {@code input-group-btn} will be set.</p>
+ * <p>A default {@link TextboxFormElement} control is set for the input group as input groups are usually
+ * expected to be used with textboxes.  The {@link InputGroupFormElement} itself is also a {@link FormControlElement}
+ * that proxies the control.  If the control is not of type {@link FormControlElement} the specific
+ * {@link FormControlElement} method calls will fail.</p>
  *
  * @author Arne Vandamme
  */
-public class InputGroupFormElement extends AbstractNodeViewElement
+public class InputGroupFormElement extends AbstractNodeViewElement implements FormControlElement
 {
 	private ViewElement addonBefore, addonAfter, control;
 
 	public InputGroupFormElement() {
 		super( "div" );
 		addCssClass( "input-group" );
+
+		setControl( new TextboxFormElement() );
 	}
 
 	public ViewElement getAddonBefore() {
@@ -70,8 +76,56 @@ public class InputGroupFormElement extends AbstractNodeViewElement
 		this.control = control;
 	}
 
+	public void setPlaceholder( String placeholder ){
+		getControl( TextboxFormElement.class ).setPlaceholder( placeholder );
+	}
+
+	public String getPlaceholder() {
+		return getControl( TextboxFormElement.class ).getPlaceholder();
+	}
+
 	public <V extends ViewElement> V getControl( Class<V> controlType ) {
 		return returnIfType( control, controlType );
+	}
+
+	@Override
+	public boolean isDisabled() {
+		return getControl( FormControlElement.class ).isDisabled();
+	}
+
+	@Override
+	public void setDisabled( boolean disabled ) {
+		getControl( FormControlElement.class ).setDisabled( disabled );
+	}
+
+	@Override
+	public boolean isReadonly() {
+		return getControl( FormControlElement.class ).isReadonly();
+	}
+
+	@Override
+	public void setReadonly( boolean readonly ) {
+		getControl( FormControlElement.class ).setReadonly( readonly );
+	}
+
+	@Override
+	public boolean isRequired() {
+		return getControl( FormControlElement.class ).isRequired();
+	}
+
+	@Override
+	public void setRequired( boolean required ) {
+		getControl( FormControlElement.class ).setRequired( required );
+	}
+
+	@Override
+	public String getControlName() {
+		return getControl( FormControlElement.class ).getControlName();
+	}
+
+	@Override
+	public void setControlName( String controlName ) {
+		getControl( FormControlElement.class ).setControlName( controlName );
 	}
 
 	@Override

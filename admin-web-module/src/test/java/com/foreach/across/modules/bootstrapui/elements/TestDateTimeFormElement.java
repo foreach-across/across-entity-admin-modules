@@ -29,8 +29,8 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 {
 	private static final String DATA_ATTRIBUTE =
 			"data-datetimepicker='{\"datepickerInput\":\"input[type=text]\"," +
-					"\"format\":\"LLL\",\"extraFormats\":[\"YYYY-MM-DD HH:mm:ss\"]," +
-					"\"locale\":\"en-GB\"}'";
+					"\"format\":\"L LT\",\"extraFormats\":[\"YYYY-MM-DD HH:mm\",\"L\",\"YYYY-MM-DD\"]," +
+					"\"locale\":\"en-GB\",\"exportFormat\":\"YYYY-MM-DD HH:mm\"}'";
 
 	private DateTimeFormElement datetime;
 
@@ -65,11 +65,11 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 				datetime,
 				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
 						"<input class='form-control' type='text' id='_birthday' name='_birthday' required='required'" +
-						" value='2015-08-07 10:31:00' />" +
+						" value='2015-08-07 10:31' />" +
 						"<span class='input-group-addon'>" +
 						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
 						"</span>" +
-						"<input type='hidden' name='birthday' value='2015-08-07 10:31:00' />" +
+						"<input type='hidden' name='birthday' value='2015-08-07 10:31' />" +
 						"</div>"
 		);
 	}

@@ -15,10 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
-import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
-import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
-import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -77,6 +74,22 @@ public class TestFormGroupElementBuilder extends AbstractViewElementBuilderTest<
 		assertTrue( labelElement.hasTarget() );
 		assertNotNull( labelElement.getTargetAsElement() );
 		assertSame( labelElement.getTargetAsElement(), group.getControl() );
+	}
+
+	@Test
+	public void labelTargetIsSetInCaseOfInputGroup() {
+		TextboxFormElement textbox = new TextboxFormElement();
+		InputGroupFormElementBuilderSupport inputGroup = new InputGroupFormElementBuilder().control( textbox );
+		LabelFormElementBuilder label = new LabelFormElementBuilder();
+
+		builder.control( inputGroup ).label( label );
+
+		FormGroupElement group = builder.build( builderContext );
+		LabelFormElement labelElement = group.getLabel( LabelFormElement.class );
+
+		assertTrue( labelElement.hasTarget() );
+		assertSame( textbox, labelElement.getTargetAsElement() );
+		assertNotNull( group.getControl( InputGroupFormElement.class ) );
 	}
 
 	@Test
