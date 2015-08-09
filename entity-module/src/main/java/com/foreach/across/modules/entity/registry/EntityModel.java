@@ -13,18 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.form.date;
+package com.foreach.across.modules.entity.registry;
 
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
-import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderFactoryAssemblerSupport;
+import org.springframework.data.repository.core.EntityInformation;
+
+import java.io.Serializable;
+import java.util.Locale;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
  */
-@Deprecated
-public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
+public interface EntityModel<T, ID extends Serializable> extends EntityInformation<T, ID>
 {
-	public DateFormElementBuilderFactoryAssembler() {
-		super( DateFormElementBuilder.class, CommonViewElements.DATE );
-	}
+	/**
+	 * @return The default generated label for an entity.
+	 */
+	String getLabel( T entity );
+
+	String getLabel( T entity, Locale locale );
+
+	T createNew( Object... args );
+
+	T createDto( T entity );
+
+	T findOne( ID id );
+
+	T save( T entity );
 }

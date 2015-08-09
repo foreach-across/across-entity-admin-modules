@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.form.date;
+package com.foreach.across.modules.entity.newviews.bootstrapui.util;
 
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
-import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderFactoryAssemblerSupport;
+import org.springframework.data.domain.Page;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
  */
-@Deprecated
-public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
+public interface PagingMessages
 {
-	public DateFormElementBuilderFactoryAssembler() {
-		super( DateFormElementBuilder.class, CommonViewElements.DATE );
-	}
+	String pagerText( Page currentPage, Object... args );
+
+	String nextPage( Page currentPage, Object... args );
+
+	String page( Page currentPage, Object... args );
+
+	String ofPages( Page currentPage, Object... args );
+
+	String previousPage( Page currentPage, Object... args );
+
+	String resultsFound( Page currentPage, Object... args );
 }

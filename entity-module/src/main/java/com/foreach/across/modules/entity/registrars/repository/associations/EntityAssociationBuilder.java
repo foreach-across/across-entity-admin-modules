@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.form.date;
+package com.foreach.across.modules.entity.registrars.repository.associations;
 
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
-import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderFactoryAssemblerSupport;
+import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
+import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import org.springframework.data.mapping.PersistentProperty;
 
 /**
  * @author Andy Somers
  */
-@Deprecated
-public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
+public interface EntityAssociationBuilder
 {
-	public DateFormElementBuilderFactoryAssembler() {
-		super( DateFormElementBuilder.class, CommonViewElements.DATE );
-	}
+	boolean supports( PersistentProperty<?> sourceProperty );
+
+	void buildAssociation( MutableEntityRegistry entityRegistry,
+	                       MutableEntityConfiguration entityConfiguration,
+	                       PersistentProperty property );
 }

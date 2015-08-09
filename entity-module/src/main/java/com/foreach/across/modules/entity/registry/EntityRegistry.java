@@ -13,18 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.form.date;
+package com.foreach.across.modules.entity.registry;
 
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
-import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderFactoryAssemblerSupport;
+import java.util.Collection;
 
 /**
- * @author Andy Somers
+ * Base interface for querying the registered entity types.
+ *
+ * @author Arne Vandamme
+ * @see com.foreach.across.modules.entity.registry.MutableEntityRegistry
  */
-@Deprecated
-public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
+public interface EntityRegistry
 {
-	public DateFormElementBuilderFactoryAssembler() {
-		super( DateFormElementBuilder.class, CommonViewElements.DATE );
-	}
+	Collection<EntityConfiguration> getEntities();
+
+	boolean contains( Class<?> entityType );
+
+	boolean contains( String entityName );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( Class<T> entityType );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( String entityName );
+
+	<T> EntityConfiguration<T> getEntityConfiguration( T entity );
 }
