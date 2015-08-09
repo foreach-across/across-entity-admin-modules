@@ -15,10 +15,18 @@
  */
 package com.foreach.across.modules.bootstrapui.config;
 
+import com.foreach.across.core.annotations.PostRefresh;
+import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResourcePackage;
+import com.foreach.across.modules.bootstrapui.resource.DateTimePickerWebResourcePackage;
+import com.foreach.across.modules.bootstrapui.resource.JQueryWebResourcePackage;
+import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Collection;
 
 /**
  * @author Arne Vandamme
@@ -26,6 +34,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BootstrapUiConfiguration
 {
+	@RefreshableCollection
+	private Collection<WebResourcePackageManager> webResourcePackageManagers;
+
+	@PostRefresh
+	protected void registerWebResourcePackages() {
+		for ( WebResourcePackageManager packageManager : webResourcePackageManagers ) {
+			packageManager.register( DateTimePickerWebResourcePackage.NAME, new DateTimePickerWebResourcePackage() );
+			packageManager.register( JQueryWebResourcePackage.NAME, new JQueryWebResourcePackage( true ) );
+			packageManager.register( BootstrapUiWebResourcePackage.NAME, new BootstrapUiWebResourcePackage() );
+		}
+	}
+
 	@Bean
 	public BootstrapUiFactory bootstrapUiFactory() {
 		return new BootstrapUiFactoryImpl();

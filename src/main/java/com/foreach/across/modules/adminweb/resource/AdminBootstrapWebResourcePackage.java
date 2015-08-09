@@ -15,11 +15,11 @@
  */
 package com.foreach.across.modules.adminweb.resource;
 
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResourcePackage;
+import com.foreach.across.modules.bootstrapui.resource.JQueryWebResourcePackage;
 import com.foreach.across.modules.web.resource.SimpleWebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
-
-import java.util.Arrays;
 
 /**
  * Boostrap css, requires jquery as well.
@@ -29,64 +29,36 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 	public static final String NAME = "bootstrap-adminweb";
 
 	public AdminBootstrapWebResourcePackage( boolean minified ) {
-		this( minified, "3.1.1" );
+		this( minified, /*"3.1.1"*/ "3.3.5" );
 	}
 
 	public AdminBootstrapWebResourcePackage( boolean minified, String version ) {
+		setDependencies( BootstrapUiWebResourcePackage.NAME );
 		if ( minified ) {
-			setWebResources( Arrays.asList( new WebResource( WebResource.CSS, NAME,
-			                                                 "/css/adminweb/fe_bootstrap-1.0.css",
-			                                                 WebResource.VIEWS ),
-//			                                new WebResource( WebResource.CSS, NAME + "-theme",
-//			                                                 "//netdna.bootstrapcdn.com/bootstrap/" + version + "/css/bootstrap-theme.min.css",
-//			                                                 WebResource.EXTERNAL ),
-                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
-                                                             "//netdna.bootstrapcdn.com/bootstrap/" + version + "/js/bootstrap.min.js",
-                                                             WebResource.EXTERNAL ),
-                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
-                                                             "/js/adminweb/main.js",
-                                                             WebResource.VIEWS ),
-                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
-                                                             "/js/adminweb/ie10-viewport-bug-workaround.js",
-                                                             WebResource.VIEWS ),
-                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-momentjs",
-                                                             "//cdn.jsdelivr.net/webjars/momentjs/2.10.6/moment-with-locales.js",
-                                                             WebResource.VIEWS ),
-                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-datetimepicker",
-                                                             "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.min.js",
-                                                             WebResource.VIEWS ),
-                                            new WebResource( WebResource.CSS, NAME + "-datetimepicker-css",
-                                                             "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.css",
-                                                             WebResource.EXTERNAL )
-			                                )
+			setWebResources(
+					// Admin web overrides default bootstrap
+					new WebResource( WebResource.CSS, BootstrapUiWebResourcePackage.NAME,
+					                 "/css/adminweb/fe_bootstrap-1.0.css",
+					                 WebResource.VIEWS ),
+					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
+					                 "/js/adminweb/main.js",
+					                 WebResource.VIEWS ),
+					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
+					                 "/js/adminweb/ie10-viewport-bug-workaround.js",
+					                 WebResource.VIEWS )
 			);
 		}
 		else {
-			setWebResources( Arrays.asList( new WebResource( WebResource.CSS, NAME,
-			                                                 "/css/adminweb/fe_bootstrap-1.0.css",
-			                                                 WebResource.VIEWS ),
-			                                new WebResource( WebResource.CSS, NAME + "-datetimepicker-css",
-			                                                 "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.css",
-			                                                 WebResource.EXTERNAL ),
-//			                                new WebResource( WebResource.CSS, NAME + "-theme",
-//			                                                 "//netdna.bootstrapcdn.com/bootstrap/" + version + "/css/bootstrap-theme.css",
-//			                                                 WebResource.EXTERNAL ),
-                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
-                                                             "//netdna.bootstrapcdn.com/bootstrap/" + version + "/js/bootstrap.js",
-                                                             WebResource.EXTERNAL ),
-                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
-                                                             "/js/adminweb/main.js",
-                                                             WebResource.VIEWS ),
-                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
-                                                             "/js/adminweb/ie10-viewport-bug-workaround.js",
-                                                             WebResource.VIEWS ),
-                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-momentjs",
-                                                             "//cdn.jsdelivr.net/webjars/momentjs/2.10.6/moment-with-locales.js",
-                                                             WebResource.EXTERNAL ),
-                                            new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-datetimepicker",
-                                                             "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.min.js",
-                                                             WebResource.EXTERNAL )
-			                 )
+			setWebResources(
+					new WebResource( WebResource.CSS, NAME,
+					                 "/css/adminweb/fe_bootstrap-1.0.css",
+					                 WebResource.VIEWS ),
+					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
+					                 "/js/adminweb/main.js",
+					                 WebResource.VIEWS ),
+					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
+					                 "/js/adminweb/ie10-viewport-bug-workaround.js",
+					                 WebResource.VIEWS )
 			);
 		}
 

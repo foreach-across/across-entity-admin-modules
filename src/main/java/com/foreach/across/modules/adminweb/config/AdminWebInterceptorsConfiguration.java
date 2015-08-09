@@ -24,7 +24,6 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.config.support.AdminWebConfigurerAdapter;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.resource.AdminBootstrapWebResourcePackage;
-import com.foreach.across.modules.adminweb.resource.JQueryWebResourcePackage;
 import com.foreach.across.modules.web.context.PrefixingPathRegistry;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.mvc.InterceptorRegistry;
@@ -112,8 +111,6 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	@Exposed
 	public WebResourcePackageManager adminWebResourcePackageManager() {
 		WebResourcePackageManager webResourcePackageManager = new WebResourcePackageManager();
-		webResourcePackageManager.register( JQueryWebResourcePackage.NAME,
-		                                    new JQueryWebResourcePackage( !developmentMode.isActive() ) );
 		webResourcePackageManager.register( AdminBootstrapWebResourcePackage.NAME,
 		                                    new AdminBootstrapWebResourcePackage( !developmentMode.isActive() ) );
 
