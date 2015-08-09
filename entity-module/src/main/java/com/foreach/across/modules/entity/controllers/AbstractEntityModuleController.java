@@ -30,15 +30,15 @@ public abstract class AbstractEntityModuleController implements EntityController
 		registry.addWithKey( WebResource.CSS, EntityModule.NAME, "/css/entity/entity-module.css", WebResource.VIEWS );
 		registry.addWithKey( WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME,
 		                     "/js/entity/entity-module.js", WebResource.VIEWS );
-		registry.addWithKey( WebResource.CSS, "jqueryui-css",
-		                     "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css",
-		                     WebResource.EXTERNAL );
-		registry.addWithKey( WebResource.JAVASCRIPT_PAGE_END, "jqueryui",
-		                     "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js",
-		                     WebResource.EXTERNAL );
-		registry.addWithKey( WebResource.JAVASCRIPT_PAGE_END, "jqueryui-i18n",
-		                     "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/i18n/jquery-ui-i18n.min.js",
-		                     WebResource.EXTERNAL );
+//		registry.addWithKey( WebResource.CSS, "jqueryui-css",
+//		                     "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css",
+//		                     WebResource.EXTERNAL );
+//		registry.addWithKey( WebResource.JAVASCRIPT_PAGE_END, "jqueryui",
+//		                     "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js",
+//		                     WebResource.EXTERNAL );
+//		registry.addWithKey( WebResource.JAVASCRIPT_PAGE_END, "jqueryui-i18n",
+//		                     "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/i18n/jquery-ui-i18n.min.js",
+//		                     WebResource.EXTERNAL );
         registry.addWithKey( WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME + "-dependson",
                              "/js/entity/dependson.js", WebResource.VIEWS );
         registry.addWithKey( WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME + "-form-elements",

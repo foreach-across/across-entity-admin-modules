@@ -13,18 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.form.date;
+package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
-import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderFactoryAssemblerSupport;
+import org.junit.Test;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
  */
-@Deprecated
-public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
+public class TestColumnViewElement extends AbstractBootstrapViewElementTest
 {
-	public DateFormElementBuilderFactoryAssembler() {
-		super( DateFormElementBuilder.class, CommonViewElements.DATE );
+	@Test
+	public void simple() {
+		ColumnViewElement column = new ColumnViewElement();
+
+		renderAndExpect(
+				column,
+				"<div></div>"
+		);
+	}
+
+	@Test
+	public void deviceLayouts() {
+		ColumnViewElement column = new ColumnViewElement();
+		column.addLayout( Grid.Device.MEDIUM.width( Grid.Width.HALF ) );
+		column.addLayout( Grid.Device.XS.hidden() );
+
+		renderAndExpect(
+				column,
+				"<div class='col-md-6 hidden-xs'></div>"
+		);
 	}
 }

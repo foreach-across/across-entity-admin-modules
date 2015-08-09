@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.form.date;
+package com.foreach.across.modules.hibernate;
 
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
-import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderFactoryAssemblerSupport;
+import com.foreach.across.core.AcrossModule;
+import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
  */
-@Deprecated
-public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
+public class TestAcrossHibernateModuleConventions extends AbstractAcrossModuleConventionsTest
 {
-	public DateFormElementBuilderFactoryAssembler() {
-		super( DateFormElementBuilder.class, CommonViewElements.DATE );
+	@Override
+	protected boolean hasSettings() {
+		return true;
+	}
+
+	@Override
+	protected AcrossModule createModule() {
+		return new AcrossHibernateModule();
 	}
 }

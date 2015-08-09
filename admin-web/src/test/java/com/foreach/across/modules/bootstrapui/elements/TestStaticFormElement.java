@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.form.date;
+package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
-import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderFactoryAssemblerSupport;
+import org.junit.Test;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
  */
-@Deprecated
-public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
+public class TestStaticFormElement extends AbstractBootstrapViewElementTest
 {
-	public DateFormElementBuilderFactoryAssembler() {
-		super( DateFormElementBuilder.class, CommonViewElements.DATE );
-	}
-}
+	@Test
+	public void simple() {
+		StaticFormElement box = new StaticFormElement();
+		box.setText( "somedude@example.com" );
+
+		renderAndExpect(
+				box,
+				"<p class='form-control-static'>somedude@example.com</p>"
+		);
+	}}

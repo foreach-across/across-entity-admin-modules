@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views.elements.form.date;
+package com.foreach.across.modules.hibernate.testmodules.hibernate2;
 
-import com.foreach.across.modules.entity.views.elements.CommonViewElements;
-import com.foreach.across.modules.entity.views.elements.form.FormElementBuilderFactoryAssemblerSupport;
+import com.foreach.across.modules.hibernate.repositories.BasicRepository;
+import com.foreach.across.modules.hibernate.testmodules.hibernate1.Product;
 
-/**
- * @author Andy Somers
- */
-@Deprecated
-public class DateFormElementBuilderFactoryAssembler extends FormElementBuilderFactoryAssemblerSupport<DateFormElementBuilder>
+public interface UserRepository extends BasicRepository<User>
 {
-	public DateFormElementBuilderFactoryAssembler() {
-		super( DateFormElementBuilder.class, CommonViewElements.DATE );
-	}
+	void save( User user, Product product );
 }
