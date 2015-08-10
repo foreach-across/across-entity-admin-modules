@@ -42,7 +42,7 @@ public class DateTimePickerWebResourcePackage extends SimpleWebResourcePackage
 				                 "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.css",
 				                 WebResource.EXTERNAL ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-viewelements",
-				                 "/js/" + BootstrapUiModule.NAME + "/form-elements.js",
+				                 "/js/" + BootstrapUiModule.NAME + "/bootstrapui.js",
 				                 WebResource.VIEWS )
 		);
 	}
