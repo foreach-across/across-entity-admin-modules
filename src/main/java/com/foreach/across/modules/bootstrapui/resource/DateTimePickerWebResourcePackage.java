@@ -35,13 +35,16 @@ public class DateTimePickerWebResourcePackage extends SimpleWebResourcePackage
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-momentjs",
 				                 "//cdn.jsdelivr.net/webjars/momentjs/2.10.6/moment-with-locales.js",
 				                 WebResource.EXTERNAL ),
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "momentjs-locale-nl-BE",
+				                 "/js/" + BootstrapUiModule.NAME + "/moment/locale-nl-BE.js",
+				                 WebResource.VIEWS ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-datetimepicker",
 				                 "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.min.js",
 				                 WebResource.EXTERNAL ),
 				new WebResource( WebResource.CSS, NAME + "-datetimepicker-css",
 				                 "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.css",
 				                 WebResource.EXTERNAL ),
-				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-viewelements",
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME,
 				                 "/js/" + BootstrapUiModule.NAME + "/bootstrapui.js",
 				                 WebResource.VIEWS )
 		);
