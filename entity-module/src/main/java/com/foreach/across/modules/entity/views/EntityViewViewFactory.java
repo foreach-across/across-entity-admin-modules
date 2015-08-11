@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import org.springframework.ui.ModelMap;
 
 /**

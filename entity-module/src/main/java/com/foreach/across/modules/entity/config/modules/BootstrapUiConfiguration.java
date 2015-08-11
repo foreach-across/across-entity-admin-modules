@@ -16,10 +16,10 @@
 package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderHelpers;
-import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderService;
-import com.foreach.across.modules.entity.newviews.EntityViewElementBuilderServiceImpl;
-import com.foreach.across.modules.entity.newviews.bootstrapui.*;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelpers;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderServiceImpl;
+import com.foreach.across.modules.entity.views.bootstrapui.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

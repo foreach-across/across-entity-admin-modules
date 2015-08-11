@@ -15,10 +15,10 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.newviews.ViewElementLookupRegistry;
-import com.foreach.across.modules.entity.newviews.ViewElementLookupRegistryImpl;
-import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
+import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;

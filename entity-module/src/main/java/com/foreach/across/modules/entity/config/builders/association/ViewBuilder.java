@@ -18,8 +18,8 @@ package com.foreach.across.modules.entity.config.builders.association;
 import com.foreach.across.modules.entity.config.builders.AbstractEntityPropertyDescriptorBuilder;
 import com.foreach.across.modules.entity.config.builders.AbstractSimpleEntityViewBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityAssociationBuilder;
-import com.foreach.across.modules.entity.newviews.ViewElementMode;
 import com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 

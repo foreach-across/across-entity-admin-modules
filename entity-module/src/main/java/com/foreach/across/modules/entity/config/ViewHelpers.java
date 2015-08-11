@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.config;
 
-import com.foreach.across.modules.entity.newviews.bootstrapui.util.SortableTableBuilder;
+import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
