@@ -31,18 +31,9 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactoryImpl;
-import com.foreach.across.modules.entity.services.EntityFormService;
 import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewViewFactory;
-import com.foreach.across.modules.entity.views.elements.CommonViewElementTypeLookupStrategy;
-import com.foreach.across.modules.entity.views.elements.fieldset.FieldsetViewElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.form.checkbox.CheckboxFormElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.form.date.DateFormElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.form.hidden.HiddenFormElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.form.select.SelectFormElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.form.textbox.TextboxFormElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.readonly.ConversionServiceViewElementBuilderFactoryAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,51 +101,6 @@ public class EntityModuleConfiguration
 	@Bean
 	public EntityPropertyDescriptorFactory entityPropertyDescriptorFactory() {
 		return new EntityPropertyDescriptorFactoryImpl();
-	}
-
-	@Bean
-	public EntityFormService entityFormService() {
-		return new EntityFormService();
-	}
-
-	@Bean
-	public TextboxFormElementBuilderFactoryAssembler textboxFormElementBuilderFactoryAssembler() {
-		return new TextboxFormElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public ConversionServiceViewElementBuilderFactoryAssembler conversionServiceViewElementBuilderFactoryAssembler() {
-		return new ConversionServiceViewElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public HiddenFormElementBuilderFactoryAssembler hiddenFormElementBuilderFactoryAsssembler() {
-		return new HiddenFormElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public DateFormElementBuilderFactoryAssembler dateFormElementBuilderFactoryAsssembler() {
-		return new DateFormElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public SelectFormElementBuilderFactoryAssembler selectFormElementBuilderFactoryAssembler() {
-		return new SelectFormElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public CheckboxFormElementBuilderFactoryAssembler checkboxFormElementBuilderFactoryAssembler() {
-		return new CheckboxFormElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public FieldsetViewElementBuilderFactoryAssembler fieldsetElementBuilderFactoryAssembler() {
-		return new FieldsetViewElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public CommonViewElementTypeLookupStrategy commonFormElementTypeLookupStrategy() {
-		return new CommonViewElementTypeLookupStrategy();
 	}
 
 	@Bean
