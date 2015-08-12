@@ -16,7 +16,6 @@
 package com.foreach.across.modules.entity.config.entities;
 
 import com.foreach.across.core.annotations.OrderInModule;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -63,14 +62,14 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 		properties.property( "created" )
 		          .displayName( "Created" )
 		          .writable( false ).readable( true ).hidden( true ).order( 1005 )
-		          .attribute( EntityAttributes.SORTABLE_PROPERTY, "createdDate" )
+		          .attribute( Sort.Order.class, new Sort.Order( "createdDate" ) )
 		          .viewElementBuilder( ViewElementMode.VALUE, createdValueBuilder() )
 		          .viewElementBuilder( ViewElementMode.LIST_VALUE, createdValueBuilder() );
 
 		properties.property( "lastModified" )
 		          .displayName( "Last modified" )
 		          .writable( false ).readable( true ).hidden( true ).order( 1006 )
-		          .attribute( EntityAttributes.SORTABLE_PROPERTY, "lastModifiedDate" )
+		          .attribute( Sort.Order.class, new Sort.Order( "lastModifiedDate" ) )
 		          .viewElementBuilder( ViewElementMode.VALUE, lastModifiedValueBuilder() )
 		          .viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedValueBuilder() );
 

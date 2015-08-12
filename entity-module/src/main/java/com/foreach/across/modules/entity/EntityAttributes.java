@@ -23,14 +23,6 @@ import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 public interface EntityAttributes
 {
 	/**
-	 * Value is the name of the property that should be sorted on.
-	 */
-	String SORTABLE_PROPERTY = "sortableProperty";
-
-	String ELEMENT_TYPE_READABLE = "elementTypeForReading";
-	String ELEMENT_TYPE_WRITABLE = "elementTypeForWriting";
-
-	/**
 	 * If set, this attribute should contain the
 	 * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertySelector} to be used for selecting
 	 * the members of a {@link FieldsetFormElement}.

@@ -162,9 +162,9 @@ In order for generated views to work automatically, an `EntityConfiguration` sho
 |`PersistentProperty.class`
 |In case of a property of a `PersistentEntity` registered through a Spring data repository.
 
-|`EntityAttributes.SORTABLE_PROPERTY`
-|Contains the name of the property that can be sorted on when sorting is enabled on this property.  In case
-of a `PersistentProperty`, this will be the name of that `PersistentProperty`.
+|`Sort.Order.class`
+|Contains the default `Sort.Order` if sorting is enabled on this property.  
+By default strings have an order that ignores case.
 
 |===
 

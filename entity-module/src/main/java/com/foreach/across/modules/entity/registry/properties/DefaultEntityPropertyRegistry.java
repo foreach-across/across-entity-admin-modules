@@ -15,10 +15,10 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.views.support.NestedValueFetcher;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.ReflectionUtils;
 
 import java.beans.PropertyDescriptor;
@@ -174,11 +174,17 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 		descriptor.setAttributes( child.attributeMap() );
 
-		if ( child.hasAttribute( EntityAttributes.SORTABLE_PROPERTY ) ) {
-			descriptor.setAttribute(
-					EntityAttributes.SORTABLE_PROPERTY,
-					parent.getName() + "." + child.getAttribute( EntityAttributes.SORTABLE_PROPERTY )
-			);
+		if ( child.hasAttribute( Sort.Order.class ) ) {
+			Sort.Order order = child.getAttribute( Sort.Order.class );
+
+			Sort.Order nestedOrder = new Sort.Order( parent.getName() + "." + order.getProperty() )
+					.with( order.getNullHandling() );
+
+			if ( order.isIgnoreCase() ) {
+				nestedOrder = nestedOrder.ignoreCase();
+			}
+
+			descriptor.setAttribute( Sort.Order.class, nestedOrder );
 		}
 
 		return descriptor;

@@ -15,9 +15,10 @@
  */
 package com.foreach.across.modules.entity.registrars.repository;
 
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
 import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
@@ -26,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PersistentEntity;
-import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 
 import javax.validation.metadata.BeanDescriptor;
@@ -66,7 +66,6 @@ public class RepositoryEntityPropertyRegistryBuilder
 		// add @Embedded
 		PersistentEntity<?, ?> persistentEntity = repositoryFactoryInformation.getPersistentEntity();
 
-		configureSortableProperties( registry, persistentEntity );
 		configureDefaultFilter( entityType, registry );
 		configureKnownDescriptors( entityType, registry );
 
@@ -103,26 +102,6 @@ public class RepositoryEntityPropertyRegistryBuilder
 //			mutable.setReadable( false );
 //			mutable.setHidden( true );
 //		}
-	}
-
-	private void configureSortableProperties( MutableEntityPropertyRegistry registry,
-	                                          PersistentEntity<?, ?> persistentEntity ) {
-		LOG.trace( "Finding sortable properties for entity {}", persistentEntity.getType() );
-
-		// A property is sortable by default if it is persisted
-		for ( EntityPropertyDescriptor descriptor : registry.getRegisteredDescriptors() ) {
-			PersistentProperty persistentProperty = persistentEntity.getPersistentProperty( descriptor.getName() );
-
-			if ( persistentProperty != null && !persistentProperty.isTransient() ) {
-				LOG.trace( "Setting persisted property {} as sortable", persistentProperty.getName() );
-
-				MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
-
-				if ( mutable != null ) {
-					mutable.setAttribute( EntityAttributes.SORTABLE_PROPERTY, persistentProperty.getName() );
-				}
-			}
-		}
 	}
 
 	private void setBeanDescriptor( MutableEntityConfiguration<?> entityConfiguration ) {

@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.mapping.context.MappingContext;
@@ -64,16 +65,8 @@ public class EntityPropertyRegistryPersistenceMetadataBuilder implements EntityP
 						MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
 
 						if ( mutable != null ) {
-							mutable.setAttribute( PersistentProperty.class, persistentProperty );
-
-							PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
-							metadata.setEmbedded( isEmbedded( persistentProperty ) );
-
-							mutable.setAttribute( PropertyPersistenceMetadata.class, metadata );
-
-							if ( mutable.isHidden() && mutable.isReadable() && metadata.isEmbedded() ) {
-								mutable.setHidden( false );
-							}
+							registerPropertyPersistenceMetadata( persistentProperty, mutable );
+							registerSortableMetadata( persistentProperty, mutable );
 						}
 					}
 				}
@@ -81,6 +74,33 @@ public class EntityPropertyRegistryPersistenceMetadataBuilder implements EntityP
 				// Only process using the first MappingContext
 				return;
 			}
+		}
+	}
+
+	private void registerSortableMetadata( PersistentProperty persistentProperty,
+	                                       MutableEntityPropertyDescriptor mutable ) {
+		if ( !persistentProperty.isTransient() && !persistentProperty.isCollectionLike() ) {
+			Sort.Order order = new Sort.Order( persistentProperty.getName() );
+
+			if ( String.class.equals( persistentProperty.getActualType() ) ) {
+				order = order.ignoreCase();
+			}
+
+			mutable.setAttribute( Sort.Order.class, order );
+		}
+	}
+
+	private void registerPropertyPersistenceMetadata( PersistentProperty persistentProperty,
+	                                                  MutableEntityPropertyDescriptor mutable ) {
+		mutable.setAttribute( PersistentProperty.class, persistentProperty );
+
+		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
+		metadata.setEmbedded( isEmbedded( persistentProperty ) );
+
+		mutable.setAttribute( PropertyPersistenceMetadata.class, metadata );
+
+		if ( mutable.isHidden() && mutable.isReadable() && metadata.isEmbedded() ) {
+			mutable.setHidden( false );
 		}
 	}
 

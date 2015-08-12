@@ -21,7 +21,7 @@ import com.foreach.across.modules.web.AcrossWebModule;
 
 @AcrossDepends(
 		required = AcrossWebModule.NAME,
-		optional = "AdminWebModule"
+		optional = { "AdminWebModule", "BootstrapUiModule" }
 )
 public class EntityModule extends AcrossModule
 {
