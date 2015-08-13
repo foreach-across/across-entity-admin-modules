@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -137,12 +137,12 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				EntityPropertyDescriptor rootDescriptor = super.getProperty( rootProperty );
 
 				if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
-					EntityPropertyRegistry subRegistry = getRegistryFactory().getOrCreate(
-							rootDescriptor.getPropertyType() );
+					EntityPropertyRegistry subRegistry
+							= getRegistryFactory().getOrCreate( rootDescriptor.getPropertyType() );
 
 					if ( subRegistry != null ) {
-						EntityPropertyDescriptor childDescriptor = subRegistry
-								.getProperty( findChildProperty( propertyName ) );
+						EntityPropertyDescriptor childDescriptor
+								= subRegistry.getProperty( findChildProperty( propertyName ) );
 
 						if ( childDescriptor != null ) {
 							descriptor = buildNestedDescriptor( propertyName, rootDescriptor, childDescriptor );
@@ -186,6 +186,8 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 			descriptor.setAttribute( Sort.Order.class, nestedOrder );
 		}
+
+		register( descriptor );
 
 		return descriptor;
 	}

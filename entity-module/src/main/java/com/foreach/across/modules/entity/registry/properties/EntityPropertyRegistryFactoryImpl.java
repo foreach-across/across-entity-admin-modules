@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class EntityPropertyRegistryFactoryImpl implements EntityPropertyRegistryFactory
 {
-	private final Map<Class<?>, EntityPropertyRegistry> registries = new HashMap<>();
+	private final Map<Class<?>, MutableEntityPropertyRegistry> registries = new HashMap<>();
 
 	@RefreshableCollection(includeModuleInternals = true, incremental = true)
 	private Collection<EntityPropertyRegistryBuilder> registryBuilders;
@@ -40,8 +40,8 @@ public class EntityPropertyRegistryFactoryImpl implements EntityPropertyRegistry
 	private EntityPropertyDescriptorFactory descriptorFactory;
 
 	@Override
-	public EntityPropertyRegistry getOrCreate( Class<?> entityType ) {
-		EntityPropertyRegistry registry = get( entityType );
+	public MutableEntityPropertyRegistry getOrCreate( Class<?> entityType ) {
+		MutableEntityPropertyRegistry registry = get( entityType );
 
 		if ( registry == null ) {
 			registry = create( entityType );
@@ -57,7 +57,7 @@ public class EntityPropertyRegistryFactoryImpl implements EntityPropertyRegistry
 	 * @param entityType for which to create the entity
 	 * @return new instance
 	 */
-	public EntityPropertyRegistry create( Class<?> entityType ) {
+	public MutableEntityPropertyRegistry create( Class<?> entityType ) {
 		DefaultEntityPropertyRegistry newRegistry
 				= new DefaultEntityPropertyRegistry( entityType, this, descriptorFactory );
 
@@ -69,16 +69,16 @@ public class EntityPropertyRegistryFactoryImpl implements EntityPropertyRegistry
 	}
 
 	@Override
-	public EntityPropertyRegistry get( Class<?> entityType ) {
+	public MutableEntityPropertyRegistry get( Class<?> entityType ) {
 		return registries.get( entityType );
 	}
 
 	@Override
-	public EntityPropertyRegistry createWithParent( EntityPropertyRegistry entityPropertyRegistry ) {
+	public MutableEntityPropertyRegistry createWithParent( EntityPropertyRegistry entityPropertyRegistry ) {
 		return new MergingEntityPropertyRegistry( entityPropertyRegistry, this, descriptorFactory );
 	}
 
-	public void add( Class<?> entityType, EntityPropertyRegistry registry ) {
+	public void add( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
 		registries.put( entityType, registry );
 	}
 }

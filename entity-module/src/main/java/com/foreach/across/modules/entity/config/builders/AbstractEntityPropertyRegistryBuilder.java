@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +19,7 @@ import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -76,7 +77,7 @@ public abstract class AbstractEntityPropertyRegistryBuilder<SELF extends Abstrac
 	 */
 	public abstract Object and();
 
-	protected void apply( EntityPropertyRegistry entityPropertyRegistry ) {
+	protected void apply( MutableEntityPropertyRegistry entityPropertyRegistry ) {
 		AbstractEntityPropertyDescriptorBuilder labelBuilder = null;
 
 		for ( Map.Entry<String, AbstractEntityPropertyDescriptorBuilder> builder : builders.entrySet() ) {
@@ -90,19 +91,12 @@ public abstract class AbstractEntityPropertyRegistryBuilder<SELF extends Abstrac
 
 		// Set the base property for the label
 		if ( labelBaseProperty != null ) {
-			EntityPropertyDescriptor label = entityPropertyRegistry.getProperty( EntityPropertyRegistry.LABEL );
+			EntityPropertyDescriptor label = entityPropertyRegistry.getMutableProperty( EntityPropertyRegistry.LABEL );
 			EntityPropertyDescriptor base = entityPropertyRegistry.getProperty( labelBaseProperty );
 
 			if ( base != null ) {
-				if ( label instanceof MutableEntityPropertyDescriptor ) {
-
-					MutableEntityPropertyDescriptor mutableLabel = (MutableEntityPropertyDescriptor) label;
-					EntityPropertyRegistryLabelPropertyBuilder.copyPropertyToLabel( base, mutableLabel );
-				}
-				else {
-					LOG.warn( "Unable to modify the {} property: not a MutableEntityPropertyDescriptor",
-					          EntityPropertyRegistry.LABEL );
-				}
+				MutableEntityPropertyDescriptor mutableLabel = (MutableEntityPropertyDescriptor) label;
+				EntityPropertyRegistryLabelPropertyBuilder.copyPropertyToLabel( base, mutableLabel );
 			}
 		}
 

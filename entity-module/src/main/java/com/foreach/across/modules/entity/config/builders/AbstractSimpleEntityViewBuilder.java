@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.EntityViewViewFactory;
@@ -129,8 +130,8 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 			factory.setPropertyRegistry( registry );
 		}
 
-		if ( propertyRegistryBuilder != null ) {
-			propertyRegistryBuilder.apply( registry );
+		if ( propertyRegistryBuilder != null && registry instanceof MutableEntityPropertyRegistry ) {
+			propertyRegistryBuilder.apply( (MutableEntityPropertyRegistry) registry );
 		}
 
 		if ( viewPropertySelectorRule != null ) {

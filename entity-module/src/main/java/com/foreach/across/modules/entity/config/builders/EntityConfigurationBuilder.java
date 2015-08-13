@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.config.builders.configuration.ListViewB
 import com.foreach.across.modules.entity.config.builders.configuration.ViewBuilder;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -176,8 +177,9 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 				entityRegistry.register( configuration );
 			}
 
-			if ( propertyRegistryBuilder != null ) {
-				propertyRegistryBuilder.apply( configuration.getPropertyRegistry() );
+			if ( propertyRegistryBuilder != null && configuration
+					.getPropertyRegistry() instanceof MutableEntityPropertyRegistry ) {
+				propertyRegistryBuilder.apply( (MutableEntityPropertyRegistry) configuration.getPropertyRegistry() );
 			}
 
 			if ( hidden != null ) {

@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,7 @@ package com.foreach.across.modules.entity.registry.properties;
  */
 public interface EntityPropertyRegistryFactory
 {
-	EntityPropertyRegistry getOrCreate( Class<?> entityType );
+	MutableEntityPropertyRegistry getOrCreate( Class<?> entityType );
 
 	EntityPropertyRegistry get( Class<?> entityType );
 
@@ -31,5 +31,5 @@ public interface EntityPropertyRegistryFactory
 	 * @param entityPropertyRegistry that is the parent
 	 * @return new registry instance for the parent source
 	 */
-	EntityPropertyRegistry createWithParent( EntityPropertyRegistry entityPropertyRegistry );
+	MutableEntityPropertyRegistry createWithParent( EntityPropertyRegistry entityPropertyRegistry );
 }
