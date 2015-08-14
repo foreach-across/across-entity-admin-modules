@@ -42,6 +42,13 @@ public class EntityViewCommand
 		return entity;
 	}
 
+	/**
+	 * @return the entity if of the expected type, null otherwise
+	 */
+	public <V> V getEntity( Class<V> entityType ) {
+		return entityType.isInstance( entity ) ? (V) entity : null;
+	}
+
 	public void setEntity( Object entity ) {
 		this.entity = entity;
 	}
