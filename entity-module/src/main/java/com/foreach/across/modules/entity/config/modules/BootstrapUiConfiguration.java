@@ -90,4 +90,9 @@ public class BootstrapUiConfiguration
 	public HiddenFormElementBuilderFactory hiddenFormElementBuilderFactory(){
 		return new HiddenFormElementBuilderFactory();
 	}
+
+	@Bean
+	public NumericFormElementBuilderFactory numericFormElementBuilderFactory() {
+		return new NumericFormElementBuilderFactory();
+	}
 }
