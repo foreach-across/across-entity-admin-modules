@@ -18,15 +18,15 @@ package com.foreach.across.modules.bootstrapui.resource;
 import com.foreach.across.modules.web.resource.SimpleWebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResource;
 
-public class JQueryWebResourcePackage extends SimpleWebResourcePackage
+public class JQueryWebResources extends SimpleWebResourcePackage
 {
 	public static final String NAME = "jquery";
 
-	public JQueryWebResourcePackage( boolean minified ) {
+	public JQueryWebResources( boolean minified ) {
 		this( minified, "1.11.3" );
 	}
 
-	public JQueryWebResourcePackage( boolean minified, String version ) {
+	public JQueryWebResources( boolean minified, String version ) {
 		if ( minified ) {
 			setWebResources(
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,

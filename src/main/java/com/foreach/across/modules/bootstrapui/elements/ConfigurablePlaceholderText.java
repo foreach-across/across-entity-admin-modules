@@ -15,21 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
-
 /**
- * Basic support for a typical form input element.  A form control with limited
- * attributes like control name and disabled.
- *
  * @author Arne Vandamme
  */
-public interface FormInputElement extends HtmlViewElement
+public interface ConfigurablePlaceholderText
 {
-	String getControlName();
+	void setPlaceholder( String placeholder );
 
-	void setControlName( String controlName );
-
-	boolean isDisabled();
-
-	void setDisabled( boolean disabled );
+	String getPlaceholder();
 }

@@ -34,7 +34,7 @@ import java.util.Iterator;
  */
 public class DateTimeFormElement extends InputGroupFormElement
 {
-	public static final String ATTRIBUTE_DATA_DATEPICKER = "data-datetimepicker";
+	public static final String ATTRIBUTE_DATA_DATEPICKER = "data-bootstrapui-datetimepicker";
 
 	public static final String CSS_JS_CONTROL = "js-form-datetimepicker";
 	public static final String CSS_DATE = "date";
@@ -72,7 +72,8 @@ public class DateTimeFormElement extends InputGroupFormElement
 		String controlName = controlElement.getControlName();
 
 		if ( controlName != null && !StringUtils.equals( "_" + hidden.getControlName(), controlName ) ) {
-			hidden.setAttribute( "name", controlName );
+			hidden.setControlName( controlName );
+			controlElement.setHtmlId( controlElement.getHtmlId() );
 			controlElement.setControlName( "_" + controlName );
 		}
 

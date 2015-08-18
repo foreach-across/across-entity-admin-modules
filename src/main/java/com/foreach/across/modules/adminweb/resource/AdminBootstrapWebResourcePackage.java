@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.adminweb.resource;
 
-import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResourcePackage;
-import com.foreach.across.modules.bootstrapui.resource.JQueryWebResourcePackage;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
+import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
 import com.foreach.across.modules.web.resource.SimpleWebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -33,11 +33,11 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 	}
 
 	public AdminBootstrapWebResourcePackage( boolean minified, String version ) {
-		setDependencies( BootstrapUiWebResourcePackage.NAME );
+		setDependencies( BootstrapUiWebResources.NAME );
 		if ( minified ) {
 			setWebResources(
 					// Admin web overrides default bootstrap
-					new WebResource( WebResource.CSS, BootstrapUiWebResourcePackage.NAME,
+					new WebResource( WebResource.CSS, BootstrapUiWebResources.NAME,
 					                 "/css/adminweb/fe_bootstrap-1.0.css",
 					                 WebResource.VIEWS ),
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
@@ -66,7 +66,7 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 
 	@Override
 	public void install( WebResourceRegistry registry ) {
-		registry.addPackage( JQueryWebResourcePackage.NAME );
+		registry.addPackage( JQueryWebResources.NAME );
 
 		super.install( registry );
 	}

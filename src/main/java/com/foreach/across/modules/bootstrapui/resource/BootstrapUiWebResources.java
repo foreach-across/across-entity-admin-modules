@@ -23,13 +23,13 @@ import com.foreach.across.modules.web.resource.WebResource;
  *
  * @author Arne Vandamme
  */
-public class BootstrapUiWebResourcePackage extends SimpleWebResourcePackage
+public class BootstrapUiWebResources extends SimpleWebResourcePackage
 {
 	public static final String VERSION = "3.3.5";
 	public static final String NAME = "bootstrap";
 
-	public BootstrapUiWebResourcePackage() {
-		setDependencies( JQueryWebResourcePackage.NAME );
+	public BootstrapUiWebResources() {
+		setDependencies( JQueryWebResources.NAME );
 		setWebResources(
 				new WebResource( WebResource.CSS, NAME,
 				                 "//maxcdn.bootstrapcdn.com/bootstrap/" + VERSION + "/css/bootstrap.min.css",

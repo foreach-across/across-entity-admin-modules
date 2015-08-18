@@ -158,4 +158,9 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	public DateTimeFormElementBuilder datetime() {
 		return new DateTimeFormElementBuilder().datetime();
 	}
+
+	@Override
+	public NumericFormElementBuilder numeric() {
+		return new NumericFormElementBuilder();
+	}
 }

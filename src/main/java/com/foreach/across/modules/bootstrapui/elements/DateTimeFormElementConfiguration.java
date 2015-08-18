@@ -16,7 +16,6 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.util.Assert;
 
@@ -158,7 +157,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 
 	public void setLocale( Locale locale ) {
 		Assert.notNull( locale );
-		put( "locale", StringUtils.replace( locale.toString(), "_", "-" ) );
+		put( "locale", locale.toLanguageTag() );
 	}
 
 	/**

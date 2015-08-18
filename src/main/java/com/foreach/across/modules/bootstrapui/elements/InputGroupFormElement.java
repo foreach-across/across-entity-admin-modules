@@ -33,7 +33,7 @@ import java.util.Iterator;
  *
  * @author Arne Vandamme
  */
-public class InputGroupFormElement extends AbstractNodeViewElement implements FormControlElement
+public class InputGroupFormElement extends AbstractNodeViewElement implements FormControlElement.Proxy, ConfigurablePlaceholderText
 {
 	private ViewElement addonBefore, addonAfter, control;
 
@@ -68,6 +68,7 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 		return returnIfType( addonAfter, addonType );
 	}
 
+	@Override
 	public ViewElement getControl() {
 		return control;
 	}
@@ -76,10 +77,12 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 		this.control = control;
 	}
 
-	public void setPlaceholder( String placeholder ){
+	@Override
+	public void setPlaceholder( String placeholder ) {
 		getControl( TextboxFormElement.class ).setPlaceholder( placeholder );
 	}
 
+	@Override
 	public String getPlaceholder() {
 		return getControl( TextboxFormElement.class ).getPlaceholder();
 	}

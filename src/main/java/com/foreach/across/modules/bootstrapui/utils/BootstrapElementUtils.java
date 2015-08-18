@@ -63,8 +63,8 @@ public final class BootstrapElementUtils
 				control = getFormControl( candidate, expectedType );
 			}
 		}
-		else if ( viewElement instanceof InputGroupFormElement ) {
-			ViewElement candidate = ( (InputGroupFormElement) viewElement ).getControl();
+		else if ( viewElement instanceof FormControlElement.Proxy ) {
+			ViewElement candidate = ( (FormControlElement.Proxy ) viewElement ).getControl();
 
 			if ( candidate != null ) {
 				control = getFormControl( candidate, expectedType );
