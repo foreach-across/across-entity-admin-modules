@@ -22,6 +22,7 @@ import org.springframework.format.number.CurrencyFormatter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Currency;
@@ -82,6 +83,9 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 
 	@JsonIgnore
 	private Currency currency;
+
+	@JsonIgnore
+	private Locale locale = LocaleContextHolder.getLocale();
 
 	public NumericFormElementConfiguration() {
 		setDecimalPositions( 2 );
@@ -239,6 +243,32 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 		return ROUND_HALF_UP_SYMMETRIC;
 	}
 
+	private RoundingMode toJavaRoundingMode( String roundingMode ) {
+		if ( ROUND_CEILING.equals( roundingMode ) ) {
+			return RoundingMode.CEILING;
+		}
+		if ( ROUND_FLOOR.equals( roundingMode ) ) {
+			return RoundingMode.FLOOR;
+		}
+		if ( ROUND_DOWN.equals( roundingMode ) ) {
+			return RoundingMode.DOWN;
+		}
+		if ( ROUND_HALF_DOWN_SYMMETRIC.equals( roundingMode ) ) {
+			return RoundingMode.HALF_DOWN;
+		}
+		if ( ROUND_HALF_UP_SYMMETRIC.equals( roundingMode ) ) {
+			return RoundingMode.HALF_UP;
+		}
+		if ( ROUND_HALF_EVEN.equals( roundingMode ) ) {
+			return RoundingMode.HALF_EVEN;
+		}
+		if ( ROUND_UP.equals( roundingMode ) ) {
+			return RoundingMode.UP;
+		}
+
+		return RoundingMode.HALF_UP;
+	}
+
 	/**
 	 * Set the multiplier to apply to the value before formatting and when posting back.
 	 * Useful if percentage values are below 1 as the javascript control expects them between 0 and 100.
@@ -330,6 +360,7 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 	 */
 	public NumericFormElementConfiguration localize( Locale locale ) {
 		NumericFormElementConfiguration clone = new NumericFormElementConfiguration( this );
+		clone.locale = locale;
 
 		if ( isLocalizeDecimalSymbols() ) {
 			DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance( locale );
@@ -382,6 +413,51 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 		else {
 			return super.put( key, value );
 		}
+	}
+
+	/**
+	 * Create a {@link NumberFormat} that represents the same configuration.
+	 *
+	 * @return numberformat instance
+	 */
+	public NumberFormat createNumberFormat() {
+		DecimalFormat format = new DecimalFormat();
+		format.setGroupingSize( (Integer) getOrDefault( "dGroup", 3 ) );
+		format.setGroupingUsed( !"".equals( get( "aSep" ) ) );
+		format.setMaximumFractionDigits( (Integer) get( "mDec" ) );
+		format.setMinimumFractionDigits( format.getMaximumFractionDigits() );
+		format.setRoundingMode( toJavaRoundingMode( (String) get( "mRound" ) ) );
+		format.setMultiplier( getMultiplier() );
+
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols( locale );
+		symbols.setGroupingSeparator( format.isGroupingUsed() ? (Character) getOrDefault( "aSep", ',' ) : ',' );
+		symbols.setDecimalSeparator( (Character) getOrDefault( "aDec", '.' ) );
+
+		String sign = (String) get( "aSign" );
+
+		if ( sign != null ) {
+			boolean signSuffix = 's' == ( (Character) getOrDefault( "pSign", 'p' ) );
+			if ( signSuffix ) {
+				format.setPositiveSuffix( sign );
+				format.setNegativeSuffix( sign );
+			}
+			else {
+				format.setPositivePrefix( sign );
+				format.setPositivePrefix( sign );
+			}
+		}
+
+		String negativeFormatter = (String) get( "nBracket" );
+
+		if ( negativeFormatter != null ) {
+			symbols.setMinusSign( '+' );
+			format.setNegativePrefix( negativeFormatter.split( "," )[0] + format.getPositivePrefix() );
+			format.setNegativeSuffix( format.getPositiveSuffix() + negativeFormatter.split( "," )[1] );
+		}
+
+		format.setDecimalFormatSymbols( symbols );
+
+		return format;
 	}
 
 	/**
