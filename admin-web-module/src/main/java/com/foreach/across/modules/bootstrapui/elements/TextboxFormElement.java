@@ -22,7 +22,7 @@ import java.util.Objects;
 /**
  * @author Arne Vandamme
  */
-public class TextboxFormElement extends FormControlElementSupport implements ConfigurableTextViewElement
+public class TextboxFormElement extends FormControlElementSupport implements ConfigurableTextViewElement, ConfigurablePlaceholderText
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.TEXTBOX;
 
@@ -88,10 +88,12 @@ public class TextboxFormElement extends FormControlElementSupport implements Con
 		super( ELEMENT_TYPE );
 	}
 
+	@Override
 	public String getPlaceholder() {
 		return placeholder;
 	}
 
+	@Override
 	public void setPlaceholder( String placeholder ) {
 		this.placeholder = placeholder;
 	}

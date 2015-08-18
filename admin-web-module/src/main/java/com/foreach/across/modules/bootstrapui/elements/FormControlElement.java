@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
+
 /**
  * @author Arne Vandamme
  */
@@ -27,4 +29,16 @@ public interface FormControlElement extends FormInputElement
 	boolean isRequired();
 
 	void setRequired( boolean required );
+
+	/**
+	 * Marks the implementation as being a proxy for the actual control that is
+	 * to be one of its children.
+	 */
+	interface Proxy extends FormControlElement
+	{
+		/**
+		 * @return the actual control
+		 */
+		ViewElement getControl();
+	}
 }

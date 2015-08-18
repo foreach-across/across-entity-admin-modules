@@ -18,7 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElement;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
-import com.foreach.across.modules.bootstrapui.resource.DateTimePickerWebResourcePackage;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 
@@ -98,7 +98,7 @@ public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupp
 		WebResourceRegistry webResourceRegistry = builderContext.getAttribute( WebResourceRegistry.class );
 
 		if ( webResourceRegistry != null ) {
-			webResourceRegistry.addPackage( DateTimePickerWebResourcePackage.NAME );
+			webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 		}
 	}
 }

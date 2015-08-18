@@ -64,10 +64,12 @@ public abstract class FormControlElementSupport extends AbstractNodeViewElement 
 		}
 	}
 
+	@Override
 	public String getControlName() {
 		return controlName;
 	}
 
+	@Override
 	public void setControlName( String controlName ) {
 		this.controlName = controlName;
 		if ( !htmlIdSpecified ) {
@@ -75,6 +77,7 @@ public abstract class FormControlElementSupport extends AbstractNodeViewElement 
 		}
 	}
 
+	@Override
 	public void setHtmlId( String htmlId ) {
 		this.htmlIdSpecified = true;
 		super.setHtmlId( htmlId );

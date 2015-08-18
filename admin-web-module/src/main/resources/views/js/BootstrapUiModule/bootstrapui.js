@@ -23,8 +23,8 @@ var BootstrapUiModule = {
         /**
          * Find and activate all date time pickers.
          */
-        $( '.js-form-datetimepicker', node ).each( function () {
-            var configuration = $( this ).data( 'datetimepicker' );
+        $( '[data-bootstrapui-datetimepicker]', node ).each( function () {
+            var configuration = $( this ).data( 'bootstrapui-datetimepicker' );
             var exportFormat = configuration.exportFormat;
 
             delete configuration.exportFormat;
@@ -34,6 +34,43 @@ var BootstrapUiModule = {
                              var exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
                              $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
                          } );
+        } );
+
+        /**
+         * Find an activate all autoNumeric form elements.
+         */
+        $( '[data-bootstrapui-numeric]', node ).each( function () {
+            var configuration = $( this ).data( 'bootstrapui-numeric' );
+            var name = $( this ).attr( 'name' );
+
+            var multiplier = configuration.multiplier ? configuration.multiplier : 1;
+
+            var multiplied;
+
+            if ( multiplier != 1 ) {
+                var currentValue = $( this ).val();
+                if ( currentValue && !isNaN( currentValue ) ) {
+                    multiplied = parseFloat( currentValue ) * multiplier;
+                }
+            }
+
+            $( this )
+                    .autoNumeric( 'init', configuration )
+                    .bind( 'blur focusout keypress keyup', function () {
+                               if ( name.length > 1 && name[0] == '_' ) {
+                                   var val = $( this ).autoNumeric( 'get' );
+
+                                   if ( multiplier != 1 ) {
+                                       val = val / multiplier;
+                                   }
+
+                                   $( 'input[type=hidden][name="' + name.substring( 1 ) + '"]' ).val( val );
+                               }
+                           } );
+
+            if ( multiplied ) {
+                $( this ).autoNumeric( 'set', multiplied );
+            }
         } );
     }
 };

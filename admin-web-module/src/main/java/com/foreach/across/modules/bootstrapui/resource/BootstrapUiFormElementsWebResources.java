@@ -20,17 +20,21 @@ import com.foreach.across.modules.web.resource.SimpleWebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResource;
 
 /**
- * Adds resources to support <a href="http://momentjs.com">moment js</a> and the
- * <a href="https://github.com/Eonasdan/bootstrap-datetimepicker">Eonasdan Bootstrap datepicker</a>.
+ * Adds resources for the following:
+ * <ul>
+ * <li><a href="http://momentjs.com">moment js</a></li>
+ * <li><a href="https://github.com/Eonasdan/bootstrap-datetimepicker">Eonasdan Bootstrap datepicker</a></li>
+ * <li><a href="https://github.com/BobKnothe/autoNumeric">autoNumeric</a></li>
+ * </ul>
  *
  * @author Arne Vandamme
  */
-public class DateTimePickerWebResourcePackage extends SimpleWebResourcePackage
+public class BootstrapUiFormElementsWebResources extends SimpleWebResourcePackage
 {
-	public static final String NAME = "bootstrap-datetimepicker";
+	public static final String NAME = "bootstrapui-formelements";
 
-	public DateTimePickerWebResourcePackage() {
-		setDependencies( BootstrapUiWebResourcePackage.NAME );
+	public BootstrapUiFormElementsWebResources() {
+		setDependencies( BootstrapUiWebResources.NAME );
 		setWebResources(
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-momentjs",
 				                 "//cdn.jsdelivr.net/webjars/momentjs/2.10.6/moment-with-locales.js",
@@ -43,6 +47,9 @@ public class DateTimePickerWebResourcePackage extends SimpleWebResourcePackage
 				                 WebResource.EXTERNAL ),
 				new WebResource( WebResource.CSS, NAME + "-datetimepicker-css",
 				                 "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.css",
+				                 WebResource.EXTERNAL ),
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-numeric",
+				                 "//cdn.jsdelivr.net/webjars/org.webjars.bower/autoNumeric/1.9.30/autoNumeric.js",
 				                 WebResource.EXTERNAL ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME,
 				                 "/js/" + BootstrapUiModule.NAME + "/bootstrapui.js",
