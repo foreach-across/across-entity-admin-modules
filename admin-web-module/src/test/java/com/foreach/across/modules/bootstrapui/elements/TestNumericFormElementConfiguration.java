@@ -79,7 +79,7 @@ public class TestNumericFormElementConfiguration
 		assertEquals( "B", configuration.get( "mRound" ) );
 		assertEquals( 'p', configuration.get( "pSign" ) );
 		assertEquals( "(,)", configuration.get( "nBracket" ) );
-		assertEquals( Currency.getInstance( "EUR" ).getSymbol(), configuration.get( "aSign" ) );
+		assertEquals( "€", configuration.get( "aSign" ) );
 
 		NumberFormat format = configuration.localize( Locale.US ).createNumberFormat();
 		assertEquals( "EUR8,000.52", format.format( new BigDecimal( "8000.52" ) ) );
@@ -98,9 +98,7 @@ public class TestNumericFormElementConfiguration
 		assertEquals( "B", configuration.get( "mRound" ) );
 		assertEquals( 's', configuration.get( "pSign" ) );
 		assertEquals( "(,)", configuration.get( "nBracket" ) );
-		assertEquals(
-				" " + Currency.getInstance( Locale.forLanguageTag( "nl-BE" ) ).getSymbol(),
-				configuration.get( "aSign" )
+		assertEquals( " €", configuration.get( "aSign" )
 		);
 
 		NumberFormat format = configuration.localize( Locale.forLanguageTag( "nl-BE" ) ).createNumberFormat();
