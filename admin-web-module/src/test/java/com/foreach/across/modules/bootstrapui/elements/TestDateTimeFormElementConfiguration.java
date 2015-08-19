@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Locale;
 
 import static com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -30,6 +31,17 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestDateTimeFormElementConfiguration
 {
+	private static final Date PRINT_DATE;
+
+	static {
+		try {
+			PRINT_DATE = DateUtils.parseDate( "2015-08-07 10:31:22", "yyyy-MM-dd HH:mm:ss" );
+		}
+		catch ( ParseException pe ) {
+			throw new RuntimeException( pe );
+		}
+	}
+
 	@Test
 	public void newConfiguration() {
 		DateTimeFormElementConfiguration configuration = new DateTimeFormElementConfiguration();
@@ -42,6 +54,15 @@ public class TestDateTimeFormElementConfiguration
 				new String[] { FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_EXTRA_PATTERN_DATE },
 				(String[]) configuration.get( "extraFormats" )
 		);
+
+		DateTimeFormElementConfiguration localized = configuration.localize( Locale.forLanguageTag( "nl-BE" ) );
+		assertEquals( "nl-BE", localized.get( "locale" ) );
+
+		assertEquals( "07-Aug-2015 10:31", configuration.createDateFormat().format( PRINT_DATE ) );
+		assertEquals( "7-aug-2015 10:31", localized.createDateFormat().format( PRINT_DATE ) );
+
+		configuration.setLocalizePatterns( false );
+		assertEquals( "en-GB", configuration.localize( Locale.forLanguageTag( "nl-BE" ) ).get( "locale" ) );
 	}
 
 	@Test
@@ -59,6 +80,10 @@ public class TestDateTimeFormElementConfiguration
 				               FMT_EXTRA_PATTERN_DATE },
 				(String[]) configuration.get( "extraFormats" )
 		);
+
+		DateTimeFormElementConfiguration localized = configuration.localize( Locale.forLanguageTag( "nl-BE" ) );
+		assertEquals( "07 August 2015 10:31:22", configuration.createDateFormat().format( PRINT_DATE ) );
+		assertEquals( "7 augustus 2015 10:31:22", localized.createDateFormat().format( PRINT_DATE ) );
 	}
 
 	@Test
@@ -74,6 +99,10 @@ public class TestDateTimeFormElementConfiguration
 				new String[] { FMT_EXPORT_MOMENT_DATETIME, FMT_EXTRA_PATTERN_DATE },
 				(String[]) configuration.get( "extraFormats" )
 		);
+
+		DateTimeFormElementConfiguration localized = configuration.localize( Locale.forLanguageTag( "nl-BE" ) );
+		assertEquals( "07-Aug-2015", configuration.createDateFormat().format( PRINT_DATE ) );
+		assertEquals( "7-aug-2015", localized.createDateFormat().format( PRINT_DATE ) );
 	}
 
 	@Test
@@ -89,6 +118,10 @@ public class TestDateTimeFormElementConfiguration
 				new String[] { FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_EXTRA_PATTERN_DATE },
 				(String[]) configuration.get( "extraFormats" )
 		);
+
+		DateTimeFormElementConfiguration localized = configuration.localize( Locale.forLanguageTag( "nl-BE" ) );
+		assertEquals( "Friday, 7 August 2015", configuration.createDateFormat().format( PRINT_DATE ) );
+		assertEquals( "vrijdag 7 augustus 2015", localized.createDateFormat().format( PRINT_DATE ) );
 	}
 
 	@Test
@@ -104,6 +137,10 @@ public class TestDateTimeFormElementConfiguration
 				new String[] { FMT_EXPORT_MOMENT_DATETIME },
 				(String[]) configuration.get( "extraFormats" )
 		);
+
+		DateTimeFormElementConfiguration localized = configuration.localize( Locale.forLanguageTag( "nl-BE" ) );
+		assertEquals( "10:31", configuration.createDateFormat().format( PRINT_DATE ) );
+		assertEquals( "10:31", localized.createDateFormat().format( PRINT_DATE ) );
 	}
 
 	@Test
