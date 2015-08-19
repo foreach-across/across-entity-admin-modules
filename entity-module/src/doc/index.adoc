@@ -340,12 +340,52 @@ specifying a `Validator` bean that supports the specific entity type.  You can u
 If more than one `Validator` could be applied,
 you will manually have to set the `Validator.class` attribute on the `EntityConfiguration` to the correct one.
 
+=== Customizing *VALUE* mode elements
+
+The `ViewElementMode.VALUE` and `ViewElementMode.LIST_VALUE` are the defaults to provide the output of a property
+for readonly views.  Unless a specific `ViewElement` is configured, this will always be a `String` output of the property.
+By default the *mvcConversionService* will be used to convert the property value if no type specific builder is provided.
+
+Apart from providing a custom `ViewElement` you can also modify the rendered output by providing attributes on the
+`EntityPropertyDescriptor`.  If you provide a `org.springframework.format.Printer.class` attribute, that implementation
+will be used for printing the text value.  Alternatively you can provide a `java.text.Format.class` attribute to be used.
+Note that most default `Format` implementations are not thread-safe, in that case you should wrap them in a `SynchronizedFormat`
+instance.
+
+All standard view elements will use the `Printer` or `Format` attribute if one of them is present, instead of the default.
+ A `Printer` attribute takes precedence over a `Format`.
+
 === Customizing textbox elements
 
 `TextboxFormElement.Type` can be set as an attribute on the `EntityPropertyDescriptor`.  If set and the property is
 generated as a `TextboxFormElement`, that type will be used.
 
 You can add default post processors to the `TextboxFormElementBuilderFactory` to customize the autodetection.
+
+=== Customizing numeric elements
+
+By default all `Number` type properties will result in a `NumericFormElement` being used which is rendered as a textbox.
+The behavior can be customized by providing a `NumericFormElementConfiguration`.  A default configuration will only be
+created for properties annotated with a Spring `@NumberFormat` for type `CURRENCY` or `PERCENT`, if no
+`NumericFormElementConfiguration.class` or `NumericFormElementConfiguration.Format.class` attribute is present.
+
+If a `NumericFormElementConfiguration` is present a more advanced javascript control will be used in the front-end for value input.
+The same configuration will also be used for rendering the *VALUE* mode elements, formatting the output according
+to the properties configured.
+
+.Manually configuring percent
+Put a format attribute with value `PERCENT` on the `EntityPropertyDescriptor`.  This will create a locale specific
+percentage format with 2 decimals (unless the property type is integer).  Alternatively use the static
+`NumericFormElementConfiguration.percent()` factory method to quickly create a localizable format suitable for percentages.
+
+NOTE: If you use Spring number format for `PERCENT` then 1 is expected to match 100%.  If you manually create a
+`NumericFormElementConfiguration` it expects 100 to match with 100%.  You can modify this behavior by setting the `multiplier`
+property on the configuration.
+
+.Manually configuring currency
+The easiest way to configure a currency is to set a `Currency.class` attribute for the property.  In that case a locale
+specific format for that currency will be created.  Alternatively the same options as for percentages can be used and
+ there is a `NumericFormElementConfiguration.currency()` factory method available.
 
 === Customizing datetime picker elements
 

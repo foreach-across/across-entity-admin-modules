@@ -16,7 +16,8 @@
 package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelpers;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderServiceImpl;
 import com.foreach.across.modules.entity.views.bootstrapui.*;
@@ -37,8 +38,13 @@ public class BootstrapUiConfiguration
 	}
 
 	@Bean
-	public EntityViewElementBuilderHelpers entityViewElementHelpers() {
-		return new EntityViewElementBuilderHelpers();
+	public EntityViewElementBuilderHelper entityViewElementBuilderHelper() {
+		return new EntityViewElementBuilderHelper();
+	}
+
+	@Bean
+	public EntityViewElementBuilderFactoryHelper entityViewElementBuilderFactoryHelpers() {
+		return new EntityViewElementBuilderFactoryHelper();
 	}
 
 	@Bean
