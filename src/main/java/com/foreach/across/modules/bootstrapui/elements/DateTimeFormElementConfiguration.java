@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.util.Assert;
 
+import java.text.DateFormat;
 import java.util.*;
 
 /**
@@ -49,6 +50,12 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	@JsonIgnore
 	private Format format;
 
+	@JsonIgnore
+	private Locale locale;
+
+	@JsonIgnore
+	private boolean localizePatterns = true;
+
 	public DateTimeFormElementConfiguration() {
 		setFormat( Format.DATETIME );
 		setLocale( DEFAULT_LOCALE );
@@ -67,6 +74,8 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 */
 	public DateTimeFormElementConfiguration( DateTimeFormElementConfiguration existing ) {
 		format = existing.format;
+		locale = existing.locale;
+		localizePatterns = existing.localizePatterns;
 		putAll( existing );
 	}
 
@@ -157,6 +166,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 
 	public void setLocale( Locale locale ) {
 		Assert.notNull( locale );
+		this.locale = locale;
 		put( "locale", locale.toLanguageTag() );
 	}
 
@@ -282,6 +292,9 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 		put( "keepInvalid", keepInvalid );
 	}
 
+	/**
+	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
+	 */
 	public void setDateAttribute( String attributeName, Date... dates ) {
 		if ( dates == null || ( dates.length == 1 && dates[0] == null ) ) {
 			remove( attributeName );
@@ -298,6 +311,64 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 				put( attributeName, formatted.toArray() );
 			}
 		}
+	}
+
+	public boolean isLocalizePatterns() {
+		return localizePatterns;
+	}
+
+	/**
+	 * Set to {@code true} if calls to {@link #localize(Locale)} will create a version of the current configuration
+	 * adapted to the locale specified.  If {@code false} localize calls will create an exact duplicate of the
+	 * configuration, no matter the output locale.  Default value is {@code true}.
+	 *
+	 * @param localizePatterns true if output locale should be taken into account
+	 */
+	public void setLocalizePatterns( boolean localizePatterns ) {
+		this.localizePatterns = localizePatterns;
+	}
+
+	/**
+	 * Create a localized copy of the current configuration.
+	 *
+	 * @param locale for which to create a localized instance
+	 * @return clone
+	 */
+	public DateTimeFormElementConfiguration localize( Locale locale ) {
+		DateTimeFormElementConfiguration clone = new DateTimeFormElementConfiguration( this );
+
+		if ( localizePatterns ) {
+			clone.setLocale( locale );
+		}
+
+		return clone;
+	}
+
+	/**
+	 * @return A date format representing the current configuration.
+	 */
+	public DateFormat createDateFormat() {
+		DateFormat dateFormat = null;
+
+		switch ( format ) {
+			case DATE:
+				dateFormat = DateFormat.getDateInstance( DateFormat.MEDIUM, locale );
+				break;
+			case DATE_FULL:
+				dateFormat = DateFormat.getDateInstance( DateFormat.FULL, locale );
+				break;
+			case TIME:
+				dateFormat = DateFormat.getTimeInstance( DateFormat.SHORT, locale );
+				break;
+			case DATETIME:
+				dateFormat = DateFormat.getDateTimeInstance( DateFormat.MEDIUM, DateFormat.SHORT, locale );
+				break;
+			case DATETIME_FULL:
+				dateFormat = DateFormat.getDateTimeInstance( DateFormat.LONG, DateFormat.MEDIUM, locale );
+				break;
+		}
+
+		return dateFormat;
 	}
 
 	/**

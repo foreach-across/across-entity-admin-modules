@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.Date;
 
@@ -83,7 +84,7 @@ public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupp
 		DateTimeFormElement datetime = apply( new DateTimeFormElement(), builderContext );
 
 		if ( configuration != null ) {
-			datetime.setConfiguration( new DateTimeFormElementConfiguration( configuration ) );
+			datetime.setConfiguration( configuration.localize( LocaleContextHolder.getLocale() ) );
 		}
 		if ( value != null ) {
 			datetime.setValue( value );
