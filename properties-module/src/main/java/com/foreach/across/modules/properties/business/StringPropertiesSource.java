@@ -17,6 +17,7 @@ package com.foreach.across.modules.properties.business;
 
 import com.foreach.common.spring.properties.support.DirectPropertiesSource;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,7 +25,14 @@ import java.util.Map;
  */
 public class StringPropertiesSource extends DirectPropertiesSource<String>
 {
-	public StringPropertiesSource( Map<String, String> map ) {
+	public StringPropertiesSource( Map<String, ?> map ) {
 		super( map );
+	}
+
+	/**
+	 * @return A clone of the StringPropertiesSource, useful for caching.
+	 */
+	public StringPropertiesSource detach() {
+		return new StringPropertiesSource( new HashMap<>( getProperties() ) );
 	}
 }
