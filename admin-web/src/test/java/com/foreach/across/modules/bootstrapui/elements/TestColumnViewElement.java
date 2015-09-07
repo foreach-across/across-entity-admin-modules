@@ -13,29 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
+package com.foreach.across.modules.bootstrapui.elements;
 
-import org.springframework.ui.ModelMap;
+import org.junit.Test;
 
 /**
- * Base implementation for viewing properties of a single entity.
- *
  * @author Arne Vandamme
  */
-public class EntityViewViewFactory extends SingleEntityViewFactory<ViewCreationContext, EntityView>
+public class TestColumnViewElement extends AbstractBootstrapViewElementTest
 {
-	@Override
-	public ViewElementMode getViewElementMode() {
-		return super.getViewElementMode();
+	@Test
+	public void simple() {
+		ColumnViewElement column = new ColumnViewElement();
+
+		renderAndExpect(
+				column,
+				"<div></div>"
+		);
 	}
 
-	@Override
-	public void setViewElementMode( ViewElementMode viewElementMode ) {
-		super.setViewElementMode( viewElementMode );
-	}
+	@Test
+	public void deviceLayouts() {
+		ColumnViewElement column = new ColumnViewElement();
+		column.addLayout( Grid.Device.MEDIUM.width( Grid.Width.HALF ) );
+		column.addLayout( Grid.Device.XS.hidden() );
 
-	@Override
-	protected EntityView createEntityView( ModelMap model ) {
-		return new EntityView( model );
+		renderAndExpect(
+				column,
+				"<div class='col-md-6 hidden-xs'></div>"
+		);
 	}
 }
