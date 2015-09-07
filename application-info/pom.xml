@@ -16,9 +16,8 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>debug-web</artifactId>
-			<version>${project.version}</version>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>debug-web-module</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
