@@ -20,10 +20,7 @@ import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.AcrossWebModule;
 
-@AcrossDepends(
-		required = { AcrossWebModule.NAME, SpringSecurityModule.NAME },
-        optional = { "AcrossHibernateModule" }
-)
+@AcrossDepends(required = { AcrossWebModule.NAME, SpringSecurityModule.NAME })
 public class AdminWebModule extends AcrossModule
 {
 	public static final String NAME = "AdminWebModule";
