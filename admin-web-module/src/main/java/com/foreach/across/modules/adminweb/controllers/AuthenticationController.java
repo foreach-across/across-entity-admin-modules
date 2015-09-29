@@ -58,7 +58,7 @@ public class AuthenticationController
 
 		String loginTemplate = settings.getLoginTemplate();
 
-		if ( StringUtils.isNoneBlank( loginTemplate ) ) {
+		if ( StringUtils.isNotBlank( loginTemplate ) ) {
 			return loginTemplate;
 		}
 

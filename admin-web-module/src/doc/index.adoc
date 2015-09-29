@@ -102,4 +102,9 @@ adminWebModule.addApplicationContextConfigurer( DisableAdminWebSecurityHeaders.c
 ==== ApplicationInfoModule
 If the `ApplicationInfoModule` is present in the context, the configured application information will be used
 to set the default remember-me cookie name (based on the `ApplicationInfo.getApplicationId()`) and application title for
- the administration interface (based on the `ApplicationInfo.getApplicationName()` property).
+ the administration interface (based on the `ApplicationInfo.getApplicationName()` property).use DebugWebConfigurerAdapter to add interceptors only to debug web
+
+Configuring admin access permissions
+By default, access to the administration interface is restricted to users having the "access administration" permission. If you want to add one or more application specific permissions you have to override the property AdminWebModuleSettings.ADMIN_ACCESS_PERMISSIONS:
+adminWebModule.setProperty( AdminWebModuleSettings.ADMIN_ACCESS_PERMISSIONS, new String[]{ "access administration", "custom permission 1", "custom permission 2" });
+
