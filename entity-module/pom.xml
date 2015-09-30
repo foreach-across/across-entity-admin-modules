@@ -16,14 +16,17 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<artifactId>across-standard-modules</artifactId>
-		<groupId>across-standard-modules</groupId>
-		<version>1.1.1-SNAPSHOT</version>
-	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>com.foreach.across.modules</groupId>
+		<artifactId>entity-module-project</artifactId>
+		<version>1.1.0-SNAPSHOT</version>
+	</parent>
+
 	<artifactId>entity-module</artifactId>
+
+	<name>${project.groupId}:${project.artifactId}</name>
 
 	<dependencies>
 		<dependency>
@@ -31,9 +34,8 @@
 			<artifactId>across-hibernate-module</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>admin-web</artifactId>
-			<version>${project.parent.version}</version>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>admin-web-module</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -72,6 +74,21 @@
 			<artifactId>spring-data-solr</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>across</groupId>
+			<artifactId>across-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.foreach.libs</groupId>
+			<artifactId>common-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -80,6 +97,27 @@
 				<groupId>com.mysema.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>1.5.0</version>
+				<configuration>
+					<sourceDirectory>${project.basedir}/src/doc</sourceDirectory>
+					<sourceDocumentName>index.adoc</sourceDocumentName>
+					<outputDirectory>${project.reporting.outputDirectory}/${project.version}/reference</outputDirectory>
+					<backend>html</backend>
+				</configuration>
+				<executions>
+					<execution>
+						<id>output-html</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
 </project>
