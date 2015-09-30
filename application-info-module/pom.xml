@@ -19,6 +19,10 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>admin-web-module</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.foreach.libs</groupId>
 			<artifactId>common-spring</artifactId>
 		</dependency>
