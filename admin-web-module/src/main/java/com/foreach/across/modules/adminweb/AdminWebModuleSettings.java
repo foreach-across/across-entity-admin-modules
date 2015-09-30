@@ -46,6 +46,8 @@ public class AdminWebModuleSettings extends AcrossModuleSettings
 	 */
 	public static final String REMEMBER_ME_KEY = "adminWebModule.login.rememberMe.key";
 
+	public static final String REMEMBER_ME_COOKIE = "adminWebModule.login.rememberMe.cookie";
+
 	public static final String TITLE = "adminWebModule.title";
 
 	/**
@@ -73,6 +75,8 @@ public class AdminWebModuleSettings extends AcrossModuleSettings
 		registry.register( REMEMBER_ME_KEY, String.class, null,
 		                   "Key used for creating the remember me cookie.  " +
 				                   "If this property is not present, remember me will not be enabled." );
+		registry.register( REMEMBER_ME_COOKIE, String.class, "rm-admin-web",
+		                   "Name of the remember me cookie if remember me is enabled." );
 		registry.register( REMEMBER_ME_TOKEN_VALIDITY_SECONDS, Integer.class, 2592000,
 		                   "Number of seconds a remember me token should be valid. Defaults to 30 days." );
 		registry.register( TITLE, String.class, null,
@@ -100,6 +104,10 @@ public class AdminWebModuleSettings extends AcrossModuleSettings
 		this.title = title;
 	}
 
+	public String getRememberMeCookie() {
+		return getProperty( REMEMBER_ME_COOKIE );
+	}
+
 	public boolean isRememberMeEnabled() {
 		return !StringUtils.isBlank( getProperty( AdminWebModuleSettings.REMEMBER_ME_KEY, "" ) );
 	}
@@ -116,15 +124,6 @@ public class AdminWebModuleSettings extends AcrossModuleSettings
 		return getProperty( ADMIN_ACCESS_PERMISSIONS, String[].class );
 	}
 
-	/**
-	 * Allows changing the admin web dashboard path at runtime.
-	 *
-	 * @param dashboardPath Path within the admin web context to the dashboard.
-	 */
-	public void setDashboardPath( String dashboardPath ) {
-		this.dashboardPath = dashboardPath;
-	}
-
 	public String getDashboardPath() {
 		if ( dashboardPath == null ) {
 			String path = getProperty( DASHBOARD_PATH );
@@ -133,6 +132,15 @@ public class AdminWebModuleSettings extends AcrossModuleSettings
 		}
 
 		return dashboardPath;
+	}
+
+	/**
+	 * Allows changing the admin web dashboard path at runtime.
+	 *
+	 * @param dashboardPath Path within the admin web context to the dashboard.
+	 */
+	public void setDashboardPath( String dashboardPath ) {
+		this.dashboardPath = dashboardPath;
 	}
 
 	public String getLoginTemplate() {
