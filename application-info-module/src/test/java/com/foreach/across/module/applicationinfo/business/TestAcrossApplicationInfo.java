@@ -2,8 +2,6 @@ package com.foreach.across.module.applicationinfo.business;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -11,8 +9,6 @@ import static org.junit.Assert.*;
 
 public class TestAcrossApplicationInfo
 {
-	private Logger logger = LoggerFactory.getLogger( TestAcrossApplicationInfo.class );
-
 	private AcrossApplicationInfoImpl applicationInfo;
 
 	@Before
@@ -22,23 +18,20 @@ public class TestAcrossApplicationInfo
 
 	@Test
 	public void uptimeCalculation() throws InterruptedException {
-		AcrossApplicationInfoImpl localApplicationInfo = new AcrossApplicationInfoImpl();
-		localApplicationInfo.setBootstrapEndDate( new Date() );
+		applicationInfo.setBootstrapEndDate( new Date() );
 
-		long first = localApplicationInfo.getUptime();
-		logger.debug( "initial uptime: " + first );
+		long first = applicationInfo.getUptime();
 		assertTrue( first >= 0 );
 
-		Thread.sleep( 150 );
-		logger.debug( "uptime after thread sleep: " + localApplicationInfo.getUptime() );
-		assertTrue( localApplicationInfo.getUptime() > first );
-		assertTrue( localApplicationInfo.getUptime() >= 5 );
+		Thread.sleep( 50 );
+		assertTrue( applicationInfo.getUptime() > first );
+		assertTrue( applicationInfo.getUptime() >= 10 );
 	}
 
 	@Test
 	public void uptimeIsZeroIfBootstrapNotFinished() throws InterruptedException {
 		assertEquals( 0, applicationInfo.getUptime() );
-		Thread.sleep( 15 );
+		Thread.sleep( 50 );
 		assertEquals( 0, applicationInfo.getUptime() );
 	}
 

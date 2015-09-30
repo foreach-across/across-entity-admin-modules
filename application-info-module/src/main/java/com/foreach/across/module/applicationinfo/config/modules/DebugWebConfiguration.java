@@ -5,6 +5,7 @@ import com.foreach.across.core.annotations.AcrossEventHandler;
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.events.AcrossModuleBootstrappedEvent;
 import com.foreach.across.module.applicationinfo.controllers.ApplicationInfoController;
+import com.foreach.across.module.applicationinfo.controllers.rest.ApplicationInfoRestController;
 import com.foreach.across.modules.debugweb.DebugWebModuleSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,5 +40,10 @@ public class DebugWebConfiguration
 	@Bean
 	public ApplicationInfoController applicationInfoController() {
 		return new ApplicationInfoController();
+	}
+
+	@Bean
+	public ApplicationInfoRestController applicationInfoRestController() {
+		return new ApplicationInfoRestController();
 	}
 }
