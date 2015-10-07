@@ -26,8 +26,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="properties-module" target="1.7" />
-      <module name="properties-module-project" target="1.7" />
+      <module name="properties-module" target="1.8" />
+      <module name="properties-module-project" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

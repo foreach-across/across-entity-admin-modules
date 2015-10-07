@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @AcrossDepends(required = { "AdminWebModule", "EntityModule" })
 @Configuration
+@Deprecated
 public class AdminWebConfiguration
 {
 	@Bean
