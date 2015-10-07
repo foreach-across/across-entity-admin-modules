@@ -15,14 +15,17 @@
   limitations under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<artifactId>across-standard-modules</artifactId>
-		<groupId>across-standard-modules</groupId>
-		<version>1.0.6-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
+	 <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>properties-module</artifactId>
+    <parent>
+        <groupId>com.foreach.across.modules</groupId>
+        <artifactId>properties-module-project</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>properties-module</artifactId>
+
+    <name>${project.groupId}:${project.artifactId}</name>
 
 	<dependencies>
 		<dependency>
@@ -30,17 +33,25 @@
 			<artifactId>common-spring</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>admin-web</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>admin-web-module</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
+			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>entity-module</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+            <groupId>across</groupId>
+            <artifactId>across-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 </project>
