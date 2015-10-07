@@ -42,7 +42,7 @@ public abstract class AbstractEntityPropertiesService<T extends EntityProperties
 
 		return createEntityProperties( entityId,
 		                               entityPropertiesRegistry.getPropertyTypeRegistry(),
-		                               source );
+		                               source.detach() );
 	}
 
 	public Collection<U> getEntityIdsForPropertyValue( String propertyName, Object propertyValue ) {
