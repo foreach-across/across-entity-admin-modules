@@ -44,7 +44,7 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>across</groupId>
+			<groupId>com.foreach.across</groupId>
 			<artifactId>across-test</artifactId>
 			<scope>test</scope>
 		</dependency>
