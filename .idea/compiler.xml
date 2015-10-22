@@ -33,9 +33,9 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="application-info-module" target="1.8" />
-      <module name="application-info-module-project" target="1.8" />
-      <module name="application-info-module-test-web" target="1.8" />
+      <module name="application-info-module" target="1.7" />
+      <module name="application-info-module-project" target="1.7" />
+      <module name="application-info-module-test-web" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>
