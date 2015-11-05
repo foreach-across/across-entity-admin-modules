@@ -10,10 +10,10 @@
           <element id="archive" name="admin-web-module-1.0.0-SNAPSHOT.jar">
             <element id="module-output" name="admin-web-module" />
           </element>
-          <element id="library" level="project" name="Maven: com.foreach.across:across-web:1.0.6-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.foreach.across:across-web:1.0.6.RELEASE" />
           <element id="library" level="project" name="Maven: org.javassist:javassist:3.18.1-GA" />
           <element id="library" level="project" name="Maven: org.thymeleaf:thymeleaf-spring4:2.1.4.RELEASE" />
-          <element id="library" level="project" name="Maven: com.foreach.across:across-core:1.0.6-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.foreach.across:across-core:1.0.6.RELEASE" />
           <element id="library" level="project" name="Maven: com.foreach.libs:common-concurrent:0.12" />
           <element id="library" level="project" name="Maven: org.springframework:spring-context:4.0.9.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-jdbc:4.0.9.RELEASE" />
@@ -30,7 +30,7 @@
           <element id="library" level="project" name="Maven: org.springframework:spring-core:4.0.9.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-expression:4.0.9.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-web:4.0.9.RELEASE" />
-          <element id="library" level="project" name="Maven: com.foreach.across.modules:spring-security-module:1.0.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.foreach.across.modules:spring-security-module:1.0.0.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework.security:spring-security-core:3.2.7.RELEASE" />
           <element id="library" level="project" name="Maven: aopalliance:aopalliance:1.0" />
           <element id="library" level="project" name="Maven: org.springframework:spring-aop:4.0.9.RELEASE" />
@@ -41,7 +41,7 @@
           <element id="library" level="project" name="Maven: ognl:ognl:3.0.8" />
           <element id="library" level="project" name="Maven: org.unbescape:unbescape:1.1.0.RELEASE" />
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.11" />
-          <element id="library" level="project" name="Maven: com.foreach.across:across-test:1.0.6-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.foreach.across:across-test:1.0.6.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-test:4.0.9.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-orm:4.0.9.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-tx:4.0.9.RELEASE" />
