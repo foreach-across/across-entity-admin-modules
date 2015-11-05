@@ -20,14 +20,27 @@ import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.events.AdminWebUrlRegistry;
 import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
+import com.foreach.across.modules.spring.security.filters.LocaleChangeFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.LocaleResolver;
 
 @Configuration
 public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAdapter
 {
+	private static final Logger LOG = LoggerFactory.getLogger( AdminWebSecurityConfiguration.class );
+
 	@Autowired
 	private AcrossEventPublisher publisher;
 
@@ -37,21 +50,30 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	@Autowired
 	private AdminWebModuleSettings settings;
 
+	@Autowired(required = false)
+	@Qualifier(DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
+	private LocaleResolver localeResolver;
+
 	@Override
 	@SuppressWarnings("SignatureDeclareThrowsException")
 	public void configure( HttpSecurity root ) throws Exception {
 		HttpSecurity http = root.antMatcher( adminWeb.path( "/**" ) );
+
+		// Allow locale to be changed before security applied
+		if ( localeResolver != null ) {
+			http.addFilterBefore( new LocaleChangeFilter( localeResolver ), SecurityContextPersistenceFilter.class );
+		}
 
 		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry urlRegistry =
 				http.authorizeRequests();
 
 		publisher.publish( new AdminWebUrlRegistry( adminWeb, urlRegistry ) );
 
-		// Only users with the "access administration " permission can login
-		urlRegistry.anyRequest().hasAuthority( "access administration" ).and()
-		           .formLogin().defaultSuccessUrl( adminWeb.path( "/" ) )
-		           .loginPage( adminWeb.path( "/login" ) ).permitAll().and()
-		           .logout().permitAll();
+		// Only users with any of the configured admin permissions can login
+		urlRegistry.anyRequest().hasAnyAuthority( settings.getAccessPermissions() )
+		           .and().formLogin().defaultSuccessUrl( adminWeb.path( "/" ) ).loginPage( adminWeb.path( "/login" ) )
+		           .permitAll()
+		           .and().logout().permitAll();
 
 		configureRememberMe( http );
 		customizeAdminWebSecurity( http );
@@ -65,7 +87,25 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 					AdminWebModuleSettings.REMEMBER_ME_TOKEN_VALIDITY_SECONDS, Integer.class
 			);
 
-			http.rememberMe().key( rememberMeKey ).tokenValiditySeconds( rememberMeValiditySeconds );
+			http.rememberMe()
+			    .key( rememberMeKey )
+			    .tokenValiditySeconds( rememberMeValiditySeconds )
+			    .addObjectPostProcessor( new ObjectPostProcessor<RememberMeAuthenticationFilter>()
+			    {
+				    @Override
+				    public RememberMeAuthenticationFilter postProcess( RememberMeAuthenticationFilter object ) {
+					    RememberMeServices rememberMeServices = object.getRememberMeServices();
+
+					    if ( rememberMeServices instanceof TokenBasedRememberMeServices ) {
+						    String cookieName = settings.getProperty( AdminWebModuleSettings.REMEMBER_ME_COOKIE );
+						    LOG.debug( "Configuring adminWeb remember me cookie name: {}", cookieName );
+
+						    ( (TokenBasedRememberMeServices) rememberMeServices ).setCookieName( cookieName );
+					    }
+
+					    return object;
+				    }
+			    } );
 		}
 	}
 
@@ -74,6 +114,7 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	 *
 	 * @param http security element scoped for adminweb urls
 	 */
+	@SuppressWarnings("all")
 	protected void customizeAdminWebSecurity( HttpSecurity http ) throws Exception {
 	}
 }

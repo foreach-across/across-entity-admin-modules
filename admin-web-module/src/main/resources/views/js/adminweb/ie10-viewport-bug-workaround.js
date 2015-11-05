@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.adminweb.menu;
 
-import com.foreach.across.modules.web.menu.Menu;
+// See the Getting Started docs for more information:
+// http://getbootstrap.com/getting-started/#support-ie10-width
 
-public class AdminMenu extends Menu
-{
-	public static final String NAME = "adminMenu";
-
-	public AdminMenu() {
-		super( NAME );
-	}
-
-	/**
-	 * Shortcut to specify the leaf point of the current breadcrumb by adding an additional
-	 * item to the path.
-	 *
-	 * @param title text for the leaf.
-	 */
-	public void breadcrumbLeaf( String title ) {
-		getLowestSelectedItem().addItem( "/breadcrumbLeaf", title ).setSelected( true );
-	}
-}
+(function () {
+    'use strict';
+    if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+        var msViewportStyle = document.createElement('style')
+        msViewportStyle.appendChild(
+            document.createTextNode(
+                '@-ms-viewport{width:auto!important}'
+            )
+        )
+        document.querySelector('head').appendChild(msViewportStyle)
+    }
+})();

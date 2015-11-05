@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public final class AdminWeb extends PrefixingPathContext
 {
+	public static final String NAME = "adminWeb";
+
 	public static final String MODULE = "AdminWebModule";
 
 	public static final String LAYOUT_TEMPLATE_CSS = "/css/adminweb/adminweb.css";
@@ -28,16 +30,12 @@ public final class AdminWeb extends PrefixingPathContext
 	@Autowired
 	private AdminWebModuleSettings settings;
 
-	private final String title;
-
-	public AdminWeb( String prefix, String title ) {
+	public AdminWeb( String prefix ) {
 		super( prefix );
-
-		this.title = title;
 	}
 
 	public String getTitle() {
-		return title;
+		return settings.getTitle();
 	}
 
 	public AdminWebModuleSettings getSettings() {
