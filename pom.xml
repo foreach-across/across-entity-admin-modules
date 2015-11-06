@@ -114,6 +114,7 @@
 	<scm>
 		<connection>scm:git:https://bitbucket.org/beforeach/entity-ui-module.git</connection>
 		<developerConnection>scm:git:https://bitbucket.org/beforeach/entity-ui-module.git</developerConnection>
+		<url>https://bitbucket.org/beforeach/entity-ui-module</url>
 	</scm>
 
 </project>
