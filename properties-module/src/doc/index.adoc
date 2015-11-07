@@ -9,26 +9,26 @@ The Properties module provides facilities to extend existing entities with custo
   <dependency>
     <groupId>across-standard-modules</groupId>
     <artifactId>properties-module</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.0.RELEASE</version>
   </dependency>
 </dependencies>
 ```
 
 ## Configuration
 ### Installers
-In order to extend existing entities with properties, the tables for these properties have to be installed. 
+In order to extend existing entities with properties, the tables for these properties have to be installed.
 The client application can do this by registering installers that extend from EntityPropertiesInstaller or RevisionBasedEntityPropertiesInstaller.
 
 ### Repositories
 The Properties module offers a base implementation of EntityPropertiesRepository that can be extended with a typed implementation.
 
 ### Services
-The client application should then extend either AbstractEntityPropertiesService or AbstractRevisionBasedEntityPropertiesService. 
+The client application should then extend either AbstractEntityPropertiesService or AbstractRevisionBasedEntityPropertiesService.
 These services can then be wired into the entity services and used as described below.
 
 ### Registries
 The entities with properties should have a registry class extending from EntityPropertiesRegistry.
-Registries are classes that contain a map for the properties added to a specific entity. 
+Registries are classes that contain a map for the properties added to a specific entity.
 For example, a User entity class can have a corresponding UserPropertiesRegistry class.
 
 ### Properties configuration
@@ -53,7 +53,7 @@ private AcrossModule currentModule;
 private UserPropertiesRegistry userPropertiesRegistry;
 ```
 
-This registry contains the definition of the property key to its implementation class and optionally a default value. 
+This registry contains the definition of the property key to its implementation class and optionally a default value.
 See EntityPropertiesRegistry for all available options.
 
 #### Defaults
