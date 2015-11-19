@@ -22,14 +22,12 @@
         <sourceTestOutputDir name="target\generated-test-sources\test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="admin-web-module" />
       </profile>
       <profile default="false" name="Annotation profile for admin-web-module-test-web" enabled="true">
         <sourceOutputDir name="target\generated-sources\annotations" />
         <sourceTestOutputDir name="target\generated-test-sources\test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="admin-web-module-test-web" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
