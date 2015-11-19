@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.module.applicationinfo.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.annotations.AcrossEventHandler;
 import com.foreach.across.core.annotations.Event;
+import com.foreach.across.core.context.configurer.PropertySourcesConfigurer;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.events.AcrossModuleBeforeBootstrapEvent;
+import com.foreach.across.module.applicationinfo.ApplicationInfoModule;
 import com.foreach.across.module.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
@@ -29,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.PropertiesPropertySource;
 
 import java.util.Properties;
 
@@ -54,19 +58,27 @@ public class AdminWebConfiguration
 
 		if ( AdminWebModule.NAME.equals( moduleInfo.getName() ) ) {
 			Properties adminWebProperties = moduleInfo.getModule().getProperties();
+			Properties modifiedProperties = new Properties();
 
 			if ( !settings.containsProperty( AdminWebModuleSettings.TITLE )
 					&& !adminWebProperties.containsKey( AdminWebModuleSettings.TITLE ) ) {
 				LOG.trace( "Registering application name as AdminWeb title" );
-				adminWebProperties.setProperty( AdminWebModuleSettings.TITLE,
-				                                runningApplicationInfo.getApplicationName() );
+				modifiedProperties.put( AdminWebModuleSettings.TITLE, runningApplicationInfo.getApplicationName() );
 			}
 			if ( !settings.containsProperty( AdminWebModuleSettings.REMEMBER_ME_COOKIE )
 					&& !adminWebProperties.containsKey( AdminWebModuleSettings.REMEMBER_ME_COOKIE ) ) {
 				LOG.trace( "Registering application id as name for the AdminWeb remember me cookie" );
-				adminWebProperties.setProperty(
+				modifiedProperties.put(
 						AdminWebModuleSettings.REMEMBER_ME_COOKIE,
 						StringUtils.deleteWhitespace( "rm-admin-" + runningApplicationInfo.getApplicationId() )
+				);
+			}
+
+			if ( !modifiedProperties.isEmpty() ) {
+				moduleBeforeBootstrapEvent.getBootstrapConfig().addApplicationContextConfigurer(
+						new PropertySourcesConfigurer(
+								new PropertiesPropertySource( ApplicationInfoModule.NAME, modifiedProperties )
+						)
 				);
 			}
 
