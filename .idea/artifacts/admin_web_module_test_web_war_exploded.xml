@@ -33,7 +33,7 @@
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.4.4" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.4.4" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.4.4" />
-          <element id="library" level="project" name="Maven: com.foreach.across.modules:spring-security-module:1.1.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.foreach.across.modules:spring-security-module:1.1.0.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework.security:spring-security-core:3.2.5.RELEASE" />
           <element id="library" level="project" name="Maven: aopalliance:aopalliance:1.0" />
           <element id="library" level="project" name="Maven: org.springframework:spring-aop:4.1.4.RELEASE" />
