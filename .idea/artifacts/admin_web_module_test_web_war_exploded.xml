@@ -1,13 +1,13 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="admin-web-module-test-web:war exploded">
-    <output-path>$PROJECT_DIR$/admin-web-module-test-web/target/admin-web-module-test-web-1.1.0-SNAPSHOT</output-path>
+    <output-path>$PROJECT_DIR$/admin-web-module-test-web/target/admin-web-module-test-web-1.1.0.RELEASE</output-path>
     <root id="root">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="admin-web-module-test-web" />
         </element>
         <element id="directory" name="lib">
-          <element id="archive" name="admin-web-module-1.1.0-SNAPSHOT.jar">
+          <element id="archive" name="admin-web-module-1.1.0.RELEASE.jar">
             <element id="module-output" name="admin-web-module" />
           </element>
           <element id="library" level="project" name="Maven: com.foreach.across:across-web:1.0.6.RELEASE" />
@@ -30,7 +30,7 @@
           <element id="library" level="project" name="Maven: org.springframework:spring-core:4.0.9.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-expression:4.0.9.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework:spring-web:4.0.9.RELEASE" />
-          <element id="library" level="project" name="Maven: com.foreach.across.modules:spring-security-module:1.1.0-SNAPSHOT" />
+          <element id="library" level="project" name="Maven: com.foreach.across.modules:spring-security-module:1.1.0.RELEASE" />
           <element id="library" level="project" name="Maven: org.springframework.security:spring-security-core:3.2.7.RELEASE" />
           <element id="library" level="project" name="Maven: aopalliance:aopalliance:1.0" />
           <element id="library" level="project" name="Maven: org.springframework:spring-aop:4.0.9.RELEASE" />
@@ -53,7 +53,7 @@
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/admin-web-module-test-web/target/admin-web-module-test-web-1.1.0-SNAPSHOT/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/admin-web-module-test-web/target/admin-web-module-test-web-1.1.0.RELEASE/META-INF/MANIFEST.MF" />
       </element>
       <element id="javaee-facet-resources" facet="admin-web-module-test-web/web/Web" />
     </root>
