@@ -12,7 +12,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: com.foreach.across.modules:across-hibernate-module:1.1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across.modules:across-hibernate-module:1.1.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-jpa:1.7.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjrt:1.8.4" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-orm:4.1.4.RELEASE" level="project" />
@@ -34,12 +34,12 @@
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:2.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.mysema.commons:mysema-commons-lang:0.2.4" level="project" />
     <orderEntry type="library" name="Maven: com.infradna.tool:bridge-method-annotation:1.13" level="project" />
-    <orderEntry type="library" name="Maven: com.foreach.across.modules:admin-web-module:1.1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.foreach.across:across-web:1.1.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across.modules:admin-web-module:1.1.0.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across:across-web:1.1.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.thymeleaf:thymeleaf-spring4:2.1.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:4.1.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-web:4.1.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: com.foreach.across.modules:spring-security-module:1.1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across.modules:spring-security-module:1.1.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-core:3.2.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:3.2.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-config:3.2.5.RELEASE" level="project" />
@@ -77,8 +77,8 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.zookeeper:zookeeper:3.4.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.woodstox:wstx-asl:3.2.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.noggit:noggit:0.5" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.foreach.across:across-test:1.1.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.foreach.across:across-core:1.1.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.foreach.across:across-test:1.1.1.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across:across-core:1.1.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.libs:common-concurrent:0.12" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.2" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.2" level="project" />
