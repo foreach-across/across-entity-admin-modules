@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>application-info-module-project</artifactId>
-		<version>1.0.0.RELEASE</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>application-info-module</artifactId>
