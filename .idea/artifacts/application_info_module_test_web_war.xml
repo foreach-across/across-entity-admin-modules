@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
   <artifact type="war" name="application-info-module-test-web:war">
     <output-path>$PROJECT_DIR$/application-info-module-test-web/target</output-path>
-    <root id="archive" name="application-info-module-test-web-1.0.0-SNAPSHOT.war">
+    <root id="archive" name="application-info-module-test-web.war">
       <element id="artifact" artifact-name="application-info-module-test-web:war exploded" />
     </root>
   </artifact>
