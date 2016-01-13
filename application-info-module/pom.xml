@@ -38,6 +38,7 @@
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>admin-web-module</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.libs</groupId>
