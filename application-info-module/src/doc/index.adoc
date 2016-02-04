@@ -106,7 +106,9 @@ NOTE: Timestamps in property files should be provided in *yyyy-MM-dd HH:mm:ss* f
 == What's new in this version?
 :numbered!:
 === 1.0.1-SNAPSHOT
-tbd
+This version introduces a couple of breaking changes:
+
+* Package has been renamed from *com.foreach.across.module* to *com.foreach.across.modules*.
 
 === 1.0.0.RELEASE
 Initial public release available on http://search.maven.org/[Maven central].

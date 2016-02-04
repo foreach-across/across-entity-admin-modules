@@ -10,7 +10,7 @@ import com.foreach.across.modules.debugweb.DebugWebModuleSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,16 +24,17 @@ public class DebugWebConfiguration
 {
 	private static Logger LOG = LoggerFactory.getLogger( DebugWebConfiguration.class );
 
-	@Autowired(required = false)
-	private DebugWebModuleSettings debugWebModuleSettings;
-
 	@Event
 	protected void registerDebugDashboard( AcrossModuleBootstrappedEvent moduleBootstrappedEvent ) {
-		if ( StringUtils.equals( "DebugWebModule", moduleBootstrappedEvent.getModule().getName() )
-				&& debugWebModuleSettings != null
-				&& StringUtils.equals( debugWebModuleSettings.getDashboardPath(), "/" ) ) {
-			LOG.trace( "Registering debug dashboard to application info controller" );
-			debugWebModuleSettings.setDashboardPath( ApplicationInfoController.PATH );
+		if ( StringUtils.equals( "DebugWebModule", moduleBootstrappedEvent.getModule().getName() ) ) {
+			ApplicationContext ctx = moduleBootstrappedEvent.getModule().getApplicationContext();
+			DebugWebModuleSettings debugWebModuleSettings = ctx.getBean( DebugWebModuleSettings.class );
+
+			if ( debugWebModuleSettings != null
+					&& StringUtils.equals( debugWebModuleSettings.getDashboardPath(), "/" ) ) {
+				LOG.trace( "Registering debug dashboard to application info controller" );
+				debugWebModuleSettings.setDashboardPath( ApplicationInfoController.PATH );
+			}
 		}
 	}
 
