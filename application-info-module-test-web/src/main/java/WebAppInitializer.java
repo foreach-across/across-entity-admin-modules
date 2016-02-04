@@ -17,10 +17,9 @@
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.config.EnableAcrossContext;
 import com.foreach.across.core.AcrossContext;
-import com.foreach.across.core.AcrossModule;
-import com.foreach.across.module.applicationinfo.ApplicationInfoModule;
-import com.foreach.across.module.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.AcrossWebModule;

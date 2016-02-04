@@ -1,12 +1,12 @@
-package com.foreach.across.module.applicationinfo.config;
+package com.foreach.across.modules.applicationinfo.config;
 
 import com.foreach.across.core.annotations.AcrossEventHandler;
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.events.AcrossContextBootstrappedEvent;
-import com.foreach.across.module.applicationinfo.ApplicationInfoModule;
-import com.foreach.across.module.applicationinfo.ApplicationInfoModuleSettings;
-import com.foreach.across.module.applicationinfo.business.AcrossApplicationInfoImpl;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
+import com.foreach.across.modules.applicationinfo.business.AcrossApplicationInfoImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

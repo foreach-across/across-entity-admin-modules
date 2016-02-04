@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.module.applicationinfo.it;
+package com.foreach.across.modules.applicationinfo.it;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.installers.InstallerAction;
-import com.foreach.across.module.applicationinfo.ApplicationInfoModule;
-import com.foreach.across.module.applicationinfo.controllers.ApplicationInfoController;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
+import com.foreach.across.modules.applicationinfo.controllers.ApplicationInfoController;
 import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.debugweb.DebugWebModuleSettings;
 import com.foreach.across.test.AcrossTestWebContext;

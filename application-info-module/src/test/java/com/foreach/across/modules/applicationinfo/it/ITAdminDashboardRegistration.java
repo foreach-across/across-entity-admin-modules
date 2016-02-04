@@ -1,11 +1,11 @@
-package com.foreach.across.module.applicationinfo.it;
+package com.foreach.across.modules.applicationinfo.it;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.installers.InstallerAction;
-import com.foreach.across.module.applicationinfo.ApplicationInfoModule;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestWebContext;
 import org.junit.Test;

@@ -1,6 +1,6 @@
-package com.foreach.across.module.applicationinfo.controllers;
+package com.foreach.across.modules.applicationinfo.controllers;
 
-import com.foreach.across.module.applicationinfo.business.AcrossApplicationInfo;
+import com.foreach.across.modules.applicationinfo.business.AcrossApplicationInfo;
 import com.foreach.across.modules.debugweb.mvc.DebugWebController;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;

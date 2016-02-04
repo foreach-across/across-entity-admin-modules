@@ -1,4 +1,4 @@
-package com.foreach.across.module.applicationinfo.business;
+package com.foreach.across.modules.applicationinfo.business;
 
 import com.foreach.common.spring.context.MutableApplicationInfo;
 import org.apache.commons.lang3.StringUtils;

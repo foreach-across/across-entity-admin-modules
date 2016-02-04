@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.module.applicationinfo.config.modules;
+package com.foreach.across.modules.applicationinfo.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.annotations.AcrossEventHandler;
@@ -22,10 +22,10 @@ import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.context.configurer.PropertySourcesConfigurer;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.events.AcrossModuleBeforeBootstrapEvent;
-import com.foreach.across.module.applicationinfo.ApplicationInfoModule;
-import com.foreach.across.module.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.common.spring.context.ApplicationInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

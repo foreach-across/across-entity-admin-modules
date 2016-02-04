@@ -1,7 +1,7 @@
-package com.foreach.across.module.applicationinfo.controllers.rest;
+package com.foreach.across.modules.applicationinfo.controllers.rest;
 
-import com.foreach.across.module.applicationinfo.business.AcrossApplicationInfo;
-import com.foreach.across.module.applicationinfo.controllers.ApplicationInfoController;
+import com.foreach.across.modules.applicationinfo.business.AcrossApplicationInfo;
+import com.foreach.across.modules.applicationinfo.controllers.ApplicationInfoController;
 import com.foreach.across.modules.debugweb.mvc.DebugWebController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

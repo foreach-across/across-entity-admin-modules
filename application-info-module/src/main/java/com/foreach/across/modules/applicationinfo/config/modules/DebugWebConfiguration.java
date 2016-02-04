@@ -1,11 +1,11 @@
-package com.foreach.across.module.applicationinfo.config.modules;
+package com.foreach.across.modules.applicationinfo.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.annotations.AcrossEventHandler;
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.events.AcrossModuleBootstrappedEvent;
-import com.foreach.across.module.applicationinfo.controllers.ApplicationInfoController;
-import com.foreach.across.module.applicationinfo.controllers.rest.ApplicationInfoRestController;
+import com.foreach.across.modules.applicationinfo.controllers.ApplicationInfoController;
+import com.foreach.across.modules.applicationinfo.controllers.rest.ApplicationInfoRestController;
 import com.foreach.across.modules.debugweb.DebugWebModuleSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

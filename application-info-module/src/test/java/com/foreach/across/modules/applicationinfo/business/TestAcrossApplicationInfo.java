@@ -1,4 +1,4 @@
-package com.foreach.across.module.applicationinfo.business;
+package com.foreach.across.modules.applicationinfo.business;
 
 import org.junit.Before;
 import org.junit.Test;

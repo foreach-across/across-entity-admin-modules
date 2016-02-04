@@ -1,10 +1,10 @@
-package com.foreach.across.module.applicationinfo.it;
+package com.foreach.across.modules.applicationinfo.it;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
-import com.foreach.across.module.applicationinfo.ApplicationInfoModule;
-import com.foreach.across.module.applicationinfo.ApplicationInfoModuleSettings;
-import com.foreach.across.module.applicationinfo.business.AcrossApplicationInfo;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
+import com.foreach.across.modules.applicationinfo.business.AcrossApplicationInfo;
 import com.foreach.across.test.AcrossTestContext;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.junit.Test;

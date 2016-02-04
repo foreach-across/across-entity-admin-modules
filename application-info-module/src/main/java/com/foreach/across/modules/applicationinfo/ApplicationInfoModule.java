@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.module.applicationinfo;
+package com.foreach.across.modules.applicationinfo;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossRole;
