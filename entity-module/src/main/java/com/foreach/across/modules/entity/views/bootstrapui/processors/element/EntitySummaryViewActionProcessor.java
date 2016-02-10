@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewCreationContext;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -42,12 +43,12 @@ public class EntitySummaryViewActionProcessor implements ViewElementPostProcesso
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row element ) {
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		EntityLinkBuilder linkBuilder = builderContext.getAttribute( EntityLinkBuilder.class );
+		EntityLinkBuilder linkBuilder
+				= builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY_LINKS, EntityLinkBuilder.class );
 
 		element.setAttribute( "data-summary-url",
 		                      ServletUriComponentsBuilder
-				                      .fromCurrentContextPath()
-				                      .path( linkBuilder.view( entity ) )
+				                      .fromUriString( linkBuilder.view( entity ) )
 				                      .queryParam( "view", viewName )
 				                      .queryParam( "_partial", "content" )
 				                      .toUriString()
