@@ -25,11 +25,6 @@ import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 public class TestAdminWebModuleConventions extends AbstractAcrossModuleConventionsTest
 {
 	@Override
-	protected boolean hasSettings() {
-		return true;
-	}
-
-	@Override
 	protected AcrossModule createModule() {
 		return new AdminWebModule();
 	}

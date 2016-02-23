@@ -20,6 +20,7 @@ import com.foreach.across.core.annotations.Module;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
+import com.foreach.across.modules.adminweb.config.LocaleProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -41,6 +42,9 @@ public class AuthenticationController
 	@Autowired
 	@Module(AcrossModule.CURRENT_MODULE)
 	private AdminWebModuleSettings settings;
+
+	@Autowired
+	private LocaleProperties localeProperties;
 
 	@RequestMapping(value = { "", "/" })
 	public String dashboard() {
@@ -76,19 +80,9 @@ public class AuthenticationController
 		List<LocaleOption> options = new LinkedList<>();
 		Locale currentLocale = LocaleContextHolder.getLocale();
 
-		for ( Object candidate : settings.getLocaleOptions() ) {
+		for ( Locale candidate : localeProperties.getOptions() ) {
 			LocaleOption option = new LocaleOption();
-
-			if ( candidate instanceof String ) {
-				option.setLocale( Locale.forLanguageTag( (String) candidate ) );
-			}
-			else if ( candidate instanceof Locale ) {
-				option.setLocale( (Locale) candidate );
-			}
-			else {
-				throw new RuntimeException( "Unknown locale option: " + candidate );
-			}
-
+			option.setLocale( candidate );
 			option.setSelected( currentLocale.equals( option.getLocale() ) );
 			option.setLabel( StringUtils.upperCase( option.getLocale().getLanguage() ) );
 

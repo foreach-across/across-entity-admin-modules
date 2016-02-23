@@ -50,6 +50,9 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	@Autowired
 	private AdminWebModuleSettings settings;
 
+	@Autowired
+	private RememberMeProperties rememberMeProperties;
+
 	@Autowired(required = false)
 	@Qualifier(DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
 	private LocaleResolver localeResolver;
@@ -81,11 +84,9 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 
 	@SuppressWarnings("SignatureDeclareThrowsException")
 	protected void configureRememberMe( HttpSecurity http ) throws Exception {
-		if ( adminWeb.getSettings().isRememberMeEnabled() ) {
-			String rememberMeKey = settings.getProperty( AdminWebModuleSettings.REMEMBER_ME_KEY );
-			int rememberMeValiditySeconds = settings.getProperty(
-					AdminWebModuleSettings.REMEMBER_ME_TOKEN_VALIDITY_SECONDS, Integer.class
-			);
+		if ( rememberMeProperties.isEnabled() ) {
+			String rememberMeKey = rememberMeProperties.getKey();
+			int rememberMeValiditySeconds = rememberMeProperties.getTokenValiditySeconds();
 
 			http.rememberMe()
 			    .key( rememberMeKey )
@@ -97,7 +98,7 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 					    RememberMeServices rememberMeServices = object.getRememberMeServices();
 
 					    if ( rememberMeServices instanceof TokenBasedRememberMeServices ) {
-						    String cookieName = settings.getProperty( AdminWebModuleSettings.REMEMBER_ME_COOKIE );
+						    String cookieName = rememberMeProperties.getCookie();
 						    LOG.debug( "Configuring adminWeb remember me cookie name: {}", cookieName );
 
 						    ( (TokenBasedRememberMeServices) rememberMeServices ).setCookieName( cookieName );
