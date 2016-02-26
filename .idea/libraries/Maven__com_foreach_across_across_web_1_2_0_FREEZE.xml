@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.foreach.across:across-web:1.2.0.FREEZE">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/across-web/1.2.0.FREEZE/across-web-1.2.0.FREEZE.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/across-web/1.2.0.FREEZE/across-web-1.2.0.FREEZE-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/foreach/across/across-web/1.2.0.FREEZE/across-web-1.2.0.FREEZE-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
