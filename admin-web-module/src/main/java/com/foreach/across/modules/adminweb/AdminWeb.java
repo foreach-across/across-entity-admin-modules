@@ -24,7 +24,7 @@ public final class AdminWeb extends PrefixingPathContext
 
 	public static final String MODULE = "AdminWebModule";
 
-	public static final String LAYOUT_TEMPLATE_CSS = "/css/adminweb/adminweb.css";
+	public static final String LAYOUT_TEMPLATE_CSS = "/static/adminweb/css/adminweb.css";
 	public static final String LAYOUT_TEMPLATE = "th/adminweb/layouts/adminPage";
 
 	@Autowired
@@ -34,11 +34,8 @@ public final class AdminWeb extends PrefixingPathContext
 		super( prefix );
 	}
 
+	@SuppressWarnings("unused")
 	public String getTitle() {
 		return settings.getTitle();
-	}
-
-	public AdminWebModuleSettings getSettings() {
-		return settings;
 	}
 }

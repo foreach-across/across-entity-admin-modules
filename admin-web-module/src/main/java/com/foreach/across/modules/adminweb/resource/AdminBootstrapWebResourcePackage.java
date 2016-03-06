@@ -35,7 +35,7 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 	public AdminBootstrapWebResourcePackage( boolean minified, String version ) {
 		if ( minified ) {
 			setWebResources( Arrays.asList( new WebResource( WebResource.CSS, NAME,
-			                                                 "/css/adminweb/fe_bootstrap-1.0.css",
+			                                                 "/static/adminweb/css/fe_bootstrap-1.0.css",
 			                                                 WebResource.VIEWS ),
 //			                                new WebResource( WebResource.CSS, NAME + "-theme",
 //			                                                 "//netdna.bootstrapcdn.com/bootstrap/" + version + "/css/bootstrap-theme.min.css",
@@ -44,17 +44,17 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
                                                              "//netdna.bootstrapcdn.com/bootstrap/" + version + "/js/bootstrap.min.js",
                                                              WebResource.EXTERNAL ),
                                             new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
-                                                             "/js/adminweb/main.js",
+                                                             "/static/adminweb/js/main.js",
                                                              WebResource.VIEWS ),
                                             new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
-                                                             "/js/adminweb/ie10-viewport-bug-workaround.js",
+                                                             "/static/adminweb/js/ie10-viewport-bug-workaround.js",
                                                              WebResource.VIEWS )
 			                 )
 			);
 		}
 		else {
 			setWebResources( Arrays.asList( new WebResource( WebResource.CSS, NAME,
-			                                                 "/css/adminweb/fe_bootstrap-1.0.css",
+			                                                 "/static/adminweb/css/fe_bootstrap-1.0.css",
 			                                                 WebResource.VIEWS ),
 //			                                new WebResource( WebResource.CSS, NAME + "-theme",
 //			                                                 "//netdna.bootstrapcdn.com/bootstrap/" + version + "/css/bootstrap-theme.css",
@@ -63,10 +63,10 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
                                                              "//netdna.bootstrapcdn.com/bootstrap/" + version + "/js/bootstrap.js",
                                                              WebResource.EXTERNAL ),
                                             new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
-                                                             "/js/adminweb/main.js",
+                                                             "/static/adminweb/js/main.js",
                                                              WebResource.VIEWS ),
                                             new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
-                                                             "/js/adminweb/ie10-viewport-bug-workaround.js",
+                                                             "/static/adminweb/js/ie10-viewport-bug-workaround.js",
                                                              WebResource.VIEWS )
 			                 )
 			);

@@ -15,35 +15,37 @@
  */
 package com.foreach.across.test.modules.adminweb;
 
-import com.foreach.across.config.AcrossContextConfigurer;
-import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
-import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.mvc.PrefixingRequestMappingHandlerMapping;
 import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import com.foreach.across.modules.web.resource.WebResourceRegistryInterceptor;
 import com.foreach.across.modules.web.template.WebTemplateRegistry;
-import com.foreach.across.test.AcrossTestWebConfiguration;
+import com.foreach.across.test.AcrossTestConfiguration;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@WebAppConfiguration
-@ContextConfiguration(classes = ITAdminWebModule.Config.class)
-public class ITAdminWebModule
+@AcrossWebAppConfiguration
+@TestPropertySource(properties = "acrossWebModule.resources.path=/static")
+public class ITAdminWebDefaultSettings
 {
 	@Autowired
 	@Qualifier("adminWebTemplateRegistry")
@@ -67,6 +69,9 @@ public class ITAdminWebModule
 	@Autowired
 	private AdminWeb adminWeb;
 
+	@Autowired
+	private MockMvc mvc;
+
 	@Test
 	public void exposedBeans() {
 		assertNotNull( adminWeb );
@@ -79,17 +84,30 @@ public class ITAdminWebModule
 		assertNotNull( localeResolver );
 	}
 
-	@Configuration
-	@AcrossTestWebConfiguration
-	protected static class Config implements AcrossContextConfigurer
-	{
-		@Override
-		public void configure( AcrossContext context ) {
-			context.addModule( new SpringSecurityModule() );
-			context.addModule( adminWebModule() );
-		}
+	@Test
+	public void staticResourcesShouldNotBeSecured() throws Exception {
+		mvc.perform( get( "/static/static/adminweb/css/adminweb.css" ) )
+		   .andExpect( status().isOk() );
+	}
 
-		private AdminWebModule adminWebModule() {
+	@Test
+	public void securedAdminControllerShouldRedirectToLogin() throws Exception {
+		mvc.perform( get( "/administration/somePage" ) )
+		   .andExpect( redirectedUrl( "http://localhost/administration/login" ) );
+	}
+
+	@Test
+	public void loginPageShouldBeUnsecuredAndRememberMeDisabled() throws Exception {
+		mvc.perform( get( "/administration/login" ) )
+		   .andExpect( status().isOk() )
+		   .andExpect( content().string( not( containsString( "remember-me" ) ) ) );
+	}
+
+	@AcrossTestConfiguration
+	protected static class Config
+	{
+		@Bean
+		public AdminWebModule adminWebModule() {
 			AdminWebModule adminWebModule = new AdminWebModule();
 			adminWebModule.setRootPath( "/administration/" );
 

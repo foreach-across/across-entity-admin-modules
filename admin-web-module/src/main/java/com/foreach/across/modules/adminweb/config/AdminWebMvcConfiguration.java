@@ -66,7 +66,7 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 
 	@Override
 	protected String getPrefixPath() {
-		return adminWebModule.getRootPath();
+		return settings.getRootPath();
 	}
 
 	@Override

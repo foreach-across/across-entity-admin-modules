@@ -49,7 +49,7 @@
 					<label for="password" class="sr-only">Password</label>
 					<input type="password" id="password" name="password" class="form-control" placeholder="Password"/>
 
-					<div th:if="${@adminWeb.settings.rememberMeEnabled}" class="checkbox">
+					<div th:if="${isRememberMeEnabled}" class="checkbox">
 						<label for="remember-me">
 							<input type="checkbox" id="remember-me" name="remember-me"/> Remember me
 						</label>

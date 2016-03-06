@@ -15,17 +15,22 @@
  */
 package com.foreach.across.modules.adminweb.config;
 
+import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.events.AdminWebUrlRegistry;
 import com.foreach.across.modules.spring.security.configuration.SpringSecurityWebConfigurerAdapter;
 import com.foreach.across.modules.spring.security.filters.LocaleChangeFilter;
+import com.foreach.across.modules.web.AcrossWebModule;
+import com.foreach.across.modules.web.config.resources.ResourceConfigurationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
@@ -117,5 +122,30 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	 */
 	@SuppressWarnings("all")
 	protected void customizeAdminWebSecurity( HttpSecurity http ) throws Exception {
+	}
+
+	/**
+	 * If the admin web is linked to the root path of the web context, it will also secure all static resources.
+	 * Add an additional configuration before admin web that ensures that static resources are served without security.
+	 * This configuration is ordered at the default (0) position, and will come before any default ordered module
+	 * configurations.
+	 */
+	@ConditionalOnProperty(prefix = "adminWebModule", name = "root-path", havingValue = "/")
+	@Order(0)
+	@Configuration
+	public static class AllowStaticResourcesSecurityConfiguration extends SpringSecurityWebConfigurerAdapter
+	{
+		@Autowired
+		private AcrossContextBeanRegistry beanRegistry;
+
+		@Override
+		public void configure( HttpSecurity http ) throws Exception {
+			ResourceConfigurationProperties resourceConfigurationProperties
+					= beanRegistry.getBeanOfTypeFromModule( AcrossWebModule.NAME,
+					                                        ResourceConfigurationProperties.class );
+
+			http.antMatcher( resourceConfigurationProperties.getPath() + "/**" )
+			    .authorizeRequests().anyRequest().permitAll();
+		}
 	}
 }

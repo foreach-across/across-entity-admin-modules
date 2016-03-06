@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("adminWebModule")
-//@SuppressWarnings("unused")
+@SuppressWarnings("unused")
 public class AdminWebModuleSettings extends AcrossModuleSettings
 {
 	/**
@@ -40,8 +40,21 @@ public class AdminWebModuleSettings extends AcrossModuleSettings
 	public static final String DASHBOARD_PATH = "adminWebModule.dashboard";
 	public static final String LOGIN_TEMPLATE = "adminWebModule.login.template";
 
+	/**
+	 * Root path for all admin web controllers.  All mappings will be relative to this path.
+	 */
+	private String rootPath = "/admin";
+
 	private String title;
 	private String dashboardPath = null;
+
+	public String getRootPath() {
+		return rootPath;
+	}
+
+	public void setRootPath( String rootPath ) {
+		this.rootPath = rootPath;
+	}
 
 	@Override
 	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {

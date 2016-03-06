@@ -91,3 +91,4 @@ Configuring admin access permissions
 By default, access to the administration interface is restricted to users having the "access administration" permission. If you want to add one or more application specific permissions you have to override the property AdminWebModuleSettings.ADMIN_ACCESS_PERMISSIONS:
 adminWebModule.setProperty( AdminWebModuleSettings.ADMIN_ACCESS_PERMISSIONS, new String[]{ "access administration", "custom permission 1", "custom permission 2" });
 
+* login template has changed: isRememberMeEnabled

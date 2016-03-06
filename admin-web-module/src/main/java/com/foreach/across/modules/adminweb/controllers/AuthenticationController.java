@@ -21,6 +21,7 @@ import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.config.LocaleProperties;
+import com.foreach.across.modules.adminweb.config.RememberMeProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -44,6 +45,9 @@ public class AuthenticationController
 	private AdminWebModuleSettings settings;
 
 	@Autowired
+	private RememberMeProperties rememberMeProperties;
+
+	@Autowired
 	private LocaleProperties localeProperties;
 
 	@RequestMapping(value = { "", "/" })
@@ -58,6 +62,7 @@ public class AuthenticationController
 
 	@RequestMapping("/login")
 	public String login( Model model ) {
+		model.addAttribute( "isRememberMeEnabled", rememberMeProperties.isEnabled() );
 		model.addAttribute( "localeOptions", buildLocaleOptions() );
 
 		String loginTemplate = settings.getLoginTemplate();

@@ -32,7 +32,7 @@ public class RememberMeProperties
 	public static final String DEFAULT_COOKIE = "rm-admin-web";
 
 	/**
-	 * Should remember me be enabled (if a key is configured).
+	 * Should remember me be enabled (will only be the case if a key is also configured).
 	 */
 	private boolean enabled = true;
 
