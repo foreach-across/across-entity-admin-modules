@@ -83,10 +83,10 @@ public class AdminWebModuleSettings
 	}
 
 	public String[] getAccessPermissions() {
-		return accessPermissions;
+		return accessPermissions.clone();
 	}
 
 	public void setAccessPermissions( String[] accessPermissions ) {
-		this.accessPermissions = accessPermissions;
+		this.accessPermissions = accessPermissions.clone();
 	}
 }
