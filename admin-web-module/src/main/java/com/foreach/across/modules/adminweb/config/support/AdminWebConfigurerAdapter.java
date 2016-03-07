@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.adminweb.config.support;
 
 import com.foreach.across.modules.adminweb.AdminWebModule;
@@ -25,7 +26,7 @@ import com.foreach.across.modules.web.config.support.PrefixingHandlerMappingConf
  *
  * @author Arne Vandamme
  */
-public class AdminWebConfigurerAdapter extends PrefixingHandlerMappingConfigurerAdapter
+public abstract class AdminWebConfigurerAdapter extends PrefixingHandlerMappingConfigurerAdapter
 {
 	@Override
 	public boolean supports( String mapperName ) {

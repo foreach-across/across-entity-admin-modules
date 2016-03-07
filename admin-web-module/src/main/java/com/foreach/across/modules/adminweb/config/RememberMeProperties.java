@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
  * Configuration options for enabling remember me functionality.
  *
  * @author Arne Vandamme
+ * @since 1.1.1
  */
 @Component
 @ConfigurationProperties(prefix = "adminWebModule.login.rememberMe")
@@ -42,7 +43,7 @@ public class RememberMeProperties
 	private String key;
 
 	/**
-	 * Number of seconds a remember me token should be valid. Defaults to 30 days.
+	 * Name of the remember-me cookie.
 	 */
 	private String cookie = DEFAULT_COOKIE;
 

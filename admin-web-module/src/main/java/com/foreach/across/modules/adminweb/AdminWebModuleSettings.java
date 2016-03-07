@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.adminweb;
 
-import com.foreach.across.core.AcrossModuleSettings;
-import com.foreach.across.core.AcrossModuleSettingsRegistry;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("adminWebModule")
 @SuppressWarnings("unused")
-public class AdminWebModuleSettings extends AcrossModuleSettings
+public class AdminWebModuleSettings
 {
 	/**
 	 * Key used for creating the remember me cookie.  If this property is not present, remember me will not be enabled.
@@ -45,8 +43,20 @@ public class AdminWebModuleSettings extends AcrossModuleSettings
 	 */
 	private String rootPath = "/admin";
 
+	/**
+	 * Name of the application to be shown in the administration UI.
+	 */
 	private String title;
-	private String dashboardPath = null;
+
+	/**
+	 * Relative path (within admin web) for the landing page of admin web.
+	 */
+	private String dashboard = "/";
+
+	/**
+	 * Set of permissions that grant access to the administration interface.
+	 */
+	private String[] accessPermissions = new String[] { "access administration" };
 
 	public String getRootPath() {
 		return rootPath;
@@ -56,23 +66,15 @@ public class AdminWebModuleSettings extends AcrossModuleSettings
 		this.rootPath = rootPath;
 	}
 
-	@Override
-	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
+	public String getDashboard() {
+		return dashboard;
+	}
 
-		registry.register( TITLE, String.class, null,
-		                   "Name of the application to be shown on the default admin web layout in the top left corner." );
-		registry.register( ADMIN_ACCESS_PERMISSIONS, String[].class, new String[] { "access administration" },
-		                   "List of permissions that grant access to the administration interface." );
-		registry.register( DASHBOARD_PATH, String.class, null,
-		                   "Relative path (within admin web) for the landing page of admin web." );
-		registry.register( LOGIN_TEMPLATE, String.class, null, "Custom template for the login page." );
+	public void setDashboard( String dashboard ) {
+		this.dashboard = dashboard;
 	}
 
 	public String getTitle() {
-		if ( title == null ) {
-			return getProperty( TITLE );
-		}
-
 		return title;
 	}
 
@@ -81,29 +83,10 @@ public class AdminWebModuleSettings extends AcrossModuleSettings
 	}
 
 	public String[] getAccessPermissions() {
-		return getProperty( ADMIN_ACCESS_PERMISSIONS, String[].class );
+		return accessPermissions;
 	}
 
-	public String getDashboardPath() {
-		if ( dashboardPath == null ) {
-			String path = getProperty( DASHBOARD_PATH );
-
-			return StringUtils.isEmpty( path ) ? "/" : path;
-		}
-
-		return dashboardPath;
-	}
-
-	/**
-	 * Allows changing the admin web dashboard path at runtime.
-	 *
-	 * @param dashboardPath Path within the admin web context to the dashboard.
-	 */
-	public void setDashboardPath( String dashboardPath ) {
-		this.dashboardPath = dashboardPath;
-	}
-
-	public String getLoginTemplate() {
-		return getProperty( LOGIN_TEMPLATE );
+	public void setAccessPermissions( String[] accessPermissions ) {
+		this.accessPermissions = accessPermissions;
 	}
 }

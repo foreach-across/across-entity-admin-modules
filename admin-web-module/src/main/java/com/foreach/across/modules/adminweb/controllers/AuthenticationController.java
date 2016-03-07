@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.adminweb.controllers;
 
 import com.foreach.across.core.AcrossModule;
@@ -24,6 +25,7 @@ import com.foreach.across.modules.adminweb.config.LocaleProperties;
 import com.foreach.across.modules.adminweb.config.RememberMeProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +39,9 @@ import java.util.Locale;
 @AdminWebController
 public class AuthenticationController
 {
+	@Value( "${adminWebModule.login.template:}" )
+	private String loginTemplate;
+
 	@Autowired
 	private AdminWeb adminWeb;
 
@@ -52,11 +57,12 @@ public class AuthenticationController
 
 	@RequestMapping(value = { "", "/" })
 	public String dashboard() {
-		String path = settings.getDashboardPath();
+		String path = settings.getDashboard();
 
 		if ( !StringUtils.equals( path, "/" ) ) {
 			return adminWeb.redirect( path );
 		}
+
 		return "th/adminweb/dashboard";
 	}
 
@@ -64,8 +70,6 @@ public class AuthenticationController
 	public String login( Model model ) {
 		model.addAttribute( "isRememberMeEnabled", rememberMeProperties.isEnabled() );
 		model.addAttribute( "localeOptions", buildLocaleOptions() );
-
-		String loginTemplate = settings.getLoginTemplate();
 
 		if ( StringUtils.isNotBlank( loginTemplate ) ) {
 			return loginTemplate;

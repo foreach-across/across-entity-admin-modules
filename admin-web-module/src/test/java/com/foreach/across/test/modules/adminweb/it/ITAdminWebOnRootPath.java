@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.test.modules.adminweb;
+package com.foreach.across.test.modules.adminweb.it;
 
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.test.AcrossTestConfiguration;

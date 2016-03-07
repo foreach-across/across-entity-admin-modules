@@ -1,5 +1,13 @@
 = AdminWebModule
-:toc:
+Arne Vandamme
+1.1.1-SNAPSHOT
+:toc: left
+:sectanchors:
+:module-version: 1.1.1-SNAPSHOT
+:module-name: AdminWebModule
+:module-artifact: admin-web-module
+:module-url: https://foreach.atlassian.net/wiki/display/AX/AdminWebModule
+:spring-security-module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityModule
 
 == General information
 
@@ -9,8 +17,9 @@
 ----
 	<dependencies>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>spring-security</artifactId>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>{module-artifact}</artifactId>
+			<version>{module-version}</version>
 		</dependency>
 	</dependencies>
 ----
@@ -31,7 +40,81 @@
 |===
 
 === Module settings
-tbd
+
+All properties start with the *adminWebModule.* prefix.
+
+|===
+|Property |Type |Description |Default
+
+|root-path
+|`String`
+|Root path for all admin web controllers.  All mappings will be relative to this path.
+|/admin
+
+|dashboard
+|`String`
+|Path within the admin web context for the initial dashboard.
+|/
+
+|title
+|`String`
+|Name of the application to be shown in the administration UI.
+|
+
+|access-permissions
+|`String[]`
+|Set of permissions that grant access to the administration interface.
+|access administration
+
+|locale.default-locale
+|`Locale`
+|Default locale that should explicitly be set when accessing the administration interface if no specific locale selected.
+|`Locale.US`
+
+|locale.options
+|`List<Locale>`
+|List of locales that can be selected on the login page.
+|`Collections.emptyList()`
+
+|login.template
+|`String`
+|View template for the login page.
+|th/adminweb/login
+
+|login.rememberMe.enabled
+|`Boolean`
+|Should remember me be enabled (will only be the case if a key is also configured).
+|`true`
+
+|login.rememberMe.key
+|`String`
+|Key used for creating the remember me cookie.
+|
+
+|login.rememberMe.cookie
+|`String`
+|Name of the remember-me cookie.
+|rm-admin-web
+
+|login.rememberMe.tokenValiditySeconds
+|`Integer`
+|Number of seconds a remember me token should be valid.
+|_30 days_
+
+
+
+|===
+
+== What's new in this version?
+:numbered!:
+=== 1.1.1-SNAPSHOT
+
+* all settings are now configurable through properties with Spring configuration metadata support
+* login template now uses the `isRememberMeEnabled` attribute to determine if the remember-me checkbox should be shown
+** this is a *breaking change* for custom templates
+
+=== 1.1.0.RELEASE
+Initial public release available on http://search.maven.org/[Maven central].
 
 == About the AdminWebModule
 

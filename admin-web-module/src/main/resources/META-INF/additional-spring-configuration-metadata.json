@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "adminWebModule.login.template",
+      "type": "java.lang.String",
+      "description": "View template for the adminweb login page.",
+      "defaultValue": "th/adminweb/login"
+    }
+  ]
+}
