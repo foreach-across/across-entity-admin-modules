@@ -93,7 +93,7 @@ public class ITAdminDashboardRegistration
 			AdminWebModuleSettings settings = ctx.beanRegistry().getBeanOfTypeFromModule( "AdminWebModule",
 			                                                                              AdminWebModuleSettings.class );
 
-			assertEquals( expectedPath, settings.getDashboardPath() );
+			assertEquals( expectedPath, settings.getDashboard() );
 		}
 	}
 }

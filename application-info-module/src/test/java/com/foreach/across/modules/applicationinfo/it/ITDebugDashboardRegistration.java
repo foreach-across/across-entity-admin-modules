@@ -103,7 +103,7 @@ public class ITDebugDashboardRegistration
 			DebugWebModuleSettings settings = ctx.beanRegistry().getBeanOfTypeFromModule( "DebugWebModule",
 			                                                                              DebugWebModuleSettings.class );
 
-			assertEquals( expectedPath, settings.getDashboardPath() );
+			assertEquals( expectedPath, settings.getDashboard() );
 		}
 	}
 }

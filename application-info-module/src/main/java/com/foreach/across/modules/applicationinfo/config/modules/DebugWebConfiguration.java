@@ -31,9 +31,9 @@ public class DebugWebConfiguration
 			DebugWebModuleSettings debugWebModuleSettings = ctx.getBean( DebugWebModuleSettings.class );
 
 			if ( debugWebModuleSettings != null
-					&& StringUtils.equals( debugWebModuleSettings.getDashboardPath(), "/" ) ) {
+					&& StringUtils.equals( debugWebModuleSettings.getDashboard(), "/" ) ) {
 				LOG.trace( "Registering debug dashboard to application info controller" );
-				debugWebModuleSettings.setDashboardPath( ApplicationInfoController.PATH );
+				debugWebModuleSettings.setDashboard( ApplicationInfoController.PATH );
 			}
 		}
 	}
