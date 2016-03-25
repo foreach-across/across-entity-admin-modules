@@ -1,12 +1,12 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ import org.junit.Test;
 public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 {
 	@Test
-	public void simple() {
+	public void defaultBox() {
 		RadioFormElement box = new RadioFormElement();
 		box.setControlName( "boxName" );
 		box.setText( "label text" );
@@ -32,8 +32,37 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				box,
 				"<div class='radio'><label for='boxName'>" +
-				"<input type='radio' id='boxName' name='boxName' value='123' />label text" +
+						"<input type='radio' id='boxName' name='boxName' value='123' />label text" +
 						"</label></div>"
+		);
+	}
+
+	@Test
+	public void unwrappedWithLabel() {
+		RadioFormElement box = new RadioFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setText( "label text" );
+		box.setWrapped( false );
+
+		renderAndExpect(
+				box,
+				"<label for='boxName'>" +
+						"<input type='radio' id='boxName' name='boxName' value='123' />label text" +
+						"</label>"
+		);
+	}
+
+	@Test
+	public void unwrappedWithoutLabel() {
+		RadioFormElement box = new RadioFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setWrapped( false );
+
+		renderAndExpect(
+				box,
+				"<input type='radio' id='boxName' name='boxName' value='123' />"
 		);
 	}
 
@@ -45,9 +74,9 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='radio'><label>" +
+				"<div class='radio'>" +
 						"<input type='radio' value='true' checked='checked' />" +
-						"</label></div>"
+						"</div>"
 		);
 	}
 
@@ -59,9 +88,9 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='radio disabled'><label>" +
+				"<div class='radio disabled'>" +
 						"<input type='radio' value='on' disabled='disabled' />" +
-						"</label></div>"
+						"</div>"
 		);
 
 		box.setDisabled( false );
@@ -69,9 +98,9 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='radio'><label>" +
+				"<div class='radio'>" +
 						"<input type='radio' value='on' readonly='readonly' />" +
-						"</label></div>"
+						"</div>"
 		);
 	}
 }

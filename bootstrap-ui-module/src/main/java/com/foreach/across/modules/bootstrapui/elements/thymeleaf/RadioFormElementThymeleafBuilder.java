@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.RadioFormElement;
@@ -34,12 +35,7 @@ public class RadioFormElementThymeleafBuilder extends FormControlElementThymleaf
 	public List<Node> buildNodes( RadioFormElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element wrapper = createElement( "div" );
-		wrapper.setAttribute( "class", "radio" );
-
-		if ( control.isDisabled() ) {
-			wrapper.setAttribute( "class", wrapper.getAttributeValue( "class" ) + " disabled" );
-		}
+		boolean showLabel = control.getText() != null || !control.isEmpty();
 
 		Element label = createElement( "label" );
 		Element radio = createElement( "input" );
@@ -52,21 +48,39 @@ public class RadioFormElementThymeleafBuilder extends FormControlElementThymleaf
 		attribute( radio, "checked", control.isChecked() );
 		applyProperties( control, arguments, radio );
 
-		label.addChild( radio );
+		if ( showLabel ) {
+			label.addChild( radio );
 
-		if ( control.getText() != null ) {
-			text( label, control.getText() );
-		}
+			if ( control.getText() != null ) {
+				text( label, control.getText() );
+			}
 
-		for ( ViewElement child : control ) {
-			for ( Node childNode : viewElementNodeFactory.buildNodes( child, arguments ) ) {
-				label.addChild( childNode );
+			for ( ViewElement child : control ) {
+				for ( Node childNode : viewElementNodeFactory.buildNodes( child, arguments ) ) {
+					label.addChild( childNode );
+				}
 			}
 		}
 
-		wrapper.addChild( label );
+		if ( control.isWrapped() ) {
+			Element wrapper = createElement( "div" );
+			wrapper.setAttribute( "class", "radio" );
 
-		return Collections.singletonList( (Node) wrapper );
+			if ( control.isDisabled() ) {
+				wrapper.setAttribute( "class", wrapper.getAttributeValue( "class" ) + " disabled" );
+			}
+
+			if ( showLabel ) {
+				wrapper.addChild( label );
+			}
+			else {
+				wrapper.addChild( radio );
+			}
+
+			return Collections.singletonList( wrapper );
+		}
+
+		return Collections.singletonList( showLabel ? label : radio );
 	}
 
 	@Override

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
@@ -44,12 +45,16 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 {
 	private OptionsFormElementBuilder.Type type = SELECT;
 
-	private boolean selected;
+	private boolean selected, wrapped = true;
 	private String text, label;
 	private Object value;
 
 	public boolean isSelected() {
 		return selected;
+	}
+
+	public boolean isWrapped() {
+		return wrapped;
 	}
 
 	public String getText() {
@@ -83,6 +88,15 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 
 	public OptionFormElementBuilder<T> selected() {
 		return selected( true );
+	}
+
+	public OptionFormElementBuilder<T> unwrapped() {
+		return wrapped( false );
+	}
+
+	public OptionFormElementBuilder<T> wrapped( boolean wrapped ) {
+		this.wrapped = wrapped;
+		return this;
 	}
 
 	public OptionFormElementBuilder<T> selected( boolean selected ) {
@@ -243,12 +257,14 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 				checkbox.setText( label != null ? label : text );
 				checkbox.setValue( value );
 				checkbox.setChecked( selected );
+				checkbox.setWrapped( wrapped );
 				return checkbox;
 			case RADIO:
 				RadioFormElement radio = new RadioFormElement();
 				radio.setText( label != null ? label : text );
 				radio.setValue( value );
 				radio.setChecked( selected );
+				radio.setWrapped( wrapped );
 				return radio;
 			default:
 				SelectFormElement.Option option = new SelectFormElement.Option();

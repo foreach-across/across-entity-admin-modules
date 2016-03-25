@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
@@ -26,7 +27,7 @@ public class CheckboxFormElement extends FormControlElementSupport implements Co
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.CHECKBOX;
 
-	private boolean checked;
+	private boolean checked, wrapped = true;
 	private Object value;
 
 	private String label;
@@ -41,6 +42,14 @@ public class CheckboxFormElement extends FormControlElementSupport implements Co
 
 	public void setChecked( boolean checked ) {
 		this.checked = checked;
+	}
+
+	public boolean isWrapped() {
+		return wrapped;
+	}
+
+	public void setWrapped( boolean wrapped ) {
+		this.wrapped = wrapped;
 	}
 
 	@Override

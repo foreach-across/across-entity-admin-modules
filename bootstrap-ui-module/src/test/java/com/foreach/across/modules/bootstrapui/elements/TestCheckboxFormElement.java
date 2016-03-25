@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -24,7 +25,7 @@ import org.junit.Test;
 public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 {
 	@Test
-	public void simple() {
+	public void defaultBox() {
 		CheckboxFormElement box = new CheckboxFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
@@ -41,6 +42,37 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void unwrappedWithLabel() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setText( "label text" );
+		box.setWrapped( false );
+
+		renderAndExpect(
+				box,
+				"<label for='boxName'>" +
+						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text" +
+						"</label>" +
+						"<input type='hidden' name='_boxName' value='on' />"
+		);
+	}
+
+	@Test
+	public void unwrappedWithoutLabel() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setWrapped( false );
+
+		renderAndExpect(
+				box,
+				"<input type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<input type='hidden' name='_boxName' value='on' />"
+		);
+	}
+
+	@Test
 	public void checked() {
 		CheckboxFormElement box = new CheckboxFormElement();
 		box.setValue( true );
@@ -48,9 +80,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox'><label>" +
+				"<div class='checkbox'>" +
 						"<input type='checkbox' value='true' checked='checked' />" +
-						"</label></div>"
+						"</div>"
 		);
 	}
 
@@ -62,9 +94,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox disabled'><label>" +
+				"<div class='checkbox disabled'>" +
 						"<input type='checkbox' value='on' disabled='disabled' />" +
-						"</label></div>"
+						"</div>"
 		);
 
 		box.setDisabled( false );
@@ -72,9 +104,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox'><label>" +
+				"<div class='checkbox'>" +
 						"<input type='checkbox' value='on' readonly='readonly' />" +
-						"</label></div>"
+						"</div>"
 		);
 	}
 

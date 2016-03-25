@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
@@ -22,6 +23,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,12 +36,7 @@ public class CheckboxFormElementThymeleafBuilder extends FormControlElementThyml
 	public List<Node> buildNodes( CheckboxFormElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element wrapper = createElement( "div" );
-		wrapper.setAttribute( "class", "checkbox" );
-
-		if ( control.isDisabled() ) {
-			wrapper.setAttribute( "class", wrapper.getAttributeValue( "class" ) + " disabled" );
-		}
+		boolean showLabel = control.getText() != null || !control.isEmpty();
 
 		Element label = createElement( "label" );
 		Element checkbox = createElement( "input" );
@@ -52,30 +49,58 @@ public class CheckboxFormElementThymeleafBuilder extends FormControlElementThyml
 		attribute( checkbox, "checked", control.isChecked() );
 		applyProperties( control, arguments, checkbox );
 
-		label.addChild( checkbox );
+		if ( showLabel ) {
+			label.addChild( checkbox );
 
-		if ( control.getText() != null ) {
-			text( label, control.getText() );
-		}
+			if ( control.getText() != null ) {
+				text( label, control.getText() );
+			}
 
-		for ( ViewElement child : control ) {
-			for ( Node childNode : viewElementNodeFactory.buildNodes( child, arguments ) ) {
-				label.addChild( childNode );
+			for ( ViewElement child : control ) {
+				for ( Node childNode : viewElementNodeFactory.buildNodes( child, arguments ) ) {
+					label.addChild( childNode );
+				}
 			}
 		}
 
-		wrapper.addChild( label );
+		Element hidden = null;
 
 		if ( control.getControlName() != null ) {
-			Element hidden = createElement( "input" );
+			hidden = createElement( "input" );
 			hidden.setAttribute( "type", "hidden" );
 			hidden.setAttribute( "name", "_" + control.getControlName() );
 			hidden.setAttribute( "value", "on" );
-
-			wrapper.addChild( hidden );
 		}
 
-		return Collections.singletonList( (Node) wrapper );
+		if ( control.isWrapped() ) {
+			Element wrapper = createElement( "div" );
+			wrapper.setAttribute( "class", "checkbox" );
+
+			if ( control.isDisabled() ) {
+				wrapper.setAttribute( "class", wrapper.getAttributeValue( "class" ) + " disabled" );
+			}
+
+			if ( showLabel ) {
+				wrapper.addChild( label );
+			}
+			else {
+				wrapper.addChild( checkbox );
+			}
+
+			if ( hidden != null ) {
+				wrapper.addChild( hidden );
+			}
+
+			return Collections.singletonList( wrapper    );
+		}
+
+		List<Node> nodes = new ArrayList<>( 2 );
+		nodes.add( showLabel ? label : checkbox );
+		if ( hidden != null ) {
+			nodes.add( hidden );
+		}
+
+		return nodes;
 	}
 
 	@Override
