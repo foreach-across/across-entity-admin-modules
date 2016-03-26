@@ -35,13 +35,13 @@ public class ApplicationInfoConfiguration
 	public AcrossApplicationInfoImpl runningApplicationInfo() {
 		AcrossApplicationInfoImpl applicationInfo = new AcrossApplicationInfoImpl();
 
-		applicationInfo.setApplicationName( settings.getProperty( ApplicationInfoModuleSettings.APPLICATION_NAME ) );
-		applicationInfo.setApplicationId( settings.getProperty( ApplicationInfoModuleSettings.APPLICATION_ID ) );
-		applicationInfo.setEnvironmentName( settings.getProperty( ApplicationInfoModuleSettings.ENVIRONMENT_NAME ) );
-		applicationInfo.setEnvironmentId( settings.getProperty( ApplicationInfoModuleSettings.ENVIRONMENT_ID ) );
+		applicationInfo.setApplicationName( settings.getApplicationName() );
+		applicationInfo.setApplicationId( settings.getApplicationId() );
+		applicationInfo.setEnvironmentName( settings.getEnvironmentName() );
+		applicationInfo.setEnvironmentId( settings.getEnvironmentId() );
 
-		applicationInfo.setBuildId( settings.getProperty( ApplicationInfoModuleSettings.BUILD_ID ) );
-		applicationInfo.setBuildDate( settings.getProperty( ApplicationInfoModuleSettings.BUILD_DATE, Date.class ) );
+		applicationInfo.setBuildId( settings.getBuildId() );
+		applicationInfo.setBuildDate( settings.getBuildDate() );
 		applicationInfo.setHostName( determineHostName() );
 
 		applicationInfo.setStartupDate( determineStartupDate() );
@@ -56,7 +56,7 @@ public class ApplicationInfoConfiguration
 	}
 
 	private Date determineStartupDate() {
-		Date startupDate = settings.getProperty( ApplicationInfoModuleSettings.STARTUP_DATE, Date.class );
+		Date startupDate = settings.getStartupDate();
 
 		if ( startupDate == null ) {
 			startupDate = applicationInfoModule.getConfigurationDate();
@@ -66,7 +66,7 @@ public class ApplicationInfoConfiguration
 	}
 
 	private String determineHostName() {
-		String hostName = settings.getProperty( ApplicationInfoModuleSettings.HOSTNAME );
+		String hostName = settings.getHostName();
 
 		if ( hostName == null ) {
 			hostName = getHostNameFromServer();

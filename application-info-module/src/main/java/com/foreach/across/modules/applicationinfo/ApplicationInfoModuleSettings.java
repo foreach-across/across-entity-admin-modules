@@ -15,12 +15,15 @@
  */
 package com.foreach.across.modules.applicationinfo;
 
-import com.foreach.across.core.AcrossModuleSettings;
-import com.foreach.across.core.AcrossModuleSettingsRegistry;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Date;
 
-public class ApplicationInfoModuleSettings extends AcrossModuleSettings
+/**
+ * @author Arne Vandamme
+ */
+@ConfigurationProperties(prefix = "applicationInfo")
+public class ApplicationInfoModuleSettings
 {
 	public static final String UNKNOWN_VALUE = "unknown";
 
@@ -33,23 +36,107 @@ public class ApplicationInfoModuleSettings extends AcrossModuleSettings
 	public static final String HOSTNAME = "applicationInfo.hostName";
 	public static final String STARTUP_DATE = "applicationInfo.startupDate";
 
-	@Override
-	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
-		registry.register( APPLICATION_ID, String.class, UNKNOWN_VALUE,
-		                   "Internal id of the application." );
-		registry.register( APPLICATION_NAME, String.class, null,
-		                   "Descriptive name of the application." );
-		registry.register( ENVIRONMENT_ID, String.class, UNKNOWN_VALUE,
-		                   "Internal id of the environment the application is running in." );
-		registry.register( ENVIRONMENT_NAME, String.class, null,
-		                   "Descriptive name of the environment the application is running in." );
-		registry.register( BUILD_ID, String.class, UNKNOWN_VALUE,
-		                   "Id of the running build of the application." );
-		registry.register( BUILD_DATE, Date.class, null,
-		                   "Date when this build was created." );
-		registry.register( HOSTNAME, String.class, null,
-		                   "Name for the infrastructure hosting the application." );
-		registry.register( STARTUP_DATE, Date.class, null,
-		                   "Timestamp when the application should be considered started." );
+	/**
+	 * Internal id of the application
+	 */
+	private String applicationId = UNKNOWN_VALUE;
+
+	/**
+	 * Descriptive name of the application.
+	 */
+	private String applicationName;
+
+	/**
+	 * Internal id of the environment the application is running in.
+	 */
+	private String environmentId = UNKNOWN_VALUE;
+
+	/**
+	 * Descriptive name of the environment the application is running in.
+	 */
+	private String environmentName;
+
+	/**
+	 * Id of the running build of the application.
+	 */
+	private String buildId = UNKNOWN_VALUE;
+
+	/**
+	 * Date when this build was created.
+	 */
+	private Date buildDate;
+
+	/**
+	 * Name for the infrastructure hosting the application.
+	 */
+	private String hostName;
+
+	/**
+	 * Timestamp when the application should be considered started.
+	 */
+	private Date startupDate;
+
+	public String getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId( String applicationId ) {
+		this.applicationId = applicationId;
+	}
+
+	public String getApplicationName() {
+		return applicationName;
+	}
+
+	public void setApplicationName( String applicationName ) {
+		this.applicationName = applicationName;
+	}
+
+	public String getEnvironmentId() {
+		return environmentId;
+	}
+
+	public void setEnvironmentId( String environmentId ) {
+		this.environmentId = environmentId;
+	}
+
+	public String getEnvironmentName() {
+		return environmentName;
+	}
+
+	public void setEnvironmentName( String environmentName ) {
+		this.environmentName = environmentName;
+	}
+
+	public String getBuildId() {
+		return buildId;
+	}
+
+	public void setBuildId( String buildId ) {
+		this.buildId = buildId;
+	}
+
+	public Date getBuildDate() {
+		return buildDate;
+	}
+
+	public void setBuildDate( Date buildDate ) {
+		this.buildDate = buildDate;
+	}
+
+	public String getHostName() {
+		return hostName;
+	}
+
+	public void setHostName( String hostName ) {
+		this.hostName = hostName;
+	}
+
+	public Date getStartupDate() {
+		return startupDate;
+	}
+
+	public void setStartupDate( Date startupDate ) {
+		this.startupDate = startupDate;
 	}
 }

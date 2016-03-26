@@ -25,13 +25,13 @@ import com.foreach.across.core.events.AcrossModuleBeforeBootstrapEvent;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
-import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.common.spring.context.ApplicationInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertiesPropertySource;
 
 import java.util.Properties;
@@ -44,13 +44,13 @@ import java.util.Properties;
 @AcrossEventHandler
 public class AdminWebConfiguration
 {
-	private static Logger LOG = LoggerFactory.getLogger( AdminWebConfiguration.class );
+	private static final Logger LOG = LoggerFactory.getLogger( AdminWebConfiguration.class );
 
 	@Autowired
 	private ApplicationInfo runningApplicationInfo;
 
 	@Autowired
-	private ApplicationInfoModuleSettings settings;
+	private Environment environment;
 
 	@Event
 	protected void registerAdminWebSettings( AcrossModuleBeforeBootstrapEvent moduleBeforeBootstrapEvent ) {
@@ -60,12 +60,12 @@ public class AdminWebConfiguration
 			Properties adminWebProperties = moduleInfo.getModule().getProperties();
 			Properties modifiedProperties = new Properties();
 
-			if ( !settings.containsProperty( AdminWebModuleSettings.TITLE )
+			if ( !environment.containsProperty( AdminWebModuleSettings.TITLE )
 					&& !adminWebProperties.containsKey( AdminWebModuleSettings.TITLE ) ) {
 				LOG.trace( "Registering application name as AdminWeb title" );
 				modifiedProperties.put( AdminWebModuleSettings.TITLE, runningApplicationInfo.getApplicationName() );
 			}
-			if ( !settings.containsProperty( AdminWebModuleSettings.REMEMBER_ME_COOKIE )
+			if ( !environment.containsProperty( AdminWebModuleSettings.REMEMBER_ME_COOKIE )
 					&& !adminWebProperties.containsKey( AdminWebModuleSettings.REMEMBER_ME_COOKIE ) ) {
 				LOG.trace( "Registering application id as name for the AdminWeb remember me cookie" );
 				modifiedProperties.put(

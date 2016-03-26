@@ -49,6 +49,7 @@ public class ApplicationInfoModule extends AcrossModule
 	 *
 	 * @return Timestamp when the module was configured.
 	 */
+	@SuppressWarnings("all")
 	public Date getConfigurationDate() {
 		return configurationDate;
 	}

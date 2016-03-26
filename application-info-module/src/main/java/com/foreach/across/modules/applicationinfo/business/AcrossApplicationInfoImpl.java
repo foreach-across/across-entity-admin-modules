@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 
+@SuppressWarnings( "all" )
 public class AcrossApplicationInfoImpl implements MutableApplicationInfo, AcrossApplicationInfo
 {
 	private String applicationId, applicationName, environmentId, environmentName, buildId, hostName, instanceId;

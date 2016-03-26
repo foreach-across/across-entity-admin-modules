@@ -1,15 +1,15 @@
 package com.foreach.across.modules.applicationinfo.it;
 
-import com.foreach.across.config.AcrossContextConfigurer;
-import com.foreach.across.core.AcrossContext;
-import com.foreach.across.core.installers.InstallerAction;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
+import com.foreach.across.modules.adminweb.config.RememberMeProperties;
 import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
-import com.foreach.across.modules.spring.security.SpringSecurityModule;
+import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.across.test.AcrossTestWebContext;
+import com.foreach.across.test.support.AcrossTestWebContextBuilder;
 import org.junit.Test;
 
+import static com.foreach.across.test.support.AcrossTestBuilders.web;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -20,80 +20,74 @@ public class ITAdminDashboardRegistration
 {
 	@Test
 	public void adminWebBeforeApplicationInfo() {
-		AcrossContextConfigurer configurer = new AcrossContextConfigurer()
-		{
-			@Override
-			public void configure( AcrossContext acrossContext ) {
-				acrossContext.setInstallerAction( InstallerAction.DISABLED );
-				acrossContext.addModule( new AdminWebModule() );
-				acrossContext.addModule( new ApplicationInfoModule() );
-				acrossContext.addModule( new SpringSecurityModule() );
-			}
-		};
-
-		assertDashboardPath( "/", configurer );
+		assertAdminWebSettings(
+				"My App", "rm-admin-myapp",
+				web( false )
+						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
+						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My App" )
+						.modules( ApplicationInfoModule.NAME, AdminWebModule.NAME )
+		);
 	}
 
 	@Test
-	public void adminWebAfterApplicationInfo() {
-		AcrossContextConfigurer configurer = new AcrossContextConfigurer()
-		{
-			@Override
-			public void configure( AcrossContext acrossContext ) {
-				acrossContext.setInstallerAction( InstallerAction.DISABLED );
-				acrossContext.addModule( new ApplicationInfoModule() );
-				acrossContext.addModule( new AdminWebModule() );
-				acrossContext.addModule( new SpringSecurityModule() );
-			}
-		};
+	public void specificSettingsOnParentAreKept() {
+		assertAdminWebSettings(
+				"My App", "my-remember-me-cookie",
+				web( false )
+						.property( AdminWebModuleSettings.REMEMBER_ME_COOKIE, "my-remember-me-cookie" )
+						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
+						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My App" )
+						.modules( ApplicationInfoModule.NAME, AdminWebModule.NAME )
+		);
 
-		assertDashboardPath( "/", configurer );
+		assertAdminWebSettings(
+				"Admin Title", "rm-admin-myapp",
+				web( false )
+						.property( AdminWebModuleSettings.TITLE, "Admin Title" )
+						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
+						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My App" )
+						.modules( ApplicationInfoModule.NAME, AdminWebModule.NAME )
+		);
 	}
 
 	@Test
-	public void adminWebCustomDashboardOnParent() {
-		AcrossContextConfigurer configurer = new AcrossContextConfigurer()
-		{
-			@Override
-			public void configure( AcrossContext acrossContext ) {
-				acrossContext.setInstallerAction( InstallerAction.DISABLED );
-				acrossContext.setProperty( AdminWebModuleSettings.DASHBOARD_PATH, "/custom" );
-				acrossContext.addModule( new ApplicationInfoModule() );
-				acrossContext.addModule( new AdminWebModule() );
-				acrossContext.addModule( new SpringSecurityModule() );
-			}
-		};
+	public void specificSettingsOnAdminWebModuleDirectlyAreKept() {
+		AdminWebModule adminWebModule = new AdminWebModule();
+		adminWebModule.setProperty( AdminWebModuleSettings.REMEMBER_ME_COOKIE, "my-other-remember-me-cookie" );
 
-		assertDashboardPath( "/custom", configurer );
+		assertAdminWebSettings(
+				"My App", "my-other-remember-me-cookie",
+				web( false )
+						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
+						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My App" )
+						.modules( ApplicationInfoModule.NAME )
+						.modules( adminWebModule )
+		);
+
+		adminWebModule = new AdminWebModule();
+		adminWebModule.setProperty( AdminWebModuleSettings.TITLE, "Other Admin Title" );
+
+		assertAdminWebSettings(
+				"Other Admin Title", "rm-admin-myapp",
+				web( false )
+						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
+						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My App" )
+						.modules( ApplicationInfoModule.NAME )
+						.modules( adminWebModule )
+		);
 	}
 
-	@Test
-	public void adminWebCustomDashboardOnAdminWebModule() {
-		AcrossContextConfigurer configurer = new AcrossContextConfigurer()
-		{
-			@Override
-			public void configure( AcrossContext acrossContext ) {
-				acrossContext.setInstallerAction( InstallerAction.DISABLED );
+	private void assertAdminWebSettings( String expectedTitle,
+	                                     String cookieName,
+	                                     AcrossTestWebContextBuilder builder ) {
+		try (AcrossTestWebContext ctx = builder.build()) {
+			AdminWebModuleSettings settings
+					= ctx.getBeanOfTypeFromModule( AdminWebModule.NAME, AdminWebModuleSettings.class );
+			assertEquals( expectedTitle, settings.getTitle() );
 
-				AdminWebModule AdminWebModule = new AdminWebModule();
-				AdminWebModule.setProperty( AdminWebModuleSettings.DASHBOARD_PATH, "/other/custom" );
-				acrossContext.addModule( AdminWebModule );
-				acrossContext.addModule( new SpringSecurityModule() );
-
-				acrossContext.addModule( new ApplicationInfoModule() );
-
-			}
-		};
-
-		assertDashboardPath( "/other/custom", configurer );
-	}
-
-	private void assertDashboardPath( String expectedPath, AcrossContextConfigurer configurer ) {
-		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configurer )) {
-			AdminWebModuleSettings settings = ctx.beanRegistry().getBeanOfTypeFromModule( "AdminWebModule",
-			                                                                              AdminWebModuleSettings.class );
-
-			assertEquals( expectedPath, settings.getDashboard() );
+			RememberMeProperties rememberMeProperties
+					= ctx.getBeanOfTypeFromModule( AdminWebModule.NAME, RememberMeProperties.class );
+			assertEquals( cookieName, rememberMeProperties.getCookie() );
 		}
 	}
 }

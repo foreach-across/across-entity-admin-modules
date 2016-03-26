@@ -1,7 +1,5 @@
 package com.foreach.across.modules.applicationinfo.it;
 
-import com.foreach.across.config.AcrossContextConfigurer;
-import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
 import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.across.modules.applicationinfo.business.AcrossApplicationInfo;
@@ -11,6 +9,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
+import static com.foreach.across.test.support.AcrossTestBuilders.standard;
 import static org.junit.Assert.*;
 
 public class ITApplicationInfoBuilding
@@ -19,8 +18,13 @@ public class ITApplicationInfoBuilding
 	public void noPropertiesConfigured() {
 		long startOfTest = System.currentTimeMillis();
 
-		try (AcrossTestContext ctx = new AcrossTestContext( new ModuleConfig() )) {
-			AcrossApplicationInfo applicationInfo = ctx.beanRegistry().getBeanOfType( AcrossApplicationInfo.class );
+		try (
+				AcrossTestContext ctx = standard()
+						.useTestDataSource( false )
+						.modules( ApplicationInfoModule.NAME )
+						.build()
+		) {
+			AcrossApplicationInfo applicationInfo = ctx.getBeanOfType( AcrossApplicationInfo.class );
 
 			assertNotNull( applicationInfo );
 			assertEquals( "unknown", applicationInfo.getApplicationId() );
@@ -58,8 +62,21 @@ public class ITApplicationInfoBuilding
 	public void propertiesSet() {
 		long startOfTest = System.currentTimeMillis();
 
-		try (AcrossTestContext ctx = new AcrossTestContext( new ModuleConfig(), new PropertiesConfig() )) {
-			AcrossApplicationInfo applicationInfo = ctx.beanRegistry().getBeanOfType( AcrossApplicationInfo.class );
+		try (
+				AcrossTestContext ctx = standard()
+						.property( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" )
+						.property( ApplicationInfoModuleSettings.APPLICATION_NAME, "My Application" )
+						.property( ApplicationInfoModuleSettings.ENVIRONMENT_ID, "test" )
+						.property( ApplicationInfoModuleSettings.ENVIRONMENT_NAME, "Test Environment" )
+						.property( ApplicationInfoModuleSettings.HOSTNAME, "someserver.test.com" )
+						.property( ApplicationInfoModuleSettings.BUILD_ID, "release-1" )
+						.property( ApplicationInfoModuleSettings.BUILD_DATE, new Date() )
+						.property( ApplicationInfoModuleSettings.STARTUP_DATE, "2014-10-15 13:30:15" )
+						.useTestDataSource( false )
+						.modules( ApplicationInfoModule.NAME )
+						.build()
+		) {
+			AcrossApplicationInfo applicationInfo = ctx.getBeanOfType( AcrossApplicationInfo.class );
 
 			assertNotNull( applicationInfo );
 			assertEquals( "myapp", applicationInfo.getApplicationId() );
@@ -86,30 +103,6 @@ public class ITApplicationInfoBuilding
 
 			assertTrue( applicationInfo.getBootstrapStartDate().after( new Date( startOfTest ) ) );
 			assertTrue( applicationInfo.getBootstrapEndDate().after( applicationInfo.getBootstrapStartDate() ) );
-		}
-	}
-
-	protected static class PropertiesConfig implements AcrossContextConfigurer
-	{
-		@Override
-		public void configure( AcrossContext context ) {
-			context.setProperty( ApplicationInfoModuleSettings.APPLICATION_ID, "myapp" );
-			context.setProperty( ApplicationInfoModuleSettings.APPLICATION_NAME, "My Application" );
-			context.setProperty( ApplicationInfoModuleSettings.ENVIRONMENT_ID, "test" );
-			context.setProperty( ApplicationInfoModuleSettings.ENVIRONMENT_NAME, "Test Environment" );
-			context.setProperty( ApplicationInfoModuleSettings.HOSTNAME, "someserver.test.com" );
-			context.setProperty( ApplicationInfoModuleSettings.BUILD_ID, "release-1" );
-			context.setProperty( ApplicationInfoModuleSettings.BUILD_DATE, new Date() );
-			context.setProperty( ApplicationInfoModuleSettings.STARTUP_DATE, "2014-10-15 13:30:15" );
-
-		}
-	}
-
-	protected static class ModuleConfig implements AcrossContextConfigurer
-	{
-		@Override
-		public void configure( AcrossContext context ) {
-			context.addModule( new ApplicationInfoModule() );
 		}
 	}
 }

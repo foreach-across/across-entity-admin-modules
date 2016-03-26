@@ -15,16 +15,15 @@
  */
 package com.foreach.across.modules.applicationinfo.it;
 
-import com.foreach.across.config.AcrossContextConfigurer;
-import com.foreach.across.core.AcrossContext;
-import com.foreach.across.core.installers.InstallerAction;
 import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
 import com.foreach.across.modules.applicationinfo.controllers.ApplicationInfoController;
 import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.debugweb.DebugWebModuleSettings;
 import com.foreach.across.test.AcrossTestWebContext;
+import com.foreach.across.test.support.AcrossTestWebContextBuilder;
 import org.junit.Test;
 
+import static com.foreach.across.test.support.AcrossTestBuilders.web;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -33,75 +32,40 @@ import static org.junit.Assert.assertEquals;
 public class ITDebugDashboardRegistration
 {
 	@Test
-	public void debugWebBeforeApplicationInfo() {
-		AcrossContextConfigurer configurer = new AcrossContextConfigurer()
-		{
-			@Override
-			public void configure( AcrossContext acrossContext ) {
-				acrossContext.setInstallerAction( InstallerAction.DISABLED );
-				acrossContext.addModule( new DebugWebModule() );
-				acrossContext.addModule( new ApplicationInfoModule() );
-			}
-		};
-
-		assertDashboardPath( ApplicationInfoController.PATH, configurer );
+	public void debugDashboardSetByApplicationInfoIfNoneConfigured() {
+		assertDashboardPath(
+				ApplicationInfoController.PATH,
+				web( false ).modules( ApplicationInfoModule.NAME, DebugWebModule.NAME )
+		);
 	}
 
 	@Test
-	public void debugWebAfterApplicationInfo() {
-		AcrossContextConfigurer configurer = new AcrossContextConfigurer()
-		{
-			@Override
-			public void configure( AcrossContext acrossContext ) {
-				acrossContext.setInstallerAction( InstallerAction.DISABLED );
-				acrossContext.addModule( new ApplicationInfoModule() );
-				acrossContext.addModule( new DebugWebModule() );
-			}
-		};
-
-		assertDashboardPath( ApplicationInfoController.PATH, configurer );
+	public void explicitDebugDashboardOnParentIsKept() {
+		assertDashboardPath(
+				"/custom",
+				web( false )
+						.property( DebugWebModuleSettings.DASHBOARD_PATH, "/custom" )
+						.modules( ApplicationInfoModule.NAME, DebugWebModule.NAME )
+		);
 	}
 
 	@Test
-	public void debugWebCustomDashboardOnParent() {
-		AcrossContextConfigurer configurer = new AcrossContextConfigurer()
-		{
-			@Override
-			public void configure( AcrossContext acrossContext ) {
-				acrossContext.setInstallerAction( InstallerAction.DISABLED );
-				acrossContext.setProperty( DebugWebModuleSettings.DASHBOARD_PATH, "/custom" );
-				acrossContext.addModule( new ApplicationInfoModule() );
-				acrossContext.addModule( new DebugWebModule() );
-			}
-		};
+	public void explicitDebugDashboardOnDebugWebModuleDirectlyIsKept() {
+		DebugWebModule debugWebModule = new DebugWebModule();
+		debugWebModule.setProperty( DebugWebModuleSettings.DASHBOARD_PATH, "/other/custom" );
 
-		assertDashboardPath( "/custom", configurer );
+		assertDashboardPath(
+				"/other/custom",
+				web( false )
+						.modules( ApplicationInfoModule.NAME )
+						.modules( debugWebModule )
+		);
 	}
 
-	@Test
-	public void debugWebCustomDashboardOnDebugWebModule() {
-		AcrossContextConfigurer configurer = new AcrossContextConfigurer()
-		{
-			@Override
-			public void configure( AcrossContext acrossContext ) {
-				acrossContext.setInstallerAction( InstallerAction.DISABLED );
-
-				DebugWebModule debugWebModule = new DebugWebModule();
-				debugWebModule.setProperty( DebugWebModuleSettings.DASHBOARD_PATH, "/other/custom" );
-				acrossContext.addModule( debugWebModule );
-
-				acrossContext.addModule( new ApplicationInfoModule() );
-
-			}
-		};
-
-		assertDashboardPath( "/other/custom", configurer );
-	}
-
-	private void assertDashboardPath( String expectedPath, AcrossContextConfigurer configurer ) {
-		try (AcrossTestWebContext ctx = new AcrossTestWebContext( configurer )) {
-			DebugWebModuleSettings settings = ctx.beanRegistry().getBeanOfTypeFromModule( "DebugWebModule",
-			                                                                              DebugWebModuleSettings.class );
+	private void assertDashboardPath( String expectedPath, AcrossTestWebContextBuilder builder ) {
+		try (AcrossTestWebContext ctx = builder.build()) {
+			DebugWebModuleSettings settings = ctx.getBeanOfTypeFromModule( "DebugWebModule",
+			                                                               DebugWebModuleSettings.class );
 
 			assertEquals( expectedPath, settings.getDashboard() );
 		}

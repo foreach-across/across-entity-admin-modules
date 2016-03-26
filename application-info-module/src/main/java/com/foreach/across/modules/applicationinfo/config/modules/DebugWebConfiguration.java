@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 @AcrossEventHandler
 public class DebugWebConfiguration
 {
-	private static Logger LOG = LoggerFactory.getLogger( DebugWebConfiguration.class );
+	private static final Logger LOG = LoggerFactory.getLogger( DebugWebConfiguration.class );
 
 	@Event
 	protected void registerDebugDashboard( AcrossModuleBootstrappedEvent moduleBootstrappedEvent ) {
