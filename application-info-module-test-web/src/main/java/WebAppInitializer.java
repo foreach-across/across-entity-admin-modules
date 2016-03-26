@@ -18,6 +18,7 @@ import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.config.EnableAcrossContext;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
 import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.across.modules.debugweb.DebugWebModule;
@@ -57,6 +58,7 @@ public class WebAppInitializer extends AbstractAcrossServletInitializer
 		private ApplicationInfoModule applicationInfoModule() {
 			ApplicationInfoModule applicationInfoModule = new ApplicationInfoModule();
 			applicationInfoModule.setProperty( ApplicationInfoModuleSettings.APPLICATION_NAME, "Test website" );
+			applicationInfoModule.setProperty( ApplicationInfoModuleSettings.APPLICATION_ID, "test-website" );
 
 			return applicationInfoModule;
 		}
@@ -75,6 +77,7 @@ public class WebAppInitializer extends AbstractAcrossServletInitializer
 		private AdminWebModule adminWebModule() {
 			AdminWebModule adminWebModule = new AdminWebModule();
 			adminWebModule.setRootPath( "/secure" );
+			adminWebModule.setProperty( AdminWebModuleSettings.REMEMBER_ME_KEY, "admin" );
 
 			return adminWebModule;
 		}
