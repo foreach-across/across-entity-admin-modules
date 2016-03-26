@@ -101,8 +101,6 @@ All properties start with the *adminWebModule.* prefix.
 |Number of seconds a remember me token should be valid.
 |_30 days_
 
-
-
 |===
 
 == What's new in this version?
@@ -117,27 +115,27 @@ All properties start with the *adminWebModule.* prefix.
 Initial public release available on http://search.maven.org/[Maven central].
 
 == About the AdminWebModule
+{module-name} provides infrastructure for building an secured administration section in your site.
+All `@AdminWebController` beans will be mapped behind the admin web root path and will have the security rules applied.
+
+Unless otherwise specified, the default admin web template will be applied for those controllers.
+The default template is built on Bootstrap and JQuery and builds a menu structure that controllers can hook into via the `AdminMenuEvent`.
 
 == Integration with other modules
 
 [[integration:acrossweb]]
 ==== AcrossWebModule
-Admin web creates its own `PrefixingRequestMappingHandlerMapping` that picks up all `@AdminWebController` and will
-prefix all request mappings with the root path of the admin web module.
+Admin web creates its own `PrefixingRequestMappingHandlerMapping` that picks up all `@AdminWebController` and will prefix all request mappings with the root path of the admin web module.
 
-Provide an `AdminWebConfigurerAdapter` if you want to register interceptors that should only be applied to the
- admin web controllers.
+Provide an `AdminWebConfigurerAdapter` if you want to register interceptors that should only be applied to the admin web controllers.
 
 [[integration:springsecurity]]
 ==== SpringSecurityModule
-By default `AdminWebModule` adds a `SpringWebSecurityConfigurerAdapter` with default rules for all requests under
-the admin web root.  If you wish to modify the default security rules, you must provide your own
-`SpringWebSecurityConfigurerAdapter` that is positioned before the default `AdminWebSecurityConfiguration` instance.
+By default `AdminWebModule` adds a `SpringWebSecurityConfigurerAdapter` with default rules for all requests under the admin web root.
+If you wish to modify the default security rules, you must provide your own `SpringWebSecurityConfigurerAdapter` that is positioned before the default `AdminWebSecurityConfiguration` instance.
 
-If you create a new `SpringWebSecurityConfigurerAdapater` you will need to scope it correctly to the admin web root
-path and provide all rules including things like login/logout and remember me.  If you are interested more in extending
-the default configuration, you can extend `AdminWebSecurityConfiguration` and override the `customizeAdminWebSecurity`
-adapter method.
+If you create a new `SpringWebSecurityConfigurerAdapater` you will need to scope it correctly to the admin web root path and provide all rules including things like login/logout and remember me.
+If you are interested more in extending the default configuration, you can extend `AdminWebSecurityConfiguration` and override the `customizeAdminWebSecurity` adapter method.
 
 .Example of disabling security headers on admin web
 [source,java,indent=0]
@@ -168,10 +166,12 @@ public class DisableAdminWebSecurityHeaders extends AdminWebSecurityConfiguratio
 AdminWebModule adminWebModule = new AdminWebModule();
 adminWebModule.addApplicationContextConfigurer( DisableAdminWebSecurityHeaders.class );
 ----
-use DebugWebConfigurerAdapter to add interceptors only to debug web
 
-Configuring admin access permissions
-By default, access to the administration interface is restricted to users having the "access administration" permission. If you want to add one or more application specific permissions you have to override the property AdminWebModuleSettings.ADMIN_ACCESS_PERMISSIONS:
-adminWebModule.setProperty( AdminWebModuleSettings.ADMIN_ACCESS_PERMISSIONS, new String[]{ "access administration", "custom permission 1", "custom permission 2" });
+== Registering additional interceptors
+Additional interceptors for admin controllers can easily be registered by providing an `AdminWebConfigurerAdapter` bean.
 
-* login template has changed: isRememberMeEnabled
+== Permissions
+By default, access to the administration interface is restricted to users having the *access administration* permission.
+The allowed permissions can be specified by setting the *adminWebModule.access-permissions* property.
+
+

@@ -33,6 +33,7 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-test:4.0.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-orm:4.0.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:4.0.9.RELEASE" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.springframework.security:spring-security-test:4.0.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.across:across-web:1.1.2-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.across:across-core:1.1.2-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.libs:common-concurrent:0.12" level="project" />
