@@ -22,6 +22,7 @@ import java.util.Date;
 /**
  * @author Arne Vandamme
  */
+@SuppressWarnings("all")
 @ConfigurationProperties(prefix = "applicationInfo")
 public class ApplicationInfoModuleSettings
 {
