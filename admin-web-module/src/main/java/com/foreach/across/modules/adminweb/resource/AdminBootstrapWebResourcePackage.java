@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.adminweb.resource;
 
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
@@ -38,26 +39,26 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 			setWebResources(
 					// Admin web overrides default bootstrap
 					new WebResource( WebResource.CSS, BootstrapUiWebResources.NAME,
-					                 "/css/adminweb/fe_bootstrap-1.0.css",
+					                 "/static/adminweb/css/fe_bootstrap-1.0.css",
 					                 WebResource.VIEWS ),
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
-					                 "/js/adminweb/main.js",
+					                 "/static/adminweb/js/main.js",
 					                 WebResource.VIEWS ),
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
-					                 "/js/adminweb/ie10-viewport-bug-workaround.js",
+					                 "/static/adminweb/js/ie10-viewport-bug-workaround.js",
 					                 WebResource.VIEWS )
 			);
 		}
 		else {
 			setWebResources(
 					new WebResource( WebResource.CSS, NAME,
-					                 "/css/adminweb/fe_bootstrap-1.0.css",
+					                 "/static/adminweb/css/fe_bootstrap-1.0.css",
 					                 WebResource.VIEWS ),
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
-					                 "/js/adminweb/main.js",
+					                 "/static/adminweb/js/main.js",
 					                 WebResource.VIEWS ),
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
-					                 "/js/adminweb/ie10-viewport-bug-workaround.js",
+					                 "/static/adminweb/js/ie10-viewport-bug-workaround.js",
 					                 WebResource.VIEWS )
 			);
 		}

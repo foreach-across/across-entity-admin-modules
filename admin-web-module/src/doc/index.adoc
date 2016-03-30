@@ -1,5 +1,13 @@
 = AdminWebModule
-:toc:
+Arne Vandamme
+1.1.1-SNAPSHOT
+:toc: left
+:sectanchors:
+:module-version: 1.1.1-SNAPSHOT
+:module-name: AdminWebModule
+:module-artifact: admin-web-module
+:module-url: https://foreach.atlassian.net/wiki/display/AX/AdminWebModule
+:spring-security-module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityModule
 
 == General information
 
@@ -9,8 +17,9 @@
 ----
 	<dependencies>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>spring-security</artifactId>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>{module-artifact}</artifactId>
+			<version>{module-version}</version>
 		</dependency>
 	</dependencies>
 ----
@@ -35,9 +44,86 @@
 |===
 
 === Module settings
-tbd
+
+All properties start with the *adminWebModule.* prefix.
+
+|===
+|Property |Type |Description |Default
+
+|root-path
+|`String`
+|Root path for all admin web controllers.  All mappings will be relative to this path.
+|/admin
+
+|dashboard
+|`String`
+|Path within the admin web context for the initial dashboard.
+|/
+
+|title
+|`String`
+|Name of the application to be shown in the administration UI.
+|
+
+|access-permissions
+|`String[]`
+|Set of permissions that grant access to the administration interface.
+|access administration
+
+|locale.default-locale
+|`Locale`
+|Default locale that should explicitly be set when accessing the administration interface if no specific locale selected.
+|`Locale.US`
+
+|locale.options
+|`List<Locale>`
+|List of locales that can be selected on the login page.
+|`Collections.emptyList()`
+
+|login.template
+|`String`
+|View template for the login page.
+|th/adminweb/login
+
+|login.rememberMe.enabled
+|`Boolean`
+|Should remember me be enabled (will only be the case if a key is also configured).
+|`true`
+
+|login.rememberMe.key
+|`String`
+|Key used for creating the remember me cookie.
+|
+
+|login.rememberMe.cookie
+|`String`
+|Name of the remember-me cookie.
+|rm-admin-web
+
+|login.rememberMe.tokenValiditySeconds
+|`Integer`
+|Number of seconds a remember me token should be valid.
+|_30 days_
+
+|===
+
+== What's new in this version?
+:numbered!:
+=== 1.1.1-SNAPSHOT
+
+* all settings are now configurable through properties with Spring configuration metadata support
+* login template now uses the `isRememberMeEnabled` attribute to determine if the remember-me checkbox should be shown
+** this is a *breaking change* for custom templates
+
+=== 1.1.0.RELEASE
+Initial public release available on http://search.maven.org/[Maven central].
 
 == About the AdminWebModule
+{module-name} provides infrastructure for building an secured administration section in your site.
+All `@AdminWebController` beans will be mapped behind the admin web root path and will have the security rules applied.
+
+Unless otherwise specified, the default admin web template will be applied for those controllers.
+The default template is built on Bootstrap and JQuery and builds a menu structure that controllers can hook into via the `AdminMenuEvent`.
 
 === Remember me configuration
 You can easily enable remember me support for the administration ui by setting the correct properties.  By default
@@ -51,22 +137,17 @@ or a fixed password encoder in local development mode.
 
 [[integration:acrossweb]]
 ==== AcrossWebModule
-Admin web creates its own `PrefixingRequestMappingHandlerMapping` that picks up all `@AdminWebController` and will
-prefix all request mappings with the root path of the admin web module.
+Admin web creates its own `PrefixingRequestMappingHandlerMapping` that picks up all `@AdminWebController` and will prefix all request mappings with the root path of the admin web module.
 
-Provide an `AdminWebConfigurerAdapter` if you want to register interceptors that should only be applied to the
- admin web controllers.
+Provide an `AdminWebConfigurerAdapter` if you want to register interceptors that should only be applied to the admin web controllers.
 
 [[integration:springsecurity]]
 ==== SpringSecurityModule
-By default `AdminWebModule` adds a `SpringWebSecurityConfigurerAdapter` with default rules for all requests under
-the admin web root.  If you wish to modify the default security rules, you must provide your own
-`SpringWebSecurityConfigurerAdapter` that is positioned before the default `AdminWebSecurityConfiguration` instance.
+By default `AdminWebModule` adds a `SpringWebSecurityConfigurerAdapter` with default rules for all requests under the admin web root.
+If you wish to modify the default security rules, you must provide your own `SpringWebSecurityConfigurerAdapter` that is positioned before the default `AdminWebSecurityConfiguration` instance.
 
-If you create a new `SpringWebSecurityConfigurerAdapater` you will need to scope it correctly to the admin web root
-path and provide all rules including things like login/logout and remember me.  If you are interested more in extending
-the default configuration, you can extend `AdminWebSecurityConfiguration` and override the `customizeAdminWebSecurity`
-adapter method.
+If you create a new `SpringWebSecurityConfigurerAdapater` you will need to scope it correctly to the admin web root path and provide all rules including things like login/logout and remember me.
+If you are interested more in extending the default configuration, you can extend `AdminWebSecurityConfiguration` and override the `customizeAdminWebSecurity` adapter method.
 
 .Example of disabling security headers on admin web
 [source,java,indent=0]
@@ -104,7 +185,11 @@ If the `ApplicationInfoModule` is present in the context, the configured applica
 to set the default remember-me cookie name (based on the `ApplicationInfo.getApplicationId()`) and application title for
  the administration interface (based on the `ApplicationInfo.getApplicationName()` property).use DebugWebConfigurerAdapter to add interceptors only to debug web
 
-Configuring admin access permissions
-By default, access to the administration interface is restricted to users having the "access administration" permission. If you want to add one or more application specific permissions you have to override the property AdminWebModuleSettings.ADMIN_ACCESS_PERMISSIONS:
-adminWebModule.setProperty( AdminWebModuleSettings.ADMIN_ACCESS_PERMISSIONS, new String[]{ "access administration", "custom permission 1", "custom permission 2" });
+== Registering additional interceptors
+Additional interceptors for admin controllers can easily be registered by providing an `AdminWebConfigurerAdapter` bean.
+
+== Permissions
+By default, access to the administration interface is restricted to users having the *access administration* permission.
+The allowed permissions can be specified by setting the *adminWebModule.access-permissions* property.
+
 

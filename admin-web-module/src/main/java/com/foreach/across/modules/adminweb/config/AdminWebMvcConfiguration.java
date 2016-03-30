@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.adminweb.config;
 
 import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.annotations.AcrossCondition;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.Module;
 import com.foreach.across.modules.adminweb.AdminWebModule;
@@ -33,13 +33,14 @@ import com.foreach.across.modules.web.mvc.PrefixingRequestMappingHandlerMapping;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.support.annotation.AnnotationClassFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import javax.annotation.PostConstruct;
-import java.util.Locale;
 
 @Configuration
 public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfiguration
@@ -54,6 +55,9 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 	@Autowired
 	private AdminWebModuleSettings settings;
 
+	@Autowired
+	private LocaleProperties localeProperties;
+
 	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public void initialize() {
@@ -63,7 +67,7 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 
 	@Override
 	protected String getPrefixPath() {
-		return adminWebModule.getRootPath();
+		return settings.getRootPath();
 	}
 
 	@Override
@@ -71,18 +75,12 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 		return new AnnotationClassFilter( AdminWebController.class, true );
 	}
 
-	@AcrossCondition("#{not getBeanFactory().containsBean('" + DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME + "')}")
+	@ConditionalOnMissingBean(name = DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME, search = SearchStrategy.ALL)
 	@Bean(name = DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
 	@Exposed
 	public CookieLocaleResolver localeResolver() {
 		CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
-		Locale defaultLocale = settings.getDefaultLocale();
-
-		if ( defaultLocale == null ) {
-			defaultLocale = Locale.UK;
-		}
-
-		cookieLocaleResolver.setDefaultLocale( defaultLocale );
+		cookieLocaleResolver.setDefaultLocale( localeProperties.getDefaultLocale() );
 
 		return cookieLocaleResolver;
 	}

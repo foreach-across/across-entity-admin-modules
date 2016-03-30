@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.adminweb.config.support;
-
+import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
-import com.foreach.across.modules.web.config.support.PrefixingHandlerMappingConfigurerAdapter;
+import org.springframework.boot.SpringApplication;
 
 /**
- * {@link com.foreach.across.modules.web.config.support.PrefixingHandlerMappingConfigurer} adapter tied
- * to the default adminWeb handler mapping.  Implementations do not need to override the {@link #supports(String)}
- * method anymore.
- *
  * @author Arne Vandamme
  */
-public abstract class AdminWebConfigurerAdapter extends PrefixingHandlerMappingConfigurerAdapter
+@AcrossApplication(modules = AdminWebModule.NAME)
+public class AdminWebTestApplication
 {
-	@Override
-	public boolean supports( String mapperName ) {
-		return AdminWebModule.NAME.equals( mapperName );
+	public static void main( String[] args ) {
+		SpringApplication.run( AdminWebTestApplication.class, args );
 	}
 }

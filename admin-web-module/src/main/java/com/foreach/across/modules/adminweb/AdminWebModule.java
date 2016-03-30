@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.adminweb;
 
 import com.foreach.across.core.AcrossContext;
@@ -31,13 +32,15 @@ public class AdminWebModule extends AcrossModule
 	public static final String NAME = "AdminWebModule";
 	public static final String RESOURCES = "adminweb";
 
-	private String rootPath = "/admin";
-
 	/**
-	 * @return The root path for all AdminWebControllers.
+	 * Set the root path that all AdminWebController instances should use.  All request mappings
+	 * will be prefixed with the path specified here.
+	 *
+	 * @param rootPath The root path for all AdminWebControllers.
+	 * @see org.springframework.web.bind.annotation.RequestMapping
 	 */
-	public String getRootPath() {
-		return rootPath;
+	public void setRootPath( String rootPath ) {
+		setProperty( "adminWebModule.root-path", rootPath );
 	}
 
 	@Override
@@ -48,17 +51,6 @@ public class AdminWebModule extends AcrossModule
 		if ( context.getModule( BootstrapUiModule.NAME ) == null ) {
 			context.addModule( new BootstrapUiModule() );
 		}
-	}
-
-	/**
-	 * Set the root path that all AdminWebController instances should use.  All request mappings
-	 * will be prefixed with the path specified here.
-	 *
-	 * @param rootPath The root path for all AdminWebControllers.
-	 * @see org.springframework.web.bind.annotation.RequestMapping
-	 */
-	public void setRootPath( String rootPath ) {
-		this.rootPath = rootPath;
 	}
 
 	@Override

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.adminweb.config;
 
 import com.foreach.across.core.AcrossModule;
@@ -21,6 +22,7 @@ import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.config.support.AdminWebConfigurerAdapter;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.resource.AdminBootstrapWebResourcePackage;
@@ -57,6 +59,9 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	private AdminWebModule adminWebModule;
 
 	@Autowired
+	private AdminWebModuleSettings settings;
+
+	@Autowired
 	private PrefixingPathRegistry prefixingPathRegistry;
 
 	@Override
@@ -69,7 +74,7 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	@Bean(name = AdminWeb.NAME)
 	@Exposed
 	public AdminWeb adminWeb() {
-		AdminWeb adminWeb = new AdminWeb( adminWebModule.getRootPath() );
+		AdminWeb adminWeb = new AdminWeb( settings.getRootPath() );
 		prefixingPathRegistry.add( AdminWeb.NAME, adminWeb );
 
 		return adminWeb;
