@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.bootstrapui.config;
 
 import com.foreach.across.core.annotations.PostRefresh;
-import com.foreach.across.core.annotations.RefreshableCollection;
+import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
 import com.foreach.across.modules.web.resource.WebResourcePackageManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Collection;
 
 /**
  * @author Arne Vandamme
@@ -34,16 +34,19 @@ import java.util.Collection;
 @Configuration
 public class BootstrapUiConfiguration
 {
-	@RefreshableCollection
-	private Collection<WebResourcePackageManager> webResourcePackageManagers;
+	@Autowired
+	private AcrossContextBeanRegistry contextBeanRegistry;
 
 	@PostRefresh
 	protected void registerWebResourcePackages() {
-		for ( WebResourcePackageManager packageManager : webResourcePackageManagers ) {
-			packageManager.register( BootstrapUiFormElementsWebResources.NAME, new BootstrapUiFormElementsWebResources() );
-			packageManager.register( JQueryWebResources.NAME, new JQueryWebResources( true ) );
-			packageManager.register( BootstrapUiWebResources.NAME, new BootstrapUiWebResources() );
-		}
+		contextBeanRegistry.getBeansOfType( WebResourcePackageManager.class ).forEach(
+				packageManager -> {
+					packageManager.register( BootstrapUiFormElementsWebResources.NAME,
+					                         new BootstrapUiFormElementsWebResources() );
+					packageManager.register( JQueryWebResources.NAME, new JQueryWebResources( true ) );
+					packageManager.register( BootstrapUiWebResources.NAME, new BootstrapUiWebResources() );
+				}
+		);
 	}
 
 	@Bean
