@@ -18,6 +18,7 @@ package com.foreach.across.modules.properties.installers;
 import com.foreach.across.core.database.SchemaConfiguration;
 import com.foreach.across.core.database.SchemaObject;
 import com.foreach.across.core.installers.AcrossLiquibaseInstaller;
+import liquibase.exception.LiquibaseException;
 
 import java.util.Collections;
 
@@ -45,7 +46,7 @@ public abstract class EntityPropertiesInstaller extends AcrossLiquibaseInstaller
 	protected abstract String getKeyColumnName();
 
 	@Override
-	public void install() {
+	public void install() throws LiquibaseException {
 		schemaConfiguration.setProperty( "table.entity_properties", getTableName() );
 		schemaConfiguration.setProperty( "column.entity_id", getKeyColumnName() );
 
