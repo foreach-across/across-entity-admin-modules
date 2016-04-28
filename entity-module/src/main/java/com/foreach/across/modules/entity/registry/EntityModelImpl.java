@@ -16,8 +16,8 @@
 package com.foreach.across.modules.entity.registry;
 
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.repository.core.CrudInvoker;
 import org.springframework.data.repository.core.EntityInformation;
+import org.springframework.data.repository.support.RepositoryInvoker;
 import org.springframework.format.Printer;
 
 import java.io.Serializable;
@@ -30,7 +30,7 @@ public class EntityModelImpl<T, ID extends Serializable> implements EntityModel<
 {
 	private EntityFactory<T> entityFactory;
 	private EntityInformation<T, ID> entityInformation;
-	private CrudInvoker<T> crudInvoker;
+	private RepositoryInvoker crudInvoker;
 	private Printer<T> labelPrinter;
 
 	public void setEntityFactory( EntityFactory<T> entityFactory ) {
@@ -41,7 +41,7 @@ public class EntityModelImpl<T, ID extends Serializable> implements EntityModel<
 		this.entityInformation = entityInformation;
 	}
 
-	public void setCrudInvoker( CrudInvoker<T> crudInvoker ) {
+	public void setCrudInvoker( RepositoryInvoker crudInvoker ) {
 		this.crudInvoker = crudInvoker;
 	}
 
