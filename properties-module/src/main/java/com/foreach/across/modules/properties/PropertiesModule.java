@@ -17,7 +17,6 @@ package com.foreach.across.modules.properties;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.modules.properties.installers.PropertyTrackingSchemaInstaller;
 
 /**
  * @author Arne Vandamme
@@ -35,10 +34,5 @@ public class PropertiesModule extends AcrossModule
 	@Override
 	public String getDescription() {
 		return "Provides facilities for both global and entity linked property maps that can be extended by other modules.";
-	}
-
-	@Override
-	public Object[] getInstallers() {
-		return new Object[] { PropertyTrackingSchemaInstaller.class };
 	}
 }

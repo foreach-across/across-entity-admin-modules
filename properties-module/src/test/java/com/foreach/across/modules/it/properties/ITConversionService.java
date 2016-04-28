@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -149,7 +150,8 @@ public class ITConversionService
 		@Bean
 		@Primary
 		public ConversionService conversionService() {
-			return mock( ConversionService.class );
+			// A real implementation because @ConfigurationProperties also uses the conversionService
+			return new DefaultConversionService();
 		}
 
 		@Bean

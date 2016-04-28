@@ -15,14 +15,14 @@
  */
 package com.foreach.across.modules.properties;
 
-import com.foreach.across.core.AcrossModuleSettings;
-import com.foreach.across.core.AcrossModuleSettingsRegistry;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.convert.ConversionService;
 
 /**
  * @author Arne Vandamme
  */
-public class PropertiesModuleSettings extends AcrossModuleSettings
+@ConfigurationProperties(prefix = "propertiesModule")
+public class PropertiesModuleSettings
 {
 	/**
 	 * Explicitly specify the default ConversionService instance to use for property maps.
@@ -37,14 +37,24 @@ public class PropertiesModuleSettings extends AcrossModuleSettings
 	 * <p/>
 	 * Value: String
 	 */
-	public static final String CONVERSION_SERVICE_BEAN = "propertiesModule.conversionService.beanName";
+	public static final String CONVERSION_SERVICE_BEAN = "propertiesModule.conversionServiceBean";
 
-	@Override
-	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
-		registry.register( CONVERSION_SERVICE, ConversionService.class, null,
-		                   "Explicitly specify the default ConversionService instance to use for property maps." );
-		registry.register( CONVERSION_SERVICE_BEAN, String.class, null,
-		                   "Specify the name fo the ConversionService bean to use for the property maps. " +
-				                   "If a bean name is specified but the bean is not found, the module will not bootstrap." );
+	private ConversionService conversionService;
+	private String conversionServiceBean;
+
+	public ConversionService getConversionService() {
+		return conversionService;
+	}
+
+	public void setConversionService(ConversionService conversionService) {
+		this.conversionService = conversionService;
+	}
+
+	public String getConversionServiceBean() {
+		return conversionServiceBean;
+	}
+
+	public void setConversionServiceBean(String conversionServiceBean) {
+		this.conversionServiceBean = conversionServiceBean;
 	}
 }

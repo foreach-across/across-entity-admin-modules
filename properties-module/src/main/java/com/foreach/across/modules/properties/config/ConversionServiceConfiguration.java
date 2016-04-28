@@ -20,7 +20,6 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.filters.ClassBeanFilter;
-import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.properties.PropertiesModuleSettings;
 import com.foreach.common.spring.convert.HierarchicalConversionService;
 import org.springframework.beans.BeansException;
@@ -48,7 +47,6 @@ public class ConversionServiceConfiguration
 	private AcrossModuleInfo currentModuleInfo;
 
 	@Autowired
-	@Module(PropertiesModule.NAME)
 	private PropertiesModuleSettings settings;
 
 	@Autowired
@@ -56,13 +54,10 @@ public class ConversionServiceConfiguration
 
 	@Bean(name = CONVERSION_SERVICE_BEAN)
 	public ConversionService propertiesConversionService() {
-		ConversionService conversionServiceToUse = settings.getProperty(
-				PropertiesModuleSettings.CONVERSION_SERVICE,
-				ConversionService.class
-		);
+		ConversionService conversionServiceToUse = settings.getConversionService();
 
 		if ( conversionServiceToUse == null ) {
-			String beanName = settings.getProperty( PropertiesModuleSettings.CONVERSION_SERVICE_BEAN );
+			String beanName = settings.getConversionServiceBean();
 
 			if ( beanName != null ) {
 				try {
