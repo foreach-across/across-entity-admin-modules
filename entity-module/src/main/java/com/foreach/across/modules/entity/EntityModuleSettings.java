@@ -15,23 +15,26 @@
  */
 package com.foreach.across.modules.entity;
 
-import com.foreach.across.core.AcrossModuleSettings;
-import com.foreach.across.core.AcrossModuleSettingsRegistry;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author Arne Vandamme
  */
-public class EntityModuleSettings extends AcrossModuleSettings
+@ConfigurationProperties(prefix = "entityModule")
+public class EntityModuleSettings
 {
-	public static final String REGISTER_ENTITY_VALIDATOR_FOR_MVC = "entityModule.entityValidator.registerForMvc";
+	/***
+	 * Should the entity Validator instance be registered as the default validator for MVC databinding
+	 */
+	public static final String REGISTER_ENTITY_VALIDATOR_FOR_MVC = "entityModule.entityValidatorRegisterForMvc";
 
-	@Override
-	protected void registerSettings( AcrossModuleSettingsRegistry registry ) {
-		registry.register( REGISTER_ENTITY_VALIDATOR_FOR_MVC, Boolean.class, true,
-		                   "Should the entity Validator instance be registered as the default validator for MVC databinding.");
+	private boolean entityValidatorRegisterForMvc = true;
+
+	public boolean isEntityValidatorRegisterForMvc() {
+		return entityValidatorRegisterForMvc;
 	}
 
-	public boolean shouldRegisterEntityValidatorForMvc() {
-		return getProperty( REGISTER_ENTITY_VALIDATOR_FOR_MVC, Boolean.class );
+	public void setEntityValidatorRegisterForMvc( boolean entityValidatorRegisterForMvc ) {
+		this.entityValidatorRegisterForMvc = entityValidatorRegisterForMvc;
 	}
 }

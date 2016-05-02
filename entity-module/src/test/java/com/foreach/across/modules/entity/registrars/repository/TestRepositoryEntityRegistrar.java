@@ -15,9 +15,6 @@
  */
 package com.foreach.across.modules.entity.registrars.repository;
 
-import com.foreach.across.config.AcrossContextConfigurer;
-import com.foreach.across.core.AcrossContext;
-import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
@@ -38,11 +35,12 @@ import com.foreach.across.modules.entity.testmodules.springdata.repositories.Cli
 import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.test.AcrossTestWebConfiguration;
+import com.foreach.across.test.AcrossTestConfiguration;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Sort;
@@ -304,23 +302,21 @@ public class TestRepositoryEntityRegistrar
 	}
 
 	@Configuration
-	@AcrossTestWebConfiguration
-	public static class Config implements AcrossContextConfigurer
+	@AcrossTestConfiguration(modules = { EntityModule.NAME, AdminWebModule.NAME, SpringSecurityModule.NAME })
+	public static class Config
 	{
-		@Override
-		public void configure( AcrossContext context ) {
-			context.addModule( new SpringSecurityModule() );
-			context.addModule( new AdminWebModule() );
-			context.addModule( new EntityModule() );
-			context.setDevelopmentMode( true );
-
+		@Bean
+		public AcrossHibernateJpaModule acrossHibernateJpaModule() {
 			AcrossHibernateJpaModule hibernateModule = new AcrossHibernateJpaModule();
 			hibernateModule.setHibernateProperty( "hibernate.hbm2ddl.auto", "create-drop" );
-			context.addModule( hibernateModule );
+			return hibernateModule;
+		}
 
+		@Bean
+		public SpringDataJpaModule springDataJpaModule() {
 			SpringDataJpaModule springDataJpaModule = new SpringDataJpaModule();
-			springDataJpaModule.setExposeFilter( new ClassBeanFilter( Repository.class ) );
-			context.addModule( springDataJpaModule );
+			springDataJpaModule.expose( Repository.class );
+			return springDataJpaModule;
 		}
 	}
 }
