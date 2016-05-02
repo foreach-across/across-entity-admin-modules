@@ -1,6 +1,25 @@
 = EntityModule
-:toc:
+Arne Vandamme
+1.2.0-SNAPSHOT
+:toc: left
+:sectanchors:
+:module-version: 1.2.0-SNAPSHOT
+:module-name: EntityModule
+:module-artifact: entity-module
+:module-url: https://foreach.atlassian.net/wiki/display/AX/EntityModule
 
+[copyright,verbatim]
+--
+Copyright (C) 2014-2015 +
+[small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
+--
+
+[abstract]
+== About
+
+Module website: {module-url}
+
+:numbered:
 == General information
 
 === Artifact
@@ -9,8 +28,9 @@
 ----
 	<dependencies>
 		<dependency>
-			<groupId>across-standard-modules</groupId>
-			<artifactId>entity-module</artifactId>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>{module-artifact}</artifactId>
+			<version>{module-version}</version>
 		</dependency>
 	</dependencies>
 ----
@@ -36,6 +56,14 @@
 |true
 |===
 
+== What's new in this version?
+:numbered!:
+=== 1.2.0-SNAPSHOT
+
+* Compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
+* TODO
+
+:numbered:
 == About the EntityModule
 
 === EntityConfiguration and EntityAssociation
