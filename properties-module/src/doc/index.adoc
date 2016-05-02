@@ -1,41 +1,107 @@
-# Properties module
+= PropertiesModule
+Arne Vandamme
+1.2.0-SNAPSHOT
+:toc: left
+:sectanchors:
+:module-version: 1.2.0-SNAPSHOT
+:module-name: PropertiesModule
+:module-artifact: properties-module
+:module-url: https://foreach.atlassian.net/wiki/display/AX/PropertiesModule
+:application-info-url: https://foreach.atlassian.net/wiki/display/AX/PropertiesModule
+
+[copyright,verbatim]
+--
+Copyright (C) 2014-2015 +
+[small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
+--
+
+[abstract]
+== About
 
 The Properties module provides facilities to extend existing entities with custom properties, with optional revision tracking.
 
-## Dependency
+Module website: {module-url}
 
-```xml
-<dependencies>
-  <dependency>
-    <groupId>across-standard-modules</groupId>
-    <artifactId>properties-module</artifactId>
-    <version>1.0.0.RELEASE</version>
-  </dependency>
-</dependencies>
-```
+:numbered:
+== General information
 
-## Configuration
-### Installers
+=== Artifact
+[source,xml,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>{module-artifact}</artifactId>
+			<version>{module-version}</version>
+		</dependency>
+	</dependencies>
+----
+
+=== Module dependencies
+
+{module-name} only has a optional dependencies on AcrossWebModule, EntityModule and AdminWebModule.
+
+.Module dependencies
+|===
+|Module |Type |Description
+
+|<<integration:adminweb-entity,EntityModule>>
+|optional
+|In combination with `AdminWebModule` this enables the management forms in the administration UI.
+|===
+
+=== Module settings
+
+All properties start with the *propertiesModule.* prefix.
+
+|===
+|Property |Type |Description |Default
+
+|conversionService
+|`org.springframework.core.convert.ConversionService`
+|Optional ConversionService instance to be used to convert properties. Defaults to the default ConversionService if none is specified.
+|
+
+|conversionServiceBean
+|`java.lang.String`
+|Optional The name of the ConversionService instance to be used to convert properties.
+|
+|===
+
+== What's new in this version?
+:numbered!:
+=== 1.2.0-SNAPSHOT
+
+* Compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
+* Switched `PropertiesModuleSettings` to `@ConfigurationProperties` instead of the deprecated `AcrossModuleSettings`
+* settings now support Spring configuration metadata
+* `UserService`, `GroupService` and `MachinePrincipalService` have been refactored to implement `QueryDslPredicateExecutor` (breaking change)
+
+:numbered:
+== Configuration
+
+=== Installers
 In order to extend existing entities with properties, the tables for these properties have to be installed.
 The client application can do this by registering installers that extend from EntityPropertiesInstaller or RevisionBasedEntityPropertiesInstaller.
 
-### Repositories
+=== Repositories
 The Properties module offers a base implementation of EntityPropertiesRepository that can be extended with a typed implementation.
 
-### Services
+=== Services
 The client application should then extend either AbstractEntityPropertiesService or AbstractRevisionBasedEntityPropertiesService.
 These services can then be wired into the entity services and used as described below.
 
-### Registries
+=== Registries
 The entities with properties should have a registry class extending from EntityPropertiesRegistry.
 Registries are classes that contain a map for the properties added to a specific entity.
 For example, a User entity class can have a corresponding UserPropertiesRegistry class.
 
-### Properties configuration
+=== Properties configuration
 The properties for a specific entity are configured in a configuration class extending from AbstractEntityPropertiesConfiguration.
 This class will specify the entity class, table name, the identifying column name and wire all classes extended as described above.
 
-### Property registration
+=== Property registration
 The client application should register the properties during application startup as follows:
 ```java
 @PostConstruct
@@ -56,7 +122,7 @@ private UserPropertiesRegistry userPropertiesRegistry;
 This registry contains the definition of the property key to its implementation class and optionally a default value.
 See EntityPropertiesRegistry for all available options.
 
-#### Defaults
+==== Defaults
 The Properties module supports simple types and parametrized types for registries. When registering a mapping, the client application can supply a default value.
 These defaults should not be changed by client code. In order to enforce this, the Properties module uses PropertyFactory from the Foreach common libraries as a way to construct these defaults.
 TypeDescriptors (from Spring) are used to describe the parameter types.
@@ -80,7 +146,7 @@ userPropertiesRegistry.register( currentModule,
 );
 ```
 
-## Usage
+== Usage
 If the Properties module is configured correctly and the services are wired, the properties of a specific entity can be read and set as follow:
 ```java
 Foo foo = new Foo( "aFoo" );
