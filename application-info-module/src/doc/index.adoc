@@ -1,9 +1,9 @@
 = ApplicationInfoModule
 Arne Vandamme
-1.0.1-SNAPSHOT
+1.0.1.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 1.0.1-SNAPSHOT
+:module-version: 1.0.1.RELEASE
 :module-name: ApplicationInfoModule
 :module-artifact: application-info-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/ApplicationInfoModule
@@ -105,7 +105,7 @@ NOTE: Timestamps in property files should be provided in *yyyy-MM-dd HH:mm:ss* f
 
 == What's new in this version?
 :numbered!:
-=== 1.0.1-SNAPSHOT
+=== 1.0.1.RELEASE
 This version introduces a couple of breaking changes:
 
 * Package has been renamed from *com.foreach.across.module* to *com.foreach.across.modules*.
