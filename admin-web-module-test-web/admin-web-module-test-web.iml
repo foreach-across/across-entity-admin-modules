@@ -49,11 +49,12 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-orm:4.0.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:4.0.9.RELEASE" level="project" />
     <orderEntry type="module" module-name="admin-web-module" />
-    <orderEntry type="library" name="Maven: com.foreach.across:across-web:1.1.2-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.foreach.across:across-core:1.1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across:across-web:1.1.2.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across:across-core:1.1.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.libs:common-concurrent:0.12" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:4.1.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:4.1.9.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-tx:4.1.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.3" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.3" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.13" level="project" />
@@ -82,14 +83,6 @@
     <orderEntry type="library" name="Maven: ognl:ognl:3.0.8" level="project" />
     <orderEntry type="library" name="Maven: org.unbescape:unbescape:1.1.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.13" level="project" />
-    <orderEntry type="library" name="Maven: com.foreach.across:across-test:1.1.2-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.zaxxer:HikariCP-java6:2.3.9" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-test:4.1.9.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-orm:4.1.9.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-tx:4.1.9.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.hsqldb:hsqldb:2.3.3" level="project" />
-    <orderEntry type="library" name="Maven: junit:junit:4.11" level="project" />
-    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="library" name="Maven: commons-dbcp:commons-dbcp:1.4" level="project" />
     <orderEntry type="library" name="Maven: commons-pool:commons-pool:1.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:javax.servlet-api:3.0.1" level="project" />
