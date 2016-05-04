@@ -1,9 +1,9 @@
 = EntityModule
 Arne Vandamme
-1.2.0-SNAPSHOT
+2.0.0-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 1.2.0-SNAPSHOT
+:module-version: 2.0.0-SNAPSHOT
 :module-name: EntityModule
 :module-artifact: entity-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/EntityModule
@@ -58,7 +58,7 @@ Module website: {module-url}
 
 == What's new in this version?
 :numbered!:
-=== 1.2.0-SNAPSHOT
+=== 2.0.0-SNAPSHOT
 
 * Compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
 * TODO

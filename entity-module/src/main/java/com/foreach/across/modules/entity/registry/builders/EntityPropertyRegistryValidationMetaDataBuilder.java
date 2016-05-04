@@ -19,10 +19,13 @@ import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
+import org.hibernate.validator.internal.engine.DefaultParameterNameProvider;
 import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
 import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.provider.MetaDataProvider;
+import org.hibernate.validator.internal.util.ExecutableHelper;
+import org.hibernate.validator.internal.util.TypeResolutionHelper;
 
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
@@ -39,7 +42,8 @@ public class EntityPropertyRegistryValidationMetaDataBuilder implements EntityPr
 	private final List<MetaDataProvider> metaDataProvider = Collections.emptyList();
 
 	private final BeanMetaDataManager metaDataManager = new BeanMetaDataManager(
-			new ConstraintHelper(),
+			new ConstraintHelper(), new ExecutableHelper( new TypeResolutionHelper() ),
+			new DefaultParameterNameProvider(),
 			metaDataProvider );
 
 	public void buildRegistry( Class<?> entityType, MutableEntityPropertyRegistry registry ) {

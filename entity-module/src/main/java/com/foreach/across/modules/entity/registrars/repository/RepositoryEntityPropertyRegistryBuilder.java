@@ -19,10 +19,13 @@ import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
+import org.hibernate.validator.internal.engine.DefaultParameterNameProvider;
 import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
 import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.provider.MetaDataProvider;
+import org.hibernate.validator.internal.util.ExecutableHelper;
+import org.hibernate.validator.internal.util.TypeResolutionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +48,8 @@ public class RepositoryEntityPropertyRegistryBuilder
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityPropertyRegistryBuilder.class );
 
 	private final BeanMetaDataManager metaDataManager = new BeanMetaDataManager(
-			new ConstraintHelper(), Collections.<MetaDataProvider>emptyList()
+			new ConstraintHelper(), new ExecutableHelper( new TypeResolutionHelper() ),
+			new DefaultParameterNameProvider(), Collections.<MetaDataProvider>emptyList()
 	);
 
 	@Autowired

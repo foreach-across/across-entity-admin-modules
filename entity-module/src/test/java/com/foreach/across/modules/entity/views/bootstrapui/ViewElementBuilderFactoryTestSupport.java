@@ -27,10 +27,13 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.mysema.util.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.internal.engine.DefaultParameterNameProvider;
 import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
 import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.provider.MetaDataProvider;
+import org.hibernate.validator.internal.util.ExecutableHelper;
+import org.hibernate.validator.internal.util.TypeResolutionHelper;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
@@ -80,7 +83,8 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 
 		if ( properties.isEmpty() ) {
 			BeanMetaDataManager manager = new BeanMetaDataManager(
-					new ConstraintHelper(), Collections.<MetaDataProvider>emptyList()
+					new ConstraintHelper(), new ExecutableHelper( new TypeResolutionHelper() ),
+					new DefaultParameterNameProvider(), Collections.<MetaDataProvider>emptyList()
 			);
 
 			BeanMetaData<?> metaData = manager.getBeanMetaData( getTestClass() );
