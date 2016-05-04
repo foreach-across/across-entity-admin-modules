@@ -1,9 +1,9 @@
 = AdminWebModule
 Arne Vandamme
-1.1.1-SNAPSHOT
+1.1.1.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 1.1.1-SNAPSHOT
+:module-version: 1.1.1.RELEASE
 :module-name: AdminWebModule
 :module-artifact: admin-web-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/AdminWebModule
@@ -109,7 +109,7 @@ All properties start with the *adminWebModule.* prefix.
 
 == What's new in this version?
 :numbered!:
-=== 1.1.1-SNAPSHOT
+=== 1.1.1.RELEASE
 
 * all settings are now configurable through properties with Spring configuration metadata support
 * login template now uses the `isRememberMeEnabled` attribute to determine if the remember-me checkbox should be shown
