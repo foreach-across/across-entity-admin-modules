@@ -16,19 +16,13 @@
 package com.foreach.across.modules.entity;
 
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import org.hibernate.validator.internal.engine.DefaultParameterNameProvider;
-import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
-import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
-import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
-import org.hibernate.validator.internal.metadata.provider.MetaDataProvider;
-import org.hibernate.validator.internal.util.ExecutableHelper;
-import org.hibernate.validator.internal.util.TypeResolutionHelper;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,17 +30,16 @@ import static org.junit.Assert.*;
 
 public class TestValidatorDetection
 {
+	private LocalValidatorFactoryBean validatorFactory = new LocalValidatorFactoryBean();
+
+	@Before
+	public void setup() {
+		validatorFactory.afterPropertiesSet();
+	}
+
 	@Test
 	public void validatorDescriptionDetector() {
-		BeanMetaDataManager manager = new BeanMetaDataManager(
-				new ConstraintHelper(), new ExecutableHelper( new TypeResolutionHelper() ),
-				new DefaultParameterNameProvider(), Collections.<MetaDataProvider>emptyList()
-		);
-
-		BeanMetaData<Client> metaData = manager.getBeanMetaData( Client.class );
-		assertNotNull( metaData );
-
-		BeanDescriptor beanDescriptor = metaData.getBeanDescriptor();
+		BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass( Client.class );
 		assertNotNull( beanDescriptor );
 
 		// non existing property
@@ -64,12 +57,7 @@ public class TestValidatorDetection
 	@Test
 	@SuppressWarnings("unchecked")
 	public void convertValidatorsToMapForJson() {
-		BeanMetaDataManager manager = new BeanMetaDataManager(
-				new ConstraintHelper(), new ExecutableHelper( new TypeResolutionHelper() ),
-				new DefaultParameterNameProvider(), Collections.<MetaDataProvider>emptyList() );
-
-		BeanMetaData<Client> metaData = manager.getBeanMetaData( Client.class );
-		BeanDescriptor beanDescriptor = metaData.getBeanDescriptor();
+		BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass( Client.class );
 
 		Map<String, Object> validators = new HashMap<>();
 
