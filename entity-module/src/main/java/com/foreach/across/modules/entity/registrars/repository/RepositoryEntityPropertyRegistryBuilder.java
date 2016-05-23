@@ -21,10 +21,6 @@ import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
-import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
-import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
-import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
-import org.hibernate.validator.internal.metadata.provider.MetaDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +31,12 @@ import org.springframework.data.repository.core.support.RepositoryFactoryInforma
 
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
+import javax.validation.ValidatorFactory;
 import javax.validation.metadata.BeanDescriptor;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Creates a {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry} for a
@@ -50,10 +50,8 @@ public class RepositoryEntityPropertyRegistryBuilder
 
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityPropertyRegistryBuilder.class );
 
-	private final BeanMetaDataManager metaDataManager = new BeanMetaDataManager(
-			new ConstraintHelper(), Collections.<MetaDataProvider>emptyList()
-	);
-
+	@Autowired
+	private ValidatorFactory validatorFactory;
 	@Autowired
 	private EntityPropertyRegistries entityPropertyRegistries;
 
@@ -188,8 +186,8 @@ public class RepositoryEntityPropertyRegistryBuilder
 	}
 
 	private void setBeanDescriptor( MutableEntityConfiguration<?> entityConfiguration ) {
-		BeanMetaData<?> metaData = metaDataManager.getBeanMetaData( entityConfiguration.getEntityType() );
-		BeanDescriptor beanDescriptor = metaData.getBeanDescriptor();
+		BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass(
+				entityConfiguration.getEntityType() );
 
 		if ( beanDescriptor != null ) {
 			entityConfiguration.addAttribute( BeanDescriptor.class, beanDescriptor );
