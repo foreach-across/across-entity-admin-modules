@@ -237,6 +237,15 @@ public void configure( EntitiesConfigurationBuilder configuration ) {
 }
 ----
 
+=== Association naming and location
+Associations are added to the `EntityConfiguration` for which it makes most sense to manage them from a UI perspective.
+The association naming however is done according to the entity class and property names.
+
+Example:
+* entity `Group`
+* entity `User` has a one to many with `Group` on property *group*
+* association *user.group* will be created on the entity configuration of `Group`
+
 == Entity views
 
 === List views

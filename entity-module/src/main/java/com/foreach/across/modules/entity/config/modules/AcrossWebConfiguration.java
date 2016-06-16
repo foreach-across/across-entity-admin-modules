@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityModuleSettings;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.controllers.ViewRequestValidator;
@@ -137,6 +138,7 @@ public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 	}
 
 	@Bean
+	@Exposed
 	protected ViewRequestValidator viewRequestValidator() {
 		return new ViewRequestValidator();
 	}
