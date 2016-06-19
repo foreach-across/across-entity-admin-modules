@@ -30,7 +30,7 @@ public class EntityModelImpl<T, ID extends Serializable> implements EntityModel<
 {
 	private EntityFactory<T> entityFactory;
 	private EntityInformation<T, ID> entityInformation;
-	private RepositoryInvoker crudInvoker;
+	private RepositoryInvoker repositoryInvoker;
 	private Printer<T> labelPrinter;
 
 	public void setEntityFactory( EntityFactory<T> entityFactory ) {
@@ -41,8 +41,8 @@ public class EntityModelImpl<T, ID extends Serializable> implements EntityModel<
 		this.entityInformation = entityInformation;
 	}
 
-	public void setCrudInvoker( RepositoryInvoker crudInvoker ) {
-		this.crudInvoker = crudInvoker;
+	public void setRepositoryInvoker( RepositoryInvoker repositoryInvoker ) {
+		this.repositoryInvoker = repositoryInvoker;
 	}
 
 	public void setLabelPrinter( Printer<T> labelPrinter ) {
@@ -72,12 +72,17 @@ public class EntityModelImpl<T, ID extends Serializable> implements EntityModel<
 
 	@Override
 	public T findOne( ID id ) {
-		return crudInvoker.invokeFindOne( id );
+		return repositoryInvoker.invokeFindOne( id );
 	}
 
 	@Override
 	public T save( T entity ) {
-		return crudInvoker.invokeSave( entity );
+		return repositoryInvoker.invokeSave( entity );
+	}
+
+	@Override
+	public void delete( T entity ) {
+		repositoryInvoker.invokeDelete( getId( entity ) );
 	}
 
 	@Override

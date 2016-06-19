@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
+import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
@@ -96,9 +97,13 @@ public class OneToManyEntityAssociationBuilder implements EntityAssociationBuild
 		                                "entityViews.listView",
 		                                "entityViews" );
 
-		EntityQueryExecutor queryExecutor = to.getAttribute( EntityQueryExecutor.class );
+		EntityQueryExecutor<?> queryExecutor = to.getAttribute( EntityQueryExecutor.class );
 
 		if ( queryExecutor != null ) {
+			association.setAttribute(
+					AssociatedEntityQueryExecutor.class,
+					new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), queryExecutor )
+			);
 			viewFactory.setPageFetcher(
 					new AssociationListViewPageFetcher( association.getTargetProperty(), queryExecutor )
 			);

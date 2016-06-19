@@ -47,6 +47,7 @@ public class RepositoryEntityViewsBuilder
 	public void buildViews( MutableEntityConfiguration entityConfiguration ) {
 		buildCreateView( entityConfiguration );
 		buildUpdateView( entityConfiguration );
+		buildDeleteView( entityConfiguration );
 
 		// todo: support regular repository to be used instead of specific CrudRepository interface (use repo information)
 		buildListView( entityConfiguration, (CrudRepository) entityConfiguration.getAttribute( Repository.class ) );
@@ -76,6 +77,14 @@ public class RepositoryEntityViewsBuilder
 		viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
 
 		entityConfiguration.registerView( EntityFormView.UPDATE_VIEW_NAME, viewFactory );
+	}
+
+	private void buildDeleteView( MutableEntityConfiguration entityConfiguration ) {
+		EntityDeleteViewFactory viewFactory = beanFactory.getBean( EntityDeleteViewFactory.class );
+		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.DELETE_VIEW_NAME, "entityViews" );
+		viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
+
+		entityConfiguration.registerView( EntityFormView.DELETE_VIEW_NAME, viewFactory );
 	}
 
 	private void buildListView( MutableEntityConfiguration entityConfiguration, CrudRepository repository ) {

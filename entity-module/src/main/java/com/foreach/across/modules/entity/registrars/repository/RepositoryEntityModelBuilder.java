@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
-import org.springframework.data.repository.support.CrudInvokerUtils;
+import org.springframework.data.repository.support.RepositoryInvokerUtils;
 import org.springframework.format.Printer;
 
 import java.util.Locale;
@@ -44,9 +44,9 @@ public class RepositoryEntityModelBuilder
 		Repository<T, ?> repository = entityConfiguration.getAttribute( Repository.class );
 
 		EntityModelImpl entityModel = new EntityModelImpl<>();
-		entityModel.setCrudInvoker(
-				CrudInvokerUtils.createCrudInvoker( repositoryFactoryInformation.getRepositoryInformation(),
-				                                    repository, mvcConversionService )
+		entityModel.setRepositoryInvoker(
+				RepositoryInvokerUtils.createRepositoryInvoker( repositoryFactoryInformation.getRepositoryInformation(),
+				                                                repository, mvcConversionService )
 		);
 		entityModel.setEntityFactory(
 				new PersistentEntityFactory( repositoryFactoryInformation.getPersistentEntity() )

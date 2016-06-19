@@ -25,10 +25,7 @@ import com.foreach.across.modules.entity.controllers.association.AssociatedEntit
 import com.foreach.across.modules.entity.controllers.association.AssociatedEntityListController;
 import com.foreach.across.modules.entity.controllers.association.AssociatedEntityUpdateController;
 import com.foreach.across.modules.entity.controllers.association.AssociatedEntityViewController;
-import com.foreach.across.modules.entity.controllers.entity.EntityCreateController;
-import com.foreach.across.modules.entity.controllers.entity.EntityListController;
-import com.foreach.across.modules.entity.controllers.entity.EntityUpdateController;
-import com.foreach.across.modules.entity.controllers.entity.EntityViewController;
+import com.foreach.across.modules.entity.controllers.entity.*;
 import com.foreach.across.modules.entity.handlers.MenuEventsHandler;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
@@ -71,6 +68,11 @@ public class AdminWebConfiguration implements EntityConfigurer
 	@Bean
 	public EntityUpdateController entitySaveController() {
 		return new EntityUpdateController();
+	}
+
+	@Bean
+	public EntityDeleteController entityDeleteController() {
+		return new EntityDeleteController();
 	}
 
 	@Bean

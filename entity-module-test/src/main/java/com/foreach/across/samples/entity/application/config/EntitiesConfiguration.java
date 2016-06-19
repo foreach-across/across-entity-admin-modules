@@ -13,32 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.registry;
 
-import org.springframework.data.repository.core.EntityInformation;
+package com.foreach.across.samples.entity.application.config;
 
-import java.io.Serializable;
-import java.util.Locale;
+import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import com.foreach.across.samples.entity.EntityModuleTestApplication;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Arne Vandamme
+ * @since 1.2.0
  */
-public interface EntityModel<T, ID extends Serializable> extends EntityInformation<T, ID>
+@Configuration
+@EnableAcrossJpaRepositories(basePackageClasses = EntityModuleTestApplication.class)
+public class EntitiesConfiguration
 {
-	/**
-	 * @return The default generated label for an entity.
-	 */
-	String getLabel( T entity );
-
-	String getLabel( T entity, Locale locale );
-
-	T createNew( Object... args );
-
-	T createDto( T entity );
-
-	T findOne( ID id );
-
-	T save( T entity );
-
-	void delete( T entity );
 }

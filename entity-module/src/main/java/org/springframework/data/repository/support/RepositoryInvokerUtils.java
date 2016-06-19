@@ -10,22 +10,10 @@ import java.io.Serializable;
 /**
  * Helper to provide access to package protected classes from Spring data commons.
  */
-public class CrudInvokerUtils
+public class RepositoryInvokerUtils
 {
-	public static <T> RepositoryInvoker crudRepositoryInvoker( CrudRepository<Object, Serializable> repository,
-	                                                           RepositoryInformation repositoryInformation,
-	                                                           ConversionService conversionService ) {
-		return new CrudRepositoryInvoker( repository, repositoryInformation, conversionService );
-	}
-
-	public static <T> RepositoryInvoker reflectionRepositoryInvoker( Repository<T, Serializable> repository,
-	                                                                 RepositoryInformation repositoryInformation,
-	                                                                 ConversionService conversionService ) {
-		return new ReflectionRepositoryInvoker( repository, repositoryInformation, conversionService );
-	}
-
 	@SuppressWarnings("unchecked")
-	public static <T, ID extends Serializable> RepositoryInvoker createCrudInvoker(
+	public static <T, ID extends Serializable> RepositoryInvoker createRepositoryInvoker(
 			RepositoryInformation repositoryInformation,
 			Repository<T, ID> repository,
 			ConversionService conversionService
@@ -39,5 +27,17 @@ public class CrudInvokerUtils
 			                                    repositoryInformation,
 			                                    conversionService );
 		}
+	}
+
+	private static <T> RepositoryInvoker crudRepositoryInvoker( CrudRepository<Object, Serializable> repository,
+	                                                            RepositoryInformation repositoryInformation,
+	                                                            ConversionService conversionService ) {
+		return new CrudRepositoryInvoker( repository, repositoryInformation, conversionService );
+	}
+
+	private static <T> RepositoryInvoker reflectionRepositoryInvoker( Repository<T, Serializable> repository,
+	                                                                  RepositoryInformation repositoryInformation,
+	                                                                  ConversionService conversionService ) {
+		return new ReflectionRepositoryInvoker( repository, repositoryInformation, conversionService );
 	}
 }

@@ -23,11 +23,13 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="entity-module" />
+        <module name="entity-module-test" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="entity-module" target="1.8" />
       <module name="entity-module-project" target="1.8" />
+      <module name="entity-module-test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

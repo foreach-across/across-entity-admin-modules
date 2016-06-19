@@ -17,7 +17,6 @@ package com.foreach.across.modules.entity.registrars.repository;
 
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
-import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
@@ -38,7 +37,8 @@ import com.foreach.across.modules.entity.testmodules.springdata.repositories.Cli
 import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.test.AcrossTestWebConfiguration;
+import com.foreach.across.test.AcrossTestConfiguration;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,9 +52,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
@@ -67,8 +65,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@WebAppConfiguration
-@ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
+@AcrossWebAppConfiguration
 public class TestRepositoryEntityRegistrar
 {
 	@Autowired
@@ -259,6 +256,9 @@ public class TestRepositoryEntityRegistrar
 		assertNotNull( existing );
 		assertEquals( "Modified name", existing.getName() );
 		assertEquals( "Modified name", model.getLabel( existing ) );
+
+		model.delete( existing );
+		assertNull( model.findOne( 10L ) );
 	}
 
 	@Test
@@ -304,7 +304,7 @@ public class TestRepositoryEntityRegistrar
 	}
 
 	@Configuration
-	@AcrossTestWebConfiguration
+	@AcrossTestConfiguration
 	public static class Config implements AcrossContextConfigurer
 	{
 		@Override
@@ -319,7 +319,7 @@ public class TestRepositoryEntityRegistrar
 			context.addModule( hibernateModule );
 
 			SpringDataJpaModule springDataJpaModule = new SpringDataJpaModule();
-			springDataJpaModule.setExposeFilter( new ClassBeanFilter( Repository.class ) );
+			springDataJpaModule.expose( Repository.class );
 			context.addModule( springDataJpaModule );
 		}
 	}

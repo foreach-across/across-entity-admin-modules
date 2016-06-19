@@ -31,11 +31,24 @@
 	</button>
 </div>
 
+<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible" role="alert">
+	<span th:text="${messages.withNameSingular(errorMessage, entityConfiguration.getLabel(entity), errorDetails)}">
+		Error while updating entity.
+	</span>
+	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
+	</button>
+</div>
+
 <div class="tabbable filled">
 	<ul class="nav nav-tabs">
 		<li th:each="tab : ${entityMenu.items}" th:classappend="${tab.selected}? 'active'">
 			<a th:href="@{${tab.url}}" th:text="${tab.title}">tab menu</a>
 		</li>
+		<!--
+		<li class="pull-right active">
+			<a href=""><span class="glyphicon glyphicon-remove"></span></a>
+		</li>
+		-->
 	</ul>
 
 	<div class="tab-content">

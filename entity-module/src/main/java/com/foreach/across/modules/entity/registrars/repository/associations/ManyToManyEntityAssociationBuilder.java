@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
+import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
@@ -152,10 +153,14 @@ public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuil
 		}
 		else {
 			// Reverse association
-			EntityQueryExecutor queryExecutor = association.getTargetEntityConfiguration()
-			                                                     .getAttribute( EntityQueryExecutor.class );
+			EntityQueryExecutor<?> queryExecutor = association.getTargetEntityConfiguration()
+			                                                  .getAttribute( EntityQueryExecutor.class );
 
 			if ( queryExecutor != null ) {
+				association.setAttribute(
+						AssociatedEntityQueryExecutor.class,
+						new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), queryExecutor )
+				);
 				return new AssociationListViewPageFetcher( association.getTargetProperty(), queryExecutor );
 			}
 		}
