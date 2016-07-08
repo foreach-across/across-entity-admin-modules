@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,20 +27,16 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.mysema.util.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
-import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
-import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
-import org.hibernate.validator.internal.metadata.provider.MetaDataProvider;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mapping.PersistentProperty;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,12 +59,14 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	@Autowired
 	protected EntityViewElementBuilderFactory builderFactory;
 
+	protected LocalValidatorFactoryBean validatorFactory = new LocalValidatorFactoryBean();
 	protected ViewElementBuilderContext builderContext;
 	protected Map<String, EntityPropertyDescriptor> properties = new HashMap<>();
 
 	@Before
 	@SuppressWarnings("unchecked")
 	public void before() {
+		validatorFactory.afterPropertiesSet();
 		reset( entityConfiguration, registry );
 
 		builderContext = spy( new ViewElementBuilderContextImpl() );
@@ -79,12 +77,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 		when( builderContext.getAttribute( EntityMessageCodeResolver.class ) ).thenReturn( codeResolver );
 
 		if ( properties.isEmpty() ) {
-			BeanMetaDataManager manager = new BeanMetaDataManager(
-					new ConstraintHelper(), Collections.<MetaDataProvider>emptyList()
-			);
-
-			BeanMetaData<?> metaData = manager.getBeanMetaData( getTestClass() );
-			BeanDescriptor beanDescriptor = metaData.getBeanDescriptor();
+			BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass( getTestClass() );
 
 			for ( Field field : ReflectionUtils.getFields( getTestClass() ) ) {
 				String propertyName = field.getName();

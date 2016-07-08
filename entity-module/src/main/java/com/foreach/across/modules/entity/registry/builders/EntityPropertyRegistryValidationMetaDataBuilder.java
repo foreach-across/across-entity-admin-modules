@@ -19,15 +19,12 @@ import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
-import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
-import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
-import org.hibernate.validator.internal.metadata.provider.MetaDataProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.validation.ValidatorFactory;
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author niels
@@ -36,15 +33,11 @@ import java.util.List;
 @OrderInModule(3)
 public class EntityPropertyRegistryValidationMetaDataBuilder implements EntityPropertyRegistryBuilder
 {
-	private final List<MetaDataProvider> metaDataProvider = Collections.emptyList();
-
-	private final BeanMetaDataManager metaDataManager = new BeanMetaDataManager(
-			new ConstraintHelper(),
-			metaDataProvider );
+	@Autowired
+	private ValidatorFactory validatorFactory;
 
 	public void buildRegistry( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
-		BeanMetaData<?> metaData = metaDataManager.getBeanMetaData( entityType );
-		BeanDescriptor beanDescriptor = metaData.getBeanDescriptor();
+		BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass( entityType );
 
 		if ( beanDescriptor != null ) {
 			for ( EntityPropertyDescriptor descriptor : registry.getRegisteredDescriptors() ) {

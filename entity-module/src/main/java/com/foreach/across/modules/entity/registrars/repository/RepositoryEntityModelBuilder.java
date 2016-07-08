@@ -46,7 +46,7 @@ public class RepositoryEntityModelBuilder
 		EntityModelImpl entityModel = new EntityModelImpl<>();
 		entityModel.setCrudInvoker(
 				CrudInvokerUtils.createCrudInvoker( repositoryFactoryInformation.getRepositoryInformation(),
-				                                    repository )
+				                                    repository, mvcConversionService )
 		);
 		entityModel.setEntityFactory(
 				new PersistentEntityFactory( repositoryFactoryInformation.getPersistentEntity() )
