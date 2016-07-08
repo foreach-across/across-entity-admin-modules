@@ -36,6 +36,7 @@ import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.test.AcrossTestConfiguration;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,9 +45,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Persistable;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -56,8 +55,7 @@ import static org.mockito.Mockito.mock;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@WebAppConfiguration
-@ContextConfiguration(classes = TestCustomizingEntityConfiguration.Config.class)
+@AcrossWebAppConfiguration(classes = TestCustomizingEntityConfiguration.Config.class)
 public class TestCustomizingEntityConfiguration
 {
 	@Autowired

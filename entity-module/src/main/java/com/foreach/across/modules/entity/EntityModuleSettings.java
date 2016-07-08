@@ -23,11 +23,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "entityModule")
 public class EntityModuleSettings
 {
+	public static final String REGISTER_ENTITY_VALIDATOR_FOR_MVC = "entityModule.entityValidatorRegisterForMvc";
+
 	/***
 	 * Should the entity Validator instance be registered as the default validator for MVC databinding
 	 */
-	public static final String REGISTER_ENTITY_VALIDATOR_FOR_MVC = "entityModule.entityValidatorRegisterForMvc";
-
 	private boolean entityValidatorRegisterForMvc = true;
 
 	public boolean isEntityValidatorRegisterForMvc() {
