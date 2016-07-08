@@ -15,10 +15,7 @@
  */
 package com.foreach.across.modules.entity.it;
 
-import com.foreach.across.config.AcrossContextConfigurer;
-import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.EmptyAcrossModule;
-import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
@@ -38,17 +35,17 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.test.AcrossTestWebConfiguration;
+import com.foreach.across.test.AcrossTestConfiguration;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Persistable;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -58,8 +55,7 @@ import static org.mockito.Mockito.mock;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@WebAppConfiguration
-@ContextConfiguration(classes = TestCustomizingEntityConfiguration.Config.class)
+@AcrossWebAppConfiguration(classes = TestCustomizingEntityConfiguration.Config.class)
 public class TestCustomizingEntityConfiguration
 {
 	@Autowired
@@ -162,26 +158,28 @@ public class TestCustomizingEntityConfiguration
 	}
 
 	@Configuration
-	@AcrossTestWebConfiguration
-	protected static class Config implements AcrossContextConfigurer
+	@AcrossTestConfiguration(modules = { EntityModule.NAME, AdminWebModule.NAME, SpringSecurityModule.NAME })
+	protected static class Config
 	{
-		@Override
-		public void configure( AcrossContext context ) {
-			context.addModule( new SpringSecurityModule() );
-			context.addModule( new AdminWebModule() );
-			context.addModule( new EntityModule() );
-
+		@Bean
+		public AcrossHibernateJpaModule acrossHibernateJpaModule() {
 			AcrossHibernateJpaModule hibernateModule = new AcrossHibernateJpaModule();
 			hibernateModule.setHibernateProperty( "hibernate.hbm2ddl.auto", "create" );
-			context.addModule( hibernateModule );
+			return hibernateModule;
+		}
 
+		@Bean
+		public SpringDataJpaModule springDataJpaModule() {
 			SpringDataJpaModule springDataJpaModule = new SpringDataJpaModule();
-			springDataJpaModule.setExposeFilter( new ClassBeanFilter( ClientRepository.class ) );
-			context.addModule( springDataJpaModule );
+			springDataJpaModule.expose( ClientRepository.class );
+			return springDataJpaModule;
+		}
 
+		@Bean
+		public EmptyAcrossModule customModule() {
 			EmptyAcrossModule customModule = new EmptyAcrossModule( "customizingModule" );
 			customModule.addApplicationContextConfigurer( ModuleConfig.class );
-			context.addModule( customModule );
+			return customModule;
 		}
 	}
 

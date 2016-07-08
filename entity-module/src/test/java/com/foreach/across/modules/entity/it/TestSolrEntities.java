@@ -15,9 +15,6 @@
  */
 package com.foreach.across.modules.entity.it;
 
-import com.foreach.across.config.AcrossContextConfigurer;
-import com.foreach.across.core.AcrossContext;
-import com.foreach.across.core.filters.ClassBeanFilter;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.testmodules.solr.SolrTestModule;
@@ -26,15 +23,15 @@ import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaMod
 import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.test.AcrossTestWebConfiguration;
+import com.foreach.across.test.AcrossTestConfiguration;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -43,8 +40,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@WebAppConfiguration
-@ContextConfiguration(classes = TestSolrEntities.Config.class)
+@AcrossWebAppConfiguration
 public class TestSolrEntities
 {
 	@Autowired(required = false)
@@ -60,26 +56,28 @@ public class TestSolrEntities
 	}
 
 	@Configuration
-	@AcrossTestWebConfiguration
-	protected static class Config implements AcrossContextConfigurer
+	@AcrossTestConfiguration(modules = { SpringSecurityModule.NAME, AdminWebModule.NAME, EntityModule.NAME })
+	protected static class Config
 	{
-		@Override
-		public void configure( AcrossContext context ) {
-			context.addModule( new SpringSecurityModule() );
-			context.addModule( new AdminWebModule() );
-			context.addModule( new EntityModule() );
-
+		@Bean
+		public AcrossHibernateJpaModule acrossHibernateJpaModule() {
 			AcrossHibernateJpaModule hibernateModule = new AcrossHibernateJpaModule();
 			hibernateModule.setHibernateProperty( "hibernate.hbm2ddl.auto", "create" );
-			context.addModule( hibernateModule );
+			return hibernateModule;
+		}
 
+		@Bean
+		public SpringDataJpaModule springDataJpaModule() {
 			SpringDataJpaModule springDataJpaModule = new SpringDataJpaModule();
-			springDataJpaModule.setExposeFilter( new ClassBeanFilter( ClientRepository.class ) );
-			context.addModule( springDataJpaModule );
+			springDataJpaModule.expose( ClientRepository.class );
+			return springDataJpaModule;
+		}
 
+		@Bean
+		public SolrTestModule solrTestModule() {
 			SolrTestModule solrTestModule = new SolrTestModule();
-			solrTestModule.setExposeFilter( new ClassBeanFilter( ProductRepository.class ) );
-			context.addModule( solrTestModule );
+			solrTestModule.expose( ProductRepository.class );
+			return solrTestModule;
 		}
 	}
 }
