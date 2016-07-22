@@ -17,24 +17,32 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.config.EnableAcrossContext;
+import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.events.BuildEntityDeleteViewEvent;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.ViewElements;
 import com.foreach.across.test.AcrossWebAppConfiguration;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ResolvableType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.ui.ModelMap;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyVararg;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
@@ -43,28 +51,90 @@ import static org.mockito.Mockito.when;
 @AcrossWebAppConfiguration
 public class TestEntityDeleteViewFactory
 {
+	private final String entity = "my entity";
+
 	@Autowired
 	private EntityDeleteViewFactory<ViewCreationContext> deleteViewFactory;
 
+	@Autowired
+	private AcrossEventPublisher eventPublisher;
+
+	private ModelMap model;
+
+	@Before
+	public void prepareTest() {
+		reset( eventPublisher );
+
+		model = new ModelMap();
+		model.addAttribute( EntityView.ATTRIBUTE_ENTITY, entity );
+	}
+
 	@Test
-	public void createSimpleDeleteView() {
+	public void deleteIsPossibleByDefault() {
+		AtomicBoolean eventPublished = new AtomicBoolean( false );
+
+		doAnswer(
+				invocation -> {
+					BuildEntityDeleteViewEvent event = (BuildEntityDeleteViewEvent) invocation.getArguments()[0];
+					eventPublished.set( true );
+					assertArrayEquals(
+							new ResolvableType[] { ResolvableType.forClass( String.class ) },
+							event.getEventGenericTypes()
+					);
+					assertSame( entity, event.getEntity() );
+					assertFalse( event.isDeleteDisabled() );
+					return null;
+				}
+		).when( eventPublisher ).publish( any( BuildEntityDeleteViewEvent.class ) );
+
+		EntityView view = buildView();
+
+		assertTrue( eventPublished.get() );
+		ViewElements viewElements = view.getViewElements();
+
+		ViewElement element = viewElements.get( "btn-delete" );
+		assertNotNull( element );
+	}
+
+	@Test
+	public void deleteSuppressedThroughEvent() {
+		doAnswer(
+				invocation -> {
+					BuildEntityDeleteViewEvent event = (BuildEntityDeleteViewEvent) invocation.getArguments()[0];
+					event.setDeleteDisabled( true );
+					return null;
+				}
+		).when( eventPublisher ).publish( any( BuildEntityDeleteViewEvent.class ) );
+
+		EntityView view = buildView();
+		assertNull( view.getViewElements().get( "btn-delete" ) );
+	}
+
+	private EntityView buildView() {
 		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 
 		ViewCreationContext creationContext = mock( ViewCreationContext.class );
 		when( creationContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 
-		ModelMap model = new ModelMap();
-		deleteViewFactory.prepareModelAndCommand( "deleteView", creationContext, mock( EntityViewCommand.class ),
-		                                          model );
-		EntityView view = deleteViewFactory.create( "deleteView", creationContext, model );
+		EntityViewCommand cmd = mock( EntityViewCommand.class );
 
+		deleteViewFactory.prepareModelAndCommand( "deleteView", creationContext, cmd, model );
+		EntityView view = deleteViewFactory.create( "deleteView", creationContext, model );
 		assertNotNull( view );
+		assertNotNull( view.getViewElements() );
+
+		return view;
 	}
 
 	@Configuration
 	@EnableAcrossContext(modules = BootstrapUiModule.NAME)
 	protected static class Config
 	{
+		@Bean
+		public AcrossEventPublisher eventPublisher() {
+			return mock( AcrossEventPublisher.class );
+		}
+
 		@Bean
 		public EntityDeleteViewFactory<ViewCreationContext> entityDeleteViewFactory() {
 			EntityMessageCodeResolver messageCodeResolver = mock( EntityMessageCodeResolver.class );

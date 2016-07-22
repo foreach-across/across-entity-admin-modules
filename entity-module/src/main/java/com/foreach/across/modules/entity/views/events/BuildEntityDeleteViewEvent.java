@@ -32,12 +32,12 @@ import org.springframework.core.ResolvableType;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class BuildDeleteViewEvent<T> implements ParameterizedAcrossEvent
+public class BuildEntityDeleteViewEvent<T> implements ParameterizedAcrossEvent
 {
 	private final T entity;
 	private boolean deleteDisabled;
 
-	public BuildDeleteViewEvent( T entity ) {
+	public BuildEntityDeleteViewEvent( T entity ) {
 		this.entity = entity;
 	}
 

@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
@@ -25,9 +26,11 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.events.BuildEntityDeleteViewEvent;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.web.resource.WebResourceUtils;
+import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
@@ -43,8 +46,18 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 {
 	public static final String FORM_NAME = "entityDeleteForm";
 
+	private BootstrapUiFactory bootstrapUi;
+	private AcrossEventPublisher eventPublisher;
+
 	@Autowired
-	protected BootstrapUiFactory bootstrapUi;
+	public void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
+		this.bootstrapUi = bootstrapUiFactory;
+	}
+
+	@Autowired
+	public void setEventPublisher( AcrossEventPublisher eventPublisher ) {
+		this.eventPublisher = eventPublisher;
+	}
 
 	@Override
 	protected EntityView createEntityView( ModelMap model ) {
@@ -62,11 +75,15 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		EntityLinkBuilder linkBuilder = view.getEntityLinkBuilder();
 		EntityMessages messages = view.getEntityMessages();
 
+		BuildEntityDeleteViewEvent viewConfiguration = buildViewConfiguration( view );
+
 		NodeViewElementBuilder list = bootstrapUi.node( "ul" );
 
 		for ( EntityAssociation association : ( (EntityConfiguration<?>) entityConfiguration ).getAssociations() ) {
 			dod( list, association, linkBuilder, view.getEntity() );
 		}
+
+		ContainerViewElementBuilder buttons = buildButtons( linkBuilder, messages, viewConfiguration );
 
 		view.setViewElements(
 				bootstrapUi.form()
@@ -82,7 +99,8 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 								                                 .name( EntityFormViewFactory.FORM_LEFT )
 								                                 .add(
 										                                 bootstrapUi
-												                                 .text( "Are you sure you want to delete?" )
+												                                 .text( messages.withNameSingular(
+														                                 "views.deleteView.confirmation" ) )
 								                                 )
 								                                 .add( list )
 						                      )
@@ -91,30 +109,40 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 								                                 .name( EntityFormViewFactory.FORM_RIGHT )
 						                      )
 				           )
-				           .add(
-						           bootstrapUi
-								           .container()
-								           .name( "buttons" )
-								           .add(
-										           bootstrapUi.button()
-										                      .name( "btn-delete" )
-										                      .style( Style.DANGER )
-										                      .submit()
-										                      .text(
-												                      messages.messageWithFallback( "buttons.delete" )
-										                      )
-								           )
-								           .add(
-										           bootstrapUi.button()
-										                      .name( "btn-cancel" )
-										                      .link( linkBuilder.overview() )
-										                      .text(
-												                      messages.messageWithFallback( "actions.cancel" )
-										                      )
-								           )
-				           )
+				           .add( buttons )
 				           .build( builderContext )
 		);
+	}
+
+	private ContainerViewElementBuilder buildButtons( EntityLinkBuilder linkBuilder,
+	                                                  EntityMessages messages,
+	                                                  BuildEntityDeleteViewEvent viewConfiguration ) {
+		ContainerViewElementBuilder buttons = bootstrapUi.container().name( "buttons" );
+		if ( !viewConfiguration.isDeleteDisabled() ) {
+			buttons.add(
+					bootstrapUi.button()
+					           .name( "btn-delete" )
+					           .style( Style.DANGER )
+					           .submit()
+					           .text( messages.messageWithFallback( "buttons.delete" ) )
+			);
+		}
+		buttons.add(
+				bootstrapUi.button()
+				           .name( "btn-cancel" )
+				           .link( linkBuilder.overview() )
+				           .text( messages.messageWithFallback( "actions.cancel" ) )
+		);
+		return buttons;
+	}
+
+	private BuildEntityDeleteViewEvent buildViewConfiguration( EntityView view ) {
+		BuildEntityDeleteViewEvent<?> event = new BuildEntityDeleteViewEvent<>( view.getEntity() );
+		event.setDeleteDisabled( false );
+
+		eventPublisher.publish( event );
+
+		return event;
 	}
 
 	private void dod( NodeViewElementBuilder list,
