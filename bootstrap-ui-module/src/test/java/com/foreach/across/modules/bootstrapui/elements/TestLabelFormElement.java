@@ -89,8 +89,8 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 		label.setText( "Textbox title" );
 
 		ContainerViewElement container = new ContainerViewElement();
-		container.add( textbox );
-		container.add( label );
+		container.addChild( textbox );
+		container.addChild( label );
 
 		renderAndExpect(
 				container,
@@ -109,8 +109,8 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 		label.setText( "Textbox title" );
 
 		ContainerViewElement container = new ContainerViewElement();
-		container.add( label );
-		container.add( textbox );
+		container.addChild( label );
+		container.addChild( textbox );
 
 		renderAndExpect(
 				container,
@@ -127,7 +127,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 		LabelFormElement label = new LabelFormElement();
 		label.setTarget( textbox );
 		label.setText( "Textbox title" );
-		label.add( textbox );
+		label.addChild( textbox );
 
 		renderAndExpect(
 				label,
@@ -141,7 +141,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void simpleFormElementRenderedAsChild() {
 		LabelFormElement label = new LabelFormElement();
-		label.add( new TextboxFormElement() );
+		label.addChild( new TextboxFormElement() );
 
 		renderAndExpect(
 				label,
@@ -162,8 +162,8 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 		label.setText( "title" );
 
 		ContainerViewElement container = new ContainerViewElement();
-		container.add( label );
-		container.add( staticContent );
+		container.addChild( label );
+		container.addChild( staticContent );
 
 		renderAndExpect(
 				container,

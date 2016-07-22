@@ -15,13 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.core.support.SingletonIterator;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import org.springframework.util.CompositeIterator;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Arne Vandamme
@@ -96,14 +95,15 @@ public class FieldsetFormElement extends AbstractNodeViewElement
 	}
 
 	@Override
-	public Iterator<ViewElement> iterator() {
-		if ( legend != null && legend.isEmpty() ) {
-			return super.iterator();
+	public List<ViewElement> getChildren() {
+		List<ViewElement> children = super.getChildren();
+		if ( legend != null && !legend.hasChildren() ) {
+			return children;
 		}
 
-		CompositeIterator<ViewElement> elements = new CompositeIterator<>();
-		elements.add( new SingletonIterator<>( legend ) );
-		elements.add( super.iterator() );
+		List<ViewElement> elements = new ArrayList<>( children.size() + 1 );
+		elements.add( legend );
+		elements.addAll( children );
 
 		return elements;
 	}
@@ -127,8 +127,8 @@ public class FieldsetFormElement extends AbstractNodeViewElement
 		}
 
 		@Override
-		public boolean isEmpty() {
-			return super.isEmpty() && text == null;
+		public boolean hasChildren() {
+			return super.hasChildren() || text != null;
 		}
 	}
 }

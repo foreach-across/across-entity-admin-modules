@@ -18,7 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.format.number.CurrencyFormatter;
+import org.springframework.format.number.CurrencyStyleFormatter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -158,7 +158,7 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 		if ( currency != null ) {
 			setFormat( Format.CURRENCY );
 
-			CurrencyFormatter currencyFormatter = new CurrencyFormatter();
+			CurrencyStyleFormatter currencyFormatter = new CurrencyStyleFormatter();
 			currencyFormatter.setCurrency( currency );
 			currencyFormatter.setFractionDigits( 0 );
 

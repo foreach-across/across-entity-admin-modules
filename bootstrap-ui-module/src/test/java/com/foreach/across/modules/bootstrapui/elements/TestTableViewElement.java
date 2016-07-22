@@ -47,7 +47,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void customTemplateChild() {
 		TableViewElement table = new TableViewElement();
-		table.add( new TemplateViewElement( CUSTOM_TEMPLATE ) );
+		table.addChild( new TemplateViewElement( CUSTOM_TEMPLATE ) );
 
 		renderAndExpect( table, "<table class='table'>" + CUSTOM_TEMPLATE_OUTPUT + "</table>" );
 	}
@@ -93,15 +93,15 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 		TableViewElement table = new TableViewElement();
 
 		TableViewElement.Row headerRow = new TableViewElement.Row();
-		headerRow.add( new TableViewElement.Cell() );
+		headerRow.addChild( new TableViewElement.Cell() );
 
-		table.add( row( heading( "heading 1" ), heading( "heading 2" ) ) );
-		table.add( row( cell( "one" ), cell( "two" ) ) );
+		table.addChild( row( heading( "heading 1" ), heading( "heading 2" ) ) );
+		table.addChild( row( cell( "one" ), cell( "two" ) ) );
 
 		TableViewElement.Cell warning = cell( "three" );
 		warning.setStyle( Style.TableCell.WARNING );
 
-		table.add( row( warning, cell( "four" ) ) );
+		table.addChild( row( warning, cell( "four" ) ) );
 
 		TableViewElement.Cell doubleCell = cell( "five" );
 		doubleCell.setColumnSpan( 2 );
@@ -109,7 +109,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 		TableViewElement.Row activeRow = row( doubleCell );
 		activeRow.setStyle( Style.ACTIVE );
 
-		table.add( activeRow );
+		table.addChild( activeRow );
 
 		renderAndExpect(
 				table,
@@ -125,11 +125,11 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void manualCaptionHeaderBodyFooterAndColGroup() {
 		TableViewElement table = new TableViewElement();
-		table.add( caption( "table caption" ) );
-		table.add( header( row( heading( "heading 1" ), heading( "heading 2" ) ) ) );
-		table.add( body( row( cell( "one" ), cell( "two" ) ) ) );
-		table.add( footer() );
-		table.add( colgroup() );
+		table.addChild( caption( "table caption" ) );
+		table.addChild( header( row( heading( "heading 1" ), heading( "heading 2" ) ) ) );
+		table.addChild( body( row( cell( "one" ), cell( "two" ) ) ) );
+		table.addChild( footer() );
+		table.addChild( colgroup() );
 
 		renderAndExpect(
 				table,
@@ -181,7 +181,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 		column.setSpan( 2 );
 		column.setAttribute( "class", "column-class" );
 
-		columnGroup.add( column );
+		columnGroup.addChild( column );
 
 		return columnGroup;
 	}
@@ -197,7 +197,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 		TableViewElement.Header header = new TableViewElement.Header();
 
 		for ( TableViewElement.Row row : rows ) {
-			header.add( row );
+			header.addChild( row );
 		}
 
 		return header;
@@ -207,7 +207,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 		TableViewElement.Footer footer = new TableViewElement.Footer();
 
 		for ( TableViewElement.Row row : rows ) {
-			footer.add( row );
+			footer.addChild( row );
 		}
 
 		return footer;
@@ -217,7 +217,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 		TableViewElement.Body body = new TableViewElement.Body();
 
 		for ( TableViewElement.Row row : rows ) {
-			body.add( row );
+			body.addChild( row );
 		}
 
 		return body;
@@ -227,7 +227,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 		TableViewElement.Row row = new TableViewElement.Row();
 
 		for ( TableViewElement.Cell cell : cells ) {
-			row.add( cell );
+			row.addChild( cell );
 		}
 
 		return row;
@@ -243,7 +243,7 @@ public class TestTableViewElement extends AbstractBootstrapViewElementTest
 
 	private TableViewElement.Cell cell( String text ) {
 		TableViewElement.Cell cell = new TableViewElement.Cell();
-		cell.add( new TextViewElement( text ) );
+		cell.addChild( new TextViewElement( text ) );
 
 		return cell;
 	}

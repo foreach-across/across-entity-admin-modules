@@ -36,7 +36,7 @@ public class CheckboxFormElementThymeleafBuilder extends FormControlElementThyml
 	public List<Node> buildNodes( CheckboxFormElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		boolean showLabel = control.getText() != null || !control.isEmpty();
+		boolean showLabel = control.getText() != null || control.hasChildren();
 
 		Element label = createElement( "label" );
 		Element checkbox = createElement( "input" );
@@ -56,7 +56,7 @@ public class CheckboxFormElementThymeleafBuilder extends FormControlElementThyml
 				text( label, control.getText() );
 			}
 
-			for ( ViewElement child : control ) {
+			for ( ViewElement child : control.getChildren() ) {
 				for ( Node childNode : viewElementNodeFactory.buildNodes( child, arguments ) ) {
 					label.addChild( childNode );
 				}

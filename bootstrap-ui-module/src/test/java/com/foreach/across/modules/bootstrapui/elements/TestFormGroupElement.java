@@ -121,9 +121,9 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	public void customTagAppended() {
 		NodeViewElement div = new NodeViewElement( "div" );
 		div.setAttribute( "class", "some-class" );
-		div.add( new TextViewElement( "appended div" ) );
+		div.addChild( new TextViewElement( "appended div" ) );
 
-		group.add( div );
+		group.addChild( div );
 
 		renderAndExpect(
 				group,
@@ -134,7 +134,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"</div>"
 		);
 
-		groupWithInputGroup.add( div );
+		groupWithInputGroup.addChild( div );
 
 		renderAndExpect(
 				groupWithInputGroup,
@@ -153,7 +153,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	public void withHelpText() {
 		NodeViewElement help = new NodeViewElement( "p" );
 		help.setAttribute( "class", "help-block" );
-		help.add( new TextViewElement( "example help text" ) );
+		help.addChild( new TextViewElement( "example help text" ) );
 
 		group.setHelpBlock( help );
 
@@ -324,7 +324,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	public void inlineFormDoesNotVisuallyRenderHelp() {
 		NodeViewElement help = new NodeViewElement( "p" );
 		help.setAttribute( "class", "help-block" );
-		help.add( new TextViewElement( "example help text" ) );
+		help.addChild( new TextViewElement( "example help text" ) );
 
 		group.setHelpBlock( help );
 		group.setFormLayout( FormLayout.inline( true ) );
@@ -354,7 +354,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	public void horizontalFormLayout() {
 		NodeViewElement help = new NodeViewElement( "p" );
 		help.setAttribute( "class", "help-block" );
-		help.add( new TextViewElement( "example help text" ) );
+		help.addChild( new TextViewElement( "example help text" ) );
 
 		group.setFormLayout( FormLayout.horizontal( 2 ) );
 		group.setHelpBlock( help );
@@ -438,7 +438,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 		FormViewElement form = new FormViewElement();
 		form.setCommandAttribute( "item" );
-		form.add( group );
+		form.addChild( group );
 
 		renderAndExpect(
 				form,

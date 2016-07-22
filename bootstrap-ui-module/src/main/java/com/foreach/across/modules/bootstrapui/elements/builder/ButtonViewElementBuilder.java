@@ -244,7 +244,7 @@ public class ButtonViewElementBuilder extends AbstractNodeViewElementBuilder<But
 
 		if ( icon != null ) {
 			if ( iconRight ) {
-				button.add( icon.get( builderContext ) );
+				button.addChild( icon.get( builderContext ) );
 			}
 			else {
 				button.setIcon( icon.get( builderContext ) );

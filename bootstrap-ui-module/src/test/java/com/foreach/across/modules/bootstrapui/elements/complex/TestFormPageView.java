@@ -20,7 +20,7 @@ public class TestFormPageView extends AbstractBootstrapViewElementTest
 		nameGroup.setLabel( nameLabel );
 		nameGroup.setControl( name );
 
-		form.add( nameGroup );
+		form.addChild( nameGroup );
 
 		FormGroupElement buttons = new FormGroupElement();
 
@@ -28,16 +28,16 @@ public class TestFormPageView extends AbstractBootstrapViewElementTest
 		save.setType( ButtonViewElement.Type.BUTTON_SUBMIT );
 		save.setStyle( Style.Button.PRIMARY );
 		save.setText( "Save" );
-		buttons.add( save );
+		buttons.addChild( save );
 
 		ButtonViewElement cancel = new ButtonViewElement();
 		cancel.setType( ButtonViewElement.Type.LINK );
 		cancel.setStyle( Style.Button.LINK );
 		cancel.setText( "Cancel" );
 		cancel.setUrl( "/goback" );
-		buttons.add( cancel );
+		buttons.addChild( cancel );
 
-		form.add( buttons );
+		form.addChild( buttons );
 
 		verify( form );
 	}

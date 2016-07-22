@@ -59,6 +59,6 @@ public class TestFieldsetFormElementBuilder extends AbstractViewElementBuilderTe
 		build();
 
 		assertEquals( "other text", element.getLegend().getText() );
-		assertEquals( 1, element.getLegend().size() );
+		assertEquals( 1, element.getLegend().getChildren().size() );
 	}
 }

@@ -84,7 +84,7 @@ public class LabelFormElementBuilder extends AbstractNodeViewElementBuilder<Labe
 				}
 
 				if ( addAsChild ) {
-					label.addFirst( textElement );
+					label.addFirstChild( textElement );
 				}
 			}
 		}

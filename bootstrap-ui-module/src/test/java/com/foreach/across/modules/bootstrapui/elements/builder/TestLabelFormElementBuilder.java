@@ -37,18 +37,18 @@ public class TestLabelFormElementBuilder extends AbstractViewElementBuilderTest<
 
 		build();
 		assertEquals( "Simple text", element.getText() );
-		assertTrue( element.isEmpty() );
+		assertFalse( element.hasChildren() );
 
 		textBuilder.escapeXml( false );
 
 		build();
 		assertNull( element.getText() );
-		assertEquals( 1, element.size() );
+		assertEquals( 1, element.getChildren().size() );
 
 		textBuilder.escapeXml( true ).customTemplate( "some template" );
 
 		build();
 		assertNull( element.getText() );
-		assertEquals( 1, element.size() );
+		assertEquals( 1, element.getChildren().size() );
 	}
 }

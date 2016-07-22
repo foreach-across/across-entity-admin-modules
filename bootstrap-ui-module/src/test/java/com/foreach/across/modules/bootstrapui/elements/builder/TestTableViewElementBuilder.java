@@ -24,7 +24,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 
+import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 import static org.junit.Assert.*;
 
 /**
@@ -56,7 +58,7 @@ public class TestTableViewElementBuilder extends AbstractViewElementBuilderTest<
 		build();
 
 		assertEquals( new HashSet<>( Arrays.asList(
-				              Style.Table.BORDERED, Style.Table.STRIPED, Style.Table.CONDENSED
+				Style.Table.BORDERED, Style.Table.STRIPED, Style.Table.CONDENSED
 		              ) ),
 		              element.getStyles() );
 	}
@@ -96,7 +98,7 @@ public class TestTableViewElementBuilder extends AbstractViewElementBuilderTest<
 		build();
 
 		assertNull( element.getBody() );
-		assertTrue( element.isEmpty() );
+		assertFalse( element.hasChildren() );
 	}
 
 	@Test
@@ -128,6 +130,7 @@ public class TestTableViewElementBuilder extends AbstractViewElementBuilderTest<
 	}
 
 	@Test
+	@SuppressWarnings( "all" )
 	public void commonTable() {
 		TableViewElementBuilder table = builder;
 		table.responsive();
@@ -152,25 +155,26 @@ public class TestTableViewElementBuilder extends AbstractViewElementBuilderTest<
 		assertEquals( "Table caption", element.getCaption().getText() );
 
 		assertTrue( element.isResponsive() );
-		assertEquals( 1, element.getHeader().size() );
-		assertEquals( 2, element.getBody().size() );
+		assertEquals( 1, element.getHeader().getChildren().size() );
+		assertEquals( 2, element.getBody().getChildren().size() );
 
-		TableViewElement.Cell cell = element.getHeader().<ContainerViewElement>get( "headerRow" ).get( "one" );
+		Optional<ContainerViewElement> headerRow = find( element.getHeader(), "headerRow", ContainerViewElement.class );
+		TableViewElement.Cell cell = find( headerRow.get(), "one", TableViewElement.Cell.class ).get();
 		assertNotNull( cell );
 		assertEquals( "Heading 1", cell.getText() );
 		assertTrue( cell.isHeading() );
 
-		cell = element.getHeader().get( "two" );
+		cell = find( element.getHeader(), "two", TableViewElement.Cell.class ).get();
 		assertNotNull( cell );
 		assertEquals( "Heading 2", cell.getText() );
 		assertTrue( cell.isHeading() );
 
-		cell = element.getBody().get( "rowOne" );
+		cell = find( element.getBody(), "rowOne", TableViewElement.Cell.class ).get();
 		assertNotNull( cell );
 		assertEquals( "row 1 - cell", cell.getText() );
 		assertFalse( cell.isHeading() );
 
-		cell = element.getBody().get( "rowTwo" );
+		cell = find( element.getBody(), "rowTwo", TableViewElement.Cell.class ).get();
 		assertNotNull( cell );
 		assertEquals( "row 2 - cell", cell.getText() );
 		assertFalse( cell.isHeading() );

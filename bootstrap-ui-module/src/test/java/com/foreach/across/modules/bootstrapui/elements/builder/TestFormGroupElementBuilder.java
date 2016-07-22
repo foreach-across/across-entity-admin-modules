@@ -104,6 +104,6 @@ public class TestFormGroupElementBuilder extends AbstractViewElementBuilderTest<
 
 		NodeViewElement node = group.getHelpBlock( NodeViewElement.class );
 		assertNotNull( node );
-		assertEquals( "some help", ( (TextViewElement) node.iterator().next() ).getText() );
+		assertEquals( "some help", ( (TextViewElement) node.getChildren().iterator().next() ).getText() );
 	}
 }

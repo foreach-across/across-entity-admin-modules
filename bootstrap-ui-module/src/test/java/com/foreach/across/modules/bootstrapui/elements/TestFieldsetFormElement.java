@@ -43,8 +43,8 @@ public class TestFieldsetFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void childrenButNoLegend() {
-		fieldset.add( new TextViewElement( "line 1" ) );
-		fieldset.add( new TextboxFormElement() );
+		fieldset.addChild( new TextViewElement( "line 1" ) );
+		fieldset.addChild( new TextboxFormElement() );
 
 		renderAndExpect(
 				fieldset,
@@ -134,10 +134,10 @@ public class TestFieldsetFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void legendWithCustomButtonAndChildren() {
 		fieldset.getLegend().setText( "legend text" );
-		fieldset.getLegend().add( new ButtonViewElement() );
+		fieldset.getLegend().addChild( new ButtonViewElement() );
 
-		fieldset.add( new TextViewElement( "line 1" ) );
-		fieldset.add( new TextboxFormElement() );
+		fieldset.addChild( new TextViewElement( "line 1" ) );
+		fieldset.addChild( new TextboxFormElement() );
 
 		renderAndExpect(
 				fieldset,

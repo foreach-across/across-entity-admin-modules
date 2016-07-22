@@ -35,7 +35,7 @@ public class RadioFormElementThymeleafBuilder extends FormControlElementThymleaf
 	public List<Node> buildNodes( RadioFormElement control,
 	                              Arguments arguments,
 	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		boolean showLabel = control.getText() != null || !control.isEmpty();
+		boolean showLabel = control.getText() != null || control.hasChildren();
 
 		Element label = createElement( "label" );
 		Element radio = createElement( "input" );
@@ -55,7 +55,7 @@ public class RadioFormElementThymeleafBuilder extends FormControlElementThymleaf
 				text( label, control.getText() );
 			}
 
-			for ( ViewElement child : control ) {
+			for ( ViewElement child : control.getChildren() ) {
 				for ( Node childNode : viewElementNodeFactory.buildNodes( child, arguments ) ) {
 					label.addChild( childNode );
 				}

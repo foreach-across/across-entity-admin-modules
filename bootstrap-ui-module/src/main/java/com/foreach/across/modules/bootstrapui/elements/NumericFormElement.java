@@ -15,14 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.core.support.SingletonIterator;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.CompositeIterator;
 
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -46,6 +44,8 @@ public class NumericFormElement extends FormControlElementSupport implements For
 		super( "input" );
 		setElementType( ContainerViewElement.ELEMENT_TYPE );
 		addCssClass( CSS_NUMERIC );
+
+		addChild( textbox );
 	}
 
 	@Override
@@ -193,9 +193,8 @@ public class NumericFormElement extends FormControlElementSupport implements For
 	}
 
 	@Override
-	public Iterator<ViewElement> iterator() {
-		CompositeIterator<ViewElement> composite = new CompositeIterator<>();
-		composite.add( new SingletonIterator<>( textbox ) );
+	public List<ViewElement> getChildren() {
+		List<ViewElement> children = super.getChildren();
 
 		if ( getConfiguration() != null ) {
 			String controlName = textbox.getControlName();
@@ -208,12 +207,13 @@ public class NumericFormElement extends FormControlElementSupport implements For
 			}
 
 			if ( controlName != null ) {
-				composite.add( new SingletonIterator<>( hidden ) );
+				children.add( hidden );
+			}
+			else {
+				children.remove( hidden );
 			}
 		}
 
-		composite.add( super.iterator() );
-
-		return composite;
+		return children;
 	}
 }

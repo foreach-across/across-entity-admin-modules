@@ -116,7 +116,7 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setText( "label text" );
-		box.add( new NodeViewElement( "strong" ) );
+		box.addChild( new NodeViewElement( "strong" ) );
 
 		renderAndExpect(
 				box,

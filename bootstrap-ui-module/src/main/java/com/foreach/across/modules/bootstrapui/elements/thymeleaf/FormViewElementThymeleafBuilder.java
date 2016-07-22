@@ -56,7 +56,7 @@ public class FormViewElementThymeleafBuilder extends HtmlViewElementThymeleafSup
 
 		Arguments newArguments = buildFormArguments( form, arguments );
 
-		for ( ViewElement child : form ) {
+		for ( ViewElement child : form.getChildren() ) {
 			viewElementNodeFactory.buildNodes( child, newArguments ).forEach( node::addChild );
 		}
 

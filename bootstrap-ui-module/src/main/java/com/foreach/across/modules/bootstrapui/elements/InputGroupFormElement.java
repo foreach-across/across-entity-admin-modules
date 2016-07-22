@@ -15,12 +15,11 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.core.support.SingletonIterator;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
-import org.springframework.util.CompositeIterator;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>Represents a bootstrap input group, wrapping a control and allowing left or right addon.
@@ -132,42 +131,36 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 	}
 
 	@Override
-	public Iterator<ViewElement> iterator() {
+	public List<ViewElement> getChildren() {
+		List<ViewElement> children = super.getChildren();
+
 		if ( control == null && addonBefore == null && addonAfter == null ) {
-			return super.iterator();
+			return children;
 		}
 
-		CompositeIterator<ViewElement> elements = new CompositeIterator<>();
+		List<ViewElement> extended = new ArrayList<>();
 		if ( addonBefore != null ) {
-			elements.add( new SingletonIterator<>( createAddon( addonBefore ) ) );
+			extended.add( createAddon( addonBefore ) );
 		}
 		if ( control != null ) {
-			elements.add( new SingletonIterator<>( control ) );
+			extended.add( control );
 		}
-		elements.add( super.iterator() );
+		extended.addAll( children );
 		if ( addonAfter != null ) {
-			elements.add( new SingletonIterator<>( createAddon( addonAfter ) ) );
+			extended.add( createAddon( addonAfter ) );
 		}
 
-		return elements;
+		return extended;
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return super.isEmpty() && addonBefore == null && addonAfter == null && control == null;
-	}
-
-	@Override
-	public int size() {
-		return super.size()
-				+ ( addonBefore != null ? 1 : 0 )
-				+ ( control != null ? 1 : 0 )
-				+ ( addonAfter != null ? 1 : 0 );
+	public boolean hasChildren() {
+		return super.hasChildren() || addonBefore != null || addonAfter != null || control != null;
 	}
 
 	private ViewElement createAddon( ViewElement child ) {
 		Addon addon = new Addon( child instanceof ButtonViewElement );
-		addon.add( child );
+		addon.addChild( child );
 		return addon;
 	}
 

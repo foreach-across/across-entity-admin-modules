@@ -82,9 +82,9 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 		three.setValue( 123 );
 		three.setLabel( "Label only" );
 
-		box.add( one );
-		box.add( two );
-		box.add( three );
+		box.addChild( one );
+		box.addChild( two );
+		box.addChild( three );
 
 		renderAndExpect(
 				box,
@@ -115,17 +115,17 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 		two.setSelected( true );
 		two.setDisabled( true );
 
-		group.add( one );
-		group.add( two );
+		group.addChild( one );
+		group.addChild( two );
 
 		SelectFormElement.OptionGroup groupTwo = new SelectFormElement.OptionGroup();
 		groupTwo.setDisabled( true );
 		groupTwo.setLabel( "some label" );
 
-		box.add( two );
-		box.add( group );
-		box.add( groupTwo );
-		box.add( one );
+		box.addChild( two );
+		box.addChild( group );
+		box.addChild( groupTwo );
+		box.addChild( one );
 
 		renderAndExpect(
 				box,

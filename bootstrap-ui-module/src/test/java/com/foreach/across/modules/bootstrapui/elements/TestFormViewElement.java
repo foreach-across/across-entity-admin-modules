@@ -55,7 +55,7 @@ public class TestFormViewElement extends AbstractBootstrapViewElementTest
 	public void simpleForm() {
 		FormViewElement form = new FormViewElement();
 		form.setCommandAttribute( "${element}" );
-		form.add( new TextViewElement( "some text" ) );
+		form.addChild( new TextViewElement( "some text" ) );
 
 		renderAndExpect(
 				form,
@@ -66,7 +66,7 @@ public class TestFormViewElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void namedForms() {
 		FormViewElement form = new FormViewElement();
-		form.add( new TextViewElement( "some text" ) );
+		form.addChild( new TextViewElement( "some text" ) );
 		form.setName( "defaultName" );
 
 		renderAndExpect(
@@ -85,7 +85,7 @@ public class TestFormViewElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void customHttpMethodAndAction() {
 		FormViewElement form = new FormViewElement();
-		form.add( new TextViewElement( "some text" ) );
+		form.addChild( new TextViewElement( "some text" ) );
 		form.setMethod( HttpMethod.GET );
 		form.setAction( "actionUrl" );
 
@@ -156,7 +156,7 @@ public class TestFormViewElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void customTemplatesInNestedElementsAreTreated() {
 		FormViewElement form = new FormViewElement();
-		form.add( new TemplateViewElement( CUSTOM_TEMPLATE ) );
+		form.addChild( new TemplateViewElement( CUSTOM_TEMPLATE ) );
 
 		renderAndExpect(
 				form,

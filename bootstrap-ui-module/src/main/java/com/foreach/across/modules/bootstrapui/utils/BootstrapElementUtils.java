@@ -19,7 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementCollection;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 
 /**
  * @author Arne Vandamme
@@ -32,8 +32,7 @@ public final class BootstrapElementUtils
 	/**
 	 * Will search for the first {@link FormControlElement} instance that is not an {@link InputGroupFormElement}.
 	 * It is possible that the instance itself is returned.  This method will recurse through
-	 * {@link InputGroupFormElement}, {@link FormGroupElement} and {@link ViewElementCollection} types until
-	 * an instance is returned.
+	 * {@link com.foreach.across.modules.web.ui.elements.ContainerViewElement} types until an instance is returned.
 	 *
 	 * @param viewElement instance
 	 * @return form control instance, or {@code null} if not found
@@ -45,8 +44,7 @@ public final class BootstrapElementUtils
 	/**
 	 * Will search for the first {@link FormControlElement} instance that matches the expected type.
 	 * It is possible that the instance itself is returned.  This method will recurse through
-	 * {@link InputGroupFormElement}, {@link FormGroupElement} and {@link ViewElementCollection} types until
-	 * an instance is returned.
+	 * {@link com.foreach.across.modules.web.ui.elements.ContainerViewElement} types until an instance is returned.
 	 *
 	 * @param viewElement  instance
 	 * @param expectedType the control should have
@@ -64,7 +62,7 @@ public final class BootstrapElementUtils
 			}
 		}
 		else if ( viewElement instanceof FormControlElement.Proxy ) {
-			ViewElement candidate = ( (FormControlElement.Proxy ) viewElement ).getControl();
+			ViewElement candidate = ( (FormControlElement.Proxy) viewElement ).getControl();
 
 			if ( candidate != null ) {
 				control = getFormControl( candidate, expectedType );
@@ -74,8 +72,8 @@ public final class BootstrapElementUtils
 			control = (V) viewElement;
 		}
 
-		if ( control == null && viewElement instanceof ViewElementCollection ) {
-			for ( ViewElement child : (ViewElementCollection<ViewElement>) viewElement ) {
+		if ( control == null && viewElement instanceof ContainerViewElement ) {
+			for ( ViewElement child : ( (ContainerViewElement) viewElement ).getChildren() ) {
 				control = getFormControl( child, expectedType );
 
 				if ( control != null ) {

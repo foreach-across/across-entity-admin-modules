@@ -15,15 +15,14 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.core.support.SingletonIterator;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.CompositeIterator;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * Extension of an {@link InputGroupFormElement} that represents a date/time picker.
@@ -67,7 +66,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 	}
 
 	@Override
-	public Iterator<ViewElement> iterator() {
+	public List<ViewElement> getChildren() {
 		FormControlElement controlElement = getControl( FormControlElement.class );
 		String controlName = controlElement.getControlName();
 
@@ -86,9 +85,9 @@ public class DateTimeFormElement extends InputGroupFormElement
 			}
 		}
 
-		CompositeIterator<ViewElement> elements = new CompositeIterator<>();
-		elements.add( super.iterator() );
-		elements.add( new SingletonIterator<>( hidden ) );
+		List<ViewElement> elements = new ArrayList<>();
+		elements.addAll( super.getChildren() );
+		elements.add( hidden );
 
 		return elements;
 	}

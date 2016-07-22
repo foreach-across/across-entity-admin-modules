@@ -37,7 +37,7 @@ public class TestBootstrapElementUtils
 	public void inputGroupShouldReturnControl() {
 		InputGroupFormElement inputGroup = new InputGroupFormElement();
 		inputGroup.setControl( textbox );
-		inputGroup.add( child );
+		inputGroup.addChild( child );
 
 		assertSame( textbox, BootstrapElementUtils.getFormControl( inputGroup ) );
 	}
@@ -46,7 +46,7 @@ public class TestBootstrapElementUtils
 	public void formGroupWithTextboxShouldReturnTextbox() {
 		FormGroupElement formGroup = new FormGroupElement();
 		formGroup.setControl( textbox );
-		formGroup.add( child );
+		formGroup.addChild( child );
 
 		assertSame( textbox, BootstrapElementUtils.getFormControl( formGroup ) );
 	}
@@ -55,7 +55,7 @@ public class TestBootstrapElementUtils
 	public void datetimeFormElementShouldReturnTextbox() {
 		DateTimeFormElement datetime = new DateTimeFormElement();
 		datetime.setControl( textbox );
-		datetime.add( child );
+		datetime.addChild( child );
 
 		assertSame( textbox, BootstrapElementUtils.getFormControl( datetime ) );
 	}
@@ -64,7 +64,7 @@ public class TestBootstrapElementUtils
 	public void formGroupWithInputGroupShouldReturnInputGroupControl() {
 		InputGroupFormElement inputGroup = new InputGroupFormElement();
 		inputGroup.setControl( textbox );
-		inputGroup.add( child );
+		inputGroup.addChild( child );
 
 		FormGroupElement formGroup = new FormGroupElement();
 		formGroup.setControl( inputGroup );
@@ -76,7 +76,7 @@ public class TestBootstrapElementUtils
 	public void formGroupWithDateTimeShouldReturnDateTimeControl() {
 		DateTimeFormElement datetime = new DateTimeFormElement();
 		datetime.setControl( textbox );
-		datetime.add( child );
+		datetime.addChild( child );
 
 		FormGroupElement formGroup = new FormGroupElement();
 		formGroup.setControl( datetime );
@@ -88,7 +88,7 @@ public class TestBootstrapElementUtils
 	public void formGroupWithInputGroupWithoutControlShouldReturnInputGroupChild() {
 		InputGroupFormElement inputGroup = new InputGroupFormElement();
 		inputGroup.setControl( null );
-		inputGroup.add( child );
+		inputGroup.addChild( child );
 
 		FormGroupElement formGroup = new FormGroupElement();
 		formGroup.setControl( inputGroup );
@@ -100,7 +100,7 @@ public class TestBootstrapElementUtils
 	public void formGroupWithoutControlShouldReturnChild() {
 		FormGroupElement formGroup = new FormGroupElement();
 		formGroup.setControl( null );
-		formGroup.add( child );
+		formGroup.addChild( child );
 
 		assertSame( child, BootstrapElementUtils.getFormControl( formGroup ) );
 	}
