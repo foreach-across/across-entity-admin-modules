@@ -37,4 +37,6 @@ public interface MutableEntityAssociation extends EntityAssociation, WritableAtt
 	void setSourceProperty( EntityPropertyDescriptor descriptor );
 
 	void setTargetProperty( EntityPropertyDescriptor descriptor );
+
+	void setParentDeleteMode( ParentDeleteMode parentDeleteMode );
 }

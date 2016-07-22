@@ -21,7 +21,7 @@ import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
-import com.foreach.across.modules.web.ui.ViewElements;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -44,10 +44,10 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 	}
 
 	@Override
-	protected ViewElements buildViewElements( V viewCreationContext,
-	                                          EntityViewElementBuilderContext<EntityFormView> viewElementBuilderContext,
-	                                          EntityMessageCodeResolver messageCodeResolver ) {
-		ViewElements elements
+	protected ContainerViewElement buildViewElements( V viewCreationContext,
+	                                                  EntityViewElementBuilderContext<EntityFormView> viewElementBuilderContext,
+	                                                  EntityMessageCodeResolver messageCodeResolver ) {
+		ContainerViewElement elements
 				= super.buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver );
 
 		EntityLinkBuilder linkBuilder = viewElementBuilderContext.getEntityView().getEntityLinkBuilder();
@@ -64,7 +64,7 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 				                             .add(
 						                             bootstrapUi.column( Grid.Device.MD.width( Grid.Width.HALF ) )
 						                                        .name( FORM_LEFT )
-						                                        .addAll( elements )
+						                                        .add( elements )
 				                             )
 				                             .add(
 						                             bootstrapUi.column( Grid.Device.MD.width( Grid.Width.HALF ) )

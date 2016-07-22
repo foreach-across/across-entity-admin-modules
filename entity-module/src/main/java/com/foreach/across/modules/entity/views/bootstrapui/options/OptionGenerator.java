@@ -97,11 +97,11 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 				&& ( !hasSelected || !optionsBuilder.isRequired() );
 
 		if ( shouldAddEmptyOption ) {
-			container.add( emptyOption.build( builderContext ) );
+			container.addChild( emptyOption.build( builderContext ) );
 		}
 
 		for ( OptionFormElementBuilder option : actual ) {
-			container.add( option.build( builderContext ) );
+			container.addChild( option.build( builderContext ) );
 		}
 
 		return container;

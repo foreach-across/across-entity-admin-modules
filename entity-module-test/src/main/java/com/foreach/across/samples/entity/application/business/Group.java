@@ -26,7 +26,7 @@ import javax.persistence.*;
 
 /**
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 @Entity
 @Table(name = "test_group")

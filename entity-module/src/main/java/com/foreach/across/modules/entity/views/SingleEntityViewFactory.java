@@ -19,7 +19,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElements;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 
 import java.util.Collection;
@@ -49,7 +49,7 @@ public abstract class SingleEntityViewFactory<V extends ViewCreationContext, T e
 	}
 
 	@Override
-	protected ViewElements buildViewElements(
+	protected ContainerViewElement buildViewElements(
 			V viewCreationContext,
 			EntityViewElementBuilderContext<T> viewElementBuilderContext,
 			EntityMessageCodeResolver messageCodeResolver

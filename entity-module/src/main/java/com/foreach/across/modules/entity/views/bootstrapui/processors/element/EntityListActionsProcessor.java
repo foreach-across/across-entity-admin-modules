@@ -61,7 +61,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 			cell.heading( true );
 		}
 
-		row.add( cell.build( builderContext ) );
+		row.addChild( cell.build( builderContext ) );
 	}
 
 	protected void addEntityActions( TableViewElementBuilder.Cell cell, Object entity ) {

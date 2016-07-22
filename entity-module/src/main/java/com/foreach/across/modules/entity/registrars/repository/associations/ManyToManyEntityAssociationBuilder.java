@@ -98,6 +98,7 @@ public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuil
 
 					buildCreateView( association );
 					buildListView( association );
+					buildDeleteView( association );
 				}
 			}
 			else {
@@ -143,6 +144,18 @@ public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuil
 		                                "entityViews" );
 
 		association.registerView( EntityFormView.CREATE_VIEW_NAME, viewFactory );
+	}
+
+	public void buildDeleteView( MutableEntityAssociation association ) {
+		EntityConfiguration to = association.getTargetEntityConfiguration();
+
+		EntityDeleteViewFactory viewFactory = beanFactory.getBean( EntityDeleteViewFactory.class );
+		BeanUtils.copyProperties( to.getViewFactory( EntityFormView.DELETE_VIEW_NAME ), viewFactory );
+		viewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".deleteView",
+		                                "entityViews.deleteView",
+		                                "entityViews" );
+
+		association.registerView( EntityFormView.DELETE_VIEW_NAME, viewFactory );
 	}
 
 	private EntityListViewPageFetcher buildManyToManyListViewPageFetcher( MutableEntityAssociation association ) {

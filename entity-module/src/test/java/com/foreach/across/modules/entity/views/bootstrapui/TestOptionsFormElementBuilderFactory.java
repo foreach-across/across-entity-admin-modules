@@ -58,7 +58,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 		assertFalse( select.isRequired() );
 		assertFalse( select.isMultiple() );
-		assertEquals( 1, select.size() );
+		assertEquals( 1, select.getChildren().size() );
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 		assertTrue( select.isRequired() );
 		assertFalse( select.isMultiple() );
-		assertEquals( 1, select.size() );
+		assertEquals( 1, select.getChildren().size() );
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 		assertFalse( select.isRequired() );
 		assertFalse( select.isMultiple() );
-		assertEquals( 1, select.size() );
+		assertEquals( 1, select.getChildren().size() );
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 		assertTrue( select.isRequired() );
 		assertFalse( select.isMultiple() );
-		assertEquals( 1, select.size() );
+		assertEquals( 1, select.getChildren().size() );
 	}
 
 	@SuppressWarnings("unchecked")

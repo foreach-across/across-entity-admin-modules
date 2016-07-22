@@ -17,6 +17,8 @@
 package com.foreach.across.modules.entity.views.events;
 
 import com.foreach.across.core.events.ParameterizedAcrossEvent;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -35,10 +37,39 @@ import org.springframework.core.ResolvableType;
 public class BuildEntityDeleteViewEvent<T> implements ParameterizedAcrossEvent
 {
 	private final T entity;
-	private boolean deleteDisabled;
+	private final EntityViewElementBuilderContext<?> builderContext;
 
-	public BuildEntityDeleteViewEvent( T entity ) {
+	private boolean deleteDisabled;
+	private ContainerViewElement messages, associations;
+
+	public BuildEntityDeleteViewEvent( T entity, EntityViewElementBuilderContext<?> builderContext ) {
 		this.entity = entity;
+		this.builderContext = builderContext;
+	}
+
+	/**
+	 * @return container with feedback messages
+	 */
+	public ContainerViewElement messages() {
+		return messages;
+	}
+
+	/**
+	 * Set the container containing message elements.
+	 */
+	public void setMessages( ContainerViewElement messages ) {
+		this.messages = messages;
+	}
+
+	/**
+	 * @return list with the association feedback items
+	 */
+	public ContainerViewElement associations() {
+		return associations;
+	}
+
+	public void setAssociations( ContainerViewElement associations ) {
+		this.associations = associations;
 	}
 
 	@Override
@@ -51,6 +82,13 @@ public class BuildEntityDeleteViewEvent<T> implements ParameterizedAcrossEvent
 	 */
 	public T getEntity() {
 		return entity;
+	}
+
+	/**
+	 * @return the current builder context
+	 */
+	public EntityViewElementBuilderContext<?> getBuilderContext() {
+		return builderContext;
 	}
 
 	/**

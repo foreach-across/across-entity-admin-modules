@@ -24,7 +24,7 @@ import com.foreach.across.samples.entity.application.business.Group;
 
 /**
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 @ModuleConfiguration(AcrossHibernateJpaModule.NAME)
 public class HibernatePackageConfiguration implements HibernatePackageConfigurer

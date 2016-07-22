@@ -66,7 +66,7 @@ public class TestLabelFormElementBuilderFactory extends ViewElementBuilderFactor
 		LabelFormElement label = assemble( "noValidator", ViewElementMode.CONTROL );
 		assertNotNull( label );
 
-		TextViewElement text = (TextViewElement) label.iterator().next();
+		TextViewElement text = (TextViewElement) label.getChildren().get( 0 );
 		assertNotNull( text );
 		assertEquals( "resolved: novalidator", text.getText() );
 	}

@@ -20,7 +20,7 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
-import com.foreach.across.modules.web.ui.ViewElements;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
@@ -99,7 +99,7 @@ public class WebViewProcessorAdapter<U extends EntityView>
 
 	}
 
-	protected void modifyViewElements( ViewElements elements ) {
+	protected void modifyViewElements( ContainerViewElement elements ) {
 
 	}
 

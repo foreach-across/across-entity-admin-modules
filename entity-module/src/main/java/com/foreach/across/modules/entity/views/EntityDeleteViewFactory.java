@@ -23,15 +23,16 @@ import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
 import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityAssociation.ParentDeleteMode;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.events.BuildEntityDeleteViewEvent;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.web.resource.WebResourceUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
@@ -39,7 +40,7 @@ import org.springframework.ui.ModelMap;
  * Creates the delete form for an entity.
  *
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		extends SimpleEntityViewFactorySupport<V, EntityView>
@@ -75,42 +76,49 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		EntityLinkBuilder linkBuilder = view.getEntityLinkBuilder();
 		EntityMessages messages = view.getEntityMessages();
 
-		BuildEntityDeleteViewEvent viewConfiguration = buildViewConfiguration( view );
-
-		NodeViewElementBuilder list = bootstrapUi.node( "ul" );
-
-		for ( EntityAssociation association : ( (EntityConfiguration<?>) entityConfiguration ).getAssociations() ) {
-			dod( list, association, linkBuilder, view.getEntity() );
-		}
+		BuildEntityDeleteViewEvent viewConfiguration = buildViewConfiguration( entityConfiguration, view,
+		                                                                       builderContext, messages );
 
 		ContainerViewElementBuilder buttons = buildButtons( linkBuilder, messages, viewConfiguration );
 
+		String confirmationMessage = messages.withNameSingular( "views.deleteView.confirmation" );
+		if ( viewConfiguration.isDeleteDisabled() ) {
+			confirmationMessage = messages.withNameSingular( "views.deleteView.deleteDisabled" );
+		}
+
 		view.setViewElements(
-				bootstrapUi.form()
-				           .name( EntityFormViewFactory.FORM_NAME )
-				           .commandAttribute( EntityControllerAttributes.VIEW_REQUEST )
-				           .post()
-				           .noValidate()
-				           .action( linkBuilder.delete( view.getEntity() ) )
-				           .add(
-						           bootstrapUi.row()
-						                      .add(
-								                      bootstrapUi.column( Grid.Device.MD.width( Grid.Width.HALF ) )
-								                                 .name( EntityFormViewFactory.FORM_LEFT )
-								                                 .add(
-										                                 bootstrapUi
-												                                 .text( messages.withNameSingular(
-														                                 "views.deleteView.confirmation" ) )
-								                                 )
-								                                 .add( list )
-						                      )
-						                      .add(
-								                      bootstrapUi.column( Grid.Device.MD.width( Grid.Width.HALF ) )
-								                                 .name( EntityFormViewFactory.FORM_RIGHT )
-						                      )
-				           )
-				           .add( buttons )
-				           .build( builderContext )
+				bootstrapUi
+						.form()
+						.name( EntityFormViewFactory.FORM_NAME )
+						.commandAttribute( EntityControllerAttributes.VIEW_REQUEST )
+						.post()
+						.noValidate()
+						.action( linkBuilder.delete( view.getEntity() ) )
+						.add(
+								bootstrapUi
+										.row()
+										.add(
+												bootstrapUi
+														.column( Grid.Device.MD.width( Grid.Width.HALF ) )
+														.name( EntityFormViewFactory.FORM_LEFT )
+														.add( viewConfiguration.messages() )
+														.add(
+																bootstrapUi
+																		.paragraph()
+																		.css(
+																				viewConfiguration.isDeleteDisabled()
+																						? Style.DANGER.forPrefix(
+																						"text" ) : "" )
+																		.add( bootstrapUi
+																				      .text( confirmationMessage ) ) )
+										)
+										.add(
+												bootstrapUi.column( Grid.Device.MD.width( Grid.Width.HALF ) )
+												           .name( EntityFormViewFactory.FORM_RIGHT )
+										)
+						)
+						.add( buttons )
+						.build( builderContext )
 		);
 	}
 
@@ -131,41 +139,96 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 				bootstrapUi.button()
 				           .name( "btn-cancel" )
 				           .link( linkBuilder.overview() )
+				           .style( viewConfiguration.isDeleteDisabled() ? Style.PRIMARY : Style.Button.LINK )
 				           .text( messages.messageWithFallback( "actions.cancel" ) )
 		);
 		return buttons;
 	}
 
-	private BuildEntityDeleteViewEvent buildViewConfiguration( EntityView view ) {
-		BuildEntityDeleteViewEvent<?> event = new BuildEntityDeleteViewEvent<>( view.getEntity() );
+	private BuildEntityDeleteViewEvent buildViewConfiguration( EntityConfiguration<?> entityConfiguration,
+	                                                           EntityView view,
+	                                                           EntityViewElementBuilderContext<EntityView> builderContext,
+	                                                           EntityMessages messages ) {
+		BuildEntityDeleteViewEvent<?> event = new BuildEntityDeleteViewEvent<>( view.getEntity(), builderContext );
 		event.setDeleteDisabled( false );
 
+		ContainerViewElement associations = bootstrapUi.node( "ul" ).build( builderContext );
+
+		event.setAssociations( associations );
+		event.setMessages(
+				bootstrapUi.container()
+				           .add(
+						           bootstrapUi.container()
+						                      .name( "associations" )
+						                      .add( bootstrapUi.paragraph()
+						                                       .add( bootstrapUi.text( messages.withNameSingular(
+								                                       "views.deleteView.associations" ) ) ) )
+						                      .add( associations )
+				           )
+				           .build( builderContext )
+		);
+
+		buildAssociations( entityConfiguration, view, event );
+		;
+
 		eventPublisher.publish( event );
+
+		// Remove the associations block if no associations were added
+		if ( !event.associations().hasChildren() ) {
+			ContainerViewElementUtils.remove( event.messages(), "associations" );
+		}
 
 		return event;
 	}
 
-	private void dod( NodeViewElementBuilder list,
-	                  EntityAssociation association,
-	                  EntityLinkBuilder parentLinkBuilder,
-	                  Object parent ) {
-		AssociatedEntityQueryExecutor executor = association.getAttribute( AssociatedEntityQueryExecutor.class );
-		int count = executor.findAll( parent, EntityQuery.all() ).size();
+	private void buildAssociations(
+			EntityConfiguration<?> entityConfiguration,
+			EntityView view,
+			BuildEntityDeleteViewEvent viewConfiguration ) {
+		Object parent = view.getEntity();
+		EntityLinkBuilder parentLinkBuilder = view.getEntityLinkBuilder();
 
-		if ( count > 0 ) {
-			EntityMessages messages = new EntityMessages(
-					association.getTargetEntityConfiguration().getEntityMessageCodeResolver()
-			);
+		entityConfiguration.getAssociations().forEach(
+				association -> {
+					if ( ParentDeleteMode.IGNORE != association.getParentDeleteMode() ) {
+						AssociatedEntityQueryExecutor executor = association.getAttribute(
+								AssociatedEntityQueryExecutor.class );
 
-			EntityLinkBuilder linkBuilder
-					= association.getAttribute( EntityLinkBuilder.class ).asAssociationFor( parentLinkBuilder, parent );
+						if ( executor != null ) {
+							int count = executor.findAll( parent, EntityQuery.all() ).size();
 
-			list.add( bootstrapUi.node( "li" )
-			                     .add( bootstrapUi.button().link().url( linkBuilder.overview() )
-			                                      .text( messages.withNamePlural( "views.deleteView.associatedResults",
-			                                                                      count ) ) ) );
-		}
+							if ( count > 0 ) {
+								if ( ParentDeleteMode.SUPPRESS == association.getParentDeleteMode() ) {
+									viewConfiguration.setDeleteDisabled( true );
+								}
 
-		//list.add( bootstrapUi.node( "li" ).add( bootstrapUi.textarea() ) )
+								if ( !association.isHidden() ) {
+									EntityMessages messages = new EntityMessages(
+											association.getTargetEntityConfiguration().getEntityMessageCodeResolver()
+									);
+
+									EntityLinkBuilder linkBuilder
+											= association.getAttribute( EntityLinkBuilder.class ).asAssociationFor(
+											parentLinkBuilder, parent );
+
+									String title = messages.withNamePlural( "views.deleteView.associatedResults",
+									                                        count );
+									viewConfiguration.associations().addChild(
+											bootstrapUi
+													.node( "li" )
+													.name( association.getName() )
+													.add( bootstrapUi
+															      .button()
+															      .link()
+															      .url( linkBuilder.overview() )
+															      .text( title ) )
+													.build( viewConfiguration.getBuilderContext() )
+									);
+								}
+							}
+						}
+					}
+				}
+		);
 	}
 }

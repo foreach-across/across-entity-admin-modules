@@ -28,7 +28,7 @@ import javax.sql.DataSource;
 
 /**
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 @AcrossApplication(modules = { AdminWebModule.NAME, EntityModule.NAME })
 public class EntityModuleTestApplication

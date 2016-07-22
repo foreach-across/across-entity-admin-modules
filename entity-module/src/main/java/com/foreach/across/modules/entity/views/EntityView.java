@@ -20,7 +20,7 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.web.menu.Menu;
-import com.foreach.across.modules.web.ui.ViewElements;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
@@ -113,12 +113,21 @@ public class EntityView implements Model
 		model.addAttribute( ATTRIBUTE_MESSAGES, messages );
 	}
 
-	public ViewElements getViewElements() {
+	/**
+	 * @return the container of all view elements for this view
+	 */
+	public ContainerViewElement getViewElements() {
 		return getAttribute( ATTRIBUTE_VIEW_ELEMENTS );
 	}
 
-	public void setViewElements( ViewElements viewElements ) {
-		model.put( ATTRIBUTE_VIEW_ELEMENTS, viewElements );
+	/**
+	 * Set the container with all view elements for this view.
+	 *
+	 * @param container with the view elements
+	 */
+	public void setViewElements( ContainerViewElement container ) {
+		Assert.notNull( container );
+		model.put( ATTRIBUTE_VIEW_ELEMENTS, container );
 	}
 
 	@SuppressWarnings("unchecked")

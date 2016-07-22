@@ -24,7 +24,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 
 /**
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 @ModuleConfiguration(SpringSecurityModule.NAME)
 public class SecurityConfiguration

@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Arne Vandamme
- * @since 1.2.0
+ * @since 2.0.0
  */
 @Configuration
 @EnableAcrossJpaRepositories(basePackageClasses = EntityModuleTestApplication.class)
