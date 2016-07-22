@@ -45,6 +45,11 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	}
 
 	@Override
+	public LinkViewElementBuilder link() {
+		return new LinkViewElementBuilder();
+	}
+
+	@Override
 	public FormViewElementBuilder form() {
 		return new FormViewElementBuilder();
 	}

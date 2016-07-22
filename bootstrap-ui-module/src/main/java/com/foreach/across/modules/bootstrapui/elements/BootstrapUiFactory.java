@@ -30,6 +30,8 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 
 	NodeViewElementBuilder paragraph();
 
+	LinkViewElementBuilder link();
+
 	FormViewElementBuilder form();
 
 	LabelFormElementBuilder label();
