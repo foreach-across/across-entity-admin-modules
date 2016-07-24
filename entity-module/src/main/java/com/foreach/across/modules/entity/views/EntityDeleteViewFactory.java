@@ -218,7 +218,6 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 													.node( "li" )
 													.name( association.getName() )
 													.add( bootstrapUi
-															      .button()
 															      .link()
 															      .url( linkBuilder.overview() )
 															      .text( title ) )
