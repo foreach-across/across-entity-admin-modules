@@ -15,17 +15,18 @@
  */
 package com.foreach.across.modules.entity.config.entities;
 
+import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
-import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
-import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.AuditablePrincipalPropertyViewElementBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.AuditablePropertyViewElementBuilder;
 import com.foreach.across.modules.hibernate.business.Auditable;
+import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +41,7 @@ import org.springframework.data.domain.Sort;
  */
 @Configuration
 @OrderInModule(2)
+@AcrossDepends(required = SpringSecurityModule.NAME)
 public class AuditableEntityUiConfiguration implements EntityConfigurer
 {
 	@Autowired
@@ -53,9 +55,15 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 		// Auditable properties are set automatically and should not be set through the interface,
 		// we make them hidden so they are only added explicitly, and we position them after other properties
 		properties
-				.property( "createdBy" ).writable( false ).hidden( true ).order( 1001 ).and()
+				.property( "createdBy" ).writable( false ).hidden( true ).order( 1001 )
+				.viewElementBuilder( ViewElementMode.VALUE, createdByValueBuilder() )
+				.viewElementBuilder( ViewElementMode.LIST_VALUE, createdByValueBuilder() )
+				.and()
 				.property( "createdDate" ).writable( false ).hidden( true ).order( 1002 ).and()
-				.property( "lastModifiedBy" ).writable( false ).hidden( true ).order( 1003 ).and()
+				.property( "lastModifiedBy" ).writable( false ).hidden( true ).order( 1003 )
+				.viewElementBuilder( ViewElementMode.VALUE, lastModifiedByValueBuilder() )
+				.viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedByValueBuilder() )
+				.and()
 				.property( "lastModifiedDate" ).writable( false ).hidden( true ).order( 1004 );
 
 		// Create aggregated properties that sort on the dates
@@ -81,17 +89,18 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 		       .properties( ".", "created", "lastModified" ).and();
 
 		// Add default sort to list views if no default sort configured
-		builder.addPostProcessor( new PostProcessor<MutableEntityConfiguration<Auditable>>()
-		{
-			@Override
-			public void process( MutableEntityConfiguration<Auditable> configuration ) {
-				EntityListViewFactory listViewFactory = configuration.getViewFactory( EntityListView.VIEW_NAME );
+		builder.addPostProcessor( entityConfiguration -> {
+			EntityListViewFactory listViewFactory = entityConfiguration.getViewFactory( EntityListView.VIEW_NAME );
 
-				if ( listViewFactory != null && listViewFactory.getDefaultSort() == null ) {
-					listViewFactory.setDefaultSort( new Sort( Sort.Direction.DESC, "lastModifiedDate" ) );
-				}
+			if ( listViewFactory != null && listViewFactory.getDefaultSort() == null ) {
+				listViewFactory.setDefaultSort( new Sort( Sort.Direction.DESC, "lastModifiedDate" ) );
 			}
 		} );
+	}
+
+	@Bean
+	public ViewElementBuilder createdByValueBuilder() {
+		return new AuditablePrincipalPropertyViewElementBuilder();
 	}
 
 	@Bean
@@ -99,6 +108,13 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 		AuditablePropertyViewElementBuilder builder = new AuditablePropertyViewElementBuilder();
 		builder.setConversionService( mvcConversionService );
 
+		return builder;
+	}
+
+	@Bean
+	public ViewElementBuilder lastModifiedByValueBuilder() {
+		AuditablePrincipalPropertyViewElementBuilder builder = new AuditablePrincipalPropertyViewElementBuilder();
+		builder.setForLastModifiedByProperty( true );
 		return builder;
 	}
 

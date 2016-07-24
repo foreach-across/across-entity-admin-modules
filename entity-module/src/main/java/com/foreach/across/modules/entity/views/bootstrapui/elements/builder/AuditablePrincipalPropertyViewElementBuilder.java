@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.entity.config.entities.AuditableEntityUiConfiguration;
@@ -24,44 +25,30 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
-
-import java.util.Date;
 
 /**
- * <p>Custom {@link ViewElementBuilder} for created and last modified properties of any
- * {@link com.foreach.across.modules.hibernate.business.Auditable} entity.  Will combine both
- * the timestamp and the principal (if available) into one field.</p>
- * <p>Usually set for {@link ViewElementMode#LIST_VALUE}.</p>
+ * <p>Custom {@link ViewElementBuilder} for createdBy and lastModifiedBy properties of any
+ * {@link com.foreach.across.modules.hibernate.business.Auditable} entity.
+ * Will lookup the label for an assumed principal name using the.</p>
+ * <p>Usually set for {@link ViewElementMode#LIST_VALUE} and {@link ViewElementMode#VALUE}.</p>
  *
  * @author Arne Vandamme
  * @see AuditableEntityUiConfiguration
+ * @since 2.0.0
  */
-public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
+public class AuditablePrincipalPropertyViewElementBuilder implements ViewElementBuilder
 {
-	private boolean forLastModifiedProperty;
-	private ConversionService conversionService;
+	private boolean forLastModifiedByProperty;
 	private SecurityPrincipalLabelResolverStrategy securityPrincipalLabelResolverStrategy;
 
 	/**
-	 * Configure the builder for the last modified property instead of the creation property.
+	 * Configure the builder for the lastModifiedBy property instead of the createdBy property.
 	 *
-	 * @param forLastModifiedProperty true if the last modified property should be used
+	 * @param forLastModifiedByProperty true if the lastModifiedBy property should be used
 	 */
-	public void setForLastModifiedProperty( boolean forLastModifiedProperty ) {
-		this.forLastModifiedProperty = forLastModifiedProperty;
-	}
-
-	/**
-	 * Set the {@link ConversionService} to be used for formatting dates.
-	 * Can be {@code null} in case a {@link org.springframework.format.Printer} is provided.
-	 *
-	 * @param conversionService to use
-	 */
-	public void setConversionService( ConversionService conversionService ) {
-		this.conversionService = conversionService;
+	public void setForLastModifiedByProperty( boolean forLastModifiedByProperty ) {
+		this.forLastModifiedByProperty = forLastModifiedByProperty;
 	}
 
 	/**
@@ -80,30 +67,14 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 
 		if ( auditable != null ) {
 			Object principal = auditable.getCreatedBy();
-			Date date = auditable.getCreatedDate();
 
-			if ( forLastModifiedProperty ) {
+			if ( forLastModifiedByProperty ) {
 				principal = auditable.getLastModifiedBy();
-				date = auditable.getLastModifiedDate();
 			}
 
-			String principalString = securityPrincipalLabelResolverStrategy.resolvePrincipalLabel( principal );
-
-			return new TextViewElement(
-					convertToString( date )
-							+ ( !StringUtils.isBlank( principalString ) ? " by " + principalString : "" )
-			);
+			return new TextViewElement( securityPrincipalLabelResolverStrategy.resolvePrincipalLabel( principal ) );
 		}
 
 		return null;
 	}
-
-	private String convertToString( Date date ) {
-		if ( conversionService != null ) {
-			return conversionService.convert( date, String.class );
-		}
-
-		return "";
-	}
 }
-

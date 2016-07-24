@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
 import com.foreach.across.config.AcrossContextConfigurer;
@@ -26,7 +27,6 @@ import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Date;
@@ -36,20 +36,20 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
+ * @since 2.0.0
  */
 @ContextConfiguration
-public class TestAuditablePropertyViewElementBuilder extends AbstractViewElementTemplateTest
+public class TestAuditablePrincipalPropertyViewElementBuilder extends AbstractViewElementTemplateTest
 {
 	private final Date dateCreated = new Date();
 	private final Date dateLastModified = new Date( System.currentTimeMillis() + 1000 );
 
-	private Entity entity;
-	private AuditablePropertyViewElementBuilder builder;
+	private AuditablePrincipalPropertyViewElementBuilder builder;
 	private ViewElementBuilderContextImpl builderContext;
 
 	@Before
 	public void before() {
-		builder = new AuditablePropertyViewElementBuilder();
+		builder = new AuditablePrincipalPropertyViewElementBuilder();
 
 		SecurityPrincipalLabelResolverStrategy resolverStrategy = mock( SecurityPrincipalLabelResolverStrategy.class );
 		builder.setSecurityPrincipalLabelResolverStrategy( resolverStrategy );
@@ -57,13 +57,7 @@ public class TestAuditablePropertyViewElementBuilder extends AbstractViewElement
 		when( resolverStrategy.resolvePrincipalLabel( "admin" ) ).thenReturn( "Administrator" );
 		when( resolverStrategy.resolvePrincipalLabel( "system" ) ).thenReturn( "System Machine" );
 
-		ConversionService conversionService = mock( ConversionService.class );
-		when( conversionService.convert( dateCreated, String.class ) ).thenReturn( "creationDate" );
-		when( conversionService.convert( dateLastModified, String.class ) ).thenReturn( "modificationDate" );
-
-		builder.setConversionService( conversionService );
-
-		entity = new Entity();
+		Entity entity = new Entity();
 		entity.setCreatedBy( "admin" );
 		entity.setCreatedDate( dateCreated );
 		entity.setLastModifiedBy( "system" );
@@ -74,27 +68,14 @@ public class TestAuditablePropertyViewElementBuilder extends AbstractViewElement
 	}
 
 	@Test
-	public void creationDateWithPrincipal() {
-		expect( "creationDate by Administrator" );
+	public void createdBy() {
+		expect( "Administrator" );
 	}
 
 	@Test
 	public void modificationDateWithPrincipal() {
-		builder.setForLastModifiedProperty( true );
-		expect( "modificationDate by System Machine" );
-	}
-
-	@Test
-	public void creationDateWithoutPrincipal() {
-		entity.setCreatedBy( null );
-		expect( "creationDate" );
-	}
-
-	@Test
-	public void modificationDateWithoutPrincipal() {
-		builder.setForLastModifiedProperty( true );
-		entity.setLastModifiedBy( null );
-		expect( "modificationDate" );
+		builder.setForLastModifiedByProperty( true );
+		expect( "System Machine" );
 	}
 
 	private void expect( String output ) {
