@@ -130,7 +130,7 @@ public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 	 */
 	@Override
 	public Validator getValidator() {
-		if ( entityValidator != null && settings.shouldRegisterEntityValidatorForMvc() ) {
+		if ( entityValidator != null && settings.isEntityValidatorRegisterForMvc() ) {
 			return entityValidator;
 		}
 
