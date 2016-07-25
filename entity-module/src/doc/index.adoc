@@ -61,7 +61,7 @@ Module website: {module-url}
 === 2.0.0-SNAPSHOT
 
 * Compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
-* TODO
+* principal names on `Auditable` entities are now pretty printed using the `SecurityPrincipalLabelResolverStrategy` from the _SpringSecurityModule_
 
 :numbered:
 == About the EntityModule
@@ -455,8 +455,20 @@ being available (hours and minutes).  However the `@Temporal` annotation also in
 private Date arrivalTime;
 ----
 
+== Default entity configuration
+
+=== Auditable
+If _SpringSecurityModule_ is present, {module-name} adapts the default views for `Auditable` entities.
+The *createdBy* and *lastModifiedBy* properties are rendered using an `AuditablePrincipalPropertyViewElementBuilder` which uses the `SecurityPrincipalLabelResolverStrategy` to generate a pretty label for a principal (eg. full name instead of username).
+The default properties are removed from default views, but an aggregated property *created* and *lastModified* is added.
+The aggregated properties combine both the timestamp and the principal in a single property using the `AuditablePropertyViewElementBuilder`.
+
+See the `AuditableEntityUiConfiguration` for full customization.
+
+
 == To be done:
 * view processor
+
 
 
 
