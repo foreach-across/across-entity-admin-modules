@@ -39,4 +39,6 @@ public interface EntityModel<T, ID extends Serializable> extends EntityInformati
 	T findOne( ID id );
 
 	T save( T entity );
+
+	void delete( T entity );
 }

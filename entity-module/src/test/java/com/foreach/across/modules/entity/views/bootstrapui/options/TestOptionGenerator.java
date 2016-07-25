@@ -188,9 +188,9 @@ public class TestOptionGenerator
 	@SuppressWarnings("unchecked")
 	private <U> List<U> build() {
 		ContainerViewElement container = generator.build( builderContext );
-		List<U> members = new ArrayList<>( container.size() );
+		List<U> members = new ArrayList<>( container.getChildren().size() );
 
-		for ( ViewElement element : container ) {
+		for ( ViewElement element : container.getChildren() ) {
 			members.add( (U) element );
 		}
 

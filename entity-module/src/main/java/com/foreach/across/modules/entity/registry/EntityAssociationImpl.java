@@ -28,10 +28,9 @@ public class EntityAssociationImpl extends AttributeSupport implements MutableEn
 	private final MutableEntityConfiguration sourceEntityConfiguration;
 
 	private Boolean hidden;
-
 	private EntityConfiguration targetEntityConfiguration;
-
 	private EntityPropertyDescriptor sourceProperty, targetProperty;
+	private ParentDeleteMode parentDeleteMode = ParentDeleteMode.SUPPRESS;
 
 	public EntityAssociationImpl( String name,
 	                              MutableEntityConfiguration sourceEntityConfiguration ) {
@@ -100,6 +99,16 @@ public class EntityAssociationImpl extends AttributeSupport implements MutableEn
 	@Override
 	public void setTargetProperty( EntityPropertyDescriptor targetProperty ) {
 		this.targetProperty = targetProperty;
+	}
+
+	@Override
+	public ParentDeleteMode getParentDeleteMode() {
+		return parentDeleteMode;
+	}
+
+	@Override
+	public void setParentDeleteMode( ParentDeleteMode parentDeleteMode ) {
+		this.parentDeleteMode = parentDeleteMode;
 	}
 
 	@Override

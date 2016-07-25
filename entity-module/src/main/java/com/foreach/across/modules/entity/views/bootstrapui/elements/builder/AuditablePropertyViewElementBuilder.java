@@ -19,15 +19,16 @@ import com.foreach.across.modules.entity.config.entities.AuditableEntityUiConfig
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.hibernate.business.Auditable;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * <p>Custom {@link ViewElementBuilder} for created and last modified properties of any
@@ -42,6 +43,7 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 {
 	private boolean forLastModifiedProperty;
 	private ConversionService conversionService;
+	private SecurityPrincipalLabelResolverStrategy securityPrincipalLabelResolverStrategy;
 
 	/**
 	 * Configure the builder for the last modified property instead of the creation property.
@@ -62,6 +64,16 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 		this.conversionService = conversionService;
 	}
 
+	/**
+	 * Implementation to use for resolving a display label for a principal object.
+	 *
+	 * @param securityPrincipalLabelResolverStrategy to use for looking up security principal label
+	 */
+	@Autowired
+	public void setSecurityPrincipalLabelResolverStrategy( SecurityPrincipalLabelResolverStrategy securityPrincipalLabelResolverStrategy ) {
+		this.securityPrincipalLabelResolverStrategy = securityPrincipalLabelResolverStrategy;
+	}
+
 	@Override
 	public ViewElement build( ViewElementBuilderContext builderContext ) {
 		Auditable auditable = EntityViewElementUtils.currentEntity( builderContext, Auditable.class );
@@ -75,7 +87,7 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 				date = auditable.getLastModifiedDate();
 			}
 
-			String principalString = Objects.toString( principal, "" );
+			String principalString = securityPrincipalLabelResolverStrategy.resolvePrincipalLabel( principal );
 
 			return new TextViewElement(
 					convertToString( date )

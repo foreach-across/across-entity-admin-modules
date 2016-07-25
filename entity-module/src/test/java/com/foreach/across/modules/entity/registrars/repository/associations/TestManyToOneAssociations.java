@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
+import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
+import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.registrars.repository.TestRepositoryEntityRegistrar;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -37,6 +39,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.ui.ModelMap;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -162,6 +165,21 @@ public class TestManyToOneAssociations
 
 		assertNotNull( association );
 
+		AssociatedEntityQueryExecutor<Client> executor
+				= association.getAttribute( AssociatedEntityQueryExecutor.class );
+
+		verifyClients( executor, one, john );
+		verifyClients( executor, two, joe, peter );
+		verifyClients( executor, three );
+	}
+
+	@Test
+	public void companyClientsListView() {
+		EntityConfiguration company = entityRegistry.getEntityConfiguration( Company.class );
+		EntityAssociation association = company.association( "client.company" );
+
+		assertNotNull( association );
+
 		EntityListViewFactory listViewFactory = association.getViewFactory( EntityListView.VIEW_NAME );
 		assertNotNull( listViewFactory );
 
@@ -170,6 +188,15 @@ public class TestManyToOneAssociations
 		verifyClients( one, john );
 		verifyClients( two, joe, peter );
 		verifyClients( three );
+	}
+
+	private void verifyClients( AssociatedEntityQueryExecutor<Client> executor, Company company, Client... clients ) {
+		assertNotNull( executor );
+
+		List<Client> result = executor.findAll( company, EntityQuery.all() );
+		assertNotNull( result );
+		assertEquals( clients.length, result.size() );
+		assertTrue( result.containsAll( Arrays.asList( clients ) ) );
 	}
 
 	@SuppressWarnings("unchecked")

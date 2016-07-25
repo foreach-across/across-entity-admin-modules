@@ -86,14 +86,10 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 
 		// todo: clean this up, work with separate control (?) allow list value to be without link, but other to be with
 		if ( controlMode.equals( ViewElementMode.VALUE ) ) {
-			formGroup.postProcessor( new ViewElementPostProcessor<FormGroupElement>()
-			{
-				@Override
-				public void postProcess( ViewElementBuilderContext builderContext, FormGroupElement element ) {
-					StaticFormElement staticFormElement = new StaticFormElement();
-					staticFormElement.add( element.getControl() );
-					element.setControl( staticFormElement );
-				}
+			formGroup.postProcessor( ( builderContext, element ) -> {
+				StaticFormElement staticFormElement = new StaticFormElement();
+				staticFormElement.addChild( element.getControl() );
+				element.setControl( staticFormElement );
 			} );
 		}
 

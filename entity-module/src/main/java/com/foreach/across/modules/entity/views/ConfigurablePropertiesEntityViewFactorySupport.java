@@ -26,7 +26,7 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.resource.WebResourceUtils;
 import com.foreach.across.modules.web.ui.DefaultViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElements;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,7 +188,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		return builders;
 	}
 
-	protected abstract ViewElements buildViewElements(
+	protected abstract ContainerViewElement buildViewElements(
 			V viewCreationContext,
 			EntityViewElementBuilderContext<T> viewElementBuilderContext,
 			EntityMessageCodeResolver messageCodeResolver

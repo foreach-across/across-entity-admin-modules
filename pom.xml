@@ -65,6 +65,7 @@
 
 	<modules>
 		<module>entity-module</module>
+		<module>entity-module-test</module>
 	</modules>
 
 	<dependencyManagement>

@@ -15,15 +15,13 @@
  */
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
+import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityFormViewFactory;
-import com.foreach.across.modules.entity.views.EntityListView;
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
+import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.fetchers.AssociationListViewPageFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +65,7 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 
 			buildCreateView( association );
 			buildListView( association, property );
+			buildDeleteView( association );
 		}
 	}
 
@@ -91,9 +90,13 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 		                                "entityViews.listView",
 		                                "entityViews" );
 
-		EntityQueryExecutor queryExecutor = to.getAttribute( EntityQueryExecutor.class );
+		EntityQueryExecutor<?> queryExecutor = to.getAttribute( EntityQueryExecutor.class );
 
 		if ( queryExecutor != null ) {
+			association.setAttribute(
+					AssociatedEntityQueryExecutor.class,
+					new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), queryExecutor )
+			);
 			viewFactory.setPageFetcher(
 					new AssociationListViewPageFetcher( association.getTargetProperty(), queryExecutor )
 			);
@@ -116,6 +119,17 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 		                                "entityViews" );
 
 		association.registerView( EntityFormView.CREATE_VIEW_NAME, viewFactory );
+	}
 
+	public void buildDeleteView( MutableEntityAssociation association ) {
+		EntityConfiguration to = association.getTargetEntityConfiguration();
+
+		EntityDeleteViewFactory viewFactory = beanFactory.getBean( EntityDeleteViewFactory.class );
+		BeanUtils.copyProperties( to.getViewFactory( EntityFormView.DELETE_VIEW_NAME ), viewFactory );
+		viewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".deleteView",
+		                                "entityViews.deleteView",
+		                                "entityViews" );
+
+		association.registerView( EntityFormView.DELETE_VIEW_NAME, viewFactory );
 	}
 }

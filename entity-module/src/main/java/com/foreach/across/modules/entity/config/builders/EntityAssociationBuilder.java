@@ -19,10 +19,7 @@ import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.config.builders.association.FormViewBuilder;
 import com.foreach.across.modules.entity.config.builders.association.ListViewBuilder;
 import com.foreach.across.modules.entity.config.builders.association.ViewBuilder;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
-import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityListView;
@@ -35,6 +32,7 @@ public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<
 
 	private boolean hiddenSpecified;
 	private Boolean hidden;
+	private EntityAssociation.ParentDeleteMode parentDeleteMode;
 
 	private Class<?> targetEntityType;
 	private String sourceProperty, targetProperty;
@@ -153,6 +151,18 @@ public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<
 	public EntityAssociationBuilder hidden( Boolean hidden ) {
 		hiddenSpecified = true;
 		this.hidden = hidden;
+		return this;
+	}
+
+	/**
+	 * Set the UI behaviour in case the parent entity is being deleted but there are associations.
+	 *
+	 * @param parentDeleteMode to use
+	 * @return current builder
+	 * @see com.foreach.across.modules.entity.registry.EntityAssociation.ParentDeleteMode
+	 */
+	public EntityAssociationBuilder parentDeleteMode( EntityAssociation.ParentDeleteMode parentDeleteMode ) {
+		this.parentDeleteMode = parentDeleteMode;
 		return this;
 	}
 

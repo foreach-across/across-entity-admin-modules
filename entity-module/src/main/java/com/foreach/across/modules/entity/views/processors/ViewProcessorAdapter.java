@@ -19,7 +19,7 @@ import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.ViewCreationContext;
-import com.foreach.across.modules.web.ui.ViewElements;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.DataBinder;
 
@@ -64,7 +64,7 @@ public class ViewProcessorAdapter<T extends ViewCreationContext, U extends Entit
 
 	}
 
-	protected void modifyViewElements( ViewElements elements ) {
+	protected void modifyViewElements( ContainerViewElement elements ) {
 
 	}
 }

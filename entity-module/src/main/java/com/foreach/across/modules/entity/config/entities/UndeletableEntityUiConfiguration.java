@@ -46,9 +46,9 @@ public class UndeletableEntityUiConfiguration implements EntityConfigurer
 				             if ( undeletable.isDeleted() ) {
 					             NodeViewElement message = new NodeViewElement( "div" );
 					             message.addCssClass( "alert", "alert-danger" );
-					             message.add( new TextViewElement( "You are watching a deleted entity." ) );
+					             message.addChild( new TextViewElement( "You are watching a deleted entity." ) );
 
-					             view.getViewElements().addFirst( message );
+					             view.getViewElements().addFirstChild( message );
 				             }
 				             //view.getViewElements().addFirst(  );
 			             }

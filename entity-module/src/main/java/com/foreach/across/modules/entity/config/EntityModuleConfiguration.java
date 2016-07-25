@@ -31,6 +31,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactoryImpl;
+import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
 import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewViewFactory;
@@ -127,5 +128,12 @@ public class EntityModuleConfiguration
 	@Scope("prototype")
 	public EntityFormViewFactory entityFormViewFactory() {
 		return new EntityFormViewFactory();
+	}
+
+	@Bean
+	@Exposed
+	@Scope("prototype")
+	public EntityDeleteViewFactory entityDeleteViewFactory() {
+		return new EntityDeleteViewFactory();
 	}
 }

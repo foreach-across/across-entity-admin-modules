@@ -25,6 +25,16 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
  */
 public interface EntityAssociation extends ReadableAttributes, EntityViewRegistry
 {
+	/**
+	 * When the parent entity is requesting to be deleted, how should this association influence the delete process?
+	 */
+	enum ParentDeleteMode
+	{
+		IGNORE,         /* ignore this association */
+		WARN,           /* check for associated entities but do not suppress deletion */
+		SUPPRESS        /* check for associated entities and suppress deletion if there are any */
+	}
+
 	String getName();
 
 	Class<?> getEntityType();
@@ -41,4 +51,9 @@ public interface EntityAssociation extends ReadableAttributes, EntityViewRegistr
 	EntityConfiguration getTargetEntityConfiguration();
 
 	EntityPropertyDescriptor getTargetProperty();
+
+	/**
+	 * @return behaviour in case the parent entity will be deleted but associated entities still exist
+	 */
+	ParentDeleteMode getParentDeleteMode();
 }

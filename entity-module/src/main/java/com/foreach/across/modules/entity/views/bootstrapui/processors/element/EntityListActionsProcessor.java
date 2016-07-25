@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 
 /**
@@ -48,8 +49,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 	}
 
 	@Override
-	public void postProcess( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext,
-	                         TableViewElement.Row row ) {
+	public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row row ) {
 		TableViewElementBuilder.Cell cell = new TableViewElementBuilder.Cell();
 
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
@@ -61,7 +61,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 			cell.heading( true );
 		}
 
-		row.add( cell.build( builderContext ) );
+		row.addChild( cell.build( builderContext ) );
 	}
 
 	protected void addEntityActions( TableViewElementBuilder.Cell cell, Object entity ) {
@@ -74,12 +74,15 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 					           .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
 					           .text( messages.updateAction() )
 			);
-	      /*.add(
-		           bootstrapUi.button()
-                              .link()
-                              .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
-                              .text( "Delete group" )
-           )*/
+		}
+
+		if ( allowableActions.contains( AllowableAction.DELETE ) ) {
+			cell.add(
+					bootstrapUi.button()
+					           .link( linkBuilder.delete( entity ) )
+					           .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
+					           .text( messages.deleteAction() )
+			);
 		}
 	}
 }

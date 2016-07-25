@@ -255,6 +255,9 @@ public class TestRepositoryEntityRegistrar
 		assertNotNull( existing );
 		assertEquals( "Modified name", existing.getName() );
 		assertEquals( "Modified name", model.getLabel( existing ) );
+
+		model.delete( existing );
+		assertNull( model.findOne( 10L ) );
 	}
 
 	@Test

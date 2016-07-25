@@ -20,6 +20,7 @@ import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
 import com.foreach.across.modules.hibernate.business.Auditable;
+import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Before;
@@ -36,13 +37,12 @@ import static org.mockito.Mockito.when;
 /**
  * @author Arne Vandamme
  */
-@ContextConfiguration(classes = TestAuditablePropertyViewElementBuilder.Config.class)
+@ContextConfiguration
 public class TestAuditablePropertyViewElementBuilder extends AbstractViewElementTemplateTest
 {
 	private final Date dateCreated = new Date();
 	private final Date dateLastModified = new Date( System.currentTimeMillis() + 1000 );
 
-	private ConversionService conversionService;
 	private Entity entity;
 	private AuditablePropertyViewElementBuilder builder;
 	private ViewElementBuilderContextImpl builderContext;
@@ -51,7 +51,13 @@ public class TestAuditablePropertyViewElementBuilder extends AbstractViewElement
 	public void before() {
 		builder = new AuditablePropertyViewElementBuilder();
 
-		conversionService = mock( ConversionService.class );
+		SecurityPrincipalLabelResolverStrategy resolverStrategy = mock( SecurityPrincipalLabelResolverStrategy.class );
+		builder.setSecurityPrincipalLabelResolverStrategy( resolverStrategy );
+
+		when( resolverStrategy.resolvePrincipalLabel( "admin" ) ).thenReturn( "Administrator" );
+		when( resolverStrategy.resolvePrincipalLabel( "system" ) ).thenReturn( "System Machine" );
+
+		ConversionService conversionService = mock( ConversionService.class );
 		when( conversionService.convert( dateCreated, String.class ) ).thenReturn( "creationDate" );
 		when( conversionService.convert( dateLastModified, String.class ) ).thenReturn( "modificationDate" );
 
@@ -69,13 +75,13 @@ public class TestAuditablePropertyViewElementBuilder extends AbstractViewElement
 
 	@Test
 	public void creationDateWithPrincipal() {
-		expect( "creationDate by admin" );
+		expect( "creationDate by Administrator" );
 	}
 
 	@Test
 	public void modificationDateWithPrincipal() {
 		builder.setForLastModifiedProperty( true );
-		expect( "modificationDate by system" );
+		expect( "modificationDate by System Machine" );
 	}
 
 	@Test
