@@ -59,9 +59,11 @@ Module website: {module-url}
 == What's new in this version?
 :numbered!:
 === 2.0.0-SNAPSHOT
+Requires Across 2.0.0+
 
-* Compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
+* compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
 * principal names on `Auditable` entities are now pretty printed using the `SecurityPrincipalLabelResolverStrategy` from the _SpringSecurityModule_
+* {module-name} now supports <<delete-view,deleting of entities>>
 
 :numbered:
 == About the EntityModule
@@ -237,6 +239,12 @@ public void configure( EntitiesConfigurationBuilder configuration ) {
 }
 ----
 
+=== ParentDeleteMode
+An `EntityAssociation` has a *parentDeleteMode* property that determines how associated items will influence the ability to delete in the user interface.
+The default value is `SUPPRESS` but can be set through the `EntitiesConfigurationBuilder`.
+
+For more information see the <<delete-view,delete view chapter>>.
+
 === Association naming and location
 Associations are added to the `EntityConfiguration` for which it makes most sense to manage them from a UI perspective.
 The association naming however is done according to the entity class and property names.
@@ -248,7 +256,7 @@ Example:
 
 == Entity views
 
-=== List views
+=== List view
 
 ==== List summary view
 
@@ -262,6 +270,35 @@ The summary pane is called using AJAX and only the _content_ fragment of the pag
 // Activate a summary view in the main user results table using a custom Thymeleaf template
 configuration.entity( User.class ).view( EntityListView.SUMMARY_VIEW_NAME ).template( "th/myModule/userSummary" );
 ----
+
+[[delete-view]]
+=== Delete view
+A delete action will be available for all entities where `AllowableAction.DELETE` is present, this is the default unless more explicit permissions are configured.
+A delete will always redirect to a confirmation page by default.
+Because the possibility to delete an entity often depends on other factors (usually associations), the default `EntityDeleteViewFactory` publishes an event that allows customizing said confirmation page.
+
+By catching the `BuildEntityDeleteViewEvent` your code can:
+
+* suppress the ability to delete (by hiding the delete button)
+* add associations to the form
+* add custom feedback messages to the form (and optionally remove the associations block)
+
+This should be sufficient for most use cases without having to revert to custom `EntityViewProcessor` implementations.
+Of course the latter would work as well.
+
+.Entity associations
+The initial `BuildEntityDeleteViewEvent` is configured based on the `EntityAssociation` list of the entity.
+If associated items are detected, they influence the form settings depending on the *parentDeleteMode* property of the `EntityAssociation`:
+
+* `ParentDeleteMode.IGNORE`: item information is not printed nor influences the ability to delete
+* `ParentDeleteMode.WARN`: item information is printed on the form but does not influence the ability to delete
+* `ParentDeleteMode.SUPPRESS`: item information is printed on the form and disables the ability to delete, this is the default setting
+
+The event is published after the initial association information has been set.
+
+.Performing the delete
+The {module-name} simply calls the delete method of the `EntityModel`, usually a direct call to a repository `delete()`.
+You will have to take care yourself of complex delete scenarios - like deleting the associations - by either modifying the `EntityModel` or using another mechanism like the `EntityInterceptor`.
 
 === Custom views
 
