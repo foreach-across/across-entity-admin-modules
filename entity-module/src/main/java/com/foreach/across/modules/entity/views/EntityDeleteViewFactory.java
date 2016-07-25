@@ -23,6 +23,7 @@ import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
 import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQuery;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityAssociation.ParentDeleteMode;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -33,6 +34,8 @@ import com.foreach.across.modules.web.resource.WebResourceUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
@@ -45,6 +48,8 @@ import org.springframework.ui.ModelMap;
 public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		extends SimpleEntityViewFactorySupport<V, EntityView>
 {
+	private static final Logger LOG = LoggerFactory.getLogger( EntityDeleteViewFactory.class );
+
 	public static final String FORM_NAME = "entityDeleteForm";
 
 	private BootstrapUiFactory bootstrapUi;
@@ -169,7 +174,6 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		);
 
 		buildAssociations( entityConfiguration, view, event );
-		;
 
 		eventPublisher.publish( event );
 
@@ -188,46 +192,66 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		Object parent = view.getEntity();
 		EntityLinkBuilder parentLinkBuilder = view.getEntityLinkBuilder();
 
+		LOG.trace( "Fetching associated items and disabling delete if parent delete mode is SUPPRESS" );
+
 		entityConfiguration.getAssociations().forEach(
 				association -> {
-					if ( ParentDeleteMode.IGNORE != association.getParentDeleteMode() ) {
-						AssociatedEntityQueryExecutor executor = association.getAttribute(
-								AssociatedEntityQueryExecutor.class );
+					int count = countAssociatedItems( association, parent );
 
-						if ( executor != null ) {
-							int count = executor.findAll( parent, EntityQuery.all() ).size();
+					if ( count > 0 ) {
+						if ( ParentDeleteMode.SUPPRESS == association.getParentDeleteMode() ) {
+							LOG.trace( "Suppressing delete action because association {} has {} items",
+							           association.getName(), count );
+							viewConfiguration.setDeleteDisabled( true );
+						}
 
-							if ( count > 0 ) {
-								if ( ParentDeleteMode.SUPPRESS == association.getParentDeleteMode() ) {
-									viewConfiguration.setDeleteDisabled( true );
-								}
-
-								if ( !association.isHidden() ) {
-									EntityMessages messages = new EntityMessages(
-											association.getTargetEntityConfiguration().getEntityMessageCodeResolver()
-									);
-
-									EntityLinkBuilder linkBuilder
-											= association.getAttribute( EntityLinkBuilder.class ).asAssociationFor(
-											parentLinkBuilder, parent );
-
-									String title = messages.withNamePlural( "views.deleteView.associatedResults",
-									                                        count );
-									viewConfiguration.associations().addChild(
-											bootstrapUi
-													.node( "li" )
-													.name( association.getName() )
-													.add( bootstrapUi
-															      .link()
-															      .url( linkBuilder.overview() )
-															      .text( title ) )
-													.build( viewConfiguration.getBuilderContext() )
-									);
-								}
-							}
+						if ( !association.isHidden() ) {
+							addAssociationInfo( viewConfiguration, parent, parentLinkBuilder, association, count );
 						}
 					}
 				}
 		);
+
+		LOG.trace( "Delete disabled after association check: {}", viewConfiguration.isDeleteDisabled() );
+	}
+
+	private void addAssociationInfo( BuildEntityDeleteViewEvent viewConfiguration,
+	                                 Object parent,
+	                                 EntityLinkBuilder parentLinkBuilder,
+	                                 EntityAssociation association,
+	                                 int itemCount ) {
+		EntityMessages messages = new EntityMessages(
+				association.getTargetEntityConfiguration().getEntityMessageCodeResolver()
+		);
+
+		EntityLinkBuilder linkBuilder = association
+				.getAttribute( EntityLinkBuilder.class )
+				.asAssociationFor( parentLinkBuilder, parent );
+
+		String title = messages.withNamePlural( "views.deleteView.associatedResults", itemCount );
+
+		viewConfiguration.associations().addChild(
+				bootstrapUi
+						.node( "li" )
+						.name( association.getName() )
+						.add( bootstrapUi
+								      .link()
+								      .url( linkBuilder.overview() )
+								      .text( title ) )
+						.build( viewConfiguration.getBuilderContext() )
+		);
+	}
+
+	private int countAssociatedItems( EntityAssociation association, Object parent ) {
+		if ( ParentDeleteMode.IGNORE != association.getParentDeleteMode() ) {
+			AssociatedEntityQueryExecutor executor = association.getAttribute(
+					AssociatedEntityQueryExecutor.class );
+
+			if ( executor != null ) {
+				return executor.findAll( parent, EntityQuery.all() ).size();
+			}
+		}
+
+		return 0;
 	}
 }
