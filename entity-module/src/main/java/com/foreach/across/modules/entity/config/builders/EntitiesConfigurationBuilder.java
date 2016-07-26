@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.config.builders.registry.FormViewBuilder;
 import com.foreach.across.modules.entity.config.builders.registry.ListViewBuilder;
 import com.foreach.across.modules.entity.config.builders.registry.ViewBuilder;
@@ -29,6 +28,7 @@ import org.springframework.util.Assert;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Central builder for customizing configuration entries in the
@@ -151,12 +151,12 @@ public class EntitiesConfigurationBuilder extends AbstractAttributesAndViewsBuil
 	 * @param entityRegistry EntityRegistry to which the post processors should be applied.
 	 */
 	public synchronized void postProcess( MutableEntityRegistry entityRegistry ) {
-		for ( PostProcessor<MutableEntityConfiguration<?>> postProcessor : postProcessors() ) {
+		for ( Consumer<MutableEntityConfiguration<?>> postProcessor : postProcessors() ) {
 			for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
 				MutableEntityConfiguration mutableEntityConfiguration
 						= entityRegistry.getMutableEntityConfiguration( entityConfiguration.getEntityType() );
 
-				postProcessor.process( mutableEntityConfiguration );
+				postProcessor.accept( mutableEntityConfiguration );
 			}
 		}
 

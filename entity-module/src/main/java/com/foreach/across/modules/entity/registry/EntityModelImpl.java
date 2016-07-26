@@ -31,7 +31,7 @@ import java.util.function.UnaryOperator;
  * using callbacks and delegate instances.
  * <ul>
  * <li>{@link EntityFactory} for creation of instances and transforming them into dtos</li>
- * <li>@link EntityInformation} for accessing an entity metadata</li>
+ * <li>{@link EntityInformation} for accessing an entity metadata</li>
  * <li>{@link Printer} for generating the label</li>
  * <li>{@link Function} for save and find methods</li>
  * <li>{@link Consumer} for delete method</li>

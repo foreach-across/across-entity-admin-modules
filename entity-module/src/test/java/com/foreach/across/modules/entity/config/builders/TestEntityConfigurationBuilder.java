@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.config.PostProcessor;
+import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
@@ -90,22 +90,14 @@ public class TestEntityConfigurationBuilder
 	public void postProcessorsAreAppliedInOrder() {
 		final List<String> processors = new ArrayList<>( 2 );
 
-		builder.addPostProcessor( new PostProcessor<MutableEntityConfiguration<Client>>()
-		{
-			@Override
-			public void process( MutableEntityConfiguration<Client> configuration ) {
-				assertSame( client, configuration );
-				processors.add( "one" );
-			}
+		builder.addPostProcessor( configuration -> {
+			assertSame( client, configuration );
+			processors.add( "one" );
 		} );
 
-		builder.addPostProcessor( new PostProcessor<MutableEntityConfiguration<Client>>()
-		{
-			@Override
-			public void process( MutableEntityConfiguration<Client> configuration ) {
-				assertSame( client, configuration );
-				processors.add( "two" );
-			}
+		builder.addPostProcessor( configuration -> {
+			assertSame( client, configuration );
+			processors.add( "two" );
 		} );
 
 		builder.postProcess( entityRegistry );
@@ -173,5 +165,34 @@ public class TestEntityConfigurationBuilder
 		one = builder.updateFormView();
 		assertNotNull( one );
 		assertSame( one, builder.formView( EntityFormView.UPDATE_VIEW_NAME ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void customEntityModel() {
+		EntityModel model = mock( EntityModel.class );
+
+		EntityModelBuilder modelBuilder = builder.entityModel( model );
+		assertNotNull( modelBuilder );
+		assertSame( builder, modelBuilder.and() );
+
+		builder.apply( entityRegistry, beanFactory );
+
+		verify( client ).setEntityModel( model );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void modifyEntityModel() {
+		EntityModel model = mock( EntityModel.class );
+		when( client.getEntityModel() ).thenReturn( model );
+
+		EntityModelBuilder modelBuilder = builder.entityModel();
+		assertNotNull( modelBuilder );
+		assertSame( builder, modelBuilder.and() );
+
+		builder.apply( entityRegistry, beanFactory );
+
+		verify( client, never() ).setEntityModel( any() );
 	}
 }

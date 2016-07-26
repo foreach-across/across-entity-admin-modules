@@ -16,7 +16,6 @@
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
-import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.config.builders.configuration.FormViewBuilder;
 import com.foreach.across.modules.entity.config.builders.configuration.ListViewBuilder;
 import com.foreach.across.modules.entity.config.builders.configuration.ViewBuilder;
@@ -31,7 +30,9 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.Assert;
 
+import java.io.Serializable;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author Arne Vandamme
@@ -47,6 +48,9 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 	private PropertyRegistryBuilder propertyRegistryBuilder;
 	private EntityConfigurationAllowableActionsBuilder allowableActionsBuilder;
 	private Boolean hidden;
+
+	private EntityModel<T, Serializable> entityModel;
+	private EntityModelBuilder<T> entityModelBuilder;
 
 	EntityConfigurationBuilder( Class<T> entityType, boolean assignableTo, EntitiesConfigurationBuilder parent ) {
 		this.entityType = entityType;
@@ -117,6 +121,32 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 	}
 
 	/**
+	 * Sets a custom {@link EntityModel} for this configuration and returns a builder
+	 * to additionally customize it.  If the model provided is not of type {@link EntityModelImpl},
+	 * additional customizations will not be performed and warnings will be logged.
+	 *
+	 * @param entityModel implementation
+	 * @return model builder
+	 */
+	public EntityModelBuilder<T> entityModel( EntityModel<T, Serializable> entityModel ) {
+		this.entityModel = entityModel;
+		return entityModel();
+	}
+
+	/**
+	 * Return a builder to customize the {@link EntityModel}.
+	 *
+	 * @return model builder
+	 */
+	public EntityModelBuilder<T> entityModel() {
+		if ( entityModelBuilder == null ) {
+			entityModelBuilder = new EntityModelBuilder<>( this );
+		}
+
+		return entityModelBuilder;
+	}
+
+	/**
 	 * @return the parent builder
 	 */
 	public EntitiesConfigurationBuilder and() {
@@ -166,7 +196,7 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 
 	void apply( MutableEntityRegistry entityRegistry, AutowireCapableBeanFactory beanFactory ) {
 		for ( Class<T> entityType : entityTypesToHandle( entityRegistry ) ) {
-			MutableEntityConfiguration configuration
+			MutableEntityConfiguration<T> configuration
 					= entityRegistry.getMutableEntityConfiguration( entityType );
 
 			if ( configuration == null ) {
@@ -175,6 +205,14 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 						beanFactory.getBean( EntityPropertyRegistryFactory.class ).getOrCreate( entityType )
 				);
 				entityRegistry.register( configuration );
+			}
+
+			if ( entityModel != null ) {
+				configuration.setEntityModel( entityModel );
+			}
+
+			if ( entityModelBuilder != null ) {
+				entityModelBuilder.apply( configuration );
 			}
 
 			if ( propertyRegistryBuilder != null && configuration
@@ -204,8 +242,8 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 			MutableEntityConfiguration configuration
 					= entityRegistry.getMutableEntityConfiguration( entityType );
 
-			for ( PostProcessor<MutableEntityConfiguration<T>> postProcessor : postProcessors() ) {
-				postProcessor.process( configuration );
+			for ( Consumer<MutableEntityConfiguration<T>> postProcessor : postProcessors() ) {
+				postProcessor.accept( configuration );
 			}
 
 			for ( EntityAssociationBuilder associationBuilder : associations.values() ) {

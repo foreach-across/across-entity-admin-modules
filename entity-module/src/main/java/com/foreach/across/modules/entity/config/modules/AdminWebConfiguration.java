@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.config.modules;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
-import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
 import com.foreach.across.modules.entity.controllers.association.*;
@@ -26,7 +25,6 @@ import com.foreach.across.modules.entity.controllers.entity.*;
 import com.foreach.across.modules.entity.handlers.MenuEventsHandler;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
-import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.web.EntityAssociationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
@@ -120,23 +118,19 @@ public class AdminWebConfiguration implements EntityConfigurer
 			}
 		};
 
-		configuration.addPostProcessor( new PostProcessor<MutableEntityConfiguration<?>>()
-		{
-			@Override
-			public void process( MutableEntityConfiguration<?> configuration ) {
-				configuration.setAttribute(
-						EntityLinkBuilder.class,
-						new EntityConfigurationLinkBuilder(
-								EntityControllerAttributes.ROOT_PATH, configuration, mvcConversionService,
-								servletContextResolver
-						)
-				);
+		configuration.addPostProcessor( c -> {
+			c.setAttribute(
+					EntityLinkBuilder.class,
+					new EntityConfigurationLinkBuilder(
+							EntityControllerAttributes.ROOT_PATH, c, mvcConversionService,
+							servletContextResolver
+					)
+			);
 
-				for ( EntityAssociation association : configuration.getAssociations() ) {
-					MutableEntityAssociation mutable = configuration.association( association.getName() );
-					mutable.setAttribute( EntityLinkBuilder.class,
-					                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
-				}
+			for ( EntityAssociation association : c.getAssociations() ) {
+				MutableEntityAssociation mutable = c.association( association.getName() );
+				mutable.setAttribute( EntityLinkBuilder.class,
+				                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
 			}
 		} );
 	}
