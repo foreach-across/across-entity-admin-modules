@@ -33,7 +33,7 @@ public interface MutableEntityConfiguration<T> extends EntityConfiguration<T>, W
 
 	void setHidden( boolean hidden );
 
-	void setEntityModel( EntityModel<T, ? extends Serializable> entityModel );
+	void setEntityModel( EntityModel<T, Serializable> entityModel );
 
 	void setPropertyRegistry( EntityPropertyRegistry propertyRegistry );
 

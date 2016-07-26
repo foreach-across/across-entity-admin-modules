@@ -24,10 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
-import org.springframework.data.repository.support.RepositoryInvokerUtils;
+import org.springframework.data.repository.support.RepositoryInvoker;
 import org.springframework.format.Printer;
 
+import java.io.Serializable;
 import java.util.Locale;
+
+import static org.springframework.data.repository.support.RepositoryInvokerUtils.createRepositoryInvoker;
 
 /**
  * Builds an {@link com.foreach.across.modules.entity.registry.EntityModel} for a Spring data repository.
@@ -39,20 +42,24 @@ public class RepositoryEntityModelBuilder
 
 	@SuppressWarnings("unchecked")
 	public <T> void buildEntityModel( MutableEntityConfiguration<T> entityConfiguration ) {
-		RepositoryFactoryInformation<T, ?> repositoryFactoryInformation
+		RepositoryFactoryInformation<T, Serializable> repositoryFactoryInformation
 				= entityConfiguration.getAttribute( RepositoryFactoryInformation.class );
 		Repository<T, ?> repository = entityConfiguration.getAttribute( Repository.class );
 
-		EntityModelImpl entityModel = new EntityModelImpl<>();
-		entityModel.setRepositoryInvoker(
-				RepositoryInvokerUtils.createRepositoryInvoker( repositoryFactoryInformation.getRepositoryInformation(),
-				                                                repository, mvcConversionService )
-		);
+		EntityModelImpl<T, Serializable> entityModel = new EntityModelImpl<>();
+		RepositoryInvoker repositoryInvoker
+				= createRepositoryInvoker( repositoryFactoryInformation.getRepositoryInformation(),
+				                           repository, mvcConversionService );
+		entityModel.setFindOneMethod( repositoryInvoker::invokeFindOne );
+		entityModel.setSaveMethod( repositoryInvoker::invokeSave );
+		entityModel.setDeleteMethod( entity -> repositoryInvoker.invokeDelete( entityModel.getId( entity ) ) );
+
 		entityModel.setEntityFactory(
 				new PersistentEntityFactory( repositoryFactoryInformation.getPersistentEntity() )
 		);
 		entityModel.setEntityInformation( repositoryFactoryInformation.getEntityInformation() );
 		entityModel.setLabelPrinter( createLabelPrinter( entityConfiguration.getPropertyRegistry() ) );
+
 
 		entityConfiguration.setEntityModel( entityModel );
 	}

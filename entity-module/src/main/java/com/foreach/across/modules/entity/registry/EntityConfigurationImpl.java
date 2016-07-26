@@ -53,7 +53,7 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	private boolean hidden;
 	private String displayName;
 
-	private EntityModel<T, ? extends Serializable> entityModel;
+	private EntityModel<T, Serializable> entityModel;
 	private EntityPropertyRegistry propertyRegistry;
 
 	public EntityConfigurationImpl( Class<T> entityType ) {
@@ -68,11 +68,11 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	}
 
 	@Override
-	public EntityModel<T, ? extends Serializable> getEntityModel() {
+	public EntityModel<T, Serializable> getEntityModel() {
 		return entityModel;
 	}
 
-	public void setEntityModel( EntityModel<T, ? extends Serializable> entityModel ) {
+	public void setEntityModel( EntityModel<T, Serializable> entityModel ) {
 		this.entityModel = entityModel;
 	}
 

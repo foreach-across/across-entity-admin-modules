@@ -31,7 +31,7 @@ public interface EntityConfiguration<T> extends ReadableAttributes, EntityViewRe
 
 	Class<T> getEntityType();
 
-	EntityModel<T, ? extends Serializable> getEntityModel();
+	EntityModel<T, Serializable> getEntityModel();
 
 	EntityPropertyRegistry getPropertyRegistry();
 
