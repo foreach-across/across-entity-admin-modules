@@ -64,6 +64,7 @@ Requires Across 2.0.0+
 * compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
 * principal names on `Auditable` entities are now pretty printed using the `SecurityPrincipalLabelResolverStrategy` from the _SpringSecurityModule_
 * {module-name} now supports <<delete-view,deleting of entities>>
+* the `EntityModel` of an `EntityConfiguration` can now be customized using the <<builders,`EntityConfigurer` builders>>
 
 :numbered:
 == About the EntityModule
@@ -74,14 +75,14 @@ Requires Across 2.0.0+
 
 == Configuring entity types
 
+[[builders]]
 === Using builders
 Entities are usually automatically added to the `EntityRegistry` through the use of one or more `EntityRegistrar` beans.
 The registrars will apply a default configuration, usually consisting of all properties, associations and views.
 
-Customizing the `EntityRegistry` is done by implementing one or more `EntityConfigurer` beans in your modules.  These
-receive an `EntitiesConfigurationBuilder` that effectively allows you to customize all registered `EntityConfiguration` instances.
-Multiple `EntityConfigurer` beans can modify the same `EntityConfiguration`, the order in which they are applied will determine
-the last value if they modify the same properties.
+Customizing the `EntityRegistry` is done by implementing one or more `EntityConfigurer` beans in your modules.
+These receive an `EntitiesConfigurationBuilder` that effectively allows you to customize all registered `EntityConfiguration` instances.
+Multiple `EntityConfigurer` beans can modify the same `EntityConfiguration`, the order in which they are applied will determine the last value if they modify the same properties.
 
 Investigate the javadoc of the `EntitiesConfigurationBuilder` and child builders to discover all possible configuration options.
 
@@ -101,31 +102,31 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 ----
 
 === Configuring properties
-Properties for an entity can be configured through the builders as well.  New properties can be added or the default
-properties can modified.  How properties are configured determines how they will be rendered on the generated forms.
+Properties for an entity can be configured through the builders as well.
+New properties can be added or the default properties can modified.
+How properties are configured determines how they will be rendered on the generated forms.
 
 hidden:: A hidden property will by default not be returned when requesting all properties from an `EntityPropertyRegistry`.
-You can still get this property directly however, the `hidden` state means a property will not advertise itself, you must
-know of its existence.
+You can still get this property directly however, the `hidden` state means a property will not advertise itself, you must know of its existence.
 
-readable:: Any readable property can be rendered in all views.  This state means that a form control can always be generated,
- even though it might very well be readonly if the property is not `writable`.
+readable:: Any readable property can be rendered in all views.
+This state means that a form control can always be generated, even though it might very well be readonly if the property is not `writable`.
 
-writable::  A writable property can be rendered in form views.  In case a property is writable but not readable, the
- property can only be included in forms but not in other views.
+writable::  A writable property can be rendered in form views.
+In case a property is writable but not readable, the property can only be included in forms but not in other views.
 
-WARNING: The `hidden` state has no correlation with a hidden form control.  Setting a property to be rendered as a hidden
-form control can only be done through configuring the right `ViewElement` information for that property.
+WARNING: The `hidden` state has no correlation with a hidden form control.
+Setting a property to be rendered as a hidden form control can only be done through configuring the right `ViewElement` information for that property.
 
 ==== Configuring a label
-An entity with a corresponding `EntityConfiguration` always has a label, this is a textual representation of the entity
- in for example lists.  This could be the *name* or the * title* property for example.  By default the label corresponds
- to a custom generated property *#label* that defaults to calling `toString()` on the entity.
+An entity with a corresponding `EntityConfiguration` always has a label, this is a textual representation of the entity in for example lists.
+This could be the *name* or the * title* property for example.
+By default the label corresponds to a custom generated property *#label* that defaults to calling `toString()` on the entity.
 
-You can configure the label using the `label()` method on a `PropertyDescriptorBuilder`.  This is equivalent to calling
-   `property("#label")`.  If you want to use another property as the base for label generation, you can configure this
-   on the `EntityConfigurationBuilder` by calling `label("propertyName")`.  This will copy all settings from the source
-   property to the *#label* property, but keep in mind it still is a separate property that can be customized.
+You can configure the label using the `label()` method on a `PropertyDescriptorBuilder`.
+This is equivalent to calling `property("#label")`.
+If you want to use another property as the base for label generation, you can configure this on the `EntityConfigurationBuilder` by calling `label("propertyName")`.
+This will copy all settings from the source property to the *#label* property, but keep in mind it still is a separate property that can be customized.
 
 [source,java,indent=0]
 [subs="verbatim,quotes,attributes"]
@@ -142,26 +143,23 @@ public void configure( EntitiesConfigurationBuilder configuration ) {
 }
 ----
 
-If you do not wish to use the *#label* property at all as default entity label, you can customize the `Printer` used for label
- generation by modifying the `EntityModel`.
+If you do not wish to use the *#label* property at all as default entity label, you can customize the `Printer` used for label generation by modifying the `EntityModel`.
 
-NOTE: As *#label* is a generated property, sorting is not enabled by default.  If you configure the label using an existing
-property, the sortable attribute will be copied as well and sorting on label will be possible.
+NOTE: As *#label* is a generated property, sorting is not enabled by default.
+If you configure the label using an existing property, the sortable attribute will be copied as well and sorting on label will be possible.
 
 === Creating an EntityConfiguration manually
 
 ==== Attributes to configure
 
-Some attributes are mandatory, others are optional but will often impact how much functionality is available
- out of the box.  You can configure any attribute you like, see the section on [automatic-attributes] for a list
- of common attributes provided by other registrars.
+Some attributes are mandatory, others are optional but will often impact how much functionality is available out of the box.
+You can configure any attribute you like, see the section on [automatic-attributes] for a list of common attributes provided by other registrars.
 
 ==== EntityQueryExecutor
 
-In order for generated views to work automatically, an `EntityConfiguration` should have an `EntityQueryExecutor`
-  attribute.  The `EntityQueryExecutor` is a generic interface that supports the simple `EntityQuery` abstraction
-  for fetching entities from the backing repository. Default implementations exist for `JpaSpecificationExecutor`
-  and `QueryDslPredicateExecutor`.
+In order for generated views to work automatically, an `EntityConfiguration` should have an `EntityQueryExecutor` attribute.
+The `EntityQueryExecutor` is a generic interface that supports the simple `EntityQuery` abstraction for fetching entities from the backing repository.
+Default implementations exist for `JpaSpecificationExecutor` and `QueryDslPredicateExecutor`.
 
 === Automatic registration of entity types
 
@@ -205,27 +203,24 @@ By default strings have an order that ignores case.
 ==== AdminWebModule
 
 If the `AdminWebModule` is present entity management controllers will be created for all registered entity configurations.
-If you want to avoid the automatic registration of entity management controllers for a particular entity type, you should
-set the `EntityConfiguration` as `hidden`.  This will effectively disable the default entity controllers for that type,
-and hide the existence of the entity type from the administration interface.
+If you want to avoid the automatic registration of entity management controllers for a particular entity type, you should set the `EntityConfiguration` as `hidden`.
+This will effectively disable the default entity controllers for that type, and hide the existence of the entity type from the administration interface.
 
-You can also hide one or more associations.  By default an association will not be shown if one of the participating
-entities is hidden.  If you specify the `hidden` property of an `EntityAssociation` explicitly, that value will take
-precendence of the entity configurations.  This way it is possible to generate management pages for associated
-entities, but not for the main entity type.
+You can also hide one or more associations.
+By default an association will not be shown if one of the participating entities is hidden.
+If you specify the `hidden` property of an `EntityAssociation` explicitly, that value will take precendence of the entity configurations.
+This way it is possible to generate management pages for associated entities, but not for the main entity type.
 
 == Entity associations
 
-The `EntityModule` attempts to automatically detect related entities and creates associations mainly to facilitate UI
-generation.  Currently `@OneToMany`, `@ManyToMany` and `@ManyToOne` annotations from `javax.persistence` API are all
-scanned and used to build `EntityAssociation` entries.
+The `EntityModule` attempts to automatically detect related entities and creates associations mainly to facilitate UI generation.
+Currently `@OneToMany`, `@ManyToMany` and `@ManyToOne` annotations from `javax.persistence` API are all scanned and used to build `EntityAssociation` entries.
 
 In the administrative UI the management of related entities can often be done either through the property or the association.
 This is especially the case for `@ManyToMany` and `@OneToMany` associations that are mapped through a property with collection type.
 By default related entity management will be done through the property and the association will be generated but hidden.
 
-NOTE: If you want to enable management through the association interface, you should manipulate the `hidden` property of
-both the association and the property using an `EntityConfigurer`.
+NOTE: If you want to enable management through the association interface, you should manipulate the `hidden` property of both the association and the property using an `EntityConfigurer`.
 
 [source,java,indent=0]
 [subs="verbatim,quotes,attributes"]
@@ -260,8 +255,8 @@ Example:
 
 ==== List summary view
 
-It is possible to activate a detail view inline in a list view.  If the `EntityConfiguration` or `EntityAssociation` has
-as view named *listSummaryView* a summary pane will automatically become available when clicking on the item row in the table.
+It is possible to activate a detail view inline in a list view.
+If the `EntityConfiguration` or `EntityAssociation` has a view named *listSummaryView* a summary pane will automatically become available when clicking on the item row in the table.
 The summary pane is called using AJAX and only the _content_ fragment of the page will be rendered.
 
 [source,java,indent=0]
@@ -304,10 +299,9 @@ You will have to take care yourself of complex delete scenarios - like deleting 
 
 === EntityLinkBuilder
 
-An `EntityConfiguration` or `EntityAssociation` can have one or more `EntityLinkBuilder` instances registered in its atttributes.
-An `EntityLinkBuilder` is used to create application links to management controllers for the entity.  By default the `EntityModule`
-will create an `EntityLinkBuilder` for the management pages in admin web if `AdminWebModule` is present, and this link builder
-will be registered as the attribute with `EntityLinkBuilder` class as key.
+An `EntityConfiguration` or `EntityAssociation` can have one or more `EntityLinkBuilder` instances registered in its attributes.
+An `EntityLinkBuilder` is used to create application links to management controllers for the entity.
+By default the `EntityModule` will create an `EntityLinkBuilder` for the management pages in admin web if `AdminWebModule` is present, and this link builder will be registered as the attribute with `EntityLinkBuilder` class as key.
 
 You can use the `EntityLinkBuilder` directly for example in redirects, often the specific `EntityLinkBuilder` is overridable per view.
 All links the `EntityLinkBuilder` generates are entirely configurable, please refer to the javadoc for all possible settings.
@@ -322,8 +316,8 @@ String path = linkBuilder.update( parent );
 ----
 
 ==== EntityLinkBuilder for associations
-Associations usually also have an `EntityLinkBuilder` registered, it is possible to create links to items that are an association
-from a parent entity.  To achieve this you must _scope_ the `EntityLinkBuilder` to the parent entity it belongs to.
+Associations usually also have an `EntityLinkBuilder` registered, it is possible to create links to items that are an association from a parent entity.
+To achieve this you must _scope_ the `EntityLinkBuilder` to the parent entity it belongs to.
 
 [source,java,indent=0]
 [subs="verbatim,quotes,attributes"]
@@ -343,8 +337,9 @@ String path = associatedLinkBuilder.update( child );
 The following section gives an overview of common custimizations for generated entity views.
 
 === Changing entity names, property names or other labels
-Labels are resolved using a message code hierarchy.  Simply define one or more message sources specifying the properties
-  you want.  Unless custom `EntityMessageCodeResolver` instances are being used, message codes are generated as follows:
+Labels are resolved using a message code hierarchy.
+Simply define one or more message sources specifying the properties you want.
+Unless custom `EntityMessageCodeResolver` instances are being used, message codes are generated as follows:
 
 |===
 |Message code|Description
@@ -407,79 +402,74 @@ Example: _UserModule.entities.user.validation.NotBlank_,  _UserModule.entities.u
 
 === Customizing entity validation
 
-By default annotation validation is performed on all entities.  Customizing validation can be done by simply
-specifying a `Validator` bean that supports the specific entity type.  You can use the `EntityValidatorSupport` as
-  as base class to extend the default annotation based entity validation.
+By default annotation validation is performed on all entities.
+Customizing validation can be done by simply specifying a `Validator` bean that supports the specific entity type.
+You can use the `EntityValidatorSupport` as a base class to extend the default annotation based entity validation.
 
-If more than one `Validator` could be applied,
-you will manually have to set the `Validator.class` attribute on the `EntityConfiguration` to the correct one.
+If more than one `Validator` could be applied, you will manually have to set the `Validator.class` attribute on the `EntityConfiguration` to the correct one.
 
 === Customizing *VALUE* mode elements
 
-The `ViewElementMode.VALUE` and `ViewElementMode.LIST_VALUE` are the defaults to provide the output of a property
-for readonly views.  Unless a specific `ViewElement` is configured, this will always be a `String` output of the property.
+The `ViewElementMode.VALUE` and `ViewElementMode.LIST_VALUE` are the defaults to provide the output of a property for readonly views.
+Unless a specific `ViewElement` is configured, this will always be a `String` output of the property.
 By default the *mvcConversionService* will be used to convert the property value if no type specific builder is provided.
 
-Apart from providing a custom `ViewElement` you can also modify the rendered output by providing attributes on the
-`EntityPropertyDescriptor`.  If you provide a `org.springframework.format.Printer.class` attribute, that implementation
-will be used for printing the text value.  Alternatively you can provide a `java.text.Format.class` attribute to be used.
-Note that most default `Format` implementations are not thread-safe, in that case you should wrap them in a `SynchronizedFormat`
-instance.
+Apart from providing a custom `ViewElement` you can also modify the rendered output by providing attributes on the `EntityPropertyDescriptor`.
+If you provide a `org.springframework.format.Printer.class` attribute, that implementation will be used for printing the text value.
+Alternatively you can provide a `java.text.Format.class` attribute to be used.
+Note that most default `Format` implementations are not thread-safe, in that case you should wrap them in a `SynchronizedFormat` instance.
 
 All standard view elements will use the `Printer` or `Format` attribute if one of them is present, instead of the default.
- A `Printer` attribute takes precedence over a `Format`.
+A `Printer` attribute takes precedence over a `Format`.
 
 === Customizing textbox elements
 
-`TextboxFormElement.Type` can be set as an attribute on the `EntityPropertyDescriptor`.  If set and the property is
-generated as a `TextboxFormElement`, that type will be used.
+`TextboxFormElement.Type` can be set as an attribute on the `EntityPropertyDescriptor`.
+If set and the property is generated as a `TextboxFormElement`, that type will be used.
 
 You can add default post processors to the `TextboxFormElementBuilderFactory` to customize the autodetection.
 
 === Customizing numeric elements
 
 By default all `Number` type properties will result in a `NumericFormElement` being used which is rendered as a textbox.
-The behavior can be customized by providing a `NumericFormElementConfiguration`.  A default configuration will only be
-created for properties annotated with a Spring `@NumberFormat` for type `CURRENCY` or `PERCENT`, if no
-`NumericFormElementConfiguration.class` or `NumericFormElementConfiguration.Format.class` attribute is present.
+The behavior can be customized by providing a `NumericFormElementConfiguration`.
+A default configuration will only be created for properties annotated with a Spring `@NumberFormat` for type `CURRENCY` or `PERCENT`, if no `NumericFormElementConfiguration.class` or `NumericFormElementConfiguration.Format.class` attribute is present.
 
 If a `NumericFormElementConfiguration` is present a more advanced javascript control will be used in the front-end for value input.
-The same configuration will also be used for rendering the *VALUE* mode elements, formatting the output according
-to the properties configured.
+The same configuration will also be used for rendering the *VALUE* mode elements, formatting the output according to the properties configured.
 
 .Manually configuring percent
-Put a format attribute with value `PERCENT` on the `EntityPropertyDescriptor`.  This will create a locale specific
-percentage format with 2 decimals (unless the property type is integer).  Alternatively use the static
-`NumericFormElementConfiguration.percent()` factory method to quickly create a localizable format suitable for percentages.
+Put a format attribute with value `PERCENT` on the `EntityPropertyDescriptor`.
+This will create a locale specific percentage format with 2 decimals (unless the property type is integer).
+Alternatively use the static `NumericFormElementConfiguration.percent()` factory method to quickly create a localizable format suitable for percentages.
 
-NOTE: If you use Spring number format for `PERCENT` then 1 is expected to match 100%.  If you manually create a
-`NumericFormElementConfiguration` it expects 100 to match with 100%.  You can modify this behavior by setting the `multiplier`
-property on the configuration.
+NOTE: If you use Spring number format for `PERCENT` then 1 is expected to match 100%.
+If you manually create a `NumericFormElementConfiguration` it expects 100 to match with 100%.
+You can modify this behavior by setting the `multiplier` property on the configuration.
 
 .Manually configuring currency
-The easiest way to configure a currency is to set a `Currency.class` attribute for the property.  In that case a locale
-specific format for that currency will be created.  Alternatively the same options as for percentages can be used and
- there is a `NumericFormElementConfiguration.currency()` factory method available.
+The easiest way to configure a currency is to set a `Currency.class` attribute for the property.
+In that case a locale specific format for that currency will be created.
+Alternatively the same options as for percentages can be used and there is a `NumericFormElementConfiguration.currency()` factory method available.
 
 === Customizing datetime picker elements
 
 By default all `Date` properties will result in a `DateTimeFormElement` which is rendered as a date time picker.
-The form element can be customized through the `DateTimeFormElementConfiguration` class.  The default configuration
-  is determined based on the presence of `@Temporal` annotations on the property.  The date picker supports 3 major
-  modes: *date*, *time* and *timestamp* (date + time) with minutes being the maximum resolution.  The presence
-  of `@Past` and `@Future` validation annotations will additionally restrict the dates that are selectable.
+The form element can be customized through the `DateTimeFormElementConfiguration` class.
+The default configuration is determined based on the presence of `@Temporal` annotations on the property.
+The date picker supports 3 major modes: *date*, *time* and *timestamp* (date + time) with minutes being the maximum resolution.
+The presence of `@Past` and `@Future` validation annotations will additionally restrict the dates that are selectable.
 
 A specific date picker format can easily be specified by putting a `DateTimeFormElementConfiguration.Format` attribute.
-Advanced customization can be done by setting a complete `DateTimeFormElementConfiguration` as attribute.  Dynamic configuration
-(for example setting the first selectable date relative to the current date) can only be done by specifying a `DateTimeFormElementBuilder`
-manually and adding a custom post processor that modifies the `DateTimeFormElementConfiguration`.
+Advanced customization can be done by setting a complete `DateTimeFormElementConfiguration` as attribute.
+Dynamic configuration (for example setting the first selectable date relative to the current date) can only be done by specifying a `DateTimeFormElementBuilder` manually and adding a custom post processor that modifies the `DateTimeFormElementConfiguration`.
 A `DateTimeFormElementConfiguration` is always duplicated when creating an element so it is safe for post processors to modify the instance.
 
 .Using dates with `TemporalType.TIME` and JPA
-A property of type `java.util.Date` but annotated with `@Temporal(TemporalType.TIME)` will result in only time selection
-being available (hours and minutes).  However the `@Temporal` annotation also influences how JPA will persist the data type.  If your type
- was created as a timestamp in the database schema, this might result in conversion errors.  With Hibernate you can
- resolve this by additionally specifying a `@Type` annotation forcing the type to be persisted as timestamp.
+A property of type `java.util.Date` but annotated with `@Temporal(TemporalType.TIME)` will result in only time selection being available (hours and minutes).
+However the `@Temporal` annotation also influences how JPA will persist the data type.
+If your type was created as a timestamp in the database schema, this might result in conversion errors.
+With Hibernate you can resolve this by additionally specifying a `@Type` annotation forcing the type to be persisted as timestamp.
 
 .Example of a required time property that is written as a date relative to start of epoch time in the database
 [source,java,indent=0]
