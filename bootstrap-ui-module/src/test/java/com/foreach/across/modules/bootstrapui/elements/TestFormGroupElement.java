@@ -16,8 +16,10 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +57,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		inputGroupFormElement.setControl( textbox );
 		inputGroupFormElement.setAddonBefore( new GlyphIcon( GlyphIcon.ALERT ) );
 
-		LabelFormElement inputGroupLabel= new LabelFormElement();
+		LabelFormElement inputGroupLabel = new LabelFormElement();
 		inputGroupLabel.setTarget( inputGroupFormElement );
 		inputGroupLabel.setText( "title input group" );
 
@@ -70,6 +72,20 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void formGroupWithoutControl() {
+		group.getLabel( LabelFormElement.class ).setTarget( (ViewElement) null );
+		group.setControl( new TemplateViewElement( "th/test/template :: value" ) );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group'>" +
+						"<label class='control-label'>title</label>" +
+						"static template" +
 						"</div>"
 		);
 	}
