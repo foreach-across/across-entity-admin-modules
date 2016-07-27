@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
@@ -117,29 +116,10 @@ public class TestEntitiesConfigurationBuilder
 	public void globalPostProcessorsRunBeforeSeparateConfigurations() {
 		final List<String> processors = new ArrayList<>( 5 );
 
-		builder.addPostProcessor( new PostProcessor<MutableEntityConfiguration<?>>()
-		{
-			@Override
-			public void process( MutableEntityConfiguration configuration ) {
-				processors.add( "one" );
-			}
-		} );
-
-		builder.addPostProcessor( new PostProcessor<MutableEntityConfiguration<?>>()
-		{
-			@Override
-			public void process( MutableEntityConfiguration configuration ) {
-				processors.add( "two" );
-			}
-		} );
-
-		builder.entity( Client.class ).addPostProcessor( new PostProcessor<MutableEntityConfiguration<Client>>()
-		{
-			@Override
-			public void process( MutableEntityConfiguration<Client> configuration ) {
-				processors.add( "three" );
-			}
-		} );
+		builder.addPostProcessor( configuration -> processors.add( "one" ) );
+		builder.addPostProcessor( configuration -> processors.add( "two" ) );
+		builder.entity( Client.class )
+		       .addPostProcessor( configuration -> processors.add( "three" ) );
 
 		builder.postProcess( entityRegistry );
 

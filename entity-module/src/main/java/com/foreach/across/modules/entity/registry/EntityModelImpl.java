@@ -17,35 +17,50 @@ package com.foreach.across.modules.entity.registry;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.repository.core.EntityInformation;
-import org.springframework.data.repository.support.RepositoryInvoker;
 import org.springframework.format.Printer;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
+ * Default implementation of {@link EntityModel} that allows customizing the different methods
+ * using callbacks and delegate instances.
+ * <ul>
+ * <li>{@link EntityFactory} for creation of instances and transforming them into dtos</li>
+ * <li>{@link EntityInformation} for accessing an entity metadata</li>
+ * <li>{@link Printer} for generating the label</li>
+ * <li>{@link Function} for save and find methods</li>
+ * <li>{@link Consumer} for delete method</li>
+ * </ul>
+ *
+ * @param <T> entity type
+ * @param <U> id type of the entity
  * @author Arne Vandamme
+ * @see EntityFactory
+ * @see EntityInformation
+ * @see Printer
  */
-public class EntityModelImpl<T, ID extends Serializable> implements EntityModel<T, ID>
+public class EntityModelImpl<T, U extends Serializable> implements EntityModel<T, U>
 {
 	private EntityFactory<T> entityFactory;
-	private EntityInformation<T, ID> entityInformation;
-	private RepositoryInvoker repositoryInvoker;
+	private EntityInformation<T, U> entityInformation;
 	private Printer<T> labelPrinter;
 
-	public void setEntityFactory( EntityFactory<T> entityFactory ) {
-		this.entityFactory = entityFactory;
-	}
+	private Function<U, T> findOneMethod;
+	private UnaryOperator<T> saveMethod;
+	private Consumer<T> deleteMethod;
 
-	public void setEntityInformation( EntityInformation<T, ID> entityInformation ) {
-		this.entityInformation = entityInformation;
-	}
-
-	public void setRepositoryInvoker( RepositoryInvoker repositoryInvoker ) {
-		this.repositoryInvoker = repositoryInvoker;
-	}
-
+	/**
+	 * Set the printer to be used for calls to {@link #getLabel(Object)} and {@link #getLabel(Object, Locale)}.
+	 *
+	 * @param labelPrinter instance
+	 */
 	public void setLabelPrinter( Printer<T> labelPrinter ) {
+		Assert.notNull( labelPrinter );
 		this.labelPrinter = labelPrinter;
 	}
 
@@ -59,30 +74,80 @@ public class EntityModelImpl<T, ID extends Serializable> implements EntityModel<
 		return labelPrinter.print( entity, locale );
 	}
 
+	/**
+	 * Set the {@link EntityFactory} delegate that should be used for creating a new instance or converting
+	 * an existing instance to a dto.
+	 *
+	 * @param entityFactory instance
+	 */
+	public void setEntityFactory( EntityFactory<T> entityFactory ) {
+		Assert.notNull( entityFactory );
+		this.entityFactory = entityFactory;
+	}
+
 	@Override
 	public T createNew( Object... args ) {
 		return entityFactory.createNew( args );
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public T createDto( T entity ) {
 		return entityFactory.createDto( entity );
 	}
 
+	/**
+	 * Set the callback method to be used for finding a single entity based on its id.
+	 *
+	 * @param findOneMethod callback
+	 */
+	public void setFindOneMethod( Function<U, T> findOneMethod ) {
+		Assert.notNull( findOneMethod );
+		this.findOneMethod = findOneMethod;
+	}
+
 	@Override
-	public T findOne( ID id ) {
-		return repositoryInvoker.invokeFindOne( id );
+	public T findOne( U id ) {
+		return findOneMethod.apply( id );
+	}
+
+	/**
+	 * Set the callback method to be used for saving a single entity.
+	 *
+	 * @param saveMethod callback
+	 */
+	public void setSaveMethod( UnaryOperator<T> saveMethod ) {
+		Assert.notNull( saveMethod );
+		this.saveMethod = saveMethod;
 	}
 
 	@Override
 	public T save( T entity ) {
-		return repositoryInvoker.invokeSave( entity );
+		return saveMethod.apply( entity );
+	}
+
+	/**
+	 * Set the callback method to be used when deleting an entity.
+	 *
+	 * @param deleteMethod callback
+	 */
+	public void setDeleteMethod( Consumer<T> deleteMethod ) {
+		Assert.notNull( deleteMethod );
+		this.deleteMethod = deleteMethod;
 	}
 
 	@Override
 	public void delete( T entity ) {
-		repositoryInvoker.invokeDelete( getId( entity ) );
+		deleteMethod.accept( entity );
+	}
+
+	/**
+	 * Set the metadata provider for this entity type.
+	 *
+	 * @param entityInformation implementation
+	 */
+	public void setEntityInformation( EntityInformation<T, U> entityInformation ) {
+		Assert.notNull( entityInformation );
+		this.entityInformation = entityInformation;
 	}
 
 	@Override
@@ -91,12 +156,12 @@ public class EntityModelImpl<T, ID extends Serializable> implements EntityModel<
 	}
 
 	@Override
-	public ID getId( T entity ) {
+	public U getId( T entity ) {
 		return entityInformation.getId( entity );
 	}
 
 	@Override
-	public Class<ID> getIdType() {
+	public Class<U> getIdType() {
 		return entityInformation.getIdType();
 	}
 

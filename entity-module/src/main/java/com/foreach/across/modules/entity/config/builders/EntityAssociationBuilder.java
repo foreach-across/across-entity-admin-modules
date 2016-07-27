@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.config.builders.association.FormViewBuilder;
 import com.foreach.across.modules.entity.config.builders.association.ListViewBuilder;
 import com.foreach.across.modules.entity.config.builders.association.ViewBuilder;
@@ -25,6 +24,8 @@ import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityListView;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.Assert;
+
+import java.util.function.Consumer;
 
 public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<EntityAssociationBuilder, MutableEntityAssociation>
 {
@@ -263,8 +264,8 @@ public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<
 	void postProcess( MutableEntityConfiguration configuration ) {
 		MutableEntityAssociation association = configuration.association( name );
 
-		for ( PostProcessor<MutableEntityAssociation> postProcessor : postProcessors() ) {
-			postProcessor.process( association );
+		for ( Consumer<MutableEntityAssociation> postProcessor : postProcessors() ) {
+			postProcessor.accept( association );
 		}
 	}
 }

@@ -16,16 +16,16 @@
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.core.support.WritableAttributes;
-import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.registry.ConfigurableEntityViewRegistry;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.Assert;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Base class for entity related builder supporting configuration of attributes and builder post processors.
@@ -39,7 +39,7 @@ import java.util.Map;
 public abstract class AbstractAttributesAndViewsBuilder<T extends AbstractAttributesAndViewsBuilder, U>
 {
 	private final Map<Object, Object> attributes = new HashMap<>();
-	private final Collection<PostProcessor<U>> postProcessors = new LinkedList<>();
+	private final Collection<Consumer<U>> postProcessors = new ArrayDeque<>();
 	private final Map<String, AbstractEntityViewBuilder> viewBuilders = new HashMap<>();
 
 	/**
@@ -77,7 +77,7 @@ public abstract class AbstractAttributesAndViewsBuilder<T extends AbstractAttrib
 	 *
 	 * @param postProcessor Post processor instance to add.
 	 */
-	public void addPostProcessor( PostProcessor<U> postProcessor ) {
+	public void addPostProcessor( Consumer<U> postProcessor ) {
 		postProcessors.add( postProcessor );
 	}
 
@@ -173,7 +173,7 @@ public abstract class AbstractAttributesAndViewsBuilder<T extends AbstractAttrib
 		}
 	}
 
-	protected Collection<PostProcessor<U>> postProcessors() {
+	protected Collection<Consumer<U>> postProcessors() {
 		return postProcessors;
 	}
 }

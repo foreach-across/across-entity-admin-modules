@@ -56,6 +56,7 @@ import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
 import javax.validation.metadata.PropertyDescriptor;
+import java.io.Serializable;
 
 import static org.junit.Assert.*;
 
@@ -216,11 +217,11 @@ public class TestRepositoryEntityRegistrar
 		assertEquals( client, converted );
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void verifyEntityModel() {
 		EntityConfiguration<Client> configuration = entityRegistry.getEntityConfiguration( Client.class );
-		EntityModel<Client, Long> model = (EntityModel<Client, Long>) configuration.getEntityModel();
+		EntityModel<Client, Serializable> model = configuration.getEntityModel();
 
 		Client existing = model.findOne( 10L );
 		assertNull( existing );
