@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.Optional;
 
@@ -62,11 +63,13 @@ public class EntitiesConfiguration implements EntityConfigurer
 
 	private void addFilteringForGroupEntity( EntityConfigurationBuilder<Group> configuration ) {
 		configuration.listView()
+		             .defaultSort( new Sort( "name" ) )
 		             .addProcessor( groupFilteringProcessor() )
 		             .pageFetcher( groupFilteringProcessor() );
 
 		configuration.association( "user.group" )
 		             .listView()
+		             .defaultSort( new Sort( "name" ) )
 		             .addProcessor( userInGroupFilteringProcessor() )
 		             .pageFetcher( userInGroupFilteringProcessor() );
 	}

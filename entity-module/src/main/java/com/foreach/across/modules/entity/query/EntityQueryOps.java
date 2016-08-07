@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.query;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
@@ -25,47 +26,21 @@ import org.springframework.util.Assert;
  */
 public enum EntityQueryOps
 {
-	AND( new OpsWriter()
-	{
-		@Override
-		public String toString( String propertyName, Object... arguments ) {
-			Assert.notNull( arguments );
-			return "(" + StringUtils.join( arguments, " and " ) + ")";
-		}
-	} ),
+	AND( ( propertyName, arguments ) -> {
+		Assert.notNull( arguments );
+		return "(" + StringUtils.join( arguments, " and " ) + ")";
+	}, "and" ),
 
-	OR( new OpsWriter()
-	{
-		@Override
-		public String toString( String propertyName, Object... arguments ) {
-			Assert.notNull( arguments );
-			return "(" + StringUtils.join( arguments, " or " ) + ")";
-		}
-	} ),
+	OR( ( propertyName, arguments ) -> {
+		Assert.notNull( arguments );
+		return "(" + StringUtils.join( arguments, " or " ) + ")";
+	}, "or" ),
 
-	EQ( new OpsWriter()
-	{
-		@Override
-		public String toString( String propertyName, Object... arguments ) {
-			return propertyName + " = " + objectAsString( arguments[0] );
-		}
-	} ),
+	EQ( ( propertyName, arguments ) -> propertyName + " = " + objectAsString( arguments[0] ), "=" ),
 
-	NEQ( new OpsWriter()
-	{
-		@Override
-		public String toString( String propertyName, Object... arguments ) {
-			return propertyName + " != " + objectAsString( arguments[0] );
-		}
-	} ),
+	NEQ( ( propertyName, arguments ) -> propertyName + " != " + objectAsString( arguments[0] ), "!=", "<>" ),
 
-	CONTAINS( new OpsWriter()
-	{
-		@Override
-		public String toString( String propertyName, Object... arguments ) {
-			return propertyName + " contains " + objectAsString( arguments[0] );
-		}
-	} );
+	CONTAINS( ( propertyName, arguments ) -> propertyName + " contains " + objectAsString( arguments[0] ), "contains" );
 
 	private interface OpsWriter
 	{
@@ -84,13 +59,27 @@ public enum EntityQueryOps
 		return object.toString();
 	}
 
+	private String[] tokens;
 	private final OpsWriter opsWriter;
 
-	EntityQueryOps( OpsWriter opsWriter ) {
+	EntityQueryOps( OpsWriter opsWriter, String... tokens ) {
 		this.opsWriter = opsWriter;
+		this.tokens = tokens;
 	}
 
 	public String toString( String propertyName, Object... arguments ) {
 		return opsWriter.toString( propertyName, arguments );
+	}
+
+	public static EntityQueryOps forToken( String token ) {
+		String lookup = StringUtils.lowerCase( token ).trim();
+
+		for ( EntityQueryOps ops : values() ) {
+			if ( ArrayUtils.contains( ops.tokens, lookup ) ) {
+				return ops;
+			}
+		}
+
+		throw new IllegalArgumentException( "No known entity query operator for token " + token );
 	}
 }
