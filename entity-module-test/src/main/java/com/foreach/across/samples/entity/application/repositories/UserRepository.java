@@ -17,7 +17,10 @@
 package com.foreach.across.samples.entity.application.repositories;
 
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
+import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.business.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author Arne Vandamme
@@ -25,4 +28,7 @@ import com.foreach.across.samples.entity.application.business.User;
  */
 public interface UserRepository extends IdBasedEntityJpaRepository<User>
 {
+	Page<User> findByGroup( Group group, Pageable pageRequest );
+
+	Page<User> findByGroupAndNameContaining( Group group, String name, Pageable pageRequest );
 }

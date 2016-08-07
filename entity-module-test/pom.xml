@@ -27,6 +27,10 @@
 
 	<artifactId>entity-module-test</artifactId>
 
+	<properties>
+		<sonar.skip>true</sonar.skip>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>

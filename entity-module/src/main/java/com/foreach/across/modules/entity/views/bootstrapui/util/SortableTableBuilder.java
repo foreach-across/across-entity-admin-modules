@@ -68,6 +68,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	public static String DATA_ATTR_PAGE_SIZE = "data-tbl-size";
 	public static String DATA_ATTR_SORT = "data-tbl-sort";
 	public static String DATA_ATTR_SORT_PROPERTY = "data-tbl-sort-property";
+	public static String DATA_ATTR_FORM = "data-tbl-form";
 
 	protected final EntityViewElementBuilderService viewElementBuilderService;
 	protected final BootstrapUiFactory bootstrapUi;
@@ -83,6 +84,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	private ViewElementBuilderSupport.ElementOrBuilder noResultsElement;
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors = new ArrayList<>();
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors = new ArrayList<>();
+	private String formName;
 
 	@Autowired
 	public SortableTableBuilder( EntityViewElementBuilderService viewElementBuilderService,
@@ -127,6 +129,20 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	 */
 	public void setTableName( String tableName ) {
 		this.tableName = tableName;
+	}
+
+	/**
+	 * Optionally set the form name that this sortable table is bound to.  When changing page the form
+	 * will be updated and submitted instead of the url of the page itself.
+	 *
+	 * @param formName name of the form element
+	 */
+	public void setFormName( String formName ) {
+		this.formName = formName;
+	}
+
+	public String getFormName() {
+		return formName;
 	}
 
 	public EntityConfiguration getEntityConfiguration() {
@@ -278,6 +294,10 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		attributes.put( DATA_ATTR_PAGES, currentPage.getTotalPages() );
 		attributes.put( DATA_ATTR_PAGE_SIZE, currentPage.getSize() );
 		attributes.put( DATA_ATTR_SORT, convertSortAttribute( currentPage.getSort() ) );
+
+		if ( formName != null ) {
+			attributes.put( DATA_ATTR_FORM, formName );
+		}
 
 		return attributes;
 	}

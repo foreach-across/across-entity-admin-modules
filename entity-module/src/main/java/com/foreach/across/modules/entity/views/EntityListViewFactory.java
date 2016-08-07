@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.entity.config.ViewHelpers;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -32,7 +33,7 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -143,24 +144,26 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		AllowableActions allowableActions = viewCreationContext.getEntityConfiguration().getAllowableActions();
 		EntityMessages messages = view.getEntityMessages();
 
-		ContainerViewElementBuilder container = bootstrapUi.container();
+		FormViewElementBuilder container = bootstrapUi
+				.form()
+				.name( EntityFormViewFactory.FORM_NAME )
+				.formName( "entity-list-form" )
+				.noValidate()
+				.get();
+
+		NodeViewElementBuilder formHeader = bootstrapUi.row().name( "entityForm-header" );
 
 		if ( allowableActions.contains( AllowableAction.CREATE ) ) {
-			container.add(
-					bootstrapUi.row().add(
-							bootstrapUi.column( Grid.Device.MD.width( Grid.Width.FULL ) )
-							           .name( "top-buttons" )
-							           .add(
-									           bootstrapUi.node( "p" )
-									                      .add(
-											                      bootstrapUi.button()
-											                                 .name( "btn-create" )
-											                                 .link( linkBuilder.create() )
-											                                 .style( Style.Button.PRIMARY )
-											                                 .text( messages.createAction() )
-									                      )
-							           )
-					)
+			formHeader.add(
+					bootstrapUi.column( Grid.Device.MD.width( Grid.Width.FULL ) )
+					           .name( "entityForm-header-actions" )
+					           .add(
+							           bootstrapUi.button()
+							                      .name( "btn-create" )
+							                      .link( linkBuilder.create() )
+							                      .style( Style.Button.PRIMARY )
+							                      .text( messages.createAction() )
+					           )
 			);
 		}
 
@@ -168,6 +171,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
 
 		SortableTableBuilder tableBuilder = viewHelpers.createSortableTableBuilder();
+		tableBuilder.setFormName( "entity-list-form" );
 		tableBuilder.setTableName( "entityList" );
 		tableBuilder.setEntityConfiguration( entityConfiguration );
 		tableBuilder.setPropertyDescriptors( descriptors );
@@ -184,6 +188,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		EntitySummaryViewActionProcessor.autoRegister( viewCreationContext, tableBuilder,
 		                                               EntityListView.SUMMARY_VIEW_NAME );
 
+		container.add( formHeader );
 		container.add( tableBuilder );
 
 		return container.build( viewElementBuilderContext );
