@@ -35,6 +35,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFactorySupport<FormGroupElementBuilder>
 {
+	public static final String NAME_PREFIX = "formGroup-";
+
 	@Autowired
 	private EntityViewElementBuilderService entityViewElementBuilderService;
 
@@ -74,6 +76,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 
 		FormGroupElementBuilder formGroup
 				= bootstrapUi.formGroup()
+				             .name( NAME_PREFIX + propertyDescriptor.getName() )
 				             .control( controlBuilder )
 				             .postProcessor( descriptionTextPostProcessor )
 				             .postProcessor( ( builderContext, element ) -> {

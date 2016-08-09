@@ -98,7 +98,7 @@ public class TestFormGroupElementBuilderFactory extends ViewElementBuilderFactor
 	@SuppressWarnings("unchecked")
 	private <V> V assembleAndVerify( String propertyName, boolean required ) {
 		FormGroupElement control = assemble( propertyName, ViewElementMode.FORM_WRITE );
-		//assertEquals( propertyName, control.getName() );
+		assertEquals( "formGroup-" + propertyName, control.getName() );
 		assertEquals( required, control.isRequired() );
 
 		return (V) control;

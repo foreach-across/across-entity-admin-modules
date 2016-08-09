@@ -30,7 +30,7 @@ import java.util.Collection;
  *
  * @author Arne Vandamme
  */
-@SuppressWarnings( "unchecked" )
+@SuppressWarnings("unchecked")
 public abstract class AbstractEntityListViewBuilder<SELF extends AbstractSimpleEntityViewBuilder>
 		extends AbstractSimpleEntityViewBuilder<EntityListViewFactory, SELF>
 {
@@ -73,6 +73,17 @@ public abstract class AbstractEntityListViewBuilder<SELF extends AbstractSimpleE
 	public SELF sortableOn( String... propertyNames ) {
 		this.sortableProperties = Arrays.asList( propertyNames );
 		return (SELF) this;
+	}
+
+	/**
+	 * Set the default sort to ascending order of the property specified.
+	 *
+	 * @param property name
+	 * @return current builder
+	 * @see #defaultSort(Sort)
+	 */
+	public SELF defaultSort( String property ) {
+		return (SELF) defaultSort( new Sort( Sort.Direction.ASC, property ) );
 	}
 
 	/**

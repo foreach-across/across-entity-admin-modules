@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.data.domain.Sort;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -123,5 +124,25 @@ public class TestEntityListViewBuilder
 
 		assertArrayEquals( new String[] { "one", "two" },
 		                   viewFactory.getPropertySelector().propertiesToSelect().keySet().toArray() );
+	}
+
+	@Test
+	public void simpleDefaultSort() {
+		view.defaultSort( "name" );
+		view.apply( client, beanFactory );
+
+		assertNotNull( viewFactory );
+		assertEquals( new Sort( Sort.Direction.ASC, "name" ), viewFactory.getDefaultSort() );
+	}
+
+	@Test
+	public void customDefaultSort() {
+		Sort defaultSort = new Sort( Sort.Direction.DESC, "test" );
+		view.defaultSort( defaultSort );
+
+		view.apply( client, beanFactory );
+
+		assertNotNull( viewFactory );
+		assertSame( defaultSort, viewFactory.getDefaultSort() );
 	}
 }
