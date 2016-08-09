@@ -16,8 +16,6 @@
 
 package com.foreach.across.samples.entity.application.config;
 
-import com.foreach.across.modules.bootstrapui.elements.ColumnViewElement;
-import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
@@ -101,23 +99,11 @@ public class EntitiesConfiguration implements EntityConfigurer
 
 			header.ifPresent(
 					h -> {
-						ColumnViewElement row = new ColumnViewElement();
-						row.addLayout( Grid.Device.MD.width( Grid.Width.FULL ) );
-						row.addChild( new TemplateViewElement( "th/entityModuleTest/group :: filterForm" ) );
+						Optional<NodeViewElement> actions
+								= find( h, "entityForm-header-actions", NodeViewElement.class );
+						actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
 
-						Optional<ColumnViewElement> actions
-								= find( h, "entityForm-header-actions", ColumnViewElement.class );
-
-						actions.ifPresent( a -> {
-							NodeViewElement newActions = new NodeViewElement( "div" );
-							newActions.addCssClass( "pull-right" );
-							newActions.getChildren().addAll( a.getChildren() );
-
-							row.addFirstChild( newActions );
-						} );
-
-						h.getChildren().clear();
-						h.addChild( row );
+						h.addChild( new TemplateViewElement( "th/entityModuleTest/group :: filterForm" ) );
 					}
 			);
 		}
@@ -153,23 +139,11 @@ public class EntitiesConfiguration implements EntityConfigurer
 
 			header.ifPresent(
 					h -> {
-						ColumnViewElement row = new ColumnViewElement();
-						row.addLayout( Grid.Device.MD.width( Grid.Width.FULL ) );
-						row.addChild( new TemplateViewElement( "th/entityModuleTest/group :: filterForm" ) );
+						Optional<NodeViewElement> actions
+								= find( h, "entityForm-header-actions", NodeViewElement.class );
+						actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
 
-						Optional<ColumnViewElement> actions
-								= find( h, "entityForm-header-actions", ColumnViewElement.class );
-
-						actions.ifPresent( a -> {
-							NodeViewElement newActions = new NodeViewElement( "div" );
-							newActions.addCssClass( "pull-right" );
-							newActions.getChildren().addAll( a.getChildren() );
-
-							row.addFirstChild( newActions );
-						} );
-
-						h.getChildren().clear();
-						h.addChild( row );
+						h.addChild( new TemplateViewElement( "th/entityModuleTest/group :: filterForm" ) );
 					}
 			);
 		}

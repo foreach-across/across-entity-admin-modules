@@ -42,6 +42,14 @@ public class TestEntityQueryParser
 
 	@Test
 	public void simpleValidQuery() {
+		//query
+		// .select(
+		//      property("value").equalTo(1)
+		//          .and( property("123").contains() )
+		// )(test=1) or (test=someThing())
+		// .orderBy( "value" ).asc()
+		//      .and( orderBy("value").desc() )
+		// )
 		when( metadataProvider.isValidProperty( "value" ) ).thenReturn( true );
 		when( metadataProvider.isValidOperatorForProperty( EntityQueryOps.EQ, "value" ) ).thenReturn( true );
 		when( metadataProvider.convertStringToTypedValue( "value", EntityQueryOps.EQ, "1" ) )

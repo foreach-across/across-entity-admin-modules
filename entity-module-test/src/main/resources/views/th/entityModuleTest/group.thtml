@@ -15,7 +15,7 @@
   -->
 
 <fragments xmlns:th="http://www.w3.org/1999/xhtml">
-    <div class="form form-inline" th:fragment="filterForm">
+    <div class="list-header form form-inline" th:fragment="filterForm">
         <div class="form-group">
             <label for="group-name-filter">Filter by name:</label>
             <input id="group-name-filter" name="extensions[filter]" th:value="${viewRequest.extensions['filter']}" type="text" class="form-control" />
