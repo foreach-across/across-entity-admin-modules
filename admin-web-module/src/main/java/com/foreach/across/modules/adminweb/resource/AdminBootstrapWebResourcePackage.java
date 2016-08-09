@@ -39,11 +39,11 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 			setWebResources(
 					// Admin web overrides default bootstrap
 					new WebResource( WebResource.CSS, BootstrapUiWebResources.NAME,
-					                 "/static/adminweb/css/fe_bootstrap-1.0.css",
-					                 WebResource.VIEWS ),
+					                 "/static/adminweb/css/admin-web-bootstrap.css",
+					                 WebResource.VIEWS ),/*
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
 					                 "/static/adminweb/js/main.js",
-					                 WebResource.VIEWS ),
+					                 WebResource.VIEWS ),*/
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
 					                 "/static/adminweb/js/ie10-viewport-bug-workaround.js",
 					                 WebResource.VIEWS )
@@ -52,11 +52,11 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 		else {
 			setWebResources(
 					new WebResource( WebResource.CSS, NAME,
-					                 "/static/adminweb/css/fe_bootstrap-1.0.css",
-					                 WebResource.VIEWS ),
+					                 "/static/adminweb/css/admin-web-bootstrap.css",
+					                 WebResource.VIEWS ),/*
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
 					                 "/static/adminweb/js/main.js",
-					                 WebResource.VIEWS ),
+					                 WebResource.VIEWS ),*/
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
 					                 "/static/adminweb/js/ie10-viewport-bug-workaround.js",
 					                 WebResource.VIEWS )
