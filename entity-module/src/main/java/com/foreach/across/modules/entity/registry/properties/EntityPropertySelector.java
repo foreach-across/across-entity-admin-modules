@@ -28,7 +28,7 @@ import java.util.Objects;
  * <ul>
  * <li>.: keep all configured rules</li>
  * <li>*: represents all properties returned when applying the default filter</li>
- * <li>**: represents all properties registerd, ignoring any default filter</li>
+ * <li>**: represents all properties registered, ignoring any default filter</li>
  * <li>propertyName: exactly that property</li>
  * <li>~propertyName: not that property</li>
  * </ul>

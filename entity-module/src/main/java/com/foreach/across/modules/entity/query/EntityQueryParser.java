@@ -16,16 +16,20 @@
 
 package com.foreach.across.modules.entity.query;
 
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.List;
 
 /**
  * Reverse parsing of a {@link String} into an {@link EntityQuery}.
  * Uses a {@link DefaultEntityMetadataProvider} if none is set.  For improved functionality it is highly advised
  * to have a custom {@link EntityQueryMetadataProvider} implementation.
+ * <p/>
+ * Supports both a *raw* entity query and an *translated* entity query.
  *
  * @author Arne Vandamme
  * @see DefaultEntityMetadataProvider
@@ -34,14 +38,28 @@ import java.util.List;
 public class EntityQueryParser
 {
 	private static final EntityQueryTokenizer tokenizer = new EntityQueryTokenizer();
+	private static final EntityQueryTokenConverter converter = new EntityQueryTokenConverter();
+
+	private ConversionService conversionService;
 
 	private EntityQueryMetadataProvider metadataProvider = new DefaultEntityMetadataProvider();
+
+	private EntityConfiguration entityConfiguration;
+
+	@Autowired
+	public void setConversionService( ConversionService conversionService ) {
+		this.conversionService = conversionService;
+	}
 
 	private enum Expecting
 	{
 		Property,
 		Operator,
 		Value
+	}
+
+	public void setEntityConfiguration( EntityConfiguration entityConfiguration ) {
+		this.entityConfiguration = entityConfiguration;
 	}
 
 	/**
@@ -55,53 +73,54 @@ public class EntityQueryParser
 	}
 
 	/**
-	 * Convert a query string into a typed and validated {@link EntityQuery}.
-	 * The {@link #setMetadataProvider(EntityQueryMetadataProvider)} value will be used for validating the query
-	 * and converting the string values to correctly typed ones.  An exception will be thrown if the query cannot
-	 * be converted.
+	 * Convert a query string into a typed and validated {@link EntityQuery}.  The query returned will be raw,
+	 * meaning that actual values might not be converted. The {@link #setMetadataProvider(EntityQueryMetadataProvider)}
+	 * value will be used for validating the query and converting the string values to correctly typed ones.
+	 * An exception will be thrown if the query cannot be converted.
 	 *
 	 * @param queryString string representation of the query
 	 * @return query instance
 	 * @throws IllegalArgumentException if parsing fails
 	 */
 	public EntityQuery parse( String queryString ) {
-		List<String> tokens = tokenizer.tokenize( queryString );
+		List<EntityQueryTokenizer.TokenMetadata> tokens = tokenizer.tokenize( queryString );
+		EntityQuery rawQuery = converter.convertTokens( tokens );
+
+		/*List<String> tokens = tokenizer.tokenize( queryString );
 
 		EntityQuery query = convertTokensToRawQuery( tokens );
 		validatePropertiesAndOperators( query );
 		convertPropertyValues( query );
 
-		return query;
+		return query;*/
+		return translate( rawQuery );
 	}
 
-	private EntityQuery convertTokensToRawQuery( List<String> tokenList ) {
-		Deque<String> tokens = new ArrayDeque<>( tokenList );
+	private EntityQuery translate( EntityQuery rawQuery ) {
+		EntityQuery translated = new EntityQuery();
+		translated.setOperand( rawQuery.getOperand() );
 
-		EntityQuery query = new EntityQuery( EntityQueryOps.AND );
-		EntityQueryCondition condition = new EntityQueryCondition();
-		Expecting expecting = Expecting.Property;
+		for ( EntityQueryExpression expression : rawQuery.getExpressions() ) {
+			if ( expression instanceof EntityQueryCondition ) {
+				EntityQueryCondition condition = (EntityQueryCondition) expression;
+				EntityPropertyDescriptor descriptor = entityConfiguration.getPropertyRegistry().getProperty(
+						condition.getProperty() );
 
-		// single condition is field/operator/value
-		while ( !tokens.isEmpty() ) {
-			String token = tokens.removeFirst();
+				if ( descriptor == null ) {
+					throw new IllegalArgumentException( "Unknown property: " + condition.getProperty() );
+				}
 
-			switch ( expecting ) {
-				case Property:
-					condition.setProperty( token );
-					expecting = Expecting.Operator;
-					break;
-				case Operator:
-					condition.setOperand( retrieveOperatorFromToken( token ) );
-					expecting = Expecting.Value;
-					break;
-				case Value:
-					condition.setArguments( new Object[] { token } );
-					query.add( condition );
-					break;
+				EntityQueryConditionTranslator translator = new EntityQueryConditionTranslator( descriptor,
+				                                                                                conversionService );
+
+				translated.add( translator.translate( condition ) );
+			}
+			else if ( expression instanceof EntityQuery ) {
+				translated.add( translate( (EntityQuery) expression ) );
 			}
 		}
 
-		return query;
+		return translated;
 	}
 
 	private void validatePropertiesAndOperators( EntityQuery query ) {
@@ -118,35 +137,12 @@ public class EntityQueryParser
 									"Illegal operator " + condition.getOperand() + " for property: " + condition
 											.getProperty() );
 						}
+						//if ( !metadataProvider.isValidValueForPropertyAndOperator( condition.getFirstArgument() ))
 					}
 					else {
 						validatePropertiesAndOperators( (EntityQuery) expression );
 					}
 				}
 		);
-	}
-
-	private void convertPropertyValues( EntityQuery query ) {
-		query.getExpressions().forEach(
-				expression -> {
-					if ( expression instanceof EntityQueryCondition ) {
-						EntityQueryCondition condition = (EntityQueryCondition) expression;
-						String rawValue = (String) condition.getFirstArgument();
-
-						Object[] typedValues = metadataProvider.convertStringToTypedValue(
-								condition.getProperty(), condition.getOperand(), rawValue
-						);
-
-						condition.setArguments( typedValues );
-					}
-					else {
-						validatePropertiesAndOperators( (EntityQuery) expression );
-					}
-				}
-		);
-	}
-
-	private EntityQueryOps retrieveOperatorFromToken( String token ) {
-		return EntityQueryOps.forToken( token );
 	}
 }

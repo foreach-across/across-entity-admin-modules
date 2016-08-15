@@ -26,21 +26,24 @@ import org.springframework.util.Assert;
  */
 public enum EntityQueryOps
 {
-	AND( ( propertyName, arguments ) -> {
-		Assert.notNull( arguments );
-		return "(" + StringUtils.join( arguments, " and " ) + ")";
+	AND( ( field, args ) -> {
+		Assert.notNull( args );
+		return "(" + StringUtils.join( args, " and " ) + ")";
 	}, "and" ),
 
-	OR( ( propertyName, arguments ) -> {
-		Assert.notNull( arguments );
-		return "(" + StringUtils.join( arguments, " or " ) + ")";
+	OR( ( field, args ) -> {
+		Assert.notNull( args );
+		return "(" + StringUtils.join( args, " or " ) + ")";
 	}, "or" ),
 
-	EQ( ( propertyName, arguments ) -> propertyName + " = " + objectAsString( arguments[0] ), "=" ),
+	EQ( ( field, args ) -> field + " = " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), "=" ),
 
-	NEQ( ( propertyName, arguments ) -> propertyName + " != " + objectAsString( arguments[0] ), "!=", "<>" ),
+	NEQ( ( field, args ) -> field + " != " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), "!=", "<>" ),
 
-	CONTAINS( ( propertyName, arguments ) -> propertyName + " contains " + objectAsString( arguments[0] ), "contains" );
+	CONTAINS( ( field, args ) -> field + " contains " + objectAsString( args[0] ), "contains" ),
+
+	NOT_CONTAINS( ( ( field, args ) -> field + " not contains " + objectAsString( args[0] ) ),
+	              "not contains" );
 
 	private interface OpsWriter
 	{
@@ -80,6 +83,6 @@ public enum EntityQueryOps
 			}
 		}
 
-		throw new IllegalArgumentException( "No known entity query operator for token " + token );
+		return null;
 	}
 }

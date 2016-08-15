@@ -16,32 +16,49 @@
 
 package com.foreach.across.modules.entity.query;
 
+import org.springframework.util.Assert;
+import org.thymeleaf.util.StringUtils;
+
+import java.util.Objects;
+
 /**
- * Default lenient implementation of {@link EntityQueryMetadataProvider} that has no knowledge of property types
- * or operators.  It accepts all combinations of the two.  Non-string values are assumed to be a number.
+ * Represents a string literal value in an {@link EntityQuery}.
  *
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class DefaultEntityMetadataProvider implements EntityQueryMetadataProvider
+public final class EQString
 {
-	@Override
-	public boolean isValidProperty( String property ) {
-		return false;
+	private final String value;
+
+	public EQString( String value ) {
+		Assert.notNull( value );
+		this.value = value;
+	}
+
+	public String getValue() {
+		return value;
 	}
 
 	@Override
-	public boolean isValidOperatorForProperty( EntityQueryOps operator, String property ) {
-		return false;
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( o == null || getClass() != o.getClass() ) {
+			return false;
+		}
+		EQString eqString = (EQString) o;
+		return Objects.equals( value, eqString.value );
 	}
 
 	@Override
-	public boolean isValidValueForPropertyAndOperator( String value, String property, EntityQueryOps operator ) {
-		return false;
+	public int hashCode() {
+		return Objects.hash( value );
 	}
 
 	@Override
-	public Object[] convertStringToTypedValue( String property, EntityQueryOps operator, String rawValue ) {
-		return new Object[0];
+	public String toString() {
+		return "'" + StringUtils.replace( value, "'", "\\'" ) + "'";
 	}
 }

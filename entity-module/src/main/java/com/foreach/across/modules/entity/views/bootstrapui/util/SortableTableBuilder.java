@@ -434,11 +434,11 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	}
 
 	protected ViewElementBuilder createDefaultNoResultsPanel() {
-		return bootstrapUi.node( "div" )
-		                  .attribute( "class", "panel panel-warning" )
+		return bootstrapUi.div()
+		                  .css( "panel", "panel-warning" )
 		                  .add(
-				                  bootstrapUi.node( "div" )
-				                             .attribute( "class", "panel-body" )
+				                  bootstrapUi.div()
+				                             .css( "panel-body", "text-warning" )
 				                             .add( bootstrapUi.text( getPagingMessages().resultsFound( getPage() ) ) )
 		                  );
 	}

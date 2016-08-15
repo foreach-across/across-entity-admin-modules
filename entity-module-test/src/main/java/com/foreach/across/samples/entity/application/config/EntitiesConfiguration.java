@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
@@ -32,6 +33,7 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.samples.entity.EntityModuleTestApplication;
 import com.foreach.across.samples.entity.application.business.Group;
+import com.foreach.across.samples.entity.application.business.User;
 import com.foreach.across.samples.entity.application.repositories.GroupRepository;
 import com.foreach.across.samples.entity.application.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -54,9 +56,17 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
 @EnableAcrossJpaRepositories(basePackageClasses = EntityModuleTestApplication.class)
 public class EntitiesConfiguration implements EntityConfigurer
 {
+	@Autowired
+	private EntityQueryFilterProcessor entityQueryFilterProcessor;
+
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		addFilteringForGroupEntity( configuration.entity( Group.class ) );
+
+		configuration.entity( User.class )
+		             .listView()
+		             .addProcessor( entityQueryFilterProcessor )
+		             .pageFetcher( entityQueryFilterProcessor );
 	}
 
 	private void addFilteringForGroupEntity( EntityConfigurationBuilder<Group> configuration ) {

@@ -17,18 +17,18 @@
 package com.foreach.across.modules.entity.query;
 
 /**
- * API that provides
+ * Responsible for translating a raw {@link EntityQuery} into an actually
+ * executable query instance that will be accepted by an {@link EntityQueryExecutor}.
+ * <p/>
+ * Translating means that all values will be parsed to their expected values (eg. ids will be turned into
+ * instances) and the entire query might be optimized (eg. a single condition might be expanded into multiple).
  *
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public interface EntityQueryMetadataProvider
+public class EntityQueryTranslator
 {
-	boolean isValidProperty( String property );
-
-	boolean isValidOperatorForProperty( EntityQueryOps operator, String property );
-
-	boolean isValidValueForPropertyAndOperator( String value, String property, EntityQueryOps operator );
-
-	Object[] convertStringToTypedValue( String property, EntityQueryOps operator, String rawValue );
+	public EntityQuery translate( EntityQuery rawQuery ) {
+		return rawQuery;
+	}
 }

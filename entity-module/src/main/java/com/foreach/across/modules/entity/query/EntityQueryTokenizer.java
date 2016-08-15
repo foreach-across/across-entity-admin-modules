@@ -20,6 +20,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Responsible for retrieving the tokens of a stringified {@link EntityQuery}.
@@ -32,7 +33,56 @@ class EntityQueryTokenizer
 {
 	private static final char[] RESERVED_CHARS = new char[] { '!', '=', '>', '<' };
 	private static final char[] GROUPING_CHARS = new char[] { '(', ')' };
-	private static final char[] STRING_LITERAL_CHARS = new char[] { '\'', '"' };
+	public static final char[] STRING_LITERAL_CHARS = new char[] { '\'', '"' };
+
+	/**
+	 * Contains both token and the position information of the token in the query.
+	 */
+	static final class TokenMetadata
+	{
+		private final String token;
+		private int position;
+
+		public TokenMetadata( String token, int position ) {
+			this.token = token;
+			this.position = position;
+		}
+
+		public String getToken() {
+			return token;
+		}
+
+		public int getPosition() {
+			return position;
+		}
+
+		public int getNextTokenPosition() {
+			return position + token.length();
+		}
+
+		@Override
+		public boolean equals( Object o ) {
+			if ( this == o ) {
+				return true;
+			}
+			if ( o == null || getClass() != o.getClass() ) {
+				return false;
+			}
+			TokenMetadata that = (TokenMetadata) o;
+			return position == that.position &&
+					Objects.equals( token, that.token );
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash( token, position );
+		}
+
+		@Override
+		public String toString() {
+			return token + ":" + position;
+		}
+	}
 
 	/**
 	 * Convert a query in its string form into the list of tokens.
@@ -41,8 +91,8 @@ class EntityQueryTokenizer
 	 * @param query string
 	 * @return list of tokens
 	 */
-	List<String> tokenize( String query ) {
-		List<String> literals = new ArrayList<>();
+	List<TokenMetadata> tokenize( String query ) {
+		List<TokenMetadata> literals = new ArrayList<>();
 
 		boolean lastCharWasReserved = false;
 		boolean charIsEscaped = false;
@@ -74,7 +124,8 @@ class EntityQueryTokenizer
 				requiredClosingStringLiteral = ch;
 
 				if ( currentLiteral.length() > 0 ) {
-					literals.add( currentLiteral.toString() );
+					int position = i - currentLiteral.length();
+					literals.add( new TokenMetadata( currentLiteral.toString(), position ) );
 					currentLiteral = new StringBuilder();
 				}
 
@@ -82,22 +133,24 @@ class EntityQueryTokenizer
 			}
 			else if ( Character.isWhitespace( ch ) ) {
 				if ( currentLiteral.length() > 0 ) {
-					literals.add( currentLiteral.toString() );
+					int position = i - currentLiteral.length();
+					literals.add( new TokenMetadata( currentLiteral.toString(), position ) );
 					currentLiteral = new StringBuilder();
 					lastCharWasReserved = false;
 				}
 			}
 			else if ( isGroupingCharacter( ch ) ) {
 				if ( currentLiteral.length() > 0 ) {
-					literals.add( currentLiteral.toString() );
+					int position = i - currentLiteral.length();
+					literals.add( new TokenMetadata( currentLiteral.toString(), position ) );
 				}
 
-				literals.add( String.valueOf( ch ) );
+				literals.add( new TokenMetadata( String.valueOf( ch ), i ) );
 				currentLiteral = new StringBuilder();
 			}
 			else if ( isReservedCharacter( ch ) ) {
 				if ( !lastCharWasReserved && currentLiteral.length() > 0 ) {
-					literals.add( currentLiteral.toString() );
+					literals.add( new TokenMetadata( currentLiteral.toString(), 0 ) );
 					currentLiteral = new StringBuilder().append( ch );
 				}
 				else {
@@ -107,7 +160,8 @@ class EntityQueryTokenizer
 			}
 			else {
 				if ( lastCharWasReserved ) {
-					literals.add( currentLiteral.toString() );
+					int position = i - currentLiteral.length();
+					literals.add( new TokenMetadata( currentLiteral.toString(), position ) );
 					currentLiteral = new StringBuilder();
 				}
 				currentLiteral.append( ch );
@@ -116,7 +170,8 @@ class EntityQueryTokenizer
 		}
 
 		if ( currentLiteral.length() > 0 ) {
-			literals.add( currentLiteral.toString() );
+			int position = query.length() - currentLiteral.length();
+			literals.add( new TokenMetadata( currentLiteral.toString(), position ) );
 		}
 
 		return literals;

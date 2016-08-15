@@ -20,6 +20,7 @@ import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.EntityQueryParser;
 import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registrars.EntityRegistrar;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.context.MappingContext;
@@ -82,6 +84,9 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 	@EntityValidator
 	private SmartValidator entityValidator;
 
+	@Autowired
+	private ConversionService mvcConversionService;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void registerEntities( MutableEntityRegistry entityRegistry,
@@ -107,7 +112,6 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 				);
 				continue;
 			}
-
 
 			Class<?> entityType = ClassUtils.getUserClass(
 					repositoryFactoryInformation.getRepositoryInformation().getDomainType()
@@ -253,6 +257,12 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 
 		if ( entityQueryExecutor != null ) {
 			entityConfiguration.setAttribute( EntityQueryExecutor.class, entityQueryExecutor );
+
+			// todo factor out
+			EntityQueryParser parser = new EntityQueryParser();
+			parser.setEntityConfiguration( entityConfiguration );
+			parser.setConversionService( mvcConversionService );
+			entityConfiguration.setAttribute( EntityQueryParser.class, parser );
 		}
 	}
 

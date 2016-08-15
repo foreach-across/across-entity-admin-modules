@@ -238,7 +238,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.setPagingMessages( messages );
 
 		expect( "<div class='panel panel-warning'>" +
-				        "<div class='panel-body'>Geen resultaten gevonden</div>" +
+				        "<div class='panel-body text-warning'>Geen resultaten gevonden</div>" +
 				        "</div>" );
 	}
 

@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.query;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Ignore
 public class TestEntityQueryParser
 {
 	private EntityQueryParser parser;
@@ -59,6 +61,27 @@ public class TestEntityQueryParser
 
 		assertEquals(
 				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.EQ, 1 ) ),
+				query
+		);
+	}
+
+	@Test
+	public void validQueries() {
+		when( metadataProvider.isValidProperty( "id" ) ).thenReturn( true );
+		when( metadataProvider.isValidOperatorForProperty( EntityQueryOps.EQ, "id" ) ).thenReturn( true );
+		when( metadataProvider.isValidProperty( "name" ) ).thenReturn( true );
+		when( metadataProvider.isValidOperatorForProperty( EntityQueryOps.EQ, "name" ) ).thenReturn( true );
+		when( metadataProvider.isValidOperatorForProperty( EntityQueryOps.NEQ, "name" ) ).thenReturn( true );
+		when( metadataProvider.isValidOperatorForProperty( EntityQueryOps.CONTAINS, "name" ) ).thenReturn( true );
+
+		EntityQuery query = parser.parse( "id = 123 or name contains 'boe' or name = 'bla' or name != 'meh'" );
+		assertEquals(
+				EntityQuery.or(
+						new EntityQueryCondition( "id", EntityQueryOps.EQ, 1 ),
+						new EntityQueryCondition( "name", EntityQueryOps.CONTAINS, "'boe'" ),
+						new EntityQueryCondition( "name", EntityQueryOps.EQ, "'bla'" ),
+						new EntityQueryCondition( "name", EntityQueryOps.NEQ, "'meh'" )
+				),
 				query
 		);
 	}

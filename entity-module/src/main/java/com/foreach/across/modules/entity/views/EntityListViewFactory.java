@@ -171,28 +171,30 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			);
 		}
 
-		EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();
-		List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
+		if ( page != null ) {
+			EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();
+			List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
 
-		SortableTableBuilder tableBuilder = viewHelpers.createSortableTableBuilder();
-		tableBuilder.setFormName( "entity-list-form" );
-		tableBuilder.setTableName( "entityList" );
-		tableBuilder.setEntityConfiguration( entityConfiguration );
-		tableBuilder.setPropertyDescriptors( descriptors );
-		tableBuilder.setPagingMessages( (ListViewEntityMessages) view.getEntityMessages() );
-		tableBuilder.setPage( page );
-		tableBuilder.setSortableProperties( getSortableProperties() );
-		tableBuilder.setShowResultNumber( isShowResultNumber() );
+			SortableTableBuilder tableBuilder = viewHelpers.createSortableTableBuilder();
+			tableBuilder.setFormName( "entity-list-form" );
+			tableBuilder.setTableName( "entityList" );
+			tableBuilder.setEntityConfiguration( entityConfiguration );
+			tableBuilder.setPropertyDescriptors( descriptors );
+			tableBuilder.setPagingMessages( (ListViewEntityMessages) view.getEntityMessages() );
+			tableBuilder.setPage( page );
+			tableBuilder.setSortableProperties( getSortableProperties() );
+			tableBuilder.setShowResultNumber( isShowResultNumber() );
 
-		EntityListActionsProcessor actionsProcessor
-				= new EntityListActionsProcessor( bootstrapUi, entityConfiguration, linkBuilder, messages );
-		tableBuilder.addHeaderRowProcessor( actionsProcessor );
-		tableBuilder.addValueRowProcessor( actionsProcessor );
+			EntityListActionsProcessor actionsProcessor
+					= new EntityListActionsProcessor( bootstrapUi, entityConfiguration, linkBuilder, messages );
+			tableBuilder.addHeaderRowProcessor( actionsProcessor );
+			tableBuilder.addValueRowProcessor( actionsProcessor );
 
-		EntitySummaryViewActionProcessor.autoRegister( viewCreationContext, tableBuilder,
-		                                               EntityListView.SUMMARY_VIEW_NAME );
+			EntitySummaryViewActionProcessor.autoRegister( viewCreationContext, tableBuilder,
+			                                               EntityListView.SUMMARY_VIEW_NAME );
 
-		container.add( tableBuilder );
+			container.add( tableBuilder );
+		}
 
 		return container.build( viewElementBuilderContext );
 	}
