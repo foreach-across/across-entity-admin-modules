@@ -16,8 +16,8 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public class TestOptionsAsRadioBuilder extends AbstractBootstrapViewElementTest
 
 	@Before
 	public void reset() {
-		builderContext = new ViewElementBuilderContextImpl();
+		builderContext = new DefaultViewElementBuilderContext();
 
 		builder = new OptionsFormElementBuilder().radio();
 	}

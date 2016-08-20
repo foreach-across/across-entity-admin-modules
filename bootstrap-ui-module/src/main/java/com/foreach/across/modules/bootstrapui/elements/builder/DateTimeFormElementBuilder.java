@@ -90,16 +90,11 @@ public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupp
 			datetime.setValue( value );
 		}
 
-		registerWebResources( builderContext );
-
 		return datetime;
 	}
 
-	protected void registerWebResources( ViewElementBuilderContext builderContext ) {
-		WebResourceRegistry webResourceRegistry = builderContext.getAttribute( WebResourceRegistry.class );
-
-		if ( webResourceRegistry != null ) {
-			webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-		}
+	@Override
+	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 	}
 }

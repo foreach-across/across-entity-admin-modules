@@ -2,8 +2,8 @@ package com.foreach.across.modules.bootstrapui.elements.complex;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import org.junit.Test;
 
 public class TestFormPageView extends AbstractBootstrapViewElementTest
@@ -62,7 +62,7 @@ public class TestFormPageView extends AbstractBootstrapViewElementTest
 						           )
 				);
 
-		verify( formBuilder.build( new ViewElementBuilderContextImpl() ) );
+		verify( formBuilder.build( new DefaultViewElementBuilderContext() ) );
 	}
 
 	private void verify( ViewElement element ) {

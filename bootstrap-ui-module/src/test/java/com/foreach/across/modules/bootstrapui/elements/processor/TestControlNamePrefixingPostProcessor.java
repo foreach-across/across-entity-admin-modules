@@ -17,7 +17,7 @@ package com.foreach.across.modules.bootstrapui.elements.processor;
 
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public class TestControlNamePrefixingPostProcessor
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "textbox" )
 				.postProcessor( processor )
-				.build( new ViewElementBuilderContextImpl() );
+				.build( new DefaultViewElementBuilderContext() );
 
 		assertEquals( "test.textbox", textbox.getControlName() );
 	}
@@ -47,7 +47,7 @@ public class TestControlNamePrefixingPostProcessor
 
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.postProcessor( processor )
-				.build( new ViewElementBuilderContextImpl() );
+				.build( new DefaultViewElementBuilderContext() );
 
 		assertNull( textbox.getControlName() );
 	}
@@ -58,7 +58,7 @@ public class TestControlNamePrefixingPostProcessor
 
 		new TextViewElementBuilder()
 				.postProcessor( processor )
-				.build( new ViewElementBuilderContextImpl() );
+				.build( new DefaultViewElementBuilderContext() );
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class TestControlNamePrefixingPostProcessor
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "test.textbox" )
 				.postProcessor( processor )
-				.build( new ViewElementBuilderContextImpl() );
+				.build( new DefaultViewElementBuilderContext() );
 
 		assertEquals( "test.textbox", textbox.getControlName() );
 	}
@@ -80,7 +80,7 @@ public class TestControlNamePrefixingPostProcessor
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "test.textbox" )
 				.postProcessor( processor )
-				.build( new ViewElementBuilderContextImpl() );
+				.build( new DefaultViewElementBuilderContext() );
 
 		assertEquals( "test.test.textbox", textbox.getControlName() );
 	}

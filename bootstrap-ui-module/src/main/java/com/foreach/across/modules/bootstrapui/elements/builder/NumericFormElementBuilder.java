@@ -106,16 +106,11 @@ public class NumericFormElementBuilder extends FormControlElementBuilderSupport<
 			numeric.setValue( value );
 		}
 
-		registerWebResources( builderContext );
-
 		return numeric;
 	}
 
-	protected void registerWebResources( ViewElementBuilderContext builderContext ) {
-		WebResourceRegistry webResourceRegistry = builderContext.getAttribute( WebResourceRegistry.class );
-
-		if ( webResourceRegistry != null ) {
-			webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-		}
+	@Override
+	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 	}
 }

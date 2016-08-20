@@ -16,7 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import org.junit.Test;
 
 /**
@@ -75,7 +75,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		ButtonViewElement button = new ButtonViewElementBuilder()
 				.style( Style.DANGER )
 				.css( "test", "extra-css" )
-				.build( new ViewElementBuilderContextImpl() );
+				.build( new DefaultViewElementBuilderContext() );
 
 		renderAndExpect(
 			button,
