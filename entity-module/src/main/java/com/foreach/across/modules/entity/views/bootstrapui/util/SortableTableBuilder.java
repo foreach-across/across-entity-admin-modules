@@ -23,12 +23,18 @@ import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
+import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
 import com.foreach.across.modules.web.ui.*;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 
 import java.util.*;
@@ -42,22 +48,25 @@ import static com.foreach.across.modules.entity.views.ViewElementMode.LIST_VALUE
  *
  * @author Arne Vandamme
  */
+@Scope("prototype")
 public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 {
 	/**
 	 * Sets an 'odd' or 'even' class on a table row depending on the iterator index.
 	 */
 	public static final ViewElementPostProcessor<TableViewElement.Row> CSS_ODD_EVEN_ROW_PROCESSOR
-			= new ViewElementPostProcessor<TableViewElement.Row>()
-	{
-		@Override
-		public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row element ) {
-			if ( builderContext instanceof IteratorViewElementBuilderContext ) {
-				boolean even = ( ( (IteratorViewElementBuilderContext) builderContext ).getIndex() + 1 ) % 2 == 0;
-				element.addCssClass( even ? "even" : "odd" );
-			}
+			= ( builderContext, element ) -> {
+		if ( builderContext instanceof IteratorViewElementBuilderContext ) {
+			boolean even = ( ( (IteratorViewElementBuilderContext) builderContext ).getIndex() + 1 ) % 2 == 0;
+			element.addCssClass( even ? "even" : "odd" );
 		}
 	};
+
+	public static String ELEMENT_TABLE = "table";
+	public static String ELEMENT_PANEL = "panel";
+	public static String ELEMENT_NORESULTS = "noresults";
+	public static String ELEMENT_PAGER = "pager";
+
 	public static String DATA_ATTR_FIELD = "data-tbl-field";
 	public static String DATA_ATTR_TABLE_NAME = "data-tbl";
 	public static String DATA_ATTR_TABLE_TYPE = "data-tbl-type";
@@ -73,7 +82,10 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	protected final BootstrapUiFactory bootstrapUi;
 
 	private String tableName = "sortableTable";
+	private String entityType;
 	private EntityConfiguration entityConfiguration;
+	private EntityPropertyRegistry entityPropertyRegistry;
+	private EntityPropertySelector propertySelector;
 	private Collection<String> sortableProperties;
 	private Collection<EntityPropertyDescriptor> propertyDescriptors;
 	private boolean tableOnly, showResultNumber = true;
@@ -84,6 +96,9 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors = new ArrayList<>();
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors = new ArrayList<>();
 
+	private PagingMessages resolvedPagingMessages;
+	private Collection<EntityPropertyDescriptor> resolvedPropertyDescriptors;
+
 	@Autowired
 	public SortableTableBuilder( EntityViewElementBuilderService viewElementBuilderService,
 	                             BootstrapUiFactory bootstrapUi ) {
@@ -91,13 +106,30 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		this.bootstrapUi = bootstrapUi;
 	}
 
+	public String getEntityType() {
+		return entityType;
+	}
+
+	/**
+	 * Set the entity type attribute value that should be set as data attribute on the table.
+	 * If not set, the name of the {@link EntityConfiguration} will be used.
+	 *
+	 * @param entityType value
+	 * @return current builder
+	 */
+	public SortableTableBuilder entityType( String entityType ) {
+		this.entityType = entityType;
+		return this;
+	}
+
 	/**
 	 * Set a custom no results view element to be returned
 	 *
 	 * @param element to be shown in case the page is empty
 	 */
-	public void setNoResultsElement( ViewElement element ) {
+	public SortableTableBuilder noResults( ViewElement element ) {
 		this.noResultsElement = ViewElementBuilderSupport.ElementOrBuilder.wrap( element );
+		return this;
 	}
 
 	/**
@@ -106,16 +138,19 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	 *
 	 * @param builder to be shown in case the page is empty
 	 */
-	public void setNoResultsElementBuilder( ViewElementBuilder builder ) {
+	public SortableTableBuilder noResults( ViewElementBuilder builder ) {
 		this.noResultsElement = ViewElementBuilderSupport.ElementOrBuilder.wrap( builder );
+		return this;
 	}
 
-	public void addHeaderRowProcessor( ViewElementPostProcessor<TableViewElement.Row> processor ) {
+	public SortableTableBuilder headerRowProcessor( ViewElementPostProcessor<TableViewElement.Row> processor ) {
 		headerRowProcessors.add( processor );
+		return this;
 	}
 
-	public void addValueRowProcessor( ViewElementPostProcessor<TableViewElement.Row> processor ) {
+	public SortableTableBuilder valueRowProcessor( ViewElementPostProcessor<TableViewElement.Row> processor ) {
 		valueRowProcessors.add( processor );
+		return this;
 	}
 
 	public String getTableName() {
@@ -125,24 +160,75 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	/**
 	 * @param tableName to be used both internally and as data attribute on the resulting html table
 	 */
-	public void setTableName( String tableName ) {
+	public SortableTableBuilder tableName( String tableName ) {
 		this.tableName = tableName;
+		return this;
 	}
 
-	public EntityConfiguration getEntityConfiguration() {
+	protected EntityConfiguration getEntityConfiguration() {
 		return entityConfiguration;
 	}
 
-	public void setEntityConfiguration( EntityConfiguration entityConfiguration ) {
+	public SortableTableBuilder entityConfiguration( EntityConfiguration entityConfiguration ) {
 		this.entityConfiguration = entityConfiguration;
+		this.resolvedPagingMessages = null;
+		this.resolvedPropertyDescriptors = null;
+		return this;
 	}
 
-	public Collection<EntityPropertyDescriptor> getPropertyDescriptors() {
-		return propertyDescriptors;
+	protected EntityPropertyRegistry getPropertyRegistry() {
+		return entityPropertyRegistry;
 	}
 
-	public void setPropertyDescriptors( Collection<EntityPropertyDescriptor> propertyDescriptors ) {
+	/**
+	 * Configure the {@link EntityPropertyRegistry} that should be used for fetching the property descriptors.
+	 * If none specified, the registry from the {@link EntityConfiguration} will be used.
+	 * If {@link EntityPropertyDescriptor}s are added directly, the registry will never be used.
+	 *
+	 * @param entityPropertyRegistry instance
+	 * @return current builder
+	 */
+	public SortableTableBuilder propertyRegistry( EntityPropertyRegistry entityPropertyRegistry ) {
+		this.entityPropertyRegistry = entityPropertyRegistry;
+		this.resolvedPropertyDescriptors = null;
+		return this;
+	}
+
+	/**
+	 * Explicitly specify the collection of {@link EntityPropertyDescriptor} instances that should be rendered.
+	 * This will take precedence over any selector specified and does not require you to have a valid
+	 * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry}.
+	 *
+	 * @param propertyDescriptors to use
+	 * @return current builder
+	 */
+	public SortableTableBuilder properties( Collection<EntityPropertyDescriptor> propertyDescriptors ) {
 		this.propertyDescriptors = propertyDescriptors;
+		return this;
+	}
+
+	/**
+	 * Specify the arguments of a {@link EntityPropertySelector} that should be applied to the registry
+	 * configured on this builder.  See also {@link #propertyRegistry(EntityPropertyRegistry)}.
+	 *
+	 * @param properties names of the properties
+	 * @return current builder
+	 */
+	public SortableTableBuilder properties( String... properties ) {
+		return properties( new EntityPropertySelector( properties ) );
+	}
+
+	/**
+	 * Specify the properties to render as a selector that should be applied to the registry
+	 * configured on this builder.  See also {@link #propertyRegistry(EntityPropertyRegistry)}.
+	 *
+	 * @param selector for the properties
+	 * @return current builder
+	 */
+	public SortableTableBuilder properties( EntityPropertySelector selector ) {
+		this.propertySelector = selector;
+		this.resolvedPropertyDescriptors = null;
+		return this;
 	}
 
 	public boolean isTableOnly() {
@@ -150,59 +236,105 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	}
 
 	/**
-	 * @param tableOnly true if only the table should be returned (no panel)
+	 * Render only the table, not the panel around it.
 	 */
-	public void setTableOnly( boolean tableOnly ) {
-		this.tableOnly = tableOnly;
+	public SortableTableBuilder tableOnly() {
+		return tableOnly( true );
 	}
 
-	public Page getPage() {
+	/**
+	 * @param tableOnly true if only the table should be returned (no panel)
+	 */
+	public SortableTableBuilder tableOnly( boolean tableOnly ) {
+		this.tableOnly = tableOnly;
+		return this;
+	}
+
+	protected Page getPage() {
 		return page;
+	}
+
+	/**
+	 * Full list of data items to be shown.  Paging will be disabled.
+	 *
+	 * @param items list of items
+	 * @return current builder
+	 */
+	public SortableTableBuilder items( List<?> items ) {
+		return items( new PageImpl<>( items ) );
 	}
 
 	/**
 	 * @param page of data items to be shown
 	 */
 	@SuppressWarnings("unchecked")
-	public void setPage( Page page ) {
+	public SortableTableBuilder items( Page page ) {
 		this.page = page;
+		return this;
 	}
 
-	public boolean isShowResultNumber() {
+	protected boolean isShowResultNumber() {
 		return showResultNumber;
+	}
+
+	public SortableTableBuilder showResultNumber() {
+		return showResultNumber( true );
+	}
+
+	public SortableTableBuilder hideResultNumber() {
+		return showResultNumber( false );
 	}
 
 	/**
 	 * @param showResultNumber true if result number should be included
 	 */
-	public void setShowResultNumber( boolean showResultNumber ) {
+	public SortableTableBuilder showResultNumber( boolean showResultNumber ) {
 		this.showResultNumber = showResultNumber;
+		return this;
 	}
 
-	public Style[] getTableStyles() {
+	protected Style[] getTableStyles() {
 		return tableStyles;
 	}
 
 	/**
 	 * @param tableStyles that should be applied to the generated table
 	 */
-	public void setTableStyles( Style... tableStyles ) {
+	public SortableTableBuilder tableStyles( Style... tableStyles ) {
 		this.tableStyles = tableStyles;
+		return this;
 	}
 
-	public PagingMessages getPagingMessages() {
+	protected PagingMessages getPagingMessages() {
 		return pagingMessages;
 	}
 
 	/**
+	 * Set the paging messages to be used in case paging is enabled.
+	 * Will only be used if the panel is being rendered.
+	 *
 	 * @param pagingMessages to be used for the result text
 	 */
-	public void setPagingMessages( PagingMessages pagingMessages ) {
+	public SortableTableBuilder pagingMessages( PagingMessages pagingMessages ) {
 		this.pagingMessages = pagingMessages;
+		return this;
 	}
 
-	public Collection<String> getSortableProperties() {
-		return sortableProperties;
+	/**
+	 * Disables sorting.
+	 */
+	public SortableTableBuilder noSorting() {
+		return sortableOn( Collections.emptyList() );
+	}
+
+	/**
+	 * Enables sorting on all properties that have a {@link org.springframework.data.domain.Sort.Order} attribute.
+	 *
+	 * @return current builder
+	 */
+	public SortableTableBuilder defaultSorting() {
+		this.sortableProperties = null;
+		return this;
 	}
 
 	/**
@@ -212,26 +344,72 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	 *
 	 * @param sortableProperties collection of property names that can be sorted on
 	 */
-	public void setSortableProperties( Collection<String> sortableProperties ) {
+	public SortableTableBuilder sortableOn( String... sortableProperties ) {
+		return sortableOn( Arrays.asList( sortableProperties ) );
+	}
+
+	/**
+	 * Limit the properties that can be sorted on by specifiying them explicitly.
+	 *
+	 * @param sortableProperties collection of property names that can be sorted on
+	 */
+	public SortableTableBuilder sortableOn( Collection<String> sortableProperties ) {
 		this.sortableProperties = sortableProperties;
+		return this;
 	}
 
-	public Collection<ViewElementPostProcessor<TableViewElement.Row>> getHeaderRowProcessors() {
-		return Collections.unmodifiableCollection( headerRowProcessors );
+	protected Collection<ViewElementPostProcessor<TableViewElement.Row>> getHeaderRowProcessors() {
+		return headerRowProcessors;
 	}
 
-	public void setHeaderRowProcessors( Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors ) {
-		this.headerRowProcessors.clear();
+	public SortableTableBuilder headerRowProcessors( Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors ) {
 		this.headerRowProcessors.addAll( headerRowProcessors );
+		return this;
 	}
 
-	public Collection<ViewElementPostProcessor<TableViewElement.Row>> getValueRowProcessors() {
-		return Collections.unmodifiableCollection( valueRowProcessors );
+	protected Collection<ViewElementPostProcessor<TableViewElement.Row>> getValueRowProcessors() {
+		return valueRowProcessors;
 	}
 
-	public void setValueRowProcessors( Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors ) {
-		this.valueRowProcessors.clear();
+	public SortableTableBuilder valueRowProcessors( Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors ) {
 		this.valueRowProcessors.addAll( valueRowProcessors );
+		return this;
+	}
+
+	/**
+	 * @return actual {@link PagingMessages} to use - fetched from {@link EntityConfiguration} or use value set
+	 */
+	protected PagingMessages getResolvedPagingMessages() {
+		PagingMessages actual = getPagingMessages();
+
+		if ( actual == null ) {
+			if ( resolvedPagingMessages == null ) {
+				resolvedPagingMessages
+						= new ListViewEntityMessages( entityConfiguration.getEntityMessageCodeResolver() );
+			}
+			actual = resolvedPagingMessages;
+		}
+
+		return actual;
+	}
+
+	protected Collection<EntityPropertyDescriptor> getResolvedPropertyDescriptors() {
+		Collection<EntityPropertyDescriptor> actual = propertyDescriptors;
+
+		if ( actual == null ) {
+			if ( resolvedPropertyDescriptors == null ) {
+				EntityPropertyRegistry registry = entityPropertyRegistry != null
+						? entityPropertyRegistry : entityConfiguration.getPropertyRegistry();
+				resolvedPropertyDescriptors = registry.select( propertySelector );
+			}
+			actual = resolvedPropertyDescriptors;
+		}
+
+		return actual;
+	}
+
+	protected String getResolvedEntityType() {
+		return entityType != null ? entityType : ( entityConfiguration != null ? entityConfiguration.getName() : null );
 	}
 
 	/**
@@ -241,13 +419,13 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	 * @return viewElement
 	 */
 	@Override
-	public ViewElement build( ViewElementBuilderContext builderContext ) {
-		if ( !page.hasContent() ) {
+	public ContainerViewElement build( ViewElementBuilderContext builderContext ) {
+		if ( page == null || !page.hasContent() ) {
 			if ( noResultsElement != null ) {
-				return noResultsElement.get( builderContext );
+				return bootstrapUi.container().add( noResultsElement.get( builderContext ) ).build( builderContext );
 			}
 
-			return createDefaultNoResultsPanel().build( builderContext );
+			return bootstrapUi.container().add( createDefaultNoResultsPanel() ).build( builderContext );
 		}
 
 		TableViewElementBuilder table = createTable();
@@ -257,8 +435,9 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 
 	protected TableViewElementBuilder createTable() {
 		TableViewElementBuilder table = bootstrapUi.table()
+		                                           .name( ELEMENT_TABLE )
 		                                           .responsive()
-		                                           .style( tableStyles )
+		                                           .style( getTableStyles() )
 		                                           .attributes( createTableAttributes() );
 
 		createTableHeader( table );
@@ -273,7 +452,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put( DATA_ATTR_TABLE_NAME, getTableName() );
 		attributes.put( DATA_ATTR_TABLE_TYPE, "paged" );
-		attributes.put( DATA_ATTR_ENTITY_TYPE, getEntityConfiguration().getName() );
+		attributes.put( DATA_ATTR_ENTITY_TYPE, getResolvedEntityType() );
 		attributes.put( DATA_ATTR_CURRENT_PAGE, currentPage.getNumber() );
 		attributes.put( DATA_ATTR_PAGES, currentPage.getTotalPages() );
 		attributes.put( DATA_ATTR_PAGE_SIZE, currentPage.getSize() );
@@ -307,7 +486,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 			);
 		}
 
-		for ( EntityPropertyDescriptor descriptor : getPropertyDescriptors() ) {
+		for ( EntityPropertyDescriptor descriptor : getResolvedPropertyDescriptors() ) {
 			TableViewElementBuilder.Cell heading = table.heading()
 			                                            .attribute( DATA_ATTR_FIELD, descriptor.getName() )
 			                                            .add( createLabel( descriptor ) );
@@ -354,7 +533,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 			);
 		}
 
-		for ( EntityPropertyDescriptor descriptor : getPropertyDescriptors() ) {
+		for ( EntityPropertyDescriptor descriptor : getResolvedPropertyDescriptors() ) {
 			ViewElementBuilder valueBuilder = createValue( descriptor );
 
 			TableViewElementBuilder.Cell cell = table.cell()
@@ -387,15 +566,16 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		return viewElementBuilderService.getElementBuilder( descriptor, LIST_VALUE );
 	}
 
-	protected ViewElementBuilder createPanelForTable( TableViewElementBuilder tableBody ) {
+	protected NodeViewElementBuilder createPanelForTable( TableViewElementBuilder tableBody ) {
+		String resultsFound = getResolvedPagingMessages().resultsFound( getPage() );
+
 		NodeViewElementBuilder panel = bootstrapUi.node( "div" )
+		                                          .name( ELEMENT_PANEL )
 		                                          .attribute( "class", "panel panel-default" )
 		                                          .add(
 				                                          bootstrapUi.node( "div" )
 				                                                     .attribute( "class", "panel-heading" )
-				                                                     .add( bootstrapUi.text(
-						                                                     pagingMessages.resultsFound(
-								                                                     getPage() ) ) )
+				                                                     .add( bootstrapUi.text( resultsFound ) )
 		                                          )
 		                                          .add(
 				                                          bootstrapUi.node( "div" )
@@ -415,19 +595,22 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 
 	protected ViewElementBuilder createDefaultNoResultsPanel() {
 		return bootstrapUi.node( "div" )
+		                  .name( ELEMENT_NORESULTS )
 		                  .attribute( "class", "panel panel-warning" )
 		                  .add(
 				                  bootstrapUi.node( "div" )
 				                             .attribute( "class", "panel-body" )
-				                             .add( bootstrapUi.text( getPagingMessages().resultsFound( getPage() ) ) )
+				                             .add( bootstrapUi.text( getResolvedPagingMessages()
+						                                                     .resultsFound( getPage() ) ) )
 		                  );
 	}
 
 	protected ViewElementBuilder createPager() {
 		Page currentPage = getPage();
-		PagingMessages messages = getPagingMessages();
+		PagingMessages messages = getResolvedPagingMessages();
 
 		NodeViewElementBuilder pager = bootstrapUi.node( "div" )
+		                                          .name( ELEMENT_PAGER )
 		                                          .attribute( "class", "pager-form form-inline text-center" );
 
 		if ( currentPage.hasPrevious() ) {
@@ -507,9 +690,8 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	}
 
 	/**
-	 * Sets the position of the item being processed (in an
-	 * {@link IteratorViewElementBuilderContext}) as the
-	 * text of a {@link TextViewElement}.
+	 * Sets the position of the item being processed (in an {@link IteratorViewElementBuilderContext})
+	 * as the text of a {@link TextViewElement}.
 	 */
 	public static class ResultNumberProcessor implements ViewElementPostProcessor<TextViewElement>
 	{

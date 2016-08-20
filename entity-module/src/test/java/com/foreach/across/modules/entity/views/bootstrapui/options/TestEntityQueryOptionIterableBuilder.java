@@ -23,8 +23,8 @@ import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,7 +67,7 @@ public class TestEntityQueryOptionIterableBuilder
 		iterableBuilder.setEntityQueryExecutor( entityQueryExecutor );
 		iterableBuilder.setValueFetcher( valueFetcher );
 
-		elementBuilderContext = new ViewElementBuilderContextImpl();
+		elementBuilderContext = new DefaultViewElementBuilderContext();
 
 		when( entityQueryExecutor.findAll( any( EntityQuery.class ) ) ).thenReturn( Arrays.asList( ONE, TWO, THREE ) );
 

@@ -16,12 +16,12 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 
 /**
  * @author Arne Vandamme
  */
-public class EntityViewElementBuilderContext<T extends EntityView> extends ViewElementBuilderContextImpl
+public class EntityViewElementBuilderContext<T extends EntityView> extends DefaultViewElementBuilderContext
 {
 	public static final String ENTITY = "entity";
 

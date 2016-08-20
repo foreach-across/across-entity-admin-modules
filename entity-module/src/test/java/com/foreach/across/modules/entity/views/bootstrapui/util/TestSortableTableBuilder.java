@@ -21,15 +21,22 @@ import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.Style;
-import com.foreach.across.modules.entity.config.ViewHelpers;
+import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +48,10 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
+import static com.foreach.across.modules.entity.views.support.ListViewEntityMessages.RESULTS_FOUND;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -77,10 +87,10 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 			"</div>";
 
 	@Autowired
-	private ViewHelpers viewHelpers;
+	private EntityViewElementBuilderService viewElementBuilderService;
 
 	@Autowired
-	private EntityViewElementBuilderService viewElementBuilderService;
+	private BootstrapUiFactory bootstrapUiFactory;
 
 	private EntityConfiguration entityConfiguration;
 	private SortableTableBuilder tableBuilder;
@@ -90,23 +100,23 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	public void before() {
 		reset( viewElementBuilderService );
 
-		tableBuilder = viewHelpers.createSortableTableBuilder();
+		tableBuilder = new SortableTableBuilder( viewElementBuilderService, bootstrapUiFactory );
 
 		entityConfiguration = mock( EntityConfiguration.class );
 		when( entityConfiguration.getName() ).thenReturn( "entity" );
 
 		descriptor = mock( EntityPropertyDescriptor.class );
 
-		tableBuilder.setEntityConfiguration( entityConfiguration );
-		tableBuilder.setSortableProperties( Collections.<String>emptyList() );
-		tableBuilder.setPropertyDescriptors( Collections.singleton( descriptor ) );
+		tableBuilder
+				.entityConfiguration( entityConfiguration )
+				.noSorting()
+				.properties( Collections.singleton( descriptor ) );
 
-		Page page = new PageImpl<>( Collections.singletonList( "test" ) );
-		tableBuilder.setPage( page );
+		tableBuilder.items( Collections.singletonList( "test" ) );
 
 		PagingMessages messages = mock( PagingMessages.class );
 		when( messages.resultsFound( any( Page.class ), anyVararg() ) ).thenReturn( "xx results" );
-		tableBuilder.setPagingMessages( messages );
+		tableBuilder.pagingMessages( messages );
 
 		when( descriptor.getName() ).thenReturn( "propertyOne" );
 
@@ -123,10 +133,12 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	}
 
 	@Test
-	public void tableOnly() {
-		tableBuilder.setTableOnly( true );
+	public void tableOnlyDoesNotRequirePagingMessages() {
+		assertSame( tableBuilder, tableBuilder.tableOnly().pagingMessages( null ) );
 
 		expect( TABLE_WITH_RESULT_NUMBER );
+
+		verify( entityConfiguration, never() ).getEntityMessageCodeResolver();
 	}
 
 	@Test
@@ -142,8 +154,28 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	}
 
 	@Test
+	public void defaultPagingMessagesFromEntityConfigurationWillBeUsed() {
+		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
+
+		when( entityConfiguration.getEntityMessageCodeResolver() ).thenReturn( codeResolver );
+		when( codeResolver.getMessageWithFallback( eq( RESULTS_FOUND ), any( Object[].class ), eq( null ) ) )
+				.thenReturn( "custom results" );
+
+		tableBuilder.pagingMessages( null );
+
+		expect(
+				"<div class='panel panel-default'>" +
+						"<div class='panel-heading'>custom results</div>" +
+						"<div class='panel-body'>" +
+						TABLE_WITH_RESULT_NUMBER +
+						"</div>" +
+						"</div>"
+		);
+	}
+
+	@Test
 	public void noResultNumberTable() {
-		tableBuilder.setShowResultNumber( false );
+		tableBuilder.showResultNumber( false );
 
 		expect(
 				"<div class='panel panel-default'>" +
@@ -166,8 +198,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		Pageable pageable = new PageRequest( 1, 20, sort );
 		Page page = new PageImpl<>( Arrays.asList( "één", "twee" ), pageable, 57 );
 
-		tableBuilder.setTableName( "entityList" );
-		tableBuilder.setPage( page );
+		tableBuilder.tableName( "entityList" ).items( page );
 
 		expect(
 				"<div class='panel panel-default'>" +
@@ -209,12 +240,12 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	@Test
 	public void defaultNoResultsPanel() {
 		Page page = new PageImpl<>( Collections.emptyList() );
-		tableBuilder.setPage( page );
+		tableBuilder.items( page );
 
 		PagingMessages messages = mock( PagingMessages.class );
 		when( messages.resultsFound( any( Page.class ), anyVararg() ) ).thenReturn( "Geen resultaten gevonden" );
 
-		tableBuilder.setPagingMessages( messages );
+		tableBuilder.pagingMessages( messages );
 
 		expect( "<div class='panel panel-warning'>" +
 				        "<div class='panel-body'>Geen resultaten gevonden</div>" +
@@ -222,14 +253,61 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	}
 
 	@Test
+	public void entityTypeAndDescriptorsSpecified() {
+		tableBuilder = new SortableTableBuilder( viewElementBuilderService, bootstrapUiFactory )
+				.noSorting()
+				.properties( Collections.singleton( descriptor ) )
+				.entityType( "my-entity" )
+				.items( Collections.singletonList( "test" ) )
+				.tableOnly();
+
+		expect( TABLE_WITH_RESULT_NUMBER.replace( "'entity'", "'my-entity'" ) );
+	}
+
+	@Test
+	public void entityTypeAndRegistrySpecified() {
+		EntityPropertyRegistry propertyRegistry = mock( EntityPropertyRegistry.class );
+		when( propertyRegistry.select( new EntityPropertySelector( "myprop" ) ) )
+				.thenReturn( Collections.singletonList( descriptor ) );
+
+		tableBuilder = new SortableTableBuilder( viewElementBuilderService, bootstrapUiFactory )
+				.noSorting()
+				.propertyRegistry( propertyRegistry )
+				.properties( "myprop" )
+				.entityType( "my-entity" )
+				.items( Collections.singletonList( "test" ) )
+				.tableOnly();
+
+		expect( TABLE_WITH_RESULT_NUMBER.replace( "'entity'", "'my-entity'" ) );
+	}
+
+	@Test
+	public void propertiesAsSelectorOnConfiguration() {
+		EntityPropertyRegistry propertyRegistry = mock( EntityPropertyRegistry.class );
+		when( propertyRegistry.select( new EntityPropertySelector( "myprop" ) ) )
+				.thenReturn( Collections.singletonList( descriptor ) );
+
+		when( entityConfiguration.getPropertyRegistry() ).thenReturn( propertyRegistry );
+
+		tableBuilder = new SortableTableBuilder( viewElementBuilderService, bootstrapUiFactory )
+				.noSorting()
+				.entityConfiguration( entityConfiguration )
+				.properties( new EntityPropertySelector( "myprop" ) )
+				.items( Collections.singletonList( "test" ) )
+				.tableOnly();
+
+		expect( TABLE_WITH_RESULT_NUMBER );
+	}
+
+	@Test
 	public void customNoResultsElement() {
 		Page page = new PageImpl<>( Collections.emptyList() );
-		tableBuilder.setPage( page );
+		tableBuilder.items( page );
 
-		tableBuilder.setNoResultsElement( new TextViewElement( "empty" ) );
+		tableBuilder.noResults( new TextViewElement( "empty" ) );
 		expect( "empty" );
 
-		tableBuilder.setNoResultsElementBuilder(
+		tableBuilder.noResults(
 				new NodeViewElementBuilder( "div" )
 						.add( new TextViewElement( "empty" ) )
 		);
@@ -238,8 +316,9 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 	@Test
 	public void sorting() {
-		tableBuilder.setTableOnly( true );
-		tableBuilder.setSortableProperties( Arrays.asList( "propertyOne", "propertyTwo" ) );
+		tableBuilder
+				.tableOnly( true )
+				.sortableOn( "propertyOne", "propertyTwo" );
 
 		expect( "<div class='table-responsive'>" +
 				        "<table class='table table-hover' " +
@@ -257,7 +336,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 				        "</div>"
 		);
 
-		tableBuilder.setSortableProperties( null );
+		tableBuilder.defaultSorting();
 
 		expect( "<div class='table-responsive'>" +
 				        "<table class='table table-hover' " +
@@ -278,8 +357,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 	@Test
 	public void tableStyle() {
-		tableBuilder.setTableStyles( Style.Table.CONDENSED );
-		tableBuilder.setTableOnly( true );
+		tableBuilder.tableStyles( Style.Table.CONDENSED ).tableOnly( true );
 
 		expect(
 				TABLE_WITH_RESULT_NUMBER.replace( "table-hover", "table-condensed" )
@@ -287,8 +365,50 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	}
 
 	@Test
-	public void panelStyle() {
+	public void elementNamesAreSet() {
+		ContainerViewElement result = tableBuilder.tableName( "mytable" )
+		                                          .build( mock( ViewElementBuilderContext.class ) );
+		assertNotEquals(
+				Optional.empty(),
+				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_PANEL, NodeViewElement.class )
+		);
+		assertNotEquals(
+				Optional.empty(),
+				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_TABLE, TableViewElement.class )
+		);
+		assertEquals(
+				Optional.empty(),
+				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_NORESULTS, TableViewElement.class )
+		);
 
+		result = tableBuilder.tableOnly().build( mock( ViewElementBuilderContext.class ) );
+		assertEquals(
+				Optional.empty(),
+				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_PANEL, NodeViewElement.class )
+		);
+		assertNotEquals(
+				Optional.empty(),
+				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_TABLE, TableViewElement.class )
+		);
+		assertEquals(
+				Optional.empty(),
+				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_NORESULTS, TableViewElement.class )
+		);
+
+		result = tableBuilder.tableOnly().items( Collections.emptyList() )
+		                     .build( mock( ViewElementBuilderContext.class ) );
+		assertEquals(
+				Optional.empty(),
+				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_PANEL, NodeViewElement.class )
+		);
+		assertEquals(
+				Optional.empty(),
+				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_TABLE, TableViewElement.class )
+		);
+		assertNotEquals(
+				Optional.empty(),
+				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_NORESULTS, ViewElement.class )
+		);
 	}
 
 	private void expect( String output ) {
@@ -313,11 +433,6 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		@Bean
 		public BootstrapUiFactory bootstrapUiFactory() {
 			return new BootstrapUiFactoryImpl();
-		}
-
-		@Bean
-		public ViewHelpers viewHelpers() {
-			return new ViewHelpers();
 		}
 	}
 }

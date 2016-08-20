@@ -19,7 +19,9 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.views.helpers.EntityViewElementBatch;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -36,6 +38,16 @@ public class EntityViewElementBuilderHelper
 
 	@Autowired
 	private EntityRegistry entityRegistry;
+
+	@Autowired
+	private BeanFactory beanFactory;
+
+	@Autowired
+	public EntityViewElementBuilderHelper( BeanFactory beanFactory ) {
+		this.beanFactory = beanFactory;
+		this.entityRegistry = beanFactory.getBean( EntityRegistry.class );
+		this.builderService = beanFactory.getBean( EntityViewElementBuilderService.class );
+	}
 
 	/**
 	 * Create a new batch builder for a given entity.  Requires an {@link EntityConfiguration} to exist for that
@@ -73,5 +85,27 @@ public class EntityViewElementBuilderHelper
 		batch.setAttribute( EntityMessageCodeResolver.class, entityConfiguration.getEntityMessageCodeResolver() );
 
 		return batch;
+	}
+
+	/**
+	 * Create a new {@link SortableTableBuilder} instance for the entity type specified.
+	 * Requires an {@link EntityConfiguration} to exist for that entity type.
+	 */
+	public <V> SortableTableBuilder createSortableTableBuilder( Class<V> entityType ) {
+		Assert.notNull( entityType );
+
+		SortableTableBuilder tableBuilder = createSortableTableBuilder();
+		EntityConfiguration<V> entityConfiguration = entityRegistry.getEntityConfiguration( entityType );
+
+		return tableBuilder.entityConfiguration( entityConfiguration );
+	}
+
+	/**
+	 * Create a new {@link SortableTableBuilder} instance, initialized with the necessary dependencies.
+	 *
+	 * @return table builders
+	 */
+	public SortableTableBuilder createSortableTableBuilder() {
+		return beanFactory.getBean( SortableTableBuilder.class );
 	}
 }

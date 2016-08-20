@@ -21,10 +21,10 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertySelec
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -41,7 +41,7 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
-public class EntityViewElementBatch<T> extends ViewElementBuilderContextImpl
+public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 {
 	private final EntityViewElementBuilderService viewElementBuilderService;
 

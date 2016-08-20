@@ -18,9 +18,9 @@ package com.foreach.across.modules.entity.views.bootstrapui.options;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class TestOptionGenerator
 		generator = new OptionGenerator();
 		options = new OptionsFormElementBuilder();
 
-		builderContext = new ViewElementBuilderContextImpl();
+		builderContext = new DefaultViewElementBuilderContext();
 		builderContext.setAttribute( OptionsFormElementBuilder.class, options );
 	}
 

@@ -16,13 +16,19 @@
 package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderServiceImpl;
 import com.foreach.across.modules.entity.views.bootstrapui.*;
+import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 /**
  * @author Arne Vandamme
@@ -38,8 +44,15 @@ public class BootstrapUiConfiguration
 	}
 
 	@Bean
-	public EntityViewElementBuilderHelper entityViewElementBuilderHelper() {
-		return new EntityViewElementBuilderHelper();
+	public EntityViewElementBuilderHelper entityViewElementBuilderHelper( BeanFactory beanFactory ) {
+		return new EntityViewElementBuilderHelper( beanFactory );
+	}
+
+	@Bean
+	@Scope(SCOPE_PROTOTYPE)
+	public SortableTableBuilder sortableTableBuilder( EntityViewElementBuilderService viewElementBuilderService,
+	                                                  BootstrapUiFactory bootstrapUi ) {
+		return new SortableTableBuilder( viewElementBuilderService, bootstrapUi );
 	}
 
 	@Bean
@@ -93,7 +106,7 @@ public class BootstrapUiConfiguration
 	}
 
 	@Bean
-	public HiddenFormElementBuilderFactory hiddenFormElementBuilderFactory(){
+	public HiddenFormElementBuilderFactory hiddenFormElementBuilderFactory() {
 		return new HiddenFormElementBuilderFactory();
 	}
 
