@@ -90,7 +90,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	private Collection<String> sortableProperties;
 	private Collection<EntityPropertyDescriptor> propertyDescriptors;
 	private boolean tableOnly, showResultNumber = true;
-	private Page<Object> page;
+	private Page<Object> page = new PageImpl<>( Collections.emptyList() );
 	private Style[] tableStyles = new Style[] { Style.Table.HOVER };
 	private PagingMessages pagingMessages;
 	private ViewElementBuilderSupport.ElementOrBuilder noResultsElement;
@@ -432,7 +432,11 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 			);
 		}
 
-		if ( page == null || !page.hasContent() ) {
+		if ( page == null ) {
+			throw new IllegalArgumentException( "Items or Page must be set on SortableTableBuilder" );
+		}
+
+		if ( !page.hasContent() ) {
 			if ( noResultsElement != null ) {
 				return bootstrapUi.container().add( noResultsElement.get( builderContext ) ).build( builderContext );
 			}
