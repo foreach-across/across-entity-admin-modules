@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
 import com.foreach.across.modules.web.ui.*;
@@ -385,7 +386,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		if ( actual == null ) {
 			if ( resolvedPagingMessages == null ) {
 				resolvedPagingMessages
-						= new ListViewEntityMessages( entityConfiguration.getEntityMessageCodeResolver() );
+						= new ListViewEntityMessages( getEntityConfiguration().getEntityMessageCodeResolver() );
 			}
 			actual = resolvedPagingMessages;
 		}
@@ -398,8 +399,8 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 
 		if ( actual == null ) {
 			if ( resolvedPropertyDescriptors == null ) {
-				EntityPropertyRegistry registry = entityPropertyRegistry != null
-						? entityPropertyRegistry : entityConfiguration.getPropertyRegistry();
+				EntityPropertyRegistry registry = getPropertyRegistry() != null
+						? getPropertyRegistry() : getEntityConfiguration().getPropertyRegistry();
 				resolvedPropertyDescriptors = registry.select( propertySelector );
 			}
 			actual = resolvedPropertyDescriptors;
@@ -409,17 +410,28 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	}
 
 	protected String getResolvedEntityType() {
-		return entityType != null ? entityType : ( entityConfiguration != null ? entityConfiguration.getName() : null );
+		return entityType != null
+				? entityType : ( getEntityConfiguration() != null ? getEntityConfiguration().getName() : null );
 	}
 
 	/**
 	 * Create a {@link ViewElement} containing the configured table.
 	 *
-	 * @param builderContext for element creation
+	 * @param parentBuilderContext for element creation
 	 * @return viewElement
 	 */
 	@Override
-	public ContainerViewElement build( ViewElementBuilderContext builderContext ) {
+	public ContainerViewElement build( ViewElementBuilderContext parentBuilderContext ) {
+		ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( parentBuilderContext );
+
+		if ( getEntityConfiguration() != null ) {
+			// set the message code resolver of the specific entity type being rendered
+			builderContext.setAttribute(
+					EntityMessageCodeResolver.class,
+					getEntityConfiguration().getEntityMessageCodeResolver()
+			);
+		}
+
 		if ( page == null || !page.hasContent() ) {
 			if ( noResultsElement != null ) {
 				return bootstrapUi.container().add( noResultsElement.get( builderContext ) ).build( builderContext );

@@ -65,6 +65,6 @@ public class EntityViewElementUtils
 			value = builderContext.getAttribute( EntityViewElementBuilderContext.ENTITY );
 		}
 
-		return expectedType.isInstance( value ) ? (U) value : null;
+		return expectedType.isInstance( value ) ? expectedType.cast( value ) : null;
 	}
 }

@@ -138,7 +138,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 		expect( TABLE_WITH_RESULT_NUMBER );
 
-		verify( entityConfiguration, never() ).getEntityMessageCodeResolver();
+		verify( entityConfiguration, times( 1 ) ).getEntityMessageCodeResolver();
 	}
 
 	@Test
