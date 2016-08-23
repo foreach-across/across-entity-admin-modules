@@ -21,7 +21,7 @@ import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class TestAuditablePropertyViewElementBuilder extends AbstractViewElement
 
 	private Entity entity;
 	private AuditablePropertyViewElementBuilder builder;
-	private ViewElementBuilderContextImpl builderContext;
+	private DefaultViewElementBuilderContext builderContext;
 
 	@Before
 	public void before() {
@@ -69,7 +69,7 @@ public class TestAuditablePropertyViewElementBuilder extends AbstractViewElement
 		entity.setLastModifiedBy( "system" );
 		entity.setLastModifiedDate( dateLastModified );
 
-		builderContext = new ViewElementBuilderContextImpl();
+		builderContext = new DefaultViewElementBuilderContext();
 		builderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, entity );
 	}
 

@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
+import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EntityQueryOptionIterableBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EnumOptionIterableBuilder;
@@ -65,6 +66,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Override
 	public boolean supports( String viewElementType ) {
 		return StringUtils.equals( BootstrapUiElements.SELECT, viewElementType )
+				|| StringUtils.equals( BootstrapUiElements.RADIO, viewElementType )
 				|| StringUtils.equals( BootstrapUiElements.MULTI_CHECKBOX, viewElementType );
 	}
 
@@ -112,6 +114,14 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 		if ( isCollection ) {
 			options.checkbox().multiple( true );
+		}
+
+		// todo, don't fetch again but pass in the type
+		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+
+		if ( lookupRegistry != null
+				&& BootstrapUiElements.RADIO.equals( lookupRegistry.getViewElementType( viewElementMode ) ) ) {
+			options.radio();
 		}
 
 		return options;

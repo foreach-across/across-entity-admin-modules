@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.handlers;
 
-import com.foreach.across.core.annotations.AcrossEventHandler;
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
@@ -29,12 +28,15 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 
-@AcrossEventHandler
 public class MenuEventsHandler
 {
+	private static final Logger LOG = LoggerFactory.getLogger( MenuEventsHandler.class );
+
 	@Autowired
 	private EntityRegistry entityRegistry;
 
@@ -52,22 +54,28 @@ public class MenuEventsHandler
 				EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
 				AcrossModuleInfo moduleInfo = entityConfiguration.getAttribute( AcrossModuleInfo.class );
 
-				String group = "/entities";
+				if ( linkBuilder != null ) {
+					String group = "/entities";
 
-				if ( moduleInfo != null ) {
-					group = "/entities/" + moduleInfo.getName();
-					builder.group( group, moduleInfo.getName() ).disable();
+					if ( moduleInfo != null ) {
+						group = "/entities/" + moduleInfo.getName();
+						builder.group( group, moduleInfo.getName() ).disable();
+					}
+
+					builder.item( group + "/" + entityConfiguration.getName(),
+					              messageCodeResolver.getNameSingular(),
+					              linkBuilder.overview() );
+
+					if ( allowableActions.contains( AllowableAction.CREATE ) ) {
+						builder.item( group + "/" + entityConfiguration.getName() + "/create",
+						              messages.createAction(),
+						              linkBuilder.create()
+						);
+					}
 				}
-
-				builder.item( group + "/" + entityConfiguration.getName(),
-				              messageCodeResolver.getNameSingular(),
-				              linkBuilder.overview() );
-
-				if ( allowableActions.contains( AllowableAction.CREATE ) ) {
-					builder.item( group + "/" + entityConfiguration.getName() + "/create",
-					              messages.createAction(),
-					              linkBuilder.create()
-					);
+				else {
+					LOG.trace( "Not showing entity {} - not hidden but no EntityLinkBuilder",
+					           entityConfiguration.getName() );
 				}
 			}
 		}

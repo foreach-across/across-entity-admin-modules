@@ -71,7 +71,7 @@ public class EntitySummaryViewActionProcessor implements ViewElementPostProcesso
 				: viewCreationContext.getEntityConfiguration().hasView( viewName );
 
 		if ( hasSummaryView ) {
-			tableBuilder.addValueRowProcessor( new EntitySummaryViewActionProcessor( viewName ) );
+			tableBuilder.valueRowProcessor( new EntitySummaryViewActionProcessor( viewName ) );
 
 			if ( viewCreationContext instanceof WebViewCreationContext ) {
 				( (WebViewCreationContext) viewCreationContext )

@@ -22,6 +22,8 @@ import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import java.util.Optional;
+
 /**
  * @author Arne Vandamme
  */
@@ -67,6 +69,7 @@ public class WebViewCreationContextImpl extends AttributeSupport implements WebV
 
 	@Override
 	public WebResourceRegistry getWebResourceRegistry() {
-		return WebResourceUtils.getRegistry( request );
+		Optional<WebResourceRegistry> webResourceRegistry = WebResourceUtils.getRegistry( request );
+		return webResourceRegistry.isPresent() ? webResourceRegistry.get() : null;
 	}
 }

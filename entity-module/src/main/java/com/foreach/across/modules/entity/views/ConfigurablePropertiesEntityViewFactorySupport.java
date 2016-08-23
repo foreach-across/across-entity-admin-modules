@@ -23,7 +23,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilte
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.web.resource.WebResourceUtils;
 import com.foreach.across.modules.web.ui.DefaultViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -122,8 +121,6 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 
 	protected EntityViewElementBuilderContext<T> createEntityViewElementBuilderContext( T view ) {
 		EntityViewElementBuilderContext<T> builderContext = new EntityViewElementBuilderContext<>( view );
-		builderContext.setWebResourceRegistry( WebResourceUtils.currentRegistry() );
-
 		DefaultViewElementPostProcessor.add( builderContext, new ControlNamePrefixingPostProcessor<>( "entity." ) );
 
 		return builderContext;

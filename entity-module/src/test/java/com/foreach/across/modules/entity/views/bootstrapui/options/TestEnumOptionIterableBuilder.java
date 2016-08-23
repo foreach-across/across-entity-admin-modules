@@ -20,8 +20,8 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -53,7 +53,7 @@ public class TestEnumOptionIterableBuilder
 		iterableBuilder.setEnumType( Counter.class );
 		iterableBuilder.setValueFetcher( valueFetcher );
 
-		elementBuilderContext = new ViewElementBuilderContextImpl();
+		elementBuilderContext = new DefaultViewElementBuilderContext();
 
 		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
 		when( codeResolver.getMessageWithFallback( anyString(), anyString() ) )

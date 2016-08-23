@@ -30,7 +30,6 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.events.BuildEntityDeleteViewEvent;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
-import com.foreach.across.modules.web.resource.WebResourceUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
@@ -76,7 +75,6 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 	                               EntityMessageCodeResolver codeResolver,
 	                               EntityView view ) {
 		EntityViewElementBuilderContext<EntityView> builderContext = new EntityViewElementBuilderContext<>( view );
-		builderContext.setWebResourceRegistry( WebResourceUtils.currentRegistry() );
 
 		EntityLinkBuilder linkBuilder = view.getEntityLinkBuilder();
 		EntityMessages messages = view.getEntityMessages();

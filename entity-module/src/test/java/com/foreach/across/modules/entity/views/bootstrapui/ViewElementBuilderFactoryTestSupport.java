@@ -22,9 +22,9 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.mysema.util.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -69,7 +69,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 		validatorFactory.afterPropertiesSet();
 		reset( entityConfiguration, registry );
 
-		builderContext = spy( new ViewElementBuilderContextImpl() );
+		builderContext = spy( new DefaultViewElementBuilderContext() );
 
 		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
 

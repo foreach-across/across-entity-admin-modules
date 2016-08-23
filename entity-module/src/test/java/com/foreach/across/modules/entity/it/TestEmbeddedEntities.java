@@ -34,7 +34,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +86,7 @@ public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 
 		FieldsetFormElement fieldset = (FieldsetFormElement) viewElementBuilderService
 				.getElementBuilder( address, ViewElementMode.FORM_WRITE )
-				.build( new ViewElementBuilderContextImpl() );
+				.build( new DefaultViewElementBuilderContext() );
 
 		assertNotNull( fieldset );
 
