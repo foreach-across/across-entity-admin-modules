@@ -156,8 +156,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 	@Test
 	public void tableBoundToForm() {
-		tableBuilder.setTableOnly( true );
-		tableBuilder.setFormName( "my-form" );
+		tableBuilder.tableOnly().formName( "my-form" );
 
 		expect( TABLE_WITH_RESULT_NUMBER_AND_FORM );
 	}

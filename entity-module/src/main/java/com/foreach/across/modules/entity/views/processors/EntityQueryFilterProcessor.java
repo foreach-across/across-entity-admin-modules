@@ -29,8 +29,8 @@ import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextImpl;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
@@ -104,7 +104,7 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 						row.add( a );
 					} );
 
-					h.addChild( row.build( new ViewElementBuilderContextImpl() ) );
+					h.addChild( row.build( new DefaultViewElementBuilderContext() ) );
 
 					String errorMessage = view.getAttribute( "filterError" );
 
@@ -113,7 +113,7 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 								bootstrapUi.div()
 								           .css( "alert", "alert-danger" )
 								           .add( bootstrapUi.text( errorMessage ) )
-								           .build( new ViewElementBuilderContextImpl() )
+								           .build( new DefaultViewElementBuilderContext() )
 						);
 					}
 				}

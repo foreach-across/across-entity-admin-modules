@@ -19,7 +19,6 @@ import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
-import com.foreach.across.modules.entity.config.ViewHelpers;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
@@ -175,19 +174,20 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();
 			List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
 
-		SortableTableBuilder tableBuilder = viewHelpers.createSortableTableBuilder();
-		tableBuilder.tableName( "entityList" );
-		tableBuilder.entityConfiguration( entityConfiguration );
-		tableBuilder.properties( descriptors );
-		tableBuilder.pagingMessages( (ListViewEntityMessages) view.getEntityMessages() );
-		tableBuilder.items( page );
-		tableBuilder.sortableOn( getSortableProperties() );
-		tableBuilder.showResultNumber( isShowResultNumber() );
+			SortableTableBuilder tableBuilder = viewHelpers.createSortableTableBuilder();
+			tableBuilder.tableName( "entityList" );
+			tableBuilder.formName( "entityList-form" );
+			tableBuilder.entityConfiguration( entityConfiguration );
+			tableBuilder.properties( descriptors );
+			tableBuilder.pagingMessages( (ListViewEntityMessages) view.getEntityMessages() );
+			tableBuilder.items( page );
+			tableBuilder.sortableOn( getSortableProperties() );
+			tableBuilder.showResultNumber( isShowResultNumber() );
 
-		EntityListActionsProcessor actionsProcessor
-				= new EntityListActionsProcessor( bootstrapUi, entityConfiguration, linkBuilder, messages );
-		tableBuilder.headerRowProcessor( actionsProcessor );
-		tableBuilder.valueRowProcessor( actionsProcessor );
+			EntityListActionsProcessor actionsProcessor
+					= new EntityListActionsProcessor( bootstrapUi, entityConfiguration, linkBuilder, messages );
+			tableBuilder.headerRowProcessor( actionsProcessor );
+			tableBuilder.valueRowProcessor( actionsProcessor );
 
 			EntitySummaryViewActionProcessor.autoRegister( viewCreationContext, tableBuilder,
 			                                               EntityListView.SUMMARY_VIEW_NAME );
