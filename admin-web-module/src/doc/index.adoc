@@ -34,6 +34,10 @@ Arne Vandamme
 |required
 |Provides the web infrastructure for supporting `@AdminWebController`.
 
+|BootstrapUiModule
+|required
+|Required for building the basic administration UI.
+
 |<<integration:springsecurity>>
 |required
 |Provides the security infrastructure.
@@ -109,6 +113,11 @@ All properties start with the *adminWebModule.* prefix.
 
 == What's new in this version?
 :numbered!:
+=== 2.0.0-SNAPSHOT
+
+* AdminWebModule now depends on BootstrapUiModule
+* the login page now provides an attribute *isLoginPage* that can is accessible in the global template
+
 === 1.1.1.RELEASE
 
 * all settings are now configurable through properties with Spring configuration metadata support
@@ -192,4 +201,34 @@ Additional interceptors for admin controllers can easily be registered by provid
 By default, access to the administration interface is restricted to users having the *access administration* permission.
 The allowed permissions can be specified by setting the *adminWebModule.access-permissions* property.
 
+== Customizing the look and feel
+=== Default template
+All admin web controllers will use a default template named *adminWeb*.
+You can customize which template to use by modifying the `WebTemplateRegistry` bean named *adminWebTemplateRegistry*.
+You can either change the default template or simply replace the instance registered as *adminWeb*.
 
+NOTE: The login page uses the same default template as all other admin web controllers.
+This means the template should take both authorized and non-authorized authentications into account.
+
+=== Login page
+The default login page can be customized by setting the property *adminWebModule.login.template* to the Thymeleaf template you wish to render.
+The login controller provides the following model attributes that can be used to customize the template:
+
+|===
+
+|Attribute |Type |Description
+
+|*isLoginPage*
+|`Boolean`
+|Always `true`.
+This attribute can be used in the wrapping template to determine if the login page is being requested.
+
+|*isRememberMeEnabled*
+|`Boolean`
+|Can be used to determine if a remember me checkbox should be rendered.
+
+|*localeOptions*
+|`List<Locale>`
+|Lists the different locale options that should be offered on the login page.
+
+|===
