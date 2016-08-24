@@ -39,7 +39,7 @@ import java.util.Locale;
 @AdminWebController
 public class AuthenticationController
 {
-	@Value( "${adminWebModule.login.template:}" )
+	@Value("${adminWebModule.login.template:}")
 	private String loginTemplate;
 
 	@Autowired
@@ -68,6 +68,7 @@ public class AuthenticationController
 
 	@RequestMapping("/login")
 	public String login( Model model ) {
+		model.addAttribute( "isLoginPage", true );
 		model.addAttribute( "isRememberMeEnabled", rememberMeProperties.isEnabled() );
 		model.addAttribute( "localeOptions", buildLocaleOptions() );
 

@@ -39,6 +39,7 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 
@@ -66,7 +67,14 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	@Override
 	@SuppressWarnings("SignatureDeclareThrowsException")
 	public void configure( HttpSecurity root ) throws Exception {
-		HttpSecurity http = root.antMatcher( adminWeb.path( "/**" ) );
+		HttpSecurity http = root.antMatcher( adminWeb.path( "/**" ) )
+		                        .formLogin().defaultSuccessUrl( adminWeb.path( "/" ) )
+		                        .loginPage( adminWeb.path( "/login" ) )
+		                        .permitAll()
+		                        .and().logout().logoutUrl( adminWeb.path( "/logout" ) )
+		                        .permitAll()
+		                        .logoutRequestMatcher( new AntPathRequestMatcher( adminWeb.path( "/logout" ) ) )
+		                        .and();
 
 		// Allow locale to be changed before security applied
 		if ( localeResolver != null ) {
@@ -79,10 +87,7 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 		publisher.publish( new AdminWebUrlRegistry( adminWeb, urlRegistry ) );
 
 		// Only users with any of the configured admin permissions can login
-		urlRegistry.anyRequest().hasAnyAuthority( settings.getAccessPermissions() )
-		           .and().formLogin().defaultSuccessUrl( adminWeb.path( "/" ) ).loginPage( adminWeb.path( "/login" ) )
-		           .permitAll()
-		           .and().logout().permitAll();
+		urlRegistry.anyRequest().hasAnyAuthority( settings.getAccessPermissions() );
 
 		configureRememberMe( http );
 		customizeAdminWebSecurity( http );

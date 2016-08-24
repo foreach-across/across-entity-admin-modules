@@ -28,8 +28,8 @@
 	      th:href="@{${css.data}}"/>
 </head>
 <body>
-<div sec:authorize="isAuthenticated()">
-	<!-- Main menu navigation -->
+<div sec:authorize="!isAnonymous()" th:unless="${isLoginPage}">
+	<!--/* Main menu navigation */-->
 	<nav class="navbar navbar-fixed-top" role="navigation">
 		<div class="container-fluid">
 			<div class="navbar-header admin-navbar-title">
@@ -53,7 +53,7 @@
 		</div>
 	</nav>
 
-	<!-- Content body -->
+	<!--/* Content body */-->
 	<div th:if="${childPage}" class="content for-navbar-fixed-top">
 		<div class="container-fluid">
 			<div class="row">
@@ -70,7 +70,8 @@
 	</div>
 </div>
 
-<div sec:authorize="not isAuthenticated()">
+<!--/* Login page does not render navigation */-->
+<div th:if="${isLoginPage}">
 	<div th:replace="${childPage} :: content"></div>
 </div>
 

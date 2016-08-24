@@ -22,6 +22,8 @@ import com.foreach.across.modules.spring.security.authority.NamedGrantedAuthorit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
+import java.util.Collections;
+
 /**
  * @author Arne Vandamme
  */
@@ -32,6 +34,8 @@ public class SecurityConfiguration
 	public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
 		auth.inMemoryAuthentication()
 		    .withUser( "admin" ).password( "admin" )
-		    .authorities( new NamedGrantedAuthority( "access administration" ) );
+		    .authorities( new NamedGrantedAuthority( "access administration" ) ).and()
+		    .withUser( "user" ).password( "user" )
+		    .authorities( Collections.emptyList() );
 	}
 }
