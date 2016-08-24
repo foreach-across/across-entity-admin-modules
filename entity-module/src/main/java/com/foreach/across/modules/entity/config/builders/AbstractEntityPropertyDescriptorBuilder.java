@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
+@Deprecated
 public abstract class AbstractEntityPropertyDescriptorBuilder<SELF extends AbstractEntityPropertyDescriptorBuilder>
 {
 	protected final Logger LOG = LoggerFactory.getLogger( getClass() );

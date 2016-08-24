@@ -60,6 +60,7 @@ public class EntityPropertyDescriptorBuilder
 	 * @param name Name of the entity property
 	 * @return current builder
 	 */
+	@Deprecated
 	public EntityPropertyDescriptorBuilder name( String name ) {
 		this.name = name;
 		return this;
@@ -222,7 +223,7 @@ public class EntityPropertyDescriptorBuilder
 	 *
 	 * @return descriptor
 	 */
-	public EntityPropertyDescriptor build() {
+	public MutableEntityPropertyDescriptor build() {
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name, parent );
 
 		if ( parent == null ) {
