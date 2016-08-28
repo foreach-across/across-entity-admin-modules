@@ -45,30 +45,29 @@ public class TestEntityPropertyDescriptorBuilder
 
 	@Before
 	public void before() {
-		builder = new EntityPropertyDescriptorBuilder();
+		builder = new EntityPropertyDescriptorBuilder( "myprop" );
 		descriptor = null;
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void nameIsRequired() {
-		build();
+		builder = new EntityPropertyDescriptorBuilder( null );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void builderMethodOnInterfaceShouldReturnEmptyBuilder() {
-		EntityPropertyDescriptorBuilder newBuilder = EntityPropertyDescriptor.builder();
+		EntityPropertyDescriptorBuilder newBuilder = EntityPropertyDescriptor.builder( "myprop" );
 		assertNotNull( newBuilder );
-		newBuilder.build();
+		descriptor = newBuilder.build();
+		assertEquals( "myprop", descriptor.getName() );
 	}
 
 	@Test
 	public void defaultPropertiesOnBlankDescriptor() {
-		builder.name( "test.property" );
-
 		build();
 
-		assertEquals( "test.property", descriptor.getName() );
-		assertEquals( "test.property", descriptor.getDisplayName() );
+		assertEquals( "myprop", descriptor.getName() );
+		assertEquals( "myprop", descriptor.getDisplayName() );
 		assertNull( descriptor.getPropertyType() );
 		assertNull( descriptor.getPropertyTypeDescriptor() );
 		assertNull( descriptor.getPropertyRegistry() );
@@ -83,7 +82,7 @@ public class TestEntityPropertyDescriptorBuilder
 	@Test
 	public void descriptorWithParent() {
 		EntityPropertyDescriptor parent = mock( EntityPropertyDescriptor.class );
-		builder.name( "myprop" ).parent( parent );
+		builder.parent( parent );
 
 		build();
 
@@ -98,8 +97,7 @@ public class TestEntityPropertyDescriptorBuilder
 		ValueFetcher vf = mock( ValueFetcher.class );
 		ViewElementBuilder veb = mock( ViewElementBuilder.class );
 
-		builder.name( "myprop" )
-		       .displayName( "My Property" )
+		builder.displayName( "My Property" )
 		       .valueFetcher( vf )
 		       .propertyType( String.class )
 		       .propertyType( TypeDescriptor.valueOf( Long.class ) )
@@ -138,8 +136,7 @@ public class TestEntityPropertyDescriptorBuilder
 		ValueFetcher vf = mock( ValueFetcher.class );
 		ViewElementBuilder veb = mock( ViewElementBuilder.class );
 
-		builder.name( "myprop" )
-		       .displayName( "My Property" )
+		builder.displayName( "My Property" )
 		       .valueFetcher( vf )
 		       .propertyType( String.class )
 		       .propertyType( TypeDescriptor.valueOf( Long.class ) )
@@ -174,7 +171,7 @@ public class TestEntityPropertyDescriptorBuilder
 
 	@Test
 	public void onlySimplePropertyType() {
-		builder.name( "myprop" ).propertyType( Long.class );
+		builder.propertyType( Long.class );
 
 		build();
 
@@ -184,8 +181,7 @@ public class TestEntityPropertyDescriptorBuilder
 
 	@Test
 	public void onlyTypeDescriptorPropertyType() {
-		builder.name( "myprop" )
-		       .propertyType( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( Long.class ) ) );
+		builder.propertyType( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( Long.class ) ) );
 
 		build();
 

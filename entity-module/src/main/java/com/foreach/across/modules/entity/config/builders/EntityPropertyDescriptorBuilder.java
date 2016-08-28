@@ -46,7 +46,7 @@ public class EntityPropertyDescriptorBuilder
 
 	private final Map<String, Object> attributes = new HashMap<>();
 	private final ViewElementLookupRegistryImpl viewElementLookupRegistry = new ViewElementLookupRegistryImpl();
-	private String name;
+	private final String name;
 	private String displayName;
 	private ValueFetcher valueFetcher;
 	private Boolean hidden, writable, readable;
@@ -55,15 +55,14 @@ public class EntityPropertyDescriptorBuilder
 	private TypeDescriptor propertyTypeDescriptor;
 
 	/**
-	 * Set the name of the entity property.
+	 * Create a new builder for the entity property with the given name.
+	 * The name of the property should be unique within the registry, and cannot be changed afterwards.
 	 *
-	 * @param name Name of the entity property
-	 * @return current builder
+	 * @param name of the property
 	 */
-	@Deprecated
-	public EntityPropertyDescriptorBuilder name( String name ) {
+	public EntityPropertyDescriptorBuilder( String name ) {
+		Assert.notNull( name );
 		this.name = name;
-		return this;
 	}
 
 	/**

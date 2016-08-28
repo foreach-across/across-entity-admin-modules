@@ -68,8 +68,7 @@ public class EntityPropertyRegistryBuilder
 		PropertyDescriptorBuilder builder = builders.get( name );
 
 		if ( builder == null ) {
-			builder = new PropertyDescriptorBuilder( this );
-			builder.name( name );
+			builder = new PropertyDescriptorBuilder( this, name );
 			builders.put( name, builder );
 		}
 
@@ -153,7 +152,8 @@ public class EntityPropertyRegistryBuilder
 
 		private Integer order;
 
-		PropertyDescriptorBuilder( EntityPropertyRegistryBuilder parent ) {
+		PropertyDescriptorBuilder( EntityPropertyRegistryBuilder parent, String propertyName ) {
+			super( propertyName );
 			this.parent = parent;
 		}
 

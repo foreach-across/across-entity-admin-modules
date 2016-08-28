@@ -55,9 +55,10 @@ public interface EntityPropertyDescriptor extends ReadableAttributes
 	/**
 	 * Create a builder for a new {@link SimpleEntityPropertyDescriptor}.
 	 *
+	 * @param propertyName name of the property (unique within the registry)
 	 * @return builder instance
 	 */
-	static EntityPropertyDescriptorBuilder builder() {
-		return new EntityPropertyDescriptorBuilder();
+	static EntityPropertyDescriptorBuilder builder( String propertyName ) {
+		return new EntityPropertyDescriptorBuilder( propertyName );
 	}
 }
