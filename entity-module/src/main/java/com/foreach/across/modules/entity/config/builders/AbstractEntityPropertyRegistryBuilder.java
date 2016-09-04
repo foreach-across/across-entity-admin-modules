@@ -30,6 +30,7 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public abstract class AbstractEntityPropertyRegistryBuilder<SELF extends AbstractEntityPropertyRegistryBuilder>
 {
 	private final Logger LOG = LoggerFactory.getLogger( getClass() );

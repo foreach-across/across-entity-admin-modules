@@ -44,7 +44,7 @@ import java.util.function.UnaryOperator;
  * @see EntityInformation
  * @see Printer
  */
-public class EntityModelImpl<T, U extends Serializable> implements EntityModel<T, U>
+public class DefaultEntityModel<T, U extends Serializable> implements EntityModel<T, U>
 {
 	private EntityFactory<T> entityFactory;
 	private EntityInformation<T, U> entityInformation;

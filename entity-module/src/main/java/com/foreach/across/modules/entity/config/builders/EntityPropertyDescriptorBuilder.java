@@ -30,9 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Builder for a configuring a single {@link SimpleEntityPropertyDescriptor}.  The builder can also be
  * applied to any existing {@link MutableEntityPropertyDescriptor}.
@@ -40,11 +37,10 @@ import java.util.Map;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class EntityPropertyDescriptorBuilder
+public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesBuilder
 {
 	protected final Logger LOG = LoggerFactory.getLogger( getClass() );
 
-	private final Map<String, Object> attributes = new HashMap<>();
 	private final ViewElementLookupRegistryImpl viewElementLookupRegistry = new ViewElementLookupRegistryImpl();
 	private final String name;
 	private String displayName;
@@ -99,31 +95,14 @@ public class EntityPropertyDescriptorBuilder
 		return this;
 	}
 
-	/**
-	 * Add a custom attribute this builder should add to the property descriptor.
-	 *
-	 * @param name  Name of the attribute.
-	 * @param value Value of the attribute.
-	 * @return current builder
-	 */
+	@Override
 	public EntityPropertyDescriptorBuilder attribute( String name, Object value ) {
-		Assert.notNull( name );
-		attributes.put( name, value );
-		return this;
+		return (EntityPropertyDescriptorBuilder) super.attribute( name, value );
 	}
 
-	/**
-	 * Add a custom attribute this builder should add to the property descriptor.
-	 *
-	 * @param type  Type of the attribute.
-	 * @param value Value of the attribute.
-	 * @param <S>   Class that is both key and value type of the attribute
-	 * @return current builder
-	 */
+	@Override
 	public <S> EntityPropertyDescriptorBuilder attribute( Class<S> type, S value ) {
-		Assert.notNull( type );
-		attributes.put( type.getName(), value );
-		return this;
+		return (EntityPropertyDescriptorBuilder) super.attribute( type, value );
 	}
 
 	/**
@@ -282,7 +261,7 @@ public class EntityPropertyDescriptorBuilder
 			}
 		}
 
-		descriptor.setAttributes( attributes );
+		applyAttributes( descriptor );
 
 		ViewElementLookupRegistry existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 

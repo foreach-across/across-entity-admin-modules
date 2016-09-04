@@ -15,22 +15,22 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.EntityModel;
-import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
-import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityListView;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.data.domain.Persistable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -66,6 +66,22 @@ public class TestEntityConfigurationBuilder
 		entityRegistry.register( company );
 
 		builder = entities.entity( Client.class );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void propertiesAreAppliedInOrder() {
+		Consumer<EntityPropertyRegistryBuilder> one = mock( Consumer.class );
+		Consumer<EntityPropertyRegistryBuilder> two = mock( Consumer.class );
+
+		InOrder inOrder = inOrder( one, two );
+
+		builder.properties( one ).properties( two );
+
+		builder.apply( entityRegistry, beanFactory );
+
+		inOrder.verify( one ).accept( any( EntityPropertyRegistryBuilder.class ) );
+		inOrder.verify( two ).accept( any( EntityPropertyRegistryBuilder.class ) );
 	}
 
 	@Test
@@ -172,10 +188,7 @@ public class TestEntityConfigurationBuilder
 	public void customEntityModel() {
 		EntityModel model = mock( EntityModel.class );
 
-		EntityModelBuilder modelBuilder = builder.entityModel( model );
-		assertNotNull( modelBuilder );
-		assertSame( builder, modelBuilder.and() );
-
+		assertSame( builder, builder.entityModel( model ) );
 		builder.apply( entityRegistry, beanFactory );
 
 		verify( client ).setEntityModel( model );
@@ -183,16 +196,74 @@ public class TestEntityConfigurationBuilder
 
 	@Test
 	@SuppressWarnings("unchecked")
+	public void noEntityModelIsCreatedIfNoConsumers() {
+		builder.apply( entityRegistry, beanFactory );
+
+		verify( client, never() ).setEntityModel( any( EntityModel.class ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void newEntityModelCreated() {
+		assertSame( builder, builder.entityModel( mock( Consumer.class ) ) );
+		builder.apply( entityRegistry, beanFactory );
+
+		verify( client ).setEntityModel( notNull( EntityModel.class ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
 	public void modifyEntityModel() {
-		EntityModel model = mock( EntityModel.class );
+		Consumer delete = mock( Consumer.class );
+		Consumer<EntityModelBuilder<Client>> one = mock( Consumer.class );
+		Consumer<EntityModelBuilder<Client>> two = mock( Consumer.class );
+		InOrder inOrder = inOrder( one, two );
+
+		EntityModel model = new DefaultEntityModel();
 		when( client.getEntityModel() ).thenReturn( model );
 
-		EntityModelBuilder modelBuilder = builder.entityModel();
-		assertNotNull( modelBuilder );
-		assertSame( builder, modelBuilder.and() );
+		assertSame(
+				builder,
+				builder.entityModel( one )
+				       .entityModel( two )
+				       .entityModel( c -> c.deleteMethod( delete ) )
+		);
 
 		builder.apply( entityRegistry, beanFactory );
 
-		verify( client, never() ).setEntityModel( any() );
+		inOrder.verify( one ).accept( any( EntityModelBuilder.class ) );
+		inOrder.verify( two ).accept( any( EntityModelBuilder.class ) );
+
+		model.delete( "test" );
+		verify( delete ).accept( "test" );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void modifyEntityModelShouldApplyToTheCustomizedEntityModel() {
+		Consumer delete = mock( Consumer.class );
+
+		EntityModel model = mock( EntityModel.class );
+		when( client.getEntityModel() ).thenReturn( model );
+
+		EntityModel<Client, Serializable> otherModel = new DefaultEntityModel<>();
+
+		doAnswer( invocation -> {
+			when( client.getEntityModel() ).thenReturn( otherModel );
+			return null;
+		} ).when( client ).setEntityModel( otherModel );
+
+		assertSame(
+				builder,
+				builder.entityModel( otherModel )
+				       .entityModel( c -> c.deleteMethod( delete ) )
+		);
+
+		builder.apply( entityRegistry, beanFactory );
+
+		assertSame( otherModel, client.getEntityModel() );
+		Client c = mock( Client.class );
+		otherModel.delete( c );
+		verify( delete ).accept( c );
 	}
 }

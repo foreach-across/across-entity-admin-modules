@@ -16,26 +16,19 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.registry.DefaultEntityModel;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.EntityModel;
-import com.foreach.across.modules.entity.registry.EntityModelImpl;
-import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
- * Allows customizing an {@link com.foreach.across.modules.entity.registry.EntityModel}.
- * If the model is an implementation of {@link EntityModelImpl}, properties can be customized, else only the
- * postprocessors will be executed.
+ * Builder to create a new {@link DefaultEntityModel} or modify an existing one.
  *
  * @author Arne Vandamme
  * @see EntityModel
@@ -43,12 +36,6 @@ import java.util.function.UnaryOperator;
  */
 public class EntityModelBuilder<T>
 {
-	private static final Logger LOG = LoggerFactory.getLogger( EntityModelBuilder.class );
-
-	private final EntityConfigurationBuilder<T> parentBuilder;
-
-	private final Collection<Consumer<EntityModel>> postProcessors = new ArrayList<>();
-
 	private EntityFactory<T> entityFactory;
 	private EntityInformation<T, Serializable> entityInformation;
 	private Printer<T> labelPrinter;
@@ -57,17 +44,6 @@ public class EntityModelBuilder<T>
 	private UnaryOperator<T> saveMethod;
 	private Consumer<T> deleteMethod;
 	private Consumer<Serializable> deleteMethodById;
-
-	EntityModelBuilder( EntityConfigurationBuilder<T> parentBuilder ) {
-		this.parentBuilder = parentBuilder;
-	}
-
-	/**
-	 * @return parent builder that owns the EntityConfiguration for this model
-	 */
-	public EntityConfigurationBuilder<T> and() {
-		return parentBuilder;
-	}
 
 	/**
 	 * Set the {@link EntityFactory} for this model.
@@ -151,59 +127,43 @@ public class EntityModelBuilder<T>
 	}
 
 	/**
-	 * Add a post processor that will be applied after all properties, regardless of the type
-	 * of {@link EntityModel} implementation.
+	 * Create a new model.
 	 *
-	 * @param postProcessor Post processor instance to add.
-	 * @return current builder
+	 * @return newly created model
 	 */
-	public EntityModelBuilder<T> postProcessor( Consumer<EntityModel> postProcessor ) {
-		postProcessors.add( postProcessor );
-		return this;
+	public EntityModel<T, Serializable> build() {
+		DefaultEntityModel<T, Serializable> model = new DefaultEntityModel<>();
+		apply( model );
+		return model;
 	}
 
-	void apply( MutableEntityConfiguration<T> configuration ) {
-		EntityModel<T, Serializable> currentModel = configuration.getEntityModel();
-
-		if ( currentModel == null ) {
-			// create a new model if non exists yet
-			currentModel = new EntityModelImpl<>();
-			configuration.setEntityModel( currentModel );
+	/**
+	 * Modify an existing {@link DefaultEntityModel}.
+	 *
+	 * @param model to be customized with the builder settings
+	 */
+	public void apply( DefaultEntityModel<T, Serializable> model ) {
+		if ( entityFactory != null ) {
+			model.setEntityFactory( entityFactory );
 		}
-
-		if ( currentModel instanceof EntityModelImpl ) {
-			EntityModelImpl<T, Serializable> model = (EntityModelImpl<T, Serializable>) currentModel;
-
-			if ( entityFactory != null ) {
-				model.setEntityFactory( entityFactory );
-			}
-			if ( entityInformation != null ) {
-				model.setEntityInformation( entityInformation );
-			}
-			if ( labelPrinter != null ) {
-				model.setLabelPrinter( labelPrinter );
-			}
-			if ( findOneMethod != null ) {
-				model.setFindOneMethod( findOneMethod );
-			}
-			if ( saveMethod != null ) {
-				model.setSaveMethod( saveMethod );
-			}
-			if ( deleteMethod != null ) {
-				model.setDeleteMethod( deleteMethod );
-			}
-			else if ( deleteMethodById != null ) {
-				// wrap convert by id method in a regular delete method
-				model.setDeleteMethod( entity -> deleteMethodById.accept( model.getId( entity ) ) );
-			}
+		if ( entityInformation != null ) {
+			model.setEntityInformation( entityInformation );
 		}
-		else {
-			LOG.warn(
-					"Skipping EntityModelBuilder properties for entity configuration {}, current implementation is not of type EntityModelImpl",
-					configuration.getName() );
+		if ( labelPrinter != null ) {
+			model.setLabelPrinter( labelPrinter );
 		}
-
-		EntityModel actual = currentModel;
-		postProcessors.forEach( postProcessor -> postProcessor.accept( actual ) );
+		if ( findOneMethod != null ) {
+			model.setFindOneMethod( findOneMethod );
+		}
+		if ( saveMethod != null ) {
+			model.setSaveMethod( saveMethod );
+		}
+		if ( deleteMethod != null ) {
+			model.setDeleteMethod( deleteMethod );
+		}
+		else if ( deleteMethodById != null ) {
+			// wrap convert by id method in a regular delete method
+			model.setDeleteMethod( entity -> deleteMethodById.accept( model.getId( entity ) ) );
+		}
 	}
 }

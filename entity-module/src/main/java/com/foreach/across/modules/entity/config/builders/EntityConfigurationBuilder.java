@@ -27,6 +27,8 @@ import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.Assert;
 
@@ -39,18 +41,23 @@ import java.util.function.Consumer;
  */
 public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBuilder<EntityConfigurationBuilder, MutableEntityConfiguration<T>>
 {
+	private static final Logger LOG = LoggerFactory.getLogger( EntityConfigurationBuilder.class );
+
 	private final EntityConfigurationBuilder configurationBuilder;
 	private final Class<T> entityType;
 	private final boolean assignableTo;
 	private final EntitiesConfigurationBuilder parent;
 	private final Map<String, EntityAssociationBuilder> associations = new HashMap<>();
 
-	private PropertyRegistryBuilder propertyRegistryBuilder;
 	private EntityConfigurationAllowableActionsBuilder allowableActionsBuilder;
 	private Boolean hidden;
 
 	private EntityModel<T, Serializable> entityModel;
-	private EntityModelBuilder<T> entityModelBuilder;
+
+	private final List<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayList<>();
+	private final List<Consumer<EntityModelBuilder<T>>> modelConsumers = new ArrayList<>();
+
+	private String labelProperty;
 
 	EntityConfigurationBuilder( Class<T> entityType, boolean assignableTo, EntitiesConfigurationBuilder parent ) {
 		this.entityType = entityType;
@@ -59,12 +66,16 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 		this.configurationBuilder = this;
 	}
 
-	public PropertyRegistryBuilder properties() {
-		if ( propertyRegistryBuilder == null ) {
-			propertyRegistryBuilder = new PropertyRegistryBuilder();
-		}
-
-		return propertyRegistryBuilder;
+	/**
+	 * Customize the property registry builder.
+	 *
+	 * @param registryConsumer to customize the registry builder
+	 * @return current builder
+	 */
+	public EntityConfigurationBuilder<T> properties( Consumer<EntityPropertyRegistryBuilder> registryConsumer ) {
+		Assert.notNull( registryConsumer );
+		registryConsumers.add( registryConsumer );
+		return this;
 	}
 
 	/**
@@ -111,39 +122,35 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 
 	/**
 	 * Configure the label property based on another registered property.
-	 * This is a shortcut for {@link #properties()#label(java.lang.String)#and()#and}.
+	 * This is a shortcut for configuring a properties builder setting the label.
 	 *
 	 * @param propertyName of the registered property to use as a base of the label
 	 * @return current builder
 	 */
 	public EntityConfigurationBuilder<T> label( String propertyName ) {
-		return properties().label( propertyName ).and().and();
+		labelProperty = propertyName;
+		return this;
 	}
 
 	/**
-	 * Sets a custom {@link EntityModel} for this configuration and returns a builder
-	 * to additionally customize it.  If the model provided is not of type {@link EntityModelImpl},
-	 * additional customizations will not be performed and warnings will be logged.
+	 * Sets a custom {@link EntityModel} for this configuration.
 	 *
 	 * @param entityModel implementation
-	 * @return model builder
+	 * @return current builder
 	 */
-	public EntityModelBuilder<T> entityModel( EntityModel<T, Serializable> entityModel ) {
+	public EntityConfigurationBuilder<T> entityModel( EntityModel<T, Serializable> entityModel ) {
 		this.entityModel = entityModel;
-		return entityModel();
+		return this;
 	}
 
 	/**
-	 * Return a builder to customize the {@link EntityModel}.
+	 * Add a consumer to customize the {@link EntityModel}.
 	 *
-	 * @return model builder
+	 * @return current builder
 	 */
-	public EntityModelBuilder<T> entityModel() {
-		if ( entityModelBuilder == null ) {
-			entityModelBuilder = new EntityModelBuilder<>( this );
-		}
-
-		return entityModelBuilder;
+	public EntityConfigurationBuilder<T> entityModel( Consumer<EntityModelBuilder<T>> entityModelConsumer ) {
+		modelConsumers.add( entityModelConsumer );
+		return this;
 	}
 
 	/**
@@ -207,18 +214,16 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 				entityRegistry.register( configuration );
 			}
 
-			if ( entityModel != null ) {
-				configuration.setEntityModel( entityModel );
-			}
+			// Configure the entity model
+			buildEntityModel( configuration );
 
-			if ( entityModelBuilder != null ) {
-				entityModelBuilder.apply( configuration );
+			// Build the properties
+			EntityPropertyRegistryBuilder registryBuilder = new EntityPropertyRegistryBuilder();
+			if ( labelProperty != null ) {
+				registryBuilder.label( labelProperty );
 			}
-
-			if ( propertyRegistryBuilder != null && configuration
-					.getPropertyRegistry() instanceof MutableEntityPropertyRegistry ) {
-				propertyRegistryBuilder.apply( (MutableEntityPropertyRegistry) configuration.getPropertyRegistry() );
-			}
+			registryConsumers.forEach( c -> c.accept( registryBuilder ) );
+			registryBuilder.apply( (MutableEntityPropertyRegistry) configuration.getPropertyRegistry() );
 
 			if ( hidden != null ) {
 				configuration.setHidden( hidden );
@@ -233,6 +238,32 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 
 			for ( EntityAssociationBuilder associationBuilder : associations.values() ) {
 				associationBuilder.apply( configuration, entityRegistry, beanFactory );
+			}
+		}
+	}
+
+	private void buildEntityModel( MutableEntityConfiguration<T> configuration ) {
+		if ( entityModel != null ) {
+			configuration.setEntityModel( entityModel );
+		}
+
+		if ( !modelConsumers.isEmpty() ) {
+			EntityModel<T, Serializable> actualModel = configuration.getEntityModel();
+
+			EntityModelBuilder<T> modelBuilder = new EntityModelBuilder<>();
+			modelConsumers.forEach( c -> c.accept( modelBuilder ) );
+
+			if ( actualModel == null ) {
+				configuration.setEntityModel( modelBuilder.build() );
+			}
+			else if ( actualModel instanceof DefaultEntityModel ) {
+				modelBuilder.apply( (DefaultEntityModel<T, Serializable>) actualModel );
+			}
+			else if ( !modelConsumers.isEmpty() ) {
+				LOG.warn(
+						"Unable to apply EntityModelBuilder - one or more consumers were registered, but a custom " +
+								"EntityModel implementation not extending DefaultEntityModel was configured." +
+								"The custom implementation takes precedence and the builder will be ignored!" );
 			}
 		}
 	}
@@ -267,6 +298,7 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 	}
 
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public class PropertyRegistryBuilder
 			extends AbstractEntityPropertyRegistryBuilder<PropertyRegistryBuilder>
 	{

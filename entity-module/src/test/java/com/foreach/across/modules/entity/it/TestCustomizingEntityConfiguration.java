@@ -193,15 +193,18 @@ public class TestCustomizingEntityConfiguration
 
 			configuration.assignableTo( Persistable.class )
 			             .label( "new" )
-			             .properties()
-			             .property( "id" )
-			             .viewElementBuilder( ViewElementMode.LIST_VALUE, mock( ViewElementBuilder.class ) );
+			             .properties(
+					             props -> props.property( "id" )
+					                           .viewElementBuilder( ViewElementMode.LIST_VALUE,
+					                                                mock( ViewElementBuilder.class ) )
+			             );
 
 			configuration.entity( Client.class )
-			             .properties()
-			             .label( "someprop" ).and()
-			             .property( "someprop" ).displayName( "Some property" ).spelValueFetcher( "'fixed'" )
-			             .and().and()
+			             .properties(
+					             props -> props.label( "someprop" ).and()
+					                           .property( "someprop" ).displayName( "Some property" )
+					                           .spelValueFetcher( "'fixed'" )
+			             )
 			             .view( "some-extra-view" )
 			             .template( "th/someTemplate" )
 			             .properties()
