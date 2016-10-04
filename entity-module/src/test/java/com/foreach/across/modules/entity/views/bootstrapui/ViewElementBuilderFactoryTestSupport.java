@@ -25,7 +25,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.mysema.util.ReflectionUtils;
+import com.querydsl.core.util.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
