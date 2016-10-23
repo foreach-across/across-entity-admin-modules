@@ -23,6 +23,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public abstract class AbstractEntityViewBuilder<T extends EntityViewFactory, SELF>
 {
 	protected Object parent;

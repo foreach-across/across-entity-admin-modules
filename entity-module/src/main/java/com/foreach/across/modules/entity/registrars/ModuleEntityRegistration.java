@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.registrars;
 
-import com.foreach.across.core.annotations.AcrossEventHandler;
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.core.context.AcrossContextUtils;
@@ -49,7 +48,6 @@ import java.util.List;
  * @see com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder
  * @see com.foreach.across.modules.entity.registrars.EntityRegistrar
  */
-@AcrossEventHandler
 public class ModuleEntityRegistration
 {
 	@Autowired

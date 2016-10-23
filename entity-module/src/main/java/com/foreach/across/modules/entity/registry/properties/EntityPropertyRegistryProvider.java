@@ -18,7 +18,7 @@ package com.foreach.across.modules.entity.registry.properties;
 /**
  * @author Arne Vandamme
  */
-public interface EntityPropertyRegistryFactory
+public interface EntityPropertyRegistryProvider
 {
 	MutableEntityPropertyRegistry getOrCreate( Class<?> entityType );
 

@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
@@ -53,29 +53,29 @@ public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 	private EntityRegistry entityRegistry;
 
 	@Autowired
-	private EntityPropertyRegistryFactory entityPropertyRegistryFactory;
+	private EntityPropertyRegistryProvider entityPropertyRegistryProvider;
 
 	@Autowired
 	private EntityViewElementBuilderService viewElementBuilderService;
 
 	@Test
 	public void persistenceMetadataShouldBeSet() {
-		EntityPropertyRegistry registry = entityPropertyRegistryFactory.getOrCreate( Company.class );
+		EntityPropertyRegistry registry = entityPropertyRegistryProvider.getOrCreate( Company.class );
 		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "address" ) ) );
 		assertFalse( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "group" ) ) );
 		assertFalse( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "class" ) ) );
 
-		registry = entityPropertyRegistryFactory.getOrCreate( ClientGroup.class );
+		registry = entityPropertyRegistryProvider.getOrCreate( ClientGroup.class );
 		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "id" ) ) );
 
-		registry = entityPropertyRegistryFactory.getOrCreate( Client.class );
+		registry = entityPropertyRegistryProvider.getOrCreate( Client.class );
 		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "phones" ) ) );
 
 	}
 
 	@Test
 	public void primitiveTypesShouldBehaveAsNonEmbedded() {
-		EntityPropertyRegistry registry = entityPropertyRegistryFactory.getOrCreate( Client.class );
+		EntityPropertyRegistry registry = entityPropertyRegistryProvider.getOrCreate( Client.class );
 		assertFalse( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "aliases" ) ) );
 	}
 

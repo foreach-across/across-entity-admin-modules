@@ -25,10 +25,10 @@ import java.util.*;
 public class EntityPropertySelectorExecutor
 {
 	private EntityPropertyRegistry current;
-	private EntityPropertyRegistryFactory propertyRegistries;
+	private EntityPropertyRegistryProvider propertyRegistries;
 
 	public EntityPropertySelectorExecutor( EntityPropertyRegistry current,
-	                                       EntityPropertyRegistryFactory propertyRegistries ) {
+	                                       EntityPropertyRegistryProvider propertyRegistries ) {
 		this.current = current;
 		this.propertyRegistries = propertyRegistries;
 	}

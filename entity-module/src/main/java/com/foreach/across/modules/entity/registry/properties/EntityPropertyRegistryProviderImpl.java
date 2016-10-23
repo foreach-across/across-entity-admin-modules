@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
-public class EntityPropertyRegistryFactoryImpl implements EntityPropertyRegistryFactory
+public class EntityPropertyRegistryProviderImpl implements EntityPropertyRegistryProvider
 {
 	private final Map<Class<?>, MutableEntityPropertyRegistry> registries = new HashMap<>();
 
@@ -59,7 +59,7 @@ public class EntityPropertyRegistryFactoryImpl implements EntityPropertyRegistry
 	 */
 	public MutableEntityPropertyRegistry create( Class<?> entityType ) {
 		DefaultEntityPropertyRegistry newRegistry
-				= new DefaultEntityPropertyRegistry( entityType, this, descriptorFactory );
+				= new DefaultEntityPropertyRegistry( this );
 
 		for ( EntityPropertyRegistryBuilder builder : registryBuilders ) {
 			builder.buildRegistry( entityType, newRegistry );

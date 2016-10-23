@@ -92,7 +92,7 @@ public abstract class AbstractEntityPropertyRegistryBuilder<SELF extends Abstrac
 
 		// Set the base property for the label
 		if ( labelBaseProperty != null ) {
-			EntityPropertyDescriptor label = entityPropertyRegistry.getMutableProperty( EntityPropertyRegistry.LABEL );
+			EntityPropertyDescriptor label = entityPropertyRegistry.getProperty( EntityPropertyRegistry.LABEL );
 			EntityPropertyDescriptor base = entityPropertyRegistry.getProperty( labelBaseProperty );
 
 			if ( base != null ) {

@@ -22,10 +22,12 @@ import java.util.Locale;
 
 /**
  * Interface for accessing metadata and common entity functions that are required by the basic UI.
+ * A model is required for an entity to be manageable through the UI.
  *
  * @param <T> entity type
  * @param <U> id type of the entity
  * @author Arne Vandamme
+ * @see EntityConfiguration
  */
 public interface EntityModel<T, U extends Serializable> extends EntityInformation<T, U>
 {

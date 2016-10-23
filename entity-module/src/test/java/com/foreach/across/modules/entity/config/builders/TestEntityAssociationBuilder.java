@@ -19,7 +19,7 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,10 +46,10 @@ public class TestEntityAssociationBuilder
 		entityRegistry = new EntityRegistryImpl();
 		beanFactory = mock( AutowireCapableBeanFactory.class );
 
-		EntityPropertyRegistryFactory registryFactory = mock( EntityPropertyRegistryFactory.class );
+		EntityPropertyRegistryProvider registryFactory = mock( EntityPropertyRegistryProvider.class );
 		when( registryFactory.getOrCreate( any( Class.class ) ) )
 				.thenReturn( mock( MutableEntityPropertyRegistry.class ) );
-		when( beanFactory.getBean( EntityPropertyRegistryFactory.class ) ).thenReturn( registryFactory );
+		when( beanFactory.getBean( EntityPropertyRegistryProvider.class ) ).thenReturn( registryFactory );
 	}
 
 	@Test

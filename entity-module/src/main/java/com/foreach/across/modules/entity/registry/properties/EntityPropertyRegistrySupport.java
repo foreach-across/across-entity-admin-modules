@@ -27,28 +27,19 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 {
 	private final Map<String, EntityPropertyDescriptor> descriptorMap = new HashMap<>();
 
+	private final EntityPropertyRegistryProvider registryProvider;
 	private final EntityPropertySelectorExecutor selectorExecutor;
 
 	private EntityPropertyFilter defaultFilter;
 	private Comparator<EntityPropertyDescriptor> defaultOrder = null;
 
-	private EntityPropertyRegistryFactory registryFactory;
-	private EntityPropertyDescriptorFactory descriptorFactory;
-
-	protected EntityPropertyRegistrySupport( EntityPropertyRegistryFactory registryFactory,
-	                                         EntityPropertyDescriptorFactory descriptorFactory ) {
-		this.registryFactory = registryFactory;
-		this.descriptorFactory = descriptorFactory;
-
-		selectorExecutor = new EntityPropertySelectorExecutor( this, registryFactory );
+	protected EntityPropertyRegistrySupport( EntityPropertyRegistryProvider registryProvider ) {
+		this.registryProvider = registryProvider;
+		selectorExecutor = new EntityPropertySelectorExecutor( this, registryProvider );
 	}
 
-	protected EntityPropertyDescriptorFactory getDescriptorFactory() {
-		return descriptorFactory;
-	}
-
-	protected EntityPropertyRegistryFactory getRegistryFactory() {
-		return registryFactory;
+	protected EntityPropertyRegistryProvider getRegistryProvider() {
+		return registryProvider;
 	}
 
 	@Override
@@ -67,13 +58,13 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	}
 
 	@Override
-	public Comparator<EntityPropertyDescriptor> getDefaultOrder() {
-		return defaultOrder;
+	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
+		this.defaultOrder = defaultOrder;
 	}
 
 	@Override
-	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
-		this.defaultOrder = defaultOrder;
+	public Comparator<EntityPropertyDescriptor> getDefaultOrder() {
+		return defaultOrder;
 	}
 
 	@Override
@@ -147,13 +138,8 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	}
 
 	@Override
-	public EntityPropertyDescriptor getProperty( String propertyName ) {
-		return descriptorMap.get( propertyName );
-	}
-
-	@Override
-	public MutableEntityPropertyDescriptor getMutableProperty( String propertyName ) {
-		EntityPropertyDescriptor descriptor = getProperty( propertyName );
+	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
+		EntityPropertyDescriptor descriptor = descriptorMap.get( propertyName );
 
 		return descriptor instanceof MutableEntityPropertyDescriptor ? (MutableEntityPropertyDescriptor) descriptor : null;
 	}

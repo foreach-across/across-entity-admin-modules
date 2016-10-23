@@ -89,7 +89,7 @@ public class EntityPropertyRegistryBuilder
 
 		// Set the base property for the label
 		if ( labelBaseProperty != null ) {
-			MutableEntityPropertyDescriptor label = propertyRegistry.getMutableProperty( EntityPropertyRegistry.LABEL );
+			MutableEntityPropertyDescriptor label = propertyRegistry.getProperty( EntityPropertyRegistry.LABEL );
 			EntityPropertyDescriptor base = propertyRegistry.getProperty( labelBaseProperty );
 
 			if ( base != null ) {
@@ -107,7 +107,7 @@ public class EntityPropertyRegistryBuilder
 	private void applyBuilder( MutableEntityPropertyRegistry propertyRegistry,
 	                           String propertyName,
 	                           PropertyDescriptorBuilder builder ) {
-		MutableEntityPropertyDescriptor existing = propertyRegistry.getMutableProperty( propertyName );
+		MutableEntityPropertyDescriptor existing = propertyRegistry.getProperty( propertyName );
 
 		if ( existing != null ) {
 			builder.apply( existing );

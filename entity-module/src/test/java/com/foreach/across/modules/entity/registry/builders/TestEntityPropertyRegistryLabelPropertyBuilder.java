@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.registry.builders;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
@@ -40,7 +39,7 @@ import static org.mockito.Mockito.*;
  */
 public class TestEntityPropertyRegistryLabelPropertyBuilder
 {
-	private static final EntityPropertyDescriptor EXISTING;
+	private static final MutableEntityPropertyDescriptor EXISTING;
 
 	private static final Answer<Void> EXISTING_ANSWER = new Answer()
 	{
@@ -62,7 +61,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 	};
 
 	static {
-		EXISTING = mock( EntityPropertyDescriptor.class );
+		EXISTING = mock( MutableEntityPropertyDescriptor.class );
 		ValueFetcher valueFetcher = mock( ValueFetcher.class );
 
 		Mockito.<Class<?>>when( EXISTING.getPropertyType() ).thenReturn( Integer.class );

@@ -62,7 +62,7 @@ public class EntityPropertyRegistryPersistenceMetadataBuilder implements EntityP
 					PersistentProperty persistentProperty = entity.getPersistentProperty( descriptor.getName() );
 
 					if ( persistentProperty != null ) {
-						MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
+						MutableEntityPropertyDescriptor mutable = registry.getProperty( descriptor.getName() );
 
 						if ( mutable != null ) {
 							registerPropertyPersistenceMetadata( persistentProperty, mutable );
@@ -109,11 +109,10 @@ public class EntityPropertyRegistryPersistenceMetadataBuilder implements EntityP
 				|| persistentProperty.isAnnotationPresent( EmbeddedId.class )
 				|| persistentProperty.isAnnotationPresent( ElementCollection.class );
 
-
 		return hasAnnotation && !isBaseType( persistentProperty.getActualType() );
 	}
 
-	private boolean isBaseType(Class<?> clazz) {
+	private boolean isBaseType( Class<?> clazz ) {
 		return String.class.equals( clazz ) || ClassUtils.isPrimitiveOrWrapper( clazz );
 	}
 }

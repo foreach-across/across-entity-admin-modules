@@ -43,7 +43,7 @@ public class TestEntityPropertySelectorExecutor
 
 	@Before
 	public void setUp() throws Exception {
-		EntityPropertyRegistryFactoryImpl registries = new EntityPropertyRegistryFactoryImpl();
+		EntityPropertyRegistryProviderImpl registries = new EntityPropertyRegistryProviderImpl();
 		propertyRegistry = mock( MutableEntityPropertyRegistry.class );
 		productRegistry = mock( MutableEntityPropertyRegistry.class );
 
@@ -65,7 +65,7 @@ public class TestEntityPropertySelectorExecutor
 	}
 
 	private EntityPropertyDescriptor property( String name ) {
-		EntityPropertyDescriptor property = mock( EntityPropertyDescriptor.class );
+		MutableEntityPropertyDescriptor property = mock( MutableEntityPropertyDescriptor.class );
 		when( property.getName() ).thenReturn( name );
 
 		when( propertyRegistry.getProperty( name ) ).thenReturn( property );

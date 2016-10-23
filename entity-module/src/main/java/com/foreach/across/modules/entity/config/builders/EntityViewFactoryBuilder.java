@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,66 +13,71 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
-import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport;
+import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.EntityViewViewFactory;
+import com.foreach.across.modules.entity.views.SimpleEntityViewFactorySupport;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
- * Basic view builder supporting both {@link com.foreach.across.modules.entity.views.SimpleEntityViewFactorySupport}
- * and {@link com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport}.
+ * Builder for creating a single {@link com.foreach.across.modules.entity.views.EntityViewFactory}.
  *
  * @author Arne Vandamme
+ * @since 2.0.0
  */
-public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurablePropertiesEntityViewFactorySupport, SELF extends AbstractSimpleEntityViewBuilder>
-		extends AbstractEntityViewBuilder<T, SELF>
+public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 {
-	private final SELF viewBuilder;
+	private final AutowireCapableBeanFactory beanFactory;
+
+	private Class<? extends T> factoryType;
+
 	protected String[] viewPropertySelectorRule;
 	protected EntityPropertyComparators.Ordered viewPropertyOrder;
 	private String template;
-	private EntityViewPropertyRegistryBuilder propertyRegistryBuilder;
+	private AbstractSimpleEntityViewBuilder.EntityViewPropertyRegistryBuilder propertyRegistryBuilder;
 	private Collection<EntityViewProcessor> processors = new ArrayList<>();
 
-	@SuppressWarnings("unchecked")
-	public AbstractSimpleEntityViewBuilder() {
-		this.viewBuilder = (SELF) this;
+	public EntityViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
+		this.beanFactory = beanFactory;
 	}
 
-	@SuppressWarnings("unchecked")
-	public SELF template( String template ) {
+	/**
+	 * Configure the type of {@link EntityViewFactory} that should be created
+	 * in case of a {@link #build()} call.
+	 *
+	 * @param factoryType to create
+	 * @return current builder
+	 */
+	public EntityViewFactoryBuilder<T> factory( Class<? extends T> factoryType ) {
+		this.factoryType = factoryType;
+		return this;
+	}
+
+	/**
+	 * Configures the template this {@link EntityViewFactory} should use.
+	 * This requires the factory type to be a {@link SimpleEntityViewFactorySupport}.
+	 *
+	 * @param template the view should render
+	 * @return current builder
+	 */
+	public EntityViewFactoryBuilder<T> template( String template ) {
 		this.template = template;
-		return (SELF) this;
+		return this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public EntityViewPropertyRegistryBuilder properties() {
-		if ( propertyRegistryBuilder == null ) {
-			propertyRegistryBuilder = createPropertiesBuilder();
-		}
+	/*
 
-		return propertyRegistryBuilder;
+	 */
+	public EntityViewFactoryBuilder<T> showProperties( String... propertyNames ) {
+		return this;
 	}
-
-	public EntityViewPropertyRegistryBuilder properties( String... propertyNames ) {
-		return properties().filter( propertyNames );
-	}
-
-	protected abstract EntityViewPropertyRegistryBuilder createPropertiesBuilder();
 
 	/**
 	 * Add a processor object that should be applied to the view factory.
@@ -81,18 +86,46 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 	 * @return current builder
 	 * @see com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter
 	 */
-	@SuppressWarnings("unchecked")
-	public SELF addProcessor( EntityViewProcessor processor ) {
+	public EntityViewFactoryBuilder<T> viewProcessor( EntityViewProcessor processor ) {
 		Assert.notNull( processor );
 		processors.add( processor );
 
-		return (SELF) this;
+		return this;
 	}
 
 	/**
-	 * @return parent builder
+	 * Build a new factory instance of the type configured using {@link #factory(Class)}.
+	 * If no {@link #factory(Class)} has been configured, an exception will be thrown.
+	 *
+	 * @return factory instance
 	 */
-	public abstract Object and();
+	public T build() {
+		Assert.notNull( factoryType );
+
+		T viewFactory = beanFactory.createBean( factoryType );
+		apply( viewFactory );
+
+		return viewFactory;
+	}
+
+	/**
+	 * Apply the builder to an existing {@link EntityViewFactory}.
+	 *
+	 * @param viewFactory to apply the builder settings to
+	 */
+	public void apply( T viewFactory ) {
+		if ( viewFactory instanceof SimpleEntityViewFactorySupport ) {
+			applySimpleAttributes( (SimpleEntityViewFactorySupport) viewFactory );
+		}
+	}
+
+	private void applySimpleAttributes( SimpleEntityViewFactorySupport viewFactory ) {
+		if ( template != null ) {
+			viewFactory.setTemplate( template );
+		}
+	}
+
+	/*
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -151,8 +184,9 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 
 		return total;
 	}
-
-	public abstract class EntityViewPropertyRegistryBuilder<MYSELF extends EntityViewPropertyRegistryBuilder>
+*/
+	/*
+	public abstract class EntityViewPropertyRegistryBuilder<MYSELF extends AbstractSimpleEntityViewBuilder.EntityViewPropertyRegistryBuilder>
 			extends AbstractEntityPropertyRegistryBuilder<MYSELF>
 	{
 		@SuppressWarnings("unchecked")
@@ -168,4 +202,5 @@ public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurableProp
 			return viewBuilder;
 		}
 	}
+	*/
 }

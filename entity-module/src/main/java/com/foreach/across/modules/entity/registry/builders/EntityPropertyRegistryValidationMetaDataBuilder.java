@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.validation.ValidatorFactory;
 import javax.validation.metadata.BeanDescriptor;
@@ -45,7 +44,7 @@ public class EntityPropertyRegistryValidationMetaDataBuilder implements EntityPr
 						= beanDescriptor.getConstraintsForProperty( descriptor.getName() );
 
 				if ( validatorDescriptor != null ) {
-					MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( descriptor.getName() );
+					MutableEntityPropertyDescriptor mutable = registry.getProperty( descriptor.getName() );
 
 					if ( mutable != null ) {
 						mutable.setAttribute( PropertyDescriptor.class, validatorDescriptor );

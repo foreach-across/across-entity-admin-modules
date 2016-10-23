@@ -120,7 +120,7 @@ public class TestEntityPropertyRegistryBuilder
 	@Test
 	public void modifyExistingProperty() {
 		MutableEntityPropertyDescriptor existing = mock( MutableEntityPropertyDescriptor.class );
-		when( registry.getMutableProperty( "myprop" ) ).thenReturn( existing );
+		when( registry.getProperty( "myprop" ) ).thenReturn( existing );
 
 		builder.property( "myprop" ).displayName( "Existing property" );
 
@@ -132,7 +132,7 @@ public class TestEntityPropertyRegistryBuilder
 	@Test
 	public void labelProperty() {
 		MutableEntityPropertyDescriptor labelProperty = mock( MutableEntityPropertyDescriptor.class );
-		when( registry.getMutableProperty( EntityPropertyRegistry.LABEL ) ).thenReturn( labelProperty );
+		when( registry.getProperty( EntityPropertyRegistry.LABEL ) ).thenReturn( labelProperty );
 
 		MutableEntityPropertyDescriptor existing = mock( MutableEntityPropertyDescriptor.class );
 		when( existing.attributeMap() ).thenReturn( Collections.singletonMap( "one", "value" ) );

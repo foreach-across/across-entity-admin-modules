@@ -25,12 +25,15 @@ import com.foreach.across.modules.entity.converters.StringToEntityConfigurationC
 import com.foreach.across.modules.entity.formatters.DateFormatter;
 import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
+import com.foreach.across.modules.entity.registry.DefaultEntityConfigurationFactory;
+import com.foreach.across.modules.entity.registry.EntityConfigurationFactory;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
+import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryDefaultPropertiesBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactoryImpl;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProviderImpl;
 import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
 import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
@@ -95,13 +98,24 @@ public class EntityModuleConfiguration
 
 	@Bean
 	@Exposed
-	public EntityPropertyRegistryFactory entityPropertyRegistryFactory() {
-		return new EntityPropertyRegistryFactoryImpl();
+	public EntityPropertyRegistryProvider entityPropertyRegistryProvider() {
+		return new EntityPropertyRegistryProviderImpl();
+	}
+
+	@Bean
+	public EntityPropertyRegistryDefaultPropertiesBuilder entityPropertyRegistryDefaultPropertiesBuilder() {
+		return new EntityPropertyRegistryDefaultPropertiesBuilder( entityPropertyDescriptorFactory() );
 	}
 
 	@Bean
 	public EntityPropertyDescriptorFactory entityPropertyDescriptorFactory() {
 		return new EntityPropertyDescriptorFactoryImpl();
+	}
+
+	@Bean
+	@Exposed
+	public EntityConfigurationFactory entityConfigurationFactory() {
+		return new DefaultEntityConfigurationFactory();
 	}
 
 	@Bean

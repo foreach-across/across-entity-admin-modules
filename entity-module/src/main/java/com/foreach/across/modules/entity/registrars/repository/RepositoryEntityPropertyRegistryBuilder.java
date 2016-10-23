@@ -16,24 +16,19 @@
 package com.foreach.across.modules.entity.registrars.repository;
 
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.registry.properties.*;
-import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
-import com.foreach.across.modules.hibernate.business.Auditable;
-import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
 import javax.validation.ValidatorFactory;
 import javax.validation.metadata.BeanDescriptor;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>Creates a {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry} for a
@@ -48,7 +43,7 @@ public class RepositoryEntityPropertyRegistryBuilder
 	@Autowired
 	private ValidatorFactory validatorFactory;
 	@Autowired
-	private EntityPropertyRegistryFactory entityPropertyRegistryFactory;
+	private EntityPropertyRegistryProvider entityPropertyRegistryProvider;
 
 	public <T> void buildEntityPropertyRegistry( MutableEntityConfiguration<T> entityConfiguration ) {
 		Class<T> entityType = entityConfiguration.getEntityType();
@@ -56,7 +51,7 @@ public class RepositoryEntityPropertyRegistryBuilder
 				= entityConfiguration.getAttribute( RepositoryFactoryInformation.class );
 
 		MutableEntityPropertyRegistry registry =
-				(MutableEntityPropertyRegistry) entityPropertyRegistryFactory.getOrCreate( entityType );
+				(MutableEntityPropertyRegistry) entityPropertyRegistryProvider.getOrCreate( entityType );
 
 		registry.setDefaultOrder( new EntityPropertyComparators.Ordered() );
 
@@ -87,7 +82,7 @@ public class RepositoryEntityPropertyRegistryBuilder
 			//registry.setDefaultFilter( EntityPropertyFilters.exclude( excludedProps ) );
 		}
 
-		registry.getMutableProperty( "class" ).setHidden( true );
+		registry.getProperty( "class" ).setHidden( true );
 	}
 
 	private void configureKnownDescriptors( Class<?> entityType, MutableEntityPropertyRegistry registry ) {

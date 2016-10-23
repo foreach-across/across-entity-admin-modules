@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.properties.MutableEntityProper
 /**
  * @author Arne Vandamme
  */
+@FunctionalInterface
 public interface EntityPropertyRegistryBuilder
 {
 	void buildRegistry( Class<?> entityType, MutableEntityPropertyRegistry registry );

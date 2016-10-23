@@ -22,34 +22,34 @@ import java.util.Map;
 
 /**
  * Registry that allows overriding properties from a parent registry.
+ * Any properties registered directly in this registry will shadow the ones from the parent registry.
  *
  * @author Arne Vandamme
+ * @see DefaultEntityPropertyRegistry
  */
 public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 {
-	private EntityPropertyRegistry parent;
+	private final EntityPropertyRegistry parent;
+	private final EntityPropertyDescriptorFactory descriptorFactory;
 
 	public MergingEntityPropertyRegistry( EntityPropertyRegistry parent,
-	                                      EntityPropertyRegistryFactory registryFactory,
+	                                      EntityPropertyRegistryProvider registryProvider,
 	                                      EntityPropertyDescriptorFactory descriptorFactory ) {
-		super( registryFactory, descriptorFactory );
+		super( registryProvider );
 		this.parent = parent;
-	}
-
-	public void setParent( EntityPropertyRegistry parent ) {
-		this.parent = parent;
+		this.descriptorFactory = descriptorFactory;
 	}
 
 	@Override
-	public EntityPropertyDescriptor getProperty( String propertyName ) {
-		EntityPropertyDescriptor localProperty = super.getProperty( propertyName );
+	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
+		MutableEntityPropertyDescriptor localProperty = super.getProperty( propertyName );
 
 		if ( localProperty == null ) {
 			EntityPropertyDescriptor parentProperty = parent.getProperty( propertyName );
 
 			if ( parentProperty != null ) {
 				MutableEntityPropertyDescriptor mutable
-						= getDescriptorFactory().createWithParent( propertyName, parentProperty );
+						= descriptorFactory.createWithParent( propertyName, parentProperty );
 				register( mutable );
 
 				localProperty = mutable;
@@ -72,7 +72,7 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 			if ( local == null ) {
 				MutableEntityPropertyDescriptor mutable
-						= getDescriptorFactory().createWithParent( descriptor.getName(), descriptor );
+						= descriptorFactory.createWithParent( descriptor.getName(), descriptor );
 				register( mutable );
 
 				actual.put( mutable.getName(), mutable );
@@ -90,6 +90,7 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
 		super.setDefaultOrder( EntityPropertyComparators.composite( defaultOrder, parent.getDefaultOrder() ) );
 	}
@@ -97,7 +98,6 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	@Override
 	public EntityPropertyFilter getDefaultFilter() {
 		EntityPropertyFilter configured = super.getDefaultFilter();
-
 		return configured != null ? configured : parent.getDefaultFilter();
 	}
 }
