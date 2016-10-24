@@ -15,11 +15,11 @@
  */
 package com.foreach.across.modules.entity.testmodules.springdata.business;
 
-import com.mysema.query.types.Path;
-import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.EntityPathBase;
+import com.querydsl.core.types.Path;
+import com.querydsl.core.types.PathMetadata;
+import com.querydsl.core.types.dsl.EntityPathBase;
 
-import static com.mysema.query.types.PathMetadataFactory.forVariable;
+import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
 /**
  * Manually created dummy QueryDSL Q class.
@@ -39,7 +39,7 @@ public class QCompany extends EntityPathBase<Company>
 		super( path.getType(), path.getMetadata() );
 	}
 
-	public QCompany( PathMetadata<?> metadata ) {
+	public QCompany( PathMetadata metadata ) {
 		super( Company.class, metadata );
 	}
 }
