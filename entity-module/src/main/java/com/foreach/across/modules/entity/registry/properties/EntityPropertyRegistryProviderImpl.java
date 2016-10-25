@@ -16,8 +16,9 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.core.annotations.RefreshableCollection;
-import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryBuilder;
+import com.foreach.across.modules.entity.registry.builders.ClassBasedPropertiesRegistrar;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,16 +26,17 @@ import java.util.Map;
 
 /**
  * Manages the {@link EntityPropertyRegistry} instances for a set of entity types.
- * Dispatches to {@link EntityPropertyRegistryBuilder} instances for attribute generation.
+ * Dispatches to {@link ClassBasedPropertiesRegistrar} instances for attribute generation.
  *
  * @author Arne Vandamme
  */
+@Service
 public class EntityPropertyRegistryProviderImpl implements EntityPropertyRegistryProvider
 {
 	private final Map<Class<?>, MutableEntityPropertyRegistry> registries = new HashMap<>();
 
 	@RefreshableCollection(includeModuleInternals = true, incremental = true)
-	private Collection<EntityPropertyRegistryBuilder> registryBuilders;
+	private Collection<ClassBasedPropertiesRegistrar> propertiesRegistrars;
 
 	@Autowired
 	private EntityPropertyDescriptorFactory descriptorFactory;
@@ -58,12 +60,8 @@ public class EntityPropertyRegistryProviderImpl implements EntityPropertyRegistr
 	 * @return new instance
 	 */
 	public MutableEntityPropertyRegistry create( Class<?> entityType ) {
-		DefaultEntityPropertyRegistry newRegistry
-				= new DefaultEntityPropertyRegistry( this );
-
-		for ( EntityPropertyRegistryBuilder builder : registryBuilders ) {
-			builder.buildRegistry( entityType, newRegistry );
-		}
+		DefaultEntityPropertyRegistry newRegistry = new DefaultEntityPropertyRegistry( this );
+		propertiesRegistrars.forEach( b -> b.accept( entityType, newRegistry ) );
 
 		return newRegistry;
 	}

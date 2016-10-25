@@ -73,7 +73,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 		when( EXISTING.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( Integer.class ) );
 	}
 
-	private EntityPropertyRegistryBuilder builder = new EntityPropertyRegistryLabelPropertyBuilder();
+	private ClassBasedPropertiesRegistrar builder = new LabelPropertiesRegistrar();
 	private MutableEntityPropertyRegistry propertyRegistry;
 
 	@Before
@@ -101,7 +101,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 			}
 		} ).when( propertyRegistry ).register( any( MutableEntityPropertyDescriptor.class ) );
 
-		builder.buildRegistry( Object.class, propertyRegistry );
+		builder.accept( Object.class, propertyRegistry );
 
 		verify( propertyRegistry ).register( any( MutableEntityPropertyDescriptor.class ) );
 	}
@@ -114,7 +114,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 		when( propertyRegistry.getProperty( "name" ) ).thenReturn( EXISTING );
 
 		doAnswer( EXISTING_ANSWER ).when( propertyRegistry ).register( any( MutableEntityPropertyDescriptor.class ) );
-		builder.buildRegistry( Object.class, propertyRegistry );
+		builder.accept( Object.class, propertyRegistry );
 		verify( propertyRegistry ).register( any( MutableEntityPropertyDescriptor.class ) );
 	}
 
@@ -126,7 +126,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 		when( propertyRegistry.getProperty( "title" ) ).thenReturn( EXISTING );
 
 		doAnswer( EXISTING_ANSWER ).when( propertyRegistry ).register( any( MutableEntityPropertyDescriptor.class ) );
-		builder.buildRegistry( Object.class, propertyRegistry );
+		builder.accept( Object.class, propertyRegistry );
 		verify( propertyRegistry ).register( any( MutableEntityPropertyDescriptor.class ) );
 	}
 
@@ -138,7 +138,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 		when( propertyRegistry.getProperty( "label" ) ).thenReturn( EXISTING );
 
 		doAnswer( EXISTING_ANSWER ).when( propertyRegistry ).register( any( MutableEntityPropertyDescriptor.class ) );
-		builder.buildRegistry( Object.class, propertyRegistry );
+		builder.accept( Object.class, propertyRegistry );
 		verify( propertyRegistry ).register( any( MutableEntityPropertyDescriptor.class ) );
 	}
 

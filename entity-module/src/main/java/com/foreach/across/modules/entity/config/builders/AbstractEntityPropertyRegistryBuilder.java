@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryLabelPropertyBuilder;
+import com.foreach.across.modules.entity.registry.builders.LabelPropertiesRegistrar;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
@@ -97,7 +97,7 @@ public abstract class AbstractEntityPropertyRegistryBuilder<SELF extends Abstrac
 
 			if ( base != null ) {
 				MutableEntityPropertyDescriptor mutableLabel = (MutableEntityPropertyDescriptor) label;
-				EntityPropertyRegistryLabelPropertyBuilder.copyPropertyToLabel( base, mutableLabel );
+				LabelPropertiesRegistrar.copyPropertyToLabel( base, mutableLabel );
 			}
 		}
 

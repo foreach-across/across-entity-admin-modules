@@ -15,7 +15,10 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Utility class for creating {@link java.util.Comparator<EntityPropertyDescriptor>} instances.
@@ -35,10 +38,6 @@ public final class EntityPropertyComparators
 
 	public static Ordered ordered( Collection<String> propertyNames ) {
 		return new Ordered( propertyNames );
-	}
-
-	public static Comparator<EntityPropertyDescriptor> composite( Comparator<EntityPropertyDescriptor>... comparators ) {
-		return new Composite( comparators );
 	}
 
 	/**
@@ -77,36 +76,6 @@ public final class EntityPropertyComparators
 
 		private Integer applyDefault( Integer fixed ) {
 			return fixed != null ? fixed : 0;
-		}
-	}
-
-	/**
-	 * Composite that runs through all {@link Comparator<EntityPropertyDescriptor>} instances in the
-	 * order specified until one of them returns non-zero or the entire list has passed.
-	 */
-	public static class Composite implements Comparator<EntityPropertyDescriptor>
-	{
-		private final Collection<Comparator<EntityPropertyDescriptor>> comparators;
-
-		public Composite( Comparator<EntityPropertyDescriptor>... comparators ) {
-			this( Arrays.asList( comparators ) );
-		}
-
-		public Composite( Collection<Comparator<EntityPropertyDescriptor>> comparators ) {
-			this.comparators = comparators;
-		}
-
-		@Override
-		public int compare( EntityPropertyDescriptor left, EntityPropertyDescriptor right ) {
-			for ( Comparator<EntityPropertyDescriptor> comparator : comparators ) {
-				int comparison = comparator.compare( left, right );
-
-				if ( comparison != 0 ) {
-					return comparison;
-				}
-			}
-
-			return 0;
 		}
 	}
 }

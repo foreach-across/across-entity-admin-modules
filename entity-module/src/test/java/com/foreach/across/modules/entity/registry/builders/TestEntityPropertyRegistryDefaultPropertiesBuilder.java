@@ -45,8 +45,8 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 	@Before
 	public void before() {
 		propertyRegistry = new DefaultEntityPropertyRegistry( registryProvider );
-		new EntityPropertyRegistryDefaultPropertiesBuilder( new EntityPropertyDescriptorFactoryImpl() )
-				.buildRegistry( Customer.class, propertyRegistry );
+		new DefaultClassBasedPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() )
+				.accept( Customer.class, propertyRegistry );
 	}
 
 	@Test
@@ -110,8 +110,8 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 		assertEquals( "some name (123)", fetch( customer, "displayName" ) );
 
 		DefaultEntityPropertyRegistry addressRegistry = new DefaultEntityPropertyRegistry( registryProvider );
-		new EntityPropertyRegistryDefaultPropertiesBuilder( new EntityPropertyDescriptorFactoryImpl() )
-				.buildRegistry( Address.class, addressRegistry );
+		new DefaultClassBasedPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() )
+				.accept( Address.class, addressRegistry );
 
 		when( registryProvider.getOrCreate( Address.class ) ).thenReturn( addressRegistry );
 

@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryLabelPropertyBuilder;
+import com.foreach.across.modules.entity.registry.builders.LabelPropertiesRegistrar;
 import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
@@ -93,7 +93,7 @@ public class EntityPropertyRegistryBuilder
 			EntityPropertyDescriptor base = propertyRegistry.getProperty( labelBaseProperty );
 
 			if ( base != null ) {
-				EntityPropertyRegistryLabelPropertyBuilder.copyPropertyToLabel( base, label );
+				LabelPropertiesRegistrar.copyPropertyToLabel( base, label );
 			}
 		}
 

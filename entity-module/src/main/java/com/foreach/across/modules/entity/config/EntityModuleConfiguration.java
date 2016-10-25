@@ -25,15 +25,7 @@ import com.foreach.across.modules.entity.converters.StringToEntityConfigurationC
 import com.foreach.across.modules.entity.formatters.DateFormatter;
 import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
-import com.foreach.across.modules.entity.registry.DefaultEntityConfigurationFactory;
-import com.foreach.across.modules.entity.registry.EntityConfigurationFactory;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
-import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryDefaultPropertiesBuilder;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactory;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProviderImpl;
 import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
 import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
@@ -43,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.format.datetime.DateFormatterRegistrar;
@@ -50,20 +43,14 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import javax.annotation.PostConstruct;
-
 @Configuration
+@ComponentScan(basePackageClasses = EntityRegistry.class)
 public class EntityModuleConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityModuleConfiguration.class );
 
 	@Autowired
-	private FormattingConversionService mvcConversionService;
-
-	@PostConstruct
-	public void init() {
-		EntityRegistry entityRegistry = entityRegistry();
-
+	public void registerConverters( FormattingConversionService mvcConversionService, EntityRegistry entityRegistry ) {
 		mvcConversionService.addConverter( new StringToEntityConfigurationConverter( entityRegistry ) );
 		mvcConversionService.addConverter( new EntityConverter<>( mvcConversionService, entityRegistry ) );
 		mvcConversionService.addConverter( new EntityToStringConverter( entityRegistry ) );
@@ -72,11 +59,6 @@ public class EntityModuleConfiguration
 		dateFormatterRegistrar.setFormatter( new DateFormatter() );
 		dateFormatterRegistrar.registerFormatters( mvcConversionService );
 		mvcConversionService.addFormatterForFieldAnnotation( new TemporalFormatterFactory() );
-	}
-
-	@Bean
-	public EntityRegistryImpl entityRegistry() {
-		return new EntityRegistryImpl();
 	}
 
 	@Bean(name = EntityModule.VALIDATOR)
@@ -94,28 +76,6 @@ public class EntityModuleConfiguration
 	@Bean
 	public ModuleEntityRegistration moduleEntityRegistration() {
 		return new ModuleEntityRegistration();
-	}
-
-	@Bean
-	@Exposed
-	public EntityPropertyRegistryProvider entityPropertyRegistryProvider() {
-		return new EntityPropertyRegistryProviderImpl();
-	}
-
-	@Bean
-	public EntityPropertyRegistryDefaultPropertiesBuilder entityPropertyRegistryDefaultPropertiesBuilder() {
-		return new EntityPropertyRegistryDefaultPropertiesBuilder( entityPropertyDescriptorFactory() );
-	}
-
-	@Bean
-	public EntityPropertyDescriptorFactory entityPropertyDescriptorFactory() {
-		return new EntityPropertyDescriptorFactoryImpl();
-	}
-
-	@Bean
-	@Exposed
-	public EntityConfigurationFactory entityConfigurationFactory() {
-		return new DefaultEntityConfigurationFactory();
 	}
 
 	@Bean

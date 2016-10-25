@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.registry;
 
 import com.foreach.across.core.annotations.RefreshableCollection;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
@@ -31,6 +32,7 @@ import java.util.function.Consumer;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Service
 public class DefaultEntityConfigurationFactory implements EntityConfigurationFactory
 {
 	/**

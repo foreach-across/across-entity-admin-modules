@@ -224,7 +224,8 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 		Assert.notNull( descriptor );
 
 		if ( name != null && !name.equals( descriptor.getName() ) ) {
-			LOG.warn( "Unable to change the name of an existing EntityPropertyDescriptor" );
+			LOG.error( "Unable to change the name of an existing EntityPropertyDescriptor: {} to {}",
+			           descriptor.getName(), name );
 		}
 
 		// Update configured properties

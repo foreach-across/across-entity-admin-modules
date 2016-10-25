@@ -84,7 +84,7 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 		Assert.notNull( filter );
 		Assert.notNull( comparator );
 
-		return fetchProperties( filter, EntityPropertyComparators.composite( comparator, getDefaultOrder() ) );
+		return fetchProperties( filter, comparator.thenComparing( getDefaultOrder() ) );
 	}
 
 	private List<EntityPropertyDescriptor> fetchProperties( EntityPropertyFilter filter,
