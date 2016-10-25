@@ -90,7 +90,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 				if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
 					EntityPropertyRegistry subRegistry
-							= getRegistryProvider().getOrCreate( rootDescriptor.getPropertyType() );
+							= getRegistryProvider().get( rootDescriptor.getPropertyType() );
 
 					if ( subRegistry != null ) {
 						EntityPropertyDescriptor childDescriptor

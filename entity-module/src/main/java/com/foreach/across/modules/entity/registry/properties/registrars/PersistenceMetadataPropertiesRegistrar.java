@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.registry.builders;
+package com.foreach.across.modules.entity.registry.properties.registrars;
 
 import com.foreach.across.core.annotations.OrderInModule;
+import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
@@ -42,7 +43,7 @@ import java.util.Set;
  */
 @Component
 @OrderInModule(2)
-public class PersistenceMetadataPropertiesRegistrar implements ClassBasedPropertiesRegistrar
+public class PersistenceMetadataPropertiesRegistrar implements DefaultEntityPropertyRegistryProvider.PropertiesRegistrar
 {
 	private Set<MappingContext> mappingContexts = new LinkedHashSet<>();
 

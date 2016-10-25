@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.registry.builders;
+package com.foreach.across.modules.entity.registry.properties.registrars;
 
+import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
@@ -73,7 +74,7 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 		when( EXISTING.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( Integer.class ) );
 	}
 
-	private ClassBasedPropertiesRegistrar builder = new LabelPropertiesRegistrar();
+	private DefaultEntityPropertyRegistryProvider.PropertiesRegistrar builder = new LabelPropertiesRegistrar();
 	private MutableEntityPropertyRegistry propertyRegistry;
 
 	@Before

@@ -120,7 +120,7 @@ public class TestDefaultEntityPropertyRegistry
 	@Test
 	public void nestedProperty() {
 		MutableEntityPropertyRegistry nested = mock( MutableEntityPropertyRegistry.class );
-		when( registryProvider.getOrCreate( Date.class ) ).thenReturn( nested );
+		when( registryProvider.get( Date.class ) ).thenReturn( nested );
 
 		MutableEntityPropertyDescriptor timestamp = mock( MutableEntityPropertyDescriptor.class );
 		when( timestamp.getDisplayName() ).thenReturn( "Nested display name" );

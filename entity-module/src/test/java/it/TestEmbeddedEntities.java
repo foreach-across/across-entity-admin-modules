@@ -60,22 +60,22 @@ public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 
 	@Test
 	public void persistenceMetadataShouldBeSet() {
-		EntityPropertyRegistry registry = entityPropertyRegistryProvider.getOrCreate( Company.class );
+		EntityPropertyRegistry registry = entityPropertyRegistryProvider.get( Company.class );
 		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "address" ) ) );
 		assertFalse( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "group" ) ) );
 		assertFalse( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "class" ) ) );
 
-		registry = entityPropertyRegistryProvider.getOrCreate( ClientGroup.class );
+		registry = entityPropertyRegistryProvider.get( ClientGroup.class );
 		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "id" ) ) );
 
-		registry = entityPropertyRegistryProvider.getOrCreate( Client.class );
+		registry = entityPropertyRegistryProvider.get( Client.class );
 		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "phones" ) ) );
 
 	}
 
 	@Test
 	public void primitiveTypesShouldBehaveAsNonEmbedded() {
-		EntityPropertyRegistry registry = entityPropertyRegistryProvider.getOrCreate( Client.class );
+		EntityPropertyRegistry registry = entityPropertyRegistryProvider.get( Client.class );
 		assertFalse( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "aliases" ) ) );
 	}
 

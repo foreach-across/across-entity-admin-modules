@@ -92,7 +92,7 @@ public class EntityPropertySelectorExecutor
 		EntityPropertyDescriptor descriptor = current.getProperty( propertyName );
 
 		if ( descriptor.getPropertyType() != null ) {
-			EntityPropertyRegistry registry = propertyRegistries.getOrCreate( descriptor.getPropertyType() );
+			EntityPropertyRegistry registry = propertyRegistries.get( descriptor.getPropertyType() );
 
 			List<EntityPropertyDescriptor> subProperties = registry.select(
 					new EntityPropertySelector( selectorString )

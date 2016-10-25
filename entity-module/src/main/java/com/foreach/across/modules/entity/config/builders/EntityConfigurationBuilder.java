@@ -209,7 +209,7 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 			if ( configuration == null ) {
 				configuration = new EntityConfigurationImpl<>( entityType );
 				configuration.setPropertyRegistry(
-						beanFactory.getBean( EntityPropertyRegistryProvider.class ).getOrCreate( entityType )
+						beanFactory.getBean( EntityPropertyRegistryProvider.class ).get( entityType )
 				);
 				entityRegistry.register( configuration );
 			}

@@ -150,12 +150,12 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 		if ( registry == null ) {
 			EntityPropertyRegistryProvider registryFactory = beanFactory.getBean( EntityPropertyRegistryProvider.class );
 			if ( viewRegistry instanceof EntityConfiguration ) {
-				registry = registryFactory.createWithParent(
+				registry = registryFactory.createForParentRegistry(
 						( (EntityConfiguration) viewRegistry ).getPropertyRegistry()
 				);
 			}
 			else if ( viewRegistry instanceof EntityAssociation ) {
-				registry = registryFactory.createWithParent(
+				registry = registryFactory.createForParentRegistry(
 						( (EntityAssociation) viewRegistry ).getTargetEntityConfiguration().getPropertyRegistry()
 				);
 			}

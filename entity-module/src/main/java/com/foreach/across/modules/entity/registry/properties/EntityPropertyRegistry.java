@@ -30,7 +30,7 @@ public interface EntityPropertyRegistry
 {
 	/**
 	 * Name of the label property.
-	 * @see com.foreach.across.modules.entity.registry.builders.LabelPropertiesRegistrar
+	 * @see com.foreach.across.modules.entity.registry.properties.registrars.LabelPropertiesRegistrar
 	 */
 	String LABEL = "#label";
 

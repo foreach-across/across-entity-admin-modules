@@ -58,7 +58,7 @@ public class RepositoryEntityViewsBuilder
 		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.CREATE_VIEW_NAME, "entityViews" );
 
 		EntityPropertyRegistry registry
-				= propertyRegistryFactory.createWithParent( entityConfiguration.getPropertyRegistry() );
+				= propertyRegistryFactory.createForParentRegistry( entityConfiguration.getPropertyRegistry() );
 
 		viewFactory.setPropertyRegistry( registry );
 		viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
@@ -71,7 +71,7 @@ public class RepositoryEntityViewsBuilder
 		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.UPDATE_VIEW_NAME, "entityViews" );
 
 		EntityPropertyRegistry registry
-				= propertyRegistryFactory.createWithParent( entityConfiguration.getPropertyRegistry() );
+				= propertyRegistryFactory.createForParentRegistry( entityConfiguration.getPropertyRegistry() );
 
 		viewFactory.setPropertyRegistry( registry );
 		viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
@@ -92,7 +92,7 @@ public class RepositoryEntityViewsBuilder
 		viewFactory.setMessagePrefixes( "entityViews.listView", "entityViews" );
 
 		EntityPropertyRegistry registry
-				= propertyRegistryFactory.createWithParent( entityConfiguration.getPropertyRegistry() );
+				= propertyRegistryFactory.createForParentRegistry( entityConfiguration.getPropertyRegistry() );
 
 		viewFactory.setPropertyRegistry( registry );
 		viewFactory.setTemplate( EntityListView.VIEW_TEMPLATE );

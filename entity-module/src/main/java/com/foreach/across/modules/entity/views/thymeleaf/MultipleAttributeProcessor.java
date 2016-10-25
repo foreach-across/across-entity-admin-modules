@@ -94,7 +94,7 @@ public class MultipleAttributeProcessor extends AbstractAttributeModifierAttrPro
 
 	/**
 	 * Sets the precedence for this processor to execute before other attribute processors.
-	 * This guarantees that we get our map back.
+	 * This guarantees that we create our map back.
 	 *
 	 * @return the precedence
 	 */

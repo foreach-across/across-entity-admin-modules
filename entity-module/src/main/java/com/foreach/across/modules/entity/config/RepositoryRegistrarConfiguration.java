@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Creates the {@link com.foreach.across.modules.entity.registrars.repository.RepositoryEntityRegistrar} and all
  * beans it depends on.  Ensures that Spring Data {@link org.springframework.data.repository.Repository}
- * implementations will get registered as entities.
+ * implementations will create registered as entities.
  */
 @Configuration
 public class RepositoryRegistrarConfiguration

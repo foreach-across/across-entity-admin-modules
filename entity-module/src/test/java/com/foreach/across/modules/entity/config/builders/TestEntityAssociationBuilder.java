@@ -47,7 +47,7 @@ public class TestEntityAssociationBuilder
 		beanFactory = mock( AutowireCapableBeanFactory.class );
 
 		EntityPropertyRegistryProvider registryFactory = mock( EntityPropertyRegistryProvider.class );
-		when( registryFactory.getOrCreate( any( Class.class ) ) )
+		when( registryFactory.get( any( Class.class ) ) )
 				.thenReturn( mock( MutableEntityPropertyRegistry.class ) );
 		when( beanFactory.getBean( EntityPropertyRegistryProvider.class ) ).thenReturn( registryFactory );
 	}

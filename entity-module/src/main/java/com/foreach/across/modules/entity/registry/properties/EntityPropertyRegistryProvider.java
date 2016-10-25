@@ -16,13 +16,35 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 /**
+ * Central API for retrieving a {@link MutableEntityPropertyRegistry} for a particular entity type.
+ *
  * @author Arne Vandamme
+ * @see DefaultEntityPropertyRegistryProvider
+ * @since 2.0.0
  */
 public interface EntityPropertyRegistryProvider
 {
-	MutableEntityPropertyRegistry getOrCreate( Class<?> entityType );
+	/**
+	 * Retrieve the property registry for the given entity type.  Usually the registry
+	 * will be created upon the first call.  Calls to this method should always return
+	 * the same instance.
+	 *
+	 * @param entityType for which to retrieve the property registry
+	 * @return registry instance
+	 * @see #create(Class)
+	 */
+	MutableEntityPropertyRegistry get( Class<?> entityType );
 
-	EntityPropertyRegistry get( Class<?> entityType );
+	/**
+	 * Create a new registry that uses this provider for nested lookups
+	 * The newly created registry will not be added to the provider itself,
+	 * calls to this method will always return a new instance.
+	 *
+	 * @param entityType for which to create a new property registry
+	 * @return new registry instance
+	 * @see #get(Class)
+	 */
+	MutableEntityPropertyRegistry create( Class<?> entityType );
 
 	/**
 	 * Creates a new registry that uses the existing as parent.  Will usually return a
@@ -31,5 +53,5 @@ public interface EntityPropertyRegistryProvider
 	 * @param entityPropertyRegistry that is the parent
 	 * @return new registry instance for the parent source
 	 */
-	MutableEntityPropertyRegistry createWithParent( EntityPropertyRegistry entityPropertyRegistry );
+	MutableEntityPropertyRegistry createForParentRegistry( EntityPropertyRegistry entityPropertyRegistry );
 }

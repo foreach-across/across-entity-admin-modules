@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.registry.builders;
+package com.foreach.across.modules.entity.registry.properties.registrars;
 
 import com.foreach.across.core.annotations.OrderInModule;
+import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
@@ -32,7 +33,7 @@ import javax.validation.metadata.PropertyDescriptor;
  */
 @Component
 @OrderInModule(3)
-public class ValidationMetadataPropertiesRegistrar implements ClassBasedPropertiesRegistrar
+public class ValidationMetadataPropertiesRegistrar implements DefaultEntityPropertyRegistryProvider.PropertiesRegistrar
 {
 	@Autowired
 	private ValidatorFactory validatorFactory;

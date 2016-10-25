@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.registry.builders;
+package com.foreach.across.modules.entity.registry.properties.registrars;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactory;
-import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
@@ -42,12 +39,12 @@ import java.util.Map;
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class DefaultClassBasedPropertiesRegistrar implements ClassBasedPropertiesRegistrar
+public class DefaultPropertiesRegistrar implements DefaultEntityPropertyRegistryProvider.PropertiesRegistrar
 {
 	private final EntityPropertyDescriptorFactory propertyDescriptorFactory;
 
 	@Autowired
-	public DefaultClassBasedPropertiesRegistrar( EntityPropertyDescriptorFactory propertyDescriptorFactory ) {
+	public DefaultPropertiesRegistrar( EntityPropertyDescriptorFactory propertyDescriptorFactory ) {
 		this.propertyDescriptorFactory = propertyDescriptorFactory;
 	}
 

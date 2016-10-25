@@ -16,8 +16,8 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.builders.LabelPropertiesRegistrar;
 import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.registry.properties.registrars.LabelPropertiesRegistrar;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;

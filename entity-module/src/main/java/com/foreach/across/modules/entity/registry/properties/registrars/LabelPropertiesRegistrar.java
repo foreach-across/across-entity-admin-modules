@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.registry.builders;
+package com.foreach.across.modules.entity.registry.properties.registrars;
 
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.registry.properties.*;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @OrderInModule(1)
-public class LabelPropertiesRegistrar implements ClassBasedPropertiesRegistrar
+public class LabelPropertiesRegistrar implements DefaultEntityPropertyRegistryProvider.PropertiesRegistrar
 {
 	public static void copyPropertyToLabel( EntityPropertyDescriptor property, MutableEntityPropertyDescriptor label ) {
 		label.setValueFetcher( property.getValueFetcher() );

@@ -15,10 +15,10 @@
  */
 package it.com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.modules.entity.registry.builders.DefaultClassBasedPropertiesRegistrar;
-import com.foreach.across.modules.entity.registry.builders.TestEntityPropertyRegistryDefaultPropertiesBuilder.Address;
-import com.foreach.across.modules.entity.registry.builders.TestEntityPropertyRegistryDefaultPropertiesBuilder.Customer;
 import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.registry.properties.registrars.DefaultPropertiesRegistrar;
+import com.foreach.across.modules.entity.registry.properties.registrars.TestEntityPropertyRegistryDefaultPropertiesBuilder.Address;
+import com.foreach.across.modules.entity.registry.properties.registrars.TestEntityPropertyRegistryDefaultPropertiesBuilder.Customer;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
@@ -39,12 +39,12 @@ import static org.junit.Assert.assertFalse;
 public class TestEntityPropertyRegistries
 {
 	@Autowired
-	private EntityPropertyRegistryProviderImpl entityPropertyRegistryProvider;
+	private DefaultEntityPropertyRegistryProvider entityPropertyRegistryProvider;
 
 	@Test
 	public void customPropertyAndValueFetcher() {
 		MutableEntityPropertyRegistry parent = entityPropertyRegistryProvider.create( Customer.class );
-		MutableEntityPropertyRegistry registry = entityPropertyRegistryProvider.createWithParent( parent );
+		MutableEntityPropertyRegistry registry = entityPropertyRegistryProvider.createForParentRegistry( parent );
 
 		SimpleEntityPropertyDescriptor calculated = new SimpleEntityPropertyDescriptor( "address.size()" );
 		calculated.setValueFetcher( new SpelValueFetcher( "address.size()" ) );
@@ -85,8 +85,8 @@ public class TestEntityPropertyRegistries
 	public static class Config
 	{
 		@Bean
-		public EntityPropertyRegistryProviderImpl entityPopertyRegistryProvider() {
-			return new EntityPropertyRegistryProviderImpl();
+		public DefaultEntityPropertyRegistryProvider entityPopertyRegistryProvider() {
+			return new DefaultEntityPropertyRegistryProvider( entityPropertyDescriptorFactory() );
 		}
 
 		@Bean
@@ -95,8 +95,8 @@ public class TestEntityPropertyRegistries
 		}
 
 		@Bean
-		public DefaultClassBasedPropertiesRegistrar entityPropertyRegistryDefaultPropertiesBuilder() {
-			return new DefaultClassBasedPropertiesRegistrar( entityPropertyDescriptorFactory() );
+		public DefaultPropertiesRegistrar entityPropertyRegistryDefaultPropertiesBuilder() {
+			return new DefaultPropertiesRegistrar( entityPropertyDescriptorFactory() );
 		}
 	}
 }

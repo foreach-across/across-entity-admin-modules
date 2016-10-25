@@ -51,7 +51,7 @@ public class RepositoryEntityPropertyRegistryBuilder
 				= entityConfiguration.getAttribute( RepositoryFactoryInformation.class );
 
 		MutableEntityPropertyRegistry registry =
-				(MutableEntityPropertyRegistry) entityPropertyRegistryProvider.getOrCreate( entityType );
+				(MutableEntityPropertyRegistry) entityPropertyRegistryProvider.get( entityType );
 
 		registry.setDefaultOrder( new EntityPropertyComparators.Ordered() );
 

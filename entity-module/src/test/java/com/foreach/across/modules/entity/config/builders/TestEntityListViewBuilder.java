@@ -67,7 +67,7 @@ public class TestEntityListViewBuilder
 		when( beanFactory.getBean( EntityListViewFactory.class ) ).thenReturn( new EntityListViewFactory() );
 
 		EntityPropertyRegistryProvider registryFactory = mock( EntityPropertyRegistryProvider.class );
-		when( registryFactory.createWithParent( any( EntityPropertyRegistry.class ) ) ).thenReturn( mock(
+		when( registryFactory.createForParentRegistry( any( EntityPropertyRegistry.class ) ) ).thenReturn( mock(
 				MutableEntityPropertyRegistry.class ) );
 		when( beanFactory.getBean( EntityPropertyRegistryProvider.class ) ).thenReturn( registryFactory );
 

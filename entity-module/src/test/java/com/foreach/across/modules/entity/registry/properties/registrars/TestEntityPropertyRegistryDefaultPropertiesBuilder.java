@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.registry.builders;
+package com.foreach.across.modules.entity.registry.properties.registrars;
 
 import com.foreach.across.modules.entity.registry.properties.*;
 import org.junit.Before;
@@ -45,7 +45,7 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 	@Before
 	public void before() {
 		propertyRegistry = new DefaultEntityPropertyRegistry( registryProvider );
-		new DefaultClassBasedPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() )
+		new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() )
 				.accept( Customer.class, propertyRegistry );
 	}
 
@@ -110,10 +110,10 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 		assertEquals( "some name (123)", fetch( customer, "displayName" ) );
 
 		DefaultEntityPropertyRegistry addressRegistry = new DefaultEntityPropertyRegistry( registryProvider );
-		new DefaultClassBasedPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() )
+		new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() )
 				.accept( Address.class, addressRegistry );
 
-		when( registryProvider.getOrCreate( Address.class ) ).thenReturn( addressRegistry );
+		when( registryProvider.get( Address.class ) ).thenReturn( addressRegistry );
 
 		assertEquals( "my street", fetch( customer, "address.street" ) );
 		assertNull( propertyRegistry.getProperty( "address.size()" ) );
