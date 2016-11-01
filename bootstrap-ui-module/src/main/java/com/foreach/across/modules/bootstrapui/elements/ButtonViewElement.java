@@ -36,6 +36,7 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 	private ViewElement icon;
 	public ButtonViewElement() {
 		super( ELEMENT_TYPE );
+		setTagName( "button" );
 	}
 
 	@Override

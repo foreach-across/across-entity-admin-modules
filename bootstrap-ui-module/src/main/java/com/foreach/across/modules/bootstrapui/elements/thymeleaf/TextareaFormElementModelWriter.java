@@ -16,26 +16,22 @@
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
-import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
+import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 
 /**
  * @author Arne Vandamme
+ * @since 1.0.0
  */
-public class TextareaFormElementThymeleafBuilder extends FormControlElementThymleafSupport<TextareaFormElement>
+public class TextareaFormElementModelWriter extends FormControlElementModelWriter<TextareaFormElement>
 {
 	@Override
-	protected Element createNode( TextareaFormElement control,
-	                              Arguments arguments,
-	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element node = new Element( "textarea" );
-		node.setAttribute( "class", "form-control" );
-		node.setAttribute( "rows", String.valueOf( control.getRows() ) );
+	protected void writeOpenElement( TextareaFormElement control, ThymeleafModelBuilder model ) {
+		super.writeOpenElement( control, model );
 
-		attribute( node, "placeholder", control.getPlaceholder() );
-		text( node, control.getText() );
+		model.addAttributeValue( "class", "form-control" );
+		model.addAttribute( "rows", control.getRows() );
+		model.addAttribute( "placeholder", control.getPlaceholder() );
 
-		return node;
+		model.addText( control.getText() );
 	}
 }

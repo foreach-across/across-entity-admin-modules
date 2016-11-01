@@ -30,6 +30,7 @@ public class SelectFormElement extends FormControlElementSupport
 
 	public SelectFormElement() {
 		super( ELEMENT_TYPE );
+		setTagName( "select" );
 	}
 
 	public boolean isMultiple() {
@@ -51,6 +52,7 @@ public class SelectFormElement extends FormControlElementSupport
 
 		public Option() {
 			super( SelectFormElement.ELEMENT_TYPE + ".option" );
+			setTagName( "option" );
 		}
 
 		public boolean isSelected() {

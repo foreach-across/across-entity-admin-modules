@@ -17,35 +17,32 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
-import com.foreach.across.modules.web.thymeleaf.HtmlIdStore;
-import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
+import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.HtmlViewElementThymeleafSupport;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
+
+import java.util.Optional;
 
 /**
  * @author Arne Vandamme
+ * @since 1.0.0
  */
-public class LabelFormElementNodeBuilder extends HtmlViewElementThymeleafSupport<LabelFormElement>
+public class LabelFormElementModelWriter extends AbstractHtmlViewElementModelWriter<LabelFormElement>
 {
 	@Override
-	protected Element createNode( LabelFormElement control,
-	                              Arguments arguments,
-	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element element = new Element( "label" );
-		element.setAttribute( "class", "control-label" );
+	protected void writeOpenElement( LabelFormElement viewElement, ThymeleafModelBuilder writer ) {
+		super.writeOpenElement( viewElement, writer );
 
-		attribute( element, "for", determineTargetId( control, arguments ) );
-		text( element, control.getText() );
+		writer.addAttributeValue( "class", "control-label" );
+		targetId( viewElement, writer ).ifPresent( id -> writer.addAttribute( "for", id ) );
 
-		return element;
+		writer.addText( viewElement.getText() );
 	}
 
-	private String determineTargetId( LabelFormElement label, Arguments arguments ) {
+	private Optional<String> targetId( LabelFormElement label, ThymeleafModelBuilder writer ) {
 		if ( label.hasTarget() ) {
 			if ( label.isTargetId() ) {
-				return label.getTargetAsId();
+				return Optional.of( label.getTargetAsId() );
 			}
 
 			ViewElement target = BootstrapElementUtils.getFormControl( label.getTargetAsElement() );
@@ -54,9 +51,9 @@ public class LabelFormElementNodeBuilder extends HtmlViewElementThymeleafSupport
 				target = label.getTargetAsElement();
 			}
 
-			return HtmlIdStore.fetch( arguments ).retrieveHtmlId( target );
+			return Optional.ofNullable( writer.retrieveHtmlId( target ) );
 		}
 
-		return null;
+		return Optional.empty();
 	}
 }

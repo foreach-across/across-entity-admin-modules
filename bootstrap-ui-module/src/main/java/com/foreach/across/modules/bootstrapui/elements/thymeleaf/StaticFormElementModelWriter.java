@@ -16,25 +16,20 @@
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
-import com.foreach.across.modules.web.thymeleaf.ViewElementNodeFactory;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.HtmlViewElementThymeleafSupport;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
+import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
 
 /**
  * @author Arne Vandamme
+ * @since 1.0.0
  */
-public class StaticFormElementThymeleafBuilder extends HtmlViewElementThymeleafSupport<StaticFormElement>
+public class StaticFormElementModelWriter extends AbstractHtmlViewElementModelWriter<StaticFormElement>
 {
 	@Override
-	protected Element createNode( StaticFormElement control,
-	                              Arguments arguments,
-	                              ViewElementNodeFactory viewElementNodeFactory ) {
-		Element element = new Element( "p" );
-		element.setAttribute( "class", "form-control-static" );
+	protected void writeOpenElement( StaticFormElement viewElement, ThymeleafModelBuilder writer ) {
+		super.writeOpenElement( viewElement, writer );
 
-		text( element, control.getText() );
-
-		return element;
+		writer.addAttributeValue( "class", "form-control-static" );
+		writer.addText( viewElement.getText() );
 	}
 }

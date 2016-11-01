@@ -38,7 +38,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 	public void emptyNumeric() {
 		renderAndExpect(
 				numeric,
-				"<input class='form-control numeric' type='text' />"
+				"<input class='numeric form-control' type='text' />"
 		);
 	}
 
@@ -49,7 +49,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				numeric,
-				"<input id='number' name='number' class='form-control numeric' type='text' value='123' />"
+				"<input id='number' name='number' class='numeric form-control' type='text' value='123' />"
 		);
 	}
 
@@ -62,7 +62,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				numeric,
-				"<input id='number' name='_number' class='form-control numeric' " +
+				"<input id='number' name='_number' class='numeric form-control' " +
 						"type='text' " + DATA_ATTRIBUTE + " value='123.9541' />" +
 						"<input type='hidden' name='number' value='123.9541' />"
 		);
@@ -85,7 +85,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='number' class='control-label'>title</label>" +
-						"<input id='number' name='number' class='form-control numeric' type='text' />" +
+						"<input id='number' name='number' class='numeric form-control' type='text' />" +
 						"</div>"
 		);
 	}

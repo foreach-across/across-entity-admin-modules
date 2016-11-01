@@ -27,7 +27,7 @@ public class StaticFormElement extends AbstractNodeViewElement
 	private String text;
 
 	public StaticFormElement() {
-		super( "div" );
+		super( "p" );
 		setElementType( ELEMENT_TYPE );
 	}
 

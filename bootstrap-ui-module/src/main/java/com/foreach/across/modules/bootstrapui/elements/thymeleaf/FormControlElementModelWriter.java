@@ -16,22 +16,23 @@
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.FormControlElementSupport;
-import com.foreach.across.modules.web.ui.elements.thymeleaf.HtmlViewElementThymeleafSupport;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
+import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
+import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
 
 /**
  * @author Arne Vandamme
+ * @since 1.0.0
  */
-public abstract class FormControlElementThymleafSupport<T extends FormControlElementSupport>
-		extends HtmlViewElementThymeleafSupport<T>
+public abstract class FormControlElementModelWriter<T extends FormControlElementSupport>
+		extends AbstractHtmlViewElementModelWriter<T>
 {
 	@Override
-	protected void applyProperties( T control, Arguments arguments, Element node ) {
-		attribute( node, "name", control.getControlName() );
+	protected void writeOpenElement( T control, ThymeleafModelBuilder model ) {
+		super.writeOpenElement( control, model );
 
-		attribute( node, "disabled", control.isDisabled() );
-		attribute( node, "readonly", control.isReadonly() );
-		attribute( node, "required", control.isRequired() );
+		model.addAttribute( "name", control.getControlName() );
+		model.addBooleanAttribute( "disabled", control.isDisabled() );
+		model.addBooleanAttribute( "readonly", control.isReadonly() );
+		model.addBooleanAttribute( "required", control.isRequired() );
 	}
 }

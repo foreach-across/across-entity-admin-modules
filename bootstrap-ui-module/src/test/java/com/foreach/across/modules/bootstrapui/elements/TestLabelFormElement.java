@@ -171,4 +171,13 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 						"<p class='form-control-static' id='static'>static content</p>"
 		);
 	}
+
+	@Test
+	public void customForAttribute() {
+		LabelFormElement label = new LabelFormElement();
+		label.setAttribute( "for", "custom-target" );
+		label.setText( "title" );
+
+		renderAndExpect( label, "<label for='custom-target' class='control-label'>title</label>" );
+	}
 }

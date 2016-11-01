@@ -32,6 +32,7 @@ public class TextareaFormElement extends TextboxFormElement
 	private int rows = 3;
 
 	public TextareaFormElement() {
+		setTagName( "textarea" );
 		setElementType( ELEMENT_TYPE );
 		setType( Type.TEXTAREA );
 	}
