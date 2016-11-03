@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.adminweb.annotations;
 
-import com.foreach.across.core.annotations.AcrossEventHandler;
+import com.foreach.across.core.annotations.AcrossDepends;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
@@ -23,8 +23,8 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@AcrossDepends(required = "AdminWebModule")
 @Component
-@AcrossEventHandler
 public @interface AdminWebController
 {
 }
