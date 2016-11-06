@@ -269,7 +269,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				group,
 				"<div class='form-group'>" +
-						"<label for='control' class='sr-only'>title</label>" +
+						"<label for='control' class='control-label sr-only'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' placeholder='title' />" +
 						"</div>"
 		);
@@ -278,7 +278,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				group,
 				"<div class='form-group'>" +
-						"<label for='control' class='sr-only'>title</label>" +
+						"<label for='control' class='control-label sr-only'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' placeholder='some placeholder' />" +
 						"</div>"
 		);
@@ -287,7 +287,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				group,
 				"<div class='form-group'>" +
-						"<label for='control' class='sr-only'>title</label>" +
+						"<label for='control' class='control-label sr-only'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' placeholder='' />" +
 						"</div>"
 		);
@@ -299,7 +299,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				groupWithInputGroup,
 				"<div class='form-group'>" +
-						"<label for='control' class='sr-only'>title input group</label>" +
+						"<label for='control' class='control-label sr-only'>title input group</label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
 						"<input type='text' class='form-control' name='control' id='control' placeholder='title input group' />" +
@@ -313,7 +313,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				groupWithInputGroup,
 				"<div class='form-group'>" +
-						"<label for='control' class='sr-only'>title input group</label>" +
+						"<label for='control' class='control-label sr-only'>title input group</label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
 						"<input type='text' class='form-control' name='control' id='control' placeholder='some placeholder' />" +
@@ -327,7 +327,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				groupWithInputGroup,
 				"<div class='form-group'>" +
-						"<label for='control' class='sr-only'>title input group</label>" +
+						"<label for='control' class='control-label sr-only'>title input group</label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
 						"<input type='text' class='form-control' name='control' id='control' placeholder='' />" +
@@ -359,7 +359,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				group,
 				"<div class='form-group'>" +
-						"<label for='control' class='sr-only'>title</label>" +
+						"<label for='control' class='control-label sr-only'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' placeholder='title' />" +
 						"<p class='help-block sr-only' id='control.help'>example help text</p>" +
 						"</div>"

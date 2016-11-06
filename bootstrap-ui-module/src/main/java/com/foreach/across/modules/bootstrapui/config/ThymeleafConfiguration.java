@@ -17,55 +17,52 @@ package com.foreach.across.modules.bootstrapui.config;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.thymeleaf.*;
-import com.foreach.across.modules.web.ui.thymeleaf.ViewElementNodeBuilderRegistry;
+import com.foreach.across.modules.web.ui.thymeleaf.ViewElementModelWriterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author Arne Vandamme
+ * @since 1.0.0
  */
 @Configuration
-// todo: check Thymeleaf is enabled
+@ConditionalOnBean(ViewElementModelWriterRegistry.class)
 public class ThymeleafConfiguration
 {
 	@Autowired
-	private ViewElementNodeBuilderRegistry viewElementNodeBuilderRegistry;
-
-	@PostConstruct
-	public void registerViewElements() {
-		viewElementNodeBuilderRegistry.registerNodeBuilder( IconViewElement.ELEMENT_TYPE,
-		                                                    new IconViewElementModelWriter() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( ButtonViewElement.class,
-		                                                    new ButtonViewElementModelWriter() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( FormViewElement.class,
-		                                                    new FormViewElementModelWriter() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( TextboxFormElement.class,
-		                                                    new TextboxFormElementModelWriter() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( TextareaFormElement.class,
-		                                                    new TextareaFormElementModelWriter() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( CheckboxFormElement.class,
-		                                                    new CheckboxFormElementModelWriter() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( RadioFormElement.class,
-		                                                    new RadioFormElementModelWriter() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( SelectFormElement.class,
-		                                                    new SelectFormElementModelWriter() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( SelectFormElement.Option.class,
-		                                                    new SelectFormElementModelWriter.OptionBuilder() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( SelectFormElement.OptionGroup.class,
-		                                                    new SelectFormElementModelWriter.OptionGroupBuilder() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( StaticFormElement.class,
-		                                                    new StaticFormElementModelWriter() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( LabelFormElement.class,
-		                                                    new LabelFormElementModelWriter() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( FormGroupElement.class,
-		                                                    new FormGroupElementModelBuilder() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( TableViewElement.class,
-		                                                    new TableViewElementModelBuilder() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( TableViewElement.Row.class,
-		                                                    new TableViewElementModelBuilder.RowElementThymeleafBuilder() );
-		viewElementNodeBuilderRegistry.registerNodeBuilder( TableViewElement.Cell.class,
-		                                                    new TableViewElementModelBuilder.CellElementThymeleafBuilder() );
+	public void registerViewElements( ViewElementModelWriterRegistry modelWriterRegistry ) {
+		modelWriterRegistry.registerModelWriter( IconViewElement.ELEMENT_TYPE,
+		                                         new IconViewElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( ButtonViewElement.class,
+		                                         new ButtonViewElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( FormViewElement.class,
+		                                         new FormViewElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( TextboxFormElement.class,
+		                                         new TextboxFormElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( TextareaFormElement.class,
+		                                         new TextareaFormElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( CheckboxFormElement.class,
+		                                         new CheckboxFormElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( RadioFormElement.class,
+		                                         new RadioFormElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( SelectFormElement.class,
+		                                         new SelectFormElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( SelectFormElement.Option.class,
+		                                         new SelectFormElementModelWriter.OptionBuilder() );
+		modelWriterRegistry.registerModelWriter( SelectFormElement.OptionGroup.class,
+		                                         new SelectFormElementModelWriter.OptionGroupBuilder() );
+		modelWriterRegistry.registerModelWriter( StaticFormElement.class,
+		                                         new StaticFormElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( LabelFormElement.class,
+		                                         new LabelFormElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( FormGroupElement.class,
+		                                         new FormGroupElementModelWriter() );
+		modelWriterRegistry.registerModelWriter( TableViewElement.class,
+		                                         new TableViewElementModelBuilder() );
+		modelWriterRegistry.registerModelWriter( TableViewElement.Row.class,
+		                                         new TableViewElementModelBuilder.RowElementThymeleafBuilder() );
+		modelWriterRegistry.registerModelWriter( TableViewElement.Cell.class,
+		                                         new TableViewElementModelBuilder.CellElementThymeleafBuilder() );
 	}
 }

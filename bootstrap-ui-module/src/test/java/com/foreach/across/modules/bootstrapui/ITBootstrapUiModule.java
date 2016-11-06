@@ -15,10 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui;
 
-import com.foreach.across.config.AcrossContextConfigurer;
-import com.foreach.across.core.AcrossContext;
+import com.foreach.across.config.EnableAcrossContext;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.test.AcrossTestWebConfiguration;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
+import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
+import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.util.Collection;
+
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -36,24 +40,32 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @WebAppConfiguration
-@ContextConfiguration(classes = ITBootstrapUiModule.Config.class)
+@ContextConfiguration
 public class ITBootstrapUiModule
 {
 	@Autowired(required = false)
 	private BootstrapUiFactory bootstrapUiFactory;
+
+	@Autowired
+	private Collection<WebResourcePackageManager> packageManagers;
 
 	@Test
 	public void exposedBeans() {
 		assertNotNull( bootstrapUiFactory );
 	}
 
+	@Test
+	public void webResourcesShouldBeRegistered() {
+		packageManagers.forEach( mgr -> {
+			assertNotNull( mgr.getPackage( BootstrapUiWebResources.NAME ) );
+			assertNotNull( mgr.getPackage( JQueryWebResources.NAME ) );
+			assertNotNull( mgr.getPackage( BootstrapUiFormElementsWebResources.NAME ) );
+		} );
+	}
+
 	@Configuration
-	@AcrossTestWebConfiguration
-	protected static class Config implements AcrossContextConfigurer
+	@EnableAcrossContext(BootstrapUiModule.NAME)
+	protected static class Config
 	{
-		@Override
-		public void configure( AcrossContext context ) {
-			context.addModule( new BootstrapUiModule() );
-		}
 	}
 }

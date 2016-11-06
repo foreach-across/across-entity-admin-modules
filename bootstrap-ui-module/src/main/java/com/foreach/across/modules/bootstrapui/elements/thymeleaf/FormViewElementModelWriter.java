@@ -18,7 +18,15 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 import com.foreach.across.modules.bootstrapui.elements.FormViewElement;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.spring4.naming.SpringContextVariableNames;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.standard.expression.VariableExpression;
+import org.thymeleaf.util.StringUtils;
 
 import java.util.Map;
 
@@ -29,6 +37,37 @@ import java.util.Map;
 public class FormViewElementModelWriter extends AbstractHtmlViewElementModelWriter<FormViewElement>
 {
 	public static final String VAR_CURRENT_BOOTSTRAP_FORM = "_currentBootstrapForm";
+
+	@Override
+	protected void writeOpenElement( FormViewElement form, ThymeleafModelBuilder model ) {
+		super.writeOpenElement( form, model );
+
+		// set the command attribute
+		ITemplateContext templateContext = model.getTemplateContext();
+
+		if ( templateContext instanceof IEngineContext ) {
+			IEngineContext engineContext = (IEngineContext) templateContext;
+			engineContext.setVariable( VAR_CURRENT_BOOTSTRAP_FORM, form );
+
+			String commandAttribute = form.getCommandAttribute();
+
+			if ( commandAttribute != null ) {
+				IEngineConfiguration configuration = engineContext.getConfiguration();
+				IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser( configuration );
+
+				VariableExpression varExpression =
+						(VariableExpression) expressionParser.parseExpression(
+								engineContext, commandAttributeName( commandAttribute )
+						);
+
+				engineContext.setVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION, varExpression );
+			}
+		}
+	}
+
+	private String commandAttributeName( String attributeName ) {
+		return StringUtils.startsWith( attributeName, "${" ) ? attributeName : "${" + attributeName + "}";
+	}
 
 	@Override
 	protected void writeCloseElement( FormViewElement viewElement, ThymeleafModelBuilder writer ) {
@@ -48,69 +87,4 @@ public class FormViewElementModelWriter extends AbstractHtmlViewElementModelWrit
 
 		super.writeCloseElement( viewElement, writer );
 	}
-
-	//
-//	@Override
-//	public List<Node> buildNodes( FormViewElement form,
-//	                              Arguments arguments,
-//	                              ViewElementNodeFactory viewElementNodeFactory ) {
-//		Element node = createNode( form, arguments, viewElementNodeFactory );
-//		attribute( node, "id", retrieveHtmlId( arguments, form ) );
-//
-//		applyProperties( form, arguments, node );
-//
-//		viewElementNodeFactory.setAttributes( node, form.getAttributes() );
-//
-//		Arguments newArguments = buildFormArguments( form, arguments );
-//
-//		for ( ViewElement child : form.getChildren() ) {
-//			viewElementNodeFactory.buildNodes( child, newArguments ).forEach( node::addChild );
-//		}
-//
-//		return Collections.singletonList( (Node) node );
-//	}
-//
-//	private Arguments buildFormArguments( FormViewElement form, Arguments original ) {
-//		String commandAttribute = form.getCommandAttribute();
-//
-//		Map<String, Object> newVariables = new HashMap<>();
-//		newVariables.put( VAR_CURRENT_BOOTSTRAP_FORM, form );
-//
-//		if ( commandAttribute != null ) {
-//			Configuration configuration = original.getConfiguration();
-//			IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser( configuration );
-//
-//			VariableExpression varExpression =
-//					(VariableExpression) expressionParser.parseExpression(
-//							original.getConfiguration(), original, commandAttributeName( commandAttribute )
-//					);
-//
-//			newVariables.put( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION, varExpression );
-//		}
-//
-//		Arguments newArguments = original.addLocalVariables( newVariables );
-//		newArguments.getExpressionObjects().putAll( original.getExpressionObjects() );
-//
-//		if ( commandAttribute != null ) {
-//			newArguments.getExpressionObjects().putAll(
-//					SpelVariableExpressionEvaluator.INSTANCE
-//							.computeExpressionObjects( newArguments.getConfiguration(), newArguments )
-//			);
-//		}
-//
-//		return newArguments;
-//	}
-//
-//	private String commandAttributeName( String attributeName ) {
-//		return StringUtils.startsWith( attributeName, "${" ) ? attributeName : "${" + attributeName + "}";
-//	}
-//
-//	@Override
-//	protected Element createNode( FormViewElement control,
-//	                              Arguments arguments,
-//	                              ViewElementNodeFactory viewElementNodeFactory ) {
-
-//
-//		return node;
-//	}
 }
