@@ -18,7 +18,6 @@ package com.foreach.across.samples.entity.application.extensions;
 
 import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
-import com.foreach.across.modules.spring.security.authority.NamedGrantedAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
@@ -33,6 +32,6 @@ public class SecurityConfiguration
 	public void configureGlobal( AuthenticationManagerBuilder auth ) throws Exception {
 		auth.inMemoryAuthentication()
 		    .withUser( "admin" ).password( "admin" )
-		    .authorities( new NamedGrantedAuthority( "access administration" ) );
+		    .authorities( "access administration" );
 	}
 }

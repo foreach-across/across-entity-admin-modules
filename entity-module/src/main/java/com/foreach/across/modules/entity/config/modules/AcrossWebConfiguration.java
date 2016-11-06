@@ -21,7 +21,6 @@ import com.foreach.across.modules.entity.EntityModuleSettings;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.controllers.ViewRequestValidator;
 import com.foreach.across.modules.entity.views.ViewCreationContext;
-import com.foreach.across.modules.entity.views.thymeleaf.EntityModuleDialect;
 import com.foreach.across.modules.entity.web.WebViewCreationContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -86,20 +84,21 @@ public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 
 		pageableHandlerMethodArgumentResolver.setFallbackPageable( null );
 
-		if ( shouldRegisterThymeleafDialect() ) {
-			LOG.debug( "Registering Thymeleaf entity module dialect" );
-
-			Object springTemplateEngine = applicationContext.getBean( "springTemplateEngine" );
-
-			if ( springTemplateEngine instanceof SpringTemplateEngine ) {
-				( (SpringTemplateEngine) springTemplateEngine ).addDialect( new EntityModuleDialect() );
-				LOG.debug( "Thymeleaf entity module dialect registered successfully." );
-			}
-			else {
-				LOG.warn(
-						"Unable to register Thymeleaf entity module dialect as bean springTemplateEngine is not of the right type." );
-			}
-		}
+		// todo cleanup
+//		if ( shouldRegisterThymeleafDialect() ) {
+//			LOG.debug( "Registering Thymeleaf entity module dialect" );
+//
+//			Object springTemplateEngine = applicationContext.getBean( "springTemplateEngine" );
+//
+//			if ( springTemplateEngine instanceof SpringTemplateEngine ) {
+//				( (SpringTemplateEngine) springTemplateEngine ).addDialect( new EntityModuleDialect() );
+//				LOG.debug( "Thymeleaf entity module dialect registered successfully." );
+//			}
+//			else {
+//				LOG.warn(
+//						"Unable to register Thymeleaf entity module dialect as bean springTemplateEngine is not of the right type." );
+//			}
+//		}
 	}
 
 	@Override
