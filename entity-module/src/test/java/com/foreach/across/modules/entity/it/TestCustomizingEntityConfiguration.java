@@ -143,13 +143,13 @@ public class TestCustomizingEntityConfiguration
 
 	@Test
 	public void customizedClientLabel() {
-		EntityConfiguration config = entityRegistry.getEntityConfiguration( Client.class );
+		EntityConfiguration<Client> config = entityRegistry.getEntityConfiguration( Client.class );
 		assertEquals( "fixed", config.getLabel( new Client() ) );
 	}
 
 	@Test
 	public void customizedPersistableLabel() {
-		EntityConfiguration config = entityRegistry.getEntityConfiguration( Company.class );
+		EntityConfiguration<Company> config = entityRegistry.getEntityConfiguration( Company.class );
 		Company c = new Company();
 		assertEquals( "false", config.getLabel( c ) );
 

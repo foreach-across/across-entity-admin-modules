@@ -16,7 +16,7 @@
 package com.foreach.across.modules.entity.testmodules.solr.config;
 
 import com.foreach.across.modules.entity.testmodules.solr.SolrTestModule;
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.solr.core.SolrOperations;
@@ -33,13 +33,13 @@ import static org.mockito.Mockito.mock;
 public class SolrConfig
 {
 	@Bean
-	public SolrServer solrServer() {
-		return mock( SolrServer.class );
+	public SolrClient solrClient() {
+		return mock( SolrClient.class );
 	}
 
 	@Bean
-	public SolrOperations solrTemplate( SolrServer server ) {
-		return new SolrTemplate( server );
+	public SolrOperations solrTemplate( SolrClient solrClient ) {
+		return new SolrTemplate( solrClient );
 	}
 
 }

@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.config;
 
-import com.foreach.across.core.annotations.AcrossCondition;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.context.support.AcrossModuleMessageSource;
 import com.foreach.across.modules.entity.EntityModule;
@@ -38,6 +37,7 @@ import com.foreach.across.modules.entity.views.EntityViewViewFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -78,7 +78,7 @@ public class EntityModuleConfiguration
 
 	@Bean(name = EntityModule.VALIDATOR)
 	@Exposed
-	@AcrossCondition("not hasBean('" + EntityModule.VALIDATOR + "')")
+	@ConditionalOnMissingBean(name = EntityModule.VALIDATOR)
 	public SmartValidator entityValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
 		localValidatorFactoryBean.setValidationMessageSource( messageSource() );
