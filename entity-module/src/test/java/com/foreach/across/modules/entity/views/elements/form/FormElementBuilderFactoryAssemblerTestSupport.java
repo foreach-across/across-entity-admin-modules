@@ -24,19 +24,14 @@ import com.foreach.across.modules.entity.views.elements.CloningViewElementBuilde
 import com.foreach.across.modules.entity.views.support.ConversionServiceConvertingValuePrinter;
 import com.mysema.util.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.internal.metadata.BeanMetaDataManager;
-import org.hibernate.validator.internal.metadata.aggregated.BeanMetaData;
-import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
-import org.hibernate.validator.internal.metadata.provider.MetaDataProvider;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +52,8 @@ public abstract class FormElementBuilderFactoryAssemblerTestSupport<T extends Fo
 	@Autowired
 	protected EntityRegistry entityRegistry;
 
+	protected LocalValidatorFactoryBean validatorFactory = new LocalValidatorFactoryBean();
+
 	protected Map<String, EntityPropertyDescriptor> properties = new HashMap<>();
 
 	protected T template;
@@ -64,18 +61,14 @@ public abstract class FormElementBuilderFactoryAssemblerTestSupport<T extends Fo
 	@Before
 	@SuppressWarnings("unchecked")
 	public void before() {
+		validatorFactory.afterPropertiesSet();
 		reset( entityConfiguration, registry );
 
 		when( entityConfiguration.getEntityMessageCodeResolver() )
 				.thenReturn( mock( EntityMessageCodeResolver.class ) );
 
 		if ( properties.isEmpty() ) {
-			BeanMetaDataManager manager = new BeanMetaDataManager(
-					new ConstraintHelper(), Collections.<MetaDataProvider>emptyList()
-			);
-
-			BeanMetaData<?> metaData = manager.getBeanMetaData( getTestClass() );
-			BeanDescriptor beanDescriptor = metaData.getBeanDescriptor();
+			BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass( getTestClass() );
 
 			for ( Field field : ReflectionUtils.getFields( getTestClass() ) ) {
 				String propertyName = field.getName();
