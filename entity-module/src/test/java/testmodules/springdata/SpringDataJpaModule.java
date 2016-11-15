@@ -21,13 +21,13 @@ import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
-import com.foreach.across.modules.hibernate.provider.HibernatePackageConfiguringModule;
+import com.foreach.across.modules.hibernate.provider.HibernatePackageConfigurer;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
 
 import java.util.Set;
 
 @AcrossDepends(required = AcrossHibernateJpaModule.NAME)
-public class SpringDataJpaModule extends AcrossModule implements HibernatePackageConfiguringModule
+public class SpringDataJpaModule extends AcrossModule implements HibernatePackageConfigurer
 {
 	public SpringDataJpaModule() {
 	}
