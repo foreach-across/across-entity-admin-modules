@@ -20,8 +20,6 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.entity.testmodules.springdata.business.CompanyStatus;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
@@ -36,6 +34,8 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import testmodules.springdata.business.Client;
+import testmodules.springdata.business.CompanyStatus;
 
 import java.math.BigDecimal;
 import java.util.Date;

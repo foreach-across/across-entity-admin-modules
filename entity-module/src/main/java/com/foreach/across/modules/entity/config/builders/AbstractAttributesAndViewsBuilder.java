@@ -15,11 +15,9 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.registry.ConfigurableEntityViewRegistry;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.util.Assert;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -36,40 +34,13 @@ import java.util.function.Consumer;
  * @see com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder
  * @see com.foreach.across.modules.entity.config.builders.EntityAssociationBuilder
  */
+@Deprecated
 public abstract class AbstractAttributesAndViewsBuilder<T extends AbstractAttributesAndViewsBuilder, U>
+		extends AbstractWritableAttributesBuilder
 {
 	private final Map<Object, Object> attributes = new HashMap<>();
 	private final Collection<Consumer<U>> postProcessors = new ArrayDeque<>();
 	private final Map<String, AbstractEntityViewBuilder> viewBuilders = new HashMap<>();
-
-	/**
-	 * Add a custom attribute this builder should apply to the entity it processes.
-	 *
-	 * @param name  Name of the attribute.
-	 * @param value Value of the attribute.
-	 * @return current builder
-	 */
-	@SuppressWarnings("unchecked")
-	public T attribute( String name, Object value ) {
-		Assert.notNull( name );
-		attributes.put( name, value );
-		return (T) this;
-	}
-
-	/**
-	 * Add a custom attribute this builder should apply to the entity it processes.
-	 *
-	 * @param type  Type of the attribute.
-	 * @param value Value of the attribute.
-	 * @param <S>   Class that is both key and value type of the attribute
-	 * @return current builder
-	 */
-	@SuppressWarnings("unchecked")
-	public <S> T attribute( Class<S> type, S value ) {
-		Assert.notNull( type );
-		attributes.put( type, value );
-		return (T) this;
-	}
 
 	/**
 	 * Add a post processor that will be applied to all configurations in the registry.
@@ -159,17 +130,6 @@ public abstract class AbstractAttributesAndViewsBuilder<T extends AbstractAttrib
 	                                  AutowireCapableBeanFactory beanFactory ) {
 		for ( AbstractEntityViewBuilder viewBuilder : viewBuilders.values() ) {
 			viewBuilder.apply( viewRegistry, beanFactory );
-		}
-	}
-
-	protected void applyAttributes( WritableAttributes writableAttributes ) {
-		for ( Map.Entry<Object, Object> attribute : attributes.entrySet() ) {
-			if ( attribute.getKey() instanceof String ) {
-				writableAttributes.setAttribute( (String) attribute.getKey(), attribute.getValue() );
-			}
-			else {
-				writableAttributes.setAttribute( (Class) attribute.getKey(), attribute.getValue() );
-			}
 		}
 	}
 

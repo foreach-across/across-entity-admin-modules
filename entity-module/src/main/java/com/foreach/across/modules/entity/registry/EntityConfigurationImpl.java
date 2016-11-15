@@ -18,7 +18,7 @@ package com.foreach.across.modules.entity.registry;
 import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
@@ -36,6 +36,9 @@ import java.util.Map;
  * {@link com.foreach.across.modules.entity.registry.EntityModel},
  * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry}
  * along with the registered views and attributes.
+ *
+ * @author Arne Vandamme
+ * @since 1.0.0
  */
 public class EntityConfigurationImpl<T> extends AttributeSupport implements MutableEntityConfiguration<T>
 {
@@ -54,13 +57,16 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	private String displayName;
 
 	private EntityModel<T, Serializable> entityModel;
-	private EntityPropertyRegistry propertyRegistry;
+	private MutableEntityPropertyRegistry propertyRegistry;
 
 	public EntityConfigurationImpl( Class<T> entityType ) {
 		this( StringUtils.uncapitalize( entityType.getSimpleName() ), entityType );
 	}
 
 	public EntityConfigurationImpl( String name, Class<T> entityType ) {
+		Assert.notNull( entityType );
+		Assert.notNull( name );
+
 		this.name = name;
 		this.entityType = entityType;
 
@@ -125,12 +131,12 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	}
 
 	@Override
-	public EntityPropertyRegistry getPropertyRegistry() {
+	public MutableEntityPropertyRegistry getPropertyRegistry() {
 		return propertyRegistry;
 	}
 
 	@Override
-	public void setPropertyRegistry( EntityPropertyRegistry propertyRegistry ) {
+	public void setPropertyRegistry( MutableEntityPropertyRegistry propertyRegistry ) {
 		Assert.notNull( propertyRegistry );
 		this.propertyRegistry = propertyRegistry;
 	}

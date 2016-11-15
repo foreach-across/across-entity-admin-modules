@@ -124,7 +124,7 @@ public class TestEntityModelBuilder
 			return null;
 		} ).when( model ).setDeleteMethod( any( Consumer.class ) );
 
-		assertSame( modelBuilder, modelBuilder.deleteMethodById( value ) );
+		assertSame( modelBuilder, modelBuilder.deleteByIdMethod( value ) );
 		modelBuilder.apply( model );
 		verify( model ).setDeleteMethod( any( Consumer.class ) );
 		verifyNoMoreInteractions( model );

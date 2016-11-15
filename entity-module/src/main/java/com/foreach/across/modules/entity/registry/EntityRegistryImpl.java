@@ -125,10 +125,10 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> EntityConfiguration<T> getEntityConfiguration( Class<T> entityType ) {
+	public <T> MutableEntityConfiguration<T> getEntityConfiguration( Class<T> entityType ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
 			if ( configuration.getEntityType().equals( entityType ) ) {
-				return (EntityConfiguration<T>) configuration;
+				return (MutableEntityConfiguration<T>) configuration;
 			}
 		}
 
@@ -137,10 +137,10 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> EntityConfiguration<T> getEntityConfiguration( String entityName ) {
+	public <T> MutableEntityConfiguration<T> getEntityConfiguration( String entityName ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
 			if ( StringUtils.equals( configuration.getName(), entityName ) ) {
-				return (EntityConfiguration<T>) configuration;
+				return (MutableEntityConfiguration<T>) configuration;
 			}
 		}
 

@@ -43,7 +43,7 @@ public class EntityModelBuilder<T>
 	private Function<Serializable, T> findOneMethod;
 	private UnaryOperator<T> saveMethod;
 	private Consumer<T> deleteMethod;
-	private Consumer<Serializable> deleteMethodById;
+	private Consumer<Serializable> deleteByIdMethod;
 
 	/**
 	 * Set the {@link EntityFactory} for this model.
@@ -121,8 +121,8 @@ public class EntityModelBuilder<T>
 	 * @param deleteMethodById callback method
 	 * @return current builder
 	 */
-	public EntityModelBuilder<T> deleteMethodById( Consumer<Serializable> deleteMethodById ) {
-		this.deleteMethodById = deleteMethodById;
+	public EntityModelBuilder<T> deleteByIdMethod( Consumer<Serializable> deleteMethodById ) {
+		this.deleteByIdMethod = deleteMethodById;
 		return this;
 	}
 
@@ -161,9 +161,9 @@ public class EntityModelBuilder<T>
 		if ( deleteMethod != null ) {
 			model.setDeleteMethod( deleteMethod );
 		}
-		else if ( deleteMethodById != null ) {
+		else if ( deleteByIdMethod != null ) {
 			// wrap convert by id method in a regular delete method
-			model.setDeleteMethod( entity -> deleteMethodById.accept( model.getId( entity ) ) );
+			model.setDeleteMethod( entity -> deleteByIdMethod.accept( model.getId( entity ) ) );
 		}
 	}
 }

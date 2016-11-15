@@ -28,6 +28,13 @@ public interface MutableEntityRegistry extends EntityRegistry
 {
 	void register( MutableEntityConfiguration<?> entityConfiguration );
 
+	@Override
+	<T> MutableEntityConfiguration<T> getEntityConfiguration( String entityName );
+
+	@Override
+	<T> MutableEntityConfiguration<T> getEntityConfiguration( Class<T> entityType );
+
+	@Deprecated
 	<T> MutableEntityConfiguration<T> getMutableEntityConfiguration( Class<T> entityType );
 
 	<T> MutableEntityConfiguration<T> remove( String entityName );

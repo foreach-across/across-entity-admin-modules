@@ -108,7 +108,6 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 				continue;
 			}
 
-
 			Class<?> entityType = ClassUtils.getUserClass(
 					repositoryFactoryInformation.getRepositoryInformation().getDomainType()
 			);
@@ -233,8 +232,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 	}
 
 	/**
-	 * Determine the best {@link EntityQueryExecutor} implementation
-	 * for this entity.
+	 * Determine the best {@link EntityQueryExecutor} implementation for this entity.
 	 */
 	private void registerEntityQueryExecutor( MutableEntityConfiguration entityConfiguration ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );

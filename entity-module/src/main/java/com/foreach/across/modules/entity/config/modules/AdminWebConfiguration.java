@@ -19,15 +19,9 @@ import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
 import com.foreach.across.modules.entity.controllers.association.*;
 import com.foreach.across.modules.entity.controllers.entity.*;
 import com.foreach.across.modules.entity.handlers.MenuEventsHandler;
-import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
-import com.foreach.across.modules.entity.web.EntityAssociationLinkBuilder;
-import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -101,7 +95,7 @@ public class AdminWebConfiguration implements EntityConfigurer
 	}
 
 	@Override
-	public void configure( EntitiesConfigurationBuilder configuration ) {
+	public void configure( EntitiesConfigurationBuilder entities ) {
 		// TODO: move to across web
 		final WebAppPathResolver servletContextResolver = new WebAppPathResolver()
 		{
@@ -118,7 +112,8 @@ public class AdminWebConfiguration implements EntityConfigurer
 			}
 		};
 
-		configuration.addPostProcessor( c -> {
+		// TODO ADMINWEB
+		/*configuration.addPostProcessor( c -> {
 			c.setAttribute(
 					EntityLinkBuilder.class,
 					new EntityConfigurationLinkBuilder(
@@ -133,5 +128,6 @@ public class AdminWebConfiguration implements EntityConfigurer
 				                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
 			}
 		} );
+		*/
 	}
 }

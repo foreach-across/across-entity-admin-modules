@@ -20,7 +20,6 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.HiddenFormElementBuilderFactory;
@@ -36,6 +35,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import testmodules.springdata.business.Client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

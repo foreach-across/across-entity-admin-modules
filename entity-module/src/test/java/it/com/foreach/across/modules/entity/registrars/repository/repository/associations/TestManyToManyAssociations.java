@@ -19,10 +19,6 @@ package it.com.foreach.across.modules.entity.registrars.repository.repository.as
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.CompanyRepository;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.RepresentativeRepository;
 import com.foreach.across.modules.entity.views.*;
 import it.com.foreach.across.modules.entity.registrars.repository.repository.TestRepositoryEntityRegistrar;
 import org.junit.Before;
@@ -35,6 +31,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.ui.ModelMap;
+import testmodules.springdata.business.Company;
+import testmodules.springdata.business.Representative;
+import testmodules.springdata.repositories.CompanyRepository;
+import testmodules.springdata.repositories.RepresentativeRepository;
 
 import java.util.Arrays;
 import java.util.Collections;

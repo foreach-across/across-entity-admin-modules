@@ -19,8 +19,6 @@ package it;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
-import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestConfiguration;
@@ -32,6 +30,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import testmodules.springdata.SpringDataJpaModule;
+import testmodules.springdata.repositories.ClientRepository;
 
 import static org.junit.Assert.assertNotNull;
 

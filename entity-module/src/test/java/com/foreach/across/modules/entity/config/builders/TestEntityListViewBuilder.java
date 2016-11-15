@@ -22,8 +22,6 @@ import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import org.junit.Before;
@@ -32,6 +30,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.data.domain.Sort;
+import testmodules.springdata.business.Client;
+import testmodules.springdata.business.Company;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -58,7 +58,7 @@ public class TestEntityListViewBuilder
 
 	@Before
 	public void before() {
-		entities = new EntitiesConfigurationBuilder();
+		entities = new EntitiesConfigurationBuilder( beanFactory );
 
 		entityRegistry = new EntityRegistryImpl();
 
@@ -83,7 +83,7 @@ public class TestEntityListViewBuilder
 		entityRegistry.register( client );
 		entityRegistry.register( company );
 
-		builder = entities.entity( Client.class );
+		builder = entities.withType( Client.class );
 
 		view = builder.listView( VIEW );
 

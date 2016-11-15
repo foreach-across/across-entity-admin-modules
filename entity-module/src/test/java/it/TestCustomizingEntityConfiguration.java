@@ -25,13 +25,8 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
-import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
@@ -47,6 +42,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Persistable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import testmodules.springdata.SpringDataJpaModule;
+import testmodules.springdata.business.Client;
+import testmodules.springdata.business.Company;
+import testmodules.springdata.repositories.ClientRepository;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -189,34 +188,34 @@ public class TestCustomizingEntityConfiguration
 	{
 		@Override
 		@SuppressWarnings("unchecked")
-		public void configure( EntitiesConfigurationBuilder configuration ) {
-			configuration.attribute( EntityLinkBuilder.class, mock( EntityConfigurationLinkBuilder.class ) );
+		public void configure( EntitiesConfigurationBuilder entities ) {
+			//configuration.attribute( EntityLinkBuilder.class, mock( EntityConfigurationLinkBuilder.class ) );
 
-			configuration.assignableTo( Persistable.class )
-			             .label( "new" )
-			             .properties(
+			entities.assignableTo( Persistable.class )
+			        .label( "new" )
+			        .properties(
 					             props -> props.property( "id" )
 					                           .viewElementBuilder( ViewElementMode.LIST_VALUE,
 					                                                mock( ViewElementBuilder.class ) )
 			             );
 
-			configuration.entity( Client.class )
-			             .properties(
+			entities.withType( Client.class )
+			        .properties(
 					             props -> props.label( "someprop" ).and()
 					                           .property( "someprop" ).displayName( "Some property" )
 					                           .spelValueFetcher( "'fixed'" )
 			             )
-			             .view( "some-extra-view" )
-			             .template( "th/someTemplate" )
-			             .properties()
-			             .property( "calculated" ).displayName( "Calculated" ).and()
-			             .property( "group-membership" )
-			             .displayName( "Group membership" )
-			             .spelValueFetcher( "groups.size()" ).and()
-			             .and()
-			             .and()
-			             .view( "some-other-view" )
-			             .factory( mock( ConfigurablePropertiesEntityViewFactorySupport.class ) );
+			        .view( "some-extra-view" )
+			        .template( "th/someTemplate" )
+			        .properties()
+			        .property( "calculated" ).displayName( "Calculated" ).and()
+			        .property( "group-membership" )
+			        .displayName( "Group membership" )
+			        .spelValueFetcher( "groups.size()" ).and()
+			        .and()
+			        .and()
+			        .view( "some-other-view" )
+			        .factory( mock( ConfigurablePropertiesEntityViewFactorySupport.class ) );
 		}
 	}
 }

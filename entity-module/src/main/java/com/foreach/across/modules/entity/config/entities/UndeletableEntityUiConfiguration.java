@@ -34,10 +34,10 @@ import com.foreach.across.modules.web.ui.elements.TextViewElement;
 public class UndeletableEntityUiConfiguration implements EntityConfigurer
 {
 	@Override
-	public void configure( EntitiesConfigurationBuilder configuration ) {
-		configuration.assignableTo( Undeletable.class )
-		             .updateFormView()
-		             .addProcessor( new WebViewProcessorAdapter()
+	public void configure( EntitiesConfigurationBuilder entities ) {
+		entities.assignableTo( Undeletable.class )
+		        .updateFormView()
+		        .addProcessor( new WebViewProcessorAdapter()
 		             {
 			             @Override
 			             protected void extendViewModel( EntityView view ) {

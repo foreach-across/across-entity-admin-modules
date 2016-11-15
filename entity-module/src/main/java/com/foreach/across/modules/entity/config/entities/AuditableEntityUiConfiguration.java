@@ -48,8 +48,8 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 	private ConversionService mvcConversionService;
 
 	@Override
-	public void configure( EntitiesConfigurationBuilder configuration ) {
-		EntityConfigurationBuilder<Auditable> builder = configuration
+	public void configure( EntitiesConfigurationBuilder entities ) {
+		EntityConfigurationBuilder<?> builder = entities
 				.assignableTo( Auditable.class )
 				.properties(
 						props -> {
@@ -96,7 +96,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 		       .properties( ".", "created", "lastModified" ).and();
 
 		// Add default sort to list views if no default sort configured
-		builder.addPostProcessor( entityConfiguration -> {
+		builder.postProcessor( entityConfiguration -> {
 			EntityListViewFactory listViewFactory = entityConfiguration.getViewFactory( EntityListView.VIEW_NAME );
 
 			if ( listViewFactory != null && listViewFactory.getDefaultSort() == null ) {

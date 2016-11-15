@@ -15,20 +15,24 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.config.builders.registry.FormViewBuilder;
-import com.foreach.across.modules.entity.config.builders.registry.ListViewBuilder;
-import com.foreach.across.modules.entity.config.builders.registry.ViewBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityConfigurationProvider;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityListView;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Central builder for customizing configuration entries in the
@@ -36,132 +40,221 @@ import java.util.function.Consumer;
  *
  * @author Arne Vandamme
  */
-public class EntitiesConfigurationBuilder extends AbstractAttributesAndViewsBuilder<EntitiesConfigurationBuilder, MutableEntityConfiguration<?>>
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class EntitiesConfigurationBuilder
 {
-	private final Map<String, EntityConfigurationBuilder> builders = new LinkedHashMap<>();
+	private final List<EntityConfigurationBuilder<?>> newConfigurationBuilders = new ArrayList<>();
+	private final Map<String, EntityConfigurationBuilder<Object>> nameBuilders = new LinkedHashMap<>();
+	private final Map<Class, EntityConfigurationBuilder<Object>> typeBuilders = new LinkedHashMap<>();
+	private final Map<Predicate<MutableEntityConfiguration>, EntityConfigurationBuilder<Object>>
+			predicateBuilders = new LinkedHashMap<>();
 
-	@Override
-	public ViewBuilder view( String name ) {
-		return view( name, ViewBuilder.class );
-	}
+	private EntityConfigurationBuilder<Object> allBuilder;
 
-	@Deprecated
-	@Override
-	public ListViewBuilder listView() {
-		return listView( EntityListView.VIEW_NAME );
-	}
+	private BeanFactory beanFactory;
 
-	@Deprecated
-	@Override
-	public ListViewBuilder listView( String name ) {
-		return view( name, ListViewBuilder.class );
-	}
-
-	@Deprecated
-	@Override
-	public FormViewBuilder createFormView() {
-		return formView( EntityFormView.CREATE_VIEW_NAME );
-	}
-
-	@Deprecated
-	@Override
-	public FormViewBuilder updateFormView() {
-		return formView( EntityFormView.UPDATE_VIEW_NAME );
-	}
-
-	@Deprecated
-	@Override
-	public FormViewBuilder formView( String name ) {
-		return view( name, FormViewBuilder.class );
+	@Autowired
+	public EntitiesConfigurationBuilder( BeanFactory beanFactory ) {
+		this.beanFactory = beanFactory;
 	}
 
 	/**
-	 * Retrieve a builder for a specific entity type.
+	 * Configure a builder for a new {@link EntityConfiguration}.  The {@link EntityConfigurationBuilder} will
+	 * only be passed to this consumer and the consumer is expected to manually populate a valid entity configuration.
+	 * If you want the default {@link EntityConfigurationProvider} to be called, you should use
+	 * {@link #withType(Class)} instead.
 	 *
-	 * @param entityType for which to retrieve the builder.
-	 * @return entity builder instance
+	 * @return configuration builder
 	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <V> EntityConfigurationBuilder<V> entity( Class<V> entityType ) {
-		Assert.notNull( entityType );
-
-		EntityConfigurationBuilder<V> builder = (EntityConfigurationBuilder<V>) builders.get( entityType.getName() );
-
-		if ( builder == null ) {
-			builder = new EntityConfigurationBuilder<>( entityType, false, this );
-			builders.put( entityType.getName(), builder );
-		}
-
-		return builder;
+	public EntityConfigurationBuilder create() {
+		EntityConfigurationBuilder newBuilder = createConfigurationBuilder();
+		newConfigurationBuilders.add( newBuilder );
+		return newBuilder;
 	}
 
 	/**
-	 * Retrieve a builder for all entities that can be assigned to the specific parent type or interface.
+	 * Configure a builder for an {@link EntityConfiguration} with the specific name.
+	 * If non-existing this method will create a new configuration.  Unlike {@link #withType(Class)}
+	 * however, the new configuration will be entirely blank and will require all settings to be
+	 * done manually.
+	 *
+	 * @param configurationName for which to configure the builder
+	 * @return configuration builder
+	 */
+	public EntityConfigurationBuilder<Object> withName( String configurationName ) {
+		return nameBuilders.computeIfAbsent( configurationName, c -> createConfigurationBuilder() );
+	}
+
+	/**
+	 * Configure a builder for a specific entity type.
+	 * If non-existing, this method will create a default {@link EntityConfiguration} with
+	 * settings that could be detected based on the specific exact type of the entity.
+	 *
+	 * @param entityType for which to configure the builder
+	 * @return configuration builder
+	 */
+	public EntityConfigurationBuilder<Object> withType( Class<?> entityType ) {
+		return typeBuilders.computeIfAbsent( entityType, c -> createConfigurationBuilder() );
+	}
+
+	/**
+	 * Configure a builder to apply to all configurations in the registry.
+	 *
+	 * @return configuration builder for all entity configurations
+	 */
+	public EntityConfigurationBuilder<Object> all() {
+		if ( allBuilder == null ) {
+			allBuilder = createConfigurationBuilder();
+		}
+		return allBuilder;
+	}
+
+	/**
+	 * Configure a builder to apply to all entities that can be assigned to the specific parent type or interface.
+	 * Same as a call to {@link #matching(Predicate)} with a predicate on entity type.
 	 *
 	 * @param entityType that entities can be assigned to
 	 * @return entity builder instance
 	 */
-	public synchronized <V> EntityConfigurationBuilder<V> assignableTo( Class<V> entityType ) {
+	public EntityConfigurationBuilder<Object> assignableTo( Class<?> entityType ) {
 		Assert.notNull( entityType );
 
-		String entityName = "assignableTo:" + entityType.getName();
-		EntityConfigurationBuilder<V> builder = (EntityConfigurationBuilder<V>) builders.get( entityName );
-
-		if ( builder == null ) {
-			builder = new EntityConfigurationBuilder<>( entityType, true, this );
-			builders.put( entityName, builder );
-		}
-
-		return builder;
+		return matching( c -> entityType.isAssignableFrom( c.getEntityType() ) );
 	}
 
 	/**
-	 * Apply the builder configuration to the EntityRegistry.  This will not invoke the post processors,
-	 * use {@link #postProcess(com.foreach.across.modules.entity.registry.MutableEntityRegistry)} to execute
-	 * the post processors after the configuration has been applied.
+	 * Configure a builder to apply to all configurations matching the predicate.
 	 *
-	 * @param entityRegistry EntityRegistry to which the configuration should be applied.
-	 * @param beanFactory    The BeanFactory that should be used to create beans like ViewFactory instances.
+	 * @param configurationPredicate predicate the configurations should match
+	 * @return current builder
 	 */
-	public synchronized void apply( MutableEntityRegistry entityRegistry, AutowireCapableBeanFactory beanFactory ) {
-		for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
-			MutableEntityConfiguration mutableEntityConfiguration
-					= entityRegistry.getMutableEntityConfiguration( entityConfiguration.getEntityType() );
+	public EntityConfigurationBuilder<Object> matching( Predicate<MutableEntityConfiguration> configurationPredicate ) {
+		Assert.notNull( configurationPredicate );
 
-			applyAttributes( mutableEntityConfiguration );
-			applyViewBuilders( mutableEntityConfiguration, beanFactory );
-		}
-
-		// Apply the individual builder
-		for ( EntityConfigurationBuilder builder : builders.values() ) {
-			builder.apply( entityRegistry, beanFactory );
-		}
+		return predicateBuilders.computeIfAbsent( configurationPredicate, c -> createConfigurationBuilder() );
 	}
 
 	/**
-	 * Apply the post processors to the registry.  Post processors are applied one after the other to the entire
-	 * registry (instead of one after the other per entity configuration).  First the global post processors
-	 * are applied, followed by the individual
-	 * {@link com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder} post processors.
-	 * <p/>
-	 * If a PostProcessor returns a different instance than the one passed in as parameter, the new instance
-	 * will replace the new one in the registry even if it would defer in entity type.  If the post processor
-	 * returns null, the entity configuration will be removed.
+	 * Apply the builder configuration to the EntityRegistry. This will first dispatch to the registered builders
+	 * for applying the configuration, and only afterwards iterated over the same builders for executing the
+	 * post-processors.
 	 *
-	 * @param entityRegistry EntityRegistry to which the post processors should be applied.
+	 * @param entityRegistry to modify
 	 */
-	public synchronized void postProcess( MutableEntityRegistry entityRegistry ) {
-		for ( Consumer<MutableEntityConfiguration<?>> postProcessor : postProcessors() ) {
-			for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
-				MutableEntityConfiguration mutableEntityConfiguration
-						= entityRegistry.getMutableEntityConfiguration( entityConfiguration.getEntityType() );
+	@SuppressWarnings("unchecked")
+	public void apply( MutableEntityRegistry entityRegistry ) {
+		Assert.notNull( entityRegistry );
 
-				postProcessor.accept( mutableEntityConfiguration );
-			}
+		List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders = new ArrayList<>();
+
+		// First create manual new entities
+		createNewEntityConfigurations( entityRegistry, appliedBuilders );
+
+		// Register new entities by type - this will create or update
+		applyTypeSpecificBuilders( entityRegistry, appliedBuilders );
+
+		// Register entities by name - this will create or update
+		applyNameSpecificBuilders( entityRegistry, appliedBuilders );
+
+		// Apply to all existing entities that match the predicate
+		applyPredicateBuilders( entityRegistry, appliedBuilders );
+
+		// Apply to all existing entities
+		if ( allBuilder != null ) {
+			entityRegistry.getEntities().forEach(
+					e -> {
+						MutableEntityConfiguration cfg = entityRegistry.getEntityConfiguration( e.getName() );
+						allBuilder.apply( cfg, false );
+						appliedBuilders.add( new ImmutablePair<>( allBuilder, cfg ) );
+					}
+			);
 		}
 
-		for ( EntityConfigurationBuilder builder : builders.values() ) {
-			builder.postProcess( entityRegistry );
+		// Run postprocessors
+		appliedBuilders.forEach( p -> p.getKey().postProcess( p.getValue() ) );
+	}
+
+	@SuppressWarnings("unchecked")
+	private void applyPredicateBuilders(
+			MutableEntityRegistry entityRegistry,
+			List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders
+	) {
+		entityRegistry.getEntities().forEach( e -> {
+			MutableEntityConfiguration config = entityRegistry.getEntityConfiguration( e.getName() );
+
+			predicateBuilders.forEach( ( predicate, builder ) -> {
+				if ( predicate.test( config ) ) {
+					builder.apply( config, false );
+					appliedBuilders.add( new ImmutablePair<>( builder, config ) );
+				}
+			} );
+		} );
+	}
+
+	private void applyNameSpecificBuilders(
+			MutableEntityRegistry entityRegistry,
+			List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders
+	) {
+		nameBuilders.forEach(
+				( name, builder ) ->
+						applyEntityConfigurationBuilder(
+								entityRegistry,
+								appliedBuilders,
+								entityRegistry.getEntityConfiguration( name ),
+								builder
+						)
+		);
+	}
+
+	private void applyTypeSpecificBuilders(
+			MutableEntityRegistry entityRegistry,
+			List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders ) {
+		typeBuilders.forEach(
+				( type, builder ) ->
+						applyEntityConfigurationBuilder(
+								entityRegistry,
+								appliedBuilders,
+								entityRegistry.getEntityConfiguration( type ),
+								builder
+						)
+		);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void applyEntityConfigurationBuilder( MutableEntityRegistry entityRegistry,
+	                                              List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders,
+	                                              MutableEntityConfiguration existing,
+	                                              EntityConfigurationBuilder<?> configurationBuilder ) {
+		MutableEntityConfiguration config = existing;
+
+		if ( config == null ) {
+			config = configurationBuilder.build( false );
+			entityRegistry.register( config );
 		}
+		else {
+			configurationBuilder.apply( config, false );
+		}
+
+		appliedBuilders.add( new ImmutablePair<>( configurationBuilder, config ) );
+	}
+
+	private void createNewEntityConfigurations(
+			MutableEntityRegistry entityRegistry,
+			List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders
+	) {
+		newConfigurationBuilders.forEach(
+				c -> {
+					MutableEntityConfiguration<?> config = c.build( false );
+					entityRegistry.register( config );
+
+					appliedBuilders.add( new ImmutablePair<>( c, config ) );
+				}
+		);
+	}
+
+	@SuppressWarnings("unchecked")
+	private EntityConfigurationBuilder<Object> createConfigurationBuilder() {
+		return beanFactory.getBean( EntityConfigurationBuilder.class );
 	}
 }

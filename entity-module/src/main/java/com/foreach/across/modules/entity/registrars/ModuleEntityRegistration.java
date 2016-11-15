@@ -91,7 +91,7 @@ public class ModuleEntityRegistration
 
 		// Configure the builders
 		for ( EntityConfigurer configurer : beanRegistry.getBeansOfType( EntityConfigurer.class, true ) ) {
-			EntitiesConfigurationBuilder builder = new EntitiesConfigurationBuilder();
+			EntitiesConfigurationBuilder builder = new EntitiesConfigurationBuilder( beanFactory );
 			configurer.configure( builder );
 
 			builders.add( builder );
@@ -99,13 +99,13 @@ public class ModuleEntityRegistration
 
 		// Apply the builders to the registry
 		for ( EntitiesConfigurationBuilder builder : builders ) {
-			builder.apply( entityRegistry, beanFactory );
+			builder.apply( entityRegistry );
 		}
 
 		// Run the builder post processors
-		for ( EntitiesConfigurationBuilder builder : builders ) {
+		/*for ( EntitiesConfigurationBuilder builder : builders ) {
 			builder.postProcess( entityRegistry );
-		}
+		}*/
 	}
 
 	private void applyModule( AcrossModuleInfo moduleInfo ) {

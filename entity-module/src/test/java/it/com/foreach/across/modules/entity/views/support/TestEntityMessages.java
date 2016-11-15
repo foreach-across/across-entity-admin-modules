@@ -19,7 +19,6 @@ package it.com.foreach.across.modules.entity.views.support;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
 import it.com.foreach.across.modules.entity.registrars.repository.repository.TestRepositoryEntityRegistrar;
@@ -33,6 +32,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import testmodules.springdata.business.Client;
 
 import java.util.Locale;
 

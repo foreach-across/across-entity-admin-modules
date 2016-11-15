@@ -26,10 +26,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
-import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.entity.testmodules.springdata.business.ClientGroup;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
@@ -40,6 +36,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import testmodules.springdata.SpringDataJpaModule;
+import testmodules.springdata.business.Client;
+import testmodules.springdata.business.ClientGroup;
+import testmodules.springdata.business.Company;
 
 import static org.junit.Assert.*;
 
