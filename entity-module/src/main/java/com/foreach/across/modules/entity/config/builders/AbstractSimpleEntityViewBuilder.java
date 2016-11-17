@@ -38,6 +38,7 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public abstract class AbstractSimpleEntityViewBuilder<T extends ConfigurablePropertiesEntityViewFactorySupport, SELF extends AbstractSimpleEntityViewBuilder>
 		extends AbstractEntityViewBuilder<T, SELF>
 {

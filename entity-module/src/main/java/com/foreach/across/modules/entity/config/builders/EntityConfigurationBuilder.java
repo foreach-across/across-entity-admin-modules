@@ -16,17 +16,15 @@
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
-import com.foreach.across.modules.entity.config.builders.configuration.FormViewBuilder;
-import com.foreach.across.modules.entity.config.builders.configuration.ListViewBuilder;
-import com.foreach.across.modules.entity.config.builders.configuration.ViewBuilder;
 import com.foreach.across.modules.entity.registry.*;
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityListView;
+import com.foreach.across.modules.entity.views.EntityListViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewFactoryProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -35,8 +33,6 @@ import org.springframework.util.Assert;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -44,13 +40,12 @@ import java.util.function.Consumer;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBuilder<EntityConfigurationBuilder, MutableEntityConfiguration<T>>
+@SuppressWarnings("unchecked")
+public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAndViewsBuilder
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityConfigurationBuilder.class );
 
-	private final BeanFactory beanFactory;
-
-	private final Map<String, EntityAssociationBuilder> associations = new HashMap<>();
+	private final AutowireCapableBeanFactory beanFactory;
 
 	private String name;
 	private String displayName;
@@ -64,11 +59,15 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 	private final Collection<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayDeque<>();
 	private final Collection<Consumer<EntityModelBuilder<T>>> modelConsumers = new ArrayDeque<>();
 	private final Collection<Consumer<MutableEntityConfiguration<T>>> postProcessors = new ArrayDeque<>();
+	private final Collection<Consumer<EntityAssociationBuilder>> associationConsumers = new ArrayDeque<>();
 
 	private String labelProperty;
 
+	private transient MutableEntityConfiguration configurationBeingBuilt;
+
 	@Autowired
-	public EntityConfigurationBuilder( BeanFactory beanFactory ) {
+	public EntityConfigurationBuilder( AutowireCapableBeanFactory beanFactory ) {
+		super( beanFactory );
 		this.beanFactory = beanFactory;
 	}
 
@@ -215,6 +214,17 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 		return this;
 	}
 
+	/**
+	 * Configure an association builder.
+	 *
+	 * @param consumer to configure the association builder
+	 * @return current builder
+	 */
+	public EntityConfigurationBuilder<T> association( Consumer<EntityAssociationBuilder> consumer ) {
+		associationConsumers.add( consumer );
+		return this;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public EntityConfigurationBuilder<T> attribute( String name, Object value ) {
@@ -228,44 +238,46 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 	}
 
 	@Override
-	public ViewBuilder view( String name ) {
-		return view( name, ViewBuilder.class );
+	public EntityConfigurationBuilder<T> listView( Consumer<EntityListViewFactoryBuilder> consumer ) {
+		return (EntityConfigurationBuilder<T>) super.listView( consumer );
 	}
 
 	@Override
-	public ListViewBuilder listView() {
-		return listView( EntityListView.VIEW_NAME );
+	public EntityConfigurationBuilder<T> listView( String viewName,
+	                                               Consumer<EntityListViewFactoryBuilder> consumer ) {
+		return (EntityConfigurationBuilder<T>) super.listView( viewName, consumer );
 	}
 
 	@Override
-	public ListViewBuilder listView( String name ) {
-		return view( name, ListViewBuilder.class );
+	public EntityConfigurationBuilder<T> createOrUpdateFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityConfigurationBuilder<T>) super.createOrUpdateFormView( consumer );
 	}
 
 	@Override
-	public FormViewBuilder createFormView() {
-		return formView( EntityFormView.CREATE_VIEW_NAME );
+	public EntityConfigurationBuilder<T> createFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityConfigurationBuilder<T>) super.createFormView( consumer );
 	}
 
 	@Override
-	public FormViewBuilder updateFormView() {
-		return formView( EntityFormView.UPDATE_VIEW_NAME );
+	public EntityConfigurationBuilder<T> updateFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityConfigurationBuilder<T>) super.updateFormView( consumer );
 	}
 
 	@Override
-	public FormViewBuilder formView( String name ) {
-		return view( name, FormViewBuilder.class );
+	public EntityConfigurationBuilder<T> deleteFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityConfigurationBuilder<T>) super.deleteFormView( consumer );
 	}
 
-	public EntityAssociationBuilder association( String name ) {
-		EntityAssociationBuilder builder = associations.get( name );
+	@Override
+	public EntityConfigurationBuilder<T> formView( String viewName,
+	                                               Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityConfigurationBuilder<T>) super.formView( viewName, consumer );
+	}
 
-		if ( builder == null ) {
-			builder = new EntityAssociationBuilder( name );
-			associations.put( name, builder );
-		}
-
-		return builder;
+	@Override
+	public EntityConfigurationBuilder<T> view( String viewName,
+	                                           Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityConfigurationBuilder<T>) super.view( viewName, consumer );
 	}
 
 	/**
@@ -302,67 +314,68 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 		apply( configuration, true );
 	}
 
-	void apply( MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
+	synchronized void apply( MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
 		Assert.notNull( configuration );
 
-		if ( displayName != null ) {
-			configuration.setDisplayName( displayName );
+		configurationBeingBuilt = configuration;
+
+		try {
+			if ( displayName != null ) {
+				configuration.setDisplayName( displayName );
+			}
+
+			// Configure the entity model
+			buildEntityModel( configuration );
+
+			// Build the properties
+			EntityPropertyRegistryBuilder registryBuilder = new EntityPropertyRegistryBuilder();
+			if ( labelProperty != null ) {
+				registryBuilder.label( labelProperty );
+			}
+			registryConsumers.forEach( c -> c.accept( registryBuilder ) );
+			registryBuilder.apply( configuration.getPropertyRegistry() );
+
+			if ( hidden != null ) {
+				configuration.setHidden( hidden );
+			}
+
+			if ( allowableActionsBuilder != null ) {
+				configuration.setAllowableActionsBuilder( allowableActionsBuilder );
+			}
+
+			applyAttributes( configuration );
+			applyViews( configuration );
+			applyAssociations( configuration );
+
+			if ( applyPostProcessors ) {
+				postProcess( configuration );
+			}
 		}
-
-		// Configure the entity model
-		buildEntityModel( configuration );
-
-		// Build the properties
-		EntityPropertyRegistryBuilder registryBuilder = new EntityPropertyRegistryBuilder();
-		if ( labelProperty != null ) {
-			registryBuilder.label( labelProperty );
+		finally {
+			configurationBeingBuilt = null;
 		}
-		registryConsumers.forEach( c -> c.accept( registryBuilder ) );
-		registryBuilder.apply( configuration.getPropertyRegistry() );
+	}
 
-		if ( hidden != null ) {
-			configuration.setHidden( hidden );
-		}
-
-		if ( allowableActionsBuilder != null ) {
-			configuration.setAllowableActionsBuilder( allowableActionsBuilder );
-		}
-
-		applyAttributes( configuration );
-
-		if ( applyPostProcessors ) {
-			postProcess( configuration );
-		}
+	private void applyAssociations( MutableEntityConfiguration<T> configuration ) {
+		associationConsumers.forEach( consumer -> {
+			EntityAssociationBuilder associationBuilder = beanFactory.getBean( EntityAssociationBuilder.class );
+			consumer.accept( associationBuilder );
+			associationBuilder.apply( configuration );
+		} );
 	}
 
 	void postProcess( MutableEntityConfiguration<T> configuration ) {
 		postProcessors.forEach( c -> c.accept( configuration ) );
 	}
 
-
-	/*
-	void apply( MutableEntityRegistry entityRegistry, AutowireCapableBeanFactory beanFactory ) {
-		for ( Class<T> entityType : entityTypesToHandle( entityRegistry ) ) {
-			MutableEntityConfiguration<T> configuration
-					= entityRegistry.getMutableEntityConfiguration( entityType );
-
-			if ( configuration == null ) {
-				configuration = new EntityConfigurationImpl<>( entityType );
-				configuration.setPropertyRegistry(
-						beanFactory.getBean( EntityPropertyRegistryProvider.class ).get( entityType )
-				);
-				entityRegistry.register( configuration );
-			}
-
-
-			applyViewBuilders( configuration, beanFactory );
-
-			for ( EntityAssociationBuilder associationBuilder : associations.values() ) {
-				associationBuilder.apply( configuration, entityRegistry, beanFactory );
-			}
+	@Override
+	protected <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType ) {
+		if ( EntityListViewFactoryBuilder.class.isAssignableFrom( builderType ) ) {
+			return (U) new ConfigurationListViewFactoryBuilder( beanFactory );
 		}
+
+		return (U) new ConfigurationViewFactoryBuilder( beanFactory );
 	}
-	*/
 
 	private void buildEntityModel( MutableEntityConfiguration<T> configuration ) {
 		if ( entityModel != null ) {
@@ -384,41 +397,43 @@ public class EntityConfigurationBuilder<T> extends AbstractAttributesAndViewsBui
 			else if ( !modelConsumers.isEmpty() ) {
 				LOG.error(
 						"Unable to apply EntityModelBuilder - one or more consumers were registered, but a custom " +
-								"EntityModel implementation not extending DefaultEntityModel was configured." +
+								"EntityModel implementation not extending DefaultEntityModel was configured. " +
 								"The custom implementation takes precedence and the builder will be ignored!" );
 			}
 		}
 	}
 
-	/*
-	void postProcess( MutableEntityRegistry entityRegistry ) {
-		for ( Class<T> entityType : entityTypesToHandle( entityRegistry ) ) {
-			MutableEntityConfiguration configuration
-					= entityRegistry.getMutableEntityConfiguration( entityType );
+	/**
+	 * Inner class that delegates creation of a view factory to the {@link EntityViewFactoryProvider} using
+	 * the current entity being configured.
+	 */
+	private class ConfigurationViewFactoryBuilder extends EntityViewFactoryBuilder<EntityViewFactory>
+	{
+		ConfigurationViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
+			super( beanFactory );
+		}
 
-			for ( Consumer<MutableEntityConfiguration<T>> postProcessor : postProcessors() ) {
-				postProcessor.accept( configuration );
-			}
-
-			for ( EntityAssociationBuilder associationBuilder : associations.values() ) {
-				associationBuilder.postProcess( configuration );
-			}
+		@Override
+		protected EntityViewFactory createNewViewFactory( Class<? extends EntityViewFactory> viewFactoryType ) {
+			EntityViewFactoryProvider viewFactoryProvider = beanFactory.getBean( EntityViewFactoryProvider.class );
+			return viewFactoryProvider.create( configurationBeingBuilt, viewFactoryType );
 		}
 	}
 
-	private Collection<Class<T>> entityTypesToHandle( EntityRegistry entityRegistry ) {
-		if ( assignableTo ) {
-			List<Class<T>> entityTypes = new ArrayList<>();
-			for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
-				if ( entityType.isAssignableFrom( entityConfiguration.getEntityType() ) ) {
-					entityTypes.add( entityConfiguration.getEntityType() );
-				}
-			}
-			return entityTypes;
+	/**
+	 * Inner class that delegates creation of a view factory to the {@link EntityViewFactoryProvider} using
+	 * the current entity being configured.
+	 */
+	private class ConfigurationListViewFactoryBuilder extends EntityListViewFactoryBuilder
+	{
+		ConfigurationListViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
+			super( beanFactory );
 		}
 
-		return Collections.singleton( entityType );
+		@Override
+		protected EntityListViewFactory createNewViewFactory( Class<? extends EntityListViewFactory> viewFactoryType ) {
+			EntityViewFactoryProvider viewFactoryProvider = beanFactory.getBean( EntityViewFactoryProvider.class );
+			return viewFactoryProvider.create( configurationBeingBuilt, viewFactoryType );
+		}
 	}
-
-*/
 }

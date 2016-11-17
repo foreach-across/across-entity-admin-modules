@@ -15,22 +15,22 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.config.builders.association.FormViewBuilder;
-import com.foreach.across.modules.entity.config.builders.association.ListViewBuilder;
-import com.foreach.across.modules.entity.config.builders.association.ViewBuilder;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityListView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.function.Consumer;
 
-public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<EntityAssociationBuilder, MutableEntityAssociation>
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class EntityAssociationBuilder extends AbstractWritableAttributesAndViewsBuilder
 {
-	private final String name;
-
+	private String name;
 	private boolean hiddenSpecified;
 	private Boolean hidden;
 	private EntityAssociation.ParentDeleteMode parentDeleteMode;
@@ -40,8 +40,24 @@ public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<
 
 	private boolean sourcePropertyRemoved, targetPropertyRemoved;
 
-	public EntityAssociationBuilder( String name ) {
+	private final AutowireCapableBeanFactory beanFactory;
+
+	@Autowired
+	public EntityAssociationBuilder( AutowireCapableBeanFactory beanFactory ) {
+		super( beanFactory );
+		this.beanFactory = beanFactory;
+	}
+
+	/**
+	 * Specify the name of the association that this builder is responsible for.
+	 *
+	 * @param name of the association
+	 * @return current builder
+	 */
+	public EntityAssociationBuilder name( String name ) {
+		Assert.notNull( name );
 		this.name = name;
+		return this;
 	}
 
 	/**
@@ -168,33 +184,50 @@ public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<
 	}
 
 	@Override
-	public ViewBuilder view( String name ) {
-		return view( name, ViewBuilder.class );
+	public EntityAssociationBuilder listView( Consumer<EntityListViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.listView( consumer );
 	}
 
 	@Override
-	public ListViewBuilder listView() {
-		return listView( EntityListView.VIEW_NAME );
+	public EntityAssociationBuilder listView( String viewName,
+	                                          Consumer<EntityListViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.listView( viewName, consumer );
 	}
 
 	@Override
-	public ListViewBuilder listView( String name ) {
-		return view( name, ListViewBuilder.class );
+	public EntityAssociationBuilder createOrUpdateFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.createOrUpdateFormView( consumer );
 	}
 
 	@Override
-	public FormViewBuilder createFormView() {
-		return formView( EntityFormView.CREATE_VIEW_NAME );
+	public EntityAssociationBuilder createFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.createFormView( consumer );
 	}
 
 	@Override
-	public FormViewBuilder updateFormView() {
-		return formView( EntityFormView.UPDATE_VIEW_NAME );
+	public EntityAssociationBuilder updateFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.updateFormView( consumer );
 	}
 
 	@Override
-	public FormViewBuilder formView( String name ) {
-		return view( name, FormViewBuilder.class );
+	public EntityAssociationBuilder deleteFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.deleteFormView( consumer );
+	}
+
+	@Override
+	public EntityAssociationBuilder formView( String viewName,
+	                                          Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.formView( viewName, consumer );
+	}
+
+	@Override
+	public EntityAssociationBuilder view( String viewName,
+	                                      Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.view( viewName, consumer );
+	}
+
+	void apply( MutableEntityConfiguration configuration ) {
+
 	}
 
 	void apply( MutableEntityConfiguration configuration,
@@ -258,14 +291,17 @@ public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<
 		}
 
 		applyAttributes( association );
-		applyViewBuilders( association, beanFactory );
+		applyViews( association );
+		//applyViewBuilders( association, beanFactory );
 	}
 
-	void postProcess( MutableEntityConfiguration configuration ) {
-		MutableEntityAssociation association = configuration.association( name );
-
-		for ( Consumer<MutableEntityAssociation> postProcessor : postProcessors() ) {
-			postProcessor.accept( association );
+	@Override
+	@SuppressWarnings("unchecked")
+	protected <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType ) {
+		if ( EntityListViewFactoryBuilder.class.isAssignableFrom( builderType ) ) {
+			return (U) new EntityListViewFactoryBuilder( beanFactory );
 		}
+
+		return (U) new EntityViewFactoryBuilder<>( beanFactory );
 	}
 }

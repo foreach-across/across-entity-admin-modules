@@ -19,7 +19,7 @@ package com.foreach.across.modules.entity.registry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 
 /**
- * Factory for creating a new {@link MutableEntityConfiguration}.
+ * Provider for creating a new {@link MutableEntityConfiguration} for a given type.
  * Default settings will be applied to the configuration.
  *
  * @author Arne Vandamme

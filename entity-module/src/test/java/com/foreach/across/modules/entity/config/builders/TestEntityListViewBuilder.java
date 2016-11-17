@@ -39,6 +39,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class TestEntityListViewBuilder
 {
 	private final static String VIEW = "listView";
@@ -85,7 +86,7 @@ public class TestEntityListViewBuilder
 
 		builder = entities.withType( Client.class );
 
-		view = builder.listView( VIEW );
+//		view = builder.listView( VIEW );
 
 		viewFactory = null;
 		doAnswer(

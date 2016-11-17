@@ -16,21 +16,8 @@
 package com.foreach.across.modules.entity.registrars.repository;
 
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.views.*;
-import com.foreach.across.modules.hibernate.business.Auditable;
-import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.Repository;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Attempts to create default views for an EntityConfiguration.
@@ -39,97 +26,44 @@ import java.util.LinkedList;
 public class RepositoryEntityViewsBuilder
 {
 	@Autowired
-	private BeanFactory beanFactory;
-
-	@Autowired
-	private EntityPropertyRegistryProvider propertyRegistryFactory;
+	private EntityViewFactoryProvider entityViewFactoryProvider;
 
 	public void buildViews( MutableEntityConfiguration entityConfiguration ) {
 		buildCreateView( entityConfiguration );
 		buildUpdateView( entityConfiguration );
 		buildDeleteView( entityConfiguration );
-
-		// todo: support regular repository to be used instead of specific CrudRepository interface (use repo information)
-		buildListView( entityConfiguration, (CrudRepository) entityConfiguration.getAttribute( Repository.class ) );
+		buildListView( entityConfiguration );
 	}
 
 	private void buildCreateView( MutableEntityConfiguration entityConfiguration ) {
-		EntityFormViewFactory viewFactory = beanFactory.getBean( EntityFormViewFactory.class );
+		EntityFormViewFactory viewFactory
+				= entityViewFactoryProvider.create( entityConfiguration, EntityFormViewFactory.class );
 		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.CREATE_VIEW_NAME, "entityViews" );
-
-		EntityPropertyRegistry registry
-				= propertyRegistryFactory.createForParentRegistry( entityConfiguration.getPropertyRegistry() );
-
-		viewFactory.setPropertyRegistry( registry );
-		viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
 
 		entityConfiguration.registerView( EntityFormView.CREATE_VIEW_NAME, viewFactory );
 	}
 
 	private void buildUpdateView( MutableEntityConfiguration entityConfiguration ) {
-		EntityFormViewFactory viewFactory = beanFactory.getBean( EntityFormViewFactory.class );
+		EntityFormViewFactory viewFactory
+				= entityViewFactoryProvider.create( entityConfiguration, EntityFormViewFactory.class );
 		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.UPDATE_VIEW_NAME, "entityViews" );
-
-		EntityPropertyRegistry registry
-				= propertyRegistryFactory.createForParentRegistry( entityConfiguration.getPropertyRegistry() );
-
-		viewFactory.setPropertyRegistry( registry );
-		viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
 
 		entityConfiguration.registerView( EntityFormView.UPDATE_VIEW_NAME, viewFactory );
 	}
 
 	private void buildDeleteView( MutableEntityConfiguration entityConfiguration ) {
-		EntityDeleteViewFactory viewFactory = beanFactory.getBean( EntityDeleteViewFactory.class );
+		EntityDeleteViewFactory viewFactory
+				= entityViewFactoryProvider.create( entityConfiguration, EntityDeleteViewFactory.class );
 		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.DELETE_VIEW_NAME, "entityViews" );
-		viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
 
 		entityConfiguration.registerView( EntityFormView.DELETE_VIEW_NAME, viewFactory );
 	}
 
-	private void buildListView( MutableEntityConfiguration entityConfiguration, CrudRepository repository ) {
-		EntityListViewFactory viewFactory = beanFactory.getBean( EntityListViewFactory.class );
-		viewFactory.setMessagePrefixes( "entityViews.listView", "entityViews" );
-
-		EntityPropertyRegistry registry
-				= propertyRegistryFactory.createForParentRegistry( entityConfiguration.getPropertyRegistry() );
-
-		viewFactory.setPropertyRegistry( registry );
-		viewFactory.setTemplate( EntityListView.VIEW_TEMPLATE );
-		viewFactory.setPageFetcher( new RepositoryEntityListViewPageFetcher( repository ) );
-
-		LinkedList<String> defaultProperties = new LinkedList<>();
-		defaultProperties.add( EntityPropertyRegistry.LABEL );
-
-		if ( SecurityPrincipal.class.isAssignableFrom( entityConfiguration.getEntityType() ) ) {
-			defaultProperties.addFirst( "principalName" );
-		}
-
-		if ( Auditable.class.isAssignableFrom( entityConfiguration.getEntityType() ) ) {
-			defaultProperties.add( "lastModified" );
-		}
-
-		viewFactory.setPropertyFilter( EntityPropertyFilters.include( defaultProperties ) );
-		viewFactory.setPropertyComparator( EntityPropertyComparators.ordered( defaultProperties ) );
-		viewFactory.setDefaultSort( determineDefaultSort( defaultProperties ) );
+	private void buildListView( MutableEntityConfiguration entityConfiguration ) {
+		EntityListViewFactory viewFactory
+				= entityViewFactoryProvider.create( entityConfiguration, EntityListViewFactory.class );
+		viewFactory.setMessagePrefixes( "entityViews." + EntityListView.VIEW_NAME, "entityViews" );
 
 		entityConfiguration.registerView( EntityListView.VIEW_NAME, viewFactory );
-	}
-
-	private Sort determineDefaultSort( Collection<String> defaultProperties ) {
-		String propertyName = null;
-
-		if ( defaultProperties.contains( "name" ) ) {
-			propertyName = "name";
-		}
-		else if ( defaultProperties.contains( "title" ) ) {
-			propertyName = "title";
-		}
-
-		if ( propertyName != null ) {
-			return new Sort( propertyName );
-		}
-
-		return null;
 	}
 }

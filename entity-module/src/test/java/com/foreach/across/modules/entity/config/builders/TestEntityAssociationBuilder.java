@@ -53,9 +53,8 @@ public class TestEntityAssociationBuilder
 		entities.withType( OtherEntity.class );
 
 		entities.withType( SomeEntity.class )
-		        .association( "other" )
-		        .targetEntityType( OtherEntity.class )
-		        .hide();
+		        .association( avb -> avb.targetEntityType( OtherEntity.class ).hide()/*.name("other")*/ );
+		;
 
 		/*entities.apply( entityRegistry, beanFactory );
 

@@ -31,6 +31,7 @@ import java.util.Collection;
  * @author Arne Vandamme
  */
 @SuppressWarnings("unchecked")
+@Deprecated
 public abstract class AbstractEntityListViewBuilder<SELF extends AbstractSimpleEntityViewBuilder>
 		extends AbstractSimpleEntityViewBuilder<EntityListViewFactory, SELF>
 {

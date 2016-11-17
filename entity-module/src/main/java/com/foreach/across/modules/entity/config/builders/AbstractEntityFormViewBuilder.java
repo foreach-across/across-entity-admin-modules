@@ -21,6 +21,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public abstract class AbstractEntityFormViewBuilder<SELF extends AbstractEntityFormViewBuilder>
 		extends AbstractSimpleEntityViewBuilder<EntityFormViewFactory, SELF>
 {

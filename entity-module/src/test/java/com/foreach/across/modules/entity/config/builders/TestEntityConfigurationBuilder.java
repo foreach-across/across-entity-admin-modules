@@ -20,13 +20,14 @@ import com.foreach.across.modules.entity.registry.EntityConfigurationProvider;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
+import com.foreach.across.modules.entity.views.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -43,7 +44,7 @@ import static org.mockito.Mockito.*;
 public class TestEntityConfigurationBuilder
 {
 	@Mock
-	private BeanFactory beanFactory;
+	private AutowireCapableBeanFactory beanFactory;
 
 	@Mock
 	private EntityConfigurationProvider configurationProvider;
@@ -255,70 +256,66 @@ public class TestEntityConfigurationBuilder
 		verify( config ).setEntityModel( notNull( EntityModel.class ) );
 	}
 
-
-	/*
 	@Test
-	public void hidden() {
-		builder.hidden( true );
-		builder.apply( entityRegistry, beanFactory );
+	public void existingListView() {
+		builder.listView( lvb -> lvb.template( "hello" ) );
 
-		verify( client ).setHidden( true );
-		verify( company, never() ).setHidden( true );
+		when( config.hasView( EntityListView.VIEW_NAME ) ).thenReturn( true );
+
+		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
+		when( config.getViewFactory( EntityListView.VIEW_NAME ) ).thenReturn( listViewFactory );
+
+		builder.apply( config, false );
+		verify( listViewFactory ).setTemplate( "hello" );
 	}
 
 	@Test
-	public void show() {
-		builder.show();
-		builder.apply( entityRegistry, beanFactory );
+	public void newViewsOfRightType() {
+		builder.view( "customView", vb -> vb.template( "custom-template" ) )
+		       .formView( "formView", fvb -> fvb.template( "form-template" ) )
+		       .listView( "listView", lvb -> lvb.template( "list-template" ) );
 
-		verify( client ).setHidden( false );
-		verify( company, never() ).setHidden( false );
+		EntityViewFactoryProvider viewFactoryProvider = mock( EntityViewFactoryProvider.class );
+		when( beanFactory.getBean( EntityViewFactoryProvider.class ) ).thenReturn( viewFactoryProvider );
+
+		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
+		when( viewFactoryProvider.create( config, EntityListViewFactory.class ) ).thenReturn( listViewFactory );
+
+		EntityFormViewFactory formViewFactory = mock( EntityFormViewFactory.class );
+		when( viewFactoryProvider.create( config, EntityFormViewFactory.class ) ).thenReturn( formViewFactory );
+
+		EntityViewViewFactory customViewFactory = mock( EntityViewViewFactory.class );
+		when( viewFactoryProvider.create( config, EntityViewViewFactory.class ) ).thenReturn( customViewFactory );
+
+		builder.apply( config, false );
+
+		InOrder inOrder = inOrder( config, listViewFactory, formViewFactory, customViewFactory );
+		inOrder.verify( listViewFactory ).setTemplate( "list-template" );
+		inOrder.verify( config ).registerView( "listView", listViewFactory );
+		inOrder.verify( formViewFactory ).setTemplate( "form-template" );
+		inOrder.verify( config ).registerView( "formView", formViewFactory );
+		inOrder.verify( customViewFactory ).setTemplate( "custom-template" );
+		inOrder.verify( config ).registerView( "customView", customViewFactory );
 	}
 
 	@Test
-	public void assignableToBuilder() {
-		EntityConfigurationBuilder<Persistable> persistableBuilder
-				= entities.assignableTo( Persistable.class )
-				          .hide();
+	public void associationBuilders() {
+		EntityAssociationBuilder one = mock( EntityAssociationBuilder.class );
+		EntityAssociationBuilder two = mock( EntityAssociationBuilder.class );
 
-		persistableBuilder.apply( entityRegistry, beanFactory );
+		when( beanFactory.getBean( EntityAssociationBuilder.class ) )
+				.thenReturn( one )
+				.thenReturn( two );
 
-		verify( client ).setHidden( true );
-		verify( company ).setHidden( true );
+		builder.association( avb -> avb.hidden( true ) )
+		       .association( avb -> avb.hidden( false ) );
+
+		builder.apply( config, false );
+
+		InOrder inOrder = inOrder( one, two );
+		inOrder.verify( one ).hidden( true );
+		inOrder.verify( one ).apply( config );
+		inOrder.verify( two ).hidden( false );
+		inOrder.verify( two ).apply( config );
 	}
-
-	@Test
-	public void hide() {
-		builder.hide();
-		builder.apply( entityRegistry, beanFactory );
-
-		verify( client ).setHidden( true );
-	}
-
-	@Test
-	public void viewBuildersAreSpecificType() {
-		AbstractEntityViewBuilder one = builder.view( "someView" );
-		assertNotNull( one );
-
-		AbstractEntityViewBuilder listOne = builder.listView();
-		assertNotNull( listOne );
-
-		AbstractEntityViewBuilder listTwo = builder.listView( EntityListView.VIEW_NAME );
-		assertSame( listOne, listTwo );
-
-		listTwo = builder.listView( "someListView" );
-		assertNotNull( listTwo );
-		assertNotSame( listOne, listTwo );
-
-		one = builder.createFormView();
-		assertNotNull( one );
-		assertSame( one, builder.formView( EntityFormView.CREATE_VIEW_NAME ) );
-
-		one = builder.updateFormView();
-		assertNotNull( one );
-		assertSame( one, builder.formView( EntityFormView.UPDATE_VIEW_NAME ) );
-	}
-
-
-	*/
 }

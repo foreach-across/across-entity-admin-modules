@@ -17,33 +17,48 @@
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
+import com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.SimpleEntityViewFactorySupport;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * Builder for creating a single {@link com.foreach.across.modules.entity.views.EntityViewFactory}.
+ * Supports {@link SimpleEntityViewFactorySupport} and
+ * {@link com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport}.  Which properties
+ * will apply will depend on the actuals {@link #factoryType(Class)} configured.
  *
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 {
 	private final AutowireCapableBeanFactory beanFactory;
+	private final Collection<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayDeque<>();
+	private final Collection<EntityViewProcessor> processors = new ArrayList<>();
 
 	private Class<? extends T> factoryType;
-
-	protected String[] viewPropertySelectorRule;
-	protected EntityPropertyComparators.Ordered viewPropertyOrder;
+	private T factory;
+	private String[] propertiesToShow;
 	private String template;
-	private AbstractSimpleEntityViewBuilder.EntityViewPropertyRegistryBuilder propertyRegistryBuilder;
-	private Collection<EntityViewProcessor> processors = new ArrayList<>();
 
+	@Autowired
 	public EntityViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
 		this.beanFactory = beanFactory;
 	}
@@ -55,14 +70,27 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	 * @param factoryType to create
 	 * @return current builder
 	 */
-	public EntityViewFactoryBuilder<T> factory( Class<? extends T> factoryType ) {
+	public EntityViewFactoryBuilder<T> factoryType( Class<? extends T> factoryType ) {
 		this.factoryType = factoryType;
 		return this;
 	}
 
 	/**
+	 * Configure the specific of {@link EntityViewFactory} that should be used for this view.
+	 * This will take precedence over a registered {@link #factoryType(Class)}.
+	 *
+	 * @param factory to use
+	 * @return current builder
+	 */
+	public EntityViewFactoryBuilder<T> factory( T factory ) {
+		Assert.notNull( factory );
+		this.factory = factory;
+		return this;
+	}
+
+	/**
 	 * Configures the template this {@link EntityViewFactory} should use.
-	 * This requires the factory type to be a {@link SimpleEntityViewFactorySupport}.
+	 * This requires the factory type to be a at least of type {@link SimpleEntityViewFactorySupport}.
 	 *
 	 * @param template the view should render
 	 * @return current builder
@@ -72,10 +100,26 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 		return this;
 	}
 
-	/*
+	/**
+	 * Customize the property registry attached to this view.
+	 *
+	 * @param registryConsumer to customize the property registry builder
+	 * @return current builder
+	 */
+	public EntityViewFactoryBuilder<T> properties( Consumer<EntityPropertyRegistryBuilder> registryConsumer ) {
+		Assert.notNull( registryConsumer );
+		registryConsumers.add( registryConsumer );
+		return this;
+	}
 
+	/**
+	 * List of properties to be shown (in order).
+	 *
+	 * @param propertyNames property names in order
+	 * @return current builder
 	 */
 	public EntityViewFactoryBuilder<T> showProperties( String... propertyNames ) {
+		this.propertiesToShow = propertyNames;
 		return this;
 	}
 
@@ -94,18 +138,22 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	}
 
 	/**
-	 * Build a new factory instance of the type configured using {@link #factory(Class)}.
-	 * If no {@link #factory(Class)} has been configured, an exception will be thrown.
+	 * Build a new factory instance of the type configured using {@link #factoryType(Class)}.
+	 * If no {@link #factoryType(Class)} has been configured, an exception will be thrown.
 	 *
 	 * @return factory instance
 	 */
 	public T build() {
 		Assert.notNull( factoryType );
 
-		T viewFactory = beanFactory.createBean( factoryType );
+		T viewFactory = factory != null ? factory : createNewViewFactory( factoryType );
 		apply( viewFactory );
 
 		return viewFactory;
+	}
+
+	protected T createNewViewFactory( Class<? extends T> viewFactoryType ) {
+		return beanFactory.createBean( viewFactoryType );
 	}
 
 	/**
@@ -113,94 +161,47 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	 *
 	 * @param viewFactory to apply the builder settings to
 	 */
-	public void apply( T viewFactory ) {
+	void apply( T viewFactory ) {
 		if ( viewFactory instanceof SimpleEntityViewFactorySupport ) {
 			applySimpleAttributes( (SimpleEntityViewFactorySupport) viewFactory );
 		}
+		if ( viewFactory instanceof ConfigurablePropertiesEntityViewFactorySupport ) {
+			applyPropertyConfiguration( (ConfigurablePropertiesEntityViewFactorySupport) viewFactory );
+		}
 	}
 
+	private void applyPropertyConfiguration( ConfigurablePropertiesEntityViewFactorySupport viewFactory ) {
+		if ( propertiesToShow != null ) {
+			EntityPropertySelector selector = viewFactory.getPropertySelector();
+			if ( selector != null ) {
+				selector.configure( propertiesToShow );
+			}
+			viewFactory.setPropertyComparator( EntityPropertyComparators.ordered( propertiesToShow ) );
+		}
+
+		if ( !registryConsumers.isEmpty() ) {
+			EntityPropertyRegistry propertyRegistry = viewFactory.getPropertyRegistry();
+
+			if ( propertyRegistry instanceof MutableEntityPropertyRegistry ) {
+				EntityPropertyRegistryBuilder registryBuilder = new EntityPropertyRegistryBuilder();
+				registryConsumers.forEach( c -> c.accept( registryBuilder ) );
+				registryBuilder.apply( (MutableEntityPropertyRegistry) viewFactory.getPropertyRegistry() );
+			}
+			else {
+				throw new IllegalStateException(
+						"Attempting to modify properties but not a MutableEntityPropertyRegistry" );
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	private void applySimpleAttributes( SimpleEntityViewFactorySupport viewFactory ) {
 		if ( template != null ) {
 			viewFactory.setTemplate( template );
 		}
-	}
-
-	/*
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected T createFactoryInstance( AutowireCapableBeanFactory beanFactory ) {
-		return (T) beanFactory.getBean( EntityViewViewFactory.class );
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	protected void applyToViewFactory( AutowireCapableBeanFactory beanFactory, EntityViewRegistry viewRegistry,
-	                                   T factory ) {
-		if ( template != null ) {
-			factory.setTemplate( template );
-		}
 
 		if ( !processors.isEmpty() ) {
-			factory.setProcessors( merge( factory.getProcessors(), processors ) );
-		}
-
-		EntityPropertyRegistry registry = factory.getPropertyRegistry();
-
-		if ( registry == null ) {
-			EntityPropertyRegistryProvider registryFactory = beanFactory.getBean( EntityPropertyRegistryProvider.class );
-			if ( viewRegistry instanceof EntityConfiguration ) {
-				registry = registryFactory.createForParentRegistry(
-						( (EntityConfiguration) viewRegistry ).getPropertyRegistry()
-				);
-			}
-			else if ( viewRegistry instanceof EntityAssociation ) {
-				registry = registryFactory.createForParentRegistry(
-						( (EntityAssociation) viewRegistry ).getTargetEntityConfiguration().getPropertyRegistry()
-				);
-			}
-
-			factory.setPropertyRegistry( registry );
-		}
-
-		if ( propertyRegistryBuilder != null && registry instanceof MutableEntityPropertyRegistry ) {
-			propertyRegistryBuilder.apply( (MutableEntityPropertyRegistry) registry );
-		}
-
-		if ( viewPropertySelectorRule != null ) {
-			factory.getPropertySelector().configure( viewPropertySelectorRule );
-		}
-
-		if ( viewPropertyOrder != null ) {
-			factory.setPropertyComparator( viewPropertyOrder );
-		}
-
-	}
-
-	private <V> Collection<V> merge( Collection<V> original, Collection<V> additional ) {
-		List<V> total = new ArrayList<>( original.size() + additional.size() );
-		total.addAll( original );
-		total.addAll( additional );
-
-		return total;
-	}
-*/
-	/*
-	public abstract class EntityViewPropertyRegistryBuilder<MYSELF extends AbstractSimpleEntityViewBuilder.EntityViewPropertyRegistryBuilder>
-			extends AbstractEntityPropertyRegistryBuilder<MYSELF>
-	{
-		@SuppressWarnings("unchecked")
-		public MYSELF filter( String... propertyNames ) {
-			and().viewPropertySelectorRule = propertyNames;
-			and().viewPropertyOrder = EntityPropertyComparators.ordered( propertyNames );
-
-			return (MYSELF) this;
-		}
-
-		@Override
-		public SELF and() {
-			return viewBuilder;
+			viewFactory.setProcessors( processors );
 		}
 	}
-	*/
 }

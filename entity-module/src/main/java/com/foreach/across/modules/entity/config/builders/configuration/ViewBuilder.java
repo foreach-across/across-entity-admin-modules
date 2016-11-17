@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 
+@Deprecated
 public class ViewBuilder extends AbstractSimpleEntityViewBuilder<ConfigurablePropertiesEntityViewFactorySupport, ViewBuilder>
 {
 	@SuppressWarnings("unchecked")

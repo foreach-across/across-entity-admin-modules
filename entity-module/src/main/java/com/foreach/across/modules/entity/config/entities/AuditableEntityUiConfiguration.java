@@ -89,11 +89,8 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 				);
 
 		// Add aggregated properties to views
-		builder.listView()
-		       .properties( ".", "lastModified" );
-
-		builder.updateFormView()
-		       .properties( ".", "created", "lastModified" ).and();
+		builder.listView( lvb -> lvb.showProperties( ".", "lastModified" ) )
+		       .updateFormView( fvb -> fvb.showProperties( ".", "created", "lastModified" ) );
 
 		// Add default sort to list views if no default sort configured
 		builder.postProcessor( entityConfiguration -> {

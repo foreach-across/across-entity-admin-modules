@@ -18,18 +18,21 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.EntityListViewFactory;
+import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
+import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
+import static org.springframework.data.domain.Sort.Direction.ASC;
 
 /**
  * @author Arne Vandamme
@@ -37,16 +40,16 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
-public class TestEntityViewFactoryBuilder
+public class TestEntityListViewFactoryBuilder
 {
 	@Mock
 	private AutowireCapableBeanFactory beanFactory;
 
-	private EntityViewFactoryBuilder<EntityViewFactory> builder;
+	private EntityListViewFactoryBuilder builder;
 
 	@Before
 	public void before() {
-		builder = new EntityViewFactoryBuilder<>( beanFactory );
+		builder = new EntityListViewFactoryBuilder( beanFactory );
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -54,9 +57,10 @@ public class TestEntityViewFactoryBuilder
 		builder.build();
 	}
 
+	/*
 	@Test
 	public void defaultCreatesSingleEntityViewFactory() {
-		builder.factoryType( EntityViewFactory.class );
+		builder.factoryType( EntityListViewFactory.class );
 
 		EntityViewFactory factory = mock( EntityViewFactory.class );
 		when( beanFactory.createBean( EntityViewFactory.class ) ).thenReturn( factory );
@@ -69,7 +73,7 @@ public class TestEntityViewFactoryBuilder
 		EntityViewViewFactory f = mock( EntityViewViewFactory.class );
 		when( beanFactory.createBean( EntityViewViewFactory.class ) ).thenReturn( f );
 
-		builder.factoryType( EntityViewViewFactory.class )
+		builder.factoryType( EntityListViewFactory.class )
 		       .template( "templateName" );
 
 		EntityViewFactory built = builder.build();
@@ -78,31 +82,11 @@ public class TestEntityViewFactoryBuilder
 		verify( f ).setTemplate( "templateName" );
 	}
 
-	// todo: specific instance
+*/
 
 	@Test
-	public void applySimpleEntityViewFactory() {
-		SimpleEntityViewFactorySupport factory = mock( SimpleEntityViewFactorySupport.class );
-
-		EntityViewProcessor one = mock( EntityViewProcessor.class );
-		EntityViewProcessor two = mock( EntityViewProcessor.class );
-
-		builder.template( "template" )
-		       .showProperties( "one", "two" )
-		       .properties( props -> props.property( "name" ).displayName( "test" ) )
-		       .viewProcessor( one )
-		       .viewProcessor( two )
-		       .apply( factory );
-
-		verify( factory ).setTemplate( "template" );
-		verify( factory ).setProcessors( Arrays.asList( one, two ) );
-		verifyNoMoreInteractions( factory );
-	}
-
-	@Test
-	public void applyConfigurablePropertiesViewFactory() {
-		ConfigurablePropertiesEntityViewFactorySupport factory = mock(
-				ConfigurablePropertiesEntityViewFactorySupport.class );
+	public void applyListViewFactory() {
+		EntityListViewFactory factory = mock( EntityListViewFactory.class );
 		MutableEntityPropertyRegistry propertyRegistry = mock( MutableEntityPropertyRegistry.class );
 		when( factory.getPropertyRegistry() ).thenReturn( propertyRegistry );
 
@@ -114,11 +98,21 @@ public class TestEntityViewFactoryBuilder
 		       .properties( props -> props.property( "name" ).displayName( "test" ) )
 		       .viewProcessor( one )
 		       .viewProcessor( two )
+		       .defaultSort( "name" )
+		       .pageFetcher( mock( EntityListViewPageFetcher.class ) )
+		       .showResultNumber( false )
+		       .pageSize( 25 )
+		       .sortableOn( "two" )
 		       .apply( factory );
 
 		verify( factory ).setTemplate( "template" );
 		verify( factory ).setProcessors( Arrays.asList( one, two ) );
 		verify( factory ).setPropertyComparator( EntityPropertyComparators.ordered( "one", "two" ) );
 		verify( propertyRegistry ).register( any() );
+		verify( factory ).setDefaultSort( new Sort( ASC, "name" ) );
+		verify( factory ).setPageSize( 25 );
+		verify( factory ).setPageFetcher( any() );
+		verify( factory ).setShowResultNumber( false );
+		verify( factory ).setSortableProperties( Arrays.asList( "two" ) );
 	}
 }

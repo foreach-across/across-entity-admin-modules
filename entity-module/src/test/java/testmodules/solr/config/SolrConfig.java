@@ -16,8 +16,6 @@
 
 package testmodules.solr.config;
 
-import org.apache.solr.client.solrj.SolrServer;
-import com.foreach.across.modules.entity.testmodules.solr.SolrTestModule;
 import org.apache.solr.client.solrj.SolrClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

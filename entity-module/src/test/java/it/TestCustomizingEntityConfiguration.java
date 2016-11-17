@@ -194,28 +194,42 @@ public class TestCustomizingEntityConfiguration
 			entities.assignableTo( Persistable.class )
 			        .label( "new" )
 			        .properties(
-					             props -> props.property( "id" )
-					                           .viewElementBuilder( ViewElementMode.LIST_VALUE,
-					                                                mock( ViewElementBuilder.class ) )
-			             );
+					        props -> props.property( "id" )
+					                      .viewElementBuilder( ViewElementMode.LIST_VALUE,
+					                                           mock( ViewElementBuilder.class ) )
+			        );
 
 			entities.withType( Client.class )
 			        .properties(
-					             props -> props.label( "someprop" ).and()
-					                           .property( "someprop" ).displayName( "Some property" )
-					                           .spelValueFetcher( "'fixed'" )
-			             )
-			        .view( "some-extra-view" )
-			        .template( "th/someTemplate" )
-			        .properties()
+					        props -> props.label( "someprop" ).and()
+					                      .property( "someprop" ).displayName( "Some property" )
+					                      .spelValueFetcher( "'fixed'" )
+			        )
+			        .view(
+					        "some-extra-view",
+					        vb -> {
+						        vb.template( "th/someTemplate" )/*
+				                 .properties( props -> props
+						                 .property( "calculated" ).displayName( "Calculated" )
+						                 .and()
+						                 .property( "group-membership" ).displayName( "Group membership" )
+						                 .spelValueFetcher( "groups.size()" )
+				                 )*/;
+					        }
+			        )
+			        .view(
+					        "some-other-view",
+					        vb -> vb.factoryType( ConfigurablePropertiesEntityViewFactorySupport.class )
+			        );
+
+
+			        /*.properties()
 			        .property( "calculated" ).displayName( "Calculated" ).and()
 			        .property( "group-membership" )
 			        .displayName( "Group membership" )
 			        .spelValueFetcher( "groups.size()" ).and()
 			        .and()
-			        .and()
-			        .view( "some-other-view" )
-			        .factory( mock( ConfigurablePropertiesEntityViewFactorySupport.class ) );
+			        .and()*/
 		}
 	}
 }

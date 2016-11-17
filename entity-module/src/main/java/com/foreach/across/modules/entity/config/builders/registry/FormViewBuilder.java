@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 
+@Deprecated
 public class FormViewBuilder extends AbstractEntityFormViewBuilder<FormViewBuilder>
 {
 	@SuppressWarnings("unchecked")
