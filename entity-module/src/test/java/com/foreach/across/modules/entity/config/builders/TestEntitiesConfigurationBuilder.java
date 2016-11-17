@@ -108,20 +108,24 @@ public class TestEntitiesConfigurationBuilder
 		MutableEntityConfiguration existing = mock( MutableEntityConfiguration.class );
 		when( entityRegistry.getEntityConfiguration( String.class ) ).thenReturn( existing );
 
-		MutableEntityConfiguration nonExisting = mock( MutableEntityConfiguration.class );
-		when( objectBuilder.build( false ) ).thenReturn( nonExisting );
+		MutableEntityConfiguration created = mock( MutableEntityConfiguration.class );
+		when( entityRegistry.getEntityConfiguration( Object.class ) )
+				.thenReturn( null )
+				.thenReturn( created );
+		when( objectBuilder.build( false ) ).thenReturn( created );
 
 		builder.apply( entityRegistry );
 
 		InOrder inOrder = inOrder( stringBuilder, objectBuilder );
 		inOrder.verify( stringBuilder ).name( "meh" );
 		inOrder.verify( objectBuilder ).label( "some-label" );
-		inOrder.verify( stringBuilder ).apply( existing, false );
 		inOrder.verify( objectBuilder ).build( false );
+		inOrder.verify( stringBuilder ).apply( existing, false );
+		inOrder.verify( objectBuilder ).apply( created, false );
 		inOrder.verify( stringBuilder ).postProcess( existing );
-		inOrder.verify( objectBuilder ).postProcess( nonExisting );
+		inOrder.verify( objectBuilder ).postProcess( created );
 
-		verify( entityRegistry ).register( nonExisting );
+		verify( entityRegistry ).register( created );
 		verify( entityRegistry, never() ).register( existing );
 	}
 
@@ -140,8 +144,11 @@ public class TestEntitiesConfigurationBuilder
 		MutableEntityConfiguration existing = mock( MutableEntityConfiguration.class );
 		when( entityRegistry.getEntityConfiguration( "string" ) ).thenReturn( existing );
 
-		MutableEntityConfiguration nonExisting = mock( MutableEntityConfiguration.class );
-		when( objectBuilder.build( false ) ).thenReturn( nonExisting );
+		MutableEntityConfiguration created = mock( MutableEntityConfiguration.class );
+		when( entityRegistry.getEntityConfiguration( "object" ) )
+				.thenReturn( null )
+				.thenReturn( created );
+		when( objectBuilder.build( false ) ).thenReturn( created );
 
 		builder.apply( entityRegistry );
 
@@ -149,12 +156,13 @@ public class TestEntitiesConfigurationBuilder
 		inOrder.verify( stringBuilder ).name( "meh" );
 		inOrder.verify( objectBuilder ).label( "some-label" );
 		inOrder.verify( objectBuilder ).label( "other-label" );
-		inOrder.verify( stringBuilder ).apply( existing, false );
 		inOrder.verify( objectBuilder ).build( false );
+		inOrder.verify( stringBuilder ).apply( existing, false );
+		inOrder.verify( objectBuilder ).apply( created, false );
 		inOrder.verify( stringBuilder ).postProcess( existing );
-		inOrder.verify( objectBuilder ).postProcess( nonExisting );
+		inOrder.verify( objectBuilder ).postProcess( created );
 
-		verify( entityRegistry ).register( nonExisting );
+		verify( entityRegistry ).register( created );
 		verify( entityRegistry, never() ).register( existing );
 	}
 
@@ -243,16 +251,16 @@ public class TestEntitiesConfigurationBuilder
 		inOrder.verify( matchingBuilder ).name( "matching" );
 		inOrder.verify( allBuilder ).name( "all" );
 		inOrder.verify( createBuilder ).build( false );
-		inOrder.verify( typeBuilder ).apply( existing, false );
-		inOrder.verify( nameBuilder ).apply( existing, false );
+		inOrder.verify( allBuilder ).apply( existing, false );
 		inOrder.verify( assignableToBuilder ).apply( existing, false );
 		inOrder.verify( matchingBuilder ).apply( existing, false );
-		inOrder.verify( allBuilder ).apply( existing, false );
+		inOrder.verify( typeBuilder ).apply( existing, false );
+		inOrder.verify( nameBuilder ).apply( existing, false );
 		inOrder.verify( createBuilder ).postProcess( created );
-		inOrder.verify( typeBuilder ).postProcess( existing );
-		inOrder.verify( nameBuilder ).postProcess( existing );
+		inOrder.verify( allBuilder ).postProcess( existing );
 		inOrder.verify( assignableToBuilder ).postProcess( existing );
 		inOrder.verify( matchingBuilder ).postProcess( existing );
-		inOrder.verify( allBuilder ).postProcess( existing );
+		inOrder.verify( typeBuilder ).postProcess( existing );
+		inOrder.verify( nameBuilder ).postProcess( existing );
 	}
 }

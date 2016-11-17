@@ -17,7 +17,6 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.registry.*;
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactoryProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -407,7 +406,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * Inner class that delegates creation of a view factory to the {@link EntityViewFactoryProvider} using
 	 * the current entity being configured.
 	 */
-	private class ConfigurationViewFactoryBuilder extends EntityViewFactoryBuilder<EntityViewFactory>
+	private class ConfigurationViewFactoryBuilder extends EntityViewFactoryBuilder
 	{
 		ConfigurationViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
 			super( beanFactory );
@@ -431,7 +430,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 		}
 
 		@Override
-		protected EntityListViewFactory createNewViewFactory( Class<? extends EntityListViewFactory> viewFactoryType ) {
+		protected EntityViewFactory createNewViewFactory( Class<? extends EntityViewFactory> viewFactoryType ) {
 			EntityViewFactoryProvider viewFactoryProvider = beanFactory.getBean( EntityViewFactoryProvider.class );
 			return viewFactoryProvider.create( configurationBeingBuilt, viewFactoryType );
 		}

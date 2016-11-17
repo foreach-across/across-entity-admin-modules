@@ -63,7 +63,7 @@ public class DefaultEntityViewFactoryProvider implements EntityViewFactoryProvid
 		configurationViewFactoryPostProcessors.add( new EntityConfigurationListViewPostProcessor() );
 	}
 
-	@Autowired
+	@Autowired(required = false)
 	public void setConfigurationViewFactoryPostProcessors( Collection<BiConsumer<EntityConfiguration, EntityViewFactory>> configurationViewFactoryPostProcessors ) {
 		this.configurationViewFactoryPostProcessors.addAll( configurationViewFactoryPostProcessors );
 	}

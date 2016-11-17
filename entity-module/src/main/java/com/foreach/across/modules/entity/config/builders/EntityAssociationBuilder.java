@@ -337,6 +337,6 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 			return (U) new EntityListViewFactoryBuilder( beanFactory );
 		}
 
-		return (U) new EntityViewFactoryBuilder<>( beanFactory );
+		return (U) new EntityViewFactoryBuilder( beanFactory );
 	}
 }

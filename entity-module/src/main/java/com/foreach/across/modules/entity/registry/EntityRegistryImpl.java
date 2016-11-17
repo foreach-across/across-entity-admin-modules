@@ -98,7 +98,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	public <T> MutableEntityConfiguration<T> remove( String entityName ) {
-		MutableEntityConfiguration<T> registered = (MutableEntityConfiguration<T>) getEntityConfiguration( entityName );
+		MutableEntityConfiguration<T> registered = getEntityConfiguration( entityName );
 
 		if ( registered != null ) {
 			entityConfigurations.remove( registered );
@@ -109,7 +109,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	public <T> MutableEntityConfiguration<T> remove( Class<T> entityType ) {
-		MutableEntityConfiguration<T> registered = getMutableEntityConfiguration( entityType );
+		MutableEntityConfiguration<T> registered = getEntityConfiguration( entityType );
 
 		if ( registered != null ) {
 			entityConfigurations.remove( registered );
@@ -145,10 +145,5 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 		}
 
 		return null;
-	}
-
-	@Override
-	public <T> MutableEntityConfiguration<T> getMutableEntityConfiguration( Class<T> entityType ) {
-		return (MutableEntityConfiguration<T>) getEntityConfiguration( entityType );
 	}
 }

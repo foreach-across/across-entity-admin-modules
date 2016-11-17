@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
+import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -40,7 +41,7 @@ import java.util.function.Consumer;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder<EntityListViewFactory>
+public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 {
 	private Boolean showResultNumber;
 	private Integer pageSize;
@@ -54,7 +55,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder<Entit
 	}
 
 	@Override
-	public EntityListViewFactoryBuilder factoryType( Class<? extends EntityListViewFactory> factoryType ) {
+	public EntityListViewFactoryBuilder factoryType( Class<? extends EntityViewFactory> factoryType ) {
 		return (EntityListViewFactoryBuilder) super.factoryType( factoryType );
 	}
 
@@ -138,23 +139,30 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder<Entit
 	}
 
 	@Override
-	void apply( EntityListViewFactory viewFactory ) {
-		super.apply( viewFactory );
+	void apply( EntityViewFactory rawViewFactory ) {
 
-		if ( pageFetcher != null ) {
-			viewFactory.setPageFetcher( pageFetcher );
+		super.apply( rawViewFactory );
+
+		if ( rawViewFactory instanceof EntityListViewFactory ) {
+			EntityListViewFactory viewFactory = (EntityListViewFactory) rawViewFactory;
+			if ( pageFetcher != null ) {
+				viewFactory.setPageFetcher( pageFetcher );
+			}
+			if ( pageSize != null ) {
+				viewFactory.setPageSize( pageSize );
+			}
+			if ( sortableProperties != null ) {
+				viewFactory.setSortableProperties( sortableProperties );
+			}
+			if ( defaultSort != null ) {
+				viewFactory.setDefaultSort( defaultSort );
+			}
+			if ( showResultNumber != null ) {
+				viewFactory.setShowResultNumber( showResultNumber );
+			}
 		}
-		if ( pageSize != null ) {
-			viewFactory.setPageSize( pageSize );
-		}
-		if ( sortableProperties != null ) {
-			viewFactory.setSortableProperties( sortableProperties );
-		}
-		if ( defaultSort != null ) {
-			viewFactory.setDefaultSort( defaultSort );
-		}
-		if ( showResultNumber != null ) {
-			viewFactory.setShowResultNumber( showResultNumber );
+		else {
+			throw new IllegalArgumentException( "Registered view factory was not of type EntityListViewFactory" );
 		}
 	}
 }

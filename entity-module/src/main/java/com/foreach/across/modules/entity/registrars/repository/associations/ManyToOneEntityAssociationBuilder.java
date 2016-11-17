@@ -55,7 +55,7 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 	public void buildAssociation( MutableEntityRegistry entityRegistry,
 	                              MutableEntityConfiguration to,
 	                              PersistentProperty property ) {
-		MutableEntityConfiguration from = entityRegistry.getMutableEntityConfiguration( property.getActualType() );
+		MutableEntityConfiguration from = entityRegistry.getEntityConfiguration( property.getActualType() );
 		if ( from != null && canAssociationBeBuilt( from, to ) ) {
 			String associationName = to.getName() + "." + property.getName();
 

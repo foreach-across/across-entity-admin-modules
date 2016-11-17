@@ -34,9 +34,6 @@ public interface MutableEntityRegistry extends EntityRegistry
 	@Override
 	<T> MutableEntityConfiguration<T> getEntityConfiguration( Class<T> entityType );
 
-	@Deprecated
-	<T> MutableEntityConfiguration<T> getMutableEntityConfiguration( Class<T> entityType );
-
 	<T> MutableEntityConfiguration<T> remove( String entityName );
 
 	<T> MutableEntityConfiguration<T> remove( Class<T> entityType );

@@ -4,12 +4,7 @@ default entitypropertyregistry is created by the entitypropertyregistryprovider
 default entitypropertydescriptor is created by the entitypropertydescriptorprovider
 default entityviewfactory instance if created by the entityviewfactoryprovider
 
-likewise, there is an equivalent builderprovider instance
-entityconfigurationbuilderprovider
-entitypropertyregistrybuilderprovider
-entityviewfactorybuilderprovider
-
-the default implementations simply use beanfactory createBean of the types requested
+the default implementations often use beanfactory createBean of the types requested
 
 the entitiesconfigurationbuilder allows customization of the default created entity configurations
 by providing a central interface to builder instances

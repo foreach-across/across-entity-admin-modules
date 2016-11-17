@@ -56,7 +56,7 @@ public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuil
 	                              MutableEntityConfiguration entityConfiguration,
 	                              PersistentProperty property ) {
 		MutableEntityConfiguration other
-				= entityRegistry.getMutableEntityConfiguration( property.getActualType() );
+				= entityRegistry.getEntityConfiguration( property.getActualType() );
 
 		if ( other != null ) {
 			String associationName = entityConfiguration.getName() + "." + property.getName();

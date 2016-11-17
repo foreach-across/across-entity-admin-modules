@@ -47,14 +47,14 @@ import java.util.function.Consumer;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class EntityViewFactoryBuilder<T extends EntityViewFactory>
+public class EntityViewFactoryBuilder
 {
 	private final AutowireCapableBeanFactory beanFactory;
 	private final Collection<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayDeque<>();
 	private final Collection<EntityViewProcessor> processors = new ArrayList<>();
 
-	private Class<? extends T> factoryType;
-	private T factory;
+	private Class<? extends EntityViewFactory> factoryType;
+	private EntityViewFactory factory;
 	private String[] propertiesToShow;
 	private String template;
 
@@ -70,7 +70,7 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	 * @param factoryType to create
 	 * @return current builder
 	 */
-	public EntityViewFactoryBuilder<T> factoryType( Class<? extends T> factoryType ) {
+	public EntityViewFactoryBuilder factoryType( Class<? extends EntityViewFactory> factoryType ) {
 		this.factoryType = factoryType;
 		return this;
 	}
@@ -82,7 +82,7 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	 * @param factory to use
 	 * @return current builder
 	 */
-	public EntityViewFactoryBuilder<T> factory( T factory ) {
+	public EntityViewFactoryBuilder factory( EntityViewFactory factory ) {
 		Assert.notNull( factory );
 		this.factory = factory;
 		return this;
@@ -95,7 +95,7 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	 * @param template the view should render
 	 * @return current builder
 	 */
-	public EntityViewFactoryBuilder<T> template( String template ) {
+	public EntityViewFactoryBuilder template( String template ) {
 		this.template = template;
 		return this;
 	}
@@ -106,7 +106,7 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	 * @param registryConsumer to customize the property registry builder
 	 * @return current builder
 	 */
-	public EntityViewFactoryBuilder<T> properties( Consumer<EntityPropertyRegistryBuilder> registryConsumer ) {
+	public EntityViewFactoryBuilder properties( Consumer<EntityPropertyRegistryBuilder> registryConsumer ) {
 		Assert.notNull( registryConsumer );
 		registryConsumers.add( registryConsumer );
 		return this;
@@ -118,7 +118,7 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	 * @param propertyNames property names in order
 	 * @return current builder
 	 */
-	public EntityViewFactoryBuilder<T> showProperties( String... propertyNames ) {
+	public EntityViewFactoryBuilder showProperties( String... propertyNames ) {
 		this.propertiesToShow = propertyNames;
 		return this;
 	}
@@ -130,7 +130,7 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	 * @return current builder
 	 * @see com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter
 	 */
-	public EntityViewFactoryBuilder<T> viewProcessor( EntityViewProcessor processor ) {
+	public EntityViewFactoryBuilder viewProcessor( EntityViewProcessor processor ) {
 		Assert.notNull( processor );
 		processors.add( processor );
 
@@ -143,16 +143,16 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	 *
 	 * @return factory instance
 	 */
-	public T build() {
+	public EntityViewFactory build() {
 		Assert.notNull( factoryType );
 
-		T viewFactory = factory != null ? factory : createNewViewFactory( factoryType );
+		EntityViewFactory viewFactory = factory != null ? factory : createNewViewFactory( factoryType );
 		apply( viewFactory );
 
 		return viewFactory;
 	}
 
-	protected T createNewViewFactory( Class<? extends T> viewFactoryType ) {
+	protected EntityViewFactory createNewViewFactory( Class<? extends EntityViewFactory> viewFactoryType ) {
 		return beanFactory.createBean( viewFactoryType );
 	}
 
@@ -161,7 +161,7 @@ public class EntityViewFactoryBuilder<T extends EntityViewFactory>
 	 *
 	 * @param viewFactory to apply the builder settings to
 	 */
-	void apply( T viewFactory ) {
+	void apply( EntityViewFactory viewFactory ) {
 		if ( viewFactory instanceof SimpleEntityViewFactorySupport ) {
 			applySimpleAttributes( (SimpleEntityViewFactorySupport) viewFactory );
 		}

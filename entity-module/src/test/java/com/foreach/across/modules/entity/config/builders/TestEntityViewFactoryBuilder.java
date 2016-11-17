@@ -42,11 +42,11 @@ public class TestEntityViewFactoryBuilder
 	@Mock
 	private AutowireCapableBeanFactory beanFactory;
 
-	private EntityViewFactoryBuilder<EntityViewFactory> builder;
+	private EntityViewFactoryBuilder builder;
 
 	@Before
 	public void before() {
-		builder = new EntityViewFactoryBuilder<>( beanFactory );
+		builder = new EntityViewFactoryBuilder( beanFactory );
 	}
 
 	@Test(expected = IllegalArgumentException.class)

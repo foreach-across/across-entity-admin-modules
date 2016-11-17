@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.registry.properties.MutableEntityProper
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
+import com.foreach.across.modules.entity.views.EntityViewViewFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,32 +58,10 @@ public class TestEntityListViewFactoryBuilder
 		builder.build();
 	}
 
-	/*
-	@Test
-	public void defaultCreatesSingleEntityViewFactory() {
-		builder.factoryType( EntityListViewFactory.class );
-
-		EntityViewFactory factory = mock( EntityViewFactory.class );
-		when( beanFactory.createBean( EntityViewFactory.class ) ).thenReturn( factory );
-
-		assertSame( builder.build(), factory );
+	@Test(expected = IllegalArgumentException.class)
+	public void factoryMustBeListViewFactory() {
+		builder.factory( mock( EntityViewViewFactory.class ) ).build();
 	}
-
-	@Test
-	public void specificTypeCreation() {
-		EntityViewViewFactory f = mock( EntityViewViewFactory.class );
-		when( beanFactory.createBean( EntityViewViewFactory.class ) ).thenReturn( f );
-
-		builder.factoryType( EntityListViewFactory.class )
-		       .template( "templateName" );
-
-		EntityViewFactory built = builder.build();
-
-		assertSame( built, f );
-		verify( f ).setTemplate( "templateName" );
-	}
-
-*/
 
 	@Test
 	public void applyListViewFactory() {

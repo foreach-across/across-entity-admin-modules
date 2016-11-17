@@ -151,14 +151,11 @@ public class EntitiesConfigurationBuilder
 		// First create manual new entities
 		createNewEntityConfigurations( entityRegistry, appliedBuilders );
 
-		// Register new entities by type - this will create or update
-		applyTypeSpecificBuilders( entityRegistry, appliedBuilders );
+		// Create new entities by type
+		applyTypeSpecificBuilders( true, entityRegistry, appliedBuilders );
 
-		// Register entities by name - this will create or update
-		applyNameSpecificBuilders( entityRegistry, appliedBuilders );
-
-		// Apply to all existing entities that match the predicate
-		applyPredicateBuilders( entityRegistry, appliedBuilders );
+		// Create new entities by name
+		applyNameSpecificBuilders( true, entityRegistry, appliedBuilders );
 
 		// Apply to all existing entities
 		if ( allBuilder != null ) {
@@ -170,6 +167,15 @@ public class EntitiesConfigurationBuilder
 					}
 			);
 		}
+
+		// Apply to all existing entities that match the predicate
+		applyPredicateBuilders( entityRegistry, appliedBuilders );
+
+		// Apply to all entities with a given type - for new entities this means the same builder will be applied twice
+		applyTypeSpecificBuilders( false, entityRegistry, appliedBuilders );
+
+		// Apply to all entities with a given name - for new entities this means the same builder will be applied twice
+		applyNameSpecificBuilders( false, entityRegistry, appliedBuilders );
 
 		// Run postprocessors
 		appliedBuilders.forEach( p -> p.getKey().postProcess( p.getValue() ) );
@@ -193,12 +199,14 @@ public class EntitiesConfigurationBuilder
 	}
 
 	private void applyNameSpecificBuilders(
+			boolean forCreation,
 			MutableEntityRegistry entityRegistry,
 			List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders
 	) {
 		nameBuilders.forEach(
 				( name, builder ) ->
 						applyEntityConfigurationBuilder(
+								forCreation,
 								entityRegistry,
 								appliedBuilders,
 								entityRegistry.getEntityConfiguration( name ),
@@ -208,11 +216,13 @@ public class EntitiesConfigurationBuilder
 	}
 
 	private void applyTypeSpecificBuilders(
+			boolean forCreation,
 			MutableEntityRegistry entityRegistry,
 			List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders ) {
 		typeBuilders.forEach(
 				( type, builder ) ->
 						applyEntityConfigurationBuilder(
+								forCreation,
 								entityRegistry,
 								appliedBuilders,
 								entityRegistry.getEntityConfiguration( type ),
@@ -222,21 +232,28 @@ public class EntitiesConfigurationBuilder
 	}
 
 	@SuppressWarnings("unchecked")
-	private void applyEntityConfigurationBuilder( MutableEntityRegistry entityRegistry,
-	                                              List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders,
-	                                              MutableEntityConfiguration existing,
-	                                              EntityConfigurationBuilder<?> configurationBuilder ) {
+	private void applyEntityConfigurationBuilder(
+			boolean forCreation,
+			MutableEntityRegistry entityRegistry,
+			List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders,
+			MutableEntityConfiguration existing,
+			EntityConfigurationBuilder<?> configurationBuilder ) {
 		MutableEntityConfiguration config = existing;
 
-		if ( config == null ) {
-			config = configurationBuilder.build( false );
-			entityRegistry.register( config );
+		if ( forCreation ) {
+			if ( config == null ) {
+				config = configurationBuilder.build( false );
+				entityRegistry.register( config );
+			}
 		}
 		else {
-			configurationBuilder.apply( config, false );
-		}
+			// should never be null as the creation call should have registered it
+			Assert.notNull( config );
 
-		appliedBuilders.add( new ImmutablePair<>( configurationBuilder, config ) );
+			// register applied builders only once
+			configurationBuilder.apply( config, false );
+			appliedBuilders.add( new ImmutablePair<>( configurationBuilder, config ) );
+		}
 	}
 
 	private void createNewEntityConfigurations(

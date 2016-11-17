@@ -27,6 +27,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
+import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
@@ -189,7 +190,8 @@ public class TestCustomizingEntityConfiguration
 		@Override
 		@SuppressWarnings("unchecked")
 		public void configure( EntitiesConfigurationBuilder entities ) {
-			//configuration.attribute( EntityLinkBuilder.class, mock( EntityConfigurationLinkBuilder.class ) );
+			entities.all()
+			        .attribute( EntityLinkBuilder.class, mock( EntityConfigurationLinkBuilder.class ) );
 
 			entities.assignableTo( Persistable.class )
 			        .label( "new" )
@@ -207,29 +209,19 @@ public class TestCustomizingEntityConfiguration
 			        )
 			        .view(
 					        "some-extra-view",
-					        vb -> {
-						        vb.template( "th/someTemplate" )/*
-				                 .properties( props -> props
-						                 .property( "calculated" ).displayName( "Calculated" )
-						                 .and()
-						                 .property( "group-membership" ).displayName( "Group membership" )
-						                 .spelValueFetcher( "groups.size()" )
-				                 )*/;
-					        }
+					        vb -> vb.template( "th/someTemplate" )
+					                .properties(
+							                props -> props
+									                .property( "calculated" ).displayName( "Calculated" )
+									                .and()
+									                .property( "group-membership" ).displayName( "Group membership" )
+									                .spelValueFetcher( "groups.size()" )
+					                )
 			        )
 			        .view(
 					        "some-other-view",
-					        vb -> vb.factoryType( ConfigurablePropertiesEntityViewFactorySupport.class )
+					        vb -> vb.factory( mock( ConfigurablePropertiesEntityViewFactorySupport.class ) )
 			        );
-
-
-			        /*.properties()
-			        .property( "calculated" ).displayName( "Calculated" ).and()
-			        .property( "group-membership" )
-			        .displayName( "Group membership" )
-			        .spelValueFetcher( "groups.size()" ).and()
-			        .and()
-			        .and()*/
 		}
 	}
 }
