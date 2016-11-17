@@ -89,16 +89,20 @@ public class DefaultEntityViewFactoryProvider implements EntityViewFactoryProvid
 
 		@Override
 		public void accept( EntityConfiguration entityConfiguration, EntityViewFactory entityViewFactory ) {
+			if ( entityViewFactory instanceof SimpleEntityViewFactorySupport ) {
+				SimpleEntityViewFactorySupport viewFactory
+						= (SimpleEntityViewFactorySupport) entityViewFactory;
+				viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
+				viewFactory.setMessagePrefixes( "entityViews" );
+			}
+
 			if ( entityViewFactory instanceof ConfigurablePropertiesEntityViewFactorySupport ) {
 				ConfigurablePropertiesEntityViewFactorySupport viewFactory
 						= (ConfigurablePropertiesEntityViewFactorySupport) entityViewFactory;
-				viewFactory.setMessagePrefixes( "entityViews" );
-
 				EntityPropertyRegistry registry
 						= propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() );
 
 				viewFactory.setPropertyRegistry( registry );
-				viewFactory.setTemplate( EntityFormView.VIEW_TEMPLATE );
 			}
 		}
 	}

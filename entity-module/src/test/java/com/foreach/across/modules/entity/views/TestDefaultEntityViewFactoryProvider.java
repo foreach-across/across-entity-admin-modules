@@ -69,6 +69,23 @@ public class TestDefaultEntityViewFactoryProvider
 	}
 
 	@Test
+	public void deleteView() {
+		BiConsumer consumer = mock( BiConsumer.class );
+		provider.setConfigurationViewFactoryPostProcessors( Collections.singleton( consumer ) );
+
+		EntityDeleteViewFactory expected = mock( EntityDeleteViewFactory.class );
+		when( beanFactory.createBean( EntityDeleteViewFactory.class ) ).thenReturn( expected );
+
+		EntityDeleteViewFactory factory = provider.create( config, EntityDeleteViewFactory.class );
+		assertSame( expected, factory );
+
+		verify( factory ).setTemplate( EntityFormView.VIEW_TEMPLATE );
+		verify( factory ).setMessagePrefixes( "entityViews" );
+		verify( consumer ).accept( config, factory );
+		verifyNoMoreInteractions( factory );
+	}
+
+	@Test
 	public void formView() {
 		BiConsumer consumer = mock( BiConsumer.class );
 		provider.setConfigurationViewFactoryPostProcessors( Collections.singleton( consumer ) );

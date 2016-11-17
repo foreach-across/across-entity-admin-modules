@@ -18,6 +18,7 @@ package com.foreach.across.samples.entity;
 
 import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import org.springframework.boot.SpringApplication;
@@ -34,7 +35,7 @@ import javax.sql.DataSource;
  */
 
 @Import(LocalDevToolsAutoConfiguration.class)
-@AcrossApplication(modules = { AdminWebModule.NAME, EntityModule.NAME })
+@AcrossApplication(modules = { AdminWebModule.NAME, EntityModule.NAME, DebugWebModule.NAME })
 public class EntityModuleTestApplication
 {
 	@Bean
