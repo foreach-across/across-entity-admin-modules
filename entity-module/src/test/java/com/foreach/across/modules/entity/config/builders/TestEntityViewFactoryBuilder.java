@@ -78,7 +78,17 @@ public class TestEntityViewFactoryBuilder
 		verify( f ).setTemplate( "templateName" );
 	}
 
-	// todo: specific instance
+	@Test
+	public void factoryInstanceTakePrecedence() {
+		EntityViewFactory expected = mock( EntityViewViewFactory.class );
+
+		builder.factoryType( EntityViewViewFactory.class )
+		       .factory( expected );
+
+		EntityViewFactory built = builder.build();
+		assertSame( expected, built );
+		verify( beanFactory, never() ).createBean( any() );
+	}
 
 	@Test
 	public void applySimpleEntityViewFactory() {

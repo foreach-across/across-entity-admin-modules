@@ -26,6 +26,12 @@ import org.springframework.util.Assert;
 
 import java.util.function.Consumer;
 
+/**
+ * Builder for managing as specific {@link EntityAssociation} on a {@link EntityConfiguration}.
+ *
+ * @author Arne Vandamme
+ * @since 1.1.1
+ */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class EntityAssociationBuilder extends AbstractWritableAttributesAndViewsBuilder
@@ -36,7 +42,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	private EntityAssociation.ParentDeleteMode parentDeleteMode;
 
 	private Class<?> targetEntityType;
-	private String sourceProperty, targetProperty;
+	private String targetEntityName, sourceProperty, targetProperty;
 
 	private boolean sourcePropertyRemoved, targetPropertyRemoved;
 
@@ -70,6 +76,20 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	public EntityAssociationBuilder targetEntityType( Class<?> targetEntityType ) {
 		Assert.notNull( targetEntityType );
 		this.targetEntityType = targetEntityType;
+		return this;
+	}
+
+	/**
+	 * Set the name of the target entity for this association.  The entity must be registered in the
+	 * {@link EntityRegistry} present in the {@link org.springframework.beans.factory.BeanFactory} provided.
+	 * This property takes precedence over {@link #targetEntityType(Class)}.
+	 *
+	 * @param entityName name of the target entity
+	 * @return current builder
+	 */
+	public EntityAssociationBuilder targetEntity( String entityName ) {
+		Assert.notNull( entityName );
+		this.targetEntityName = entityName;
 		return this;
 	}
 
@@ -226,34 +246,33 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 		return (EntityAssociationBuilder) super.view( viewName, consumer );
 	}
 
-	void apply( MutableEntityConfiguration configuration ) {
-
+	@Override
+	public EntityAssociationBuilder attribute( String name, Object value ) {
+		return (EntityAssociationBuilder) super.attribute( name, value );
 	}
 
-	void apply( MutableEntityConfiguration configuration,
-	            MutableEntityRegistry entityRegistry,
-	            AutowireCapableBeanFactory beanFactory ) {
+	@Override
+	public <S> EntityAssociationBuilder attribute( Class<S> type, S value ) {
+		return (EntityAssociationBuilder) super.attribute( type, value );
+	}
+
+	/**
+	 * Apply the association builder to the configuration specified.  This will add or modify the association
+	 * represented by this builder.
+	 *
+	 * @param configuration to register the association in
+	 */
+	void apply( MutableEntityConfiguration configuration ) {
 		MutableEntityAssociation association = configuration.association( name );
 
 		if ( association == null ) {
-			if ( targetEntityType != null ) {
-				association = configuration.createAssociation( name );
-			}
-			else {
-				// If no target specified, do not create this association, just ignore this builder
-				return;
-			}
+			EntityConfiguration targetConfiguration = retrieveTargetConfiguration();
+
+			association = configuration.createAssociation( name );
+			association.setTargetEntityConfiguration( targetConfiguration );
 		}
-
-		if ( targetEntityType != null ) {
-			EntityConfiguration targetEntityConfiguration = entityRegistry.getEntityConfiguration( targetEntityType );
-
-			if ( targetEntityConfiguration == null ) {
-				throw new IllegalArgumentException(
-						"Entity type " + targetEntityType.getName() + " is not registered" );
-			}
-
-			association.setTargetEntityConfiguration( targetEntityConfiguration );
+		else if ( targetEntityType != null ) {
+			association.setTargetEntityConfiguration( retrieveTargetConfiguration() );
 		}
 
 		if ( sourcePropertyRemoved ) {
@@ -276,7 +295,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 		}
 		else if ( targetProperty != null ) {
 			EntityPropertyDescriptor targetPropertyDescriptor =
-					association.getSourceEntityConfiguration().getPropertyRegistry().getProperty( targetProperty );
+					association.getTargetEntityConfiguration().getPropertyRegistry().getProperty( targetProperty );
 
 			if ( targetPropertyDescriptor == null ) {
 				throw new IllegalArgumentException(
@@ -290,9 +309,25 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 			association.setHidden( hidden );
 		}
 
+		if ( parentDeleteMode != null ) {
+			association.setParentDeleteMode( parentDeleteMode );
+		}
+
 		applyAttributes( association );
 		applyViews( association );
-		//applyViewBuilders( association, beanFactory );
+	}
+
+	private EntityConfiguration retrieveTargetConfiguration() {
+		EntityRegistry entityRegistry = beanFactory.getBean( EntityRegistry.class );
+		EntityConfiguration targetConfiguration = targetEntityName != null
+				? entityRegistry.getEntityConfiguration( targetEntityName )
+				: entityRegistry.getEntityConfiguration( targetEntityType );
+
+		if ( targetConfiguration == null ) {
+			throw new IllegalArgumentException( "Unable to retrieve target entity configured: " + targetEntityType );
+		}
+
+		return targetConfiguration;
 	}
 
 	@Override
