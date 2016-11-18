@@ -35,7 +35,7 @@ import java.util.stream.Stream;
  * @since 2.0.0
  */
 @Order(2)
-@Installer(description = "Installs a number of test groups for filtering", phase = InstallerPhase.AfterModuleBootstrap)
+@Installer(description = "Installs a number of test users for filtering", phase = InstallerPhase.AfterModuleBootstrap)
 public class TestUserInstaller
 {
 	@Autowired
