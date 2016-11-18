@@ -26,12 +26,14 @@ import static org.junit.Assert.assertNull;
 
 /**
  * @author Arne Vandamme
+ * @since 1.0.0
  */
+@SuppressWarnings("unchecked")
 public class TestControlNamePrefixingPostProcessor
 {
 	@Test
 	public void simplePrefixing() {
-		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test." );
+		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test" );
 
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "textbox" )
@@ -42,8 +44,20 @@ public class TestControlNamePrefixingPostProcessor
 	}
 
 	@Test
+	public void indexPropertyPrefix() {
+		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test" );
+
+		TextboxFormElement textbox = new TextboxFormElementBuilder()
+				.controlName( "[textbox]" )
+				.postProcessor( processor )
+				.build( new DefaultViewElementBuilderContext() );
+
+		assertEquals( "test[textbox]", textbox.getControlName() );
+	}
+
+	@Test
 	public void noControlNameSet() {
-		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test." );
+		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test" );
 
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.postProcessor( processor )
@@ -54,7 +68,7 @@ public class TestControlNamePrefixingPostProcessor
 
 	@Test
 	public void notAFormInputElement() {
-		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test." );
+		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test" );
 
 		new TextViewElementBuilder()
 				.postProcessor( processor )
@@ -63,7 +77,7 @@ public class TestControlNamePrefixingPostProcessor
 
 	@Test
 	public void alreadyPrefixed() {
-		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test." );
+		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test" );
 
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "test.textbox" )
@@ -75,7 +89,7 @@ public class TestControlNamePrefixingPostProcessor
 
 	@Test
 	public void alwaysPrefix() {
-		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test.", true );
+		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test", true );
 
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "test.textbox" )
@@ -83,5 +97,23 @@ public class TestControlNamePrefixingPostProcessor
 				.build( new DefaultViewElementBuilderContext() );
 
 		assertEquals( "test.test.textbox", textbox.getControlName() );
+	}
+
+	@Test
+	public void exactPrefix() {
+		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test" );
+		processor.setExactPrefix( true );
+
+		TextboxFormElement textbox = new TextboxFormElementBuilder()
+				.controlName( "textbox" )
+				.postProcessor( processor )
+				.build( new DefaultViewElementBuilderContext() );
+		assertEquals( "testtextbox", textbox.getControlName() );
+
+		textbox = new TextboxFormElementBuilder()
+				.controlName( "[textbox]" )
+				.postProcessor( processor )
+				.build( new DefaultViewElementBuilderContext() );
+		assertEquals( "test[textbox]", textbox.getControlName() );
 	}
 }

@@ -23,14 +23,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 /**
- * Prefixes the control name of any {@link FormInputElement}.
+ * Prefixes the control name of any {@link FormInputElement}.  Meant for bean property prefixing.
+ * Adds the prefix with a . (dot) to the original control name. Supports indexed properties,
+ * which can be overruled using the {@link #setExactPrefix(boolean)}.
  *
  * @author Arne Vandamme
  */
 public class ControlNamePrefixingPostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
 {
 	private String prefix;
-	private boolean alwaysPrefix;
+	private boolean alwaysPrefix, exactPrefix;
 
 	public ControlNamePrefixingPostProcessor( String prefix ) {
 		this( prefix, false );
@@ -56,6 +58,16 @@ public class ControlNamePrefixingPostProcessor<T extends ViewElement> implements
 		this.alwaysPrefix = alwaysPrefix;
 	}
 
+	/**
+	 * Set to {@code true} if the prefix should be added as is.  If that is the case the prefix will not get an
+	 * intermediate . (dot) added and will ignore indexed properties.
+	 *
+	 * @param exactPrefix true if the prefix should be added as is
+	 */
+	public void setExactPrefix( boolean exactPrefix ) {
+		this.exactPrefix = exactPrefix;
+	}
+
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, ViewElement element ) {
 		if ( element instanceof FormInputElement ) {
@@ -63,7 +75,19 @@ public class ControlNamePrefixingPostProcessor<T extends ViewElement> implements
 			String controlName = input.getControlName();
 
 			if ( controlName != null && ( alwaysPrefix || !StringUtils.startsWith( controlName, prefix ) ) ) {
-				input.setControlName( prefix + controlName );
+				if ( exactPrefix ) {
+					input.setControlName( prefix + controlName );
+				}
+				else {
+					if ( controlName.charAt( 0 ) == '['
+							|| controlName.charAt( 0 ) == '('
+							|| controlName.charAt( 0 ) == '{' ) {
+						input.setControlName( prefix + controlName );
+					}
+					else {
+						input.setControlName( prefix + "." + controlName );
+					}
+				}
 			}
 		}
 	}
