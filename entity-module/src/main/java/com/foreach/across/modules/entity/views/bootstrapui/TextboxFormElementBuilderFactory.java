@@ -19,6 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
@@ -74,7 +75,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		TextboxFormElementBuilder textboxBuilder = bootstrapUi
 				.textbox()
 				.name( propertyDescriptor.getName() )
-				.controlName( propertyDescriptor.getName() )
+				.controlName( EntityAttributes.controlName( propertyDescriptor ) )
 				.postProcessor( builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) )
 				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
 

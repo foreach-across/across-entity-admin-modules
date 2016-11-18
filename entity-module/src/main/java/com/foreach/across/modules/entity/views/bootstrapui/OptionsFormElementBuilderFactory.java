@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -86,7 +87,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		OptionsFormElementBuilder options
 				= bootstrapUi.options()
 				             .name( descriptor.getName() )
-				             .controlName( descriptor.getName() );
+				             .controlName( EntityAttributes.controlName( descriptor ) );
 
 		OptionGenerator optionGenerator = new OptionGenerator();
 		optionGenerator.setSorted( true );

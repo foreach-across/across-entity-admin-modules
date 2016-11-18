@@ -85,16 +85,20 @@ public class EntityUpdateController extends EntityControllerSupport
 		EntityModel entityModel = entityConfiguration.getEntityModel();
 
 		if ( !bindingResult.hasErrors() ) {
-			entityModel.save( viewRequest.getEntity() );
+			try {
+				entityModel.save( viewRequest.getEntity() );
 
-			redirectAttributes.addFlashAttribute( "successMessage", "feedback.entityUpdated" );
+				redirectAttributes.addFlashAttribute( "successMessage", "feedback.entityUpdated" );
 
-			return adminWeb.redirect( entityConfiguration.getAttribute( EntityLinkBuilder.class )
-			                                             .update( viewRequest.getEntity() ) );
+				return adminWeb.redirect( entityConfiguration.getAttribute( EntityLinkBuilder.class )
+				                                             .update( viewRequest.getEntity() ) );
+			}
+			catch ( RuntimeException e ) {
+				buildExceptionLoggingModel( entityConfiguration, e, model, "feedback.entitySaveFailed" );
+			}
 		}
-		else {
-			return showUpdateEntityForm( entityConfiguration, viewRequest, adminMenu, model );
-		}
+
+		return showUpdateEntityForm( entityConfiguration, viewRequest, adminMenu, model );
 	}
 
 	@SuppressWarnings("unchecked")

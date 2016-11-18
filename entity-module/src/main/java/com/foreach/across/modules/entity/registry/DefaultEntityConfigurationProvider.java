@@ -17,7 +17,11 @@
 package com.foreach.across.modules.entity.registry;
 
 import com.foreach.across.core.annotations.RefreshableCollection;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -51,13 +55,22 @@ public class DefaultEntityConfigurationProvider implements EntityConfigurationPr
 		this.postProcessors = postProcessors;
 	}
 
-	private EntityPropertyRegistryProvider propertyRegistryProvider;
+	private final MessageSource messageSource;
+	private final EntityPropertyRegistryProvider propertyRegistryProvider;
+
+	@Autowired
+	public DefaultEntityConfigurationProvider( MessageSource messageSource,
+	                                           EntityPropertyRegistryProvider propertyRegistryProvider ) {
+		this.messageSource = messageSource;
+		this.propertyRegistryProvider = propertyRegistryProvider;
+	}
 
 	@Override
 	public <T> MutableEntityConfiguration<T> create( Class<T> entityType ) {
 		Assert.notNull( entityType );
 
 		MutableEntityConfiguration<T> configuration = new EntityConfigurationImpl<>( entityType );
+		configuration.setEntityMessageCodeResolver( createMessageCodeResolver( configuration ) );
 		configuration.setPropertyRegistry( propertyRegistryProvider.get( entityType ) );
 		postProcessors.forEach( p -> p.accept( configuration ) );
 
@@ -65,11 +78,14 @@ public class DefaultEntityConfigurationProvider implements EntityConfigurationPr
 	}
 
 	@Override
-	public <T> MutableEntityConfiguration<T> create( String name, Class<T> entityType, boolean registerForClass ) {
+	public <T> MutableEntityConfiguration<T> create( String name,
+	                                                 Class<? extends T> entityType,
+	                                                 boolean registerForClass ) {
 		Assert.notNull( name );
 		Assert.notNull( entityType );
 
 		MutableEntityConfiguration<T> configuration = new EntityConfigurationImpl<>( name, entityType );
+		configuration.setEntityMessageCodeResolver( createMessageCodeResolver( configuration ) );
 		configuration.setPropertyRegistry(
 				registerForClass
 						? propertyRegistryProvider.get( entityType )
@@ -78,5 +94,14 @@ public class DefaultEntityConfigurationProvider implements EntityConfigurationPr
 		postProcessors.forEach( p -> p.accept( configuration ) );
 
 		return configuration;
+	}
+
+	private EntityMessageCodeResolver createMessageCodeResolver( MutableEntityConfiguration<?> configuration ) {
+		EntityMessageCodeResolver messageCodeResolver = new EntityMessageCodeResolver();
+		messageCodeResolver.setEntityConfiguration( configuration );
+		messageCodeResolver.setMessageSource( messageSource );
+		messageCodeResolver.setPrefixes( "entities." + configuration.getName() );
+		messageCodeResolver.setFallbackCollections( EntityModule.NAME + ".entities", "" );
+		return messageCodeResolver;
 	}
 }

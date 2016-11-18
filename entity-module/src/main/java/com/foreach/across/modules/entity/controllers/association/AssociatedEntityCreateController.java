@@ -86,17 +86,22 @@ public class AssociatedEntityCreateController extends AssociatedEntityController
 				entityConfiguration.association( associationName ).getTargetEntityConfiguration().getEntityModel();
 
 		if ( !bindingResult.hasErrors() ) {
-			associatedModel.save( viewRequest.getEntity() );
+			try {
+				associatedModel.save( viewRequest.getEntity() );
 
-			redirectAttributes.addFlashAttribute( "successMessage", "feedback.entityCreated" );
+				redirectAttributes.addFlashAttribute( "successMessage", "feedback.entityCreated" );
 
-			EntityLinkBuilder linkBuilder = (EntityLinkBuilder) model.get( EntityView.ATTRIBUTE_ENTITY_LINKS );
+				EntityLinkBuilder linkBuilder = (EntityLinkBuilder) model.get( EntityView.ATTRIBUTE_ENTITY_LINKS );
 
-			return adminWeb.redirect( linkBuilder.update( viewRequest.getEntity() ) );
+				return adminWeb.redirect( linkBuilder.update( viewRequest.getEntity() ) );
+			}
+			catch ( RuntimeException e ) {
+				buildExceptionLoggingModel( entityConfiguration, e, model, "feedback.entitySaveFailed" );
+			}
 		}
-		else {
-			return showCreateEntityForm( entityConfiguration, sourceEntity, viewRequest, model );
-		}
+
+		return showCreateEntityForm( entityConfiguration, sourceEntity, viewRequest, model );
+
 	}
 
 	@SuppressWarnings("unchecked")

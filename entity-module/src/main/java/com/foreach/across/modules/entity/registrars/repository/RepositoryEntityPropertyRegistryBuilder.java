@@ -46,7 +46,7 @@ public class RepositoryEntityPropertyRegistryBuilder
 	private EntityPropertyRegistryProvider entityPropertyRegistryProvider;
 
 	public <T> void buildEntityPropertyRegistry( MutableEntityConfiguration<T> entityConfiguration ) {
-		Class<T> entityType = entityConfiguration.getEntityType();
+		Class<? extends T> entityType = entityConfiguration.getEntityType();
 		RepositoryFactoryInformation<T, ?> repositoryFactoryInformation
 				= entityConfiguration.getAttribute( RepositoryFactoryInformation.class );
 

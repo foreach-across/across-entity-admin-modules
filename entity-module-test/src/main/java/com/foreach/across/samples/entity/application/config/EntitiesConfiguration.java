@@ -16,9 +16,29 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.config.EntityConfigurer;
+import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.registry.EntityFactory;
+import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
+import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.ViewCreationContext;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.samples.entity.EntityModuleTestApplication;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.core.EntityInformation;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+
+import java.util.*;
+import java.util.function.UnaryOperator;
 
 /**
  * @author Arne Vandamme
@@ -26,6 +46,150 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableAcrossJpaRepositories(basePackageClasses = EntityModuleTestApplication.class)
-public class EntitiesConfiguration
+public class EntitiesConfiguration implements EntityConfigurer
 {
+	@Override
+	public void configure( EntitiesConfigurationBuilder entities ) {
+		// configuration of a dummy entity represented by a map, requires manual configuration of pretty much everything:
+		// entity configuration, the properties, the backing model, the views - nothing will have been created up front
+		List<Map<String, Object>> categories = new ArrayList<>();
+		Map<String, Object> tv = new HashMap<>();
+		tv.put( "id", "tv" );
+		tv.put( "name", "Televisions" );
+		categories.add( tv );
+
+		entities.create()
+		        .name( "category" )
+		        .entityType( Map.class, false )
+		        .displayName( "Category" )
+		        .attribute( Validator.class, categoryValidator() )
+		        .properties(
+				        props -> props
+						        .property( "id" )
+						        .displayName( "Id" )
+						        .propertyType( String.class )
+						        .attribute( EntityAttributes.CONTROL_NAME, "[id]" )
+						        .attribute( TextboxFormElement.Type.class, TextboxFormElement.Type.TEXT )
+						        .writable( true )
+						        .spelValueFetcher( "get('id')" )
+						        .order( 1 )
+						        .and()
+						        .property( "name" )
+						        .displayName( "Name" )
+						        .propertyType( String.class )
+						        .attribute( EntityAttributes.CONTROL_NAME, "[name]" )
+						        .attribute( TextboxFormElement.Type.class, TextboxFormElement.Type.TEXT )
+						        .writable( true )
+						        .spelValueFetcher( "get('name')" )
+						        .order( 2 )
+		        )
+		        .entityModel(
+				        model -> {
+					        UnaryOperator<Object> saveMethod = cat -> {
+						        Map<String, Object> category = (Map<String, Object>) cat;
+						        Optional<Map<String, Object>> existing = categories
+								        .stream()
+								        .filter( m -> m.get( "id" ).equals( category.get( "id" ) ) )
+								        .findFirst();
+
+						        if ( existing.isPresent() ) {
+							        existing.ifPresent( e -> e.putAll( category ) );
+						        }
+						        else {
+							        categories.add( category );
+						        }
+
+						        return category;
+					        };
+
+					        model
+							        .entityFactory( new CategoryEntityFactory() )
+							        .entityInformation( new CategoryEntityInformation() )
+							        .labelPrinter( ( o, locale ) -> (String) ( (Map) o ).get( "name" ) )
+							        .findOneMethod( id -> categories.stream()
+							                                        .filter( m -> id.equals( m.get( "id" ) ) )
+							                                        .findFirst().orElse( null ) )
+							        .saveMethod( saveMethod )
+							        .deleteMethod( categories::remove );
+				        }
+		        )
+		        .listView( lvb -> lvb.pageFetcher( new EntityListViewPageFetcher()
+		        {
+			        @Override
+			        public Page fetchPage( ViewCreationContext viewCreationContext,
+			                               Pageable pageable,
+			                               EntityView model ) {
+				        return new PageImpl<>( categories );
+			        }
+		        } ) )
+		        .createFormView( fvb -> fvb.showProperties( "id", "name" ) )
+		        .updateFormView( fvb -> fvb.showProperties( "name" ) )
+		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
+		        .show();
+
+	}
+
+	@Bean
+	protected CategoryValidator categoryValidator() {
+		return new CategoryValidator();
+	}
+
+	private static class CategoryValidator extends EntityValidatorSupport<Map<String, Object>>
+	{
+		@Override
+		public boolean supports( Class<?> aClass ) {
+			return Map.class.equals( aClass );
+		}
+
+		@Override
+		protected void postValidation( Map<String, Object> entity, Errors errors ) {
+			String prefix = StringUtils.removeEnd( errors.getNestedPath(), "." );
+			errors.setNestedPath( "" );
+
+			if ( StringUtils.defaultString( Objects.toString( entity.get( "id" ) ) ).length() == 0 ) {
+				errors.rejectValue( prefix + "[id]", "NotBlank" );
+			}
+			if ( StringUtils.defaultString( Objects.toString( entity.get( "name" ) ) ).length() == 0 ) {
+				errors.rejectValue( prefix + "[name]", "NotBlank" );
+			}
+
+			errors.pushNestedPath( "entity" );
+		}
+	}
+
+	private static class CategoryEntityFactory implements EntityFactory<Object>
+	{
+		@Override
+		public Object createNew( Object... args ) {
+			return new HashMap<>();
+		}
+
+		@Override
+		public Object createDto( Object entity ) {
+			return new HashMap<>( (Map<?, ?>) entity );
+		}
+	}
+
+	private static class CategoryEntityInformation implements EntityInformation<Map, String>
+	{
+		@Override
+		public boolean isNew( Map map ) {
+			return map.containsKey( "id" );
+		}
+
+		@Override
+		public String getId( Map map ) {
+			return (String) map.get( "id" );
+		}
+
+		@Override
+		public Class<String> getIdType() {
+			return String.class;
+		}
+
+		@Override
+		public Class<Map> getJavaType() {
+			return Map.class;
+		}
+	}
 }

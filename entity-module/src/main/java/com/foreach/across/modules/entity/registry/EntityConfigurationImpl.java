@@ -43,7 +43,7 @@ import java.util.Map;
 public class EntityConfigurationImpl<T> extends AttributeSupport implements MutableEntityConfiguration<T>
 {
 	private final String name;
-	private final Class<T> entityType;
+	private final Class<? extends T> entityType;
 	private final Map<String, EntityViewFactory> registeredViews = new HashMap<>();
 	private final Map<String, EntityAssociation> entityAssociations = new HashMap<>();
 
@@ -63,7 +63,7 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 		this( StringUtils.uncapitalize( entityType.getSimpleName() ), entityType );
 	}
 
-	public EntityConfigurationImpl( String name, Class<T> entityType ) {
+	public EntityConfigurationImpl( String name, Class<? extends T> entityType ) {
 		Assert.notNull( entityType );
 		Assert.notNull( name );
 
@@ -83,7 +83,7 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	}
 
 	@Override
-	public Class<T> getEntityType() {
+	public Class<? extends T> getEntityType() {
 		return entityType;
 	}
 

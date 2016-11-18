@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.registry.ConfigurableEntityViewRegistry;
 import com.foreach.across.modules.entity.views.*;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.util.Assert;
 
 import java.util.ArrayDeque;
@@ -37,19 +36,12 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 {
 	private final Map<String, Collection<Consumer<EntityListViewFactoryBuilder>>> listViewConsumers
 			= new LinkedHashMap<>();
+	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> deleteViewConsumers
+			= new LinkedHashMap<>();
 	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> formViewConsumers
 			= new LinkedHashMap<>();
 	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> customViewConsumers
 			= new LinkedHashMap<>();
-
-	private final BeanFactory beanFactory;
-
-	/**
-	 * @param beanFactory used for creating the builders
-	 */
-	protected AbstractWritableAttributesAndViewsBuilder( BeanFactory beanFactory ) {
-		this.beanFactory = beanFactory;
-	}
 
 	/**
 	 * Configure the default list view builder for the entity being configured.
@@ -120,7 +112,8 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder deleteFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		return formView( EntityFormView.DELETE_VIEW_NAME, consumer );
+		deleteViewConsumers.computeIfAbsent( EntityFormView.DELETE_VIEW_NAME, k -> new ArrayDeque<>() ).add( consumer );
+		return this;
 	}
 
 	/**
@@ -155,6 +148,8 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 		registerViews( EntityListViewFactoryBuilder.class, EntityListViewFactory.class, listViewConsumers,
 		               viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityFormViewFactory.class, formViewConsumers, viewRegistry );
+		registerViews( EntityViewFactoryBuilder.class, EntityDeleteViewFactory.class, deleteViewConsumers,
+		               viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityViewViewFactory.class, customViewConsumers, viewRegistry );
 	}
 

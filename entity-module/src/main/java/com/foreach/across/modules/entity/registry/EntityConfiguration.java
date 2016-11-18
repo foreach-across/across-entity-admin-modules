@@ -56,7 +56,7 @@ public interface EntityConfiguration<T> extends ReadableAttributes, EntityViewRe
 	/**
 	 * @return simple class that instances of this entity are.
 	 */
-	Class<T> getEntityType();
+	Class<? extends T> getEntityType();
 
 	/**
 	 * @return basic model for performing entity operations

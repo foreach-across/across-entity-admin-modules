@@ -16,6 +16,8 @@
 package com.foreach.across.modules.entity;
 
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Contains common Entity attribute keys.
@@ -23,9 +25,25 @@ import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 public interface EntityAttributes
 {
 	/**
+	 * If set, contains the control name that should be used for form elements.
+	 */
+	String CONTROL_NAME = EntityPropertyDescriptor.class + ".controlName";
+
+	/**
 	 * If set, this attribute should contain the
 	 * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertySelector} to be used for selecting
 	 * the members of a {@link FieldsetFormElement}.
 	 */
 	String FIELDSET_PROPERTY_SELECTOR = FieldsetFormElement.class.getName() + ".EntityPropertySelector";
+
+	/**
+	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.
+	 * If an attribute {@link #CONTROL_NAME} is present, it will be used, else the regular name will be used.
+	 *
+	 * @param descriptor of the property
+	 * @return control name to use
+	 */
+	static String controlName( EntityPropertyDescriptor descriptor ) {
+		return StringUtils.defaultString( descriptor.getAttribute( CONTROL_NAME, String.class ), descriptor.getName() );
+	}
 }

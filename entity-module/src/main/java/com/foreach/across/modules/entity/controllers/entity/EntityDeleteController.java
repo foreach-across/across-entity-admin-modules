@@ -94,9 +94,8 @@ public class EntityDeleteController extends EntityControllerSupport
 				return adminWeb.redirect( entityConfiguration.getAttribute( EntityLinkBuilder.class )
 				                                             .overview() );
 			}
-			catch ( Exception e ) {
-				model.addAttribute( "errorMessage", "feedback.entityDeleteFailed" );
-				model.addAttribute( "errorDetails", e.getMessage() );
+			catch ( RuntimeException e ) {
+				buildExceptionLoggingModel( entityConfiguration, e, model, "feedback.entityDeleteFailed" );
 			}
 		}
 

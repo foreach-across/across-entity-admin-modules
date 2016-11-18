@@ -67,7 +67,7 @@ public class EntitiesConfigurationBuilder
 	 *
 	 * @return configuration builder
 	 */
-	public EntityConfigurationBuilder create() {
+	public EntityConfigurationBuilder<Object> create() {
 		EntityConfigurationBuilder newBuilder = createConfigurationBuilder();
 		newConfigurationBuilders.add( newBuilder );
 		return newBuilder;

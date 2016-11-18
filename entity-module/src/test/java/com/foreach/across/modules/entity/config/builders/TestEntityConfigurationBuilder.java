@@ -273,7 +273,8 @@ public class TestEntityConfigurationBuilder
 	public void newViewsOfRightType() {
 		builder.view( "customView", vb -> vb.template( "custom-template" ) )
 		       .formView( "formView", fvb -> fvb.template( "form-template" ) )
-		       .listView( "listView", lvb -> lvb.template( "list-template" ) );
+		       .listView( "listView", lvb -> lvb.template( "list-template" ) )
+		       .deleteFormView( dvb -> dvb.template( "delete-template" ) );
 
 		EntityViewFactoryProvider viewFactoryProvider = mock( EntityViewFactoryProvider.class );
 		when( beanFactory.getBean( EntityViewFactoryProvider.class ) ).thenReturn( viewFactoryProvider );
@@ -287,13 +288,18 @@ public class TestEntityConfigurationBuilder
 		EntityViewViewFactory customViewFactory = mock( EntityViewViewFactory.class );
 		when( viewFactoryProvider.create( config, EntityViewViewFactory.class ) ).thenReturn( customViewFactory );
 
+		EntityDeleteViewFactory deleteViewFactory = mock( EntityDeleteViewFactory.class );
+		when( viewFactoryProvider.create( config, EntityDeleteViewFactory.class ) ).thenReturn( deleteViewFactory );
+
 		builder.apply( config, false );
 
-		InOrder inOrder = inOrder( config, listViewFactory, formViewFactory, customViewFactory );
+		InOrder inOrder = inOrder( config, listViewFactory, formViewFactory, deleteViewFactory, customViewFactory );
 		inOrder.verify( listViewFactory ).setTemplate( "list-template" );
 		inOrder.verify( config ).registerView( "listView", listViewFactory );
 		inOrder.verify( formViewFactory ).setTemplate( "form-template" );
 		inOrder.verify( config ).registerView( "formView", formViewFactory );
+		inOrder.verify( deleteViewFactory ).setTemplate( "delete-template" );
+		inOrder.verify( config ).registerView( EntityFormView.DELETE_VIEW_NAME, deleteViewFactory );
 		inOrder.verify( customViewFactory ).setTemplate( "custom-template" );
 		inOrder.verify( config ).registerView( "customView", customViewFactory );
 	}

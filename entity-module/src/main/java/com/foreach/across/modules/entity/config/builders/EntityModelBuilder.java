@@ -37,7 +37,7 @@ import java.util.function.UnaryOperator;
 public class EntityModelBuilder<T>
 {
 	private EntityFactory<T> entityFactory;
-	private EntityInformation<T, Serializable> entityInformation;
+	private EntityInformation<?, ?> entityInformation;
 	private Printer<T> labelPrinter;
 
 	private Function<Serializable, T> findOneMethod;
@@ -62,7 +62,7 @@ public class EntityModelBuilder<T>
 	 * @param entityInformation to set
 	 * @return current builder
 	 */
-	public EntityModelBuilder<T> entityInformation( EntityInformation<T, Serializable> entityInformation ) {
+	public EntityModelBuilder<T> entityInformation( EntityInformation<?, ?> entityInformation ) {
 		this.entityInformation = entityInformation;
 		return this;
 	}
@@ -147,7 +147,7 @@ public class EntityModelBuilder<T>
 			model.setEntityFactory( entityFactory );
 		}
 		if ( entityInformation != null ) {
-			model.setEntityInformation( entityInformation );
+			model.setEntityInformation( (EntityInformation<T, Serializable>) entityInformation );
 		}
 		if ( labelPrinter != null ) {
 			model.setLabelPrinter( labelPrinter );

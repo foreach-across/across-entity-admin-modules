@@ -55,6 +55,6 @@ public interface EntityConfigurationProvider
 	 * @param registerForClass true if the property registry should be the main registry for that type
 	 * @return pre-configured entity configuration
 	 */
-	<T> MutableEntityConfiguration<T> create( String name, Class<T> entityType, boolean registerForClass );
+	<T> MutableEntityConfiguration<T> create( String name, Class<? extends T> entityType, boolean registerForClass );
 
 }

@@ -50,7 +50,6 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 
 	@Autowired
 	public EntityAssociationBuilder( AutowireCapableBeanFactory beanFactory ) {
-		super( beanFactory );
 		this.beanFactory = beanFactory;
 	}
 

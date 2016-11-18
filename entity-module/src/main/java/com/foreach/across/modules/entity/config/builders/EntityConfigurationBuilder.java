@@ -48,7 +48,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 
 	private String name;
 	private String displayName;
-	private Class<T> entityType;
+	private Class<? extends T> entityType;
 	private boolean registerForClass = false;
 	private EntityConfigurationAllowableActionsBuilder allowableActionsBuilder;
 	private Boolean hidden;
@@ -66,7 +66,6 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 
 	@Autowired
 	public EntityConfigurationBuilder( AutowireCapableBeanFactory beanFactory ) {
-		super( beanFactory );
 		this.beanFactory = beanFactory;
 	}
 
@@ -107,7 +106,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * @param registerForClass true if the property registry should be the main registry for that class
 	 * @return current builder
 	 */
-	public EntityConfigurationBuilder<T> entityType( Class<T> entityType, boolean registerForClass ) {
+	public EntityConfigurationBuilder<T> entityType( Class<? extends T> entityType, boolean registerForClass ) {
 		this.entityType = entityType;
 		this.registerForClass = registerForClass;
 		return this;
