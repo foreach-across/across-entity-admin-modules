@@ -53,9 +53,11 @@ public class TestEntityPropertyComparators
 
 	@Test
 	public void compositeFilter() {
-		EntityPropertyComparators.Ordered defaultOrder =  new EntityPropertyComparators.Ordered( null, "id", "name", "value", "class" );
-		Collections.sort( descriptors, EntityPropertyComparators.composite(
-				new EntityPropertyComparators.Ordered( "value", "name" ), defaultOrder ) );
+		EntityPropertyComparators.Ordered defaultOrder
+				= new EntityPropertyComparators.Ordered( null, "id", "name", "value", "class" );
+		Collections.sort( descriptors,
+		                  new EntityPropertyComparators.Ordered( "value", "name" ).thenComparing( defaultOrder )
+		);
 
 		assertEquals( "value", descriptors.get( 0 ).getName() );
 		assertEquals( "name", descriptors.get( 1 ).getName() );

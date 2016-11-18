@@ -26,6 +26,8 @@ import java.util.Map;
  */
 public class EntityViewCommand
 {
+	private String entityName;
+
 	@Valid
 	private Object entity;
 
@@ -33,6 +35,14 @@ public class EntityViewCommand
 	private Map<String, Object> extensions = new HashMap<>();
 
 	public EntityViewCommand() {
+	}
+
+	public String getEntityName() {
+		return entityName;
+	}
+
+	public void setEntityName( String entityName ) {
+		this.entityName = entityName;
 	}
 
 	/**

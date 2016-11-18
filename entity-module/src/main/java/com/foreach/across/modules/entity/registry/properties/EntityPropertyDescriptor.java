@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.core.support.ReadableAttributes;
+import com.foreach.across.modules.entity.config.builders.EntityPropertyDescriptorBuilder;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -50,4 +51,14 @@ public interface EntityPropertyDescriptor extends ReadableAttributes
 	 * @return the property registry that owns this property
 	 */
 	EntityPropertyRegistry getPropertyRegistry();
+
+	/**
+	 * Create a builder for a new {@link SimpleEntityPropertyDescriptor}.
+	 *
+	 * @param propertyName name of the property (unique within the registry)
+	 * @return builder instance
+	 */
+	static EntityPropertyDescriptorBuilder builder( String propertyName ) {
+		return new EntityPropertyDescriptorBuilder( propertyName );
+	}
 }

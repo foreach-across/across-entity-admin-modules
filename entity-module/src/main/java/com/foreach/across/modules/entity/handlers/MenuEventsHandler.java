@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 
 public class MenuEventsHandler
 {
@@ -43,13 +44,20 @@ public class MenuEventsHandler
 	@Event
 	public void adminMenu( AdminMenuEvent adminMenuEvent ) {
 		PathBasedMenuBuilder builder = adminMenuEvent.builder();
-		builder.item( "/entities", "Entity management" );
+		builder.group( "/entities", "Entity management" );
 
 		for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions();
 
 			if ( !entityConfiguration.isHidden() && allowableActions.contains( AllowableAction.READ ) ) {
 				EntityMessageCodeResolver messageCodeResolver = entityConfiguration.getEntityMessageCodeResolver();
+
+				Assert.notNull(
+						messageCodeResolver,
+						"A visible EntityConfiguration (" + entityConfiguration
+								.getName() + ") requires an EntityMessageCodeResolver"
+				);
+
 				EntityMessages messages = new EntityMessages( messageCodeResolver );
 				EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
 				AcrossModuleInfo moduleInfo = entityConfiguration.getAttribute( AcrossModuleInfo.class );

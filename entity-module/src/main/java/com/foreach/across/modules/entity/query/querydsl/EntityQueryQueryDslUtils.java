@@ -20,10 +20,10 @@ import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryExpression;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.mysema.query.BooleanBuilder;
-import com.mysema.query.support.Expressions;
-import com.mysema.query.types.*;
-import com.mysema.query.types.path.PathBuilder;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.*;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.PathBuilder;
 import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
@@ -83,7 +83,7 @@ public abstract class EntityQueryQueryDslUtils
 				return Expressions.predicate( Ops.NE, property, constant );
 			}
 			case CONTAINS: {
-				Path property = pathBuilder.get( condition.getProperty() );
+				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
 				return Expressions.predicate( Ops.CONTAINS_VALUE, property, constant );
 			}

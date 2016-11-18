@@ -98,7 +98,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	public <T> MutableEntityConfiguration<T> remove( String entityName ) {
-		MutableEntityConfiguration<T> registered = (MutableEntityConfiguration<T>) getEntityConfiguration( entityName );
+		MutableEntityConfiguration<T> registered = getEntityConfiguration( entityName );
 
 		if ( registered != null ) {
 			entityConfigurations.remove( registered );
@@ -109,7 +109,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	public <T> MutableEntityConfiguration<T> remove( Class<T> entityType ) {
-		MutableEntityConfiguration<T> registered = getMutableEntityConfiguration( entityType );
+		MutableEntityConfiguration<T> registered = getEntityConfiguration( entityType );
 
 		if ( registered != null ) {
 			entityConfigurations.remove( registered );
@@ -125,10 +125,10 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> EntityConfiguration<T> getEntityConfiguration( Class<T> entityType ) {
+	public <T> MutableEntityConfiguration<T> getEntityConfiguration( Class<T> entityType ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
 			if ( configuration.getEntityType().equals( entityType ) ) {
-				return (EntityConfiguration<T>) configuration;
+				return (MutableEntityConfiguration<T>) configuration;
 			}
 		}
 
@@ -137,18 +137,13 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> EntityConfiguration<T> getEntityConfiguration( String entityName ) {
+	public <T> MutableEntityConfiguration<T> getEntityConfiguration( String entityName ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
 			if ( StringUtils.equals( configuration.getName(), entityName ) ) {
-				return (EntityConfiguration<T>) configuration;
+				return (MutableEntityConfiguration<T>) configuration;
 			}
 		}
 
 		return null;
-	}
-
-	@Override
-	public <T> MutableEntityConfiguration<T> getMutableEntityConfiguration( Class<T> entityType ) {
-		return (MutableEntityConfiguration<T>) getEntityConfiguration( entityType );
 	}
 }

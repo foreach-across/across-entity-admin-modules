@@ -19,6 +19,7 @@ import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.support.MethodValueFetcher;
 import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
@@ -28,6 +29,7 @@ import java.lang.reflect.Method;
  * @author Arne Vandamme
  */
 // todo: when creating from parent, dispatch to attribute cloning
+@Service
 public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescriptorFactory
 {
 	@Override

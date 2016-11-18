@@ -48,48 +48,52 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 	private ConversionService mvcConversionService;
 
 	@Override
-	public void configure( EntitiesConfigurationBuilder configuration ) {
-		EntityConfigurationBuilder<Auditable> builder = configuration.assignableTo( Auditable.class );
-		EntityConfigurationBuilder.PropertyRegistryBuilder properties = builder.properties();
+	public void configure( EntitiesConfigurationBuilder entities ) {
+		EntityConfigurationBuilder<?> builder = entities
+				.assignableTo( Auditable.class )
+				.properties(
+						props -> {
+							// Auditable properties are set automatically and should not be set through the interface,
+							// we make them hidden so they are only added explicitly, and we position them after other properties
+							props.property( "createdBy" )
+							     .writable( false ).hidden( true ).order( 1001 )
+							     .viewElementBuilder( ViewElementMode.VALUE, createdByValueBuilder() )
+							     .viewElementBuilder( ViewElementMode.LIST_VALUE, createdByValueBuilder() )
+							     .and()
+							     .property( "createdDate" )
+							     .writable( false ).hidden( true ).order( 1002 )
+							     .and()
+							     .property( "lastModifiedBy" )
+							     .writable( false ).hidden( true ).order( 1003 )
+							     .viewElementBuilder( ViewElementMode.VALUE, lastModifiedByValueBuilder() )
+							     .viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedByValueBuilder() )
+							     .and()
+							     .property( "lastModifiedDate" )
+							     .writable( false ).hidden( true ).order( 1004 );
 
-		// Auditable properties are set automatically and should not be set through the interface,
-		// we make them hidden so they are only added explicitly, and we position them after other properties
-		properties
-				.property( "createdBy" ).writable( false ).hidden( true ).order( 1001 )
-				.viewElementBuilder( ViewElementMode.VALUE, createdByValueBuilder() )
-				.viewElementBuilder( ViewElementMode.LIST_VALUE, createdByValueBuilder() )
-				.and()
-				.property( "createdDate" ).writable( false ).hidden( true ).order( 1002 ).and()
-				.property( "lastModifiedBy" ).writable( false ).hidden( true ).order( 1003 )
-				.viewElementBuilder( ViewElementMode.VALUE, lastModifiedByValueBuilder() )
-				.viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedByValueBuilder() )
-				.and()
-				.property( "lastModifiedDate" ).writable( false ).hidden( true ).order( 1004 );
+							// Create aggregated properties that sort on the dates
+							props.property( "created" )
+							     .displayName( "Created" )
+							     .writable( false ).readable( true ).hidden( true ).order( 1005 )
+							     .attribute( Sort.Order.class, new Sort.Order( "createdDate" ) )
+							     .viewElementBuilder( ViewElementMode.VALUE, createdValueBuilder() )
+							     .viewElementBuilder( ViewElementMode.LIST_VALUE, createdValueBuilder() );
 
-		// Create aggregated properties that sort on the dates
-		properties.property( "created" )
-		          .displayName( "Created" )
-		          .writable( false ).readable( true ).hidden( true ).order( 1005 )
-		          .attribute( Sort.Order.class, new Sort.Order( "createdDate" ) )
-		          .viewElementBuilder( ViewElementMode.VALUE, createdValueBuilder() )
-		          .viewElementBuilder( ViewElementMode.LIST_VALUE, createdValueBuilder() );
-
-		properties.property( "lastModified" )
-		          .displayName( "Last modified" )
-		          .writable( false ).readable( true ).hidden( true ).order( 1006 )
-		          .attribute( Sort.Order.class, new Sort.Order( "lastModifiedDate" ) )
-		          .viewElementBuilder( ViewElementMode.VALUE, lastModifiedValueBuilder() )
-		          .viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedValueBuilder() );
+							props.property( "lastModified" )
+							     .displayName( "Last modified" )
+							     .writable( false ).readable( true ).hidden( true ).order( 1006 )
+							     .attribute( Sort.Order.class, new Sort.Order( "lastModifiedDate" ) )
+							     .viewElementBuilder( ViewElementMode.VALUE, lastModifiedValueBuilder() )
+							     .viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedValueBuilder() );
+						}
+				);
 
 		// Add aggregated properties to views
-		builder.listView()
-		       .properties( ".", "lastModified" );
-
-		builder.updateFormView()
-		       .properties( ".", "created", "lastModified" ).and();
+		builder.listView( lvb -> lvb.showProperties( ".", "lastModified" ) )
+		       .updateFormView( fvb -> fvb.showProperties( ".", "created", "lastModified" ) );
 
 		// Add default sort to list views if no default sort configured
-		builder.addPostProcessor( entityConfiguration -> {
+		builder.postProcessor( entityConfiguration -> {
 			EntityListViewFactory listViewFactory = entityConfiguration.getViewFactory( EntityListView.VIEW_NAME );
 
 			if ( listViewFactory != null && listViewFactory.getDefaultSort() == null ) {

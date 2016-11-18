@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
@@ -152,7 +153,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 			return bootstrapUi
 					.numeric()
 					.name( propertyDescriptor.getName() )
-					.controlName( propertyDescriptor.getName() )
+					.controlName( EntityAttributes.controlName( propertyDescriptor ) )
 					.configuration( determineBaseConfiguration( propertyDescriptor ) )
 					.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) )
 					.postProcessor(

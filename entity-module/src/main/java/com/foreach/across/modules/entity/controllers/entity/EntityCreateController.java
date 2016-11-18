@@ -84,16 +84,20 @@ public class EntityCreateController extends EntityControllerSupport
 		EntityModel entityModel = entityConfiguration.getEntityModel();
 
 		if ( !bindingResult.hasErrors() ) {
-			entityModel.save( viewRequest.getEntity() );
+			try {
+				entityModel.save( viewRequest.getEntity() );
 
-			redirectAttributes.addFlashAttribute( "successMessage", "feedback.entityCreated" );
+				redirectAttributes.addFlashAttribute( "successMessage", "feedback.entityCreated" );
 
-			return adminWeb.redirect( entityConfiguration.getAttribute( EntityLinkBuilder.class )
-			                                             .update( viewRequest.getEntity() ) );
+				return adminWeb.redirect( entityConfiguration.getAttribute( EntityLinkBuilder.class )
+				                                             .update( viewRequest.getEntity() ) );
+			}
+			catch ( RuntimeException e ) {
+				buildExceptionLoggingModel( entityConfiguration, e, model, "feedback.entitySaveFailed" );
+			}
 		}
-		else {
-			return showCreateEntityForm( viewRequest, entityConfiguration, model );
-		}
+
+		return showCreateEntityForm( viewRequest, entityConfiguration, model );
 	}
 
 	@RequestMapping(method = RequestMethod.GET)

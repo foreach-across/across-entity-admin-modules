@@ -121,7 +121,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 
 	protected EntityViewElementBuilderContext<T> createEntityViewElementBuilderContext( T view ) {
 		EntityViewElementBuilderContext<T> builderContext = new EntityViewElementBuilderContext<>( view );
-		DefaultViewElementPostProcessor.add( builderContext, new ControlNamePrefixingPostProcessor<>( "entity." ) );
+		DefaultViewElementPostProcessor.add( builderContext, new ControlNamePrefixingPostProcessor<>( "entity" ) );
 
 		return builderContext;
 	}

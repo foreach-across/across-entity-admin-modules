@@ -15,47 +15,54 @@
   -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<title th:fragment="title">Modify entity</title>
+    <title th:fragment="title">Modify entity</title>
 </head>
 <body th:fragment="content">
 
 <h4 class="page-header" th:if="${pageTitle != null}" th:text="${pageTitle}">
-	Page title
+    Page title
 </h4>
 
 <div th:if="${successMessage}" class="alert alert-success alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
+    </button>
 	<span th:text="${messages.withNameSingular(successMessage, entityConfiguration.getLabel(entity))}">
 		Entity has been saved succesfully.
 	</span>
-	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
-	</button>
 </div>
 
 <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible" role="alert">
-	<span th:text="${messages.withNameSingular(errorMessage, entityConfiguration.getLabel(entity), errorDetails)}">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
+    </button>
+	<span th:utext="${messages.withNameSingular(errorMessage, entityConfiguration.getLabel(entity), errorDetails, errorCode)}">
 		Error while updating entity.
 	</span>
-	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
-	</button>
+
 </div>
 
 <div class="tabbable filled">
-	<ul class="nav nav-tabs">
-		<li th:each="tab : ${entityMenu.items}" th:classappend="${tab.selected}? 'active'">
-			<a th:href="@{${tab.url}}" th:text="${tab.title}">tab menu</a>
-		</li>
-		<!--
-		<li class="pull-right active">
-			<a href=""><span class="glyphicon glyphicon-remove"></span></a>
-		</li>
-		-->
-	</ul>
+    <ul class="nav nav-tabs">
+        <li th:each="tab : ${entityMenu.items}" th:classappend="${tab.selected}? 'active'">
+            <a th:href="@{${tab.url}}" th:text="${tab.title}">tab menu</a>
+        </li>
+        <!--
+        <li class="pull-right active">
+            <a href=""><span class="glyphicon glyphicon-remove"></span></a>
+        </li>
+        -->
+    </ul>
 
-	<div class="tab-content">
-		<div class="tab-pane active">
-			<across:view element="${viewElements}" />
-		</div>
-	</div>
+    <div class="tab-content" th:object="${viewRequest}">
+        <div class="tab-pane active">
+            <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
+                [[#{EntityModule.entities.feedback.validationErrors}]]
+                <ul class="global-errors" th:if="${#fields.hasGlobalErrors()}">
+                    <li th:each="error : ${#fields.globalErrors()}"><strong>[[${error}]]</strong></li>
+                </ul>
+            </div>
+            <across:view element="${viewElements}"/>
+        </div>
+    </div>
 
 </div>
 

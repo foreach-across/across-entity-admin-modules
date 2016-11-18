@@ -15,7 +15,8 @@
  */
 package com.foreach.across.modules.entity.generators.label;
 
-import com.foreach.across.modules.entity.registry.properties.TestProperties;
+import com.foreach.across.modules.entity.registry.properties.registrars.TestEntityPropertyRegistryDefaultPropertiesBuilder.Address;
+import com.foreach.across.modules.entity.registry.properties.registrars.TestEntityPropertyRegistryDefaultPropertiesBuilder.Customer;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import org.junit.Test;
 
@@ -28,12 +29,12 @@ public class TestSpelObjectValueFetcher
 {
 	@Test
 	public void testExpression() {
-		TestProperties.Customer customer = new TestProperties.Customer();
+		Customer customer = new Customer();
 		customer.setName( "some name" );
 		customer.setSomeValue( "some value" );
 		customer.setId( 123 );
 
-		TestProperties.Address address = new TestProperties.Address();
+		Address address = new Address();
 		address.setStreet( "my street" );
 		address.setNumber( 666 );
 

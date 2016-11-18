@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.config;
 
-import com.foreach.across.core.annotations.AcrossCondition;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.context.support.AcrossModuleMessageSource;
 import com.foreach.across.modules.entity.EntityModule;
@@ -26,11 +25,6 @@ import com.foreach.across.modules.entity.formatters.DateFormatter;
 import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactory;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactoryImpl;
 import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
 import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
@@ -39,8 +33,10 @@ import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProce
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.format.datetime.DateFormatterRegistrar;
@@ -48,20 +44,14 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import javax.annotation.PostConstruct;
-
 @Configuration
+@ComponentScan(basePackageClasses = EntityRegistry.class)
 public class EntityModuleConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityModuleConfiguration.class );
 
 	@Autowired
-	private FormattingConversionService mvcConversionService;
-
-	@PostConstruct
-	public void init() {
-		EntityRegistry entityRegistry = entityRegistry();
-
+	public void registerConverters( FormattingConversionService mvcConversionService, EntityRegistry entityRegistry ) {
 		mvcConversionService.addConverter( new StringToEntityConfigurationConverter( entityRegistry ) );
 		mvcConversionService.addConverter( new EntityConverter<>( mvcConversionService, entityRegistry ) );
 		mvcConversionService.addConverter( new EntityToStringConverter( entityRegistry ) );
@@ -72,14 +62,9 @@ public class EntityModuleConfiguration
 		mvcConversionService.addFormatterForFieldAnnotation( new TemporalFormatterFactory() );
 	}
 
-	@Bean
-	public EntityRegistryImpl entityRegistry() {
-		return new EntityRegistryImpl();
-	}
-
 	@Bean(name = EntityModule.VALIDATOR)
 	@Exposed
-	@AcrossCondition("not hasBean('" + EntityModule.VALIDATOR + "')")
+	@ConditionalOnMissingBean(name = EntityModule.VALIDATOR)
 	public SmartValidator entityValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
 		localValidatorFactoryBean.setValidationMessageSource( messageSource() );
@@ -92,17 +77,6 @@ public class EntityModuleConfiguration
 	@Bean
 	public ModuleEntityRegistration moduleEntityRegistration() {
 		return new ModuleEntityRegistration();
-	}
-
-	@Bean
-	@Exposed
-	public EntityPropertyRegistryFactory entityPropertyRegistryFactory() {
-		return new EntityPropertyRegistryFactoryImpl();
-	}
-
-	@Bean
-	public EntityPropertyDescriptorFactory entityPropertyDescriptorFactory() {
-		return new EntityPropertyDescriptorFactoryImpl();
 	}
 
 	@Bean

@@ -20,12 +20,17 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Registry containing the property information for a particular entity type.
+ * Registry containing a collection of property information.  Usually for a particular entity type,
+ * although this is not required.
+ *
+ * @see DefaultEntityPropertyRegistry
+ * @see EntityPropertyRegistryProvider
  */
 public interface EntityPropertyRegistry
 {
 	/**
 	 * Name of the label property.
+	 * @see com.foreach.across.modules.entity.registry.properties.registrars.LabelPropertiesRegistrar
 	 */
 	String LABEL = "#label";
 
@@ -46,18 +51,9 @@ public interface EntityPropertyRegistry
 
 	List<EntityPropertyDescriptor> select( EntityPropertySelector selector );
 
-	// todo: move
-	void setDefaultOrder( String... propertyNames );
-
-	// todo: move
-	void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder );
-
 	Collection<EntityPropertyDescriptor> getRegisteredDescriptors();
 
 	Comparator<EntityPropertyDescriptor> getDefaultOrder();
-
-	// todo: move
-	void setDefaultFilter( EntityPropertyFilter filter );
 
 	EntityPropertyFilter getDefaultFilter();
 }

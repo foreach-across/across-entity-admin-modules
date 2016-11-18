@@ -16,10 +16,9 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.registry.DefaultEntityModel;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.EntityModel;
-import com.foreach.across.modules.entity.registry.EntityModelImpl;
-import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.repository.core.EntityInformation;
@@ -32,7 +31,6 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -41,49 +39,32 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings("unchecked")
 public class TestEntityModelBuilder
 {
-	private EntityConfigurationBuilder<Object> parent;
-	private MutableEntityConfiguration<Object> configuration;
 	private EntityModelBuilder<Object> modelBuilder;
-	private EntityModelImpl<Object, Serializable> model;
+	private DefaultEntityModel<Object, Serializable> model;
 
 	@Before
 	public void before() {
-		parent = mock( EntityConfigurationBuilder.class );
-		configuration = mock( MutableEntityConfiguration.class );
-		modelBuilder = new EntityModelBuilder<>( parent );
-		model = mock( EntityModelImpl.class );
-		when( configuration.getEntityModel() ).thenReturn( model );
+		modelBuilder = new EntityModelBuilder<>();
+		model = mock( DefaultEntityModel.class );
 	}
 
 	@Test
-	public void andReturnsParent() {
-		assertSame( parent, modelBuilder.and() );
-	}
+	public void newEntityModel() {
+		Consumer delete = mock( Consumer.class );
+		EntityModel newModel = modelBuilder.deleteMethod( delete ).build();
 
-	@Test
-	public void applyIgnoresNonEntityModelImpl() {
-		EntityModel otherModel = mock( EntityModel.class );
-		when( configuration.getEntityModel() ).thenReturn( otherModel );
+		assertNotNull( newModel );
+		assertTrue( newModel instanceof DefaultEntityModel );
 
-		Consumer<EntityModel> postProcessor = mock( Consumer.class );
-		modelBuilder.postProcessor( postProcessor ).apply( configuration );
-
-		verify( configuration, never() ).setEntityModel( any() );
-		verify( postProcessor ).accept( otherModel );
-	}
-
-	@Test
-	public void newEntityModelIsCreatedIfNoneWasAttached() {
-		reset( configuration );
-		modelBuilder.apply( configuration );
-		verify( configuration ).setEntityModel( any( EntityModelImpl.class ) );
+		newModel.delete( "test" );
+		verify( delete ).accept( "test" );
 	}
 
 	@Test
 	public void entityFactory() {
 		EntityFactory value = mock( EntityFactory.class );
 		assertSame( modelBuilder, modelBuilder.entityFactory( value ) );
-		modelBuilder.apply( configuration );
+		modelBuilder.apply( model );
 		verify( model ).setEntityFactory( value );
 		verifyNoMoreInteractions( model );
 	}
@@ -92,7 +73,7 @@ public class TestEntityModelBuilder
 	public void entityInformation() {
 		EntityInformation value = mock( EntityInformation.class );
 		assertSame( modelBuilder, modelBuilder.entityInformation( value ) );
-		modelBuilder.apply( configuration );
+		modelBuilder.apply( model );
 		verify( model ).setEntityInformation( value );
 		verifyNoMoreInteractions( model );
 	}
@@ -101,7 +82,7 @@ public class TestEntityModelBuilder
 	public void labelPrinter() {
 		Printer value = mock( Printer.class );
 		assertSame( modelBuilder, modelBuilder.labelPrinter( value ) );
-		modelBuilder.apply( configuration );
+		modelBuilder.apply( model );
 		verify( model ).setLabelPrinter( value );
 		verifyNoMoreInteractions( model );
 	}
@@ -110,7 +91,7 @@ public class TestEntityModelBuilder
 	public void findOneMethod() {
 		Function value = mock( Function.class );
 		assertSame( modelBuilder, modelBuilder.findOneMethod( value ) );
-		modelBuilder.apply( configuration );
+		modelBuilder.apply( model );
 		verify( model ).setFindOneMethod( value );
 		verifyNoMoreInteractions( model );
 	}
@@ -119,7 +100,7 @@ public class TestEntityModelBuilder
 	public void saveMethod() {
 		UnaryOperator value = mock( UnaryOperator.class );
 		assertSame( modelBuilder, modelBuilder.saveMethod( value ) );
-		modelBuilder.apply( configuration );
+		modelBuilder.apply( model );
 		verify( model ).setSaveMethod( value );
 		verifyNoMoreInteractions( model );
 	}
@@ -128,7 +109,7 @@ public class TestEntityModelBuilder
 	public void deleteMethod() {
 		Consumer value = mock( Consumer.class );
 		assertSame( modelBuilder, modelBuilder.deleteMethod( value ) );
-		modelBuilder.apply( configuration );
+		modelBuilder.apply( model );
 		verify( model ).setDeleteMethod( value );
 		verifyNoMoreInteractions( model );
 	}
@@ -143,8 +124,8 @@ public class TestEntityModelBuilder
 			return null;
 		} ).when( model ).setDeleteMethod( any( Consumer.class ) );
 
-		assertSame( modelBuilder, modelBuilder.deleteMethodById( value ) );
-		modelBuilder.apply( configuration );
+		assertSame( modelBuilder, modelBuilder.deleteByIdMethod( value ) );
+		modelBuilder.apply( model );
 		verify( model ).setDeleteMethod( any( Consumer.class ) );
 		verifyNoMoreInteractions( model );
 

@@ -101,9 +101,8 @@ public class AssociatedEntityDeleteController extends AssociatedEntityController
 
 				return adminWeb.redirect( linkBuilder.overview() );
 			}
-			catch ( Exception e ) {
-				model.addAttribute( "errorMessage", "feedback.entityDeleteFailed" );
-				model.addAttribute( "errorDetails", e.getMessage() );
+			catch ( RuntimeException e ) {
+				buildExceptionLoggingModel( entityConfiguration, e, model, "feedback.entityDeleteFailed" );
 			}
 		}
 

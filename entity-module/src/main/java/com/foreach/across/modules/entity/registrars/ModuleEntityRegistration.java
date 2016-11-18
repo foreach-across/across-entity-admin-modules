@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.registrars;
 
-import com.foreach.across.core.annotations.AcrossEventHandler;
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.core.context.AcrossContextUtils;
@@ -31,9 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Takes care of running all registered {@link com.foreach.across.modules.entity.registrars.EntityRegistrar}
@@ -49,7 +46,6 @@ import java.util.List;
  * @see com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder
  * @see com.foreach.across.modules.entity.registrars.EntityRegistrar
  */
-@AcrossEventHandler
 public class ModuleEntityRegistration
 {
 	@Autowired
@@ -89,25 +85,13 @@ public class ModuleEntityRegistration
 		AcrossContextBeanRegistry beanRegistry
 				= AcrossContextUtils.getBeanRegistry( contextBootstrappedEvent.getContext() );
 
-		List<EntitiesConfigurationBuilder> builders = new ArrayList<>();
-
-		// Configure the builders
+		// Configure the configuration builder
+		EntitiesConfigurationBuilder builder = new EntitiesConfigurationBuilder( beanFactory );
 		for ( EntityConfigurer configurer : beanRegistry.getBeansOfType( EntityConfigurer.class, true ) ) {
-			EntitiesConfigurationBuilder builder = new EntitiesConfigurationBuilder();
 			configurer.configure( builder );
-
-			builders.add( builder );
 		}
 
-		// Apply the builders to the registry
-		for ( EntitiesConfigurationBuilder builder : builders ) {
-			builder.apply( entityRegistry, beanFactory );
-		}
-
-		// Run the builder post processors
-		for ( EntitiesConfigurationBuilder builder : builders ) {
-			builder.postProcess( entityRegistry );
-		}
+		builder.apply( entityRegistry );
 	}
 
 	private void applyModule( AcrossModuleInfo moduleInfo ) {
