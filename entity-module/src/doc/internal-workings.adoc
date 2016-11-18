@@ -1,0 +1,10 @@
+
+default entityconfiguration is created by the entityconfigurationprovider
+default entitypropertyregistry is created by the entitypropertyregistryprovider
+default entitypropertydescriptor is created by the entitypropertydescriptorprovider
+default entityviewfactory instance if created by the entityviewfactoryprovider
+
+the default implementations often use beanfactory createBean of the types requested
+
+the entitiesconfigurationbuilder allows customization of the default created entity configurations
+by providing a central interface to builder instances

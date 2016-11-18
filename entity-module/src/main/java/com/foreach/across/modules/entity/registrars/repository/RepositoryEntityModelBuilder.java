@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.registrars.repository;
 
-import com.foreach.across.modules.entity.registry.EntityModelImpl;
+import com.foreach.across.modules.entity.registry.DefaultEntityModel;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.PersistentEntityFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -46,7 +46,7 @@ public class RepositoryEntityModelBuilder
 				= entityConfiguration.getAttribute( RepositoryFactoryInformation.class );
 		Repository<T, ?> repository = entityConfiguration.getAttribute( Repository.class );
 
-		EntityModelImpl<T, Serializable> entityModel = new EntityModelImpl<>();
+		DefaultEntityModel<T, Serializable> entityModel = new DefaultEntityModel<>();
 		RepositoryInvoker repositoryInvoker
 				= createRepositoryInvoker( repositoryFactoryInformation.getRepositoryInformation(),
 				                           repository, mvcConversionService );

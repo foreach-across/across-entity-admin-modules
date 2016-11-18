@@ -88,17 +88,21 @@ public class AssociatedEntityUpdateController extends AssociatedEntityController
 				entityConfiguration.association( associationName ).getTargetEntityConfiguration().getEntityModel();
 
 		if ( !bindingResult.hasErrors() ) {
-			associatedModel.save( viewRequest.getEntity() );
+			try {
+				associatedModel.save( viewRequest.getEntity() );
 
-			EntityLinkBuilder linkBuilder = (EntityLinkBuilder) model.get( EntityView.ATTRIBUTE_ENTITY_LINKS );
+				EntityLinkBuilder linkBuilder = (EntityLinkBuilder) model.get( EntityView.ATTRIBUTE_ENTITY_LINKS );
 
-			redirectAttributes.addFlashAttribute( "successMessage", "feedback.entityUpdated" );
+				redirectAttributes.addFlashAttribute( "successMessage", "feedback.entityUpdated" );
 
-			return adminWeb.redirect( linkBuilder.update( viewRequest.getEntity() ) );
+				return adminWeb.redirect( linkBuilder.update( viewRequest.getEntity() ) );
+			}
+			catch ( RuntimeException e ) {
+				buildExceptionLoggingModel( entityConfiguration, e, model, "feedback.entitySaveFailed" );
+			}
 		}
-		else {
-			return showUpdateEntityForm( entityConfiguration, sourceEntity, viewRequest, model );
-		}
+
+		return showUpdateEntityForm( entityConfiguration, sourceEntity, viewRequest, model );
 	}
 
 	@SuppressWarnings("unchecked")

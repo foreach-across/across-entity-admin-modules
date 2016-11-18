@@ -37,11 +37,11 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings("unchecked")
 public class TestEntityModel
 {
-	private EntityModelImpl<Object, Serializable> model;
+	private DefaultEntityModel<Object, Serializable> model;
 
 	@Before
 	public void before() {
-		model = new EntityModelImpl<>();
+		model = new DefaultEntityModel<>();
 	}
 
 	@Test(expected = IllegalArgumentException.class)

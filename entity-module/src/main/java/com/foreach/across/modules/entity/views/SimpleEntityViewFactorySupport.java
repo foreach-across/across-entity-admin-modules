@@ -25,8 +25,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.validation.DataBinder;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Base support class for {@link EntityViewFactory} implementations that supports the following features:
@@ -43,7 +43,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 {
 	public static final String CONTAINER = "_entityView";
 
-	private Collection<EntityViewProcessor<V, T>> processors = Collections.emptyList();
+	private Collection<EntityViewProcessor<V, T>> processors = new ArrayDeque<>();
 
 	private String template;
 	private MessageSource messageSource;
@@ -114,7 +114,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	 * @param processors A Collection of ViewPreProcessors
 	 */
 	public void setProcessors( Collection<EntityViewProcessor<V, T>> processors ) {
-		this.processors = processors;
+		this.processors.addAll( processors );
 	}
 
 	@Override

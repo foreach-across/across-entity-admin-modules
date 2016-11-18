@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registrars.EntityRegistrar;
 import com.foreach.across.modules.entity.registry.*;
-import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryPersistenceMetadataBuilder;
+import com.foreach.across.modules.entity.registry.properties.registrars.PersistenceMetadataPropertiesRegistrar;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import org.apache.commons.lang3.StringUtils;
@@ -77,7 +77,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 	private MessageSource messageSource;
 
 	@Autowired
-	private EntityPropertyRegistryPersistenceMetadataBuilder mappingMetaDataBuilder;
+	private PersistenceMetadataPropertiesRegistrar mappingMetaDataBuilder;
 
 	@EntityValidator
 	private SmartValidator entityValidator;
@@ -107,7 +107,6 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 				);
 				continue;
 			}
-
 
 			Class<?> entityType = ClassUtils.getUserClass(
 					repositoryFactoryInformation.getRepositoryInformation().getDomainType()
@@ -233,8 +232,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 	}
 
 	/**
-	 * Determine the best {@link EntityQueryExecutor} implementation
-	 * for this entity.
+	 * Determine the best {@link EntityQueryExecutor} implementation for this entity.
 	 */
 	private void registerEntityQueryExecutor( MutableEntityConfiguration entityConfiguration ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );

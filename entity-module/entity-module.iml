@@ -43,7 +43,6 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:4.3.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-web:4.3.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:1.4.0.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:1.4.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.17" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.across.modules:admin-web-module:2.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.across.modules:spring-security-module:2.0.0-SNAPSHOT" level="project" />
@@ -51,9 +50,8 @@
     <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:4.1.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-config:4.1.1.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.thymeleaf.extras:thymeleaf-extras-springsecurity4:2.1.2.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.thymeleaf.extras:thymeleaf-extras-springsecurity4:3.0.0.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.thymeleaf:thymeleaf:3.0.2.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: ognl:ognl:3.1.10" level="project" />
     <orderEntry type="library" name="Maven: org.attoparser:attoparser:2.0.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.unbescape:unbescape:1.1.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-validator:5.2.4.Final" level="project" />
@@ -96,6 +94,8 @@
     <orderEntry type="library" name="Maven: net.engio:mbassador:1.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.zaxxer:HikariCP:2.4.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-test:4.3.2.RELEASE" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-test:1.4.0.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:1.4.0.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hsqldb:hsqldb:2.3.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: xmlunit:xmlunit:1.6" level="project" />

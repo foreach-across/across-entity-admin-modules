@@ -34,24 +34,25 @@ import com.foreach.across.modules.web.ui.elements.TextViewElement;
 public class UndeletableEntityUiConfiguration implements EntityConfigurer
 {
 	@Override
-	public void configure( EntitiesConfigurationBuilder configuration ) {
-		configuration.assignableTo( Undeletable.class )
-		             .updateFormView()
-		             .addProcessor( new WebViewProcessorAdapter()
-		             {
-			             @Override
-			             protected void extendViewModel( EntityView view ) {
-				             Undeletable undeletable = view.getEntity();
+	public void configure( EntitiesConfigurationBuilder entities ) {
+		entities.assignableTo( Undeletable.class )
+		        .updateFormView(
+				        fvb -> fvb.viewProcessor( new WebViewProcessorAdapter()
+				        {
+					        @Override
+					        protected void extendViewModel( EntityView view ) {
+						        Undeletable undeletable = view.getEntity();
 
-				             if ( undeletable.isDeleted() ) {
-					             NodeViewElement message = new NodeViewElement( "div" );
-					             message.addCssClass( "alert", "alert-danger" );
-					             message.addChild( new TextViewElement( "You are watching a deleted entity." ) );
+						        if ( undeletable.isDeleted() ) {
+							        NodeViewElement message = new NodeViewElement( "div" );
+							        message.addCssClass( "alert", "alert-danger" );
+							        message.addChild( new TextViewElement( "You are watching a deleted entity." ) );
 
-					             view.getViewElements().addFirstChild( message );
-				             }
-				             //view.getViewElements().addFirst(  );
-			             }
-		             } );
+							        view.getViewElements().addFirstChild( message );
+						        }
+						        //view.getViewElements().addFirst(  );
+					        }
+				        } )
+		        );
 	}
 }

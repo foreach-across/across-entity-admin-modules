@@ -15,184 +15,313 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.registry.DefaultEntityModel;
+import com.foreach.across.modules.entity.registry.EntityConfigurationProvider;
 import com.foreach.across.modules.entity.registry.EntityModel;
-import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityListView;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
+import com.foreach.across.modules.entity.views.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.data.domain.Persistable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.function.Consumer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  */
+@RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("unchecked")
 public class TestEntityConfigurationBuilder
 {
-	private EntitiesConfigurationBuilder entities;
-	private MutableEntityRegistry entityRegistry;
+	@Mock
 	private AutowireCapableBeanFactory beanFactory;
 
-	private EntityConfigurationBuilder<Client> builder;
-	private MutableEntityConfiguration client, company;
+	@Mock
+	private EntityConfigurationProvider configurationProvider;
+
+	@Mock
+	private MutableEntityConfiguration<String> config;
+
+	private EntityConfigurationBuilder<String> builder;
 
 	@Before
 	public void before() {
-		entities = new EntitiesConfigurationBuilder();
-
-		entityRegistry = new EntityRegistryImpl();
-		beanFactory = mock( AutowireCapableBeanFactory.class );
-
-		client = mock( MutableEntityConfiguration.class );
-		when( client.getEntityType() ).thenReturn( Client.class );
-		when( client.getName() ).thenReturn( "client" );
-
-		company = mock( MutableEntityConfiguration.class );
-		when( company.getEntityType() ).thenReturn( Company.class );
-		when( company.getName() ).thenReturn( "company" );
-
-		entityRegistry.register( client );
-		entityRegistry.register( company );
-
-		builder = entities.entity( Client.class );
+		builder = spy( new EntityConfigurationBuilder<>( beanFactory ) );
+		when( beanFactory.getBean( EntityConfigurationProvider.class ) ).thenReturn( configurationProvider );
 	}
 
 	@Test
-	public void andReturnsParent() {
-		assertSame( entities, builder.and() );
+	@SuppressWarnings("unchecked")
+	public void propertiesAreAppliedInOrder() {
+		Consumer<EntityPropertyRegistryBuilder> one = mock( Consumer.class );
+		Consumer<EntityPropertyRegistryBuilder> two = mock( Consumer.class );
+
+		InOrder inOrder = inOrder( one, two );
+
+		builder.properties( one ).properties( two );
+
+		builder.apply( config );
+
+		inOrder.verify( one ).accept( any( EntityPropertyRegistryBuilder.class ) );
+		inOrder.verify( two ).accept( any( EntityPropertyRegistryBuilder.class ) );
 	}
 
 	@Test
-	public void attributesAreAdded() {
-		Company companyAttribute = new Company();
+	public void simpleBuildShouldExecutePostProcessors() {
+		MutableEntityConfiguration expected = mock( MutableEntityConfiguration.class );
 
-		builder.attribute( Company.class, companyAttribute );
-		builder.attribute( "attributeKey", 123 );
+		doReturn( expected ).when( builder ).build( true );
+		assertSame( expected, builder.build() );
+	}
 
-		builder.apply( entityRegistry, beanFactory );
+	@Test
+	public void simpleApplyShouldExecutePostProcessors() {
+		doAnswer( invocation -> null ).when( builder ).apply( config, true );
+		builder.apply( config );
+		verify( builder ).apply( config, true );
+	}
 
-		verify( client ).setAttribute( Company.class, companyAttribute );
-		verify( client ).setAttribute( "attributeKey", 123 );
+	@Test
+	public void buildWithPostProcessors() {
+		MutableEntityConfiguration expected = mock( MutableEntityConfiguration.class );
+		when( configurationProvider.create( "myEntity", String.class, false ) )
+				.thenReturn( expected );
+		doAnswer( invocation -> null ).when( builder ).apply( expected, true );
+
+		MutableEntityConfiguration<String> config
+				= builder.name( "myEntity" )
+				         .displayName( "My entity" )
+				         .entityType( String.class, false )
+				         .build( true );
+
+		assertSame( expected, config );
+		verify( expected, never() ).setDisplayName( anyString() );
+		verify( builder ).apply( expected, true );
+	}
+
+	@Test
+	public void buildWithoutPostProcessors() {
+		MutableEntityConfiguration expected = mock( MutableEntityConfiguration.class );
+		when( configurationProvider.create( "myEntity", String.class, false ) )
+				.thenReturn( expected );
+		doAnswer( invocation -> null ).when( builder ).apply( expected, false );
+
+		MutableEntityConfiguration<String> config
+				= builder.name( "myEntity" )
+				         .displayName( "My entity" )
+				         .entityType( String.class, false )
+				         .build( false );
+
+		assertSame( expected, config );
+		verify( expected, never() ).setDisplayName( anyString() );
+		verify( builder ).apply( expected, false );
 	}
 
 	@Test
 	public void postProcessorsAreAppliedInOrder() {
-		final List<String> processors = new ArrayList<>( 2 );
+		Consumer<MutableEntityConfiguration<String>> one = mock( Consumer.class );
+		Consumer<MutableEntityConfiguration<String>> two = mock( Consumer.class );
+		InOrder inOrder = inOrder( one, two );
 
-		builder.addPostProcessor( configuration -> {
-			assertSame( client, configuration );
-			processors.add( "one" );
-		} );
+		builder.postProcessor( one )
+		       .postProcessor( two );
 
-		builder.addPostProcessor( configuration -> {
-			assertSame( client, configuration );
-			processors.add( "two" );
-		} );
+		builder.postProcess( config );
 
-		builder.postProcess( entityRegistry );
-
-		assertEquals( Arrays.asList( "one", "two" ), processors );
+		inOrder.verify( one ).accept( config );
+		inOrder.verify( two ).accept( config );
 	}
 
 	@Test
-	public void hidden() {
-		builder.hidden( true );
-		builder.apply( entityRegistry, beanFactory );
-
-		verify( client ).setHidden( true );
-		verify( company, never() ).setHidden( true );
-	}
-
-	@Test
-	public void show() {
-		builder.show();
-		builder.apply( entityRegistry, beanFactory );
-
-		verify( client ).setHidden( false );
-		verify( company, never() ).setHidden( false );
-	}
-
-	@Test
-	public void assignableToBuilder() {
-		EntityConfigurationBuilder<Persistable> persistableBuilder
-				= entities.assignableTo( Persistable.class )
-				          .hide();
-
-		persistableBuilder.apply( entityRegistry, beanFactory );
-
-		verify( client ).setHidden( true );
-		verify( company ).setHidden( true );
-	}
-
-	@Test
-	public void hide() {
-		builder.hide();
-		builder.apply( entityRegistry, beanFactory );
-
-		verify( client ).setHidden( true );
-	}
-
-	@Test
-	public void viewBuildersAreSpecificType() {
-		AbstractEntityViewBuilder one = builder.view( "someView" );
-		assertNotNull( one );
-
-		AbstractEntityViewBuilder listOne = builder.listView();
-		assertNotNull( listOne );
-
-		AbstractEntityViewBuilder listTwo = builder.listView( EntityListView.VIEW_NAME );
-		assertSame( listOne, listTwo );
-
-		listTwo = builder.listView( "someListView" );
-		assertNotNull( listTwo );
-		assertNotSame( listOne, listTwo );
-
-		one = builder.createFormView();
-		assertNotNull( one );
-		assertSame( one, builder.formView( EntityFormView.CREATE_VIEW_NAME ) );
-
-		one = builder.updateFormView();
-		assertNotNull( one );
-		assertSame( one, builder.formView( EntityFormView.UPDATE_VIEW_NAME ) );
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void customEntityModel() {
+	public void applyWithPostProcessors() {
 		EntityModel model = mock( EntityModel.class );
 
-		EntityModelBuilder modelBuilder = builder.entityModel( model );
-		assertNotNull( modelBuilder );
-		assertSame( builder, modelBuilder.and() );
+		MutableEntityPropertyRegistry propertyRegistry = mock( MutableEntityPropertyRegistry.class );
+		when( config.getPropertyRegistry() ).thenReturn( propertyRegistry );
 
-		builder.apply( entityRegistry, beanFactory );
+		builder.name( "myEntity" )
+		       .displayName( "My entity" )
+		       .entityType( String.class, false )
+		       .hidden( true )
+		       .label( "name" )
+		       .entityModel( model )
+		       .attribute( "someAttribute", "someAttributeValue" )
+		       .apply( config, true );
 
-		verify( client ).setEntityModel( model );
+		verify( config ).setDisplayName( "My entity" );
+		verify( config ).setHidden( true );
+		verify( config ).setEntityModel( model );
+		verify( config ).setAttributes( Collections.singletonMap( "someAttribute", "someAttributeValue" ) );
+		verify( propertyRegistry ).getProperty( "name" );
+
+		verify( builder ).postProcess( config );
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	public void applyWithoutPostProcessors() {
+		EntityModel model = mock( EntityModel.class );
+
+		builder.name( "myEntity" )
+		       .displayName( "My entity" )
+		       .entityType( String.class, false )
+		       .hidden( true )
+		       .entityModel( model )
+		       .attribute( "someAttribute", "someAttributeValue" )
+		       .apply( config, false );
+
+		verify( config ).setDisplayName( "My entity" );
+		verify( config ).setHidden( true );
+		verify( config ).setEntityModel( model );
+		verify( config ).setAttributes( Collections.singletonMap( "someAttribute", "someAttributeValue" ) );
+
+		verify( builder, never() ).postProcess( config );
+	}
+
+	@Test
 	public void modifyEntityModel() {
+		Consumer delete = mock( Consumer.class );
+		Consumer<EntityModelBuilder<String>> one = mock( Consumer.class );
+		Consumer<EntityModelBuilder<String>> two = mock( Consumer.class );
+		InOrder inOrder = inOrder( one, two );
+
+		EntityModel model = new DefaultEntityModel();
+		when( config.getEntityModel() ).thenReturn( model );
+
+		assertSame(
+				builder,
+				builder.entityModel( one )
+				       .entityModel( two )
+				       .entityModel( c -> c.deleteMethod( delete ) )
+		);
+
+		builder.apply( config, false );
+
+		inOrder.verify( one ).accept( any( EntityModelBuilder.class ) );
+		inOrder.verify( two ).accept( any( EntityModelBuilder.class ) );
+
+		model.delete( "test" );
+		verify( delete ).accept( "test" );
+	}
+
+	@Test
+	public void modifyEntityModelShouldApplyToTheCustomizedEntityModel() {
+		Consumer delete = mock( Consumer.class );
+
 		EntityModel model = mock( EntityModel.class );
-		when( client.getEntityModel() ).thenReturn( model );
+		when( config.getEntityModel() ).thenReturn( model );
 
-		EntityModelBuilder modelBuilder = builder.entityModel();
-		assertNotNull( modelBuilder );
-		assertSame( builder, modelBuilder.and() );
+		EntityModel<String, Serializable> otherModel = new DefaultEntityModel<>();
 
-		builder.apply( entityRegistry, beanFactory );
+		doAnswer( invocation -> {
+			when( config.getEntityModel() ).thenReturn( otherModel );
+			return null;
+		} ).when( config ).setEntityModel( otherModel );
 
-		verify( client, never() ).setEntityModel( any() );
+		assertSame(
+				builder,
+				builder.entityModel( otherModel )
+				       .entityModel( c -> c.deleteMethod( delete ) )
+		);
+
+		builder.apply( config, false );
+
+		assertSame( otherModel, config.getEntityModel() );
+		String c = "";
+		otherModel.delete( c );
+		verify( delete ).accept( c );
+	}
+
+	@Test
+	public void noEntityModelIsCreatedIfNoConsumers() {
+		builder.apply( config, false );
+
+		verify( config, never() ).setEntityModel( any( EntityModel.class ) );
+	}
+
+	@Test
+	public void newEntityModelCreated() {
+		assertSame( builder, builder.entityModel( mock( Consumer.class ) ) );
+		builder.apply( config, false );
+
+		verify( config ).setEntityModel( notNull( EntityModel.class ) );
+	}
+
+	@Test
+	public void existingListView() {
+		builder.listView( lvb -> lvb.template( "hello" ) );
+
+		when( config.hasView( EntityListView.VIEW_NAME ) ).thenReturn( true );
+
+		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
+		when( config.getViewFactory( EntityListView.VIEW_NAME ) ).thenReturn( listViewFactory );
+
+		builder.apply( config, false );
+		verify( listViewFactory ).setTemplate( "hello" );
+	}
+
+	@Test
+	public void newViewsOfRightType() {
+		builder.view( "customView", vb -> vb.template( "custom-template" ) )
+		       .formView( "formView", fvb -> fvb.template( "form-template" ) )
+		       .listView( "listView", lvb -> lvb.template( "list-template" ) )
+		       .deleteFormView( dvb -> dvb.template( "delete-template" ) );
+
+		EntityViewFactoryProvider viewFactoryProvider = mock( EntityViewFactoryProvider.class );
+		when( beanFactory.getBean( EntityViewFactoryProvider.class ) ).thenReturn( viewFactoryProvider );
+
+		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
+		when( viewFactoryProvider.create( config, EntityListViewFactory.class ) ).thenReturn( listViewFactory );
+
+		EntityFormViewFactory formViewFactory = mock( EntityFormViewFactory.class );
+		when( viewFactoryProvider.create( config, EntityFormViewFactory.class ) ).thenReturn( formViewFactory );
+
+		EntityViewViewFactory customViewFactory = mock( EntityViewViewFactory.class );
+		when( viewFactoryProvider.create( config, EntityViewViewFactory.class ) ).thenReturn( customViewFactory );
+
+		EntityDeleteViewFactory deleteViewFactory = mock( EntityDeleteViewFactory.class );
+		when( viewFactoryProvider.create( config, EntityDeleteViewFactory.class ) ).thenReturn( deleteViewFactory );
+
+		builder.apply( config, false );
+
+		InOrder inOrder = inOrder( config, listViewFactory, formViewFactory, deleteViewFactory, customViewFactory );
+		inOrder.verify( listViewFactory ).setTemplate( "list-template" );
+		inOrder.verify( config ).registerView( "listView", listViewFactory );
+		inOrder.verify( formViewFactory ).setTemplate( "form-template" );
+		inOrder.verify( config ).registerView( "formView", formViewFactory );
+		inOrder.verify( deleteViewFactory ).setTemplate( "delete-template" );
+		inOrder.verify( config ).registerView( EntityFormView.DELETE_VIEW_NAME, deleteViewFactory );
+		inOrder.verify( customViewFactory ).setTemplate( "custom-template" );
+		inOrder.verify( config ).registerView( "customView", customViewFactory );
+	}
+
+	@Test
+	public void associationBuilders() {
+		EntityAssociationBuilder one = mock( EntityAssociationBuilder.class );
+		EntityAssociationBuilder two = mock( EntityAssociationBuilder.class );
+
+		when( beanFactory.getBean( EntityAssociationBuilder.class ) )
+				.thenReturn( one )
+				.thenReturn( two );
+
+		builder.association( avb -> avb.hidden( true ) )
+		       .association( avb -> avb.hidden( false ) );
+
+		builder.apply( config, false );
+
+		InOrder inOrder = inOrder( one, two );
+		inOrder.verify( one ).hidden( true );
+		inOrder.verify( one ).apply( config );
+		inOrder.verify( two ).hidden( false );
+		inOrder.verify( two ).apply( config );
 	}
 }

@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.controllers.association;
 
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.entity.controllers.AbstractEntityModuleController;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.controllers.ViewRequestValidator;
@@ -43,6 +44,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author Arne Vandamme
@@ -58,6 +60,9 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 
 	@Autowired
 	private ViewRequestValidator viewRequestValidator;
+
+	@Autowired
+	private AcrossDevelopmentMode developmentMode;
 
 	protected Object buildViewRequest(
 			EntityConfiguration entityConfiguration,
@@ -96,6 +101,7 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 
 		EntityViewRequest viewRequest =
 				new EntityViewRequest( viewName, viewFactory, viewCreationContext );
+		viewRequest.setEntityName( entityConfiguration.getName() );
 		model.addAttribute( VIEW_COMMAND, viewRequest );
 
 		if ( StringUtils.isNotBlank( partialFragment ) ) {
@@ -227,5 +233,29 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 
 			request.removeAttribute( ATTRIBUTE_DATABINDER, RequestAttributes.SCOPE_REQUEST );
 		}
+	}
+
+	/**
+	 * Logs the exception and returns the feedback if development mode is not active.
+	 * In development mode exception will be thrown upwards instead.
+	 */
+	protected void buildExceptionLoggingModel( EntityConfiguration entityConfiguration,
+	                                           RuntimeException thrown,
+	                                           ModelMap model,
+	                                           String message ) {
+		if ( developmentMode.isActive() ) {
+			throw thrown;
+		}
+
+		UUID exceptionId = UUID.randomUUID();
+		LOG.error( "Exception [{}] in associated entity controller {}: {} ",
+		           getClass().getSimpleName(),
+		           entityConfiguration.getName(),
+		           exceptionId,
+		           thrown );
+
+		model.addAttribute( "errorDetails", thrown.toString() );
+		model.addAttribute( "errorCode", exceptionId );
+		model.addAttribute( "errorMessage", message );
 	}
 }

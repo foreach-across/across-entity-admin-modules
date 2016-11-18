@@ -27,36 +27,18 @@ public final class EntityPropertyFilters
 	/**
 	 * No-op filter that does not filter at all but includes all properties.
 	 */
-	public static EntityPropertyFilter NOOP = new EntityPropertyFilter()
-	{
-		@Override
-		public boolean shouldInclude( EntityPropertyDescriptor descriptor ) {
-			return true;
-		}
-	};
+	public static EntityPropertyFilter NOOP = descriptor -> true;
 
 	/**
 	 * Only properties where {@link EntityPropertyDescriptor#isReadable()} returns {@code true}.
 	 */
-	public static EntityPropertyFilter READABLE = new EntityPropertyFilter()
-	{
-		@Override
-		public boolean shouldInclude( EntityPropertyDescriptor descriptor ) {
-			return descriptor.isReadable();
-		}
-	};
+	public static EntityPropertyFilter READABLE = descriptor -> descriptor.isReadable();
 
 	/**
 	 * Only properties where {@link EntityPropertyDescriptor#isHidden()} returns {@code false}.
 	 * This is usually the default configured on a {@link EntityPropertyRegistry}.
 	 */
-	public static EntityPropertyFilter NOT_HIDDEN = new EntityPropertyFilter()
-	{
-		@Override
-		public boolean shouldInclude( EntityPropertyDescriptor descriptor ) {
-			return !descriptor.isHidden();
-		}
-	};
+	public static EntityPropertyFilter NOT_HIDDEN = descriptor -> !descriptor.isHidden();
 
 	private EntityPropertyFilters() {
 	}

@@ -19,7 +19,6 @@ import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ClassUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -48,7 +47,7 @@ public class ViewRequestValidator implements Validator
 
 		if ( entity != null ) {
 			errors.pushNestedPath( "entity" );
-			validatorForEntity( entity ).validate( entity, errors );
+			validatorForEntity( viewRequest.getEntityName() ).validate( entity, errors );
 			errors.popNestedPath();
 		}
 
@@ -57,11 +56,10 @@ public class ViewRequestValidator implements Validator
 		errors.popNestedPath();
 	}
 
-	private Validator validatorForEntity( Object entity ) {
+	private Validator validatorForEntity( String entityName ) {
 		Validator validator = null;
 
-		Class entityType = ClassUtils.getUserClass( entity );
-		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( entityType );
+		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( entityName );
 
 		if ( entityConfiguration != null ) {
 			validator = entityConfiguration.getAttribute( Validator.class );

@@ -56,7 +56,7 @@ public class OneToManyEntityAssociationBuilder implements EntityAssociationBuild
 	                              MutableEntityConfiguration entityConfiguration,
 	                              PersistentProperty property ) {
 		MutableEntityConfiguration other
-				= entityRegistry.getMutableEntityConfiguration( property.getActualType() );
+				= entityRegistry.getEntityConfiguration( property.getActualType() );
 
 		if ( other != null ) {
 			String mappedBy = (String) AnnotationUtils.getValue( property.findAnnotation( OneToMany.class ),

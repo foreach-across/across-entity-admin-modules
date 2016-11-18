@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
@@ -173,7 +174,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 			return bootstrapUi
 					.datetime()
 					.name( propertyDescriptor.getName() )
-					.controlName( propertyDescriptor.getName() )
+					.controlName( EntityAttributes.controlName( propertyDescriptor ) )
 					.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) )
 					.postProcessor(
 							( builderContext, datetime ) ->

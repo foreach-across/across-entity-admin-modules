@@ -101,7 +101,7 @@ public class AdminWebConfiguration implements EntityConfigurer
 	}
 
 	@Override
-	public void configure( EntitiesConfigurationBuilder configuration ) {
+	public void configure( EntitiesConfigurationBuilder entities ) {
 		// TODO: move to across web
 		final WebAppPathResolver servletContextResolver = new WebAppPathResolver()
 		{
@@ -118,20 +118,23 @@ public class AdminWebConfiguration implements EntityConfigurer
 			}
 		};
 
-		configuration.addPostProcessor( c -> {
-			c.setAttribute(
-					EntityLinkBuilder.class,
-					new EntityConfigurationLinkBuilder(
-							EntityControllerAttributes.ROOT_PATH, c, mvcConversionService,
-							servletContextResolver
-					)
-			);
+		entities
+				.all()
+				.postProcessor( entityConfiguration -> {
+					entityConfiguration.setAttribute(
+							EntityLinkBuilder.class,
+							new EntityConfigurationLinkBuilder(
+									EntityControllerAttributes.ROOT_PATH, entityConfiguration, mvcConversionService,
+									servletContextResolver
+							)
+					);
 
-			for ( EntityAssociation association : c.getAssociations() ) {
-				MutableEntityAssociation mutable = c.association( association.getName() );
-				mutable.setAttribute( EntityLinkBuilder.class,
-				                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
-			}
-		} );
+					for ( EntityAssociation association : entityConfiguration.getAssociations() ) {
+						MutableEntityAssociation mutable = entityConfiguration.association( association.getName() );
+						mutable.setAttribute( EntityLinkBuilder.class,
+						                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
+					}
+				} );
+
 	}
 }

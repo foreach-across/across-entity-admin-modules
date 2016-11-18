@@ -4,5 +4,5 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 
 public interface EntityConfigurer
 {
-	void configure( EntitiesConfigurationBuilder configuration );
+	void configure( EntitiesConfigurationBuilder entities );
 }

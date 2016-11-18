@@ -15,10 +15,10 @@
  */
 package com.foreach.across.modules.entity;
 
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import testmodules.springdata.business.Client;
 
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;

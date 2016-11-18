@@ -33,14 +33,15 @@ import org.springframework.data.domain.Persistable;
 public class PersistableEntityUiConfiguration implements EntityConfigurer
 {
 	@Override
-	public void configure( EntitiesConfigurationBuilder configuration ) {
-		configuration.assignableTo( Persistable.class )
-		             .properties()
-		             .property( "id" ).writable( false ).hidden( true ).and()
-		             .property( "new" ).readable( false ).hidden( true );
+	public void configure( EntitiesConfigurationBuilder entities ) {
+		entities.assignableTo( Persistable.class )
+		        .properties(
+				             props -> props.property( "id" ).writable( false ).hidden( true )
+				                           .and()
+				                           .property( "new" ).readable( false ).hidden( true )
+		             );
 
-		configuration.assignableTo( SettableIdBasedEntity.class )
-		             .properties()
-		             .property( "newEntityId" ).readable( false ).hidden( true );
+		entities.assignableTo( SettableIdBasedEntity.class )
+		        .properties( props -> props.property( "newEntityId" ).readable( false ).hidden( true ) );
 	}
 }

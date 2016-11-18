@@ -19,16 +19,13 @@ import com.foreach.across.modules.entity.registrars.repository.*;
 import com.foreach.across.modules.entity.registrars.repository.associations.ManyToManyEntityAssociationBuilder;
 import com.foreach.across.modules.entity.registrars.repository.associations.ManyToOneEntityAssociationBuilder;
 import com.foreach.across.modules.entity.registrars.repository.associations.OneToManyEntityAssociationBuilder;
-import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryLabelPropertyBuilder;
-import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryPersistenceMetadataBuilder;
-import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryValidationMetaDataBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * Creates the {@link com.foreach.across.modules.entity.registrars.repository.RepositoryEntityRegistrar} and all
  * beans it depends on.  Ensures that Spring Data {@link org.springframework.data.repository.Repository}
- * implementations will get registered as entities.
+ * implementations will create registered as entities.
  */
 @Configuration
 public class RepositoryRegistrarConfiguration
@@ -72,20 +69,5 @@ public class RepositoryRegistrarConfiguration
 	@Bean
 	protected OneToManyEntityAssociationBuilder oneToManyAssociationViewBuilder() {
 		return new OneToManyEntityAssociationBuilder();
-	}
-
-	@Bean
-	protected EntityPropertyRegistryLabelPropertyBuilder entityPropertyRegistryLabelPropertyBuilder() {
-		return new EntityPropertyRegistryLabelPropertyBuilder();
-	}
-
-	@Bean
-	protected EntityPropertyRegistryPersistenceMetadataBuilder entityPropertyRegistryPersistenceMetadataBuilder() {
-		return new EntityPropertyRegistryPersistenceMetadataBuilder();
-	}
-
-	@Bean
-	public EntityPropertyRegistryValidationMetaDataBuilder entityPropertyRegistryValidationMetaDataBuilder() {
-		return new EntityPropertyRegistryValidationMetaDataBuilder();
 	}
 }

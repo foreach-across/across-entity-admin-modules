@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.controllers.entity;
 
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.entity.controllers.AbstractEntityModuleController;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.controllers.ViewRequestValidator;
@@ -42,6 +43,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Support class for controllers generating entity views linked to a particular entity type and/or entity.
@@ -60,7 +62,10 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 	@Autowired
 	private ViewRequestValidator viewRequestValidator;
 
-	@SuppressWarnings( "unchecked" )
+	@Autowired
+	private AcrossDevelopmentMode developmentMode;
+
+	@SuppressWarnings("unchecked")
 	protected Object buildViewRequest(
 			EntityConfiguration entityConfiguration,
 			boolean includeEntity,
@@ -84,6 +89,9 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 		String viewName = StringUtils.defaultString( requestedViewName, getDefaultViewName() );
 
 		EntityViewFactory viewFactory = entityConfiguration.getViewFactory( viewName );
+		if ( viewFactory == null ) {
+			throw new IllegalStateException( "No registered EntityViewFactory with name: " + viewName );
+		}
 		model.addAttribute( VIEW_FACTORY, viewFactory );
 
 		viewCreationContext.setEntityConfiguration( entityConfiguration );
@@ -91,6 +99,7 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 
 		EntityViewRequest viewRequest =
 				new EntityViewRequest( viewName, viewFactory, viewCreationContext );
+		viewRequest.setEntityName( entityConfiguration.getName() );
 		model.addAttribute( VIEW_COMMAND, viewRequest );
 
 		if ( StringUtils.isNotBlank( partialFragment ) ) {
@@ -169,7 +178,7 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 	                                         Serializable entityId,
 	                                         ModelMap model
 	) {
-		Object entity = mvcConversionService.convert( entityId, entityConfiguration.getEntityType() );
+		Object entity = entityConfiguration.getEntityModel().findOne( entityId );
 
 		model.addAttribute( EntityFormView.ATTRIBUTE_ORIGINAL_ENTITY, entity );
 		model.addAttribute( EntityView.ATTRIBUTE_ENTITY, entity );
@@ -217,4 +226,27 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 		}
 	}
 
+	/**
+	 * Logs the exception and returns the feedback if development mode is not active.
+	 * In development mode exception will be thrown upwards instead.
+	 */
+	protected void buildExceptionLoggingModel( EntityConfiguration entityConfiguration,
+	                                           RuntimeException thrown,
+	                                           ModelMap model,
+	                                           String message ) {
+		if ( developmentMode.isActive() ) {
+			throw thrown;
+		}
+
+		UUID exceptionId = UUID.randomUUID();
+		LOG.error( "Exception [{}] in entity controller {}: {} ",
+		           getClass().getSimpleName(),
+		           entityConfiguration.getName(),
+		           exceptionId,
+		           thrown );
+
+		model.addAttribute( "errorDetails", thrown.toString() );
+		model.addAttribute( "errorCode", exceptionId );
+		model.addAttribute( "errorMessage", message );
+	}
 }

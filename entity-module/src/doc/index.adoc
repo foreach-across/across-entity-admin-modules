@@ -59,8 +59,11 @@ Module website: {module-url}
 == What's new in this version?
 :numbered!:
 === 2.0.0-SNAPSHOT
-Requires Across 2.0.0+
+This release has a lot of breaking changes compared with the previous release.
 
+* requires Across 2.0.0+
+* massive overhaul of the `EntitiesConfigurationBuilder` system - removed the `and()` concatenating of builder calls
+** nested builder consumers are used instead - this greatly simplified the class hierarchy involved
 * compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
 * principal names on `Auditable` entities are now pretty printed using the `SecurityPrincipalLabelResolverStrategy` from the _SpringSecurityModule_
 * {module-name} now supports <<delete-view,deleting of entities>>
@@ -96,7 +99,7 @@ public class UserEntitiesConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		// By default permissions cannot be managed through the user interface
-		configuration.entity( Permission.class ).hide();
+		configuration.withType( Permission.class ).hide();
 	}
 }
 ----
@@ -132,14 +135,14 @@ This will copy all settings from the source property to the *#label* property, b
 [subs="verbatim,quotes,attributes"]
 ----
 @Override
-public void configure( EntitiesConfigurationBuilder configuration ) {
+public void configure( EntitiesConfigurationBuilder entities ) {
     // Configure the username to be used as label for a User entity
-    configuration.entity( User.class ).label( "username" );
+    entities.withType( User.class ).label( "username" );
 
     // Configure the group name to be used as base label, but modify the value fetcher so
     // the label is prefixed with Group
-    configuration.entity( Group.class )
-                    .properties().label( "name" ).spelValueFetcher( "'Group: ' + name" );
+    entities.withType( Group.class )
+            .properties( props -> props.label( "name" ).spelValueFetcher( "'Group: ' + name" ) );
 }
 ----
 
@@ -194,6 +197,10 @@ Default implementations exist for `JpaSpecificationExecutor` and `QueryDslPredic
 |Contains the default `Sort.Order` if sorting is enabled on this property.  
 By default strings have an order that ignores case.
 
+|`EntityAttributes.CONTROL_NAME`
+|Optional: required to be a `String` value.
+When present this value will be used as the form control name instead of the descriptor name.
+
 |===
 
 
@@ -228,9 +235,9 @@ NOTE: If you want to enable management through the association interface, you sh
 @Override
 public void configure( EntitiesConfigurationBuilder configuration ) {
     // Groups should be managed through the association instead of the property
-    configuration.entity( MachinePrincipal.class )
-                 .properties().property( "groups" ).hidden( true ).and().and()
-                 .association( "machinePrincipal.groups" ).show();
+    configuration.withType( MachinePrincipal.class )
+                 .properties( props -> props.property( "groups" ).hidden( true ) )
+                 .association( ab -> ab.name( "machinePrincipal.groups" ).show() );
 }
 ----
 
@@ -263,7 +270,8 @@ The summary pane is called using AJAX and only the _content_ fragment of the pag
 [subs="verbatim,quotes,attributes"]
 ----
 // Activate a summary view in the main user results table using a custom Thymeleaf template
-configuration.entity( User.class ).view( EntityListView.SUMMARY_VIEW_NAME ).template( "th/myModule/userSummary" );
+configuration.withType( User.class )
+             .view( EntityListView.SUMMARY_VIEW_NAME, vb -> vb.template( "th/myModule/userSummary" ) );
 ----
 
 [[delete-view]]

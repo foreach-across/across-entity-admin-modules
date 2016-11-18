@@ -25,6 +25,7 @@ import java.util.Collection;
  * @see EntityPropertyFilters
  * @see EntityPropertyComparators
  */
+@FunctionalInterface
 public interface EntityPropertyFilter
 {
 	boolean shouldInclude( EntityPropertyDescriptor descriptor );

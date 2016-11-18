@@ -25,11 +25,6 @@ import com.foreach.across.modules.entity.formatters.DateFormatter;
 import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactory;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactory;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryFactoryImpl;
 import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
 import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
@@ -40,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.format.datetime.DateFormatterRegistrar;
@@ -47,20 +43,14 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import javax.annotation.PostConstruct;
-
 @Configuration
+@ComponentScan(basePackageClasses = EntityRegistry.class)
 public class EntityModuleConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityModuleConfiguration.class );
 
 	@Autowired
-	private FormattingConversionService mvcConversionService;
-
-	@PostConstruct
-	public void init() {
-		EntityRegistry entityRegistry = entityRegistry();
-
+	public void registerConverters( FormattingConversionService mvcConversionService, EntityRegistry entityRegistry ) {
 		mvcConversionService.addConverter( new StringToEntityConfigurationConverter( entityRegistry ) );
 		mvcConversionService.addConverter( new EntityConverter<>( mvcConversionService, entityRegistry ) );
 		mvcConversionService.addConverter( new EntityToStringConverter( entityRegistry ) );
@@ -69,11 +59,6 @@ public class EntityModuleConfiguration
 		dateFormatterRegistrar.setFormatter( new DateFormatter() );
 		dateFormatterRegistrar.registerFormatters( mvcConversionService );
 		mvcConversionService.addFormatterForFieldAnnotation( new TemporalFormatterFactory() );
-	}
-
-	@Bean
-	public EntityRegistryImpl entityRegistry() {
-		return new EntityRegistryImpl();
 	}
 
 	@Bean(name = EntityModule.VALIDATOR)
@@ -91,17 +76,6 @@ public class EntityModuleConfiguration
 	@Bean
 	public ModuleEntityRegistration moduleEntityRegistration() {
 		return new ModuleEntityRegistration();
-	}
-
-	@Bean
-	@Exposed
-	public EntityPropertyRegistryFactory entityPropertyRegistryFactory() {
-		return new EntityPropertyRegistryFactoryImpl();
-	}
-
-	@Bean
-	public EntityPropertyDescriptorFactory entityPropertyDescriptorFactory() {
-		return new EntityPropertyDescriptorFactoryImpl();
 	}
 
 	@Bean

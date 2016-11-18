@@ -70,13 +70,13 @@ public interface ViewElementLookupRegistry
 	void reset( ViewElementMode mode );
 
 	/**
-	 * @param mode to get the builder for
+	 * @param mode to create the builder for
 	 * @return the registered builder - null if none available
 	 */
 	ViewElementBuilder getViewElementBuilder( ViewElementMode mode );
 
 	/**
-	 * @param mode to get the type for
+	 * @param mode to create the type for
 	 * @return the registered view element type - null if none available
 	 */
 	String getViewElementType( ViewElementMode mode );
