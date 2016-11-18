@@ -27,6 +27,8 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
+import java.util.Arrays;
+
 /**
  * @author Arne Vandamme
  */
@@ -86,6 +88,16 @@ public abstract class EntityQueryQueryDslUtils
 				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
 				return Expressions.predicate( Ops.CONTAINS_VALUE, property, constant );
+			}
+			case IN: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( Arrays.asList( condition.getArguments() ) );
+				return Expressions.predicate( Ops.IN, property, constant );
+			}
+			case NOT_IN: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( Arrays.asList( condition.getArguments() ) );
+				return Expressions.predicate( Ops.NOT_IN, property, constant );
 			}
 		}
 

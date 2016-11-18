@@ -30,7 +30,7 @@ import java.util.Objects;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public final class EQGroup
+public final class EQGroup implements EQType
 {
 	private final List<Object> values;
 

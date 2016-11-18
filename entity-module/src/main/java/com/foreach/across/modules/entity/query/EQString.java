@@ -27,7 +27,7 @@ import java.util.Objects;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public final class EQString
+public final class EQString implements EQType
 {
 	private final String value;
 

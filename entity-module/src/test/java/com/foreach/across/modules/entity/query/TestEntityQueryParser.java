@@ -19,6 +19,9 @@ package com.foreach.across.modules.entity.query;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -29,11 +32,13 @@ import static org.mockito.Mockito.when;
  * @since 2.0.0
  */
 @Ignore
+@RunWith(MockitoJUnitRunner.class)
 public class TestEntityQueryParser
 {
-	private EntityQueryParser parser;
-
+	@Mock
 	private EntityQueryMetadataProvider metadataProvider;
+
+	private EntityQueryParser parser;
 
 	@Before
 	public void before() {
@@ -54,8 +59,8 @@ public class TestEntityQueryParser
 		// )
 		when( metadataProvider.isValidProperty( "value" ) ).thenReturn( true );
 		when( metadataProvider.isValidOperatorForProperty( EntityQueryOps.EQ, "value" ) ).thenReturn( true );
-		when( metadataProvider.convertStringToTypedValue( "value", EntityQueryOps.EQ, "1" ) )
-				.thenReturn( new Object[] { 1 } );
+		//when( metadataProvider.convertStringToTypedValue( "value", EntityQueryOps.EQ, "1" ) )
+	//			.thenReturn( new Object[] { 1 } );
 
 		EntityQuery query = parser.parse( "value = 1" );
 

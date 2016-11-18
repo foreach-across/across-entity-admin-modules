@@ -19,6 +19,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Different operand types that an {@link EntityQueryCondition} supports.
  *
@@ -43,7 +46,11 @@ public enum EntityQueryOps
 	CONTAINS( ( field, args ) -> field + " contains " + objectAsString( args[0] ), "contains" ),
 
 	NOT_CONTAINS( ( ( field, args ) -> field + " not contains " + objectAsString( args[0] ) ),
-	              "not contains" );
+	              "not contains" ),
+
+	IN( ( field, args ) -> field + " in (" + joinAsStrings( args ) + ")", "in" ),
+
+	NOT_IN( ( field, args ) -> field + " not in (" + joinAsStrings( args ) + ")", "not in" ),;
 
 	private interface OpsWriter
 	{
@@ -60,6 +67,12 @@ public enum EntityQueryOps
 		}
 
 		return object.toString();
+	}
+
+	private static String joinAsStrings( Object... arguments ) {
+		return Stream.of( arguments )
+		             .map( EntityQueryOps::objectAsString )
+		             .collect( Collectors.joining( "," ) );
 	}
 
 	private String[] tokens;

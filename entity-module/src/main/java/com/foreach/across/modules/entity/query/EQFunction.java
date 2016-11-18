@@ -27,8 +27,9 @@ import java.util.*;
  *
  * @author Arne Vandamme
  * @since 2.0.0
+ * @see EntityQueryFunctionHandler
  */
-public final class EQFunction
+public final class EQFunction implements EQType
 {
 	private final String name;
 	private final List<Object> arguments;

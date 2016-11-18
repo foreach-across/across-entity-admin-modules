@@ -32,7 +32,7 @@ import java.util.Objects;
 class EntityQueryTokenizer
 {
 	private static final char[] RESERVED_CHARS = new char[] { '!', '=', '>', '<' };
-	private static final char[] GROUPING_CHARS = new char[] { '(', ')' };
+	private static final char[] GROUPING_CHARS = new char[] { '(', ')',',' };
 	public static final char[] STRING_LITERAL_CHARS = new char[] { '\'', '"' };
 
 	/**

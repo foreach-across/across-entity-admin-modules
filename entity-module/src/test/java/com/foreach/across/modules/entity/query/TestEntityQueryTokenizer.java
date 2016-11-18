@@ -116,6 +116,14 @@ public class TestEntityQueryTokenizer
 	}
 
 	@Test
+	public void commaSeparatedValues() {
+		assertEquals(
+				Arrays.asList( "a", "=", "(", "1", ",", "2", ")" ),
+				tokens( "a = (1,2)" )
+		);
+	}
+
+	@Test
 	public void stringLiterals() {
 		assertEquals(
 				Arrays.asList( "value", "=", "'123 456'" ),

@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * Converts a list of tokens into an {@link EntityQuery} without applying any content validation.
  * This will create groups, determine operators, see if the form of "field - operator - value" is respected,
- * and convert the value into one of String, EQValue, EQGroup or EQFunction.
+ * and convert the value into one of EQString, EQValue, EQGroup or EQFunction.
  *
  * @author Arne Vandamme
  * @since 2.0.0
@@ -367,6 +367,7 @@ class EntityQueryTokenConverter
 			case "and":
 			case "or":
 			case "not":
+			case "in":
 				return true;
 		}
 

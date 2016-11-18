@@ -143,6 +143,28 @@ public class TestEntityQueryQueryDslUtils
 	}
 
 	@Test
+	public void in() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.IN, "one", "two" ) );
+		List<Company> found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+
+		assertNotNull( found );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two ) ) );
+	}
+
+	@Test
+	public void notIn() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_IN, "one", "two" ) );
+		List<Company> found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+
+		assertNotNull( found );
+		assertEquals( 1, found.size() );
+		assertTrue( found.contains( three ) );
+	}
+
+	@Test
 	public void contains() {
 		EntityQuery query = EntityQuery.and(
 				new EntityQueryCondition( "representatives", EntityQueryOps.CONTAINS, john )

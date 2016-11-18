@@ -21,6 +21,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -53,7 +54,7 @@ public class EntityQueryConditionTranslator
 		return translated;
 	}
 
-	private Object[] resolveArgumentValues( TypeDescriptor expectedType, Object[] arguments ) {
+	private Object[] resolveArgumentValues( TypeDescriptor expectedType, Object... arguments ) {
 		List<Object> resolved = new ArrayList<>();
 
 		for ( Object argument : arguments ) {
@@ -66,6 +67,11 @@ public class EntityQueryConditionTranslator
 			}
 			else if ( argument instanceof EQString ) {
 				resolved.add( ( (EQString) argument ).getValue() );
+			}
+			else if ( argument instanceof EQGroup ) {
+				for ( Object groupValue : ( (EQGroup) argument ).getValues() ) {
+					resolved.addAll( Arrays.asList( resolveArgumentValues( expectedType, groupValue ) ) );
+				}
 			}
 			else {
 				resolved.add( argument );

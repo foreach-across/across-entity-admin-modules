@@ -52,6 +52,8 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  */
 public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
 {
+	private static final String PARAM = "eqFilter";
+
 	private BootstrapUiFactory bootstrapUi;
 
 	@Autowired
@@ -61,13 +63,13 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 
 	@Override
 	protected void registerCommandExtensions( EntityViewCommand command ) {
-		command.addExtensions( "filter", "" );
+		command.addExtensions( PARAM, "" );
 	}
 
 	@Override
 	protected void extendViewModel( EntityListView view ) {
 		EntityViewRequest request = view.getAttribute( "viewRequest" );
-		String filter = (String) request.getExtensions().get( "filter" );
+		String filter = (String) request.getExtensions().get( PARAM );
 
 		ContainerViewElement elements = view.getViewElements();
 
@@ -81,7 +83,7 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 						             bootstrapUi
 								             .inputGroup(
 										             bootstrapUi.textbox()
-										                        .controlName( "extensions[filter]" )
+										                        .controlName( "extensions[" + PARAM + "]" )
 										                        .text( filter )
 								             )
 								             .addonAfter(
@@ -122,7 +124,7 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 	@SuppressWarnings("unchecked")
 	public Page fetchPage( WebViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
 		EntityViewRequest request = model.getAttribute( "viewRequest" );
-		String filter = (String) request.getExtensions().get( "filter" );
+		String filter = (String) request.getExtensions().get( PARAM );
 
 		try {
 			EntityQueryParser parser = viewCreationContext.getEntityConfiguration().getAttribute(

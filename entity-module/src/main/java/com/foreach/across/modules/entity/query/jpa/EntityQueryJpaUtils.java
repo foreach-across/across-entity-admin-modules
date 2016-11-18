@@ -65,6 +65,10 @@ public abstract class EntityQueryJpaUtils
 			case CONTAINS:
 				Expression<Collection> collection = root.get( condition.getProperty() );
 				return cb.isMember( condition.getFirstArgument(), collection );
+			case IN:
+				return resolveProperty( root, condition.getProperty() ).in( condition.getArguments() );
+			case NOT_IN:
+				return cb.not( resolveProperty( root, condition.getProperty() ).in( condition.getArguments() ) );
 		}
 
 		throw new IllegalArgumentException( "Unsupported operand for JPA query: " + condition.getOperand() );

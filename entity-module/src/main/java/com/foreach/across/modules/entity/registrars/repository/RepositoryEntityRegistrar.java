@@ -170,10 +170,11 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 
 			entityConfiguration.setHidden( Modifier.isAbstract( entityType.getModifiers() ) );
 
-			registerEntityQueryExecutor( entityConfiguration );
-
 			propertyRegistryBuilder.buildEntityPropertyRegistry( entityConfiguration );
 			entityModelBuilder.buildEntityModel( entityConfiguration );
+
+			registerEntityQueryExecutor( entityConfiguration );
+
 			viewsBuilder.buildViews( entityConfiguration );
 
 			entityRegistry.register( entityConfiguration );

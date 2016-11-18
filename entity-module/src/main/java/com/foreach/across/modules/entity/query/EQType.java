@@ -17,16 +17,11 @@
 package com.foreach.across.modules.entity.query;
 
 /**
- * API that provides validation information for entity query conditions.
+ * Marker for EntityQuery parsing types.
  *
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public interface EntityQueryMetadataProvider
+public interface EQType
 {
-	boolean isValidProperty( String property );
-
-	boolean isValidOperatorForProperty( EntityQueryOps operator, String property );
-
-	boolean isValidValueForPropertyAndOperator( Object value, String property, EntityQueryOps operator );
 }

@@ -26,13 +26,13 @@ import java.util.List;
 
 /**
  * Reverse parsing of a {@link String} into an {@link EntityQuery}.
- * Uses a {@link DefaultEntityMetadataProvider} if none is set.  For improved functionality it is highly advised
+ * Uses a {@link DefaultEntityQueryMetadataProvider} if none is set.  For improved functionality it is highly advised
  * to have a custom {@link EntityQueryMetadataProvider} implementation.
  * <p/>
  * Supports both a *raw* entity query and an *translated* entity query.
  *
  * @author Arne Vandamme
- * @see DefaultEntityMetadataProvider
+ * @see DefaultEntityQueryMetadataProvider
  * @since 2.0.0
  */
 public class EntityQueryParser
@@ -42,7 +42,7 @@ public class EntityQueryParser
 
 	private ConversionService conversionService;
 
-	private EntityQueryMetadataProvider metadataProvider = new DefaultEntityMetadataProvider();
+	private EntityQueryMetadataProvider metadataProvider;
 
 	private EntityConfiguration entityConfiguration;
 
@@ -60,6 +60,7 @@ public class EntityQueryParser
 
 	public void setEntityConfiguration( EntityConfiguration entityConfiguration ) {
 		this.entityConfiguration = entityConfiguration;
+		setMetadataProvider( new DefaultEntityQueryMetadataProvider( entityConfiguration.getPropertyRegistry() ) );
 	}
 
 	/**
@@ -85,14 +86,8 @@ public class EntityQueryParser
 	public EntityQuery parse( String queryString ) {
 		List<EntityQueryTokenizer.TokenMetadata> tokens = tokenizer.tokenize( queryString );
 		EntityQuery rawQuery = converter.convertTokens( tokens );
+		validatePropertiesAndOperators( rawQuery );
 
-		/*List<String> tokens = tokenizer.tokenize( queryString );
-
-		EntityQuery query = convertTokensToRawQuery( tokens );
-		validatePropertiesAndOperators( query );
-		convertPropertyValues( query );
-
-		return query;*/
 		return translate( rawQuery );
 	}
 
@@ -124,25 +119,28 @@ public class EntityQueryParser
 	}
 
 	private void validatePropertiesAndOperators( EntityQuery query ) {
-		query.getExpressions().forEach(
-				expression -> {
-					if ( expression instanceof EntityQueryCondition ) {
-						EntityQueryCondition condition = (EntityQueryCondition) expression;
-						if ( !metadataProvider.isValidProperty( condition.getProperty() ) ) {
-							throw new IllegalArgumentException( "Unknown property: " + condition.getProperty() );
-						}
-						if ( !metadataProvider.isValidOperatorForProperty( condition.getOperand(),
-						                                                   condition.getProperty() ) ) {
-							throw new IllegalArgumentException(
-									"Illegal operator " + condition.getOperand() + " for property: " + condition
-											.getProperty() );
-						}
-						//if ( !metadataProvider.isValidValueForPropertyAndOperator( condition.getFirstArgument() ))
-					}
-					else {
-						validatePropertiesAndOperators( (EntityQuery) expression );
-					}
+		for ( EntityQueryExpression expression : query.getExpressions() ) {
+			if ( expression instanceof EntityQueryCondition ) {
+				EntityQueryCondition condition = (EntityQueryCondition) expression;
+				if ( !metadataProvider.isValidProperty( condition.getProperty() ) ) {
+					throw new IllegalArgumentException( "Unknown property: " + condition.getProperty() );
 				}
-		);
+				if ( !metadataProvider.isValidOperatorForProperty( condition.getOperand(),
+				                                                   condition.getProperty() ) ) {
+					throw new IllegalArgumentException(
+							"Illegal operator " + condition.getOperand() + " for property: " + condition
+									.getProperty() );
+				}
+				if ( !metadataProvider.isValidValueForPropertyAndOperator( condition.getFirstArgument(),
+				                                                           condition.getProperty(),
+				                                                           condition.getOperand() ) ) {
+					throw new IllegalArgumentException( "Illegal value for operator " + condition
+							.getOperand() + " and property: " + condition.getProperty() );
+				}
+			}
+			else {
+				validatePropertiesAndOperators( (EntityQuery) expression );
+			}
+		}
 	}
 }
