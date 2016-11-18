@@ -20,25 +20,43 @@ import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
+import com.foreach.across.modules.entity.controllers.EntityViewCommand;
+import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
+import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewCreationContext;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.samples.entity.EntityModuleTestApplication;
+import com.foreach.across.samples.entity.application.business.Group;
+import com.foreach.across.samples.entity.application.business.User;
+import com.foreach.across.samples.entity.application.repositories.GroupRepository;
+import com.foreach.across.samples.entity.application.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.*;
 import java.util.function.UnaryOperator;
+
+import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
 /**
  * @author Arne Vandamme
@@ -48,6 +66,133 @@ import java.util.function.UnaryOperator;
 @EnableAcrossJpaRepositories(basePackageClasses = EntityModuleTestApplication.class)
 public class EntitiesConfiguration implements EntityConfigurer
 {
+	@Configuration
+	public static class NestedEntityConfig implements EntityConfigurer
+	{
+		@Autowired
+		private EntityQueryFilterProcessor entityQueryFilterProcessor;
+
+		@Override
+		public void configure( EntitiesConfigurationBuilder configuration ) {
+			addFilteringForGroupEntity( configuration.withType( Group.class ) );
+
+			configuration.withType( User.class )
+			             .listView(
+					             lvb -> lvb.viewProcessor( entityQueryFilterProcessor )
+					                       .pageFetcher( entityQueryFilterProcessor )
+			             );
+		}
+
+		private void addFilteringForGroupEntity( EntityConfigurationBuilder<Object> configuration ) {
+			configuration.listView(
+					lvb -> lvb.defaultSort( new Sort( "name" ) )
+					          .viewProcessor( groupFilteringProcessor() )
+					          .pageFetcher( groupFilteringProcessor() )
+			);
+
+			configuration.association(
+					ab -> ab.name( "user.group" )
+					        .listView(
+							        lvb -> lvb.defaultSort( new Sort( "name" ) )
+							                  .viewProcessor( userInGroupFilteringProcessor() )
+							                  .pageFetcher( userInGroupFilteringProcessor() )
+					        )
+			);
+		}
+
+		@Bean
+		protected GroupFilteringProcessor groupFilteringProcessor() {
+			return new GroupFilteringProcessor();
+		}
+
+		@Bean
+		protected UserInGroupFilteringProcessor userInGroupFilteringProcessor() {
+			return new UserInGroupFilteringProcessor();
+		}
+
+		private static class GroupFilteringProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
+		{
+			@Autowired
+			private GroupRepository groupRepository;
+
+			@Override
+			protected void registerCommandExtensions( EntityViewCommand command ) {
+				command.addExtensions( "filter", "" );
+			}
+
+			@Override
+			protected void modifyViewElements( ContainerViewElement elements ) {
+				// move the original actions
+				Optional<ContainerViewElement> header = find( elements, "entityForm-header",
+				                                              ContainerViewElement.class );
+
+				header.ifPresent(
+						h -> {
+							Optional<NodeViewElement> actions
+									= find( h, "entityForm-header-actions", NodeViewElement.class );
+							actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
+
+							h.addChild( new TemplateViewElement( "th/entityModuleTest/group :: filterForm" ) );
+						}
+				);
+			}
+
+			@Override
+			public Page fetchPage( WebViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
+				EntityViewRequest request = model.getAttribute( "viewRequest" );
+
+				String filter = (String) request.getExtensions().get( "filter" );
+
+				if ( !StringUtils.isBlank( filter ) ) {
+					return groupRepository.findByNameContaining( filter, pageable );
+				}
+
+				return groupRepository.findAll( pageable );
+			}
+		}
+
+		private static class UserInGroupFilteringProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
+		{
+			@Autowired
+			private UserRepository userRepository;
+
+			@Override
+			protected void registerCommandExtensions( EntityViewCommand command ) {
+				command.addExtensions( "filter", "" );
+			}
+
+			@Override
+			protected void modifyViewElements( ContainerViewElement elements ) {
+				// move the original actions
+				Optional<ContainerViewElement> header = find( elements, "entityForm-header",
+				                                              ContainerViewElement.class );
+
+				header.ifPresent(
+						h -> {
+							Optional<NodeViewElement> actions
+									= find( h, "entityForm-header-actions", NodeViewElement.class );
+							actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
+
+							h.addChild( new TemplateViewElement( "th/entityModuleTest/group :: filterForm" ) );
+						}
+				);
+			}
+
+			@Override
+			public Page fetchPage( WebViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
+				EntityViewRequest request = model.getAttribute( "viewRequest" );
+				Group group = (Group) model.getParentEntity();
+				String filter = (String) request.getExtensions().get( "filter" );
+
+				if ( !StringUtils.isBlank( filter ) ) {
+					return userRepository.findByGroupAndNameContaining( group, filter, pageable );
+				}
+
+				return userRepository.findByGroup( group, pageable );
+			}
+		}
+	}
+
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		// configuration of a dummy entity represented by a map, requires manual configuration of pretty much everything:
