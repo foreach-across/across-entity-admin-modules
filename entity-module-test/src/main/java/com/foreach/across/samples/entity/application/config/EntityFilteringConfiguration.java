@@ -51,7 +51,7 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  * <ul>
  * <li>default entity query filter on all entities having an {@link EntityQueryExecutor}</li>
  * <li>replaced by a custom filter on Group list</li>
- * <li>add acustom filter on Users list tab for a group</li>
+ * <li>add a custom filter on Users list tab for a group</li>
  * </ul>
  *
  * @author Arne Vandamme
@@ -75,8 +75,6 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 				          .filter( groupFilteringProcessor() )
 		);
 
-		configuration.association( ab -> ab.name( "user.group" ).listView( lvb -> lvb.entityQueryFilter( true ) ) );
-		/*
 		configuration.association(
 				ab -> ab.name( "user.group" )
 				        .listView(
@@ -84,7 +82,6 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 						                  .filter( userInGroupFilteringProcessor() )
 				        )
 		);
-		*/
 	}
 
 	@Bean
