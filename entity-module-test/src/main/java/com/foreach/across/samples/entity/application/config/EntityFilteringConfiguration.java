@@ -75,14 +75,16 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 				          .filter( groupFilteringProcessor() )
 		);
 
+		configuration.association( ab -> ab.name( "user.group" ).listView( lvb -> lvb.entityQueryFilter( true ) ) );
+		/*
 		configuration.association(
 				ab -> ab.name( "user.group" )
 				        .listView(
 						        lvb -> lvb.defaultSort( new Sort( "name" ) )
-						                  .entityQueryFilter( false )
 						                  .filter( userInGroupFilteringProcessor() )
 				        )
 		);
+		*/
 	}
 
 	@Bean

@@ -51,6 +51,8 @@ import java.util.List;
  */
 public class EntityListViewFactory<V extends ViewCreationContext> extends ConfigurablePropertiesEntityViewFactorySupport<V, EntityListView>
 {
+	private static final String FORM_NAME = "entityList-form";
+
 	@Autowired
 	private EntityViewElementBuilderHelper viewHelpers;
 
@@ -146,7 +148,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		FormViewElementBuilder container = bootstrapUi
 				.form()
 				.name( EntityFormViewFactory.FORM_NAME )
-				.formName( "entity-list-form" )
+				.formName( FORM_NAME )
 				.noValidate()
 				.get();
 
@@ -176,7 +178,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 
 			SortableTableBuilder tableBuilder = viewHelpers.createSortableTableBuilder();
 			tableBuilder.tableName( "entityList" );
-			tableBuilder.formName( "entityList-form" );
+			tableBuilder.formName( FORM_NAME );
 			tableBuilder.entityConfiguration( entityConfiguration );
 			tableBuilder.properties( descriptors );
 			tableBuilder.pagingMessages( (ListViewEntityMessages) view.getEntityMessages() );

@@ -21,10 +21,8 @@ import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
-import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.query.EntityQueryExecutor;
-import com.foreach.across.modules.entity.query.EntityQueryParser;
-import com.foreach.across.modules.entity.query.EntityQueryParsingException;
+import com.foreach.across.modules.entity.query.*;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -121,6 +119,7 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Page fetchPage( WebViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
 		EntityViewRequest request = model.getAttribute( "viewRequest" );
 		String filter = (String) request.getExtensions().get( "filter" );
@@ -129,11 +128,19 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 			EntityQueryParser parser = viewCreationContext.getEntityConfiguration().getAttribute(
 					EntityQueryParser.class );
 			EntityQuery query = parser.parse( filter );
-
 			EntityQueryExecutor executor = viewCreationContext.getEntityConfiguration().getAttribute(
 					EntityQueryExecutor.class );
 
-			return executor.findAll( query, pageable );
+			if ( viewCreationContext.isForAssociation() ) {
+				EntityAssociation association = viewCreationContext.getEntityAssociation();
+				AssociatedEntityQueryExecutor associatedExecutor
+						= new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), executor );
+
+				return associatedExecutor.findAll( model.getParentEntity(), query, pageable );
+			}
+			else {
+				return executor.findAll( query, pageable );
+			}
 		}
 		catch ( EntityQueryParsingException pe ) {
 			model.addAttribute( "filterError",
@@ -147,4 +154,5 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 		// Explicitly return null to avoid "0 users found" along with an exception
 		return null;
 	}
+
 }
