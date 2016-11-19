@@ -65,7 +65,7 @@ public class TestDefaultEntityQueryMetadataProvider
 	@Test
 	public void stringOperands() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
-		expectedOperands( EQ, NEQ, IN, NOT_IN );
+		expectedOperands( EQ, NEQ, IN, NOT_IN, LIKE );
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class TestDefaultEntityQueryMetadataProvider
 	@Test
 	public void numberOperands() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( Integer.class ) );
-		expectedOperands( EQ, NEQ, IN, NOT_IN );
+		expectedOperands( EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE );
 	}
 
 	@Test

@@ -84,6 +84,26 @@ public abstract class EntityQueryQueryDslUtils
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
 				return Expressions.predicate( Ops.NE, property, constant );
 			}
+			case GT: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.GT, property, constant );
+			}
+			case GE: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.GOE, property, constant );
+			}
+			case LT: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.LT, property, constant );
+			}
+			case LE: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.LOE, property, constant );
+			}
 			case CONTAINS: {
 				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );

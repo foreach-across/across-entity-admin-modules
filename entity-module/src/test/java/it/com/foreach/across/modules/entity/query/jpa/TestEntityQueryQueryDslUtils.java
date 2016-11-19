@@ -81,9 +81,9 @@ public class TestEntityQueryQueryDslUtils
 
 			representativeRepository.save( Arrays.asList( john, joe, peter ) );
 
-			one = new Company( "one" );
-			two = new Company( "two" );
-			three = new Company( "three" );
+			one = new Company( "one", 1 );
+			two = new Company( "two", 2 );
+			three = new Company( "three", 3 );
 
 			one.setGroup( groupOne );
 			two.setGroup( groupOne );
@@ -140,6 +140,33 @@ public class TestEntityQueryQueryDslUtils
 		assertNotNull( found );
 		assertEquals( 2, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( one, three ) ) );
+	}
+
+	@Test
+	public void numericOperands() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "number", EntityQueryOps.GT, 1 ) );
+		List<Company> found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( two, three ) ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "number", EntityQueryOps.GE, 1 ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 3, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two, three ) ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "number", EntityQueryOps.LT, 3 ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two ) ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "number", EntityQueryOps.LE, 3 ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 3, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two, three ) ) );
 	}
 
 	@Test

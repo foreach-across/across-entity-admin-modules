@@ -93,9 +93,9 @@ public class TestOneToManyAssociations
 			groupTwo = new Group( "groupTwo" );
 			groupRepository.save( Arrays.asList( groupOne, groupTwo ) );
 
-			one = new Company( "one" );
-			two = new Company( "two" );
-			three = new Company( "three" );
+			one = new Company( "one", 1 );
+			two = new Company( "two", 2 );
+			three = new Company( "three", 3 );
 
 			companyRepository.save( Arrays.asList( one, two, three ) );
 
@@ -183,8 +183,8 @@ public class TestOneToManyAssociations
 	}
 
 	private void verifyClientGroups( AssociatedEntityQueryExecutor<ClientGroup> executor,
-	                           Client client,
-	                           ClientGroup... groups ) {
+	                                 Client client,
+	                                 ClientGroup... groups ) {
 		assertNotNull( executor );
 
 		List<ClientGroup> result = executor.findAll( client, EntityQuery.all() );

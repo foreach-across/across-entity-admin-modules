@@ -37,6 +37,9 @@ public class Company implements Persistable<String>
 	@Column
 	private CompanyStatus status;
 
+	@Column
+	private int number;
+
 	@ManyToMany
 	private Set<Representative> representatives = new HashSet<>();
 
@@ -63,8 +66,9 @@ public class Company implements Persistable<String>
 	public Company() {
 	}
 
-	public Company( String id ) {
+	public Company( String id, int number ) {
 		this.id = id;
+		this.number = number;
 		setNew( true );
 	}
 
@@ -98,6 +102,14 @@ public class Company implements Persistable<String>
 
 	public void setAddress( Address address ) {
 		this.address = address;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber( int number ) {
+		this.number = number;
 	}
 
 	@Override

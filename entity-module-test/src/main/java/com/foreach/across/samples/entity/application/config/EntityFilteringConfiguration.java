@@ -31,6 +31,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.samples.entity.application.business.Group;
+import com.foreach.across.samples.entity.application.business.User;
 import com.foreach.across.samples.entity.application.repositories.GroupRepository;
 import com.foreach.across.samples.entity.application.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +64,9 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		addFilteringForGroupEntity( configuration.withType( Group.class ) );
+
+		configuration.withType( User.class )
+		             .listView( lvb -> lvb.showProperties( "id", "name", "group" ).showResultNumber( false ) );
 
 		configuration.matching( c -> c.hasAttribute( EntityQueryExecutor.class ) )
 		             .listView( lvb -> lvb.entityQueryFilter( true ) );

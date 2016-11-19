@@ -363,6 +363,10 @@ class EntityQueryTokenConverter
 		switch ( token.toLowerCase() ) {
 			case "!=":
 			case "=":
+			case ">":
+			case ">=":
+			case "<":
+			case "<=":
 			case "contains":
 			case "and":
 			case "or":

@@ -33,28 +33,25 @@ public enum EntityQueryOps
 		Assert.notNull( args );
 		return "(" + StringUtils.join( args, " and " ) + ")";
 	}, "and" ),
-
 	OR( ( field, args ) -> {
 		Assert.notNull( args );
 		return "(" + StringUtils.join( args, " or " ) + ")";
 	}, "or" ),
-
 	EQ( ( field, args ) -> field + " = " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), "=" ),
-
 	NEQ( ( field, args ) -> field + " != " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), "!=", "<>" ),
-
 	CONTAINS( ( field, args ) -> field + " contains " + objectAsString( args[0] ), "contains" ),
-
-	NOT_CONTAINS( ( ( field, args ) -> field + " not contains " + objectAsString( args[0] ) ),
-	              "not contains" ),
-
+	NOT_CONTAINS(
+			( ( field, args ) -> field + " not contains " + objectAsString( args[0] ) ),
+			"not contains"
+	),
 	IN( ( field, args ) -> field + " in (" + joinAsStrings( args ) + ")", "in" ),
-
 	NOT_IN( ( field, args ) -> field + " not in (" + joinAsStrings( args ) + ")", "not in" ),
-
-	LIKE( (field, args ) -> field + " like " + objectAsString( args[0] ), "like" ),
-
-	NOT_LIKE( (field, args ) -> field + " not like " + objectAsString( args[0] ), "not like" );
+	LIKE( ( field, args ) -> field + " like " + objectAsString( args[0] ), "like" ),
+	NOT_LIKE( ( field, args ) -> field + " not like " + objectAsString( args[0] ), "not like" ),
+	GT( ( field, args ) -> field + " > " + objectAsString( args[0] ), ">" ),
+	GE( ( field, args ) -> field + " >= " + objectAsString( args[0] ), ">=" ),
+	LT( ( field, args ) -> field + " < " + objectAsString( args[0] ), "<" ),
+	LE( ( field, args ) -> field + " <= " + objectAsString( args[0] ), "<=" );
 
 	private interface OpsWriter
 	{

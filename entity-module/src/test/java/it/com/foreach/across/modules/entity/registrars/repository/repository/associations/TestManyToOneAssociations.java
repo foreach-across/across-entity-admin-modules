@@ -79,9 +79,9 @@ public class TestManyToOneAssociations
 		if ( !inserted ) {
 			inserted = true;
 
-			one = new Company( "one" );
-			two = new Company( "two" );
-			three = new Company( "three" );
+			one = new Company( "one", 1 );
+			two = new Company( "two", 2 );
+			three = new Company( "three", 3 );
 
 			companyRepository.save( Arrays.asList( one, two, three ) );
 

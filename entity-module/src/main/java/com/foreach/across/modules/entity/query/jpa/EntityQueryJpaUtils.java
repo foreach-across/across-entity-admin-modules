@@ -64,6 +64,22 @@ public abstract class EntityQueryJpaUtils
 				return cb.equal( resolveProperty( root, condition.getProperty() ), condition.getFirstArgument() );
 			case NEQ:
 				return cb.notEqual( resolveProperty( root, condition.getProperty() ), condition.getFirstArgument() );
+			case GT: {
+				Expression<Comparable> p = (Expression<Comparable>) resolveProperty( root, condition.getProperty() );
+				return cb.greaterThan( p, (Comparable) condition.getFirstArgument() );
+			}
+			case GE: {
+				Expression<Comparable> p = (Expression<Comparable>) resolveProperty( root, condition.getProperty() );
+				return cb.greaterThanOrEqualTo( p, (Comparable) condition.getFirstArgument() );
+			}
+			case LT: {
+				Expression<Comparable> p = (Expression<Comparable>) resolveProperty( root, condition.getProperty() );
+				return cb.lessThan( p, (Comparable) condition.getFirstArgument() );
+			}
+			case LE: {
+				Expression<Comparable> p = (Expression<Comparable>) resolveProperty( root, condition.getProperty() );
+				return cb.lessThanOrEqualTo( p, (Comparable) condition.getFirstArgument() );
+			}
 			case CONTAINS: {
 				Expression<Collection> collection = root.get( condition.getProperty() );
 				return cb.isMember( condition.getFirstArgument(), collection );
