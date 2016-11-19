@@ -165,6 +165,47 @@ public class TestEntityQueryQueryDslUtils
 	}
 
 	@Test
+	@SuppressWarnings("all")
+	public void like() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "on%" ) );
+		List<Company> found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( Arrays.asList( one ), found );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "%wo" ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( Arrays.asList( two ), found );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "%o%" ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( Arrays.asList( one, two ), found );
+	}
+
+	@Test
+	@SuppressWarnings("all")
+	public void notLike() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "on%" ) );
+		List<Company> found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( two, three ) ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "%wo" ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, three ) ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "%o%" ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 1, found.size() );
+		assertTrue( found.contains( three ) );
+	}
+
+	@Test
 	public void contains() {
 		EntityQuery query = EntityQuery.and(
 				new EntityQueryCondition( "representatives", EntityQueryOps.CONTAINS, john )
@@ -175,6 +216,19 @@ public class TestEntityQueryQueryDslUtils
 		assertNotNull( found );
 		assertEquals( 2, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( one, two ) ) );
+	}
+
+	@Test
+	public void notContains() {
+		EntityQuery query = EntityQuery.and(
+				new EntityQueryCondition( "representatives", EntityQueryOps.NOT_CONTAINS, john )
+		);
+		List<Company> found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+
+		assertNotNull( found );
+		assertEquals( 1, found.size() );
+		assertTrue( found.contains( three ) );
 	}
 
 	@Test

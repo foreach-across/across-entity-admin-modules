@@ -172,6 +172,53 @@ public class TestEntityQueryJpaUtils
 	}
 
 	@Test
+	public void notContains() {
+		EntityQuery query = EntityQuery.and(
+				new EntityQueryCondition( "representatives", EntityQueryOps.NOT_CONTAINS, john )
+		);
+		List<Company> found = companyRepository.findAll( EntityQueryJpaUtils.<Company>toSpecification( query ) );
+
+		assertNotNull( found );
+		assertEquals( 1, found.size() );
+		assertTrue( found.contains( three ) );
+	}
+
+	@Test
+	@SuppressWarnings("all")
+	public void like() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "on%" ) );
+		List<Company> found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( Arrays.asList( one ), found );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "%wo" ) );
+		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( Arrays.asList( two ), found );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "%o%" ) );
+		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( Arrays.asList( one, two ), found );
+	}
+
+	@Test
+	@SuppressWarnings("all")
+	public void notLike() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "on%" ) );
+		List<Company> found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( two, three ) ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "%wo" ) );
+		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, three ) ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "%o%" ) );
+		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( 1, found.size() );
+		assertTrue( found.contains( three ) );
+	}
+
+	@Test
 	public void combined() {
 		EntityQuery query = EntityQuery.and(
 				new EntityQueryCondition( "id", EntityQueryOps.NEQ, "two" ),

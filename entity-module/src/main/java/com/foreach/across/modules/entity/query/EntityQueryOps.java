@@ -50,7 +50,11 @@ public enum EntityQueryOps
 
 	IN( ( field, args ) -> field + " in (" + joinAsStrings( args ) + ")", "in" ),
 
-	NOT_IN( ( field, args ) -> field + " not in (" + joinAsStrings( args ) + ")", "not in" ),;
+	NOT_IN( ( field, args ) -> field + " not in (" + joinAsStrings( args ) + ")", "not in" ),
+
+	LIKE( (field, args ) -> field + " like " + objectAsString( args[0] ), "like" ),
+
+	NOT_LIKE( (field, args ) -> field + " not like " + objectAsString( args[0] ), "not like" );
 
 	private interface OpsWriter
 	{

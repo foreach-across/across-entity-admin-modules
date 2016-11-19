@@ -89,6 +89,11 @@ public abstract class EntityQueryQueryDslUtils
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
 				return Expressions.predicate( Ops.CONTAINS_VALUE, property, constant );
 			}
+			case NOT_CONTAINS: {
+				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.CONTAINS_VALUE, property, constant ).not();
+			}
 			case IN: {
 				Path property = pathBuilder.get( condition.getProperty() );
 				Expression<Object> constant = Expressions.constant( Arrays.asList( condition.getArguments() ) );
@@ -98,6 +103,16 @@ public abstract class EntityQueryQueryDslUtils
 				Path property = pathBuilder.get( condition.getProperty() );
 				Expression<Object> constant = Expressions.constant( Arrays.asList( condition.getArguments() ) );
 				return Expressions.predicate( Ops.NOT_IN, property, constant );
+			}
+			case LIKE: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.LIKE, property, constant );
+			}
+			case NOT_LIKE: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.LIKE, property, constant ).not();
 			}
 		}
 

@@ -26,6 +26,7 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Arne Vandamme
@@ -54,6 +55,7 @@ public abstract class EntityQueryJpaUtils
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private static <V> Predicate buildConditionPredicate( EntityQueryCondition condition,
 	                                                      Root<V> root,
 	                                                      CriteriaBuilder cb ) {
@@ -62,13 +64,26 @@ public abstract class EntityQueryJpaUtils
 				return cb.equal( resolveProperty( root, condition.getProperty() ), condition.getFirstArgument() );
 			case NEQ:
 				return cb.notEqual( resolveProperty( root, condition.getProperty() ), condition.getFirstArgument() );
-			case CONTAINS:
+			case CONTAINS: {
 				Expression<Collection> collection = root.get( condition.getProperty() );
 				return cb.isMember( condition.getFirstArgument(), collection );
+			}
+			case NOT_CONTAINS: {
+				Expression<Collection> collection = root.get( condition.getProperty() );
+				return cb.isNotMember( condition.getFirstArgument(), collection );
+			}
 			case IN:
 				return resolveProperty( root, condition.getProperty() ).in( condition.getArguments() );
 			case NOT_IN:
 				return cb.not( resolveProperty( root, condition.getProperty() ).in( condition.getArguments() ) );
+			case LIKE: {
+				Expression<String> p = (Expression<String>) resolveProperty( root, condition.getProperty() );
+				return cb.like( p, Objects.toString( condition.getFirstArgument() ) );
+			}
+			case NOT_LIKE: {
+				Expression<String> p = (Expression<String>) resolveProperty( root, condition.getProperty() );
+				return cb.notLike( p, Objects.toString( condition.getFirstArgument() ) );
+			}
 		}
 
 		throw new IllegalArgumentException( "Unsupported operand for JPA query: " + condition.getOperand() );
