@@ -126,7 +126,7 @@ public class TestEQTypeConverter
 		                                                     new EQGroup( new EQValue( "1" ), new EQString( "2" ) ) ) );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = EntityQueryParsingException.IllegalFunction.class)
 	public void eqFunctionThrowsExceptionIfFunctionDoesNotExist() {
 		typeConverter.convert( valueOf( Integer.class ), new EQFunction( "hello" ) );
 	}
@@ -134,11 +134,13 @@ public class TestEQTypeConverter
 	@Test
 	public void validFunction() {
 		when( functionTwo.accepts( "hello", valueOf( Integer.class ) ) ).thenReturn( true );
-		when( functionTwo.apply( "hello", new Object[] { 1, 2 }, valueOf( Integer.class ), typeConverter ) )
+		when( functionTwo.apply( "hello", new EQType[] { new EQValue( "1" ), new EQValue( "2" ) },
+		                         valueOf( Integer.class ), typeConverter ) )
 				.thenReturn( "hello from function" );
 
 		assertEquals( "hello from function", typeConverter
-				.convert( valueOf( Integer.class ), new EQFunction( "hello", new Object[] { 1, 2 } ) )
+				.convert( valueOf( Integer.class ),
+				          new EQFunction( "hello", new EQType[] { new EQValue( "1" ), new EQValue( "2" ) } ) )
 		);
 	}
 }

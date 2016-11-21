@@ -88,21 +88,20 @@ public class EntityQueryParser
 			if ( expression instanceof EntityQueryCondition ) {
 				EntityQueryCondition condition = (EntityQueryCondition) expression;
 				if ( !metadataProvider.isValidProperty( condition.getProperty() ) ) {
-					throw new IllegalArgumentException( "Unknown property: " + condition.getProperty() );
+					throw new EntityQueryParsingException.IllegalField( condition.getProperty() );
 				}
 				if ( !metadataProvider.isValidOperatorForProperty( condition.getOperand(),
 				                                                   condition.getProperty() ) ) {
-					throw new IllegalArgumentException(
-							"Illegal operator " + condition.getOperand() + " for property: " + condition
-									.getProperty() );
+					throw new EntityQueryParsingException.IllegalOperator( condition.getOperand().getToken(),
+					                                                       condition.getProperty() );
 				}
 
 				if ( condition.hasArguments() ) {
 					if ( !metadataProvider.isValidValueForPropertyAndOperator( condition.getFirstArgument(),
 					                                                           condition.getProperty(),
 					                                                           condition.getOperand() ) ) {
-						throw new IllegalArgumentException( "Illegal value for operator " + condition
-								.getOperand() + " and property: " + condition.getProperty() );
+						throw new EntityQueryParsingException.IllegalValue( condition.getOperand().getToken(),
+						                                                    condition.getProperty() );
 					}
 				}
 			}

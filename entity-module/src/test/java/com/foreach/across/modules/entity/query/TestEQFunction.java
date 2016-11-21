@@ -38,7 +38,7 @@ public class TestEQFunction
 
 	@Test(expected = IllegalArgumentException.class)
 	public void nullArgumentsNotAllowed() {
-		new EQFunction( "myFunction", (Object[]) null );
+		new EQFunction( "myFunction", (EQType[]) null );
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class TestEQFunction
 		assertEquals( "myFunction", function.getName() );
 		assertTrue( function.getArguments().length == 0 );
 
-		Object[] values = new Object[] { "one", 123 };
+		EQType[] values = new EQType[] { new EQString( "one" ), new EQValue( "123" ) };
 		function = new EQFunction( "otherFunction", values );
 		assertEquals( "otherFunction", function.getName() );
 		assertArrayEquals( values, function.getArguments() );
@@ -57,8 +57,8 @@ public class TestEQFunction
 	public void equalIfSameNameAndArguments() {
 		assertEquals( new EQFunction( "myFunc" ), new EQFunction( "myFunc" ) );
 		assertEquals(
-				new EQFunction( "otherFunc", Arrays.asList( "one", 123 ) ),
-				new EQFunction( "otherFunc", Arrays.asList( "one", 123 ) )
+				new EQFunction( "otherFunc", Arrays.asList( new EQString( "one" ), new EQValue( "123" ) ) ),
+				new EQFunction( "otherFunc", Arrays.asList( new EQString( "one" ), new EQValue( "123" ) ) )
 		);
 	}
 
@@ -66,17 +66,17 @@ public class TestEQFunction
 	public void notEqualIfDifferentNameOrArguments() {
 		assertNotEquals( new EQFunction( "myFunc" ), new EQFunction( "otherFunc" ) );
 		assertNotEquals(
-				new EQFunction( "otherFunc", Arrays.asList( "one", 123 ) ),
-				new EQFunction( "otherFunc", Arrays.asList( "one", 456 ) )
+				new EQFunction( "otherFunc", Arrays.asList( new EQString( "one" ), new EQValue( "123" ) ) ),
+				new EQFunction( "otherFunc", Arrays.asList( new EQString( "one" ), new EQValue( "456" ) ) )
 		);
 	}
 
 	@Test
 	public void changesToOriginalCollectionHaveNoImpact() {
-		List<Object> values = new ArrayList<>();
+		List<EQType> values = new ArrayList<>();
 
 		EQFunction f = new EQFunction( "myFunc", values );
-		values.add( "test" );
+		values.add( new EQValue( "test" ) );
 		assertFalse( ArrayUtils.contains( f.getArguments(), "test" ) );
 	}
 
@@ -86,7 +86,8 @@ public class TestEQFunction
 		assertEquals(
 				"anotherFunc(1,'test',2)",
 				new EQFunction( "anotherFunc",
-				                Arrays.asList( 1, new EQString( "test" ), new EQValue( "2" ) ) ).toString()
+				                Arrays.asList( new EQValue( "1" ), new EQString( "test" ), new EQValue( "2" ) ) )
+						.toString()
 		);
 	}
 }

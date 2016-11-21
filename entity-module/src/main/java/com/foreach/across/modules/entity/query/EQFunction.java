@@ -34,17 +34,17 @@ import java.util.Objects;
 public final class EQFunction implements EQType
 {
 	private final String name;
-	private final Object[] arguments;
+	private final EQType[] arguments;
 
 	public EQFunction( String name ) {
-		this( name, new Object[0] );
+		this( name, new EQType[0] );
 	}
 
-	public EQFunction( String name, Collection<Object> arguments ) {
-		this( name, arguments.toArray() );
+	public EQFunction( String name, Collection<EQType> arguments ) {
+		this( name, arguments.toArray( new EQType[arguments.size()] ) );
 	}
 
-	public EQFunction( String name, Object[] arguments ) {
+	public EQFunction( String name, EQType[] arguments ) {
 		Assert.notNull( name );
 		Assert.notNull( arguments );
 		this.name = name;
@@ -61,7 +61,7 @@ public final class EQFunction implements EQType
 	/**
 	 * @return arguments for this function
 	 */
-	public Object[] getArguments() {
+	public EQType[] getArguments() {
 		return arguments;
 	}
 

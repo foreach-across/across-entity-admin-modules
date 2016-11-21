@@ -92,6 +92,10 @@ public enum EntityQueryOps
 		return opsWriter.toString( propertyName, arguments );
 	}
 
+	public String getToken() {
+		return tokens[0];
+	}
+
 	public static EntityQueryOps forToken( String token ) {
 		String lookup = StringUtils.lowerCase( token ).trim();
 

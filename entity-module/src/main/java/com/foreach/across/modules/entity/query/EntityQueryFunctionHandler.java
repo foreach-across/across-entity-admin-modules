@@ -46,7 +46,7 @@ public interface EntityQueryFunctionHandler
 	 * @return evaluation result
 	 */
 	Object apply( String functionName,
-	              Object[] arguments,
+	              EQType[] arguments,
 	              TypeDescriptor desiredType,
 	              EQTypeConverter argumentConverter );
 }

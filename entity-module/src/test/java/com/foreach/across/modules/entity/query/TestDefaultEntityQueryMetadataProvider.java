@@ -73,8 +73,8 @@ public class TestDefaultEntityQueryMetadataProvider
 	public void allowedStringValues() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
 		expectedValidValue( new EQString( "text" ), EQ, NEQ, LIKE, NOT_LIKE );
-		expectedInvalidValue( new EQGroup( Collections.singleton( "text" ) ), EQ, NEQ );
-		expectedValidValue( new EQGroup( Collections.singleton( "text" ) ), IN, NOT_IN );
+		expectedInvalidValue( new EQGroup( Collections.singleton( new EQString( "text" ) ) ), EQ, NEQ );
+		expectedValidValue( new EQGroup( Collections.singleton( new EQString( "text" ) ) ), IN, NOT_IN );
 		expectedValidValue( new EQFunction( "text" ), DefaultEntityQueryMetadataProvider.STRING_OPS );
 	}
 

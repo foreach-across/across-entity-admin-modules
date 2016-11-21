@@ -34,7 +34,7 @@ import java.text.MessageFormat;
  */
 public abstract class EntityQueryParsingException extends RuntimeException
 {
-	private int contextExpressionStart, errorExpressionPosition;
+	private int contextExpressionStart, errorExpressionPosition = -1;
 	private String contextExpression, errorExpression;
 
 	public EntityQueryParsingException( String message ) {
@@ -74,6 +74,10 @@ public abstract class EntityQueryParsingException extends RuntimeException
 	 */
 	public boolean hasContext() {
 		return contextExpression != null;
+	}
+
+	public boolean hasErrorExpressionPosition() {
+		return errorExpressionPosition >= 0;
 	}
 
 	public int getContextExpressionStart() {
@@ -118,6 +122,10 @@ public abstract class EntityQueryParsingException extends RuntimeException
 
 	public static class IllegalField extends EntityQueryParsingException
 	{
+		public IllegalField( String fieldName ) {
+			this( fieldName, -1 );
+		}
+
 		public IllegalField( String expression, int position ) {
 			super( "Illegal field: {2}" );
 			setErrorExpression( expression );
@@ -127,6 +135,11 @@ public abstract class EntityQueryParsingException extends RuntimeException
 
 	public static class IllegalOperator extends EntityQueryParsingException
 	{
+		public IllegalOperator( String operator, String field ) {
+			super( "Invalid operator for field " + field + ": {2}" );
+			setErrorExpression( operator );
+		}
+
 		public IllegalOperator( String expression, int position ) {
 			super( "Illegal operator: {2}" );
 			setErrorExpression( expression );
@@ -134,12 +147,28 @@ public abstract class EntityQueryParsingException extends RuntimeException
 		}
 	}
 
+	public static class IllegalValue extends EntityQueryParsingException
+	{
+		public IllegalValue( String field, String value ) {
+			super( "Invalid value for field " + field + ": {2}" );
+			setErrorExpression( value );
+		}
+	}
+
 	public static class IllegalIsValue extends EntityQueryParsingException
 	{
-		public IllegalIsValue( String expression, int position ) {
+		public IllegalIsValue( String field, int position ) {
 			super( "Illegal value for {2}: IS and IS NOT can only be combined with NULL or EMPTY" );
-			setErrorExpression( expression );
+			setErrorExpression( field );
 			setErrorExpressionPosition( position );
+		}
+	}
+
+	public static class IllegalFunction extends EntityQueryParsingException
+	{
+		public IllegalFunction( String functionName ) {
+			super( "Unknown entity query function: {2}" );
+			setErrorExpression( functionName );
 		}
 	}
 

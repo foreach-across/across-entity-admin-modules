@@ -67,7 +67,7 @@ public class TestDefaultEntityQueryTranslator
 		translator.validateProperties();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = EntityQueryParsingException.IllegalField.class)
 	public void exceptionIfPropertyNotFound() {
 		EntityQuery query = EntityQuery.and(
 				new EntityQueryCondition( "name", IN, "one", "two" ),

@@ -120,7 +120,7 @@ public class EQTypeConverter
 				return functionHandler.get().apply( function.getName(), function.getArguments(), expectedType, this );
 			}
 			else {
-				throw new IllegalArgumentException( "Unknown entity query function: " + function.getName() );
+				throw new EntityQueryParsingException.IllegalFunction( function.getName() );
 			}
 		}
 

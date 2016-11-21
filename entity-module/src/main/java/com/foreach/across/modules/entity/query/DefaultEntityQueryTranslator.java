@@ -78,7 +78,7 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( condition.getProperty() );
 
 		if ( descriptor == null ) {
-			throw new IllegalArgumentException( "Unknown property: " + condition.getProperty() );
+			throw new EntityQueryParsingException.IllegalField( condition.getProperty() );
 		}
 
 		EntityQueryCondition translated = new EntityQueryCondition();

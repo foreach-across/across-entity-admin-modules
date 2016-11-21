@@ -182,7 +182,7 @@ class EntityQueryTokenConverter
 			condition.setOperand( operator );
 
 			int expectedPosition = queue.getLastPopped().getNextTokenPosition();
-			Object value = retrieveValue( queue, true );
+			EQType value = retrieveValue( queue, true );
 
 			if ( value == null ) {
 				throw new MissingValue( operator.toString( field.getToken() ), expectedPosition );
@@ -276,7 +276,7 @@ class EntityQueryTokenConverter
 		return null;
 	}
 
-	private Object retrieveValue( TokenQueue queue, boolean allowGroupValue ) {
+	private EQType retrieveValue( TokenQueue queue, boolean allowGroupValue ) {
 		if ( queue.hasTokens() ) {
 			TokenMetadata token = queue.pop();
 
@@ -315,7 +315,7 @@ class EntityQueryTokenConverter
 	}
 
 	private EQGroup removeCurrentGroup( TokenQueue queue ) {
-		List<Object> values = new ArrayList<>();
+		List<EQType> values = new ArrayList<>();
 
 		boolean inGroup = true;
 		boolean expectingNext = true;

@@ -34,12 +34,12 @@ public class TestEQGroup
 {
 	@Test(expected = IllegalArgumentException.class)
 	public void nullValueNotAllowed() {
-		new EQGroup( (Object[]) null );
+		new EQGroup( (EQType[]) null );
 	}
 
 	@Test
 	public void values() {
-		Object[] values = new Object[] { "one", 123 };
+		EQType[] values = new EQType[] { new EQString( "one" ), new EQValue( "123" ) };
 
 		EQGroup g = new EQGroup( values );
 		assertArrayEquals( values, g.getValues() );
@@ -47,21 +47,23 @@ public class TestEQGroup
 
 	@Test
 	public void equalIfSameValue() {
-		assertEquals( new EQGroup( Arrays.asList( "one", 123 ) ), new EQGroup( Arrays.asList( "one", 123 ) ) );
+		assertEquals( new EQGroup( Arrays.asList( new EQString( "one" ), new EQValue( "123" ) ) ),
+		              new EQGroup( Arrays.asList( new EQString( "one" ), new EQValue( "123" ) ) ) );
 	}
 
 	@Test
 	public void notEqualIfDifferentValue() {
-		assertNotEquals( new EQGroup( Arrays.asList( "one", 123 ) ), new EQGroup( Arrays.asList( "one", 456 ) ) );
+		assertNotEquals( new EQGroup( Arrays.asList( new EQString( "one" ), new EQValue( "123" ) ) ),
+		                 new EQGroup( new EQString( "one" ), new EQValue( "456" ) ) );
 	}
 
 	@Test
 	public void changesToOriginalCollectionHaveNoImpact() {
-		List<Object> values = new ArrayList<>();
+		List<EQType> values = new ArrayList<>();
 
 		EQGroup g = new EQGroup( values );
-		values.add( "test" );
-		assertFalse( ArrayUtils.contains( g.getValues(), "test" ) );
+		values.add( new EQString( "test" ) );
+		assertFalse( ArrayUtils.contains( g.getValues(), new EQString( "test" ) ) );
 	}
 
 	@Test
@@ -69,7 +71,8 @@ public class TestEQGroup
 		assertEquals( "()", new EQGroup( Collections.emptyList() ).toString() );
 		assertEquals(
 				"(1,'test',2)",
-				new EQGroup( Arrays.asList( 1, new EQString( "test" ), new EQValue( "2" ) ) ).toString()
+				new EQGroup( Arrays.asList( new EQValue( "1" ), new EQString( "test" ), new EQValue( "2" ) ) )
+						.toString()
 		);
 	}
 }

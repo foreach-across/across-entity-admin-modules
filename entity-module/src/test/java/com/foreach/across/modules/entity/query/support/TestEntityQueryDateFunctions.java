@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.query.support;
 
+import com.foreach.across.modules.entity.query.EQType;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,20 +57,20 @@ public class TestEntityQueryDateFunctions
 	public void now() {
 		Date start = new Date();
 
-		Date calculated = (Date) functions.apply( NOW, new Object[0], TypeDescriptor.valueOf( Date.class ), null );
+		Date calculated = (Date) functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( Date.class ), null );
 		assertNotNull( calculated );
 		assertTrue( calculated.getTime() >= start.getTime() && calculated.getTime() < ( start.getTime() + 1000 ) );
 
 		start = new Date();
-		long time = (Long) functions.apply( NOW, new Object[0], TypeDescriptor.valueOf( Long.class ), null );
+		long time = (Long) functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( Long.class ), null );
 		assertTrue( time >= start.getTime() && time < ( start.getTime() + 1000 ) );
 	}
 
 	@Test
 	public void today() {
 		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
-		assertEquals( today, functions.apply( TODAY, new Object[0], TypeDescriptor.valueOf( Date.class ), null ) );
+		assertEquals( today, functions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
 		assertEquals( today.getTime(),
-		              functions.apply( TODAY, new Object[0], TypeDescriptor.valueOf( Long.class ), null ) );
+		              functions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( Long.class ), null ) );
 	}
 }

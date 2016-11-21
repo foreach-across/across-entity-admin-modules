@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.query.support;
 
+import com.foreach.across.modules.entity.query.EQType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,14 +59,14 @@ public class TestEntityQueryAuthenticationFunctions
 	@Test(expected = IllegalStateException.class)
 	public void noSecurityContextThrowsIllegalState() {
 		SecurityContextHolder.clearContext();
-		functions.apply( "currentUser", new Object[0], TypeDescriptor.valueOf( String.class ), null );
+		functions.apply( "currentUser", new EQType[0], TypeDescriptor.valueOf( String.class ), null );
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void noAuthenticationThrowsIllegalState() {
 		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 		SecurityContextHolder.setContext( securityContext );
-		functions.apply( "currentUser", new Object[0], TypeDescriptor.valueOf( String.class ), null );
+		functions.apply( "currentUser", new EQType[0], TypeDescriptor.valueOf( String.class ), null );
 	}
 
 	@Test
@@ -79,7 +80,7 @@ public class TestEntityQueryAuthenticationFunctions
 
 		assertEquals(
 				"username",
-				functions.apply( "currentUser", new Object[0], TypeDescriptor.valueOf( String.class ), null )
+				functions.apply( "currentUser", new EQType[0], TypeDescriptor.valueOf( String.class ), null )
 		);
 	}
 }

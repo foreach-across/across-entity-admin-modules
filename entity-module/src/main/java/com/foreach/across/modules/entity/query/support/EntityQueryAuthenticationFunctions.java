@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.query.support;
 
+import com.foreach.across.modules.entity.query.EQType;
 import com.foreach.across.modules.entity.query.EQTypeConverter;
 import com.foreach.across.modules.entity.query.EntityQueryFunctionHandler;
 import org.springframework.core.convert.TypeDescriptor;
@@ -46,7 +47,7 @@ public class EntityQueryAuthenticationFunctions implements EntityQueryFunctionHa
 
 	@Override
 	public Object apply( String functionName,
-	                     Object[] arguments,
+	                     EQType[] arguments,
 	                     TypeDescriptor desiredType,
 	                     EQTypeConverter argumentConverter ) {
 		SecurityContext securityContext = SecurityContextHolder.getContext();

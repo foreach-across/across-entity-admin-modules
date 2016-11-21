@@ -62,7 +62,7 @@ public class TestEntityQueryParser
 		parser.validateProperties();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = EntityQueryParsingException.IllegalField.class)
 	public void invalidQuery() {
 		parser.parse( "id = 123 or name contains 'boe' or name = 'bla' or name != 'meh'" );
 	}

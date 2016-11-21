@@ -71,11 +71,7 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 //		Class<?> objectType = type.getObjectType();
 		TypeDescriptor valueType = TypeDescriptor.forObject( value );
 
-		if ( !isValidGroupOrNonGroupOperation( valueType, operator ) ) {
-			return false;
-		}
-
-		return true;
+		return isValidGroupOrNonGroupOperation( valueType, operator );
 	}
 
 	private boolean isValidGroupOrNonGroupOperation( TypeDescriptor valueType, EntityQueryOps operator ) {

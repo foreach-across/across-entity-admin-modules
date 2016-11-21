@@ -31,19 +31,19 @@ import java.util.Objects;
  */
 public final class EQGroup implements EQType
 {
-	private final Object[] values;
+	private final EQType[] values;
 
-	public EQGroup( Collection<Object> values ) {
+	public EQGroup( Collection<EQType> values ) {
 		Assert.notNull( values );
-		this.values = values.toArray();
+		this.values = values.toArray( new EQType[values.size()] );
 	}
 
-	public EQGroup( Object... values ) {
+	public EQGroup( EQType... values ) {
 		Assert.notNull( values );
 		this.values = values;
 	}
 
-	public Object[] getValues() {
+	public EQType[] getValues() {
 		return values;
 	}
 
@@ -61,7 +61,7 @@ public final class EQGroup implements EQType
 
 	@Override
 	public int hashCode() {
-		return Objects.hash( values );
+		return Objects.hashCode( values );
 	}
 
 	@Override

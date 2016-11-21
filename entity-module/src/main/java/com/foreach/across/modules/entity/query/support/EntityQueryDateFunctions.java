@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.query.support;
 
+import com.foreach.across.modules.entity.query.EQType;
 import com.foreach.across.modules.entity.query.EQTypeConverter;
 import com.foreach.across.modules.entity.query.EntityQueryFunctionHandler;
 import org.apache.commons.lang3.ArrayUtils;
@@ -53,15 +54,15 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 
 	@Override
 	public Object apply( String functionName,
-	                     Object[] arguments,
+	                     EQType[] arguments,
 	                     TypeDescriptor desiredType,
 	                     EQTypeConverter argumentConverter ) {
-		Date calculated = calculateDate( functionName, arguments );
+		Date calculated = calculateDate( functionName );
 
 		return convertToDesiredType( calculated, desiredType.getObjectType() );
 	}
 
-	private Date calculateDate( String functionName, Object[] arguments ) {
+	private Date calculateDate( String functionName ) {
 		switch ( functionName ) {
 			case "today":
 				return DateUtils.truncate( new Date(), Calendar.DATE );
