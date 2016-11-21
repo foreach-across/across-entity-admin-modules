@@ -18,9 +18,6 @@ package com.foreach.across.modules.entity.query;
 
 import org.springframework.core.convert.TypeDescriptor;
 
-import java.util.Collection;
-import java.util.function.BiFunction;
-
 /**
  * Handler API for defining and executing an function in an {@link EntityQuery}.
  *
@@ -28,22 +25,28 @@ import java.util.function.BiFunction;
  * @see EQFunction
  * @since 2.0.0
  */
-public interface EntityQueryFunctionHandler extends BiFunction<String, Collection<Object>, Object>
+public interface EntityQueryFunctionHandler
 {
 	/**
-	 * Specify the type this function will return.
+	 * Does this handler accept a function with the given name and support the desired result type.
 	 *
-	 * @return type descriptor for to match
+	 * @param functionName name of the function call
+	 * @param desiredType  of the result
+	 * @return true if handler can execute the requested function
 	 */
-	TypeDescriptor returnType( String functionName );
+	boolean accepts( String functionName, TypeDescriptor desiredType );
 
 	/**
-	 * Apply the function and return the value of type specified by {@link #returnType(String)}.
+	 * Apply the function and return the value in the {@param desiredType}.
 	 *
-	 * @param functionName name of the function being executed.
-	 * @param arguments    for the function
+	 * @param functionName      name of the function being executed.
+	 * @param arguments         for the function
+	 * @param desiredType       for the output
+	 * @param argumentConverter to be used for argument conversion
 	 * @return evaluation result
 	 */
-	@Override
-	Object apply( String functionName, Collection<Object> arguments );
+	Object apply( String functionName,
+	              Object[] arguments,
+	              TypeDescriptor desiredType,
+	              EQTypeConverter argumentConverter );
 }

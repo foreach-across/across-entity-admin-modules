@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.query;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -33,15 +34,15 @@ public class TestEQGroup
 {
 	@Test(expected = IllegalArgumentException.class)
 	public void nullValueNotAllowed() {
-		new EQGroup( null );
+		new EQGroup( (Object[]) null );
 	}
 
 	@Test
 	public void values() {
-		List<Object> values = Arrays.asList( "one", 123 );
+		Object[] values = new Object[] { "one", 123 };
 
 		EQGroup g = new EQGroup( values );
-		assertEquals( values, g.getValues() );
+		assertArrayEquals( values, g.getValues() );
 	}
 
 	@Test
@@ -60,7 +61,7 @@ public class TestEQGroup
 
 		EQGroup g = new EQGroup( values );
 		values.add( "test" );
-		assertFalse( g.getValues().contains( "test" ) );
+		assertFalse( ArrayUtils.contains( g.getValues(), "test" ) );
 	}
 
 	@Test

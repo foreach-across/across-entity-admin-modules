@@ -20,7 +20,6 @@ import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
-import com.foreach.across.modules.entity.query.EntityQueryParser;
 import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registrars.EntityRegistrar;
@@ -259,10 +258,12 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 			entityConfiguration.setAttribute( EntityQueryExecutor.class, entityQueryExecutor );
 
 			// todo factor out
-			EntityQueryParser parser = new EntityQueryParser();
+			/*EntityQueryParser parser = new EntityQueryParser();
+			EntityQueryMetadataProvider metadataProvider = new DefaultEntityQueryMetadataProvider( entityConfiguration.getPropertyRegistry() );
+			EntityQueryTranslator queryTranslator = new EntityQueryTranslator
 			parser.setEntityConfiguration( entityConfiguration );
 			parser.setConversionService( mvcConversionService );
-			entityConfiguration.setAttribute( EntityQueryParser.class, parser );
+			entityConfiguration.setAttribute( EntityQueryParser.class, parser );*/
 		}
 	}
 

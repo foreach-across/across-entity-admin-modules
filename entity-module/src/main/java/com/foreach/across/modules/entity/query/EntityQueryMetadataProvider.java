@@ -20,6 +20,7 @@ package com.foreach.across.modules.entity.query;
  * API that provides validation information for entity query conditions.
  *
  * @author Arne Vandamme
+ * @see DefaultEntityQueryMetadataProvider
  * @since 2.0.0
  */
 public interface EntityQueryMetadataProvider

@@ -16,20 +16,13 @@
 
 package com.foreach.across.modules.entity.query;
 
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
 
 import java.util.List;
 
 /**
  * Reverse parsing of a {@link String} into an {@link EntityQuery}.
- * Uses a {@link DefaultEntityQueryMetadataProvider} if none is set.  For improved functionality it is highly advised
- * to have a custom {@link EntityQueryMetadataProvider} implementation.
- * <p/>
- * Supports both a *raw* entity query and an *translated* entity query.
+ * Uses a {@link DefaultEntityQueryMetadataProvider} if none is set.
  *
  * @author Arne Vandamme
  * @see DefaultEntityQueryMetadataProvider
@@ -40,28 +33,8 @@ public class EntityQueryParser
 	private static final EntityQueryTokenizer tokenizer = new EntityQueryTokenizer();
 	private static final EntityQueryTokenConverter converter = new EntityQueryTokenConverter();
 
-	private ConversionService conversionService;
-
 	private EntityQueryMetadataProvider metadataProvider;
-
-	private EntityConfiguration entityConfiguration;
-
-	@Autowired
-	public void setConversionService( ConversionService conversionService ) {
-		this.conversionService = conversionService;
-	}
-
-	private enum Expecting
-	{
-		Property,
-		Operator,
-		Value
-	}
-
-	public void setEntityConfiguration( EntityConfiguration entityConfiguration ) {
-		this.entityConfiguration = entityConfiguration;
-		setMetadataProvider( new DefaultEntityQueryMetadataProvider( entityConfiguration.getPropertyRegistry() ) );
-	}
+	private EntityQueryTranslator queryTranslator;
 
 	/**
 	 * Set the actual {@link EntityQueryMetadataProvider} that should be used for validating and typing query strings.
@@ -74,9 +47,26 @@ public class EntityQueryParser
 	}
 
 	/**
-	 * Convert a query string into a typed and validated {@link EntityQuery}.  The query returned will be raw,
-	 * meaning that actual values might not be converted. The {@link #setMetadataProvider(EntityQueryMetadataProvider)}
-	 * value will be used for validating the query and converting the string values to correctly typed ones.
+	 * Set the {@link DefaultEntityQueryTranslator} to use for translating raw queries that passed validation.
+	 *
+	 * @param queryTranslator instance
+	 */
+	public void setQueryTranslator( EntityQueryTranslator queryTranslator ) {
+		Assert.notNull( queryTranslator );
+		this.queryTranslator = queryTranslator;
+	}
+
+	public void validateProperties() {
+		Assert.notNull( metadataProvider );
+		Assert.notNull( queryTranslator );
+	}
+
+	/**
+	 * Convert a query string into a typed and validated {@link EntityQuery}.
+	 * The {@link #setMetadataProvider(EntityQueryMetadataProvider)}
+	 * value will be used for validating the query, and -when passing validation - query will be translated
+	 * by passing every separate expression to the {}
+	 * <p>
 	 * An exception will be thrown if the query cannot be converted.
 	 *
 	 * @param queryString string representation of the query
@@ -84,38 +74,13 @@ public class EntityQueryParser
 	 * @throws IllegalArgumentException if parsing fails
 	 */
 	public EntityQuery parse( String queryString ) {
+		validateProperties();
+
 		List<EntityQueryTokenizer.TokenMetadata> tokens = tokenizer.tokenize( queryString );
 		EntityQuery rawQuery = converter.convertTokens( tokens );
 		validatePropertiesAndOperators( rawQuery );
 
-		return translate( rawQuery );
-	}
-
-	private EntityQuery translate( EntityQuery rawQuery ) {
-		EntityQuery translated = new EntityQuery();
-		translated.setOperand( rawQuery.getOperand() );
-
-		for ( EntityQueryExpression expression : rawQuery.getExpressions() ) {
-			if ( expression instanceof EntityQueryCondition ) {
-				EntityQueryCondition condition = (EntityQueryCondition) expression;
-				EntityPropertyDescriptor descriptor = entityConfiguration.getPropertyRegistry().getProperty(
-						condition.getProperty() );
-
-				if ( descriptor == null ) {
-					throw new IllegalArgumentException( "Unknown property: " + condition.getProperty() );
-				}
-
-				EntityQueryConditionTranslator translator = new EntityQueryConditionTranslator( descriptor,
-				                                                                                conversionService );
-
-				translated.add( translator.translate( condition ) );
-			}
-			else if ( expression instanceof EntityQuery ) {
-				translated.add( translate( (EntityQuery) expression ) );
-			}
-		}
-
-		return translated;
+		return queryTranslator.translate( rawQuery );
 	}
 
 	private void validatePropertiesAndOperators( EntityQuery query ) {

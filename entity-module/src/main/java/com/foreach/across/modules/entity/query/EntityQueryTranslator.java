@@ -25,10 +25,9 @@ package com.foreach.across.modules.entity.query;
  *
  * @author Arne Vandamme
  * @since 2.0.0
+ * @see DefaultEntityQueryTranslator
  */
-public class EntityQueryTranslator
+public interface EntityQueryTranslator
 {
-	public EntityQuery translate( EntityQuery rawQuery ) {
-		return rawQuery;
-	}
+	EntityQuery translate( EntityQuery rawQuery );
 }

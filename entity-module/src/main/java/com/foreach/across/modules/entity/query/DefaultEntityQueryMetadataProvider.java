@@ -35,13 +35,13 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
  */
 public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataProvider
 {
-	public static final EntityQueryOps[] STRING_OPS = new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE };
+	public static final EntityQueryOps[] STRING_OPS = new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE };
 	public static final EntityQueryOps[] NUMBER_OPS = new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE };
 	public static final EntityQueryOps[] COLLECTION_OPS = new EntityQueryOps[] { CONTAINS, NOT_CONTAINS };
 	public static final EntityQueryOps[] ENTITY_OPS = new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN };
 
 	private static final TypeDescriptor EQ_GROUP_TYPE = TypeDescriptor.valueOf( EQGroup.class );
-	private static final TypeDescriptor EQ_VALUE_TYPE = TypeDescriptor.valueOf( EQValue.class );
+	private static final TypeDescriptor EQ_FUNCTION_TYPE = TypeDescriptor.valueOf( EQFunction.class );
 
 	private final EntityPropertyRegistry propertyRegistry;
 
@@ -60,26 +60,26 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 		return ArrayUtils.contains( retrieveOperandsForType( descriptor.getPropertyTypeDescriptor() ), operator );
 	}
 
-	// group only allowed with in/not in
-
 	@Override
 	public boolean isValidValueForPropertyAndOperator( Object value, String property, EntityQueryOps operator ) {
 		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( property );
 		TypeDescriptor type = descriptor.getPropertyTypeDescriptor();
-		Class<?> objectType = type.getObjectType();
+//		Class<?> objectType = type.getObjectType();
 		TypeDescriptor valueType = TypeDescriptor.forObject( value );
 
-		if ( valueType != null ) {
-			if ( String.class.equals( objectType ) ) {
-				if ( valueType.equals( EQ_GROUP_TYPE )
-						&& !operator.equals( EntityQueryOps.IN )
-						&& !operator.equals( EntityQueryOps.NOT_IN ) ) {
-					return false;
-				}
-			}
+		if ( !isValidGroupOrNonGroupOperation( valueType, operator ) ) {
+			return false;
 		}
 
 		return true;
+	}
+
+	private boolean isValidGroupOrNonGroupOperation( TypeDescriptor valueType, EntityQueryOps operator ) {
+		if ( operator == IN || operator == NOT_IN ) {
+			return EQ_GROUP_TYPE.equals( valueType ) || EQ_FUNCTION_TYPE.equals( valueType );
+		}
+
+		return !EQ_GROUP_TYPE.equals( valueType );
 	}
 
 	private EntityQueryOps[] retrieveOperandsForType( TypeDescriptor type ) {

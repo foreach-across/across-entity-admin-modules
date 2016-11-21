@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.query;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -37,19 +38,19 @@ public class TestEQFunction
 
 	@Test(expected = IllegalArgumentException.class)
 	public void nullArgumentsNotAllowed() {
-		new EQFunction( "myFunction", null );
+		new EQFunction( "myFunction", (Object[]) null );
 	}
 
 	@Test
 	public void properties() {
 		EQFunction function = new EQFunction( "myFunction" );
 		assertEquals( "myFunction", function.getName() );
-		assertTrue( function.getArguments().isEmpty() );
+		assertTrue( function.getArguments().length == 0 );
 
-		List<Object> values = Arrays.asList( "one", 123 );
+		Object[] values = new Object[] { "one", 123 };
 		function = new EQFunction( "otherFunction", values );
 		assertEquals( "otherFunction", function.getName() );
-		assertEquals( values, function.getArguments() );
+		assertArrayEquals( values, function.getArguments() );
 	}
 
 	@Test
@@ -62,7 +63,7 @@ public class TestEQFunction
 	}
 
 	@Test
-	public void notEqualIfDifferentNamdOrArguments() {
+	public void notEqualIfDifferentNameOrArguments() {
 		assertNotEquals( new EQFunction( "myFunc" ), new EQFunction( "otherFunc" ) );
 		assertNotEquals(
 				new EQFunction( "otherFunc", Arrays.asList( "one", 123 ) ),
@@ -76,7 +77,7 @@ public class TestEQFunction
 
 		EQFunction f = new EQFunction( "myFunc", values );
 		values.add( "test" );
-		assertFalse( f.getArguments().contains( "test" ) );
+		assertFalse( ArrayUtils.contains( f.getArguments(), "test" ) );
 	}
 
 	@Test

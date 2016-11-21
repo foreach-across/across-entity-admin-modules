@@ -19,9 +19,8 @@ package com.foreach.across.modules.entity.query;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -32,14 +31,19 @@ import java.util.Objects;
  */
 public final class EQGroup implements EQType
 {
-	private final List<Object> values;
+	private final Object[] values;
 
 	public EQGroup( Collection<Object> values ) {
 		Assert.notNull( values );
-		this.values = new ArrayList<>( values );
+		this.values = values.toArray();
 	}
 
-	public Collection<Object> getValues() {
+	public EQGroup( Object... values ) {
+		Assert.notNull( values );
+		this.values = values;
+	}
+
+	public Object[] getValues() {
 		return values;
 	}
 
@@ -52,7 +56,7 @@ public final class EQGroup implements EQType
 			return false;
 		}
 		EQGroup eqGroup = (EQGroup) o;
-		return Objects.equals( values, eqGroup.values );
+		return Arrays.equals( values, eqGroup.values );
 	}
 
 	@Override

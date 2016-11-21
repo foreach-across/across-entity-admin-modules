@@ -32,6 +32,7 @@ import java.util.Collections;
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -65,19 +66,32 @@ public class TestDefaultEntityQueryMetadataProvider
 	@Test
 	public void stringOperands() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
-		expectedOperands( EQ, NEQ, IN, NOT_IN, LIKE );
+		expectedOperands( EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE );
 	}
 
 	@Test
 	public void allowedStringValues() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
-		expectedValidValue( new EQString( "text" ), DefaultEntityQueryMetadataProvider.STRING_OPS );
-		expectedInvalidValue( new EQGroup( Collections.singleton( "text" ) ), EntityQueryOps.EQ, EntityQueryOps.NEQ );
-		expectedValidValue( new EQGroup( Collections.singleton( "text" ) ), EntityQueryOps.IN, EntityQueryOps.NOT_IN );
+		expectedValidValue( new EQString( "text" ), EQ, NEQ, LIKE, NOT_LIKE );
+		expectedInvalidValue( new EQGroup( Collections.singleton( "text" ) ), EQ, NEQ );
+		expectedValidValue( new EQGroup( Collections.singleton( "text" ) ), IN, NOT_IN );
 		expectedValidValue( new EQFunction( "text" ), DefaultEntityQueryMetadataProvider.STRING_OPS );
-		// wrong type of function
-		// collection returning function (only for IN)
+	}
 
+	@Test
+	public void inOperatorsRequireEQGroupOrFunctionReturningCollection() {
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( mock( TypeDescriptor.class ) );
+		expectedInvalidValue( new EQValue( "" ), EntityQueryOps.IN, EntityQueryOps.NOT_IN );
+		expectedInvalidValue( new EQString( "" ), EntityQueryOps.IN, EntityQueryOps.NOT_IN );
+		expectedValidValue( new EQGroup( Collections.emptyList() ), EntityQueryOps.IN, EntityQueryOps.NOT_IN );
+		expectedValidValue( new EQFunction( "" ), EntityQueryOps.IN, EntityQueryOps.NOT_IN );
+	}
+
+	@Test
+	public void groupRequiresAnInOperator() {
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( mock( TypeDescriptor.class ) );
+		expectedInvalidValue( new EQGroup( Collections.emptyList() ), EQ, NEQ, GT, GE, LT, LE, LIKE, NOT_CONTAINS,
+		                      CONTAINS );
 	}
 
 	@Test

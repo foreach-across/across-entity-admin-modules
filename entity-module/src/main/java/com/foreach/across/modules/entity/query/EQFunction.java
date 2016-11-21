@@ -19,30 +19,36 @@ package com.foreach.across.modules.entity.query;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a function value.  A function will be evaluated at runtime to determine the actual arguments returned.
  * A function is identified by a name and optional set of arguments.
  *
  * @author Arne Vandamme
- * @since 2.0.0
  * @see EntityQueryFunctionHandler
+ * @since 2.0.0
  */
 public final class EQFunction implements EQType
 {
 	private final String name;
-	private final List<Object> arguments;
+	private final Object[] arguments;
 
 	public EQFunction( String name ) {
-		this( name, Collections.emptyList() );
+		this( name, new Object[0] );
 	}
 
 	public EQFunction( String name, Collection<Object> arguments ) {
+		this( name, arguments.toArray() );
+	}
+
+	public EQFunction( String name, Object[] arguments ) {
 		Assert.notNull( name );
 		Assert.notNull( arguments );
 		this.name = name;
-		this.arguments = new ArrayList<>( arguments );
+		this.arguments = arguments.clone();
 	}
 
 	/**
@@ -55,7 +61,7 @@ public final class EQFunction implements EQType
 	/**
 	 * @return arguments for this function
 	 */
-	public Collection<Object> getArguments() {
+	public Object[] getArguments() {
 		return arguments;
 	}
 
@@ -69,7 +75,7 @@ public final class EQFunction implements EQType
 		}
 		EQFunction that = (EQFunction) o;
 		return Objects.equals( name, that.name ) &&
-				Objects.equals( arguments, that.arguments );
+				Arrays.equals( arguments, that.arguments );
 	}
 
 	@Override
