@@ -1,0 +1,24 @@
+== EntityQuery infrastructure
+
+EntityQueryExecutor
+
+EntityQuery language
+
+EntityQueryParser
+
+filtering
+
+enable default entity query filter
+
+support operators
+
+default functions
+now()
+today()
+currentUser
+
+how to customize
+custom conversion
+adding a custom function
+
+

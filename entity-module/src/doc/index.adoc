@@ -260,6 +260,9 @@ Example:
 
 === List view
 
+==== Filtering a list view
+activate default or create custom
+
 ==== List summary view
 
 It is possible to activate a detail view inline in a list view.
@@ -273,6 +276,8 @@ The summary pane is called using AJAX and only the _content_ fragment of the pag
 configuration.withType( User.class )
              .view( EntityListView.SUMMARY_VIEW_NAME, vb -> vb.template( "th/myModule/userSummary" ) );
 ----
+
+
 
 [[delete-view]]
 === Delete view
@@ -403,6 +408,9 @@ Example: _UserModule.entities.user.validation.NotBlank_,  _UserModule.entities.u
 * EntityPrefix: ModuleName.entities.entityName, or EntityModule.entities.entityName or simply entityName
 * Hierarchical lookups: entity can be removed, module can be replaced by EntityModule
 
+=== Adding a custom filter to a list view
+todo:
+
 === Selecting properties
 `EntityPropertySelector`, incremental builders, keep current, select all, select all without default filter, exclude
 
@@ -500,6 +508,7 @@ The aggregated properties combine both the timestamp and the principal in a sing
 
 See the `AuditableEntityUiConfiguration` for full customization.
 
+include::chap-entity-query.adoc[]
 
 == To be done:
 * view processor
