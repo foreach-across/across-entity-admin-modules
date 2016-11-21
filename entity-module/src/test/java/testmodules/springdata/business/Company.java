@@ -19,6 +19,7 @@ package testmodules.springdata.business;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,6 +40,9 @@ public class Company implements Persistable<String>
 
 	@Column
 	private int number;
+
+	@Column
+	private Date created;
 
 	@ManyToMany
 	private Set<Representative> representatives = new HashSet<>();
@@ -67,8 +71,13 @@ public class Company implements Persistable<String>
 	}
 
 	public Company( String id, int number ) {
+		this( id, number, new Date() );
+	}
+
+	public Company( String id, int number, Date created ) {
 		this.id = id;
 		this.number = number;
+		this.created = created;
 		setNew( true );
 	}
 
@@ -110,6 +119,14 @@ public class Company implements Persistable<String>
 
 	public void setNumber( int number ) {
 		this.number = number;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated( Date created ) {
+		this.created = created;
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * @author Arne Vandamme
@@ -54,6 +55,9 @@ public class User extends SettableIdBasedEntity<User>
 	@ManyToOne
 	private Group group;
 
+	@Column
+	private Date registrationDate;
+
 	public User() {
 	}
 
@@ -83,5 +87,13 @@ public class User extends SettableIdBasedEntity<User>
 
 	public void setGroup( Group group ) {
 		this.group = group;
+	}
+
+	public Date getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate( Date registrationDate ) {
+		this.registrationDate = registrationDate;
 	}
 }

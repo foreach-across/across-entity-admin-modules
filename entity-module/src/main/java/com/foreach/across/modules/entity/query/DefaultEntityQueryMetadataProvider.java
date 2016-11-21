@@ -60,6 +60,8 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 		return ArrayUtils.contains( retrieveOperandsForType( descriptor.getPropertyTypeDescriptor() ), operator );
 	}
 
+	// group only allowed with in/not in
+
 	@Override
 	public boolean isValidValueForPropertyAndOperator( Object value, String property, EntityQueryOps operator ) {
 		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( property );

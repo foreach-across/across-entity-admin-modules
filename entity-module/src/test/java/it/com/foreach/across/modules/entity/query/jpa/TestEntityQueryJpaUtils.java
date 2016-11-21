@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaUtils;
 import it.com.foreach.across.modules.entity.registrars.repository.repository.TestRepositoryEntityRegistrar;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,10 +37,8 @@ import testmodules.springdata.repositories.CompanyRepository;
 import testmodules.springdata.repositories.GroupRepository;
 import testmodules.springdata.repositories.RepresentativeRepository;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.text.ParseException;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -81,9 +80,9 @@ public class TestEntityQueryJpaUtils
 
 			representativeRepository.save( Arrays.asList( john, joe, peter ) );
 
-			one = new Company( "one", 1 );
-			two = new Company( "two", 2 );
-			three = new Company( "three", 3 );
+			one = new Company( "one", 1, asDate( "2015-01-17 13:30" ) );
+			two = new Company( "two", 2, asDate( "2016-03-04 14:00" ) );
+			three = new Company( "three", 3, asDate( "2016-04-04 14:00" ) );
 
 			one.setGroup( groupOne );
 			two.setGroup( groupOne );
@@ -157,6 +156,45 @@ public class TestEntityQueryJpaUtils
 		assertTrue( found.containsAll( Arrays.asList( one, two ) ) );
 
 		query = EntityQuery.and( new EntityQueryCondition( "number", EntityQueryOps.LE, 3 ) );
+		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( 3, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two, three ) ) );
+	}
+
+	@Test
+	public void dateOperands() {
+		EntityQuery query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.EQ, asDate( "2015-01-17 13:30" ) ) );
+		List<Company> found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( 1, found.size() );
+		assertTrue( found.contains( one ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.NEQ, asDate( "2015-01-17 13:30" ) ) );
+		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( two, three ) ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.GT, asDate( "2015-01-17 13:30" ) ) );
+		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( two, three ) ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.GE, asDate( "2015-01-17 13:30" ) ) );
+		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( 3, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two, three ) ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.LT, asDate( "2016-04-04 14:00" ) ) );
+		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two ) ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.LE, asDate( "2016-04-04 14:00" ) ) );
 		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
 		assertEquals( 3, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( one, two, three ) ) );
@@ -252,5 +290,14 @@ public class TestEntityQueryJpaUtils
 		assertNotNull( found );
 		assertEquals( 1, found.size() );
 		assertTrue( found.contains( one ) );
+	}
+
+	public static Date asDate( String str ) {
+		try {
+			return DateUtils.parseDateStrictly( str, "yyyy-MM-dd HH:mm" );
+		}
+		catch ( ParseException pe ) {
+			throw new RuntimeException( pe );
+		}
 	}
 }

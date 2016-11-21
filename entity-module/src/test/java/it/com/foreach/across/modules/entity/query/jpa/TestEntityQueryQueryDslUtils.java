@@ -19,6 +19,7 @@ package it.com.foreach.across.modules.entity.query.jpa;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
+import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaUtils;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslUtils;
 import it.com.foreach.across.modules.entity.registrars.repository.repository.TestRepositoryEntityRegistrar;
 import org.junit.Before;
@@ -41,6 +42,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import static it.com.foreach.across.modules.entity.query.jpa.TestEntityQueryJpaUtils.asDate;
 import static org.junit.Assert.*;
 
 /**
@@ -81,9 +83,9 @@ public class TestEntityQueryQueryDslUtils
 
 			representativeRepository.save( Arrays.asList( john, joe, peter ) );
 
-			one = new Company( "one", 1 );
-			two = new Company( "two", 2 );
-			three = new Company( "three", 3 );
+			one = new Company( "one", 1, asDate( "2015-01-17 13:30" ) );
+			two = new Company( "two", 2, asDate( "2016-03-04 14:00" ) );
+			three = new Company( "three", 3, asDate( "2016-04-04 14:00" ) );
 
 			one.setGroup( groupOne );
 			two.setGroup( groupOne );
@@ -165,6 +167,50 @@ public class TestEntityQueryQueryDslUtils
 		query = EntityQuery.and( new EntityQueryCondition( "number", EntityQueryOps.LE, 3 ) );
 		found = (List<Company>) companyRepository.findAll(
 				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 3, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two, three ) ) );
+	}
+
+	@Test
+	public void dateOperands() {
+		EntityQuery query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.EQ, asDate( "2015-01-17 13:30" ) ) );
+		List<Company> found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 1, found.size() );
+		assertTrue( found.contains( one ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.NEQ, asDate( "2015-01-17 13:30" ) ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( two, three ) ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.GT, asDate( "2015-01-17 13:30" ) ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( two, three ) ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.GE, asDate( "2015-01-17 13:30" ) ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 3, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two, three ) ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.LT, asDate( "2016-04-04 14:00" ) ) );
+		found = (List<Company>) companyRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+		assertEquals( 2, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( one, two ) ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "created", EntityQueryOps.LE, asDate( "2016-04-04 14:00" ) ) );
+		found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
 		assertEquals( 3, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( one, two, three ) ) );
 	}

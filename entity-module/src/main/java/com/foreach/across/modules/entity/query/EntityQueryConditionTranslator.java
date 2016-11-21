@@ -21,7 +21,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -58,26 +57,37 @@ public class EntityQueryConditionTranslator
 		List<Object> resolved = new ArrayList<>();
 
 		for ( Object argument : arguments ) {
-			if ( argument instanceof EQValue ) {
-				resolved.add(
-						conversionService
-								.convert( ( (EQValue) argument ).getValue(), TypeDescriptor.valueOf( String.class ),
-								          expectedType )
-				);
-			}
-			else if ( argument instanceof EQString ) {
-				resolved.add( ( (EQString) argument ).getValue() );
-			}
-			else if ( argument instanceof EQGroup ) {
+			if ( argument instanceof EQGroup ) {
 				for ( Object groupValue : ( (EQGroup) argument ).getValues() ) {
-					resolved.addAll( Arrays.asList( resolveArgumentValues( expectedType, groupValue ) ) );
+					resolved.add( convertArgumentValue( expectedType, groupValue ) );
 				}
 			}
 			else {
-				resolved.add( argument );
+				resolved.add( convertArgumentValue( expectedType, argument ) );
 			}
 		}
 
 		return resolved.toArray();
+	}
+
+	/**
+	 * Convert a single - non-EQGroup - argument value.
+	 */
+	private Object convertArgumentValue( TypeDescriptor expectedType, Object argument ) {
+		TypeDescriptor sourceType = TypeDescriptor.forObject( argument );
+
+		if ( conversionService.canConvert( sourceType, expectedType ) ) {
+			// Use directly registered converter
+			return conversionService.convert( argument, sourceType, expectedType );
+		}
+		else if ( argument instanceof EQValue ) {
+			return convertArgumentValue( expectedType, ( (EQValue) argument ).getValue() );
+		}
+		else if ( argument instanceof EQString ) {
+			return ( (EQString) argument ).getValue();
+		}
+
+		// Unable to convert, return the raw argument
+		return argument;
 	}
 }

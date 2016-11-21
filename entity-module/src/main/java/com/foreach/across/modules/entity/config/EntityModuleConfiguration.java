@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.converters.EntityToStringConverter;
 import com.foreach.across.modules.entity.converters.StringToEntityConfigurationConverter;
 import com.foreach.across.modules.entity.formatters.DateFormatter;
 import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
+import com.foreach.across.modules.entity.query.support.EQStringToDateConverter;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
@@ -60,6 +61,8 @@ public class EntityModuleConfiguration
 		dateFormatterRegistrar.setFormatter( new DateFormatter() );
 		dateFormatterRegistrar.registerFormatters( mvcConversionService );
 		mvcConversionService.addFormatterForFieldAnnotation( new TemporalFormatterFactory() );
+
+		mvcConversionService.addConverter( new EQStringToDateConverter( mvcConversionService ) );
 	}
 
 	@Bean(name = EntityModule.VALIDATOR)

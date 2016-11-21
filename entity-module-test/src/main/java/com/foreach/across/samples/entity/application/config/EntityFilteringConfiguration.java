@@ -66,7 +66,8 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		addFilteringForGroupEntity( configuration.withType( Group.class ) );
 
 		configuration.withType( User.class )
-		             .listView( lvb -> lvb.showProperties( "id", "name", "group" ).showResultNumber( false ) );
+		             .listView( lvb -> lvb.showProperties( "id", "name", "group", "registrationDate" )
+		                                  .showResultNumber( false ) );
 
 		configuration.matching( c -> c.hasAttribute( EntityQueryExecutor.class ) )
 		             .listView( lvb -> lvb.entityQueryFilter( true ) );

@@ -28,7 +28,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.Assert;
 
+import java.util.Calendar;
 import java.util.stream.Stream;
+
+import static java.util.Calendar.*;
 
 /**
  * @author Arne Vandamme
@@ -44,8 +47,16 @@ public class TestUserInstaller
 	@Autowired
 	private UserRepository userRepository;
 
+	private transient Calendar cal;
+
 	@InstallerMethod
 	public void installTestUsersInGroup() {
+		cal = Calendar.getInstance();
+		cal.set( YEAR, 2016 );
+		cal.set( MONTH, JANUARY );
+		cal.set( DAY_OF_MONTH, 1 );
+		cal.set( HOUR_OF_DAY, 10 );
+
 		Group group = groupRepository.findOne( -1L );
 
 		Stream.of( "john", "joey", "jane", "paul" )
@@ -65,6 +76,11 @@ public class TestUserInstaller
 		User user = new User();
 		user.setName( name );
 		user.setGroup( group );
+		user.setRegistrationDate( cal.getTime() );
+
+		cal.add( DAY_OF_MONTH, 5 );
+		cal.add( HOUR_OF_DAY, 1 );
+		cal.add( MINUTE, 15);
 
 		userRepository.save( user );
 	}
