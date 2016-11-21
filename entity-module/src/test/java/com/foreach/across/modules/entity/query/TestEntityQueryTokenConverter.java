@@ -120,6 +120,46 @@ public class TestEntityQueryTokenConverter
 	}
 
 	@Test
+	public void isNull() {
+		assertEquals(
+				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.IS_NULL ) ),
+				convert( "value", "is", "NULL" )
+		);
+		assertEquals(
+				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.IS_NOT_NULL ) ),
+				convert( "value", "is", "not", "NULL" )
+		);
+		assertEquals(
+				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.IS_NULL ) ),
+				convert( "value", "is", "null" )
+		);
+		assertEquals(
+				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.IS_NOT_NULL ) ),
+				convert( "value", "is", "not", "null" )
+		);
+	}
+
+	@Test
+	public void isEmpty() {
+		assertEquals(
+				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.IS_EMPTY ) ),
+				convert( "value", "is", "EMPTY" )
+		);
+		assertEquals(
+				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.IS_NOT_EMPTY ) ),
+				convert( "value", "is", "not", "EMPTY" )
+		);
+		assertEquals(
+				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.IS_EMPTY ) ),
+				convert( "value", "is", "empty" )
+		);
+		assertEquals(
+				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.IS_NOT_EMPTY ) ),
+				convert( "value", "is", "not", "empty" )
+		);
+	}
+
+	@Test
 	public void illegalField() {
 		expectError(
 				"Illegal field: and", 0,
@@ -141,6 +181,19 @@ public class TestEntityQueryTokenConverter
 		expectError(
 				"Missing expected field at position 41", 41,
 				"a", "=", "b", "and", "("
+		);
+	}
+
+
+	@Test
+	public void illegalNullOrEmptyValue() {
+		expectError(
+				"Illegal value for a: IS and IS NOT can only be combined with NULL or EMPTY", 12,
+		        "a", "is", "bla"
+		);
+		expectError(
+				"Illegal value for a: IS and IS NOT can only be combined with NULL or EMPTY", 23,
+				"a", "is", "not", "bla"
 		);
 	}
 

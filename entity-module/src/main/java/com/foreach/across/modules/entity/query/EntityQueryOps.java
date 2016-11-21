@@ -51,7 +51,11 @@ public enum EntityQueryOps
 	GT( ( field, args ) -> field + " > " + objectAsString( args[0] ), ">" ),
 	GE( ( field, args ) -> field + " >= " + objectAsString( args[0] ), ">=" ),
 	LT( ( field, args ) -> field + " < " + objectAsString( args[0] ), "<" ),
-	LE( ( field, args ) -> field + " <= " + objectAsString( args[0] ), "<=" );
+	LE( ( field, args ) -> field + " <= " + objectAsString( args[0] ), "<=" ),
+	IS_NULL( ( field, args ) -> field + " is NULL", "is" ),
+	IS_NOT_NULL( ( field, args ) -> field + " is not NULL", "is not" ),
+	IS_EMPTY( ( field, args ) -> field + " is EMPTY", "is" ),
+	IS_NOT_EMPTY( ( field, args ) -> field + " is not EMPTY", "is not" );
 
 	private interface OpsWriter
 	{

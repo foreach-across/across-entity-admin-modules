@@ -134,6 +134,15 @@ public abstract class EntityQueryParsingException extends RuntimeException
 		}
 	}
 
+	public static class IllegalIsValue extends EntityQueryParsingException
+	{
+		public IllegalIsValue( String expression, int position ) {
+			super( "Illegal value for {2}: IS and IS NOT can only be combined with NULL or EMPTY" );
+			setErrorExpression( expression );
+			setErrorExpressionPosition( position );
+		}
+	}
+
 	/**
 	 * Base class for unbalanced exception, meaning a token or keyword was expected but not found.
 	 * The {@link #getErrorExpressionPosition()} will contain the position of where the token was expected.

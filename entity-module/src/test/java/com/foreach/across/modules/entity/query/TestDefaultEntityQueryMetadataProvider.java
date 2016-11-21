@@ -66,7 +66,7 @@ public class TestDefaultEntityQueryMetadataProvider
 	@Test
 	public void stringOperands() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
-		expectedOperands( EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE );
+		expectedOperands( EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY );
 	}
 
 	@Test
@@ -97,19 +97,19 @@ public class TestDefaultEntityQueryMetadataProvider
 	@Test
 	public void numberOperands() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( Integer.class ) );
-		expectedOperands( EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE );
+		expectedOperands( EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY );
 	}
 
 	@Test
 	public void entityOperands() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( Object.class ) );
-		expectedOperands( EQ, NEQ, IN, NOT_IN );
+		expectedOperands( EQ, NEQ, IN, NOT_IN, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY );
 	}
 
 	@Test
 	public void collectionOperands() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( ArrayList.class ) );
-		expectedOperands( CONTAINS, NOT_CONTAINS );
+		expectedOperands( CONTAINS, NOT_CONTAINS, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY );
 	}
 
 	private void expectedValidValue( Object value, EntityQueryOps... allowed ) {

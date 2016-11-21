@@ -35,10 +35,14 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
  */
 public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataProvider
 {
-	public static final EntityQueryOps[] STRING_OPS = new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE };
-	public static final EntityQueryOps[] NUMBER_OPS = new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE };
-	public static final EntityQueryOps[] COLLECTION_OPS = new EntityQueryOps[] { CONTAINS, NOT_CONTAINS };
-	public static final EntityQueryOps[] ENTITY_OPS = new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN };
+	public static final EntityQueryOps[] STRING_OPS =
+			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
+	public static final EntityQueryOps[] NUMBER_OPS =
+			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
+	public static final EntityQueryOps[] COLLECTION_OPS =
+			new EntityQueryOps[] { CONTAINS, NOT_CONTAINS, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
+	public static final EntityQueryOps[] ENTITY_OPS =
+			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
 
 	private static final TypeDescriptor EQ_GROUP_TYPE = TypeDescriptor.valueOf( EQGroup.class );
 	private static final TypeDescriptor EQ_FUNCTION_TYPE = TypeDescriptor.valueOf( EQFunction.class );

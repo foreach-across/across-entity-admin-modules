@@ -27,6 +27,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import testmodules.springdata.business.Company;
+import testmodules.springdata.business.CompanyStatus;
 import testmodules.springdata.business.Group;
 import testmodules.springdata.business.Representative;
 import testmodules.springdata.repositories.CompanyRepository;
@@ -79,7 +80,11 @@ public abstract class AbstractQueryTest
 			representativeRepository.save( Arrays.asList( john, joe, peter ) );
 
 			one = new Company( "one", 1, asDate( "2015-01-17 13:30" ) );
+			one.setStatus( CompanyStatus.IN_BUSINESS );
+
 			two = new Company( "two", 2, asDate( "2016-03-04 14:00" ) );
+			two.setStatus( CompanyStatus.BROKE );
+
 			three = new Company( "three", 3, asDate( "2035-04-04 14:00" ) );
 
 			one.setGroup( groupOne );
@@ -88,7 +93,6 @@ public abstract class AbstractQueryTest
 
 			one.setRepresentatives( Collections.singleton( john ) );
 			two.setRepresentatives( new HashSet<>( Arrays.asList( john, joe, peter ) ) );
-			three.setRepresentatives( Collections.singleton( peter ) );
 
 			companyRepository.save( Arrays.asList( one, two, three ) );
 		}

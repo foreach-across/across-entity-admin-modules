@@ -23,6 +23,8 @@ import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 
+import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
+
 /**
  * Default implementation of {@link EntityQueryTranslator} that uses the metadata from a {@link EntityPropertyRegistry}
  * to retrieve the property type information and an {@link EQTypeConverter} to convert raw arguments into typed values.
@@ -81,11 +83,24 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 
 		EntityQueryCondition translated = new EntityQueryCondition();
 		translated.setProperty( descriptor.getName() );
-		translated.setOperand( condition.getOperand() );
 
 		TypeDescriptor expectedType = descriptor.getPropertyTypeDescriptor();
-		translated.setArguments( typeConverter.convertAll( expectedType, true, condition.getArguments() ) );
+		translated.setOperand( findTypeSpecificOperand( condition.getOperand(), expectedType ) );
 
+		if ( condition.hasArguments() ) {
+			translated.setArguments( typeConverter.convertAll( expectedType, true, condition.getArguments() ) );
+		}
 		return translated;
+	}
+
+	private EntityQueryOps findTypeSpecificOperand( EntityQueryOps operand, TypeDescriptor expectedType ) {
+		if ( IS_EMPTY.equals( operand ) ) {
+			return !expectedType.isCollection() && !expectedType.isArray() ? IS_NULL : IS_EMPTY;
+		}
+		else if ( IS_NOT_EMPTY.equals( operand ) ) {
+			return !expectedType.isCollection() && !expectedType.isArray() ? IS_NOT_NULL : IS_NOT_EMPTY;
+		}
+
+		return operand;
 	}
 }

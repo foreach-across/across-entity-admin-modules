@@ -96,11 +96,14 @@ public class EntityQueryParser
 							"Illegal operator " + condition.getOperand() + " for property: " + condition
 									.getProperty() );
 				}
-				if ( !metadataProvider.isValidValueForPropertyAndOperator( condition.getFirstArgument(),
-				                                                           condition.getProperty(),
-				                                                           condition.getOperand() ) ) {
-					throw new IllegalArgumentException( "Illegal value for operator " + condition
-							.getOperand() + " and property: " + condition.getProperty() );
+
+				if ( condition.hasArguments() ) {
+					if ( !metadataProvider.isValidValueForPropertyAndOperator( condition.getFirstArgument(),
+					                                                           condition.getProperty(),
+					                                                           condition.getOperand() ) ) {
+						throw new IllegalArgumentException( "Illegal value for operator " + condition
+								.getOperand() + " and property: " + condition.getProperty() );
+					}
 				}
 			}
 			else {

@@ -60,6 +60,10 @@ public abstract class EntityQueryJpaUtils
 	                                                      Root<V> root,
 	                                                      CriteriaBuilder cb ) {
 		switch ( condition.getOperand() ) {
+			case IS_NULL:
+				return cb.isNull( resolveProperty( root, condition.getProperty() ) );
+			case IS_NOT_NULL:
+				return cb.isNotNull( resolveProperty( root, condition.getProperty() ) );
 			case EQ:
 				return cb.equal( resolveProperty( root, condition.getProperty() ), condition.getFirstArgument() );
 			case NEQ:
@@ -81,12 +85,24 @@ public abstract class EntityQueryJpaUtils
 				return cb.lessThanOrEqualTo( p, (Comparable) condition.getFirstArgument() );
 			}
 			case CONTAINS: {
-				Expression<Collection> collection = root.get( condition.getProperty() );
+				Expression<Collection> collection
+						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
 				return cb.isMember( condition.getFirstArgument(), collection );
 			}
 			case NOT_CONTAINS: {
-				Expression<Collection> collection = root.get( condition.getProperty() );
+				Expression<Collection> collection
+						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
 				return cb.isNotMember( condition.getFirstArgument(), collection );
+			}
+			case IS_EMPTY: {
+				Expression<Collection> collection
+						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
+				return cb.isEmpty( collection );
+			}
+			case IS_NOT_EMPTY: {
+				Expression<Collection> collection
+						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
+				return cb.isNotEmpty( collection );
 			}
 			case IN:
 				return resolveProperty( root, condition.getProperty() ).in( condition.getArguments() );

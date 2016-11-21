@@ -74,6 +74,10 @@ public abstract class EntityQueryQueryDslUtils
 
 	private static Predicate buildConditionPredicate( EntityQueryCondition condition, PathBuilder pathBuilder ) {
 		switch ( condition.getOperand() ) {
+			case IS_NULL:
+				return pathBuilder.get( condition.getProperty() ).isNull();
+			case IS_NOT_NULL:
+				return pathBuilder.get( condition.getProperty() ).isNotNull();
 			case EQ: {
 				Path property = pathBuilder.get( condition.getProperty() );
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
@@ -113,6 +117,14 @@ public abstract class EntityQueryQueryDslUtils
 				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
 				return Expressions.predicate( Ops.CONTAINS_VALUE, property, constant ).not();
+			}
+			case IS_EMPTY: {
+				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
+				return Expressions.predicate( Ops.COL_IS_EMPTY, property );
+			}
+			case IS_NOT_EMPTY: {
+				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
+				return Expressions.predicate( Ops.COL_IS_EMPTY, property ).not();
 			}
 			case IN: {
 				Path property = pathBuilder.get( condition.getProperty() );

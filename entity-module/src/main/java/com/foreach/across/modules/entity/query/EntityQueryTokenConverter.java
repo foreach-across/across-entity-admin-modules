@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
+import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
+
 /**
  * Converts a list of tokens into an {@link EntityQuery} without applying any content validation.
  * This will create groups, determine operators, see if the form of "field - operator - value" is respected,
@@ -186,7 +188,14 @@ class EntityQueryTokenConverter
 				throw new MissingValue( operator.toString( field.getToken() ), expectedPosition );
 			}
 
-			condition.setArguments( new Object[] { value } );
+			if ( isNullOrEmptyOperator( operator ) ) {
+				if ( !validateNullOrEmptyConditionValue( condition, value ) ) {
+					throw new IllegalIsValue( field.getToken(), expectedPosition );
+				}
+			}
+			else {
+				condition.setArguments( new Object[] { value } );
+			}
 
 			return condition;
 		}
@@ -204,6 +213,32 @@ class EntityQueryTokenConverter
 
 			throw pe;
 		}
+	}
+
+	private boolean isNullOrEmptyOperator( EntityQueryOps operator ) {
+		return IS_NULL.equals( operator ) || IS_EMPTY.equals( operator )
+				|| IS_NOT_NULL.equals( operator ) || IS_NOT_EMPTY.equals( operator );
+	}
+
+	private boolean validateNullOrEmptyConditionValue( EntityQueryCondition condition, Object value ) {
+		if ( value instanceof EQValue ) {
+			String rawValue = StringUtils.lowerCase( ( (EQValue) value ).getValue() );
+			if ( "empty".equals( rawValue ) ) {
+				if ( EntityQueryOps.IS_NULL.equals( condition.getOperand() ) ) {
+					condition.setOperand( EntityQueryOps.IS_EMPTY );
+				}
+				if ( EntityQueryOps.IS_NOT_NULL.equals( condition.getOperand() ) ) {
+					condition.setOperand( EntityQueryOps.IS_NOT_EMPTY );
+				}
+
+				return true;
+			}
+			else if ( "null".equals( rawValue ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private TokenMetadata retrieveField( TokenQueue queue ) {
@@ -373,6 +408,7 @@ class EntityQueryTokenConverter
 			case "not":
 			case "in":
 			case "like":
+			case "is":
 				return true;
 		}
 

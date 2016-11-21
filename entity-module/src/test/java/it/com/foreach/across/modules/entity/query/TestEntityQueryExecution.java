@@ -142,6 +142,33 @@ public class TestEntityQueryExecution extends AbstractQueryTest
 		}
 	}
 
+	@Test
+	public void enumValues() {
+		find( "status = BROKE", two );
+		find( "status = IN_BUSINESS", one );
+		find( "status not in (BROKE)", one );
+	}
+
+	@Test
+	public void isNull() {
+		find( "status is empty", three );
+		find( "status is EMPTY", three );
+		find( "status is NULL", three );
+		find( "status is null", three );
+		find( "status is not empty", one, two );
+		find( "status is not EMPTY", one, two );
+		find( "status is not NULL", one, two );
+		find( "status is not null", one, two );
+	}
+
+	@Test
+	public void isEmpty() {
+		find( "representatives is empty", three );
+		find( "representatives is EMPTY", three );
+		find( "representatives is not empty", one, two );
+		find( "representatives is not EMPTY", one, two );
+	}
+
 	private void find( String query, Company... expected ) {
 		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( Company.class );
 		EntityQueryExecutor<Company> queryExecutor = entityConfiguration.getAttribute( EntityQueryExecutor.class );

@@ -25,8 +25,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.convert.TypeDescriptor;
 
-import static com.foreach.across.modules.entity.query.EntityQueryOps.EQ;
-import static com.foreach.across.modules.entity.query.EntityQueryOps.IN;
+import java.util.List;
+
+import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -116,5 +117,49 @@ public class TestDefaultEntityQueryTranslator
 		);
 
 		assertEquals( translated, translator.translate( raw ) );
+	}
+
+	@Test
+	public void isEmptyOnNonCollectionGetsReplacedByIsNull() {
+		EntityPropertyDescriptor cities = mock( EntityPropertyDescriptor.class );
+		when( cities.getName() ).thenReturn( "translatedCities" );
+		when( cities.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
+		when( propertyRegistry.getProperty( "cities" ) ).thenReturn( cities );
+
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "cities", IS_EMPTY ) );
+		EntityQuery translated = EntityQuery.and( new EntityQueryCondition( "translatedCities", IS_NULL ) );
+		assertEquals( translated, translator.translate( query ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "cities", IS_NOT_EMPTY ) );
+		translated = EntityQuery.and( new EntityQueryCondition( "translatedCities", IS_NOT_NULL ) );
+		assertEquals( translated, translator.translate( query ) );
+	}
+
+	@Test
+	public void isEmptyOnCollectionOrArrayIsKept() {
+		EntityPropertyDescriptor cities = mock( EntityPropertyDescriptor.class );
+		when( cities.getName() ).thenReturn( "translatedCities" );
+		when( cities.getPropertyTypeDescriptor() )
+				.thenReturn( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( String.class ) ) );
+		when( propertyRegistry.getProperty( "cities" ) ).thenReturn( cities );
+
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "cities", IS_EMPTY ) );
+		EntityQuery translated = EntityQuery.and( new EntityQueryCondition( "translatedCities", IS_EMPTY ) );
+		assertEquals( translated, translator.translate( query ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "cities", IS_NOT_EMPTY ) );
+		translated = EntityQuery.and( new EntityQueryCondition( "translatedCities", IS_NOT_EMPTY ) );
+		assertEquals( translated, translator.translate( query ) );
+
+		when( cities.getPropertyTypeDescriptor() )
+				.thenReturn( TypeDescriptor.array( TypeDescriptor.valueOf( String.class ) ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "cities", IS_EMPTY ) );
+		translated = EntityQuery.and( new EntityQueryCondition( "translatedCities", IS_EMPTY ) );
+		assertEquals( translated, translator.translate( query ) );
+
+		query = EntityQuery.and( new EntityQueryCondition( "cities", IS_NOT_EMPTY ) );
+		translated = EntityQuery.and( new EntityQueryCondition( "translatedCities", IS_NOT_EMPTY ) );
+		assertEquals( translated, translator.translate( query ) );
 	}
 }
