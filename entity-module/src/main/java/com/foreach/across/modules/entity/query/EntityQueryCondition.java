@@ -33,6 +33,7 @@ public class EntityQueryCondition implements EntityQueryExpression
 	}
 
 	public EntityQueryCondition( String property, EntityQueryOps operand, Object... arguments ) {
+		Assert.notNull( arguments );
 		this.property = property;
 		this.operand = operand;
 		this.arguments = arguments;
@@ -62,6 +63,10 @@ public class EntityQueryCondition implements EntityQueryExpression
 	public void setArguments( Object[] arguments ) {
 		Assert.notNull( arguments );
 		this.arguments = arguments;
+	}
+
+	public boolean hasArguments() {
+		return arguments.length > 0;
 	}
 
 	@JsonIgnore

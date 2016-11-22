@@ -34,6 +34,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.context.MappingContext;
@@ -81,6 +82,9 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 
 	@EntityValidator
 	private SmartValidator entityValidator;
+
+	@Autowired
+	private ConversionService mvcConversionService;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -165,10 +169,11 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 
 			entityConfiguration.setHidden( Modifier.isAbstract( entityType.getModifiers() ) );
 
-			registerEntityQueryExecutor( entityConfiguration );
-
 			propertyRegistryBuilder.buildEntityPropertyRegistry( entityConfiguration );
 			entityModelBuilder.buildEntityModel( entityConfiguration );
+
+			registerEntityQueryExecutor( entityConfiguration );
+
 			viewsBuilder.buildViews( entityConfiguration );
 
 			entityRegistry.register( entityConfiguration );
@@ -251,6 +256,14 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 
 		if ( entityQueryExecutor != null ) {
 			entityConfiguration.setAttribute( EntityQueryExecutor.class, entityQueryExecutor );
+
+			// todo factor out
+			/*EntityQueryParser parser = new EntityQueryParser();
+			EntityQueryMetadataProvider metadataProvider = new DefaultEntityQueryMetadataProvider( entityConfiguration.getPropertyRegistry() );
+			EntityQueryTranslator queryTranslator = new EntityQueryTranslator
+			parser.setEntityConfiguration( entityConfiguration );
+			parser.setConversionService( mvcConversionService );
+			entityConfiguration.setAttribute( EntityQueryParser.class, parser );*/
 		}
 	}
 

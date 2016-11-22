@@ -27,6 +27,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
@@ -105,7 +107,7 @@ public class TestEntityViewFactoryBuilder
 		       .apply( factory );
 
 		verify( factory ).setTemplate( "template" );
-		verify( factory ).setProcessors( Arrays.asList( one, two ) );
+		verify( factory ).setProcessors( new LinkedHashSet<>( Arrays.asList( one, two ) ) );
 		verifyNoMoreInteractions( factory );
 	}
 
@@ -118,17 +120,24 @@ public class TestEntityViewFactoryBuilder
 
 		EntityViewProcessor one = mock( EntityViewProcessor.class );
 		EntityViewProcessor two = mock( EntityViewProcessor.class );
+		EntityViewProcessor three = mock( EntityViewProcessor.class );
+
+		Collection<EntityViewProcessor> processors = mock( Collection.class );
+		when( factory.getProcessors() ).thenReturn( processors );
 
 		builder.template( "template" )
 		       .showProperties( "one", "two" )
 		       .properties( props -> props.property( "name" ).displayName( "test" ) )
 		       .viewProcessor( one )
+		       .viewProcessor( three )
 		       .viewProcessor( two )
+		       .removeViewProcessor( three )
 		       .apply( factory );
 
 		verify( factory ).setTemplate( "template" );
-		verify( factory ).setProcessors( Arrays.asList( one, two ) );
+		verify( factory ).setProcessors( new LinkedHashSet<>( Arrays.asList( one, two ) ) );
 		verify( factory ).setPropertyComparator( EntityPropertyComparators.ordered( "one", "two" ) );
 		verify( propertyRegistry ).register( any() );
+		verify( processors ).remove( three );
 	}
 }

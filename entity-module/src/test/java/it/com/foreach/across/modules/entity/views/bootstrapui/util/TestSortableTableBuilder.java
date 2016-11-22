@@ -75,6 +75,19 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 			"</table>" +
 			"</div>";
 
+	private static final String TABLE_WITH_RESULT_NUMBER_AND_FORM = "<div class='table-responsive'>" +
+			"<table class='table table-hover' " +
+			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
+			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0' data-tbl-form='my-form'>" +
+			"<thead>" +
+			"<tr><th class='result-number'>#</th><th data-tbl-field='propertyOne'>Property name</th></tr>" +
+			"</thead>" +
+			"<tbody>" +
+			"<tr class='odd'><td class='result-number'>1</td><td data-tbl-field='propertyOne'>Property value</td></tr>" +
+			"</tbody>" +
+			"</table>" +
+			"</div>";
+
 	private static final String TABLE_WITHOUT_RESULT_NUMBER = "<div class='table-responsive'>" +
 			"<table class='table table-hover' " +
 			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
@@ -141,6 +154,13 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		expect( TABLE_WITH_RESULT_NUMBER );
 
 		verify( entityConfiguration, times( 1 ) ).getEntityMessageCodeResolver();
+	}
+
+	@Test
+	public void tableBoundToForm() {
+		tableBuilder.tableOnly().formName( "my-form" );
+
+		expect( TABLE_WITH_RESULT_NUMBER_AND_FORM );
 	}
 
 	@Test
@@ -250,7 +270,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.pagingMessages( messages );
 
 		expect( "<div class='panel panel-warning'>" +
-				        "<div class='panel-body'>Geen resultaten gevonden</div>" +
+				        "<div class='panel-body text-warning'>Geen resultaten gevonden</div>" +
 				        "</div>" );
 	}
 

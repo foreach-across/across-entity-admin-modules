@@ -81,9 +81,9 @@ public class TestManyToManyAssociations
 
 			representativeRepository.save( Arrays.asList( john, joe, peter ) );
 
-			one = new Company( "one" );
-			two = new Company( "two" );
-			three = new Company( "three" );
+			one = new Company( "one", 1 );
+			two = new Company( "two", 2 );
+			three = new Company( "three", 3 );
 			one.setRepresentatives( Collections.singleton( john ) );
 			two.setRepresentatives( new HashSet<>( Arrays.asList( john, joe, peter ) ) );
 			three.setRepresentatives( Collections.singleton( peter ) );

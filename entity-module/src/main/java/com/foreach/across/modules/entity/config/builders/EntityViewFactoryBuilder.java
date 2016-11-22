@@ -32,8 +32,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.function.Consumer;
 
 /**
@@ -51,7 +51,8 @@ public class EntityViewFactoryBuilder
 {
 	private final AutowireCapableBeanFactory beanFactory;
 	private final Collection<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayDeque<>();
-	private final Collection<EntityViewProcessor> processors = new ArrayList<>();
+	private final Collection<EntityViewProcessor> processors = new LinkedHashSet<>();
+	private final Collection<EntityViewProcessor> processorsToRemove = new LinkedHashSet<>();
 
 	private Class<? extends EntityViewFactory> factoryType;
 	private EntityViewFactory factory;
@@ -61,6 +62,14 @@ public class EntityViewFactoryBuilder
 	@Autowired
 	public EntityViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
 		this.beanFactory = beanFactory;
+	}
+
+	protected <U> U getBean( Class<U> beanType ) {
+		return beanFactory.getBean( beanType );
+	}
+
+	protected <U> U createBean( Class<U> beanType ) {
+		return beanFactory.createBean( beanType );
 	}
 
 	/**
@@ -138,6 +147,19 @@ public class EntityViewFactoryBuilder
 	}
 
 	/**
+	 * Removes a previously registered processor instance.
+	 *
+	 * @param processor instance - should not be null
+	 * @return current builder
+	 */
+	public EntityViewFactoryBuilder removeViewProcessor( EntityViewProcessor processor ) {
+		Assert.notNull( processor );
+		processors.remove( processor );
+		processorsToRemove.add( processor );
+		return this;
+	}
+
+	/**
 	 * Build a new factory instance of the type configured using {@link #factoryType(Class)}.
 	 * If no {@link #factoryType(Class)} has been configured, an exception will be thrown.
 	 *
@@ -153,7 +175,7 @@ public class EntityViewFactoryBuilder
 	}
 
 	protected EntityViewFactory createNewViewFactory( Class<? extends EntityViewFactory> viewFactoryType ) {
-		return beanFactory.createBean( viewFactoryType );
+		return createBean( viewFactoryType );
 	}
 
 	/**
@@ -202,6 +224,10 @@ public class EntityViewFactoryBuilder
 
 		if ( !processors.isEmpty() ) {
 			viewFactory.setProcessors( processors );
+		}
+
+		if ( !processorsToRemove.isEmpty() ) {
+			processorsToRemove.forEach( viewFactory.getProcessors()::remove );
 		}
 	}
 }

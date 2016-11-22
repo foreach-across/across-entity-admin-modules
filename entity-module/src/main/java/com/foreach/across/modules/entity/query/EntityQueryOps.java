@@ -15,8 +15,12 @@
  */
 package com.foreach.across.modules.entity.query;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Different operand types that an {@link EntityQueryCondition} supports.
@@ -25,47 +29,33 @@ import org.springframework.util.Assert;
  */
 public enum EntityQueryOps
 {
-	AND( new OpsWriter()
-	{
-		@Override
-		public String toString( String propertyName, Object... arguments ) {
-			Assert.notNull( arguments );
-			return "(" + StringUtils.join( arguments, " and " ) + ")";
-		}
-	} ),
-
-	OR( new OpsWriter()
-	{
-		@Override
-		public String toString( String propertyName, Object... arguments ) {
-			Assert.notNull( arguments );
-			return "(" + StringUtils.join( arguments, " or " ) + ")";
-		}
-	} ),
-
-	EQ( new OpsWriter()
-	{
-		@Override
-		public String toString( String propertyName, Object... arguments ) {
-			return propertyName + " = " + objectAsString( arguments[0] );
-		}
-	} ),
-
-	NEQ( new OpsWriter()
-	{
-		@Override
-		public String toString( String propertyName, Object... arguments ) {
-			return propertyName + " != " + objectAsString( arguments[0] );
-		}
-	} ),
-
-	CONTAINS( new OpsWriter()
-	{
-		@Override
-		public String toString( String propertyName, Object... arguments ) {
-			return propertyName + " contains " + objectAsString( arguments[0] );
-		}
-	} );
+	AND( ( field, args ) -> {
+		Assert.notNull( args );
+		return "(" + StringUtils.join( args, " and " ) + ")";
+	}, "and" ),
+	OR( ( field, args ) -> {
+		Assert.notNull( args );
+		return "(" + StringUtils.join( args, " or " ) + ")";
+	}, "or" ),
+	EQ( ( field, args ) -> field + " = " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), "=" ),
+	NEQ( ( field, args ) -> field + " != " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), "!=", "<>" ),
+	CONTAINS( ( field, args ) -> field + " contains " + objectAsString( args[0] ), "contains" ),
+	NOT_CONTAINS(
+			( ( field, args ) -> field + " not contains " + objectAsString( args[0] ) ),
+			"not contains"
+	),
+	IN( ( field, args ) -> field + " in (" + joinAsStrings( args ) + ")", "in" ),
+	NOT_IN( ( field, args ) -> field + " not in (" + joinAsStrings( args ) + ")", "not in" ),
+	LIKE( ( field, args ) -> field + " like " + objectAsString( args[0] ), "like" ),
+	NOT_LIKE( ( field, args ) -> field + " not like " + objectAsString( args[0] ), "not like" ),
+	GT( ( field, args ) -> field + " > " + objectAsString( args[0] ), ">" ),
+	GE( ( field, args ) -> field + " >= " + objectAsString( args[0] ), ">=" ),
+	LT( ( field, args ) -> field + " < " + objectAsString( args[0] ), "<" ),
+	LE( ( field, args ) -> field + " <= " + objectAsString( args[0] ), "<=" ),
+	IS_NULL( ( field, args ) -> field + " is NULL", "is" ),
+	IS_NOT_NULL( ( field, args ) -> field + " is not NULL", "is not" ),
+	IS_EMPTY( ( field, args ) -> field + " is EMPTY", "is" ),
+	IS_NOT_EMPTY( ( field, args ) -> field + " is not EMPTY", "is not" );
 
 	private interface OpsWriter
 	{
@@ -84,13 +74,37 @@ public enum EntityQueryOps
 		return object.toString();
 	}
 
+	private static String joinAsStrings( Object... arguments ) {
+		return Stream.of( arguments )
+		             .map( EntityQueryOps::objectAsString )
+		             .collect( Collectors.joining( "," ) );
+	}
+
+	private String[] tokens;
 	private final OpsWriter opsWriter;
 
-	EntityQueryOps( OpsWriter opsWriter ) {
+	EntityQueryOps( OpsWriter opsWriter, String... tokens ) {
 		this.opsWriter = opsWriter;
+		this.tokens = tokens;
 	}
 
 	public String toString( String propertyName, Object... arguments ) {
 		return opsWriter.toString( propertyName, arguments );
+	}
+
+	public String getToken() {
+		return tokens[0];
+	}
+
+	public static EntityQueryOps forToken( String token ) {
+		String lookup = StringUtils.lowerCase( token ).trim();
+
+		for ( EntityQueryOps ops : values() ) {
+			if ( ArrayUtils.contains( ops.tokens, lookup ) ) {
+				return ops;
+			}
+		}
+
+		return null;
 	}
 }

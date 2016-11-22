@@ -56,7 +56,7 @@ public class TestEntitiesConfigurationBuilder
 
 	@Test
 	public void newBuilders() {
-		EntityConfigurationBuilder configBuilder = mock( EntityConfigurationBuilder.class );
+		EntityConfigurationBuilder configBuilder = mockConfigurationBuilder();
 		when( beanFactory.getBean( EntityConfigurationBuilder.class ) ).thenReturn( configBuilder );
 
 		MutableEntityConfiguration cfg = mock( MutableEntityConfiguration.class );
@@ -74,7 +74,7 @@ public class TestEntitiesConfigurationBuilder
 
 	@Test
 	public void applyToAllEntities() {
-		EntityConfigurationBuilder configBuilder = mock( EntityConfigurationBuilder.class );
+		EntityConfigurationBuilder configBuilder = mockConfigurationBuilder();
 		when( beanFactory.getBean( EntityConfigurationBuilder.class ) ).thenReturn( configBuilder );
 
 		MutableEntityConfiguration string = mock( MutableEntityConfiguration.class );
@@ -96,8 +96,8 @@ public class TestEntitiesConfigurationBuilder
 
 	@Test
 	public void entityByType() {
-		EntityConfigurationBuilder stringBuilder = mock( EntityConfigurationBuilder.class );
-		EntityConfigurationBuilder objectBuilder = mock( EntityConfigurationBuilder.class );
+		EntityConfigurationBuilder stringBuilder = mockConfigurationBuilder();
+		EntityConfigurationBuilder objectBuilder = mockConfigurationBuilder();
 		when( beanFactory.getBean( EntityConfigurationBuilder.class ) )
 				.thenReturn( stringBuilder )
 				.thenReturn( objectBuilder );
@@ -131,8 +131,8 @@ public class TestEntitiesConfigurationBuilder
 
 	@Test
 	public void entityByName() {
-		EntityConfigurationBuilder stringBuilder = mock( EntityConfigurationBuilder.class );
-		EntityConfigurationBuilder objectBuilder = mock( EntityConfigurationBuilder.class );
+		EntityConfigurationBuilder stringBuilder = mockConfigurationBuilder();
+		EntityConfigurationBuilder objectBuilder = mockConfigurationBuilder();
 		when( beanFactory.getBean( EntityConfigurationBuilder.class ) )
 				.thenReturn( stringBuilder )
 				.thenReturn( objectBuilder );
@@ -168,9 +168,9 @@ public class TestEntitiesConfigurationBuilder
 
 	@Test
 	public void entityByPredicate() {
-		EntityConfigurationBuilder stringBuilder = mock( EntityConfigurationBuilder.class );
-		EntityConfigurationBuilder matchedBuilder = mock( EntityConfigurationBuilder.class );
-		EntityConfigurationBuilder unmatchedBuilder = mock( EntityConfigurationBuilder.class );
+		EntityConfigurationBuilder stringBuilder = mockConfigurationBuilder();
+		EntityConfigurationBuilder matchedBuilder = mockConfigurationBuilder();
+		EntityConfigurationBuilder unmatchedBuilder = mockConfigurationBuilder();
 		when( beanFactory.getBean( EntityConfigurationBuilder.class ) )
 				.thenReturn( stringBuilder )
 				.thenReturn( matchedBuilder )
@@ -210,12 +210,12 @@ public class TestEntitiesConfigurationBuilder
 
 	@Test
 	public void typeOrdering() {
-		EntityConfigurationBuilder createBuilder = mock( EntityConfigurationBuilder.class );
-		EntityConfigurationBuilder typeBuilder = mock( EntityConfigurationBuilder.class );
-		EntityConfigurationBuilder nameBuilder = mock( EntityConfigurationBuilder.class );
-		EntityConfigurationBuilder assignableToBuilder = mock( EntityConfigurationBuilder.class );
-		EntityConfigurationBuilder matchingBuilder = mock( EntityConfigurationBuilder.class );
-		EntityConfigurationBuilder allBuilder = mock( EntityConfigurationBuilder.class );
+		EntityConfigurationBuilder createBuilder = mockConfigurationBuilder();
+		EntityConfigurationBuilder typeBuilder = mockConfigurationBuilder();
+		EntityConfigurationBuilder nameBuilder = mockConfigurationBuilder();
+		EntityConfigurationBuilder assignableToBuilder = mockConfigurationBuilder();
+		EntityConfigurationBuilder matchingBuilder = mockConfigurationBuilder();
+		EntityConfigurationBuilder allBuilder = mockConfigurationBuilder();
 		when( beanFactory.getBean( EntityConfigurationBuilder.class ) )
 				.thenReturn( createBuilder )
 				.thenReturn( typeBuilder )
@@ -262,5 +262,11 @@ public class TestEntitiesConfigurationBuilder
 		inOrder.verify( matchingBuilder ).postProcess( existing );
 		inOrder.verify( typeBuilder ).postProcess( existing );
 		inOrder.verify( nameBuilder ).postProcess( existing );
+	}
+
+	private EntityConfigurationBuilder mockConfigurationBuilder() {
+		EntityConfigurationBuilder builder = mock( EntityConfigurationBuilder.class );
+		when( builder.as( any() ) ).thenReturn( builder );
+		return builder;
 	}
 }

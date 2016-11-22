@@ -38,27 +38,39 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.*;
-import java.util.function.UnaryOperator;
 
 /**
+ * Configures a dummy <strong>category</strong> entity.
+ * This entity is completely fake and has no Spring data repository.  It is represented by a {@link Map} containing
+ * all its properties. The entire entity is manually configured: configuration, properties, entity model and views.
+ * <p>
+ * <p/>
+ * This is a test case for manual configuration of an entity, probably not much of a real life use case however.
+ *
  * @author Arne Vandamme
  * @since 2.0.0
  */
 @Configuration
 @EnableAcrossJpaRepositories(basePackageClasses = EntityModuleTestApplication.class)
-public class EntitiesConfiguration implements EntityConfigurer
+public class CategoryEntityConfiguration implements EntityConfigurer
 {
-	@Override
-	public void configure( EntitiesConfigurationBuilder entities ) {
-		// configuration of a dummy entity represented by a map, requires manual configuration of pretty much everything:
-		// entity configuration, the properties, the backing model, the views - nothing will have been created up front
-		List<Map<String, Object>> categories = new ArrayList<>();
+	private final List<Map<String, Object>> categoryRepository = new ArrayList<>();
+
+	/**
+	 * Builds the initial category repository.
+	 */
+	public CategoryEntityConfiguration() {
 		Map<String, Object> tv = new HashMap<>();
 		tv.put( "id", "tv" );
 		tv.put( "name", "Televisions" );
-		categories.add( tv );
 
+		categoryRepository.add( tv );
+	}
+
+	@Override
+	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.create()
+		        .as( Map.class )
 		        .name( "category" )
 		        .entityType( Map.class, false )
 		        .displayName( "Category" )
@@ -84,34 +96,33 @@ public class EntitiesConfiguration implements EntityConfigurer
 						        .order( 2 )
 		        )
 		        .entityModel(
-				        model -> {
-					        UnaryOperator<Object> saveMethod = cat -> {
-						        Map<String, Object> category = (Map<String, Object>) cat;
-						        Optional<Map<String, Object>> existing = categories
-								        .stream()
-								        .filter( m -> m.get( "id" ).equals( category.get( "id" ) ) )
-								        .findFirst();
+				        model -> model
+						        .entityFactory( new CategoryEntityFactory() )
+						        .entityInformation( new CategoryEntityInformation() )
+						        .labelPrinter( ( o, locale ) -> (String) ( (Map) o ).get( "name" ) )
+						        .findOneMethod( id -> categoryRepository.stream()
+						                                                .filter( m -> id.equals(
+								                                                m.get( "id" ) ) )
+						                                                .findFirst().orElse( null ) )
+						        .saveMethod(
+								        category -> {
+									        //Map<String, Object> category = (Map<String, Object>) cat;
+									        Optional<Map<String, Object>> existing = categoryRepository
+											        .stream()
+											        .filter( m -> m.get( "id" ).equals( category.get( "id" ) ) )
+											        .findFirst();
 
-						        if ( existing.isPresent() ) {
-							        existing.ifPresent( e -> e.putAll( category ) );
-						        }
-						        else {
-							        categories.add( category );
-						        }
+									        if ( existing.isPresent() ) {
+										        existing.ifPresent( e -> e.putAll( category ) );
+									        }
+									        else {
+										        categoryRepository.add( category );
+									        }
 
-						        return category;
-					        };
-
-					        model
-							        .entityFactory( new CategoryEntityFactory() )
-							        .entityInformation( new CategoryEntityInformation() )
-							        .labelPrinter( ( o, locale ) -> (String) ( (Map) o ).get( "name" ) )
-							        .findOneMethod( id -> categories.stream()
-							                                        .filter( m -> id.equals( m.get( "id" ) ) )
-							                                        .findFirst().orElse( null ) )
-							        .saveMethod( saveMethod )
-							        .deleteMethod( categories::remove );
-				        }
+									        return category;
+								        }
+						        )
+						        .deleteMethod( categoryRepository::remove )
 		        )
 		        .listView( lvb -> lvb.pageFetcher( new EntityListViewPageFetcher()
 		        {
@@ -119,7 +130,7 @@ public class EntitiesConfiguration implements EntityConfigurer
 			        public Page fetchPage( ViewCreationContext viewCreationContext,
 			                               Pageable pageable,
 			                               EntityView model ) {
-				        return new PageImpl<>( categories );
+				        return new PageImpl<>( categoryRepository );
 			        }
 		        } ) )
 		        .createFormView( fvb -> fvb.showProperties( "id", "name" ) )
@@ -157,15 +168,15 @@ public class EntitiesConfiguration implements EntityConfigurer
 		}
 	}
 
-	private static class CategoryEntityFactory implements EntityFactory<Object>
+	private static class CategoryEntityFactory implements EntityFactory<Map>
 	{
 		@Override
-		public Object createNew( Object... args ) {
+		public Map createNew( Object... args ) {
 			return new HashMap<>();
 		}
 
 		@Override
-		public Object createDto( Object entity ) {
+		public Map createDto( Map entity ) {
 			return new HashMap<>( (Map<?, ?>) entity );
 		}
 	}

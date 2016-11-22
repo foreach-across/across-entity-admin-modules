@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var SortableTable = function ( element ) {
+var SortableTable = function ( element )
+{
     var table = $( element );
     var id = $( element ).attr( 'data-tbl' );
     var page = table.attr( 'data-tbl-current-page' );
+    this.formName = $( element ).attr( 'data-tbl-form' );
 
     this.size = table.attr( 'data-tbl-size' );
     this.totalPages = table.attr( 'data-tbl-total-pages' );
@@ -34,7 +36,8 @@ var SortableTable = function ( element ) {
         var order = this.sort[i];
 
         $( "[data-tbl='" + id + "'][data-tbl-sort-property='" + order.prop + "']", table )
-                .each( function () {
+                .each( function ()
+                       {
                            if ( i == 0 ) {
                                $( this ).addClass( order.dir == 'ASC' ? 'asc' : 'desc' );
                            }
@@ -45,17 +48,20 @@ var SortableTable = function ( element ) {
 
     var pager = this;
 
-    $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( function () {
-        pager.moveToPage( $( this ).attr( 'data-tbl-page' ) );
-        return false;
-    } );
+    $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( function ()
+                                                         {
+                                                             pager.moveToPage( $( this ).attr( 'data-tbl-page' ) );
+                                                             return false;
+                                                         } );
 
     $( "input[type='text'][data-tbl='" + id + "'][data-tbl-page-selector]" )
-            .click( function ( event ) {
+            .click( function ( event )
+                    {
                         event.preventDefault();
                         $( this ).select();
                     } )
-            .keypress( function ( event ) {
+            .keypress( function ( event )
+                       {
                            if ( event.which == 13 ) {
                                event.preventDefault();
                                var pageNumber = $( this ).val();
@@ -76,15 +82,16 @@ var SortableTable = function ( element ) {
                            }
                        } );
 
-    this.sortables.click( function () {
-        pager.sortOnProperty( $( this ).data( 'tbl-field' ) );
-        return false;
-    } );
+    this.sortables.click( function ()
+                          {
+                              pager.sortOnProperty( $( this ).data( 'tbl-field' ) );
+                              return false;
+                          } );
 
-    this.moveToPage = function ( pageNumber ) {
+    this.moveToPage = function ( pageNumber )
+    {
         var params = {
-            'page': pageNumber,
-            'size': this.size
+            'page': pageNumber, 'size': this.size
         };
 
         if ( this.sort != null && this.sort.length > 0 ) {
@@ -97,11 +104,43 @@ var SortableTable = function ( element ) {
             params['sort'] = sortProperties;
         }
 
-        var pathUrl = window.location.href.split( '?' )[0];
-        window.location.href = pathUrl + '?' + $.param( params, true );
+        if ( this.formName ) {
+            var form = $( 'form[name=' + this.formName + ']' );
+
+            var requireHiddenElement = function ( name, value )
+            {
+                if ( value ) {
+                    var hidden = $( 'input[name=' + name + ']', form );
+                    if ( hidden.length ) {
+                        hidden.value( value );
+                    }
+                    else {
+                        if ( $.isArray(value)) {
+                            for ( var i = 0; i < value.length; i++ ) {
+                                form.append( '<input type="hidden" name="' + name + '" value="' + value[i] + '" />' );
+                            }
+                        }
+                        else {
+                            form.append( '<input type="hidden" name="' + name + '" value="' + value + '" />' );
+                        }
+                    }
+                }
+            };
+
+            requireHiddenElement( 'page', params.page );
+            requireHiddenElement( 'size', params.size );
+            requireHiddenElement( 'sort', params.sort );
+
+            form.submit();
+        }
+        else {
+            var pathUrl = window.location.href.split( '?' )[0];
+            window.location.href = pathUrl + '?' + $.param( params, true );
+        }
     };
 
-    this.sortOnProperty = function ( propertyName ) {
+    this.sortOnProperty = function ( propertyName )
+    {
         var currentIndex = -1;
 
         for ( var i = 0; i < this.sort.length && currentIndex < 0; i++ ) {
@@ -111,8 +150,7 @@ var SortableTable = function ( element ) {
         }
 
         var order = {
-            'prop': propertyName,
-            'dir': 'ASC'
+            'prop': propertyName, 'dir': 'ASC'
         };
 
         if ( currentIndex > -1 ) {
@@ -134,8 +172,11 @@ var SortableTable = function ( element ) {
     };
 };
 
-$( document ).ready( function () {
-    $( '[data-tbl-type="paged"]' ).each( function () {
-        $( this ).sortableTable = new SortableTable( $( this ) );
-    } );
-} );
+$( document ).ready( function ()
+                     {
+                         $( '[data-tbl-type="paged"]' ).each( function ()
+                                                              {
+                                                                  $( this ).sortableTable =
+                                                                          new SortableTable( $( this ) );
+                                                              } );
+                     } );

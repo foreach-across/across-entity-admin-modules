@@ -78,6 +78,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	public static String DATA_ATTR_PAGE_SIZE = "data-tbl-size";
 	public static String DATA_ATTR_SORT = "data-tbl-sort";
 	public static String DATA_ATTR_SORT_PROPERTY = "data-tbl-sort-property";
+	public static String DATA_ATTR_FORM = "data-tbl-form";
 
 	protected final EntityViewElementBuilderService viewElementBuilderService;
 	protected final BootstrapUiFactory bootstrapUi;
@@ -96,6 +97,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	private ViewElementBuilderSupport.ElementOrBuilder noResultsElement;
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors = new ArrayList<>();
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors = new ArrayList<>();
+	private String formName;
 
 	private PagingMessages resolvedPagingMessages;
 	private Collection<EntityPropertyDescriptor> resolvedPropertyDescriptors;
@@ -164,6 +166,21 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	public SortableTableBuilder tableName( String tableName ) {
 		this.tableName = tableName;
 		return this;
+	}
+
+	/**
+	 * Optionally set the form name that this sortable table is bound to.  When changing page the form
+	 * will be updated and submitted instead of the url of the page itself.
+	 *
+	 * @param formName name of the form element
+	 */
+	public SortableTableBuilder formName( String formName ) {
+		this.formName = formName;
+		return this;
+	}
+
+	protected String getFormName() {
+		return formName;
 	}
 
 	protected EntityConfiguration getEntityConfiguration() {
@@ -474,6 +491,10 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		attributes.put( DATA_ATTR_PAGE_SIZE, currentPage.getSize() );
 		attributes.put( DATA_ATTR_SORT, convertSortAttribute( currentPage.getSort() ) );
 
+		if ( getFormName() != null ) {
+			attributes.put( DATA_ATTR_FORM, getFormName() );
+		}
+
 		return attributes;
 	}
 
@@ -497,7 +518,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		if ( isShowResultNumber() ) {
 			headerRow.add(
 					table.heading()
-					     .attribute( "class", "result-number" )
+					     .css( "result-number" )
 					     .text( "#" )
 			);
 		}
@@ -510,7 +531,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 			String sortsOn = determineSortableProperty( descriptor );
 
 			if ( sortsOn != null ) {
-				heading.attribute( "class", "sortable" )
+				heading.css( "sortable" )
 				       .attribute( DATA_ATTR_SORT_PROPERTY, sortsOn )
 				       .attribute( DATA_ATTR_TABLE_NAME, getTableName() );
 			}
@@ -542,7 +563,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 			int startIndex = Math.max( 0, page.getNumber() ) * page.getSize();
 			valueRow.add(
 					table.cell()
-					     .attribute( "class", "result-number" )
+					     .css( "result-number" )
 					     .add(
 							     bootstrapUi.text().postProcessor( new ResultNumberProcessor( startIndex ) )
 					     )
@@ -587,22 +608,22 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 
 		NodeViewElementBuilder panel = bootstrapUi.node( "div" )
 		                                          .name( ELEMENT_PANEL )
-		                                          .attribute( "class", "panel panel-default" )
+		                                          .css( "panel", "panel-default" )
 		                                          .add(
 				                                          bootstrapUi.node( "div" )
-				                                                     .attribute( "class", "panel-heading" )
+				                                                     .css( "panel-heading" )
 				                                                     .add( bootstrapUi.text( resultsFound ) )
 		                                          )
 		                                          .add(
 				                                          bootstrapUi.node( "div" )
-				                                                     .attribute( "class", "panel-body" )
+				                                                     .css( "panel-body" )
 				                                                     .add( tableBody )
 		                                          );
 
 		if ( page.getTotalPages() > 1 ) {
 			panel.add(
 					bootstrapUi.node( "div" )
-					           .attribute( "class", "panel-footer" )
+					           .css( "panel-footer" )
 					           .add( createPager() )
 			);
 		}
@@ -612,10 +633,10 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 	protected ViewElementBuilder createDefaultNoResultsPanel() {
 		return bootstrapUi.node( "div" )
 		                  .name( ELEMENT_NORESULTS )
-		                  .attribute( "class", "panel panel-warning" )
+		                  .css( "panel", "panel-warning" )
 		                  .add(
 				                  bootstrapUi.node( "div" )
-				                             .attribute( "class", "panel-body" )
+				                             .css( "panel-body", "text-warning" )
 				                             .add( bootstrapUi.text( getResolvedPagingMessages()
 						                                                     .resultsFound( getPage() ) ) )
 		                  );
@@ -627,7 +648,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 
 		NodeViewElementBuilder pager = bootstrapUi.node( "div" )
 		                                          .name( ELEMENT_PAGER )
-		                                          .attribute( "class", "pager-form form-inline text-center" );
+		                                          .css( "pager-form", "form-inline", "text-center" );
 
 		if ( currentPage.hasPrevious() ) {
 			pager.add(
@@ -640,7 +661,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 			);
 		}
 		else {
-			pager.add( bootstrapUi.node( "span" ).attribute( "class", "no-btn" ) );
+			pager.add( bootstrapUi.node( "span" ).css( "no-btn" ) );
 		}
 
 		pager.add(
@@ -655,9 +676,9 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 		)
 		     .add( bootstrapUi.node( "span" ).add( bootstrapUi.text( messages.ofPages( currentPage ) ) ) )
 		     .add(
-				     bootstrapUi.node( "a" )
-				                .attribute( "href", "#" )
-				                .attribute( "class", "total-pages-link" )
+				     bootstrapUi.link()
+				                .url( "#" )
+				                .css( "total-pages-link" )
 				                .attribute( DATA_ATTR_PAGE, currentPage.getTotalPages() - 1 )
 				                .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
 				                .add( bootstrapUi.text( String.valueOf( currentPage.getTotalPages() ) ) )
@@ -674,7 +695,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
 			);
 		}
 		else {
-			pager.add( bootstrapUi.node( "span" ).attribute( "class", "no-btn" ) );
+			pager.add( bootstrapUi.node( "span" ).css( "no-btn" ) );
 		}
 
 		return pager;

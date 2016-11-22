@@ -1,0 +1,5 @@
+== About the EntityModule
+
+=== EntityConfiguration and EntityAssociation
+
+=== Integration with Spring Data repositories

@@ -23,12 +23,14 @@ import com.foreach.across.modules.entity.converters.EntityToStringConverter;
 import com.foreach.across.modules.entity.converters.StringToEntityConfigurationConverter;
 import com.foreach.across.modules.entity.formatters.DateFormatter;
 import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
+import com.foreach.across.modules.entity.query.support.EQStringToDateConverter;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
 import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewViewFactory;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +61,8 @@ public class EntityModuleConfiguration
 		dateFormatterRegistrar.setFormatter( new DateFormatter() );
 		dateFormatterRegistrar.registerFormatters( mvcConversionService );
 		mvcConversionService.addFormatterForFieldAnnotation( new TemporalFormatterFactory() );
+
+		mvcConversionService.addConverter( new EQStringToDateConverter( mvcConversionService ) );
 	}
 
 	@Bean(name = EntityModule.VALIDATOR)
@@ -109,5 +113,11 @@ public class EntityModuleConfiguration
 	@Scope("prototype")
 	public EntityDeleteViewFactory entityDeleteViewFactory() {
 		return new EntityDeleteViewFactory();
+	}
+
+	@Bean
+	@Exposed
+	public EntityQueryFilterProcessor entityQueryFilterProcessor() {
+		return new EntityQueryFilterProcessor();
 	}
 }

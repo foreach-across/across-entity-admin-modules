@@ -26,6 +26,7 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Arne Vandamme
@@ -54,17 +55,67 @@ public abstract class EntityQueryJpaUtils
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private static <V> Predicate buildConditionPredicate( EntityQueryCondition condition,
 	                                                      Root<V> root,
 	                                                      CriteriaBuilder cb ) {
 		switch ( condition.getOperand() ) {
+			case IS_NULL:
+				return cb.isNull( resolveProperty( root, condition.getProperty() ) );
+			case IS_NOT_NULL:
+				return cb.isNotNull( resolveProperty( root, condition.getProperty() ) );
 			case EQ:
 				return cb.equal( resolveProperty( root, condition.getProperty() ), condition.getFirstArgument() );
 			case NEQ:
 				return cb.notEqual( resolveProperty( root, condition.getProperty() ), condition.getFirstArgument() );
-			case CONTAINS:
-				Expression<Collection> collection = root.get( condition.getProperty() );
+			case GT: {
+				Expression<Comparable> p = (Expression<Comparable>) resolveProperty( root, condition.getProperty() );
+				return cb.greaterThan( p, (Comparable) condition.getFirstArgument() );
+			}
+			case GE: {
+				Expression<Comparable> p = (Expression<Comparable>) resolveProperty( root, condition.getProperty() );
+				return cb.greaterThanOrEqualTo( p, (Comparable) condition.getFirstArgument() );
+			}
+			case LT: {
+				Expression<Comparable> p = (Expression<Comparable>) resolveProperty( root, condition.getProperty() );
+				return cb.lessThan( p, (Comparable) condition.getFirstArgument() );
+			}
+			case LE: {
+				Expression<Comparable> p = (Expression<Comparable>) resolveProperty( root, condition.getProperty() );
+				return cb.lessThanOrEqualTo( p, (Comparable) condition.getFirstArgument() );
+			}
+			case CONTAINS: {
+				Expression<Collection> collection
+						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
 				return cb.isMember( condition.getFirstArgument(), collection );
+			}
+			case NOT_CONTAINS: {
+				Expression<Collection> collection
+						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
+				return cb.isNotMember( condition.getFirstArgument(), collection );
+			}
+			case IS_EMPTY: {
+				Expression<Collection> collection
+						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
+				return cb.isEmpty( collection );
+			}
+			case IS_NOT_EMPTY: {
+				Expression<Collection> collection
+						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
+				return cb.isNotEmpty( collection );
+			}
+			case IN:
+				return resolveProperty( root, condition.getProperty() ).in( condition.getArguments() );
+			case NOT_IN:
+				return cb.not( resolveProperty( root, condition.getProperty() ).in( condition.getArguments() ) );
+			case LIKE: {
+				Expression<String> p = (Expression<String>) resolveProperty( root, condition.getProperty() );
+				return cb.like( p, Objects.toString( condition.getFirstArgument() ) );
+			}
+			case NOT_LIKE: {
+				Expression<String> p = (Expression<String>) resolveProperty( root, condition.getProperty() );
+				return cb.notLike( p, Objects.toString( condition.getFirstArgument() ) );
+			}
 		}
 
 		throw new IllegalArgumentException( "Unsupported operand for JPA query: " + condition.getOperand() );

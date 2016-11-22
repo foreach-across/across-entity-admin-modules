@@ -24,6 +24,8 @@ import java.util.List;
  * Simple abstraction interface for defining simple generic queries (in the form of {@link EntityQuery})
  * that can be used to fetch one or more entities.  Used as an additional abstraction for the specific
  * JPA, QueryDsl repositories.
+ * <p/>
+ * Only accepts a translated and executable {@link EntityQuery}.
  *
  * @author Arne Vandamme
  * @see com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor

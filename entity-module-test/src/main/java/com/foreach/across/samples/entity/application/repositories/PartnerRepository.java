@@ -18,10 +18,13 @@ package com.foreach.across.samples.entity.application.repositories;
 
 import com.foreach.across.modules.hibernate.jpa.repositories.IdBasedEntityJpaRepository;
 import com.foreach.across.samples.entity.application.business.Partner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author Arne Vandamme
  */
 public interface PartnerRepository extends IdBasedEntityJpaRepository<Partner>
 {
+	Page<Partner> findByNameContaining( String name, Pageable pageable );
 }

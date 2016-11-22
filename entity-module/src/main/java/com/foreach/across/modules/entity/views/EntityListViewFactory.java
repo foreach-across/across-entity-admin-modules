@@ -17,6 +17,8 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
@@ -31,7 +33,6 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,6 +51,8 @@ import java.util.List;
  */
 public class EntityListViewFactory<V extends ViewCreationContext> extends ConfigurablePropertiesEntityViewFactorySupport<V, EntityListView>
 {
+	private static final String FORM_NAME = "entityList-form";
+
 	@Autowired
 	private EntityViewElementBuilderHelper viewHelpers;
 
@@ -142,48 +145,57 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		AllowableActions allowableActions = viewCreationContext.getEntityConfiguration().getAllowableActions();
 		EntityMessages messages = view.getEntityMessages();
 
-		ContainerViewElementBuilder container = bootstrapUi.container();
+		FormViewElementBuilder container = bootstrapUi
+				.form()
+				.name( EntityFormViewFactory.FORM_NAME )
+				.formName( FORM_NAME )
+				.noValidate()
+				.get();
+
+		ColumnViewElementBuilder formHeader
+				= bootstrapUi.column( Grid.Device.MD.width( Grid.Width.FULL ) ).name( "entityForm-header" );
+		container.add( bootstrapUi.row().add( formHeader ) );
 
 		if ( allowableActions.contains( AllowableAction.CREATE ) ) {
-			container.add(
-					bootstrapUi.row().add(
-							bootstrapUi.column( Grid.Device.MD.width( Grid.Width.FULL ) )
-							           .name( "top-buttons" )
-							           .add(
-									           bootstrapUi.node( "p" )
-									                      .add(
-											                      bootstrapUi.button()
-											                                 .name( "btn-create" )
-											                                 .link( linkBuilder.create() )
-											                                 .style( Style.Button.PRIMARY )
-											                                 .text( messages.createAction() )
-									                      )
-							           )
-					)
+			formHeader.add(
+					bootstrapUi
+							.div()
+							.name( "entityForm-header-actions" )
+							.css( "list-header" )
+							.add(
+									bootstrapUi.button()
+									           .name( "btn-create" )
+									           .link( linkBuilder.create() )
+									           .style( Style.Button.PRIMARY )
+									           .text( messages.createAction() )
+							)
 			);
 		}
 
-		EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();
-		List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
+		if ( page != null ) {
+			EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();
+			List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
 
-		SortableTableBuilder tableBuilder = viewHelpers.createSortableTableBuilder();
-		tableBuilder.tableName( "entityList" );
-		tableBuilder.entityConfiguration( entityConfiguration );
-		tableBuilder.properties( descriptors );
-		tableBuilder.pagingMessages( (ListViewEntityMessages) view.getEntityMessages() );
-		tableBuilder.items( page );
-		tableBuilder.sortableOn( getSortableProperties() );
-		tableBuilder.showResultNumber( isShowResultNumber() );
+			SortableTableBuilder tableBuilder = viewHelpers.createSortableTableBuilder();
+			tableBuilder.tableName( "entityList" );
+			tableBuilder.formName( FORM_NAME );
+			tableBuilder.entityConfiguration( entityConfiguration );
+			tableBuilder.properties( descriptors );
+			tableBuilder.pagingMessages( (ListViewEntityMessages) view.getEntityMessages() );
+			tableBuilder.items( page );
+			tableBuilder.sortableOn( getSortableProperties() );
+			tableBuilder.showResultNumber( isShowResultNumber() );
 
-		EntityListActionsProcessor actionsProcessor
-				= new EntityListActionsProcessor( bootstrapUi, entityConfiguration, linkBuilder, messages );
-		tableBuilder.headerRowProcessor( actionsProcessor );
-		tableBuilder.valueRowProcessor( actionsProcessor );
+			EntityListActionsProcessor actionsProcessor
+					= new EntityListActionsProcessor( bootstrapUi, entityConfiguration, linkBuilder, messages );
+			tableBuilder.headerRowProcessor( actionsProcessor );
+			tableBuilder.valueRowProcessor( actionsProcessor );
 
-		EntitySummaryViewActionProcessor.autoRegister( viewCreationContext, tableBuilder,
-		                                               EntityListView.SUMMARY_VIEW_NAME );
+			EntitySummaryViewActionProcessor.autoRegister( viewCreationContext, tableBuilder,
+			                                               EntityListView.SUMMARY_VIEW_NAME );
 
-		container.add( tableBuilder );
+			container.add( tableBuilder );
+		}
 
 		return container.build( viewElementBuilderContext );
 	}

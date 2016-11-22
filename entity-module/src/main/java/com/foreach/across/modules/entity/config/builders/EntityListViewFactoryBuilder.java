@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -30,6 +31,7 @@ import org.springframework.util.Assert;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.function.Consumer;
 
 /**
@@ -43,7 +45,7 @@ import java.util.function.Consumer;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 {
-	private Boolean showResultNumber;
+	private Boolean showResultNumber, entityQueryFilter;
 	private Integer pageSize;
 	private Sort defaultSort;
 	private Collection<String> sortableProperties;
@@ -138,13 +140,56 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		return this;
 	}
 
-	@Override
-	void apply( EntityViewFactory rawViewFactory ) {
+	/**
+	 * Enable default {@link com.foreach.across.modules.entity.query.EntityQuery} based filtering for this list.
+	 * Amounts to the same as manually registering a {@link EntityQueryFilterProcessor} using {@link #filter(EntityViewProcessor)}.
+	 * <p/>
+	 * Calling with {@code false} will remove the processor if it was activated before.  But you will have to manually
+	 * reset the {@link #pageFetcher(EntityListViewPageFetcher)} to the instance you want used.
+	 *
+	 * @param enabled true if filter should be added, false if not (or removed again)
+	 * @return current builder
+	 */
+	public EntityListViewFactoryBuilder entityQueryFilter( boolean enabled ) {
+		entityQueryFilter = enabled;
+		return this;
+	}
 
+	/**
+	 * Configure a filter to apply to the list view.  Shortcut to adding both a
+	 * {@link #viewProcessor(EntityViewProcessor)} and {@link #pageFetcher(EntityListViewPageFetcher)}.
+	 * Use {@link #entityQueryFilter(boolean)} if you only want the default query language based filter to be added.
+	 *
+	 * @param filterProcessor instance
+	 * @param <U>             filter type
+	 * @return current builder
+	 */
+	public <U extends EntityViewProcessor & EntityListViewPageFetcher> EntityListViewFactoryBuilder filter( U filterProcessor ) {
+		Assert.notNull( filterProcessor );
+
+		viewProcessor( filterProcessor );
+		pageFetcher( filterProcessor );
+		return this;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	void apply( EntityViewFactory rawViewFactory ) {
 		super.apply( rawViewFactory );
 
 		if ( rawViewFactory instanceof EntityListViewFactory ) {
 			EntityListViewFactory viewFactory = (EntityListViewFactory) rawViewFactory;
+			if ( entityQueryFilter != null ) {
+				EntityQueryFilterProcessor processor = getBean( EntityQueryFilterProcessor.class );
+				if ( entityQueryFilter ) {
+					viewFactory.setPageFetcher( processor );
+					viewFactory.setProcessors( Collections.singleton( processor ) );
+				}
+				else {
+					// only removes the processor
+					viewFactory.getProcessors().remove( processor );
+				}
+			}
 			if ( pageFetcher != null ) {
 				viewFactory.setPageFetcher( pageFetcher );
 			}

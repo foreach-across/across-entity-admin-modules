@@ -23,6 +23,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 /**
  * @author Arne Vandamme
@@ -49,6 +50,9 @@ public class Group extends SettableIdBasedEntity<Group>
 	@Column(unique = true)
 	private String name;
 
+	@OneToMany(mappedBy = "group")
+	private Collection<User> users;
+
 	public Group() {
 	}
 
@@ -70,5 +74,9 @@ public class Group extends SettableIdBasedEntity<Group>
 
 	public void setName( String name ) {
 		this.name = name;
+	}
+
+	public Collection<User> getUsers() {
+		return users;
 	}
 }

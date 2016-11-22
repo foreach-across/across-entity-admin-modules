@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.EntityViewViewFactory;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,8 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.data.domain.Sort.Direction.ASC;
@@ -85,7 +88,7 @@ public class TestEntityListViewFactoryBuilder
 		       .apply( factory );
 
 		verify( factory ).setTemplate( "template" );
-		verify( factory ).setProcessors( Arrays.asList( one, two ) );
+		verify( factory ).setProcessors( new LinkedHashSet<>( Arrays.asList( one, two ) ) );
 		verify( factory ).setPropertyComparator( EntityPropertyComparators.ordered( "one", "two" ) );
 		verify( propertyRegistry ).register( any() );
 		verify( factory ).setDefaultSort( new Sort( ASC, "name" ) );
@@ -93,5 +96,63 @@ public class TestEntityListViewFactoryBuilder
 		verify( factory ).setPageFetcher( any() );
 		verify( factory ).setShowResultNumber( false );
 		verify( factory ).setSortableProperties( Arrays.asList( "two" ) );
+	}
+
+	@Test
+	public void customFilter() {
+		EntityQueryFilterProcessor filter = mock( EntityQueryFilterProcessor.class );
+		EntityListViewFactory factory = mock( EntityListViewFactory.class );
+
+		builder.filter( filter ).apply( factory );
+
+		verify( factory ).setProcessors( Collections.singleton( filter ) );
+		verify( factory ).setPageFetcher( filter );
+	}
+
+	@Test
+	public void entityQueryFilterEnabled() {
+		EntityQueryFilterProcessor filter = mock( EntityQueryFilterProcessor.class );
+		when( beanFactory.getBean( EntityQueryFilterProcessor.class ) ).thenReturn( filter );
+
+		EntityListViewFactory factory = mock( EntityListViewFactory.class );
+
+		builder.entityQueryFilter( true ).apply( factory );
+
+		verify( factory ).setProcessors( Collections.singleton( filter ) );
+		verify( factory ).setPageFetcher( filter );
+	}
+
+	@Test
+	public void entityQueryFilterDisabledAgain() {
+		EntityQueryFilterProcessor filter = mock( EntityQueryFilterProcessor.class );
+		when( beanFactory.getBean( EntityQueryFilterProcessor.class ) ).thenReturn( filter );
+
+		EntityListViewFactory factory = mock( EntityListViewFactory.class );
+
+		builder.entityQueryFilter( true )
+		       .entityQueryFilter( false )
+		       .apply( factory );
+
+		verify( factory, never() ).setProcessors( any() );
+		verify( factory, never() ).setPageFetcher( any() );
+	}
+
+	@Test
+	public void customPageFetcherIsKept() {
+		EntityQueryFilterProcessor filter = mock( EntityQueryFilterProcessor.class );
+		when( beanFactory.getBean( EntityQueryFilterProcessor.class ) ).thenReturn( filter );
+
+		EntityListViewFactory factory = mock( EntityListViewFactory.class );
+		EntityListViewPageFetcher pageFetcher = mock( EntityListViewPageFetcher.class );
+		EntityViewProcessor one = mock( EntityViewProcessor.class );
+
+		builder.entityQueryFilter( true )
+		       .viewProcessor( one )
+		       .pageFetcher( pageFetcher )
+		       .entityQueryFilter( false )
+		       .apply( factory );
+
+		verify( factory ).setProcessors( Collections.singleton( one ) );
+		verify( factory ).setPageFetcher( pageFetcher );
 	}
 }

@@ -68,7 +68,7 @@ public class EntitiesConfigurationBuilder
 	 * @return configuration builder
 	 */
 	public EntityConfigurationBuilder<Object> create() {
-		EntityConfigurationBuilder newBuilder = createConfigurationBuilder();
+		EntityConfigurationBuilder<Object> newBuilder = createConfigurationBuilder();
 		newConfigurationBuilders.add( newBuilder );
 		return newBuilder;
 	}
@@ -94,8 +94,8 @@ public class EntitiesConfigurationBuilder
 	 * @param entityType for which to configure the builder
 	 * @return configuration builder
 	 */
-	public EntityConfigurationBuilder<Object> withType( Class<?> entityType ) {
-		return typeBuilders.computeIfAbsent( entityType, c -> createConfigurationBuilder() );
+	public <U> EntityConfigurationBuilder<U> withType( Class<U> entityType ) {
+		return typeBuilders.computeIfAbsent( entityType, c -> createConfigurationBuilder() ).as( entityType );
 	}
 
 	/**
@@ -117,10 +117,9 @@ public class EntitiesConfigurationBuilder
 	 * @param entityType that entities can be assigned to
 	 * @return entity builder instance
 	 */
-	public EntityConfigurationBuilder<Object> assignableTo( Class<?> entityType ) {
+	public <U> EntityConfigurationBuilder<U> assignableTo( Class<U> entityType ) {
 		Assert.notNull( entityType );
-
-		return matching( c -> entityType.isAssignableFrom( c.getEntityType() ) );
+		return matching( c -> entityType.isAssignableFrom( c.getEntityType() ) ).as( entityType );
 	}
 
 	/**
