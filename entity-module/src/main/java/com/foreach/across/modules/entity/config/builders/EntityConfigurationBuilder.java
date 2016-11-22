@@ -70,6 +70,19 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	/**
+	 * Downcast the current builder as managing an {@link EntityConfiguration} of a specific type.
+	 * Note this can throw class cast exceptions if the types doe not match.
+	 *
+	 * @param subType of the original generic type
+	 * @param <U>     subType of the original generic type
+	 * @return downcast version of the current builder
+	 */
+	public <U extends T> EntityConfigurationBuilder<U> as( Class<U> subType ) {
+		Assert.notNull( subType );
+		return (EntityConfigurationBuilder<U>) this;
+	}
+
+	/**
 	 * Set the internal name of the entity configuration. Must be unique within a registry.
 	 * Can only be used along with {@link #build()}, cannot be modified on an existing configuration.
 	 *

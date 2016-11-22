@@ -33,6 +33,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -145,12 +146,17 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 			}
 		}
 		catch ( EntityQueryParsingException pe ) {
-			model.addAttribute( "filterError",
-			                    pe.getMessage() + " ; position " + pe.getErrorExpressionPosition() + "" );
+			String message = pe.getMessage();
+
+			if ( pe.hasErrorExpressionPosition() ) {
+				message += " ; position " + pe.getErrorExpressionPosition();
+			}
+
+			model.addAttribute( "filterError", message );
 
 		}
 		catch ( Exception e ) {
-			model.addAttribute( "filterError", e.getMessage() );
+			model.addAttribute( "filterError", ExceptionUtils.getRootCauseMessage( e ) );
 		}
 
 		// Explicitly return null to avoid "0 users found" along with an exception

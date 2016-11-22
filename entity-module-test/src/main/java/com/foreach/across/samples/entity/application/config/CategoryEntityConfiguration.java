@@ -38,7 +38,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.*;
-import java.util.function.UnaryOperator;
 
 /**
  * Configures a dummy <strong>category</strong> entity.
@@ -71,6 +70,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.create()
+		        .as( Map.class )
 		        .name( "category" )
 		        .entityType( Map.class, false )
 		        .displayName( "Category" )
@@ -96,34 +96,33 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .order( 2 )
 		        )
 		        .entityModel(
-				        model -> {
-					        UnaryOperator<Object> saveMethod = cat -> {
-						        Map<String, Object> category = (Map<String, Object>) cat;
-						        Optional<Map<String, Object>> existing = categoryRepository
-								        .stream()
-								        .filter( m -> m.get( "id" ).equals( category.get( "id" ) ) )
-								        .findFirst();
+				        model -> model
+						        .entityFactory( new CategoryEntityFactory() )
+						        .entityInformation( new CategoryEntityInformation() )
+						        .labelPrinter( ( o, locale ) -> (String) ( (Map) o ).get( "name" ) )
+						        .findOneMethod( id -> categoryRepository.stream()
+						                                                .filter( m -> id.equals(
+								                                                m.get( "id" ) ) )
+						                                                .findFirst().orElse( null ) )
+						        .saveMethod(
+								        category -> {
+									        //Map<String, Object> category = (Map<String, Object>) cat;
+									        Optional<Map<String, Object>> existing = categoryRepository
+											        .stream()
+											        .filter( m -> m.get( "id" ).equals( category.get( "id" ) ) )
+											        .findFirst();
 
-						        if ( existing.isPresent() ) {
-							        existing.ifPresent( e -> e.putAll( category ) );
-						        }
-						        else {
-							        categoryRepository.add( category );
-						        }
+									        if ( existing.isPresent() ) {
+										        existing.ifPresent( e -> e.putAll( category ) );
+									        }
+									        else {
+										        categoryRepository.add( category );
+									        }
 
-						        return category;
-					        };
-
-					        model
-							        .entityFactory( new CategoryEntityFactory() )
-							        .entityInformation( new CategoryEntityInformation() )
-							        .labelPrinter( ( o, locale ) -> (String) ( (Map) o ).get( "name" ) )
-							        .findOneMethod( id -> categoryRepository.stream()
-							                                                .filter( m -> id.equals( m.get( "id" ) ) )
-							                                                .findFirst().orElse( null ) )
-							        .saveMethod( saveMethod )
-							        .deleteMethod( categoryRepository::remove );
-				        }
+									        return category;
+								        }
+						        )
+						        .deleteMethod( categoryRepository::remove )
 		        )
 		        .listView( lvb -> lvb.pageFetcher( new EntityListViewPageFetcher()
 		        {
@@ -169,15 +168,15 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 		}
 	}
 
-	private static class CategoryEntityFactory implements EntityFactory<Object>
+	private static class CategoryEntityFactory implements EntityFactory<Map>
 	{
 		@Override
-		public Object createNew( Object... args ) {
+		public Map createNew( Object... args ) {
 			return new HashMap<>();
 		}
 
 		@Override
-		public Object createDto( Object entity ) {
+		public Map createDto( Map entity ) {
 			return new HashMap<>( (Map<?, ?>) entity );
 		}
 	}
