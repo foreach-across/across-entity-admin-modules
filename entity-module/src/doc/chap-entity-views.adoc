@@ -1,0 +1,103 @@
+== Entity views
+
+=== List view
+
+[[list-view-filter]]
+==== Filtering a list view
+
+By default a list view is not filtered.
+If your entity has an <<entity-query-executor,`EntityQueryExecutor`>> available you can easily activate a simple yet powerful <<entity-query-language,EQL-based filter>>.
+Activating `EntityQuery` based filtering can be done through the builders:
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+// Activate the EQL-based filter on every entity that has an EntityQueryExecutor
+configuration.matching( c -> c.hasAttribute( EntityQueryExecutor.class ) )
+             .listView( lvb -> lvb.entityQueryFilter( true ) );
+----
+
+See <<entity-list-view-custom-filter,this chapter>> for information on how to configure a custom filter for a list view.
+
+
+==== List summary view
+
+It is possible to activate a detail view inline in a list view.
+If the `EntityConfiguration` or `EntityAssociation` has a view named *listSummaryView* a summary pane will automatically become available when clicking on the item row in the table.
+The summary pane is called using AJAX and only the _content_ fragment of the page will be rendered.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+// Activate a summary view in the main user results table using a custom Thymeleaf template
+configuration.withType( User.class )
+             .view( EntityListView.SUMMARY_VIEW_NAME, vb -> vb.template( "th/myModule/userSummary" ) );
+----
+
+
+
+[[delete-view]]
+=== Delete view
+A delete action will be available for all entities where `AllowableAction.DELETE` is present, this is the default unless more explicit permissions are configured.
+A delete will always redirect to a confirmation page by default.
+Because the possibility to delete an entity often depends on other factors (usually associations), the default `EntityDeleteViewFactory` publishes an event that allows customizing said confirmation page.
+
+By catching the `BuildEntityDeleteViewEvent` your code can:
+
+* suppress the ability to delete (by hiding the delete button)
+* add associations to the form
+* add custom feedback messages to the form (and optionally remove the associations block)
+
+This should be sufficient for most use cases without having to revert to custom `EntityViewProcessor` implementations.
+Of course the latter would work as well.
+
+.Entity associations
+The initial `BuildEntityDeleteViewEvent` is configured based on the `EntityAssociation` list of the entity.
+If associated items are detected, they influence the form settings depending on the *parentDeleteMode* property of the `EntityAssociation`:
+
+* `ParentDeleteMode.IGNORE`: item information is not printed nor influences the ability to delete
+* `ParentDeleteMode.WARN`: item information is printed on the form but does not influence the ability to delete
+* `ParentDeleteMode.SUPPRESS`: item information is printed on the form and disables the ability to delete, this is the default setting
+
+The event is published after the initial association information has been set.
+
+.Performing the delete
+The {module-name} simply calls the delete method of the `EntityModel`, usually a direct call to a repository `delete()`.
+You will have to take care yourself of complex delete scenarios - like deleting the associations - by either modifying the `EntityModel` or using another mechanism like the `EntityInterceptor`.
+
+=== Custom views
+
+=== EntityLinkBuilder
+
+An `EntityConfiguration` or `EntityAssociation` can have one or more `EntityLinkBuilder` instances registered in its attributes.
+An `EntityLinkBuilder` is used to create application links to management controllers for the entity.
+By default the `EntityModule` will create an `EntityLinkBuilder` for the management pages in admin web if `AdminWebModule` is present, and this link builder will be registered as the attribute with `EntityLinkBuilder` class as key.
+
+You can use the `EntityLinkBuilder` directly for example in redirects, often the specific `EntityLinkBuilder` is overridable per view.
+All links the `EntityLinkBuilder` generates are entirely configurable, please refer to the javadoc for all possible settings.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
+
+// Will create a link of the form "/entities/{parent}/{parentId}/update"
+String path = linkBuilder.update( parent );
+----
+
+==== EntityLinkBuilder for associations
+Associations usually also have an `EntityLinkBuilder` registered, it is possible to create links to items that are an association from a parent entity.
+To achieve this you must _scope_ the `EntityLinkBuilder` to the parent entity it belongs to.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
+
+EntityConfiguration associated = association.getTargetEntityConfiguration();
+EntityLinkBuilder associatedLinkBuilder = association.getAttribute( EntityLinkBuilder.class )
+                                                     .asAssociationFor( linkBuilder, parent );
+
+// Will create a link of the form "/entities/{parent}/{parentId}/associations/{associationName}/{childId}/update"
+String path = associatedLinkBuilder.update( child );
+----

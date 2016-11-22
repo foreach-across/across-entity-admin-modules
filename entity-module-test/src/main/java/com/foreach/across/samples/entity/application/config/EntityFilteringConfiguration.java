@@ -18,7 +18,6 @@ package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
@@ -31,8 +30,9 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.samples.entity.application.business.Group;
+import com.foreach.across.samples.entity.application.business.Partner;
 import com.foreach.across.samples.entity.application.business.User;
-import com.foreach.across.samples.entity.application.repositories.GroupRepository;
+import com.foreach.across.samples.entity.application.repositories.PartnerRepository;
 import com.foreach.across.samples.entity.application.repositories.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  * Registers 3 filters:
  * <ul>
  * <li>default entity query filter on all entities having an {@link EntityQueryExecutor}</li>
- * <li>replaced by a custom filter on Group list</li>
+ * <li>replaced by a custom filter on Partner list</li>
  * <li>add a custom filter on Users list tab for a group</li>
  * </ul>
  *
@@ -63,49 +63,49 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 {
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
-		addFilteringForGroupEntity( configuration.withType( Group.class ) );
-
 		configuration.withType( User.class )
 		             .listView( lvb -> lvb.showProperties( "id", "name", "group", "registrationDate" )
 		                                  .showResultNumber( false ) );
 
 		configuration.matching( c -> c.hasAttribute( EntityQueryExecutor.class ) )
 		             .listView( lvb -> lvb.entityQueryFilter( true ) );
-	}
 
-	private void addFilteringForGroupEntity( EntityConfigurationBuilder<Object> configuration ) {
-		configuration.listView(
-				lvb -> lvb.defaultSort( new Sort( "name" ) )
-				          .entityQueryFilter( false )
-				          .filter( groupFilteringProcessor() )
-		);
+		// Custom filter on partners
+		configuration.withType( Partner.class )
+		             .listView(
+				             lvb -> lvb.defaultSort( "name" )
+				                       .entityQueryFilter( false )
+				                       .filter( partnerFilterProcessor() )
+		             );
 
-		configuration.association(
-				ab -> ab.name( "user.group" )
-				        .listView(
-						        lvb -> lvb.defaultSort( new Sort( "name" ) )
-						                  .filter( userInGroupFilteringProcessor() )
-				        )
-		);
-	}
-
-	@Bean
-	protected GroupFilteringProcessor groupFilteringProcessor() {
-		return new GroupFilteringProcessor();
+		// Custom filters on users under Group
+		configuration.withType( Group.class )
+		             .association(
+				             ab -> ab.name( "user.group" )
+				                     .listView(
+						                     lvb -> lvb.defaultSort( new Sort( "name" ) )
+						                               .filter( userInGroupFilterProcessor() )
+				                     )
+		             );
 	}
 
 	@Bean
-	protected UserInGroupFilteringProcessor userInGroupFilteringProcessor() {
-		return new UserInGroupFilteringProcessor();
+	protected PartnerFilterProcessor partnerFilterProcessor() {
+		return new PartnerFilterProcessor();
+	}
+
+	@Bean
+	protected UserInGroupFilterProcessor userInGroupFilterProcessor() {
+		return new UserInGroupFilterProcessor();
 	}
 
 	/**
 	 * Custom filter for a main entity (Group) list view.
 	 */
-	private static class GroupFilteringProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
+	private static class PartnerFilterProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
 	{
 		@Autowired
-		private GroupRepository groupRepository;
+		private PartnerRepository partnerRepository;
 
 		@Override
 		protected void registerCommandExtensions( EntityViewCommand command ) {
@@ -124,7 +124,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 								= find( h, "entityForm-header-actions", NodeViewElement.class );
 						actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
 
-						h.addChild( new TemplateViewElement( "th/entityModuleTest/group :: filterForm" ) );
+						h.addChild( new TemplateViewElement( "th/entityModuleTest/partner :: filterForm" ) );
 					}
 			);
 		}
@@ -136,17 +136,17 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 			String filter = (String) request.getExtensions().get( "filter" );
 
 			if ( !StringUtils.isBlank( filter ) ) {
-				return groupRepository.findByNameContaining( filter, pageable );
+				return partnerRepository.findByNameContaining( filter, pageable );
 			}
 
-			return groupRepository.findAll( pageable );
+			return partnerRepository.findAll( pageable );
 		}
 	}
 
 	/**
 	 * Custom filter for an associated entity (User in Group) list view.
 	 */
-	private static class UserInGroupFilteringProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
+	private static class UserInGroupFilterProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
 	{
 		@Autowired
 		private UserRepository userRepository;

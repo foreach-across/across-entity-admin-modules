@@ -1,0 +1,37 @@
+== Entity associations
+
+The `EntityModule` attempts to automatically detect related entities and creates associations mainly to facilitate UI generation.
+Currently `@OneToMany`, `@ManyToMany` and `@ManyToOne` annotations from `javax.persistence` API are all scanned and used to build `EntityAssociation` entries.
+
+In the administrative UI the management of related entities can often be done either through the property or the association.
+This is especially the case for `@ManyToMany` and `@OneToMany` associations that are mapped through a property with collection type.
+By default related entity management will be done through the property and the association will be generated but hidden.
+
+NOTE: If you want to enable management through the association interface, you should manipulate the `hidden` property of both the association and the property using an `EntityConfigurer`.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@Override
+public void configure( EntitiesConfigurationBuilder configuration ) {
+    // Groups should be managed through the association instead of the property
+    configuration.withType( MachinePrincipal.class )
+                 .properties( props -> props.property( "groups" ).hidden( true ) )
+                 .association( ab -> ab.name( "machinePrincipal.groups" ).show() );
+}
+----
+
+=== ParentDeleteMode
+An `EntityAssociation` has a *parentDeleteMode* property that determines how associated items will influence the ability to delete in the user interface.
+The default value is `SUPPRESS` but can be set through the `EntitiesConfigurationBuilder`.
+
+For more information see the <<delete-view,delete view chapter>>.
+
+=== Association naming and location
+Associations are added to the `EntityConfiguration` for which it makes most sense to manage them from a UI perspective.
+The association naming however is done according to the entity class and property names.
+
+Example:
+* entity `Group`
+* entity `User` has a one to many with `Group` on property *group*
+* association *user.group* will be created on the entity configuration of `Group`

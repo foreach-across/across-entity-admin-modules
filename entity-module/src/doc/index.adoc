@@ -7,6 +7,7 @@ Arne Vandamme
 :module-name: EntityModule
 :module-artifact: entity-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/EntityModule
+:bootstrap-ui-module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
 
 [copyright,verbatim]
 --
@@ -57,24 +58,29 @@ Module website: {module-url}
 |===
 
 == What's new in this version?
+
 :numbered!:
 === 2.0.0-SNAPSHOT
 This release has a lot of breaking changes compared with the previous release.
+The code has been heavily rewritten and optimized.
+The public API modified accordingly with a focus on simplification and future extensibility.
 
 * requires Across 2.0.0+
 * massive overhaul of the `EntitiesConfigurationBuilder` system - removed the `and()` concatenating of builder calls
 ** nested builder consumers are used instead - this greatly simplified the class hierarchy involved
+* externalized the entire `ViewElement` infrastructure to {bootstrap-ui-module-url}[BootstrapUiModule]
+** if {bootstrap-ui-module-url}[BootstrapUiModule] is not present, default views will not be created
 * compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
 * principal names on `Auditable` entities are now pretty printed using the `SecurityPrincipalLabelResolverStrategy` from the _SpringSecurityModule_
 * {module-name} now supports <<delete-view,deleting of entities>>
 * the `EntityModel` of an `EntityConfiguration` can now be customized using the <<builders,`EntityConfigurer` builders>>
+* extension of the <<entity-query,EntityQuery infrastructure>>
+** addition of the <<entity-query-language,EntityQuery Language (EQL)>> providing SQL-like syntax for building an `EntityQuery`
+** provide a default <<list-view-filter,EQL-based filter for list views>>
 
 :numbered:
-== About the EntityModule
 
-=== EntityConfiguration and EntityAssociation
-
-=== Integration with Spring Data repositories
+include::chap-about.adoc[]
 
 == Configuring entity types
 
@@ -156,7 +162,7 @@ If you configure the label using an existing property, the sortable attribute wi
 ==== Attributes to configure
 
 Some attributes are mandatory, others are optional but will often impact how much functionality is available out of the box.
-You can configure any attribute you like, see the section on [automatic-attributes] for a list of common attributes provided by other registrars.
+You can configure any attribute you like, see the section on <<automatic-attributes,automatic registration>> for a list of common attributes provided by other registrars.
 
 ==== EntityQueryExecutor
 
@@ -168,6 +174,8 @@ Default implementations exist for `JpaSpecificationExecutor` and `QueryDslPredic
 
 [[automatic-attributes]]
 ==== Registered EntityConfiguration attributes
+
+Some of these may or may not be available depending on how the entity was registered.
 
 |===
 |Key |Value
@@ -182,7 +190,13 @@ Default implementations exist for `JpaSpecificationExecutor` and `QueryDslPredic
 |In case of an entity registered through a Spring data repository that exposed `PersistentEntity` information.
 
 |`EntityQueryExecutor.class`
-|Holds the `EntityQueryExecutor` that will be used for entity fetching.
+|Holds the `EntityQueryExecutor` that can be used for <<entity-query,custom `EntityQuery` execution>> and will be used by default for fetching entities.
+Available if the `Repository` was supported by one of the <<entity-query-executor,default `EntityQueryExecutor` implementations>>.
+
+|`EntityQueryParser.class`
+|Holds the `EntityQueryParser` that should be used for <<entity-query-language,parsing EQL statements>> into a valid `EntityQuery`.
+Available if the `EntityQueryExecutor.class` attribute is present.
+
 |===
 
 ==== Registered EntityPropertyDescriptor attributes
@@ -215,288 +229,14 @@ This will effectively disable the default entity controllers for that type, and 
 
 You can also hide one or more associations.
 By default an association will not be shown if one of the participating entities is hidden.
-If you specify the `hidden` property of an `EntityAssociation` explicitly, that value will take precendence of the entity configurations.
+If you specify the `hidden` property of an `EntityAssociation` explicitly, that value will take precedence of the entity configurations.
 This way it is possible to generate management pages for associated entities, but not for the main entity type.
 
-== Entity associations
+include::chap-entity-associations.adoc[]
 
-The `EntityModule` attempts to automatically detect related entities and creates associations mainly to facilitate UI generation.
-Currently `@OneToMany`, `@ManyToMany` and `@ManyToOne` annotations from `javax.persistence` API are all scanned and used to build `EntityAssociation` entries.
+include::chap-entity-views.adoc[]
 
-In the administrative UI the management of related entities can often be done either through the property or the association.
-This is especially the case for `@ManyToMany` and `@OneToMany` associations that are mapped through a property with collection type.
-By default related entity management will be done through the property and the association will be generated but hidden.
-
-NOTE: If you want to enable management through the association interface, you should manipulate the `hidden` property of both the association and the property using an `EntityConfigurer`.
-
-[source,java,indent=0]
-[subs="verbatim,quotes,attributes"]
-----
-@Override
-public void configure( EntitiesConfigurationBuilder configuration ) {
-    // Groups should be managed through the association instead of the property
-    configuration.withType( MachinePrincipal.class )
-                 .properties( props -> props.property( "groups" ).hidden( true ) )
-                 .association( ab -> ab.name( "machinePrincipal.groups" ).show() );
-}
-----
-
-=== ParentDeleteMode
-An `EntityAssociation` has a *parentDeleteMode* property that determines how associated items will influence the ability to delete in the user interface.
-The default value is `SUPPRESS` but can be set through the `EntitiesConfigurationBuilder`.
-
-For more information see the <<delete-view,delete view chapter>>.
-
-=== Association naming and location
-Associations are added to the `EntityConfiguration` for which it makes most sense to manage them from a UI perspective.
-The association naming however is done according to the entity class and property names.
-
-Example:
-* entity `Group`
-* entity `User` has a one to many with `Group` on property *group*
-* association *user.group* will be created on the entity configuration of `Group`
-
-== Entity views
-
-=== List view
-
-==== Filtering a list view
-activate default or create custom
-
-==== List summary view
-
-It is possible to activate a detail view inline in a list view.
-If the `EntityConfiguration` or `EntityAssociation` has a view named *listSummaryView* a summary pane will automatically become available when clicking on the item row in the table.
-The summary pane is called using AJAX and only the _content_ fragment of the page will be rendered.
-
-[source,java,indent=0]
-[subs="verbatim,quotes,attributes"]
-----
-// Activate a summary view in the main user results table using a custom Thymeleaf template
-configuration.withType( User.class )
-             .view( EntityListView.SUMMARY_VIEW_NAME, vb -> vb.template( "th/myModule/userSummary" ) );
-----
-
-
-
-[[delete-view]]
-=== Delete view
-A delete action will be available for all entities where `AllowableAction.DELETE` is present, this is the default unless more explicit permissions are configured.
-A delete will always redirect to a confirmation page by default.
-Because the possibility to delete an entity often depends on other factors (usually associations), the default `EntityDeleteViewFactory` publishes an event that allows customizing said confirmation page.
-
-By catching the `BuildEntityDeleteViewEvent` your code can:
-
-* suppress the ability to delete (by hiding the delete button)
-* add associations to the form
-* add custom feedback messages to the form (and optionally remove the associations block)
-
-This should be sufficient for most use cases without having to revert to custom `EntityViewProcessor` implementations.
-Of course the latter would work as well.
-
-.Entity associations
-The initial `BuildEntityDeleteViewEvent` is configured based on the `EntityAssociation` list of the entity.
-If associated items are detected, they influence the form settings depending on the *parentDeleteMode* property of the `EntityAssociation`:
-
-* `ParentDeleteMode.IGNORE`: item information is not printed nor influences the ability to delete
-* `ParentDeleteMode.WARN`: item information is printed on the form but does not influence the ability to delete
-* `ParentDeleteMode.SUPPRESS`: item information is printed on the form and disables the ability to delete, this is the default setting
-
-The event is published after the initial association information has been set.
-
-.Performing the delete
-The {module-name} simply calls the delete method of the `EntityModel`, usually a direct call to a repository `delete()`.
-You will have to take care yourself of complex delete scenarios - like deleting the associations - by either modifying the `EntityModel` or using another mechanism like the `EntityInterceptor`.
-
-=== Custom views
-
-=== EntityLinkBuilder
-
-An `EntityConfiguration` or `EntityAssociation` can have one or more `EntityLinkBuilder` instances registered in its attributes.
-An `EntityLinkBuilder` is used to create application links to management controllers for the entity.
-By default the `EntityModule` will create an `EntityLinkBuilder` for the management pages in admin web if `AdminWebModule` is present, and this link builder will be registered as the attribute with `EntityLinkBuilder` class as key.
-
-You can use the `EntityLinkBuilder` directly for example in redirects, often the specific `EntityLinkBuilder` is overridable per view.
-All links the `EntityLinkBuilder` generates are entirely configurable, please refer to the javadoc for all possible settings.
-
-[source,java,indent=0]
-[subs="verbatim,quotes,attributes"]
-----
-EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
-
-// Will create a link of the form "/entities/{parent}/{parentId}/update"
-String path = linkBuilder.update( parent );
-----
-
-==== EntityLinkBuilder for associations
-Associations usually also have an `EntityLinkBuilder` registered, it is possible to create links to items that are an association from a parent entity.
-To achieve this you must _scope_ the `EntityLinkBuilder` to the parent entity it belongs to.
-
-[source,java,indent=0]
-[subs="verbatim,quotes,attributes"]
-----
-EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
-
-EntityConfiguration associated = association.getTargetEntityConfiguration();
-EntityLinkBuilder associatedLinkBuilder = association.getAttribute( EntityLinkBuilder.class )
-                                                     .asAssociationFor( linkBuilder, parent );
-
-// Will create a link of the form "/entities/{parent}/{parentId}/associations/{associationName}/{childId}/update"
-String path = associatedLinkBuilder.update( child );
-----
-
-
-== Customizing generated Entity views
-The following section gives an overview of common custimizations for generated entity views.
-
-=== Changing entity names, property names or other labels
-Labels are resolved using a message code hierarchy.
-Simply define one or more message sources specifying the properties you want.
-Unless custom `EntityMessageCodeResolver` instances are being used, message codes are generated as follows:
-
-|===
-|Message code|Description
-
-| enums.*EnumName*.*EnumValue*
-| Message code for a single enum value label. +
-Example: _enums.Numbers.ONE_
-
-| *EntityPrefix*.name.singular
-| Label for an entity in singular form, for use outside or at the beginning of a sentence. +
-Example: _UserModule.entities.user.name.singular_
-
-| *EntityPrefix*.name.plural
-| Label for an entity in plural form, for use outside or at the beginning of a sentence. +
-Example: _UserModule.entities.user.name.plural_
-
-| *EntityPrefix*.name.singular.inline
-| Label for an entity in singular form, for use within a sentence. If not explicitly specified, the label is
-generated based by lower-casing the non-inline version. +
-Example: _UserModule.entities.user.name.singular.inline_
-
-| *EntityPrefix*.name.plural.inline
-| Label for an entity in plural form, for use within a sentence.  If not explicitly specified, the label is
- generated based by lower-casing the non-inline version. +
-Example: _UserModule.entities.user.name.plural.inline_
-
-| *EntityPrefix*.properties.*propertyName*
-| Label for a single entity property. +
-Example: _UserModule.entities.user.properties.username_
-
-| *EntityPrefix*.properties.*propertyName*[description]
-| Description text for a property.  If not empty this will be rendered in a help block on forms. +
-Example: _UserModule.entities.user.properties.username[description]_
-
-| *EntityPrefix*.properties.*propertyName*[placeholder]
-| Placeholder text for a property.  Will be used for certain controle like textbox. +
-Example: _UserModule.entities.user.properties.username[placeholder]_
-
-| *EntityPrefix*.validation.*validatorKey*
-| Description text for a validation error message.  Optionally can be suffixed with the specific property name. +
-Example: _UserModule.entities.user.validation.NotBlank_,  _UserModule.entities.user.validation.alreadyExists.username_
-
-
-| actions.*
-|
-
-| pageTitle.*
-
-
-|===
-
-* _Entity_ codes are camel cased
-* EntityPrefix: ModuleName.entities.entityName, or EntityModule.entities.entityName or simply entityName
-* Hierarchical lookups: entity can be removed, module can be replaced by EntityModule
-
-=== Adding a custom filter to a list view
-todo:
-
-=== Selecting properties
-`EntityPropertySelector`, incremental builders, keep current, select all, select all without default filter, exclude
-
-=== Customizing fieldsets
-
-=== Customizing entity validation
-
-By default annotation validation is performed on all entities.
-Customizing validation can be done by simply specifying a `Validator` bean that supports the specific entity type.
-You can use the `EntityValidatorSupport` as a base class to extend the default annotation based entity validation.
-
-If more than one `Validator` could be applied, you will manually have to set the `Validator.class` attribute on the `EntityConfiguration` to the correct one.
-
-=== Customizing *VALUE* mode elements
-
-The `ViewElementMode.VALUE` and `ViewElementMode.LIST_VALUE` are the defaults to provide the output of a property for readonly views.
-Unless a specific `ViewElement` is configured, this will always be a `String` output of the property.
-By default the *mvcConversionService* will be used to convert the property value if no type specific builder is provided.
-
-Apart from providing a custom `ViewElement` you can also modify the rendered output by providing attributes on the `EntityPropertyDescriptor`.
-If you provide a `org.springframework.format.Printer.class` attribute, that implementation will be used for printing the text value.
-Alternatively you can provide a `java.text.Format.class` attribute to be used.
-Note that most default `Format` implementations are not thread-safe, in that case you should wrap them in a `SynchronizedFormat` instance.
-
-All standard view elements will use the `Printer` or `Format` attribute if one of them is present, instead of the default.
-A `Printer` attribute takes precedence over a `Format`.
-
-=== Customizing textbox elements
-
-`TextboxFormElement.Type` can be set as an attribute on the `EntityPropertyDescriptor`.
-If set and the property is generated as a `TextboxFormElement`, that type will be used.
-
-You can add default post processors to the `TextboxFormElementBuilderFactory` to customize the autodetection.
-
-=== Customizing numeric elements
-
-By default all `Number` type properties will result in a `NumericFormElement` being used which is rendered as a textbox.
-The behavior can be customized by providing a `NumericFormElementConfiguration`.
-A default configuration will only be created for properties annotated with a Spring `@NumberFormat` for type `CURRENCY` or `PERCENT`, if no `NumericFormElementConfiguration.class` or `NumericFormElementConfiguration.Format.class` attribute is present.
-
-If a `NumericFormElementConfiguration` is present a more advanced javascript control will be used in the front-end for value input.
-The same configuration will also be used for rendering the *VALUE* mode elements, formatting the output according to the properties configured.
-
-.Manually configuring percent
-Put a format attribute with value `PERCENT` on the `EntityPropertyDescriptor`.
-This will create a locale specific percentage format with 2 decimals (unless the property type is integer).
-Alternatively use the static `NumericFormElementConfiguration.percent()` factory method to quickly create a localizable format suitable for percentages.
-
-NOTE: If you use Spring number format for `PERCENT` then 1 is expected to match 100%.
-If you manually create a `NumericFormElementConfiguration` it expects 100 to match with 100%.
-You can modify this behavior by setting the `multiplier` property on the configuration.
-
-.Manually configuring currency
-The easiest way to configure a currency is to set a `Currency.class` attribute for the property.
-In that case a locale specific format for that currency will be created.
-Alternatively the same options as for percentages can be used and there is a `NumericFormElementConfiguration.currency()` factory method available.
-
-=== Customizing datetime picker elements
-
-By default all `Date` properties will result in a `DateTimeFormElement` which is rendered as a date time picker.
-The form element can be customized through the `DateTimeFormElementConfiguration` class.
-The default configuration is determined based on the presence of `@Temporal` annotations on the property.
-The date picker supports 3 major modes: *date*, *time* and *timestamp* (date + time) with minutes being the maximum resolution.
-The presence of `@Past` and `@Future` validation annotations will additionally restrict the dates that are selectable.
-
-A specific date picker format can easily be specified by putting a `DateTimeFormElementConfiguration.Format` attribute.
-Advanced customization can be done by setting a complete `DateTimeFormElementConfiguration` as attribute.
-Dynamic configuration (for example setting the first selectable date relative to the current date) can only be done by specifying a `DateTimeFormElementBuilder` manually and adding a custom post processor that modifies the `DateTimeFormElementConfiguration`.
-A `DateTimeFormElementConfiguration` is always duplicated when creating an element so it is safe for post processors to modify the instance.
-
-.Using dates with `TemporalType.TIME` and JPA
-A property of type `java.util.Date` but annotated with `@Temporal(TemporalType.TIME)` will result in only time selection being available (hours and minutes).
-However the `@Temporal` annotation also influences how JPA will persist the data type.
-If your type was created as a timestamp in the database schema, this might result in conversion errors.
-With Hibernate you can resolve this by additionally specifying a `@Type` annotation forcing the type to be persisted as timestamp.
-
-.Example of a required time property that is written as a date relative to start of epoch time in the database
-[source,java,indent=0]
-[subs="verbatim,quotes,attributes"]
-----
-@NotNull
-@Column(name = "arrival_time")
-@Temporal(TemporalType.TIME)
-@Type( type = "timestamp")
-private Date arrivalTime;
-----
+include::chap-entity-views-customizing.adoc[]
 
 == Default entity configuration
 
@@ -510,8 +250,7 @@ See the `AuditableEntityUiConfiguration` for full customization.
 
 include::chap-entity-query.adoc[]
 
-== To be done:
-* view processor
+
 
 
 
