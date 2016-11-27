@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.adminweb;
 
-import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
@@ -41,16 +40,6 @@ public class AdminWebModule extends AcrossModule
 	 */
 	public void setRootPath( String rootPath ) {
 		setProperty( "adminWebModule.root-path", rootPath );
-	}
-
-	@Override
-	protected void setContext( AcrossContext context ) {
-		super.setContext( context );
-
-		// todo BootstrapUiModule should be managed externally (?)
-		if ( context.getModule( BootstrapUiModule.NAME ) == null ) {
-			context.addModule( new BootstrapUiModule() );
-		}
 	}
 
 	@Override
