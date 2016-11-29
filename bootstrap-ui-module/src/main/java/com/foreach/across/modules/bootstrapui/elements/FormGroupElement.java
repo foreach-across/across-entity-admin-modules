@@ -28,6 +28,7 @@ public class FormGroupElement extends AbstractNodeViewElement
 	private ViewElement label, control, helpBlock;
 	private FormLayout formLayout;
 	private boolean required, renderHelpBlockBeforeControl;
+	private boolean detectFieldErrors = true;
 
 	public FormGroupElement() {
 		super( "div" );
@@ -98,5 +99,20 @@ public class FormGroupElement extends AbstractNodeViewElement
 
 	public void setRequired( boolean required ) {
 		this.required = required;
+	}
+
+	public boolean isDetectFieldErrors() {
+		return detectFieldErrors;
+	}
+
+	/**
+	 * When rendering, should field errors be detected from the bound object.
+	 * If {@code true} (default) the controlName of the form control will be used as property name of the bound
+	 * object, if no such property, an exception will occur when rendering.
+	 *
+	 * @param detectFieldErrors {@code true} if field errors should be detected
+	 */
+	public void setDetectFieldErrors( boolean detectFieldErrors ) {
+		this.detectFieldErrors = detectFieldErrors;
 	}
 }

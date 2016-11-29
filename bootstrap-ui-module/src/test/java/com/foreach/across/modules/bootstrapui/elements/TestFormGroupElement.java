@@ -21,6 +21,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import com.foreach.across.test.modules.webtest.controllers.RenderViewElementController;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -429,25 +430,35 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		ContainerViewElement container = new ContainerViewElement();
 		container.setCustomTemplate( "th/test/formObject" );
 
+		RenderViewElementController.Callback callback = ( model ) -> {
+			TestClass target = new TestClass( "test value" );
+			BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+			errors.rejectValue( "control", "broken", "broken" );
+
+			model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
+			model.addAttribute( "item", target );
+			model.addAttribute( "formGroup", group );
+		};
 		renderAndExpect(
 				container,
-				model -> {
-					TestClass target = new TestClass( "test value" );
-					BindingResult errors = new BeanPropertyBindingResult( target, "item" );
-					errors.rejectValue( "control", "broken", "broken" );
-
-					model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
-					model.addAttribute( "item", target );
-					model.addAttribute( "formGroup", group );
-				},
+				callback,
 				"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label'>title</label>" +
 						"<input type='text' class='form-control' name='control' id='control' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>"
 		);
-	}
 
+		group.setDetectFieldErrors( false );
+		renderAndExpect(
+				container,
+				callback,
+				"<div class='form-group'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>"
+		);
+	}
 
 	@Test
 	public void controlNameNotOnBoundObject() {
@@ -455,6 +466,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		container.setCustomTemplate( "th/test/formObject" );
 
 		group.getControl( TextboxFormElement.class ).setControlName( "illegalProperty" );
+		group.setDetectFieldErrors( false );
 
 		renderAndExpect(
 				container,

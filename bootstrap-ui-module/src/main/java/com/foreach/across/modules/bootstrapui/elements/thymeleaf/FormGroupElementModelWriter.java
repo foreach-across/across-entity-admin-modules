@@ -21,9 +21,6 @@ import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.InvalidPropertyException;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.*;
 import org.thymeleaf.spring4.expression.Fields;
@@ -46,8 +43,6 @@ import java.util.function.Consumer;
  */
 public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWriter<FormGroupElement>
 {
-	private static final Logger LOG = LoggerFactory.getLogger( FormGroupElementModelWriter.class );
-
 	private final Collection<String> CONTROL_ELEMENTS = Arrays.asList( "input", "textarea", "select" );
 
 	@Override
@@ -110,7 +105,9 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 				}
 			}
 
-			errorBuilder = createFieldErrorsBuilder( formControl.getControlName(), model.getTemplateContext() );
+			errorBuilder = group.isDetectFieldErrors()
+					? createFieldErrorsBuilder( formControl.getControlName(), model.getTemplateContext() )
+					: null;
 		}
 
 		if ( helpBlockModel != null && layout.getType() == FormLayout.Type.INLINE ) {
@@ -295,18 +292,13 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 					? StringUtils.substring( controlName, 1 )
 					: controlName;
 
-			try {
-				if ( fields != null && fields.hasErrors( propertyName ) ) {
-					return model -> {
-						model.addOpenElement( "div" );
-						model.addAttributeValue( "class", "small", "text-danger" );
-						model.addText( "" + StringUtils.join( fields.errors( propertyName ), " " ) );
-						model.addCloseElement();
-					};
-				}
-			}
-			catch ( InvalidPropertyException ipe ) {
-				LOG.trace( "Unable to retrieve property error information for controlName: {}", controlName, ipe );
+			if ( fields != null && fields.hasErrors( propertyName ) ) {
+				return model -> {
+					model.addOpenElement( "div" );
+					model.addAttributeValue( "class", "small", "text-danger" );
+					model.addText( "" + StringUtils.join( fields.errors( propertyName ), " " ) );
+					model.addCloseElement();
+				};
 			}
 		}
 
