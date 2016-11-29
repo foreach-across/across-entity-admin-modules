@@ -117,7 +117,7 @@ public class TestDefaultEntityViewFactoryProvider
 		verify( factory ).setTemplate( EntityListView.VIEW_TEMPLATE );
 		verify( factory ).setMessagePrefixes( "entityViews" );
 		verify( factory ).setPropertyRegistry( subPropertyRegistry );
-		verify( factory ).setPropertyFilter( any() );
+//		verify( factory ).setPropertyFilter( any() );
 		verify( factory ).setPropertyComparator( any() );
 		verify( factory ).setDefaultSort( any() );
 	}

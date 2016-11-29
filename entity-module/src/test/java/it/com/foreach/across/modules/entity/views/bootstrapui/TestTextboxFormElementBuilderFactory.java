@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -143,7 +144,11 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 	}
 
 	@Test
-	public void passwordTypeByName() {
+	public void passwordType() {
+		EntityPropertyDescriptor descriptor = properties.get( "password" );
+		when( descriptor.hasAttribute( TextboxFormElement.Type.class ) ).thenReturn( true );
+		when( descriptor.getAttribute( TextboxFormElement.Type.class ) ).thenReturn( TextboxFormElement.Type.PASSWORD );
+
 		TextboxFormElement textbox = assembleAndVerify( "password", false );
 		assertEquals( TextboxFormElement.Type.PASSWORD, textbox.getType() );
 	}

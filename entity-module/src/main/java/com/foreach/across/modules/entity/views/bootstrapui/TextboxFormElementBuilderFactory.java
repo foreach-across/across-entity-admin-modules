@@ -116,8 +116,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	}
 
 	/**
-	 * Any property named password is considered a password property.  This will also clear the set text
-	 * so no password is communicated back to the user.
+	 * Unreadable properties rendered as password type will have their text cleared.
 	 */
 	public static class PasswordTypeDetectionProcessor implements EntityViewElementBuilderProcessor<TextboxFormElementBuilder>
 	{
@@ -125,11 +124,10 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		public void process( EntityPropertyDescriptor propertyDescriptor,
 		                     ViewElementMode viewElementMode,
 		                     TextboxFormElementBuilder builder ) {
-			if ( !propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
-				if ( "password".equals( propertyDescriptor.getName() ) ) {
-					builder.type( TextboxFormElement.Type.PASSWORD )
-					       .postProcessor( ( builderContext, element ) -> element.setText( null ) );
-				}
+			if ( TextboxFormElement.Type.PASSWORD.equals(
+					propertyDescriptor.getAttribute( TextboxFormElement.Type.class ) )
+					&& !propertyDescriptor.isReadable() ) {
+				builder.postProcessor( ( builderContext, element ) -> element.setText( null ) );
 			}
 		}
 	}

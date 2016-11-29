@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.hibernate.business.Auditable;
@@ -136,7 +135,7 @@ public class DefaultEntityViewFactoryProvider implements EntityViewFactoryProvid
 					defaultProperties.add( "lastModified" );
 				}
 
-				viewFactory.setPropertyFilter( EntityPropertyFilters.include( defaultProperties ) );
+				//viewFactory.setPropertyFilter( EntityPropertyFilters.include( defaultProperties ) );
 				viewFactory.setPropertyComparator( EntityPropertyComparators.ordered( defaultProperties ) );
 				viewFactory.setDefaultSort( determineDefaultSort( defaultProperties ) );
 			}
