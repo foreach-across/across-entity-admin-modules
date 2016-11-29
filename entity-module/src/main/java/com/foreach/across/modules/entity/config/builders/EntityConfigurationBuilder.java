@@ -17,9 +17,9 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.registry.*;
+import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactoryProvider;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -306,7 +306,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 		Assert.notNull( entityType );
 
 		EntityConfigurationProvider configurationProvider = beanFactory.getBean( EntityConfigurationProvider.class );
-		String defaultName = name != null ? name : StringUtils.uncapitalize( entityType.getSimpleName() );
+		String defaultName = name != null ? name : EntityUtils.generateEntityName( entityType );
 
 		MutableEntityConfiguration<T> configuration
 				= configurationProvider.create( defaultName, entityType, registerForClass );

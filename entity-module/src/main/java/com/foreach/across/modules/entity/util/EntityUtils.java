@@ -24,9 +24,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EntityUtils
 {
+	/**
+	 * Generate a default entity name for an entity type.
+	 *
+	 * @param entityType for which to generate the name
+	 * @return default name
+	 */
+	public static String generateEntityName( Class<?> entityType ) {
+		return Stream.of( StringUtils.split( StringUtils.substringAfterLast( entityType.getName(), "." ), "$" ) )
+		             .map( StringUtils::uncapitalize )
+		             .collect( Collectors.joining( "." ) );
+	}
+
 	public static String generateDisplayName( String propertyName ) {
 		String cleaned = propertyName.replace( '.', ' ' ).replace( '_', ' ' ).replaceAll( "[^\\p{L}\\p{Nd} ]+", " " );
 

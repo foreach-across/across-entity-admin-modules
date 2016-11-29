@@ -106,7 +106,6 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						                                                .findFirst().orElse( null ) )
 						        .saveMethod(
 								        category -> {
-									        //Map<String, Object> category = (Map<String, Object>) cat;
 									        Optional<Map<String, Object>> existing = categoryRepository
 											        .stream()
 											        .filter( m -> m.get( "id" ).equals( category.get( "id" ) ) )

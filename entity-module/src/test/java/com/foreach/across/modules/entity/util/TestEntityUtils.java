@@ -112,4 +112,20 @@ public class TestEntityUtils
 		              EntityUtils.combineDisplayNames( "BasicSecurityPrincipal", "PermissionGroup", "_someFieldName",
 		                                               "_TEST_FOR_ME" ) );
 	}
+
+	@Test
+	public void generateEntityName() {
+		assertEquals( "testEntityUtils", EntityUtils.generateEntityName( TestEntityUtils.class ) );
+		assertEquals( "testEntityUtils.subEntity", EntityUtils.generateEntityName( SubEntity.class ) );
+		assertEquals( "testEntityUtils.subEntity.secondLevel",
+		              EntityUtils.generateEntityName( SubEntity.SecondLevel.class )
+		);
+	}
+
+	static class SubEntity
+	{
+		static class SecondLevel
+		{
+		}
+	}
 }

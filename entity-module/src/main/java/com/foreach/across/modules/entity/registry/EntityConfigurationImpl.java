@@ -23,7 +23,6 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
@@ -60,7 +59,7 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	private MutableEntityPropertyRegistry propertyRegistry;
 
 	public EntityConfigurationImpl( Class<T> entityType ) {
-		this( StringUtils.uncapitalize( entityType.getSimpleName() ), entityType );
+		this( EntityUtils.generateEntityName( entityType ), entityType );
 	}
 
 	public EntityConfigurationImpl( String name, Class<? extends T> entityType ) {
