@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity;
 
+import com.foreach.across.modules.entity.config.modules.AcrossWebConfiguration;
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
 
@@ -41,5 +42,11 @@ public class TestSort
 		orders.clear();
 
 		assertFalse( emptySort.iterator().hasNext() );
+	}
+
+	@Test
+	public void emptySort() {
+		Sort sort = AcrossWebConfiguration.emptySort();
+		assertFalse( sort.iterator().hasNext() );
 	}
 }

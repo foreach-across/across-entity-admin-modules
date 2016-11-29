@@ -25,14 +25,21 @@ import com.foreach.across.modules.entity.web.WebViewCreationContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.data.web.ProxyingHandlerMethodArgumentResolver;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.data.web.config.HateoasAwareSpringDataWebConfiguration;
+import org.springframework.data.web.config.SpringDataWebConfiguration;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -44,6 +51,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -51,39 +59,56 @@ import java.util.List;
  */
 @AcrossDepends(required = "AcrossWebModule")
 @Configuration
-@EnableSpringDataWebSupport
 public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 {
+	/**
+	 * Activate Spring Data web support if not yet activated on the parent application context.
+	 */
+	@ConditionalOnMissingBean({ SpringDataWebConfiguration.class, HateoasAwareSpringDataWebConfiguration.class })
+	@Configuration
+	@EnableSpringDataWebSupport
+	public static class SpringDataWebSupportConfiguration
+	{
+	}
+
+	/***
+	 * This is a workaround for https://jira.spring.io/browse/DATACMNS-776
+	 */
+	@ConditionalOnClass(ProxyingHandlerMethodArgumentResolver.class)
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	@Configuration
+	public static class ProxyingHandlerWebMvcConfiguration extends WebMvcConfigurerAdapter
+	{
+		@Override
+		public void addArgumentResolvers( List<HandlerMethodArgumentResolver> argumentResolvers ) {
+			List<HandlerMethodArgumentResolver> proxyingHandlerMethodArgumentResolvers = new ArrayList<>();
+			for ( Iterator<HandlerMethodArgumentResolver> it = argumentResolvers.iterator(); it.hasNext(); ) {
+				HandlerMethodArgumentResolver argumentResolver = it.next();
+				if ( argumentResolver instanceof ProxyingHandlerMethodArgumentResolver ) {
+					it.remove();
+					proxyingHandlerMethodArgumentResolvers.add( argumentResolver );
+				}
+			}
+			argumentResolvers.addAll( proxyingHandlerMethodArgumentResolvers );
+		}
+	}
+
 	private static final String CLASS_THYMELEAF_TEMPLATE_ENGINE = "org.thymeleaf.spring4.SpringTemplateEngine";
 
 	private static final Logger LOG = LoggerFactory.getLogger( AcrossWebConfiguration.class );
 
 	@EntityValidator
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unused", "SpringJavaAutowiringInspection" })
 	private SmartValidator entityValidator;
 
 	@Autowired
 	private EntityModuleSettings settings;
 
 	@Autowired
-	private SortHandlerMethodArgumentResolver sortHandlerMethodArgumentResolver;
-
-	@Autowired
-	private PageableHandlerMethodArgumentResolver pageableHandlerMethodArgumentResolver;
-
-	@Autowired
 	private ApplicationContext applicationContext;
 
 	@PostConstruct
-	public void removeFallbackPageableAndSetFallbackSort() {
-		// Must return an empty Sort instance or a nullpointer will occur in case of paging without Sort
-		List<Sort.Order> orders = new ArrayList<>( 1 );
-		orders.add( new Sort.Order( "name" ) );
-		sortHandlerMethodArgumentResolver.setFallbackSort( new Sort( orders ) );
-		orders.clear();
-
-		pageableHandlerMethodArgumentResolver.setFallbackPageable( null );
-
+	public void registerThymeleaf() {
 		// todo cleanup
 //		if ( shouldRegisterThymeleafDialect() ) {
 //			LOG.debug( "Registering Thymeleaf entity module dialect" );
@@ -99,6 +124,29 @@ public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 //						"Unable to register Thymeleaf entity module dialect as bean springTemplateEngine is not of the right type." );
 //			}
 //		}
+	}
+
+	@Autowired(required = false)
+	public void registerFallbackSort( SortHandlerMethodArgumentResolver sortHandlerMethodArgumentResolver ) {
+		if ( sortHandlerMethodArgumentResolver != null ) {
+			// Must return an empty Sort instance or a null-pointer will occur in case of paging without Sort
+			sortHandlerMethodArgumentResolver.setFallbackSort( emptySort() );
+		}
+		else {
+			LOG.warn( "No SortHandlerMethodArgumentResolver found - paging in EntityModule might not work.  " +
+					          "EntityModule expects an empty Sort to be supported on default Pageable." );
+		}
+	}
+
+	@Autowired(required = false)
+	public void registerFallbackPageable( PageableHandlerMethodArgumentResolver pageableHandlerMethodArgumentResolver ) {
+		if ( pageableHandlerMethodArgumentResolver != null ) {
+			pageableHandlerMethodArgumentResolver.setFallbackPageable( null );
+		}
+		else {
+			LOG.warn( "No PageableHandlerMethodArgumentResolver found - paging in EntityModule might not work.  " +
+					          "EntityModule expects a null Pageable to be set as fallback." );
+		}
 	}
 
 	@Override
@@ -153,5 +201,18 @@ public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 		}
 
 		return false;
+	}
+
+	/**
+	 * Create an empty sort instance.
+	 *
+	 * @return empty sort
+	 */
+	public static Sort emptySort() {
+		List<Sort.Order> orders = new ArrayList<>( 1 );
+		orders.add( new Sort.Order( "name" ) );
+		Sort s = new Sort( orders );
+		orders.clear();
+		return s;
 	}
 }
