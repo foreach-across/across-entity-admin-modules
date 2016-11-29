@@ -448,6 +448,32 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		);
 	}
 
+
+	@Test
+	public void controlNameNotOnBoundObject() {
+		ContainerViewElement container = new ContainerViewElement();
+		container.setCustomTemplate( "th/test/formObject" );
+
+		group.getControl( TextboxFormElement.class ).setControlName( "illegalProperty" );
+
+		renderAndExpect(
+				container,
+				model -> {
+					TestClass target = new TestClass( "test value" );
+					BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+					errors.rejectValue( "control", "broken", "broken" );
+
+					model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
+					model.addAttribute( "item", target );
+					model.addAttribute( "formGroup", group );
+				},
+				"<div class='form-group'>" +
+						"<label for='illegalProperty' class='control-label'>title</label>" +
+						"<input type='text' class='form-control' name='illegalProperty' id='illegalProperty' />" +
+						"</div>"
+		);
+	}
+
 	@Test
 	public void errorFromFormCommand() {
 		TestClass target = new TestClass( "test value" );
