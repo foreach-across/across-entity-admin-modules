@@ -48,10 +48,11 @@ public class ButtonViewElementModelWriter extends AbstractHtmlViewElementModelWr
 		// write text attribute if necessary
 		String text = button.getText();
 
-		if ( text != null && EnumSet.of( INPUT, INPUT_RESET, INPUT_SUBMIT ).contains( button.getType() ) ) {
-			writer.addAttribute( "value", text );
-			text = null;    // reset to null to avoid adding as a child
+		if ( button.getType() != ButtonViewElement.Type.LINK ) {
+			writer.addAttribute( "name", button.getControlName() );
 		}
+
+		addButtonValue( button, writer );
 
 		// add left-hand side icon
 		if ( button.getIcon() != null ) {
@@ -59,7 +60,24 @@ public class ButtonViewElementModelWriter extends AbstractHtmlViewElementModelWr
 		}
 
 		// add text as child
-		writer.addText( text );
+		if ( !EnumSet.of( INPUT, INPUT_RESET, INPUT_SUBMIT ).contains( button.getType() ) ) {
+			writer.addText( text );
+		}
+	}
+
+	private void addButtonValue( ButtonViewElement button, ThymeleafModelBuilder writer ) {
+		switch ( button.getType() ) {
+			case INPUT:
+			case INPUT_RESET:
+			case INPUT_SUBMIT:
+				writer.addAttribute( "value", StringUtils.defaultString( button.getValue(), button.getText() ) );
+				break;
+			case LINK:
+				writer.addAttribute( "data-value", button.getValue() );
+				break;
+			default:
+				writer.addAttribute( "value", button.getValue() );
+		}
 	}
 
 	private void addButtonUrl( ButtonViewElement button, ThymeleafModelBuilder writer ) {

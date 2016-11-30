@@ -19,6 +19,9 @@ import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElement
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 /**
  * @author Arne Vandamme
  */
@@ -51,6 +54,41 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void nameAndValue() {
+		ButtonViewElement button = new ButtonViewElement();
+		button.setControlName( "bouton" );
+		button.setValue( "123" );
+		button.setText( "Link button" );
+
+		renderAndExpect( button,
+		                 "<button id='bouton' type='button' value='123' name='bouton' class='btn btn-default'>Link button</button>" );
+
+		button.setType( ButtonViewElement.Type.BUTTON_SUBMIT );
+		renderAndExpect( button,
+		                 "<button id='bouton' name='bouton' value='123' type='submit' class='btn btn-default'>Link button</button>" );
+
+		button.setType( ButtonViewElement.Type.BUTTON_RESET );
+		renderAndExpect( button,
+		                 "<button id='bouton' name='bouton' value='123' type='reset' class='btn btn-default'>Link button</button>" );
+
+		button.setType( ButtonViewElement.Type.INPUT );
+		renderAndExpect( button,
+		                 "<input id='bouton' name='bouton' type='button' class='btn btn-default' value='123' />" );
+
+		button.setType( ButtonViewElement.Type.INPUT_SUBMIT );
+		renderAndExpect( button,
+		                 "<input id='bouton' name='bouton' type='submit' class='btn btn-default' value='123' />" );
+
+		button.setType( ButtonViewElement.Type.INPUT_RESET );
+		renderAndExpect( button,
+		                 "<input id='bouton' name='bouton' type='reset' class='btn btn-default' value='123' />" );
+
+		button.setType( ButtonViewElement.Type.LINK );
+		renderAndExpect( button,
+		                 "<a id='bouton' data-value='123' class='btn btn-default' href='#' role='button'>Link button</a>" );
+	}
+
+	@Test
 	public void buttonStyles() {
 		ButtonViewElement button = new ButtonViewElement();
 		button.setText( "Link button" );
@@ -78,8 +116,8 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 				.build( new DefaultViewElementBuilderContext() );
 
 		renderAndExpect(
-			button,
-		    "<button type='button' class='test extra-css btn btn-danger' />"
+				button,
+				"<button type='button' class='test extra-css btn btn-danger' />"
 		);
 	}
 
@@ -162,6 +200,12 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 
 		button.setType( ButtonViewElement.Type.LINK );
 		renderAndExpect( button, "<a class='btn btn-default disabled' href='#' role='button'>disabled button</a>" );
+
+		button.setDisabled( false );
+		assertNull( button.getState() );
+
+		button.setDisabled( true );
+		assertEquals( ButtonViewElement.State.DISABLED, button.getState() );
 	}
 
 	@Test

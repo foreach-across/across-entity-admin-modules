@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
  *
  * @author Arne Vandamme
  */
-public class ButtonViewElement extends AbstractNodeViewElement implements ConfigurableTextViewElement
+public class ButtonViewElement extends AbstractNodeViewElement implements ConfigurableTextViewElement, FormInputElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.BUTTON;
 	private String text, title, url = "#";
@@ -34,6 +34,11 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 	private State state;
 	private Size size;
 	private ViewElement icon;
+
+	private String controlName, value;
+
+	private boolean htmlIdSpecified;
+
 	public ButtonViewElement() {
 		super( ELEMENT_TYPE );
 		setTagName( "button" );
@@ -47,6 +52,51 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 	@Override
 	public void setText( String text ) {
 		this.text = text;
+	}
+
+	@Override
+	public void setName( String name ) {
+		super.setName( name );
+		if ( controlName == null ) {
+			setControlName( name );
+		}
+	}
+
+	@Override
+	public String getControlName() {
+		return controlName;
+	}
+
+	@Override
+	public void setControlName( String controlName ) {
+		this.controlName = controlName;
+		if ( !htmlIdSpecified ) {
+			super.setHtmlId( controlName );
+		}
+	}
+
+	@Override
+	public void setHtmlId( String htmlId ) {
+		this.htmlIdSpecified = true;
+		super.setHtmlId( htmlId );
+	}
+
+	@Override
+	public boolean isDisabled() {
+		return state == State.DISABLED;
+	}
+
+	@Override
+	public void setDisabled( boolean disabled ) {
+		setState( disabled ? State.DISABLED : null );
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue( String value ) {
+		this.value = value;
 	}
 
 	public String getTitle() {
