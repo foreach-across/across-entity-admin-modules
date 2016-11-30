@@ -50,7 +50,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row row ) {
-		TableViewElementBuilder.Cell cell = new TableViewElementBuilder.Cell();
+		TableViewElementBuilder.Cell cell = new TableViewElementBuilder.Cell().css( "row-actions" );
 
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
 

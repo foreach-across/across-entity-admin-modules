@@ -36,3 +36,9 @@
 .pager-form {
   color: black;
 }
+
+table > tbody > tr > td.row-actions {
+  text-align: right;
+  padding-left: 20px;
+  padding-right: 20px;
+}

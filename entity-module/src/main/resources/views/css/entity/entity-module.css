@@ -21,7 +21,16 @@
     display: none; }
   .sortable.dropup span.caret, .sortable.dropdown span.caret {
     display: inline-block; }
+
 .table > thead > tr.odd {
-    background-color: #ffffff; }
+  background-color: #ffffff; }
+
+.pager-form {
+  color: black; }
+
+table > tbody > tr > td.row-actions {
+  text-align: right;
+  padding-left: 20px;
+  padding-right: 20px; }
 
 /*# sourceMappingURL=entity-module.css.map */
