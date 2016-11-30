@@ -17,6 +17,8 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.EntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewFactoryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -47,6 +49,8 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	private boolean sourcePropertyRemoved, targetPropertyRemoved;
 
 	private final AutowireCapableBeanFactory beanFactory;
+
+	private MutableEntityAssociation associationBeingBuilt;
 
 	@Autowired
 	public EntityAssociationBuilder( AutowireCapableBeanFactory beanFactory ) {
@@ -274,46 +278,53 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 			association.setTargetEntityConfiguration( retrieveTargetConfiguration() );
 		}
 
-		if ( sourcePropertyRemoved ) {
-			association.setSourceProperty( null );
-		}
-		else if ( sourceProperty != null ) {
-			EntityPropertyDescriptor sourcePropertyDescriptor =
-					association.getSourceEntityConfiguration().getPropertyRegistry().getProperty( sourceProperty );
+		associationBeingBuilt = association;
 
-			if ( sourcePropertyDescriptor == null ) {
-				throw new IllegalArgumentException(
-						"Property " + sourceProperty + " was not found as source property for association " + name );
+		try {
+			if ( sourcePropertyRemoved ) {
+				association.setSourceProperty( null );
+			}
+			else if ( sourceProperty != null ) {
+				EntityPropertyDescriptor sourcePropertyDescriptor =
+						association.getSourceEntityConfiguration().getPropertyRegistry().getProperty( sourceProperty );
+
+				if ( sourcePropertyDescriptor == null ) {
+					throw new IllegalArgumentException(
+							"Property " + sourceProperty + " was not found as source property for association " + name );
+				}
+
+				association.setSourceProperty( sourcePropertyDescriptor );
 			}
 
-			association.setSourceProperty( sourcePropertyDescriptor );
-		}
+			if ( targetPropertyRemoved ) {
+				association.setTargetProperty( null );
+			}
+			else if ( targetProperty != null ) {
+				EntityPropertyDescriptor targetPropertyDescriptor =
+						association.getTargetEntityConfiguration().getPropertyRegistry().getProperty( targetProperty );
 
-		if ( targetPropertyRemoved ) {
-			association.setTargetProperty( null );
-		}
-		else if ( targetProperty != null ) {
-			EntityPropertyDescriptor targetPropertyDescriptor =
-					association.getTargetEntityConfiguration().getPropertyRegistry().getProperty( targetProperty );
+				if ( targetPropertyDescriptor == null ) {
+					throw new IllegalArgumentException(
+							"Property " + targetProperty + " was not found as target property for association " + name );
+				}
 
-			if ( targetPropertyDescriptor == null ) {
-				throw new IllegalArgumentException(
-						"Property " + targetProperty + " was not found as target property for association " + name );
+				association.setTargetProperty( targetPropertyDescriptor );
 			}
 
-			association.setTargetProperty( targetPropertyDescriptor );
-		}
+			if ( hiddenSpecified ) {
+				association.setHidden( hidden );
+			}
 
-		if ( hiddenSpecified ) {
-			association.setHidden( hidden );
-		}
+			if ( parentDeleteMode != null ) {
+				association.setParentDeleteMode( parentDeleteMode );
+			}
 
-		if ( parentDeleteMode != null ) {
-			association.setParentDeleteMode( parentDeleteMode );
+			applyAttributes( association );
+			applyViews( association );
 		}
-
-		applyAttributes( association );
-		applyViews( association );
+		finally {
+			associationBeingBuilt = null;
+		}
 	}
 
 	private EntityConfiguration retrieveTargetConfiguration() {
@@ -333,9 +344,43 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	@SuppressWarnings("unchecked")
 	protected <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType ) {
 		if ( EntityListViewFactoryBuilder.class.isAssignableFrom( builderType ) ) {
-			return (U) new EntityListViewFactoryBuilder( beanFactory );
+			return (U) new AssociationListViewFactoryBuilder( beanFactory );
 		}
 
-		return (U) new EntityViewFactoryBuilder( beanFactory );
+		return (U) new AssociationViewFactoryBuilder( beanFactory );
+	}
+
+	/**
+	 * Inner class that delegates creation of a view factory to the {@link EntityViewFactoryProvider} using
+	 * the current entity being configured.
+	 */
+	private class AssociationViewFactoryBuilder extends EntityViewFactoryBuilder
+	{
+		AssociationViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
+			super( beanFactory );
+		}
+
+		@Override
+		protected EntityViewFactory createNewViewFactory( Class<? extends EntityViewFactory> viewFactoryType ) {
+			EntityViewFactoryProvider viewFactoryProvider = beanFactory.getBean( EntityViewFactoryProvider.class );
+			return viewFactoryProvider.create( associationBeingBuilt.getTargetEntityConfiguration(), viewFactoryType );
+		}
+	}
+
+	/**
+	 * Inner class that delegates creation of a view factory to the {@link EntityViewFactoryProvider} using
+	 * the current entity being configured.
+	 */
+	private class AssociationListViewFactoryBuilder extends EntityListViewFactoryBuilder
+	{
+		AssociationListViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
+			super( beanFactory );
+		}
+
+		@Override
+		protected EntityViewFactory createNewViewFactory( Class<? extends EntityViewFactory> viewFactoryType ) {
+			EntityViewFactoryProvider viewFactoryProvider = beanFactory.getBean( EntityViewFactoryProvider.class );
+			return viewFactoryProvider.create( associationBeingBuilt.getTargetEntityConfiguration(), viewFactoryType );
+		}
 	}
 }

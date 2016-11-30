@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.bootstrapui.elements.Grid;
+import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
@@ -172,6 +173,13 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			);
 		}
 
+		if ( !EntityListView.VIEW_NAME.equals( view.getName() ) ) {
+			HiddenFormElement viewNameControl = new HiddenFormElement();
+			viewNameControl.setControlName( "view" );
+			viewNameControl.setValue( view.getName() );
+			container.add( viewNameControl );
+		}
+
 		if ( page != null ) {
 			EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();
 			List<EntityPropertyDescriptor> descriptors = getPropertyDescriptors( entityConfiguration );
@@ -194,10 +202,17 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			EntitySummaryViewActionProcessor.autoRegister( viewCreationContext, tableBuilder,
 			                                               EntityListView.SUMMARY_VIEW_NAME );
 
+			configureSortableTableBuilder( tableBuilder, entityConfiguration );
+
 			container.add( tableBuilder );
 		}
 
 		return container.build( viewElementBuilderContext );
+	}
+
+	protected void configureSortableTableBuilder( SortableTableBuilder tableBuilder,
+	                                              EntityConfiguration entityConfiguration ) {
+
 	}
 
 	private Pageable buildPageable( EntityListView view ) {

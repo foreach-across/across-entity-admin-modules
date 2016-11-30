@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.MutableEntityProper
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewFactoryProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +60,9 @@ public class TestEntityAssociationBuilder
 
 	@Test
 	public void newAssociation() {
+		EntityViewFactoryProvider viewFactoryProvider = mock( EntityViewFactoryProvider.class );
+		when( beanFactory.getBean( EntityViewFactoryProvider.class ) ).thenReturn( viewFactoryProvider );
+
 		MutableEntityAssociation association = mock( MutableEntityAssociation.class );
 		when( configuration.createAssociation( "users" ) ).thenReturn( association );
 		when( association.getSourceEntityConfiguration() ).thenReturn( configuration );
@@ -78,7 +82,7 @@ public class TestEntityAssociationBuilder
 
 		when( association.hasView( EntityListView.VIEW_NAME ) ).thenReturn( false );
 		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
-		when( beanFactory.createBean( EntityListViewFactory.class ) ).thenReturn( listViewFactory );
+		when( viewFactoryProvider.create( target, EntityListViewFactory.class ) ).thenReturn( listViewFactory );
 
 		builder.name( "users" )
 		       .hidden( false )

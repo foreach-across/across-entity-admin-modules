@@ -62,7 +62,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 
 	private String labelProperty;
 
-	private transient MutableEntityConfiguration configurationBeingBuilt;
+	private MutableEntityConfiguration configurationBeingBuilt;
 
 	@Autowired
 	public EntityConfigurationBuilder( AutowireCapableBeanFactory beanFactory ) {
