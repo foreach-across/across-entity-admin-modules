@@ -1,9 +1,9 @@
 = PropertiesModule
 Arne Vandamme
-2.0.0-SNAPSHOT
+1.1.1-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 2.0.0-SNAPSHOT
+:module-version: 1.1.1-SNAPSHOT
 :module-name: PropertiesModule
 :module-artifact: properties-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/PropertiesModule
@@ -71,12 +71,10 @@ All properties start with the *propertiesModule.* prefix.
 
 == What's new in this version?
 :numbered!:
-=== 2.0.0-SNAPSHOT
+=== 1.1.1-SNAPSHOT
 
-* Compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
 * Switched `PropertiesModuleSettings` to `@ConfigurationProperties` instead of the deprecated `AcrossModuleSettings`
 * settings now support Spring configuration metadata
-* `UserService`, `GroupService` and `MachinePrincipalService` have been refactored to implement `QueryDslPredicateExecutor` (breaking change)
 
 :numbered:
 == Configuration
