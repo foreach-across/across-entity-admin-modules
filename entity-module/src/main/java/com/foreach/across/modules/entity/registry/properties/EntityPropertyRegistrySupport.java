@@ -26,6 +26,7 @@ import java.util.*;
 public abstract class EntityPropertyRegistrySupport implements MutableEntityPropertyRegistry
 {
 	private final Map<String, EntityPropertyDescriptor> descriptorMap = new HashMap<>();
+	private final EntityPropertyComparators.Ordered propertyOrder = new EntityPropertyComparators.Ordered();
 
 	private final EntityPropertyRegistryProvider registryProvider;
 	private final EntityPropertySelectorExecutor selectorExecutor;
@@ -64,7 +65,7 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 
 	@Override
 	public Comparator<EntityPropertyDescriptor> getDefaultOrder() {
-		return defaultOrder;
+		return defaultOrder != null ? defaultOrder.thenComparing( propertyOrder ) : propertyOrder;
 	}
 
 	@Override
@@ -85,6 +86,11 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 		Assert.notNull( comparator );
 
 		return fetchProperties( filter, comparator.thenComparing( getDefaultOrder() ) );
+	}
+
+	public void setPropertyOrder( String propertyName, int order ) {
+		Assert.notNull( propertyName );
+		propertyOrder.put( propertyName, order );
 	}
 
 	private List<EntityPropertyDescriptor> fetchProperties( EntityPropertyFilter filter,

@@ -20,6 +20,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.springframework.core.Ordered.LOWEST_PRECEDENCE;
+
 /**
  * Utility class for creating {@link java.util.Comparator<EntityPropertyDescriptor>} instances.
  *
@@ -42,7 +44,7 @@ public final class EntityPropertyComparators
 
 	/**
 	 * Comparator that contains a map of property names with a specified order.
-	 * Undefined properties are assumed to have an order index of 0.
+	 * Undefined properties are assumed to have an order index of {@link org.springframework.core.Ordered#LOWEST_PRECEDENCE}.
 	 */
 	public static class Ordered extends LinkedHashMap<String, Integer> implements Comparator<EntityPropertyDescriptor>
 	{
@@ -75,7 +77,7 @@ public final class EntityPropertyComparators
 		}
 
 		private Integer applyDefault( Integer fixed ) {
-			return fixed != null ? fixed : 0;
+			return fixed != null ? fixed : LOWEST_PRECEDENCE;
 		}
 	}
 }

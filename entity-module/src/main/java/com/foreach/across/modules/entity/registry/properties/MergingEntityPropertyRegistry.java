@@ -15,8 +15,6 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
-import org.springframework.util.Assert;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -86,17 +84,7 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 	@Override
 	public Comparator<EntityPropertyDescriptor> getDefaultOrder() {
-		Comparator<EntityPropertyDescriptor> configured = super.getDefaultOrder();
-
-		return configured != null ? configured : parent.getDefaultOrder();
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
-		Assert.notNull( defaultOrder );
-
-		super.setDefaultOrder( defaultOrder.thenComparing( parent.getDefaultOrder() ) );
+		return super.getDefaultOrder().thenComparing( parent.getDefaultOrder() );
 	}
 
 	@Override

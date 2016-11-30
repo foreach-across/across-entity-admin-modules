@@ -25,9 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -125,21 +123,12 @@ public class EntityPropertyRegistryBuilder
 	private void registerPropertyOrder( MutableEntityPropertyRegistry propertyRegistry,
 	                                    String propertyName,
 	                                    Integer order ) {
-		Comparator<EntityPropertyDescriptor> defaultOrder = propertyRegistry.getDefaultOrder();
-
-		if ( defaultOrder == null ) {
-			defaultOrder = EntityPropertyComparators.ordered();
-			propertyRegistry.setDefaultOrder( defaultOrder );
-		}
-
-		if ( defaultOrder instanceof EntityPropertyComparators.Ordered ) {
-			EntityPropertyComparators.Ordered propertyOrder
-					= ( (EntityPropertyComparators.Ordered) defaultOrder );
-			propertyOrder.put( propertyName, order );
+		if ( propertyRegistry instanceof EntityPropertyRegistrySupport ) {
+			( (EntityPropertyRegistrySupport) propertyRegistry ).setPropertyOrder( propertyName, order );
 		}
 		else {
-			LOG.warn( "Unable to register a property order as the used comparator is of type {} instead of {}",
-			          ClassUtils.getUserClass( defaultOrder ), EntityPropertyComparators.Ordered.class );
+			LOG.warn(
+					"Unable to register a property order as the propertyRegistry is not of type EntityPropertyRegistrySupport" );
 		}
 	}
 

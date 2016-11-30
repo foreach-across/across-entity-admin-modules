@@ -18,9 +18,6 @@ package com.foreach.across.modules.entity.registry.properties;
 import com.foreach.across.modules.entity.views.support.NestedValueFetcher;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
-import org.springframework.util.Assert;
-
-import java.util.Comparator;
 
 /**
  * Default implementation of a {@link MutableEntityPropertyRegistry}.
@@ -40,9 +37,6 @@ import java.util.Comparator;
  */
 public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 {
-	// first ordering specified will always be kept as fallback
-	private Comparator<EntityPropertyDescriptor> initialOrder = null;
-
 	/**
 	 * Create a new detached entity property registry.  Only properties registered directly will be available,
 	 * no nested properties will be looked up.
@@ -62,20 +56,6 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	public DefaultEntityPropertyRegistry( EntityPropertyRegistryProvider registryProvider ) {
 		super( registryProvider );
 		setDefaultFilter( EntityPropertyFilters.NOT_HIDDEN );
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
-		Assert.notNull( defaultOrder );
-
-		if ( initialOrder == null ) {
-			initialOrder = defaultOrder;
-			super.setDefaultOrder( defaultOrder );
-		}
-		else {
-			super.setDefaultOrder( defaultOrder.thenComparing( initialOrder ) );
-		}
 	}
 
 	@Override

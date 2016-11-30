@@ -57,20 +57,24 @@ public class DefaultPropertiesRegistrar implements DefaultEntityPropertyRegistry
 			scannedDescriptors.put( descriptor.getName(), descriptor );
 		}
 
-		registry.setDefaultOrder( buildDeclarationOrder( scannedDescriptors, entityType, registry ) );
+		if ( registry instanceof EntityPropertyRegistrySupport ) {
+			registerDeclarationPropertyOrder(
+					scannedDescriptors, entityType, (EntityPropertyRegistrySupport) registry
+			);
+		}
 	}
 
-	private EntityPropertyComparators.Ordered buildDeclarationOrder(
+	private void registerDeclarationPropertyOrder(
 			Map<String, PropertyDescriptor> scannedDescriptors,
 			Class<?> entityType,
-			MutableEntityPropertyRegistry registry
+			EntityPropertyRegistrySupport registry
 	) {
 		final Map<String, Integer> order = new HashMap<>();
 
 		ReflectionUtils.doWithFields( entityType, new ReflectionUtils.FieldCallback()
 		{
 			private Class declaringClass;
-			private int declaringClassOffset = 0;
+			private int declaringClassOffset = 1000000;
 
 			@Override
 			public void doWith( Field field ) throws IllegalArgumentException, IllegalAccessException {
@@ -91,7 +95,7 @@ public class DefaultPropertiesRegistrar implements DefaultEntityPropertyRegistry
 		ReflectionUtils.doWithMethods( entityType, new ReflectionUtils.MethodCallback()
 		{
 			private Class declaringClass;
-			private int declaringClassOffset = 0;
+			private int declaringClassOffset = 1000000;
 
 			@Override
 			public void doWith( Method method ) throws IllegalArgumentException, IllegalAccessException {
@@ -128,6 +132,6 @@ public class DefaultPropertiesRegistrar implements DefaultEntityPropertyRegistry
 			}
 		}
 
-		return new EntityPropertyComparators.Ordered( order );
+		order.forEach( registry::setPropertyOrder );
 	}
 }

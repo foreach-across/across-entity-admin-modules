@@ -17,10 +17,9 @@
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder.PropertyDescriptorBuilder;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistrySupport;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
@@ -30,9 +29,7 @@ import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -46,12 +43,12 @@ public class TestEntityPropertyRegistryBuilder
 {
 	private EntityPropertyRegistryBuilder builder;
 
-	private MutableEntityPropertyRegistry registry;
+	private EntityPropertyRegistrySupport registry;
 
 	@Before
 	public void before() {
 		builder = new EntityPropertyRegistryBuilder();
-		registry = mock( MutableEntityPropertyRegistry.class );
+		registry = mock( EntityPropertyRegistrySupport.class );
 	}
 
 	@Test
@@ -149,23 +146,13 @@ public class TestEntityPropertyRegistryBuilder
 	@Test
 	@SuppressWarnings("unchecked")
 	public void propertyOrder() {
-		AtomicReference<Comparator> comparator = new AtomicReference<>();
-
-		doAnswer( invocation -> {
-			comparator.set( invocation.getArgumentAt( 0, Comparator.class ) );
-			when( registry.getDefaultOrder() ).thenReturn( comparator.get() );
-			return null;
-		} ).when( registry ).setDefaultOrder( any( Comparator.class ) );
-
 		builder.property( "one" ).order( 1 ).and()
 		       .property( "two" ).order( 2 );
 
 		build();
 
-		assertNotNull( comparator.get() );
-		EntityPropertyComparators.Ordered ordered = (EntityPropertyComparators.Ordered) comparator.get();
-		assertEquals( Integer.valueOf( 1 ), ordered.get( "one" ) );
-		assertEquals( Integer.valueOf( 2 ), ordered.get( "two" ) );
+		verify( registry ).setPropertyOrder( "one", 1 );
+		verify( registry ).setPropertyOrder( "two", 2 );
 	}
 
 	private void build() {
