@@ -124,7 +124,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 								= find( h, "entityForm-header-actions", NodeViewElement.class );
 						actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
 
-						h.addChild( new TemplateViewElement( "th/entityModuleTest/partner :: filterForm" ) );
+						h.addChild( new TemplateViewElement( "th/entityModuleTest/filters :: filterForm" ) );
 					}
 			);
 		}
@@ -168,7 +168,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 								= find( h, "entityForm-header-actions", NodeViewElement.class );
 						actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
 
-						h.addChild( new TemplateViewElement( "th/entityModuleTest/group :: filterForm" ) );
+						h.addChild( new TemplateViewElement( "th/entityModuleTest/filters :: filterForm" ) );
 					}
 			);
 		}
