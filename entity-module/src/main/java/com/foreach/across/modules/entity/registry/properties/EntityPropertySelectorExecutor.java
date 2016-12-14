@@ -34,7 +34,7 @@ public class EntityPropertySelectorExecutor
 	}
 
 	public List<EntityPropertyDescriptor> select( EntityPropertySelector selector ) {
-		List<EntityPropertyDescriptor> properties = new ArrayList<>();
+		LinkedHashSet<EntityPropertyDescriptor> properties = new LinkedHashSet<>();
 		Set<String> excluded = new HashSet<>();
 
 		for ( Map.Entry<String, Boolean> candidate : selector.propertiesToSelect().entrySet() ) {
@@ -85,7 +85,7 @@ public class EntityPropertySelectorExecutor
 			}
 		}
 
-		return properties;
+		return new ArrayList<>( properties );
 	}
 
 	private List<EntityPropertyDescriptor> selectNestedProperties( String propertyName, String selectorString ) {

@@ -88,6 +88,14 @@ public class TestEntityPropertySelectorExecutor
 	}
 
 	@Test
+	public void duplicateSimpleProperties() {
+		selector.configure( "id", "displayName", "id" );
+		select();
+
+		assertResult( "id", "displayName" );
+	}
+
+	@Test
 	public void simpleExclude() {
 		selector.configure( "id", "~displayName" );
 		select();
@@ -109,7 +117,7 @@ public class TestEntityPropertySelectorExecutor
 	public void allWithAdditionalAndExclude() {
 		when( propertyRegistry.getProperties() ).thenReturn( Arrays.asList( displayName, name ) );
 
-		selector.configure( "*", "id", "~displayName" );
+		selector.configure( "*", "id", "name", "~displayName" );
 		select();
 
 		assertResult( "name", "id" );
