@@ -51,9 +51,12 @@ public class ViewRequestValidator implements Validator
 			errors.popNestedPath();
 		}
 
-		errors.pushNestedPath( "extensions" );
-		entityValidator.validate( viewRequest.getExtensions(), errors );
-		errors.popNestedPath();
+		viewRequest.getExtensions()
+		           .forEach( ( key, value ) -> {
+			           errors.pushNestedPath( "extensions[" + key + "]" );
+			           entityValidator.validate( value, errors );
+			           errors.popNestedPath();
+		           } );
 	}
 
 	private Validator validatorForEntity( String entityName ) {
