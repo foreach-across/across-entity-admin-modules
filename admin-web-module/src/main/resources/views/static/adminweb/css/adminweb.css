@@ -83,10 +83,6 @@ label.control-label > sup.required {
     margin-right: 8px;
 }
 
-.form-horizontal .form-group {
-    margin-bottom: 0;
-}
-
 .form-horizontal .control-label.text-left {
     text-align: left;
 }
