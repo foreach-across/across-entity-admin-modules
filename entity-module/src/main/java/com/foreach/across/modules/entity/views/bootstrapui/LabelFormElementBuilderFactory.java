@@ -45,7 +45,7 @@ public class LabelFormElementBuilderFactory extends EntityViewElementBuilderFact
 
 	@Override
 	protected ViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                   ViewElementMode viewElementMode ) {
+	                                                   ViewElementMode viewElementMode, String viewElementType ) {
 		boolean labelTextOnly = ViewElementMode.isLabel( viewElementMode );
 
 		TextViewElementBuilder labelText = bootstrapUi

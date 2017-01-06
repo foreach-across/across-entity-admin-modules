@@ -71,7 +71,8 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 	@Override
 	protected TextboxFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                          ViewElementMode viewElementMode ) {
+	                                                          ViewElementMode viewElementMode,
+	                                                          String viewElementType ) {
 		TextboxFormElementBuilder textboxBuilder = bootstrapUi
 				.textbox()
 				.name( propertyDescriptor.getName() )
@@ -83,7 +84,10 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 			textboxBuilder.type( propertyDescriptor.getAttribute( TextboxFormElement.Type.class ) );
 		}
 		else {
-			textboxBuilder.multiLine( String.class.equals( propertyDescriptor.getPropertyType() ) );
+			textboxBuilder.multiLine(
+					String.class.equals( propertyDescriptor.getPropertyType() )
+							|| BootstrapUiElements.TEXTAREA.equals( viewElementType )
+			);
 		}
 
 		return textboxBuilder;
@@ -105,7 +109,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		@Override
-		protected void handleConstraint( TextboxFormElementBuilder builder,
+		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor, TextboxFormElementBuilder builder,
 		                                 Annotation annotation,
 		                                 Map<String, Object> annotationAttributes,
 		                                 ConstraintDescriptor constraint ) {
@@ -138,7 +142,8 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	private class TextboxConstraintsProcessor extends ValidationConstraintsBuilderProcessor<TextboxFormElementBuilder>
 	{
 		@Override
-		protected void handleConstraint( TextboxFormElementBuilder textbox,
+		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor,
+		                                 TextboxFormElementBuilder textbox,
 		                                 Annotation annotation,
 		                                 Map<String, Object> attributes,
 		                                 ConstraintDescriptor constraint ) {
@@ -147,7 +152,9 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 				if ( max != Integer.MAX_VALUE ) {
 					textbox.maxLength( max );
-					textbox.multiLine( max > maximumSingleLineLength );
+					if ( !propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
+						textbox.multiLine( max > maximumSingleLineLength );
+					}
 				}
 			}
 		}

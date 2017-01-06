@@ -42,7 +42,7 @@ public class CheckboxFormElementBuilderFactory implements EntityViewElementBuild
 
 	@Override
 	public OptionFormElementBuilder createBuilder( EntityPropertyDescriptor descriptor,
-	                                               ViewElementMode viewElementMode ) {
+	                                               ViewElementMode viewElementMode, String viewElementType ) {
 		return bootstrapUi.checkbox()
 		                  .name( descriptor.getName() )
 		                  .text( descriptor.getDisplayName() )

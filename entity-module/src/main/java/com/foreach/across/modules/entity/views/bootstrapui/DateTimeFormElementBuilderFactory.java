@@ -73,12 +73,13 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 
 	@Override
 	protected ViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                   ViewElementMode viewElementMode ) {
+	                                                   ViewElementMode viewElementMode,
+	                                                   String viewElementType ) {
 		if ( ViewElementMode.isControl( viewElementMode ) && propertyDescriptor.isWritable() ) {
-			return controlBuilderFactory.createBuilder( propertyDescriptor, viewElementMode );
+			return controlBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
 		}
 
-		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode );
+		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
 	}
 
 	/**
@@ -94,7 +95,8 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 
 		@Override
 		protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-		                                                       ViewElementMode viewElementMode ) {
+		                                                       ViewElementMode viewElementMode,
+		                                                       String viewElementType ) {
 			AbstractValueTextPostProcessor valueTextPostProcessor
 					= builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor );
 
@@ -112,8 +114,9 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 				}
 
 				if ( config == null ) {
-					DateTimeFormElementBuilder created
-							= controlBuilderFactory.createBuilder( propertyDescriptor, ViewElementMode.CONTROL );
+					DateTimeFormElementBuilder created = controlBuilderFactory.createBuilder(
+							propertyDescriptor, ViewElementMode.CONTROL, viewElementType
+					);
 
 					config = created.getConfiguration();
 				}
@@ -145,8 +148,9 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 
 		@Override
 		public DateTimeFormElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor,
-		                                                 ViewElementMode viewElementMode ) {
-			DateTimeFormElementBuilder builder = super.createBuilder( propertyDescriptor, viewElementMode );
+		                                                 ViewElementMode viewElementMode, String viewElementType ) {
+			DateTimeFormElementBuilder builder
+					= super.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
 
 			// Apply custom configuration
 			DateTimeFormElementConfiguration configuration = propertyDescriptor.getAttribute(
@@ -169,7 +173,8 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 
 		@Override
 		protected DateTimeFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-		                                                           ViewElementMode viewElementMode ) {
+		                                                           ViewElementMode viewElementMode,
+		                                                           String viewElementType ) {
 
 			return bootstrapUi
 					.datetime()
@@ -223,7 +228,8 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 	public static class PastAndFutureValidationProcessor extends ValidationConstraintsBuilderProcessor<DateTimeFormElementBuilder>
 	{
 		@Override
-		protected void handleConstraint( DateTimeFormElementBuilder builder,
+		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor,
+		                                 DateTimeFormElementBuilder builder,
 		                                 Annotation annotation,
 		                                 Map<String, Object> annotationAttributes,
 		                                 ConstraintDescriptor constraint ) {

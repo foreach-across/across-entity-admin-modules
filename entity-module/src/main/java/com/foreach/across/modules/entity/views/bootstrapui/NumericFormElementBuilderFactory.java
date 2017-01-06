@@ -82,12 +82,12 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 	@Override
 	protected ViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                   ViewElementMode viewElementMode ) {
+	                                                   ViewElementMode viewElementMode, String viewElementType ) {
 		if ( ViewElementMode.isControl( viewElementMode ) && propertyDescriptor.isWritable() ) {
-			return controlBuilderFactory.createBuilder( propertyDescriptor, viewElementMode );
+			return controlBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
 		}
 
-		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode );
+		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 		@Override
 		protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-		                                                       ViewElementMode viewElementMode ) {
+		                                                       ViewElementMode viewElementMode, String viewElementType ) {
 			AbstractValueTextPostProcessor valueTextPostProcessor
 					= builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor );
 
@@ -149,7 +149,8 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 		@Override
 		protected NumericFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-		                                                          ViewElementMode viewElementMode ) {
+		                                                          ViewElementMode viewElementMode,
+		                                                          String viewElementType ) {
 			return bootstrapUi
 					.numeric()
 					.name( propertyDescriptor.getName() )

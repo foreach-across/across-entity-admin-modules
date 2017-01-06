@@ -44,7 +44,7 @@ public class TextViewElementBuilderFactory extends EntityViewElementBuilderFacto
 
 	@Override
 	protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                       ViewElementMode viewElementMode ) {
+	                                                       ViewElementMode viewElementMode, String viewElementType ) {
 		return bootstrapUi
 				.text()
 				.postProcessor( builderFactoryHelper.createDefaultValueTextPostProcessor( propertyDescriptor ) );

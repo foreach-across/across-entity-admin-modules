@@ -31,5 +31,15 @@ public interface EntityViewElementBuilderFactory<T extends ViewElementBuilder>
 	 */
 	boolean supports( String viewElementType );
 
-	T createBuilder( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode );
+	/**
+	 * Create the actual builder.
+	 *
+	 * @param propertyDescriptor for which to create the builder
+	 * @param viewElementMode    element mode
+	 * @param viewElementType    requested type
+	 * @return builder
+	 */
+	T createBuilder( EntityPropertyDescriptor propertyDescriptor,
+	                 ViewElementMode viewElementMode,
+	                 String viewElementType );
 }

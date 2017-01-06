@@ -36,8 +36,9 @@ public abstract class EntityViewElementBuilderFactorySupport<T extends ViewEleme
 	@Override
 	@SuppressWarnings("unchecked")
 	public T createBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                        ViewElementMode viewElementMode ) {
-		T builder = createInitialBuilder( propertyDescriptor, viewElementMode );
+	                        ViewElementMode viewElementMode,
+	                        String viewElementType ) {
+		T builder = createInitialBuilder( propertyDescriptor, viewElementMode, viewElementType );
 
 		for ( EntityViewElementBuilderProcessor<T> processor : processors ) {
 			processor.process( propertyDescriptor, viewElementMode, builder );
@@ -47,5 +48,6 @@ public abstract class EntityViewElementBuilderFactorySupport<T extends ViewEleme
 	}
 
 	protected abstract T createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                           ViewElementMode viewElementMode );
+	                                           ViewElementMode viewElementMode,
+	                                           String viewElementType );
 }

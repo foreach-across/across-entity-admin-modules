@@ -54,7 +54,7 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 
 	@Override
 	protected FieldsetFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                           ViewElementMode viewElementMode ) {
+	                                                           ViewElementMode viewElementMode, String viewElementType ) {
 		FieldsetFormElementBuilder fieldset
 				= bootstrapUi.fieldset()
 				             .name( propertyDescriptor.getName() )

@@ -60,7 +60,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 
 	@Override
 	protected FormGroupElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                        ViewElementMode viewElementMode ) {
+	                                                        ViewElementMode viewElementMode, String viewElementType ) {
 		ViewElementMode controlMode = ViewElementMode.CONTROL;
 
 		if ( !propertyDescriptor.isWritable() || ViewElementMode.FORM_READ.equals( viewElementMode ) ) {

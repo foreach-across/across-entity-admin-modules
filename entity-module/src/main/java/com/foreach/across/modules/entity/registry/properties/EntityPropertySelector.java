@@ -123,4 +123,8 @@ public class EntityPropertySelector
 	public int hashCode() {
 		return Objects.hash( propertiesToSelect, filter );
 	}
+
+	public static EntityPropertySelector of( String... propertyNames ) {
+		return new EntityPropertySelector( propertyNames );
+	}
 }

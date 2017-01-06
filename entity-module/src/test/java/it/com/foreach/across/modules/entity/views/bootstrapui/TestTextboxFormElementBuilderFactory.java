@@ -114,6 +114,17 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 	}
 
 	@Test
+	public void multilineForcedToTextbox() {
+		when( properties.get( "sizeForMultiLineValidator" ).hasAttribute( TextboxFormElement.Type.class ) )
+				.thenReturn( true );
+		when( properties.get( "sizeForMultiLineValidator" ).getAttribute( TextboxFormElement.Type.class ) )
+				.thenReturn( TextboxFormElement.Type.TEXT );
+
+		TextboxFormElement textbox = assembleAndVerify( "sizeForMultiLineValidator", false );
+		assertFalse( textbox instanceof TextareaFormElement );
+	}
+
+	@Test
 	public void lengthValidator() {
 		TextboxFormElement textbox = assembleAndVerify( "lengthValidator", false );
 		assertEquals( Integer.valueOf( 10 ), textbox.getMaxLength() );

@@ -119,13 +119,24 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	protected abstract Class getTestClass();
 
 	protected <V extends T> V assemble( String propertyName, ViewElementMode viewElementMode ) {
-		return assemble( properties.get( propertyName ), viewElementMode );
+		return assemble( propertyName, viewElementMode, null );
+	}
+
+	protected <V extends T> V assemble( String propertyName, ViewElementMode viewElementMode, String viewElementType ) {
+		return assemble( properties.get( propertyName ), viewElementMode, viewElementType );
 	}
 
 	@SuppressWarnings("unchecked")
 	protected <V extends T> V assemble( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
+		return assemble( descriptor, viewElementMode, null );
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <V extends T> V assemble( EntityPropertyDescriptor descriptor,
+	                                    ViewElementMode viewElementMode,
+	                                    String viewElementType ) {
 		return (V) builderFactory
-				.createBuilder( descriptor, viewElementMode )
+				.createBuilder( descriptor, viewElementMode, viewElementType )
 				.build( builderContext );
 	}
 

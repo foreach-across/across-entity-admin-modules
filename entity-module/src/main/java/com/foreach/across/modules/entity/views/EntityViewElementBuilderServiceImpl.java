@@ -71,7 +71,7 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 	                                                String elementType ) {
 		for ( EntityViewElementBuilderFactory builderFactory : builderFactories ) {
 			if ( builderFactory.supports( elementType ) ) {
-				return builderFactory.createBuilder( descriptor, mode );
+				return builderFactory.createBuilder( descriptor, mode, elementType );
 			}
 		}
 

@@ -61,7 +61,7 @@ public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFac
 
 	@Override
 	protected HiddenFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                         ViewElementMode viewElementMode ) {
+	                                                         ViewElementMode viewElementMode, String viewElementType ) {
 		return bootstrapUi.hidden()
 		                  .name( propertyDescriptor.getName() )
 		                  .controlName( EntityAttributes.controlName( propertyDescriptor ) )

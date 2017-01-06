@@ -74,7 +74,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Override
 	@SuppressWarnings("unchecked")
 	protected OptionsFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor,
-	                                                          ViewElementMode viewElementMode ) {
+	                                                          ViewElementMode viewElementMode, String viewElementType ) {
 
 		boolean isCollection = isCollection( descriptor );
 		Class<?> memberType = isCollection ? determineCollectionMemberType( descriptor ) : descriptor.getPropertyType();
@@ -151,7 +151,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			extends ValidationConstraintsBuilderProcessor<OptionsFormElementBuilder>
 	{
 		@Override
-		protected void handleConstraint( OptionsFormElementBuilder builder,
+		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor, OptionsFormElementBuilder builder,
 		                                 Annotation annotation,
 		                                 Map<String, Object> annotationAttributes,
 		                                 ConstraintDescriptor constraint ) {

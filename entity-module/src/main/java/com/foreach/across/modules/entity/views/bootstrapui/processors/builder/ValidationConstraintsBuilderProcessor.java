@@ -33,7 +33,7 @@ import java.util.Map;
  * Base implementation for handling javax.validation constraints.  This implementation will see if the
  * {@link EntityPropertyDescriptor} has a {@link PropertyDescriptor} registered that can be used
  * for fetching validation {@link ConstraintDescriptor} instances.  Constraint annotations will be passed
- * to the {@link #handleConstraint(ViewElementBuilder, Annotation, Map, ConstraintDescriptor)} implementation.
+ * to the {@link #handleConstraint(EntityPropertyDescriptor, ViewElementBuilder, Annotation, Map, ConstraintDescriptor)} implementation.
  *
  * @author Arne Vandamme
  */
@@ -49,10 +49,11 @@ public abstract class ValidationConstraintsBuilderProcessor<T extends ViewElemen
 			for ( ConstraintDescriptor constraint : validationDescriptor.getConstraintDescriptors() ) {
 				Annotation annotation = constraint.getAnnotation();
 
-				handleConstraint( builder,
-				                  annotation,
-				                  AnnotationUtils.getAnnotationAttributes( annotation ),
-				                  constraint );
+				handleConstraint(
+						propertyDescriptor,
+						builder,
+						annotation,
+						AnnotationUtils.getAnnotationAttributes( annotation ), constraint );
 			}
 		}
 	}
@@ -82,7 +83,7 @@ public abstract class ValidationConstraintsBuilderProcessor<T extends ViewElemen
 	 * Helper that that checks if the annotation is any of the types specified.
 	 *
 	 * @param annotation to validate
-	 * @param types Array of types
+	 * @param types      Array of types
 	 * @return true if annotation is of any type specified in the array
 	 */
 	@SafeVarargs
@@ -90,7 +91,7 @@ public abstract class ValidationConstraintsBuilderProcessor<T extends ViewElemen
 		return ArrayUtils.contains( types, annotation.annotationType() );
 	}
 
-	protected abstract void handleConstraint( T builder,
+	protected abstract void handleConstraint( EntityPropertyDescriptor propertyDescriptor, T builder,
 	                                          Annotation annotation,
 	                                          Map<String, Object> annotationAttributes,
 	                                          ConstraintDescriptor constraint );
