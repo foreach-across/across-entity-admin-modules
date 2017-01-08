@@ -16,6 +16,9 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+
+import java.util.Collection;
 
 /**
  * Registry that maps {@link com.foreach.across.modules.web.ui.ViewElementBuilder} instances or
@@ -35,6 +38,14 @@ public interface ViewElementLookupRegistry
 	 * @param builder instance to store
 	 */
 	void setViewElementBuilder( ViewElementMode mode, ViewElementBuilder builder );
+
+	/**
+	 * Add a {@link ViewElementPostProcessor} that should be applied to the element builder.
+	 *
+	 * @param mode          to register the postprocessor for
+	 * @param postProcessor to add
+	 */
+	void addViewElementPostProcessor( ViewElementMode mode, ViewElementPostProcessor<?> postProcessor );
 
 	/**
 	 * If {@link #isCacheable(ViewElementMode)} returns{@code false} this call will have no effect
@@ -63,9 +74,9 @@ public interface ViewElementLookupRegistry
 	void setCacheable( ViewElementMode mode, boolean cacheable );
 
 	/**
-	 * Removes all stored information about the given mode.
+	 * Removes the cached builder for the given mode.
 	 *
-	 * @param mode to remove all stored data for
+	 * @param mode to remove the cached builder for
 	 */
 	void reset( ViewElementMode mode );
 
@@ -74,6 +85,12 @@ public interface ViewElementLookupRegistry
 	 * @return the registered builder - null if none available
 	 */
 	ViewElementBuilder getViewElementBuilder( ViewElementMode mode );
+
+	/**
+	 * @param mode to get the postprocessors for
+	 * @return collection of postprocessors
+	 */
+	Collection<ViewElementPostProcessor<?>> getViewElementPostProcessors( ViewElementMode mode );
 
 	/**
 	 * @param mode to create the type for

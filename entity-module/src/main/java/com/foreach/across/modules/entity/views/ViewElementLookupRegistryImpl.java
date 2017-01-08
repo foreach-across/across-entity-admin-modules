@@ -16,9 +16,9 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Arne Vandamme
@@ -29,6 +29,7 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 	private final Map<ViewElementMode, ViewElementBuilder> viewElementBuilderCache = new HashMap<>();
 	private final Map<ViewElementMode, ViewElementBuilder> fixedViewElementBuilders = new HashMap<>();
 	private final Map<ViewElementMode, Boolean> cacheableStatus = new HashMap<>();
+	private final Map<ViewElementMode, Collection<ViewElementPostProcessor<?>>> postProcessors = new HashMap<>();
 
 	private boolean defaultCacheable = true;
 
@@ -48,6 +49,11 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 		else {
 			fixedViewElementBuilders.remove( mode );
 		}
+	}
+
+	@Override
+	public void addViewElementPostProcessor( ViewElementMode mode, ViewElementPostProcessor<?> postProcessor ) {
+		postProcessors.computeIfAbsent( mode, m -> new ArrayList<>() ).add( postProcessor );
 	}
 
 	@Override
@@ -90,6 +96,11 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 	}
 
 	@Override
+	public Collection<ViewElementPostProcessor<?>> getViewElementPostProcessors( ViewElementMode mode ) {
+		return postProcessors.getOrDefault( mode, Collections.emptyList() );
+	}
+
+	@Override
 	public boolean isCacheable( ViewElementMode mode ) {
 		return cacheableStatus.containsKey( mode )
 				? Boolean.TRUE.equals( cacheableStatus.get( mode ) ) : defaultCacheable;
@@ -97,21 +108,16 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 
 	/**
 	 * Merge the current values into an already existing registry.
+	 * This will ignore the cached builders as additional postprocessors can be registered.
 	 *
 	 * @param existing to merge the values in
 	 */
 	public void mergeInto( ViewElementLookupRegistry existing ) {
-		for ( Map.Entry<ViewElementMode, Boolean> type : cacheableStatus.entrySet() ) {
-			existing.setCacheable( type.getKey(), type.getValue() );
-		}
-		for ( Map.Entry<ViewElementMode, String> type : viewElementTypes.entrySet() ) {
-			existing.setViewElementType( type.getKey(), type.getValue() );
-		}
-		for ( Map.Entry<ViewElementMode, ViewElementBuilder> type : fixedViewElementBuilders.entrySet() ) {
-			existing.setViewElementBuilder( type.getKey(), type.getValue() );
-		}
-		for ( Map.Entry<ViewElementMode, ViewElementBuilder> type : viewElementBuilderCache.entrySet() ) {
-			existing.cacheViewElementBuilder( type.getKey(), type.getValue() );
-		}
+		cacheableStatus.forEach( existing::setCacheable );
+		viewElementTypes.forEach( existing::setViewElementType );
+		fixedViewElementBuilders.forEach( existing::setViewElementBuilder );
+		postProcessors.forEach(
+				( mode, list ) -> list.forEach( pp -> existing.addViewElementPostProcessor( mode, pp ) )
+		);
 	}
 }

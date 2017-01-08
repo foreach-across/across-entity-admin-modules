@@ -17,8 +17,11 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static com.foreach.across.modules.entity.views.ViewElementMode.*;
 import static org.junit.Assert.*;
@@ -150,6 +153,9 @@ public class TestViewElementLookupRegistryImpl
 	public void mergeInto() {
 		registry.setDefaultCacheable( true );
 
+		ViewElementPostProcessor ppOne = mock( ViewElementPostProcessor.class );
+		ViewElementPostProcessor ppTwo = mock( ViewElementPostProcessor.class );
+
 		ViewElementLookupRegistryImpl other = new ViewElementLookupRegistryImpl();
 		other.setDefaultCacheable( true );
 		other.setCacheable( CONTROL, true );
@@ -157,12 +163,15 @@ public class TestViewElementLookupRegistryImpl
 		other.setViewElementType( LIST_LABEL, "button" );
 		other.setViewElementType( LIST_VALUE, "button" );
 		other.cacheViewElementBuilder( ViewElementMode.VALUE, mock( ViewElementBuilder.class ) );
+		other.addViewElementPostProcessor( CONTROL, ppOne );
 
 		registry.setCacheable( LABEL, true );
 		registry.setCacheable( FORM_WRITE, false );
 		registry.setViewElementType( LIST_CONTROL, "boem" );
 		registry.setViewElementType( LIST_VALUE, "bla" );
 		registry.cacheViewElementBuilder( FORM_READ, mock( ViewElementBuilder.class ) );
+		registry.addViewElementPostProcessor( LABEL, mock( ViewElementPostProcessor.class ) );
+		registry.addViewElementPostProcessor( CONTROL, ppTwo );
 
 		registry.mergeInto( other );
 
@@ -174,9 +183,13 @@ public class TestViewElementLookupRegistryImpl
 		assertEquals( "bla", other.getViewElementType( LIST_VALUE ) );
 		assertEquals( "boem", other.getViewElementType( LIST_CONTROL ) );
 
-		assertNotNull( other.getViewElementBuilder( FORM_READ ) );
+		assertNull( other.getViewElementBuilder( FORM_READ ) );
 		assertNotNull( other.getViewElementBuilder( VALUE ) );
 		assertNull( other.getViewElementBuilder( LABEL ) );
+
+		assertTrue( other.getViewElementPostProcessors( LIST_LABEL ).isEmpty() );
+		assertEquals( 1, other.getViewElementPostProcessors( LABEL ).size() );
+		assertEquals( Arrays.asList( ppOne, ppTwo ), other.getViewElementPostProcessors( CONTROL ) );
 	}
 }
 

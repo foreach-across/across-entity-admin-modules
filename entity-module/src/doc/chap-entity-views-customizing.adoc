@@ -189,6 +189,20 @@ entities.withType( Group.class )
 === Selecting properties
 `EntityPropertySelector`, incremental builders, keep current, select all, select all without default filter, exclude
 
+=== Configuring property view types
+You can configure a property using the `EntityPropertyDescriptorBuilder`.
+This builder also contains some methods to influence the `ViewElement` that should be built for that property for a given mode.
+
+By default a `ViewElement` will be built based on the property and some of its annotations.
+There are 3 ways you can influence the default behaviour:
+
+* specify a custom `viewElementType()` for a given mode
+** a default builder of that type will be created for that mode
+* specify one or more `viewElementPostProcessor()` for a given mode
+** these `ViewElementPostProcessor` instances will be added to the default builder, in the order they were registered
+* specify a custom  `viewElementBuilder()` for a given mode
+** the default building will be ignored and only your custom builder will be used
+
 === Fieldset properties
 A fieldset is a visual grouping of other properties, inside a block that has a title (legend) and optional description.
 Fieldsets are rendered as a `FieldsetFormElement`.

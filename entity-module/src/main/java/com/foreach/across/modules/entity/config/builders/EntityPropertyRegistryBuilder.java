@@ -20,7 +20,9 @@ import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.registry.properties.registrars.LabelPropertiesRegistrar;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
@@ -226,6 +228,13 @@ public class EntityPropertyRegistryBuilder
 		public PropertyDescriptorBuilder viewElementBuilder( ViewElementMode mode,
 		                                                     ViewElementBuilder viewElementBuilder ) {
 			return (PropertyDescriptorBuilder) super.viewElementBuilder( mode, viewElementBuilder );
+		}
+
+		@Override
+		public <U extends ViewElement> PropertyDescriptorBuilder viewElementPostProcessor(
+				ViewElementMode mode,
+				ViewElementPostProcessor<U> viewElementPostProcessor ) {
+			return (PropertyDescriptorBuilder) super.viewElementPostProcessor( mode, viewElementPostProcessor );
 		}
 
 		/**

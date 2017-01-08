@@ -24,7 +24,9 @@ import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
@@ -193,6 +195,22 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	public EntityPropertyDescriptorBuilder viewElementBuilder( ViewElementMode mode,
 	                                                           ViewElementBuilder viewElementBuilder ) {
 		viewElementLookupRegistry.setViewElementBuilder( mode, viewElementBuilder );
+		return this;
+	}
+
+	/**
+	 * Add a {@link ViewElementPostProcessor} to apply to the default {@link ViewElementBuilder}.
+	 * Note that postprocessor will be ignored if a custom {@link ViewElementBuilder}
+	 * was set using {@link #viewElementBuilder(ViewElementMode, ViewElementBuilder)}.
+	 *
+	 * @param mode                     to add the postprocessor for
+	 * @param viewElementPostProcessor to add
+	 * @return current builder
+	 */
+	public <U extends ViewElement> EntityPropertyDescriptorBuilder viewElementPostProcessor(
+			ViewElementMode mode,
+			ViewElementPostProcessor<U> viewElementPostProcessor ) {
+		viewElementLookupRegistry.addViewElementPostProcessor( mode, viewElementPostProcessor );
 		return this;
 	}
 

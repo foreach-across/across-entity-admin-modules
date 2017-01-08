@@ -18,6 +18,10 @@ package com.foreach.across.modules.entity.views;
 import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -28,12 +32,15 @@ import java.util.Collection;
 @Service
 public class EntityViewElementBuilderServiceImpl implements EntityViewElementBuilderService
 {
+	private static final Logger LOG = LoggerFactory.getLogger( EntityViewElementBuilderServiceImpl.class );
+
 	@RefreshableCollection(incremental = true, includeModuleInternals = true)
 	private Collection<ViewElementTypeLookupStrategy> elementTypeLookupStrategies;
 
 	@RefreshableCollection(incremental = true, includeModuleInternals = true)
 	private Collection<EntityViewElementBuilderFactory> builderFactories;
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public ViewElementBuilder getElementBuilder( EntityPropertyDescriptor descriptor, ViewElementMode mode ) {
 		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
@@ -46,6 +53,20 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 			}
 			else {
 				builder = createElementBuilder( descriptor, mode );
+				Collection<ViewElementPostProcessor<?>> postProcessors
+						= lookupRegistry.getViewElementPostProcessors( mode );
+
+				if ( !postProcessors.isEmpty() ) {
+					if ( builder instanceof ViewElementBuilderSupport ) {
+						postProcessors.forEach( ( (ViewElementBuilderSupport) builder )::postProcessor );
+					}
+					else {
+						LOG.warn(
+								"ViewElementPostProcessors registered for {} but the builder is not of type ViewElementBuilderSupport",
+								descriptor.getName() );
+					}
+				}
+
 				if ( builder != null && lookupRegistry.isCacheable( mode ) ) {
 					lookupRegistry.cacheViewElementBuilder( mode, builder );
 				}
