@@ -22,9 +22,13 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.FieldsetFormElementBuilderFactory;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,6 +105,35 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 		assertNotNull( fieldset );
 		verify( registry ).select( selector );
 		verify( viewElementBuilderService ).getElementBuilder( member, ViewElementMode.FORM_READ );
+	}
+
+	@Test
+	public void descriptionTextIsAddedOnTopOfFieldSet() {
+		EntityPropertyDescriptor member = mock( EntityPropertyDescriptor.class );
+
+		EntityPropertySelector selector = new EntityPropertySelector( "embedded.one" );
+		when( registry.select( selector ) ).thenReturn( Collections.singletonList( member ) );
+
+		EntityPropertyDescriptor embedded = properties.get( "embedded" );
+		when( embedded.getAttribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.class ) )
+				.thenReturn( selector );
+
+		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
+		when( codeResolver.getMessageWithFallback( "properties.embedded[description]", "" ) ).thenReturn( "help text" );
+		when( builderContext.getAttribute( EntityMessageCodeResolver.class ) ).thenReturn( codeResolver );
+
+		ViewElementBuilder propertyBuilder = mock( ViewElementBuilder.class );
+		when( viewElementBuilderService.getElementBuilder( member, ViewElementMode.FORM_READ ) ).thenReturn(
+				propertyBuilder );
+		when( propertyBuilder.build( builderContext ) ).thenReturn( mock( TextViewElement.class ) );
+
+		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_READ );
+		assertNotNull( fieldset );
+		verify( codeResolver ).getMessageWithFallback( "properties.embedded[description]", "" );
+
+		NodeViewElement helpBlock = (NodeViewElement) fieldset.getChildren().get( 0 );
+		assertNotNull( helpBlock );
+		assertEquals( "help text", ( (TextViewElement) helpBlock.getChildren().get( 0 ) ).getText() );
 	}
 
 	private static class Instance

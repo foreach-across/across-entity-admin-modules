@@ -155,12 +155,16 @@ public class EntityConfigurationLinkBuilder implements EntityLinkBuilder
 		return resolve( MessageFormat.format( pattern, rootPath, getEntityConfigurationPath(), null ) );
 	}
 
-	@SuppressWarnings("unchecked")
 	private String generate( String pattern, Object entity ) {
-		Serializable id = entityConfiguration.getEntityModel().getId( entity );
-		String idAsString = conversionService.convert( id, String.class );
+		String idAsString = getIdAsString( entityConfiguration, entity );
 
 		return resolve( MessageFormat.format( pattern, rootPath, getEntityConfigurationPath(), idAsString ) );
+	}
+
+	@SuppressWarnings("unchecked")
+	protected String getIdAsString( EntityConfiguration cfg, Object entity ) {
+		Serializable id = cfg.getEntityModel().getId( entity );
+		return conversionService.convert( id, String.class );
 	}
 
 	private String resolve( String path ) {

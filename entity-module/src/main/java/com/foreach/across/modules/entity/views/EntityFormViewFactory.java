@@ -16,13 +16,17 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.bootstrapui.elements.Grid;
+import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.ui.ModelMap;
+
+import java.util.Optional;
 
 /**
  * @author Arne Vandamme
@@ -47,11 +51,15 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 	protected ContainerViewElement buildViewElements( V viewCreationContext,
 	                                                  EntityViewElementBuilderContext<EntityFormView> viewElementBuilderContext,
 	                                                  EntityMessageCodeResolver messageCodeResolver ) {
+		Optional<String> fromUrl = Optional.ofNullable( retrieveFromUrl( viewCreationContext ) );
+
 		ContainerViewElement elements
 				= super.buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver );
 
 		EntityLinkBuilder linkBuilder = viewElementBuilderContext.getEntityView().getEntityLinkBuilder();
 		EntityMessages messages = viewElementBuilderContext.getEntityView().getEntityMessages();
+
+		String cancelUrl = fromUrl.orElseGet( linkBuilder::overview );
 
 		return bootstrapUi.form()
 		                  .name( FORM_NAME )
@@ -84,13 +92,27 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 				                             .add(
 						                             bootstrapUi.button()
 						                                        .name( "btn-cancel" )
-						                                        .link( linkBuilder.overview() )
+						                                        .link( cancelUrl )
 						                                        .text(
 								                                        messages.messageWithFallback( "actions.cancel" )
 						                                        )
 				                             )
 		                  )
+		                  .postProcessor( ( ctx, form ) -> {
+			                  fromUrl.ifPresent(
+					                  url -> {
+						                  HiddenFormElement hiddenFrom = new HiddenFormElement();
+						                  hiddenFrom.setControlName( "from" );
+						                  hiddenFrom.setValue( url );
+						                  form.addChild( hiddenFrom );
+					                  }
+			                  );
+		                  } )
 		                  .build( viewElementBuilderContext );
+	}
+
+	private String retrieveFromUrl( ViewCreationContext viewCreationContext ) {
+		return ( (WebViewCreationContext) viewCreationContext ).getRequest().getParameter( "from" );
 	}
 
 	private String buildActionUrl( EntityViewElementBuilderContext<EntityFormView> viewElementBuilderContext ) {

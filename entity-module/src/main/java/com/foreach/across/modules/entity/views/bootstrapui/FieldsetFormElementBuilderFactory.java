@@ -17,17 +17,22 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FieldsetFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.TextCodeResolverPostProcessor;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -54,7 +59,8 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 
 	@Override
 	protected FieldsetFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
-	                                                           ViewElementMode viewElementMode, String viewElementType ) {
+	                                                           ViewElementMode viewElementMode,
+	                                                           String viewElementType ) {
 		FieldsetFormElementBuilder fieldset
 				= bootstrapUi.fieldset()
 				             .name( propertyDescriptor.getName() )
@@ -63,7 +69,8 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 				             .postProcessor(
 						             new TextCodeResolverPostProcessor<>( "properties." + propertyDescriptor.getName() )
 				             )
-				             .and();
+				             .and()
+				             .postProcessor( new DescriptionTextPostProcessor( bootstrapUi, propertyDescriptor ) );
 
 		EntityPropertySelector selector = retrieveMembersSelector( propertyDescriptor );
 		EntityPropertyRegistry propertyRegistry = propertyDescriptor.getPropertyRegistry();
@@ -92,5 +99,44 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 		}
 
 		return selector;
+	}
+
+	/**
+	 * Attempts to resolve a property description (help block).
+	 */
+	public static class DescriptionTextPostProcessor implements ViewElementPostProcessor<FieldsetFormElement>
+	{
+		private final BootstrapUiFactory bootstrapUi;
+		private final EntityPropertyDescriptor propertyDescriptor;
+		private EntityMessageCodeResolver defaultMessageCodeResolver;
+
+		public DescriptionTextPostProcessor( BootstrapUiFactory bootstrapUi,
+		                                     EntityPropertyDescriptor propertyDescriptor ) {
+			this.bootstrapUi = bootstrapUi;
+			this.propertyDescriptor = propertyDescriptor;
+		}
+
+		public void setDefaultMessageCodeResolver( EntityMessageCodeResolver defaultMessageCodeResolver ) {
+			this.defaultMessageCodeResolver = defaultMessageCodeResolver;
+		}
+
+		@Override
+		public void postProcess( ViewElementBuilderContext builderContext, FieldsetFormElement element ) {
+			EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
+
+			if ( codeResolver == null ) {
+				codeResolver = defaultMessageCodeResolver;
+			}
+
+			if ( codeResolver != null ) {
+				String description = codeResolver.getMessageWithFallback(
+						"properties." + propertyDescriptor.getName() + "[description]", ""
+				);
+
+				if ( !StringUtils.isBlank( description ) ) {
+					element.addFirstChild( bootstrapUi.helpBlock( description ).build( builderContext ) );
+				}
+			}
+		}
 	}
 }

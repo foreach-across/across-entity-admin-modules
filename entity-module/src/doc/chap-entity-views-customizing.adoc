@@ -47,23 +47,46 @@ Example: _UserModule.entities.user.properties.username[placeholder]_
 | Description text for a validation error message.  Optionally can be suffixed with the specific property name. +
 Example: _UserModule.entities.user.validation.NotBlank_,  _UserModule.entities.user.validation.alreadyExists.username_
 
+| *EntityPrefix*.adminMenu.general
+| Name of the _General_ tab.
+Usually the first tab that is also opened when creating a new entity.
 
-| actions.*
-|
+| *EntityPrefix*.adminMenu.*associationName*
+| Name of the tab for that association. +
+Example: _UserModule.entities.group.adminMenu.user.groups_
 
-| pageTitle.*
+| *EntityPrefix*.actions.*actionName*
+| Name of the actions, usually the buttons or links on a page.
+Often you just want to replace these on a global level. +
+Example: _EntityModule.entities.actions.save_, _UserModule.entities.group.actions.cancel_
 
+| *EntityPrefix*.pageTitle.*pageName*
+| Title of the page.
+Supports <<message-code-parameters,message code parameters>>. +
+Example: _UserModule.entities.user.pageTitle.update=Updating {1}: {2}_
+
+| *EntityPrefix*.feedback.*feedbackType*
+| Feedback message shown for the given feedback type. +
+Example: _UserModule.entities.user.feedback.validationErrors_
 
 |===
 
-* _Entity_ codes are camel cased
+* _Entity_ codes are camel cased, eg. `CarBrand` would become *carBrand*
 * EntityPrefix: ModuleName.entities.entityName, or EntityModule.entities.entityName or simply entityName
 * Hierarchical lookups: entity can be removed, module can be replaced by EntityModule
 
+[[message-code-parameters]]
+.Message code parameters
+Some message codes support parameters, if so, the following could be available:
+
+* {0}: entity name
+* {1}: entity name inline
+* {2}: label of the entity being modified (if known)
+
 === Specifying a custom template
 
-Every default view uses a specific (Thymeleaf) template that renders the `ViewElement`s created by the view.
-If you want control over the rendering through a separate template you can specify a different template using `template()` method on the `EntityViewFactoryBuilder`.
+Every default view uses a specific (Thymeleaf) template that renders the `ViewElement` list created by the view.
+If you want control over the rendering through a separate template you can specify a different template using the `template()` method on the `EntityViewFactoryBuilder`.
 
 === EntityViewProcessor
 
@@ -166,7 +189,52 @@ entities.withType( Group.class )
 === Selecting properties
 `EntityPropertySelector`, incremental builders, keep current, select all, select all without default filter, exclude
 
-=== Customizing fieldsets
+=== Fieldset properties
+A fieldset is a visual grouping of other properties, inside a block that has a title (legend) and optional description.
+Fieldsets are rendered as a `FieldsetFormElement`.
+You can postprocess a group of `ViewElement` instances and move them manually to a `FieldsetFormElement`, or you can set a fieldset as the `ViewElementMode` for a property.
+
+In the latter, because a fieldset is a collection of other properties, you will need to specify which properties make up the fieldset.
+Specifying the properties of fieldset is done by setting the `EntityAttributes.FIELDSET_PROPERTY_SELECTOR` to a valid `EntityPropertySelector`.
+
+The following is an example of manually adding a fieldset property to a form, and moving some properties to it:
+[source,java,indent=0]
+[subs="verbatim,attributes"]
+----
+entities.withType( WebPage.class )
+        .createOrUpdateFormView( fvb -> fvb
+                /**
+                 * First create a new property that is a fieldset
+                 * of the existing url and urlGenerated properties.
+                 * We add this property only to the scope of the
+                 * create or update form view.
+                 */
+                .properties( props -> props
+                        .property( "url-settings" )
+                        .displayName( "URL settings" )
+                        .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
+                        .attribute(
+                                EntityAttributes.FIELDSET_PROPERTY_SELECTOR,
+                                EntityPropertySelector.of( "url", "urlGenerated" )
+                        )
+                )
+                /**
+                 * Because url and urlGenerated are direct members
+                 * of WebPage, we need to ensure they are not rendered
+                 * directly anymore, so we remove them from the form view.
+                 * The new url-settings property will be selected by default
+                 * and in turn will render the url and urlGenerated properties.
+                 *
+                 * If we were to configure the url-settings property as hidden,
+                 * we would have to explicitly include it in the form view as well.
+                 * That would probably be a preferred approach if we have defined
+                 * url-settings in the global property registry for WebPage.
+                 */
+                .showProperties( "*", "~url", "~urlGenerated" )
+        )
+----
+
+NOTE: Properties mapped to an `@Embedded` type will automatically be mapped as a fieldset type.
 
 === Customizing entity validation
 

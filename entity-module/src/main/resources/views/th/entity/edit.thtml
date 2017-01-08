@@ -55,7 +55,7 @@
     <div class="tab-content" th:object="${viewRequest}">
         <div class="tab-pane active">
             <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
-                [[#{EntityModule.entities.feedback.validationErrors}]]
+                [[${messages.withNameSingular('feedback.validationErrors', entityConfiguration.getLabel(entity))}]]
                 <ul class="global-errors" th:if="${#fields.hasGlobalErrors()}">
                     <li th:each="error : ${#fields.globalErrors()}"><strong>[[${error}]]</strong></li>
                 </ul>

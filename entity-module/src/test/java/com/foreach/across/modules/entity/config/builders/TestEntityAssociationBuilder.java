@@ -32,6 +32,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Collections;
 
+import static com.foreach.across.modules.entity.registry.EntityAssociation.Type.EMBEDDED;
 import static org.mockito.Mockito.*;
 
 /**
@@ -86,6 +87,7 @@ public class TestEntityAssociationBuilder
 
 		builder.name( "users" )
 		       .hidden( false )
+		       .associationType( EMBEDDED )
 		       .targetEntityType( String.class )
 		       .targetProperty( "id" )
 		       .sourceProperty( "users" )
@@ -95,6 +97,7 @@ public class TestEntityAssociationBuilder
 		       .apply( configuration );
 
 		verify( configuration ).createAssociation( "users" );
+		verify( association ).setAssociationType( EMBEDDED );
 		verify( association ).setSourceProperty( sourceProperty );
 		verify( association ).setTargetEntityConfiguration( target );
 		verify( association ).setTargetProperty( targetProperty );
@@ -129,6 +132,7 @@ public class TestEntityAssociationBuilder
 
 		builder.name( "users" )
 		       .hidden( false )
+		       .associationType( EMBEDDED )
 		       .targetEntityType( String.class )
 		       .targetEntity( "string" )
 		       .targetProperty( "id" )
@@ -138,6 +142,7 @@ public class TestEntityAssociationBuilder
 		       .listView( lvb -> lvb.template( "hello" ) )
 		       .apply( configuration );
 
+		verify( association ).setAssociationType( EMBEDDED );
 		verify( association ).setSourceProperty( sourceProperty );
 		verify( association ).setTargetEntityConfiguration( target );
 		verify( association ).setTargetProperty( targetProperty );

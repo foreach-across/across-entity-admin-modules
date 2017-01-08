@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -82,6 +83,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		configuration.withType( Group.class )
 		             .association(
 				             ab -> ab.name( "user.group" )
+				                     .associationType( EntityAssociation.Type.EMBEDDED )
 				                     .listView(
 						                     lvb -> lvb.defaultSort( new Sort( "name" ) )
 						                               .filter( userInGroupFilterProcessor() )

@@ -45,6 +45,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 
 	private Class<?> targetEntityType;
 	private String targetEntityName, sourceProperty, targetProperty;
+	private EntityAssociation.Type associationType;
 
 	private boolean sourcePropertyRemoved, targetPropertyRemoved;
 
@@ -66,6 +67,18 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	public EntityAssociationBuilder name( String name ) {
 		Assert.notNull( name );
 		this.name = name;
+		return this;
+	}
+
+	/**
+	 * Specify the type of association.  This will determine how the associated entities can be managed.
+	 *
+	 * @param associationType of the association
+	 * @return current builder
+	 */
+	public EntityAssociationBuilder associationType( EntityAssociation.Type associationType ) {
+		Assert.notNull( associationType );
+		this.associationType = associationType;
 		return this;
 	}
 
@@ -279,6 +292,10 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 		}
 
 		associationBeingBuilt = association;
+
+		if ( associationType != null ) {
+			associationBeingBuilt.setAssociationType( associationType );
+		}
 
 		try {
 			if ( sourcePropertyRemoved ) {

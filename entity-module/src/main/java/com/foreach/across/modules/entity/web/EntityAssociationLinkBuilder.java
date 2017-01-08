@@ -16,8 +16,10 @@
 package com.foreach.across.modules.entity.web;
 
 import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * <p>Generates links for an {@link com.foreach.across.modules.entity.registry.EntityAssociation}.
@@ -38,5 +40,60 @@ public class EntityAssociationLinkBuilder extends EntityConfigurationLinkBuilder
 	@Override
 	protected String getEntityConfigurationPath() {
 		return association.getName();
+	}
+
+	@Override
+	public EntityLinkBuilder asAssociationFor( EntityLinkBuilder sourceLinkBuilder, Object sourceEntity ) {
+		if ( association.getAssociationType() == EntityAssociation.Type.EMBEDDED ) {
+			return super.asAssociationFor( sourceLinkBuilder, sourceEntity );
+		}
+
+		return new LinkedAssociationLinkBuilder( sourceLinkBuilder.associations( sourceEntity ), sourceEntity, this );
+	}
+
+	class LinkedAssociationLinkBuilder extends PrefixingLinkBuilder
+	{
+		private final Object sourceEntity;
+
+		LinkedAssociationLinkBuilder( String prefixPath, Object sourceEntity, EntityLinkBuilder linkBuilder ) {
+			super( prefixPath, linkBuilder );
+			this.sourceEntity = sourceEntity;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public String create() {
+			UriComponentsBuilder uri = UriComponentsBuilder.fromUriString(
+					association.getTargetEntityConfiguration().getAttribute( EntityLinkBuilder.class ).create()
+			);
+
+			EntityPropertyDescriptor targetProperty = association.getTargetProperty();
+			if ( targetProperty != null && sourceEntity != null ) {
+				uri.queryParam(
+						"entity." + targetProperty.getName(),
+						getIdAsString( association.getSourceEntityConfiguration(), sourceEntity )
+				);
+			}
+
+			return uri.queryParam( "from", overview() ).toUriString();
+		}
+
+		@Override
+		public String update( Object entity ) {
+			UriComponentsBuilder uri = UriComponentsBuilder.fromUriString(
+					association.getTargetEntityConfiguration().getAttribute( EntityLinkBuilder.class ).update( entity )
+			);
+
+			return uri.queryParam( "from", overview() ).toUriString();
+		}
+
+		@Override
+		public String view( Object entity ) {
+			UriComponentsBuilder uri = UriComponentsBuilder.fromUriString(
+					association.getTargetEntityConfiguration().getAttribute( EntityLinkBuilder.class ).view( entity )
+			);
+
+			return uri.queryParam( "from", overview() ).toUriString();
+		}
 	}
 }

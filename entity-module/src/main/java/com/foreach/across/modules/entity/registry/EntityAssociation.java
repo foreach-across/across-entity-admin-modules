@@ -35,9 +35,23 @@ public interface EntityAssociation extends ReadableAttributes, EntityViewRegistr
 		SUPPRESS        /* check for associated entities and suppress deletion if there are any */
 	}
 
+	/**
+	 * Determines if this entity is managed as a sub-entity of the parent (embedded), or simply a linked entity.
+	 */
+	enum Type
+	{
+		EMBEDDED,       /* manage this entity entirely through the parent */
+		LINKED          /* manage through the entity itself - refer to it from the parent */
+	}
+
 	String getName();
 
 	Class<?> getEntityType();
+
+	/**
+	 * @return type of association
+	 */
+	Type getAssociationType();
 
 	/**
 	 * @return True if the association should be hidden from administrative UI implementations.

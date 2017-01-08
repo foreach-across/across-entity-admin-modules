@@ -31,11 +31,22 @@ public class EntityAssociationImpl extends AttributeSupport implements MutableEn
 	private EntityConfiguration targetEntityConfiguration;
 	private EntityPropertyDescriptor sourceProperty, targetProperty;
 	private ParentDeleteMode parentDeleteMode = ParentDeleteMode.SUPPRESS;
+	private Type associationType = Type.LINKED;
 
 	public EntityAssociationImpl( String name,
 	                              MutableEntityConfiguration sourceEntityConfiguration ) {
 		this.name = name;
 		this.sourceEntityConfiguration = sourceEntityConfiguration;
+	}
+
+	@Override
+	public Type getAssociationType() {
+		return associationType;
+	}
+
+	@Override
+	public void setAssociationType( Type associationType ) {
+		this.associationType = associationType;
 	}
 
 	@Override

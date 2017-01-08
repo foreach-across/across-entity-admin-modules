@@ -108,9 +108,10 @@ public class MenuEventsHandler
 			for ( EntityAssociation association : entityConfiguration.getAssociations() ) {
 				if ( !association.isHidden() ) {
 					EntityConfiguration associated = association.getTargetEntityConfiguration();
-					EntityLinkBuilder associatedLinkBuilder = association.getAttribute( EntityLinkBuilder.class )
-					                                                     .asAssociationFor( linkBuilder,
-					                                                                        menu.getEntity() );
+					EntityLinkBuilder associatedLinkBuilder
+							= association.getAttribute( EntityLinkBuilder.class )
+							             .asAssociationFor( linkBuilder, menu.getEntity() );
+
 					String itemTitle = messageCodeResolver.getMessageWithFallback(
 							"adminMenu." + association.getName(),
 							associated.getEntityMessageCodeResolver().getNamePlural()
