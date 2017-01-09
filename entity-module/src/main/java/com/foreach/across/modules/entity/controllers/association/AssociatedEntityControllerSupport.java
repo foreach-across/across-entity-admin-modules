@@ -65,7 +65,7 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 	private AcrossDevelopmentMode developmentMode;
 
 	protected Object buildViewRequest(
-			EntityConfiguration entityConfiguration,
+			EntityConfiguration sourceEntityConfiguration,
 			Serializable entityId,
 			String associationName,
 			boolean includeEntity,
@@ -77,21 +77,23 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 		WebViewCreationContextImpl viewCreationContext = new WebViewCreationContextImpl();
 		viewCreationContext.setRequest( request );
 
-		Object sourceEntity = buildSourceEntityModel( entityConfiguration, entityId, model );
+		Object sourceEntity = buildSourceEntityModel( sourceEntityConfiguration, entityId, model );
 
 		String requestedViewName = request.getParameter( "view" );
 		String partialFragment = request.getParameter( WebTemplateInterceptor.PARTIAL_PARAMETER );
 
 		String viewName = StringUtils.defaultString( requestedViewName, getDefaultViewName() );
 
-		EntityAssociation association = entityConfiguration.association( associationName );
+		EntityAssociation association = sourceEntityConfiguration.association( associationName );
 
 		if ( association.isHidden() ) {
 			LOG.warn(
 					"AssociatedEntityControllers for association {} on {} are disabled because the EntityAssociation is hidden",
-					association.getName(), entityConfiguration.getName() );
+					association.getName(), sourceEntityConfiguration.getName() );
 			throw new AccessDeniedException( "Not allowed to manage this associated entity type." );
 		}
+
+		EntityConfiguration targetEntityConfiguration = association.getTargetEntityConfiguration();
 
 		EntityViewFactory viewFactory = association.getViewFactory( viewName );
 		model.addAttribute( VIEW_FACTORY, viewFactory );
@@ -99,9 +101,8 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 		viewCreationContext.setEntityAssociation( association );
 		model.addAttribute( CREATION_CONTEXT, viewCreationContext );
 
-		EntityViewRequest viewRequest =
-				new EntityViewRequest( viewName, viewFactory, viewCreationContext );
-		viewRequest.setEntityName( entityConfiguration.getName() );
+		EntityViewRequest viewRequest = new EntityViewRequest( viewName, viewFactory, viewCreationContext );
+		viewRequest.setEntityName( targetEntityConfiguration.getName() );
 		model.addAttribute( VIEW_COMMAND, viewRequest );
 
 		if ( StringUtils.isNotBlank( partialFragment ) ) {
@@ -115,13 +116,12 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 		if ( includeEntity ) {
 			if ( associatedEntityId != null ) {
 				if ( includeDto ) {
-					viewRequest.setEntity( buildUpdateDto( association.getTargetEntityConfiguration(),
-					                                       associatedEntityId, model ) );
+					viewRequest.setEntity( buildUpdateDto( targetEntityConfiguration, associatedEntityId, model ) );
 				}
 				else {
 					viewRequest.setEntity(
-							buildOriginalEntityModel( association.getTargetEntityConfiguration(), associatedEntityId,
-							                          model ) );
+							buildOriginalEntityModel( targetEntityConfiguration, associatedEntityId, model )
+					);
 				}
 			}
 			else if ( includeDto ) {
@@ -206,11 +206,15 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 
 	@InitBinder(VIEW_REQUEST)
 	protected void initBinder( @PathVariable(VAR_ENTITY) EntityConfiguration<?> entityConfiguration,
+	                           @PathVariable(VAR_ASSOCIATION) String associationName,
 	                           WebRequest request,
 	                           WebDataBinder binder ) {
 		request.setAttribute( ATTRIBUTE_DATABINDER, binder, RequestAttributes.SCOPE_REQUEST );
 
-		binder.setMessageCodesResolver( entityConfiguration.getEntityMessageCodeResolver() );
+		binder.setMessageCodesResolver(
+				entityConfiguration.association( associationName )
+				                   .getTargetEntityConfiguration().getEntityMessageCodeResolver()
+		);
 		binder.setValidator( viewRequestValidator );
 
 		initViewFactoryBinder( request );
