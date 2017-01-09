@@ -33,6 +33,8 @@ import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
  */
 public class EntityListActionsProcessor implements ViewElementPostProcessor<TableViewElement.Row>
 {
+	public static final String CELL_NAME = "row-actions";
+
 	protected final BootstrapUiFactory bootstrapUi;
 	protected final EntityConfiguration<Object> entityConfiguration;
 	protected final EntityLinkBuilder linkBuilder;
@@ -50,7 +52,9 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row row ) {
-		TableViewElementBuilder.Cell cell = new TableViewElementBuilder.Cell().css( "row-actions" );
+		TableViewElementBuilder.Cell cell = new TableViewElementBuilder.Cell()
+				.name( CELL_NAME )
+				.css( "row-actions" );
 
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
 

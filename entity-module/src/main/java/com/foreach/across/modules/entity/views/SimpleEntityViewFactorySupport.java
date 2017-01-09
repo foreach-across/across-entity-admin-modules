@@ -27,6 +27,7 @@ import org.springframework.validation.DataBinder;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * Base support class for {@link EntityViewFactory} implementations that supports the following features:
@@ -124,9 +125,11 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	                                    ModelMap model ) {
 		registerLinkBuilder( creationContext, model );
 
-		for ( EntityViewProcessor<V, T> processor : processors ) {
-			processor.prepareModelAndCommand( viewName, creationContext, command, model );
-		}
+		dispatchToProcessors(
+				EntityViewProcessor.class,
+				p -> p.prepareModelAndCommand( viewName, creationContext, command, model )
+
+		);
 	}
 
 	@Override
@@ -134,9 +137,17 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	                               V creationContext,
 	                               EntityViewCommand command,
 	                               DataBinder dataBinder ) {
-		for ( EntityViewProcessor<V, T> processor : processors ) {
-			processor.prepareDataBinder( viewName, creationContext, command, dataBinder );
-		}
+		dispatchToProcessors(
+				EntityViewProcessor.class,
+				p -> p.prepareDataBinder( viewName, creationContext, command, dataBinder )
+
+		);
+	}
+
+	protected <U> void dispatchToProcessors( Class<U> processorType, Consumer<U> consumer ) {
+		processors.stream()
+		          .filter( processorType::isInstance )
+		          .forEach( p -> consumer.accept( processorType.cast( p ) ) );
 	}
 
 	@Override

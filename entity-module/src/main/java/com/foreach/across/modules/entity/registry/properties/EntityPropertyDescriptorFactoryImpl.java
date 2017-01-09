@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
 /**
  * @author Arne Vandamme
  */
-// todo: when creating from parent, dispatch to attribute cloning
+// todo: when creating from parent, dispatchToProcessors to attribute cloning
 @Service
 public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescriptorFactory
 {

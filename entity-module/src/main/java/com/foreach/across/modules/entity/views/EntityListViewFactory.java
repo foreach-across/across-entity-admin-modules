@@ -28,9 +28,11 @@ import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityListActionsProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntitySummaryViewActionProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
+import com.foreach.across.modules.entity.views.processors.SortableTableEntityListViewProcessor;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -203,6 +205,11 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			                                               EntityListView.SUMMARY_VIEW_NAME );
 
 			configureSortableTableBuilder( tableBuilder, entityConfiguration );
+
+			dispatchToProcessors(
+					SortableTableEntityListViewProcessor.class,
+					p -> p.configureSortableTable( (WebViewCreationContext) viewCreationContext, view, tableBuilder )
+			);
 
 			container.add( tableBuilder );
 		}
