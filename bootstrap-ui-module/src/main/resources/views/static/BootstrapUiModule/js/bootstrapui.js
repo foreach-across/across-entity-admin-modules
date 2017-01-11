@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 var BootstrapUiModule = {
     /**
      * Scan for and initialize all known form element types.
@@ -72,6 +73,11 @@ var BootstrapUiModule = {
                 $( this ).autoNumeric( 'set', multiplied );
             }
         } );
+
+        /**
+         * Find and activate all autogrow textarea elements.
+         */
+        autosize( $('.js-autosize', node ) );
     }
 };
 

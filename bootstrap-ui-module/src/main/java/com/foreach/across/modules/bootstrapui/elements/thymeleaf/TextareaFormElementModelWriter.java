@@ -28,7 +28,9 @@ public class TextareaFormElementModelWriter extends FormControlElementModelWrite
 	protected void writeOpenElement( TextareaFormElement control, ThymeleafModelBuilder model ) {
 		super.writeOpenElement( control, model );
 
-		model.addAttributeValue( "class", "form-control" );
+		model.addAttributeValue( "class", "form-control",
+		                         control.isAutoSize() ? TextareaFormElement.CSS_AUTOSIZE : null );
+
 		model.addAttribute( "rows", control.getRows() );
 		model.addAttribute( "placeholder", control.getPlaceholder() );
 

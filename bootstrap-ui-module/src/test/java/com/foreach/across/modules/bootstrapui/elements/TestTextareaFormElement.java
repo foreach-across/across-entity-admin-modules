@@ -30,7 +30,7 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<textarea class='form-control' placeholder='Text input' rows='3'>" +
+				"<textarea class='form-control js-autosize' placeholder='Text input' rows='3'>" +
 						"some &lt;strong class=&quot;test&quot;&gt;html&lt;/strong&gt;" +
 						"</textarea>"
 		);
@@ -40,6 +40,7 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 	public void namedTextarea() {
 		TextareaFormElement box = new TextareaFormElement();
 		box.setName( "internalName" );
+		box.setAutoSize( false );
 
 		renderAndExpect(
 				box,
@@ -60,7 +61,7 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<textarea class='form-control' rows='3' disabled='disabled' />"
+				"<textarea class='form-control js-autosize' rows='3' disabled='disabled' />"
 		);
 
 		box.setDisabled( false );
@@ -68,7 +69,7 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<textarea class='form-control' rows='3' readonly='readonly' />"
+				"<textarea class='form-control js-autosize' rows='3' readonly='readonly' />"
 		);
 	}
 }

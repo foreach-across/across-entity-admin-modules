@@ -69,7 +69,7 @@ public final class BootstrapElementUtils
 			}
 		}
 		else if ( expectedType.isInstance( viewElement ) ) {
-			control = (V) viewElement;
+			control = expectedType.cast( viewElement );
 		}
 
 		if ( control == null && viewElement instanceof ContainerViewElement ) {

@@ -23,6 +23,7 @@ package com.foreach.across.modules.bootstrapui.elements;
 public class TextareaFormElement extends TextboxFormElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.TEXTAREA;
+	public static final String CSS_AUTOSIZE = "js-autosize";
 
 	public static class Type
 	{
@@ -30,6 +31,7 @@ public class TextareaFormElement extends TextboxFormElement
 	}
 
 	private int rows = 3;
+	private boolean autoSize = true;
 
 	public TextareaFormElement() {
 		setTagName( "textarea" );
@@ -43,5 +45,13 @@ public class TextareaFormElement extends TextboxFormElement
 
 	public void setRows( int rows ) {
 		this.rows = rows;
+	}
+
+	public boolean isAutoSize() {
+		return autoSize;
+	}
+
+	public void setAutoSize( boolean autoSize ) {
+		this.autoSize = autoSize;
 	}
 }

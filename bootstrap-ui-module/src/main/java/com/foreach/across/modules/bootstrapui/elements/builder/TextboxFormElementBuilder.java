@@ -17,6 +17,8 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -30,6 +32,8 @@ import java.util.Map;
  */
 public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<TextboxFormElement, TextboxFormElementBuilder>
 {
+	private Boolean autoSize;
+
 	private boolean multiLine = false;
 
 	private TextboxFormElement.Type type;
@@ -63,6 +67,26 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 	 */
 	public TextboxFormElementBuilder multiLine( int rows ) {
 		return rows( rows );
+	}
+
+	/**
+	 * Set the textbox to resize automatically.  Only supported by multi line textboxes.
+	 *
+	 * @return current builder
+	 */
+	public TextboxFormElementBuilder autoSize() {
+		return autoSize( true );
+	}
+
+	/**
+	 * Set the textbox to resize automatically or not.
+	 *
+	 * @param autoSize true if box should resize automatically
+	 * @return current builder
+	 */
+	public TextboxFormElementBuilder autoSize( boolean autoSize ) {
+		this.autoSize = autoSize;
+		return this;
 	}
 
 	/**
@@ -217,6 +241,10 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 				textarea.setRows( rows );
 			}
 
+			if ( autoSize != null ) {
+				textarea.setAutoSize( autoSize );
+			}
+
 			textbox = textarea;
 		}
 		else {
@@ -237,5 +265,10 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 		}
 
 		return apply( textbox, builderContext );
+	}
+
+	@Override
+	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 	}
 }

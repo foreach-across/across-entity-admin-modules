@@ -25,6 +25,7 @@ import com.foreach.across.modules.web.resource.WebResource;
  * <li><a href="http://momentjs.com">moment js</a></li>
  * <li><a href="https://github.com/Eonasdan/bootstrap-datetimepicker">Eonasdan Bootstrap datepicker</a></li>
  * <li><a href="https://github.com/BobKnothe/autoNumeric">autoNumeric</a></li>
+ * <li><a href="http://www.jacklmoore.com/autosize/">Autosize</a></li>
  * </ul>
  *
  * @author Arne Vandamme
@@ -39,8 +40,8 @@ public class BootstrapUiFormElementsWebResources extends SimpleWebResourcePackag
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-momentjs",
 				                 "//cdn.jsdelivr.net/webjars/momentjs/2.10.6/moment-with-locales.js",
 				                 WebResource.EXTERNAL ),
-				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "momentjs-locale-nl-BE",
-				                 "/js/" + BootstrapUiModule.NAME + "/moment/locale-nl-BE.js",
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-momentjs-locale-nl-BE",
+				                 "/static/" + BootstrapUiModule.NAME + "/js/moment/locale-nl-BE.js",
 				                 WebResource.VIEWS ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-datetimepicker",
 				                 "//cdn.jsdelivr.net/webjars/org.webjars/Eonasdan-bootstrap-datetimepicker/4.14.30/bootstrap-datetimepicker.min.js",
@@ -51,8 +52,11 @@ public class BootstrapUiFormElementsWebResources extends SimpleWebResourcePackag
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-numeric",
 				                 "//cdn.jsdelivr.net/webjars/org.webjars.bower/autoNumeric/1.9.30/autoNumeric.js",
 				                 WebResource.EXTERNAL ),
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-autosize",
+				                 "/static/" + BootstrapUiModule.NAME + "/js/autosize.min.js",
+				                 WebResource.VIEWS ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME,
-				                 "/js/" + BootstrapUiModule.NAME + "/bootstrapui.js",
+				                 "/static/" + BootstrapUiModule.NAME + "/js/bootstrapui.js",
 				                 WebResource.VIEWS )
 		);
 	}
