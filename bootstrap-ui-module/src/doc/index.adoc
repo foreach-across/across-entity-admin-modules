@@ -1,0 +1,49 @@
+= BootstrapUiModule
+Arne Vandamme
+1.0.0-SNAPSHOT
+:toc: left
+:sectanchors:
+:module-version: 1.0.0-SNAPSHOT
+:module-name: BootstrapUiModule
+:module-artifact: bootstrap-ui-module
+:module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
+
+[copyright,verbatim]
+--
+Copyright (C) 2014-2017 +
+[small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
+--
+
+[abstract]
+== About
+The {module-name} provides infrastructure for generating user interfaces based on Bootstrap.
+
+Module website: {module-url}
+
+:numbered:
+== General information
+
+=== Artifact
+[source,xml,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>{module-artifact}</artifactId>
+			<version>{module-version}</version>
+		</dependency>
+	</dependencies>
+----
+
+=== Module dependencies
+
+{module-name} only has a required dependency on AcrossWebModule.
+
+== What's new in this version?
+:numbered!:
+=== 1.0.0-SNAPSHOT
+Initial public release available on http://search.maven.org/[Maven central].
+
+:numbered:
+== Using {module-name}

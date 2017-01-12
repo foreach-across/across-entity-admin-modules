@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/bootstrap-ui-module/bootstrap-ui-module.iml" filepath="$PROJECT_DIR$/bootstrap-ui-module/bootstrap-ui-module.iml" />
       <module fileurl="file://$PROJECT_DIR$/bootstrap-ui-module-project.iml" filepath="$PROJECT_DIR$/bootstrap-ui-module-project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bootstrap-ui-module-test/bootstrap-ui-module-test.iml" filepath="$PROJECT_DIR$/bootstrap-ui-module-test/bootstrap-ui-module-test.iml" />
     </modules>
   </component>
 </project>
