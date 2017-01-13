@@ -95,12 +95,12 @@ public class BootstrapMenuController
 		menu.item( "/one", "One" ).order( 2 ).and()
 		    .item( "/two", "Two" ).order( 1 ).and()
 		    .item( "/three", " Three" )
-		    .attribute( NavComponentBuilder.ICON_ATTRIBUTE, new GlyphIcon( GlyphIcon.APPLE ) ).order( 3 );
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) ).order( 3 );
 	}
 
 	private void simpleMenuWithSelected( PathBasedMenuBuilder menu ) {
 		menu.item( "/one", " Selected" )
-		    .attribute( NavComponentBuilder.ICON_ATTRIBUTE, new GlyphIcon( GlyphIcon.DOWNLOAD ) ).order( 2 )
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) ).order( 2 )
 		    .and()
 		    .item( "/two", "Two" ).order( 1 ).and()
 		    .item( "/three", "Three" ).order( 3 ).and();
@@ -108,21 +108,21 @@ public class BootstrapMenuController
 
 	private void singleLevelDropDownMenu( PathBasedMenuBuilder menu ) {
 		menu.item( "/one", "One" ).order( 1 ).and()
-		    .item( "/two", "Two" ).order( 2 ).and()
+		    .group( "/two", "Two" ).order( 2 ).and()
 		    .item( "/two/one", "Sub item 1" ).and()
 		    .item( "/two/two", "Sub item 2" ).and()
 		    .item( "/two/three", " Selected" )
-		    .attribute( NavComponentBuilder.ICON_ATTRIBUTE, new GlyphIcon( GlyphIcon.DOWNLOAD ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) )
 		    .and()
-		    .item( "/three", "Three" )
-		    .attribute( NavComponentBuilder.ICON_ATTRIBUTE, new GlyphIcon( GlyphIcon.ALERT ) )
+		    .group( "/three", "Three" )
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.ALERT ) )
 		    .order( 3 ).and()
 		    .item( "/three/one", "Sub item 1" ).order( 1 ).and()
 		    .item( "/three/two", "Sub item 2" ).order( 2 );
 	}
 
 	private NavComponentBuilder menuComponentBuilder( String type, Menu menu ) {
-		NavComponentBuilder menuBuilder = bootstrapUiComponentFactory.menu( menu );
+		NavComponentBuilder menuBuilder = bootstrapUiComponentFactory.nav( menu );
 
 		switch ( type ) {
 			case "navbar":

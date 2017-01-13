@@ -17,9 +17,7 @@
 package com.foreach.across.modules.bootstrapui.components;
 
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.web.menu.Menu;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,13 +25,10 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
-@RequiredArgsConstructor
 class BootstrapUiComponentFactoryImpl implements BootstrapUiComponentFactory
 {
-	private final BootstrapUiFactory bootstrapUiFactory;
-
 	@Override
-	public NavComponentBuilder menu( Menu menu ) {
-		return new NavComponentBuilder( bootstrapUiFactory ).menu( menu );
+	public NavComponentBuilder nav( Menu menu ) {
+		return new NavComponentBuilder().menu( menu );
 	}
 }

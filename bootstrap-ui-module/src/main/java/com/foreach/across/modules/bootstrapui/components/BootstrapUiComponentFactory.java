@@ -33,5 +33,5 @@ public interface BootstrapUiComponentFactory
 	 * @param menu to render
 	 * @return builder
 	 */
-	NavComponentBuilder menu( Menu menu );
+	NavComponentBuilder nav( Menu menu );
 }

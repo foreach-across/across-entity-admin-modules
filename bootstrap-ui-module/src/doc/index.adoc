@@ -47,3 +47,106 @@ Initial public release available on http://search.maven.org/[Maven central].
 
 :numbered:
 == Using {module-name}
+
+=== Rendering menus: NavComponentBuilder
+Converts a Menu to a Bootstrap nav section (unordered list with base class nav)
+
+example :
+menu x
+through builder
+will be rendered as
+
+Conversion rules:
+
+following styles are supported:
+* simple
+* navbar
+* tabs
+* pills
+* stacked
+
+It's also a regular builder that creates an unordered list `NodeViewElement`.
+
+replaceGroupBySelectedItem:
+if true the title of a group will be replaced by the title of the selected item if there is one,
+Unless the nav:keepGroupItem
+
+NOTE: this does not happen if the group
+
+* only 3 levels are supported
+* item
+* group of items
+** will be rendered as a drop-down
+* group of items as an item of another group
+** will be rendered as a labeled section in the drop-down
+
+An item having sub items will not have its sub items rendered.
+
+Only non-disabled items will be rendered.
+If a group has no non-disabled items, it will be skipped altogether.
+
+Special Menu attributes
+By default renders as an unordered list with list items and standard bootstrap css classes.
+You can influence the generated output by setting reserved attributes on the Menu.
+
+NOTE: attribute names mentioned here are available as constants on the `NavComponentBuilder` class.
+
+[cols="1,4"]
+|===
+
+|nav:icon
+|ViewElement or ViewElementBuilder to be preprended to the item text.
+
+|nav:iconOnly
+|Only applicable on group.
+Will render the group itself as only the icon (if one was set).
+
+|nav:linkViewElement
+|ViewElement or ViewElementBuilder to use when rendering the item within its list item.
+This will replace the standard link with text.  Note that any value for *nav:icon* will be ignored.
+
+Possible child items will still be rendered as a nested unordered list if the item is a group.
+
+|nav:itemViewElement
+|ViewElement or ViewElementBuilder to use for rendering the entire list item for the Menu.
+The ViewElement should take care of the full rendering, including children.
+
+|nav:keepAsGroup
+|Only applicable to group items.  If set to true the group will still be rendered as a group,
+even though there is only a single item.
+
+|nav:keepGroupItem
+|Only applicable if replaceGroupBySelectedItem is set to true.
+In that case if nav:keepGroupItem is set to true, the replace action will be suppressed and the group will always be rendered.
+
+|html:*
+|Any attribute with this name will be added as html attribute to the list item.
+Name of the html attribute will be the menu attribute name without the html: prefix.
+
+|===
+
+
+ViewElementBuilder attribute values
+Some attributes support a `ViewElementBuilder`.
+When rendering using a `ViewElementBuilder` the `ViewElementBuilderContext` will have an attribute *NavComponentBuilder.currentMenuItem* that contains the `Menu` the builder is rendering.
+
+Adding an icon
+Add the nav:icon attribute with a `ViewElement` or `ViewElementBuilder` value.
+
+.example adding a Glyphicon
+//code
+
+
+Managing groups
+If a group only has a single item, that item will be rendered directly.
+To avoid this, add nav:keepAsGroup true.
+
+Icon based drop down
+If you set nav:iconOnly to true, the group will only render the icon for the group itself.
+If there is no icon value set on the group item, the group will be rendered as a normal item.
+
+The children of the group (drop-down options) will always be rendered as icons with text.
+
+If there is only a single item and the group is collapsed, the single item will also be rendered as only an icon.
+
+
