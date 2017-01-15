@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -46,12 +47,13 @@ public class TestLinkViewElementBuilder extends AbstractViewElementBuilderTest<L
 
 	@Test
 	public void customValues() {
+		when( builderContext.buildLink( "2" ) ).thenReturn( "link-2" );
+
 		builder.text( "1" ).url( "2" ).title( "3" );
 		build();
 
 		assertEquals( "1", element.getText() );
-		assertEquals( "2", element.getUrl() );
+		assertEquals( "link-2", element.getUrl() );
 		assertEquals( "3", element.getTitle() );
 	}
-
 }

@@ -21,9 +21,8 @@ import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
-public class ButtonViewElementBuilder extends AbstractNodeViewElementBuilder<ButtonViewElement, ButtonViewElementBuilder>
+public class ButtonViewElementBuilder extends AbstractLinkSupportingNodeViewElementBuilder<ButtonViewElement, ButtonViewElementBuilder>
 {
 	private String text, title, url;
 	private ButtonViewElement.Type type;
@@ -207,7 +206,7 @@ public class ButtonViewElementBuilder extends AbstractNodeViewElementBuilder<But
 		ButtonViewElement button = new ButtonViewElement();
 
 		if ( url != null ) {
-			button.setUrl( url );
+			button.setUrl( buildLink( url, builderContext ) );
 		}
 		if ( type != null ) {
 			button.setType( type );

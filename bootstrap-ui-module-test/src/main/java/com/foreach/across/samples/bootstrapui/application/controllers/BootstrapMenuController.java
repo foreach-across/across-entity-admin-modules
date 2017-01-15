@@ -45,7 +45,7 @@ import java.util.function.Consumer;
  */
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/bootstrapMenu")
+@RequestMapping("/bootstrapNav")
 public class BootstrapMenuController
 {
 	private final BootstrapUiComponentFactory bootstrapUiComponentFactory;
@@ -59,11 +59,11 @@ public class BootstrapMenuController
 		navMenu.builder()
 		       //.group( "/test", "Functionality demos" ).and()
 		       .group( "/test/menu", "Bootstrap menu rendering" ).and()
-		       .item( "/test/menu/simple", "Simple navigation", "/bootstrapMenu/simple" ).order( 1 ).and()
-		       .item( "/test/menu/navbar", "Navbar navigation", "/bootstrapMenu/navbar" ).order( 2 ).and()
-		       .item( "/test/menu/tabs", "Tabs navigation", "/bootstrapMenu/tabs" ).order( 3 ).and()
-		       .item( "/test/menu/pills", "Pills navigation", "/bootstrapMenu/pills" ).order( 4 ).and()
-		       .item( "/test/menu/pills-stacked", "Stacked pills navigation", "/bootstrapMenu/pills-stacked" )
+		       .item( "/test/menu/simple", "Simple navigation", "/bootstrapNav/simple" ).order( 1 ).and()
+		       .item( "/test/menu/navbar", "Navbar navigation", "/bootstrapNav/navbar" ).order( 2 ).and()
+		       .item( "/test/menu/tabs", "Tabs navigation", "/bootstrapNav/tabs" ).order( 3 ).and()
+		       .item( "/test/menu/pills", "Pills navigation", "/bootstrapNav/pills" ).order( 4 ).and()
+		       .item( "/test/menu/pills-stacked", "Stacked pills navigation", "/bootstrapNav/pills-stacked" )
 		       .order( 5 );
 	}
 
@@ -77,6 +77,9 @@ public class BootstrapMenuController
 		menusToGenerate.put( "Simple menu without dropdowns and no selected item", this::simpleMenu );
 		menusToGenerate.put( "Simple menu without dropdowns and with a selected item", this::simpleMenuWithSelected );
 		menusToGenerate.put( "Single level dropdown menu", this::singleLevelDropDownMenu );
+		menusToGenerate.put( "Two level groups dropdown menu", this::twoLevelGroupsWithSeparators );
+		menusToGenerate.put( "Selected item used as group name", this::twoLevelGroupsWithSelected );
+		menusToGenerate.put( "Icon only menu items with custom HTML attributes", this::iconOnlyItems );
 
 		Map<String, ViewElement> generatedMenus = new LinkedHashMap<>();
 		menusToGenerate.forEach(
@@ -92,33 +95,105 @@ public class BootstrapMenuController
 	}
 
 	private void simpleMenu( PathBasedMenuBuilder menu ) {
-		menu.item( "/one", "One" ).order( 2 ).and()
-		    .item( "/two", "Two" ).order( 1 ).and()
-		    .item( "/three", " Three" )
+		menu.item( "/one", "One", "#" ).order( 2 ).and()
+		    .item( "/two", "Two", "#" ).order( 1 ).and()
+		    .item( "/three", "Three", "#" )
 		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) ).order( 3 );
 	}
 
 	private void simpleMenuWithSelected( PathBasedMenuBuilder menu ) {
-		menu.item( "/one", " Selected" )
+		menu.item( "/one", "Selected", "#" )
 		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) ).order( 2 )
 		    .and()
-		    .item( "/two", "Two" ).order( 1 ).and()
-		    .item( "/three", "Three" ).order( 3 ).and();
+		    .item( "/two", "Two", "#" ).order( 1 ).and()
+		    .item( "/three", "Three", "#" ).order( 3 ).and();
 	}
 
 	private void singleLevelDropDownMenu( PathBasedMenuBuilder menu ) {
-		menu.item( "/one", "One" ).order( 1 ).and()
+		menu.item( "/one", "One", "#" ).order( 1 ).and()
 		    .group( "/two", "Two" ).order( 2 ).and()
-		    .item( "/two/one", "Sub item 1" ).and()
-		    .item( "/two/two", "Sub item 2" ).and()
-		    .item( "/two/three", " Selected" )
+		    .item( "/two/one", "Sub item 1", "#" ).and()
+		    .item( "/two/two", "Sub item 2", "#" ).and()
+		    .item( "/two/three", "Selected", "#" )
 		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) )
 		    .and()
 		    .group( "/three", "Three" )
 		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.ALERT ) )
 		    .order( 3 ).and()
-		    .item( "/three/one", "Sub item 1" ).order( 1 ).and()
-		    .item( "/three/two", "Sub item 2" ).order( 2 );
+		    .item( "/three/one", "Sub item 1", "#" ).order( 1 ).and()
+		    .item( "/three/two", "Sub item 2", "#" ).order( 2 );
+	}
+
+	private void twoLevelGroupsWithSeparators( PathBasedMenuBuilder menu ) {
+		menu.item( "/one", "One", "#" ).order( 1 ).and()
+		    .group( "/two", "Two" ).order( 2 ).and()
+		    .item( "/two/one", "Item 1", "#" ).order( 1 ).and()
+		    .item( "/two/two", "Item 2", "#" ).order( 2 ).and()
+		    .group( "/two/three", "Sub group 1" ).order( 3 ).and()
+		    .item( "/two/three/1", "Sub group item 1", "#" ).and()
+		    .item( "/two/three/2", "Sub group item 2", "#" ).and()
+		    .group( "/two/four", "Sub group 2" ).order( 4 ).and()
+		    .item( "/two/four/1", "Sub group 2 item 1", "#" ).and()
+		    .item( "/two/five", "Item 4", "#" )
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+		    .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.AROUND )
+		    .order( 5 )
+		    .and()
+		    .item( "/two/six", "Item 5", "#" ).order( 6 );
+	}
+
+	private void twoLevelGroupsWithSelected( PathBasedMenuBuilder menu ) {
+		menu.root( "replaceGroup" ).and()
+		    .item( "/one", "One", "#" ).order( 1 ).and()
+		    .group( "/two", "Two" ).order( 2 ).and()
+		    .item( "/two/one", "Item 1", "#" ).order( 1 ).and()
+		    .item( "/two/two", "Item 2", "#" ).order( 2 ).and()
+		    .group( "/two/three", "Sub group 1" )
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.HOME ) )
+		    .order( 3 )
+		    .and()
+		    .item( "/two/three/1", "Sub group item 1", "#" ).and()
+		    .item( "/two/three/2", "Selected", "#" )
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.COG ) )
+		    .and()
+		    .group( "/two/four", "Sub group 2" ).order( 4 ).and()
+		    .item( "/two/four/1", "Sub group 2 item 1", "#" ).and()
+		    .item( "/two/five", "Item 4", "#" )
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+		    .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.AROUND )
+		    .order( 5 )
+		    .and()
+		    .item( "/two/six", "Item 5", "#" ).order( 6 );
+	}
+
+	private void iconOnlyItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/one", "One", "#" ).order( 1 ).and()
+		    .group( "/advanced", "Advanced settings" )
+		    .order( 2 )
+		    .attribute( "html:class", "pull-right" )
+		    .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
+		    .and()
+		    .item( "/advanced/trash", "Move to trash", "#" )
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+		    .and()
+		    .group( "/two", "Two" ).order( 3 )
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
+		    .attribute( "html:class", "pull-right" )
+		    .and()
+		    .item( "/two/one", "Item 1", "#" ).order( 1 ).and()
+		    .item( "/two/two", "Item 2", "#" ).order( 2 ).and()
+		    .group( "/two/three", "Sub group 1" ).order( 3 ).and()
+		    .item( "/two/three/1", "Sub group item 1", "#" ).and()
+		    .item( "/two/three/2", "Sub group item 2", "#" ).and()
+		    .group( "/two/four", "Sub group 2" ).order( 4 ).and()
+		    .item( "/two/four/1", "Sub group 2 item 1", "#" ).and()
+		    .item( "/two/five", "Selected", "#" )
+		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+		    .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.AROUND )
+		    .order( 5 )
+		    .and()
+		    .item( "/two/six", "Item 5", "#" ).order( 6 );
 	}
 
 	private NavComponentBuilder menuComponentBuilder( String type, Menu menu ) {
@@ -142,6 +217,10 @@ public class BootstrapMenuController
 				break;
 		}
 
+		if ( "replaceGroup".equals( menu.getRoot().getPath() ) ) {
+			menuBuilder.replaceGroupBySelectedItem();
+		}
+
 		return menuBuilder;
 	}
 
@@ -150,7 +229,7 @@ public class BootstrapMenuController
 		builderConsumer.accept( builder );
 		Menu menu = builder.build();
 		menu.sort();
-		menu.select( Menu.byTitle( " Selected" ) );
+		menu.select( Menu.byTitle( "Selected" ) );
 		return menu;
 	}
 }

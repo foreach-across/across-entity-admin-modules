@@ -18,13 +18,12 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
 /**
  * @author Arne Vandamme
  * @since 1.0.0
  */
-public class LinkViewElementBuilder extends AbstractNodeViewElementBuilder<LinkViewElement, LinkViewElementBuilder>
+public class LinkViewElementBuilder extends AbstractLinkSupportingNodeViewElementBuilder<LinkViewElement, LinkViewElementBuilder>
 {
 	private String text, title, url;
 
@@ -63,7 +62,7 @@ public class LinkViewElementBuilder extends AbstractNodeViewElementBuilder<LinkV
 			link.setText( text );
 		}
 		if ( url != null ) {
-			link.setUrl( url );
+			link.setUrl( buildLink( url, builderContext ) );
 		}
 		if ( title != null ) {
 			link.setTitle( title );

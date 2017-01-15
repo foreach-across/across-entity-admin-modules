@@ -7,6 +7,8 @@ Arne Vandamme
 :module-name: BootstrapUiModule
 :module-artifact: bootstrap-ui-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
+:autoNumeric-url: https://github.com/BobKnothe/autoNumeric
+:datetime-url: https://github.com/Eonasdan/bootstrap-datetimepicker
 
 [copyright,verbatim]
 --
@@ -46,107 +48,382 @@ Module website: {module-url}
 Initial public release available on http://search.maven.org/[Maven central].
 
 :numbered:
-== Using {module-name}
+== ViewElement infrastructure
+{module-name} provides a whole set of `ViewElement` infrastructure, meant for programmatically building user interfaces.
 
+=== ViewElement
+`ViewElement` implementations usually correspond to one or more HTML nodes.
+{module-name} comes with a default set `ViewElement` implementation for rendering Bootstrap markup elements.
+This is done through a collection of Thymeleaf processors for rendering `ViewElement` components.
+
+You can render a `ViewElement` available on the model anywhere in a Thymeleaf template by using the _across:view_ tag.
+
+[source,xml,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+	<across:view element="${myViewElement}" />
+----
+
+WARNING: You usually do not want to cache and reuse `ViewElement` components.
+It is better to cache `ViewElementBuilder`.
+
+=== Default properties
+In its most simple form, a `ViewElement` has the following properties:
+
+[cols=2]
+|===
+
+|*name*
+|An optional internal name of the element.
+This name can be used to retrieve the element from a `ContainerViewElement`.
+
+|*elementType*
+|A *required* type identification for the element.
+
+|*customTemplate*
+|An optional template name.
+If a custom template is specified, it will be used to render the `ViewElement` instead of the default processor.
+By default only Thymeleaf templates are supported.
+
+|===
+
+=== ViewElementBuilder
+A `ViewElementBuilder` is a simple API for creating a `ViewElement` instance based on a configuration and a given `ViewElementBuilderContext`.
+
+The `ViewElementBuilderContext` represents the runtime context when creating the element.
+It is a way to pass attributes required for building the elements, and it also gives access to default request related beans like the `WebResourceRegistry` or the `WebAppLinkBuilder`.
+
+{module-name} comes with a number of default `ViewElementBuilder` implementations for both simple elements and more complex components.
+
+==== Creating application links
+The `ViewElementBuilderContext` provides a `buildLink(String)` method that will resolve a link using the `WebAppLinkBuilder` attribute that is available on the builder context.
+By default the request-bound `WebAppLinkBuilder` is already set.
+
+== Default elements
+Most default elements can be created through the `BootstrapUiFactory`.
+
+=== Overview
+Although elements can be created directly, most have an equivalent `ViewElementBuilder`.
+The builder implementation is rarely created directly but through the `BootstrapUiFactory`.
+
+`BootstrapUiElements` contains the list of constants that define the specific element types.
+
+[cols="1,2,4",options=header]
+|===
+
+|Element
+|Builder
+|Description
+
+|`ButtonViewElement`
+|`ButtonViewElementBuilder`
+|Create buttons or button links.
+
+|`CheckboxFormElement`
+|`OptionFormElementBuilder`
+|
+
+|`ColumnViewElement`
+|`ColumnViewElementBuilder`
+|Creates a Bootstrap grid based layout.
+
+|`DateTimeFormElement`
+|`<<DateTimeFormElementBuilder>>`
+|
+
+|`FaIcon`
+|
+|Represents a Font Awesome icon.
+
+|`FieldsetFormElement`
+|`FieldsetFormElementBuilder`
+|
+
+|`FormGroupElement`
+|`<<FormGroupElementBuilder>>`
+|
+
+|`FormViewElement`
+|`FormViewElementBuilder`
+|Create a form element with optional command attribute.
+
+|`Glyphicon`
+|
+|Represents a Glyphicon icon.
+
+|`HiddenFormElement`
+|`HiddenFormElementBuilder`
+|
+
+|`InputGroupFormElement`
+|`InputGroupFormElementBuilder`
+|
+
+|`LabelFormElement`
+|`LabelFormElementBuilder`
+|
+
+|`LinkViewElement`
+|`LinkViewElementBuilder`
+|Regular hyperlink.
+
+|`NumericFormElement`
+|`<<NumericFormElementBuilder>>`
+|
+
+|`RadioFormElement`
+|`<<OptionsFormElementBuilder,OptionFormElementBuilder>>`
+|Creates a single radio button.
+
+|`SelectFormElement`
+|`<<OptionsFormElementBuilder>>`
+|Creates a select control.
+
+|`SelectFormElement.Option`
+|`<<OptionsFormElementBuilder,OptionFormElementBuilder>>`
+|Creates a single select option.
+
+|`StaticFormElement`
+|
+|Creates a readonly form-control.
+
+|`TableViewElement`
+|`<<TableViewElementBuilder>>`
+|
+
+|`TextareaFormElement`
+|`<<TextboxFormElementBuilder>>`
+|Multi-line text field.
+
+|`TextboxFormElement` +
+|`<<TextboxFormElementBuilder>>`
+|Single-line text field - supporting HTML5 types.
+
+|===
+
+=== TableViewElementBuilder
+Generate Bootstrap markup table structures.
+Holds nested builders for head, foot and body sections.
+
+=== TextboxFormElementBuilder
+Will add textbox or textarea, based on multiline or not.
+Also supports typing a textbox element.
+In case of textarea will by default enable autosizing of the textarea and will register the javascript to do so.
+
+=== OptionsFormElementBuilder
+To quickly create a list of options, either as a select, list of checkboxes or list or radio buttons.
+
+=== FormGroupElementBuilder
+Takes a label and a control.
+Can optionally take some help text.
+Will render as a form group and will attempt to link the label to the control.
+
+=== NumericFormElementBuilder
+Uses the {autoNumeric-url}[JQuery autoNumeric plugin].
+Supports decimal precision, localization and adding symbols (eg. for currency).
+See the class `NumericFormElementConfiguration` for configuration options.
+
+=== DateTimeFormElementBuilder
+Represented as a date/time picker.
+Uses the {datetime-url}[Eonasdan datetimepicker] JQuery plugin.
+
+== Custom component builders
+Accessible through the `BootstrapUiComponentFactory`.
+
+=== Overview
+[cols="1,2,4",options=header]
+|===
+
+|Builder
+|Creates
+|Description
+
+|`<<NavComponentBuilder,NavComponentBuilder>>`
+|`NodeViewElement`
+|Renders a `Menu` component to a Boostrap nav structure.
+
+|===
+
+[[NavComponentBuilder]]
 === Rendering menus: NavComponentBuilder
-Converts a Menu to a Bootstrap nav section (unordered list with base class nav)
+The `NavComponentBuilder` converts a `Menu` component to a http://getbootstrap.com/components/#nav[Bootstrap nav]. +
+An example:
 
-example :
-menu x
-through builder
-will be rendered as
+.Custom menu definition and rendering
+[source,java,indent=0]
+[subs="verbatim,attributes"]
+----
+PathBasedMenuBuilder menu = new PathBasedMenuBuilder();
+menu.item( "/one", "One", "#" ).order( 1 ).and()
+    .group( "/two", "Two" ).order( 2 ).and()
+    .item( "/two/one", "Sub item 1", "#" ).and()
+    .item( "/two/two", "Sub item 2", "#" );
 
-Conversion rules:
+model.addAttribute(
+    "customNav",
+    bootstrapUiComponentFactory.nav( menu ).tabs().build( builderContext )
+);
+----
 
-following styles are supported:
-* simple
-* navbar
-* tabs
-* pills
-* stacked
+.Thymeleaf template
+[source,xml,indent=0]
+[subs="verbatim,attributes"]
+----
+<nav>
+    <across:view element="${customNav}" />
+</nav>
+----
 
-It's also a regular builder that creates an unordered list `NodeViewElement`.
+.HTML output generated
+[source,xml,indent=0]
+[subs="verbatim,attributes"]
+----
+<nav>
+    <ul class="nav nav-tabs">
+        <li><a href="#" title="One">One</a></li>
+        <li class="dropdown">
+            <a data-toggle="dropdown" href="#" title="Two" class="dropdown-toggle">
+                Two <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="#" title="Sub item 1">Sub item 1</a></li>
+                <li><a href="#" title="Sub item 2">Sub item 2</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+----
 
-replaceGroupBySelectedItem:
-if true the title of a group will be replaced by the title of the selected item if there is one,
-Unless the nav:keepGroupItem
+==== Supported nav styles
+The `NavComponentBuilder` supports the following styles:
 
-NOTE: this does not happen if the group
+[cols="1,2,4",options=header]
+|===
 
-* only 3 levels are supported
-* item
-* group of items
-** will be rendered as a drop-down
-* group of items as an item of another group
-** will be rendered as a labeled section in the drop-down
+|Method
+|CSS appended
+|Remarks
 
-An item having sub items will not have its sub items rendered.
+|`simple()`
+|
+|Default mode.
 
-Only non-disabled items will be rendered.
-If a group has no non-disabled items, it will be skipped altogether.
+|`navbar()`
+|_navbar-nav_
+|
 
-Special Menu attributes
-By default renders as an unordered list with list items and standard bootstrap css classes.
-You can influence the generated output by setting reserved attributes on the Menu.
+|`tabs()`
+|_nav-tabs_
+|
 
-NOTE: attribute names mentioned here are available as constants on the `NavComponentBuilder` class.
+|`pills()`
+|_nav-pills_
+|
+
+|`stacked()`
+|_nav-pills nav-stacked_
+|
+
+|===
+
+The `NavComponentBuilder` supports custom HTML attributes to be configured directly on the root *ul* element.
+
+==== Default menu conversion behaviour
+When mapping a `Menu` onto a nav, the following rules are followed:
+
+* only 3 levels of items/groups are supported in the `Menu`
+* an item is always rendered as a single item, even if it has children
+* an item or group are only rendered if they are not disabled
+* when an item is selected, the item itself as well as all its parent will have the _active_ css class
+* a group is only rendered if it has at least one non-disabled child
+* a group is rendered as a dropdown
+* a group inside a group is rendered as a labeled section in the dropdown
+* a group having only a single item is rendered as that single item unless the attribute _nav:keepAsGroup_ is set
+
+==== Replacing group label by the selected item
+By default the label of a dropdown will always be the title of the group.
+If you want the label to be replaced by the label of the selected item, you should configure the `NavComponentBuilder` with `replaceGroupBySelectedItem`.
+
+With `replaceGroupBySelectedItem` `true`, if no item is selected in the group, the dropdown label will still be the title of the group.
+If an item is selected however, the dropdown label will be the item label, unless the group itself has the attribute _nav:keepGroupItem_ set to `true`.
+
+==== Customizing nav rendering through the Menu
+You can influence the generated output by setting reserved attributes on the `Menu` items.
+
+NOTE: Attribute names mentioned here are available as constants on the `NavComponentBuilder` class.
+
+The following attributes are support on `Menu` items:
 
 [cols="1,4"]
 |===
 
-|nav:icon
-|ViewElement or ViewElementBuilder to be preprended to the item text.
+|_nav:icon_
+|`ViewElement` or `ViewElementBuilder` to be prepended to the item text.
 
-|nav:iconOnly
-|Only applicable on group.
-Will render the group itself as only the icon (if one was set).
+|_nav:iconOnly_
+|Only applicable on a group.
+If an icon is set, this will render the group itself as only the icon.
 
-|nav:linkViewElement
-|ViewElement or ViewElementBuilder to use when rendering the item within its list item.
-This will replace the standard link with text.  Note that any value for *nav:icon* will be ignored.
+|_nav:linkViewElement_
+|`ViewElement` or `ViewElementBuilder` to use when rendering the link inside the list item.
+This will replace the standard link with the element generated.
+Note that any value for *nav:icon* will be ignored.
 
 Possible child items will still be rendered as a nested unordered list if the item is a group.
+A custom link should handle opening the dropdown in that case.
 
-|nav:itemViewElement
-|ViewElement or ViewElementBuilder to use for rendering the entire list item for the Menu.
-The ViewElement should take care of the full rendering, including children.
+|_nav:itemViewElement_
+|`ViewElement` or `ViewElementBuilder` to use for rendering the entire list item of that `Menu`.
+The `ViewElement` should take care of the full rendering, including any possible children.
 
-|nav:keepAsGroup
-|Only applicable to group items.  If set to true the group will still be rendered as a group,
-even though there is only a single item.
+|_nav:keepAsGroup_
+|Only applicable on a group.
+If set to `true` the group will always be rendered as a group, even though there is only a single item in it.
 
-|nav:keepGroupItem
-|Only applicable if replaceGroupBySelectedItem is set to true.
-In that case if nav:keepGroupItem is set to true, the replace action will be suppressed and the group will always be rendered.
+|_nav:keepGroupItem_
+|Only applicable on a group and if `replaceGroupBySelectedItem` is set to `true`.
+If so and _nav:keepGroupItem_ is set to true, the replace action will be suppressed and the group label will always be rendered.
 
-|html:*
-|Any attribute with this name will be added as html attribute to the list item.
-Name of the html attribute will be the menu attribute name without the html: prefix.
+|_html:*_
+|Any attribute with a name starting with _html:_ will be added as html attribute to the list item.
+Name of the html attribute will be the menu attribute name without the _html:_ prefix.
 
 |===
 
-
-ViewElementBuilder attribute values
+===== ViewElementBuilder attribute values
 Some attributes support a `ViewElementBuilder`.
 When rendering using a `ViewElementBuilder` the `ViewElementBuilderContext` will have an attribute *NavComponentBuilder.currentMenuItem* that contains the `Menu` the builder is rendering.
 
-Adding an icon
-Add the nav:icon attribute with a `ViewElement` or `ViewElementBuilder` value.
 
-.example adding a Glyphicon
-//code
+==== Examples
+===== Adding an icon
+Adding an icon to an item or group is easily done by setting the _nav:icon_ attribute with a `ViewElement` or `ViewElementBuilder` value.
 
+.Example adding an icon as attribute
+[source,java,indent=0]
+[subs="verbatim,attributes"]
+----
+menu.item( "/dl", "Download", "#" )
+    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) )
+    .order( 1 );
+----
 
-Managing groups
-If a group only has a single item, that item will be rendered directly.
-To avoid this, add nav:keepAsGroup true.
+===== An icon based dropdown
+If you set attribute _nav:iconOnly_ to `true`, the dropdown will only render the icon for the group.
+If there is no icon value set on the group item, the dropdown will render the group title.
 
-Icon based drop down
-If you set nav:iconOnly to true, the group will only render the icon for the group itself.
-If there is no icon value set on the group item, the group will be rendered as a normal item.
+The children of the group (dropdown options) will always be rendered as full items.
 
-The children of the group (drop-down options) will always be rendered as icons with text.
+If however the dropdown label is replaced by an item or the group only contains a single item, the item will also be rendered as only an icon.
 
-If there is only a single item and the group is collapsed, the single item will also be rendered as only an icon.
-
-
+.Example creating a dropdown represented by a single icon
+[source,java,indent=0]
+[subs="verbatim,attributes"]
+----
+menu.group( "/options", "Options", "#" )
+    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.COG ) )
+    .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
+    .and()
+    .item( "/options/dl", "Download", "#" )
+    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) );
+----

@@ -28,7 +28,7 @@ import com.foreach.across.modules.web.menu.Menu;
 public interface BootstrapUiComponentFactory
 {
 	/**
-	 * Returns a builder for rendering a {@link Menu} to a Boostrap nav structure.
+	 * Returns a builder for rendering a {@link Menu} to a Bootstrap nav type unordered list.
 	 *
 	 * @param menu to render
 	 * @return builder

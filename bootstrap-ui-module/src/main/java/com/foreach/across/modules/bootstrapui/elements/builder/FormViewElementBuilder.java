@@ -21,12 +21,11 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 import org.springframework.http.HttpMethod;
 
 import java.util.Map;
 
-public class FormViewElementBuilder extends AbstractNodeViewElementBuilder<FormViewElement, FormViewElementBuilder>
+public class FormViewElementBuilder extends AbstractLinkSupportingNodeViewElementBuilder<FormViewElement, FormViewElementBuilder>
 {
 	private String action, encType, acceptCharSet, formName;
 	private boolean noValidate;
@@ -173,7 +172,7 @@ public class FormViewElementBuilder extends AbstractNodeViewElementBuilder<FormV
 		}
 
 		if ( action != null ) {
-			form.setAction( action );
+			form.setAction( buildLink( action, viewElementBuilderContext ) );
 		}
 
 		if ( encType != null ) {
