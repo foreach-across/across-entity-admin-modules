@@ -8,6 +8,7 @@ Arne Vandamme
 :module-artifact: admin-web-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/AdminWebModule
 :spring-security-module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityModule
+:bootstrap-ui-module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
 
 == General information
 
@@ -34,7 +35,7 @@ Arne Vandamme
 |required
 |Provides the web infrastructure for supporting `@AdminWebController`.
 
-|BootstrapUiModule
+|{bootstrap-ui-module-url}[BootstrapUiModule]
 |required
 |Required for building the basic administration UI.
 
@@ -115,8 +116,9 @@ All properties start with the *adminWebModule.* prefix.
 :numbered!:
 === 2.0.0-SNAPSHOT
 
-* AdminWebModule now depends on BootstrapUiModule
+* AdminWebModule now depends on {bootstrap-ui-module-url}[BootstrapUiModule]
 * the login page now provides an attribute *isLoginPage* that is accessible in the global template
+* added the <<page-content-structure,`PageContentStructure` with corresponding template>> to facilitate layouting admin pages
 
 === 1.1.1.RELEASE
 
@@ -145,13 +147,13 @@ or a fixed password encoder in local development mode.
 == Integration with other modules
 
 [[integration:acrossweb]]
-==== AcrossWebModule
+=== AcrossWebModule
 Admin web creates its own `PrefixingRequestMappingHandlerMapping` that picks up all `@AdminWebController` and will prefix all request mappings with the root path of the admin web module.
 
 Provide an `AdminWebConfigurerAdapter` if you want to register interceptors that should only be applied to the admin web controllers.
 
 [[integration:springsecurity]]
-==== SpringSecurityModule
+=== SpringSecurityModule
 By default `AdminWebModule` adds a `SpringWebSecurityConfigurerAdapter` with default rules for all requests under the admin web root.
 If you wish to modify the default security rules, you must provide your own `SpringWebSecurityConfigurerAdapter` that is positioned before the default `AdminWebSecurityConfiguration` instance.
 
@@ -189,7 +191,7 @@ adminWebModule.addApplicationContextConfigurer( DisableAdminWebSecurityHeaders.c
 ----
 
 [[integration:application-info]]
-==== ApplicationInfoModule
+=== ApplicationInfoModule
 If the `ApplicationInfoModule` is present in the context, the configured application information will be used
 to set the default remember-me cookie name (based on the `ApplicationInfo.getApplicationId()`) and application title for
  the administration interface (based on the `ApplicationInfo.getApplicationName()` property).use DebugWebConfigurerAdapter to add interceptors only to debug web
@@ -207,7 +209,7 @@ All admin web controllers will use a default template named *adminWeb*.
 You can customize which template to use by modifying the `WebTemplateRegistry` bean named *adminWebTemplateRegistry*.
 You can either change the default template or simply replace the instance registered as *adminWeb*.
 
-NOTE: The login page uses the same default template as all other admin web controllers.
+WARNING: The login page uses the same default template as all other admin web controllers.
 This means the template should take both authorized and non-authorized authentications into account.
 
 === Login page
@@ -232,3 +234,121 @@ This attribute can be used in the wrapping template to determine if the login pa
 |Lists the different locale options that should be offered on the login page.
 
 |===
+
+== Building an administration UI
+=== Registering admin controllers
+{module-name} will scan for all beans annoted with `@AdminWebController`.
+This is a replacement for the default `@Controller` annotation and marks the beans as controllers that should run under the {module-name} root path.
+
+All request mappings that the controller declares will be prefixed with the admin root path, and will be secured behind it.
+The default admin web template will be applied to the controller unless it explicitly declares a `@Template` annotation.
+
+NOTE: `@AdminWebController` also declared a Spring condition.
+Beans annotated with `@AdminWebController` will only get created if {module-name} is present.
+
+The following code snippet illustrates creating a simple admin controller:
+
+.Example creating a custom admin web controller
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@AdminWebController
+@RequestMapping("/demo")
+public class DemoAdminWebController
+{
+	@RequestMapping("/page")
+	public String renderPage( Model model ) {
+	    model.addAttribute( "message", "Hello!" );
+	    return "th/myModule/admin/page";
+	}
+}
+----
+
+With the default settings, the controller in the example would be available as _/admin/demo/page.
+
+=== Linking to other admin controllers
+Because admin controllers have no knowledge of the base prefix, care should be taken to use the `WebAppPathResolver` with the correct prefix for generating the right links.
+
+There are 3 ways to do this:
+
+* using the *adminWeb* prefix in the `WebAppPathResolver` bean: `webapp.path("@adminWeb:/demo/page")`
+* using the *adminWeb* prefix directly in any Thymeleaf url: `th:href="@{@adminWeb:/demo/page}"`
+* using the `AdminWeb` bean to generate paths or redirect: `adminWeb.redirect("/demo/page")`
+
+NOTE: {module-name} registers the *adminWeb* link prefix that represents the admin web root path.
+
+=== Adding a page to the main nav section
+If you want to add a page to the main navigation section of admin web, you can do so by simply registering it in the `AdminMenu`.
+The easiest way to do so is by intercepting the `AdminMenuEvent`.
+
+.Example creating a custom admin web controller
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@Event
+public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
+	adminMenuEvent.builder()
+	              .group( "/group", "Demo pages" ).and()
+	              .item( "/group/page", "My demo page", "/demo/page" );
+}
+----
+
+NOTE: Relative urls added to the `AdminMenuEvent` will be considered admin web relative, and will get prefixed with the admin web root path.
+If you want to avoid this, either use absolute urls, add a specific prefix or begin them with an exclamation mark (!).
+
+[[page-content-structure]]
+=== Default page structures
+When creating an admin web page you can use the `PageContentStructure` to help you build a reliable layout.
+The `PageContentStructure` is a `ViewElement` that represents the different sections on a page:
+
+* _header_ with the _page title_ and optionally _page title sub text_
+* _feedback_ section below the header but before the other page content
+* _nav_ section meant for the in-page navigation (for example tabs)
+* _body_ section holding the main content
+* _footer_ section at the bottom
+
+You can create the `PageContentStructure` as a model attribute and if you use the default template `PageContentStructure.TEMPLATE` this will render the entire page.
+This requires you to add all content as `ViewElement` components, but of course you can still specify one or more of the `ViewElement` values to use a custom template for rendering.
+
+Alternatively you can use your own page template and simply render some of the `ViewElement` properties of the `PageContentStructure` where and when you want them.
+
+.Example creating a default page structure
+[source,java,indent=0]
+[subs="verbatim,attributes"]
+----
+@RequestMapping("/page")
+public String pageContent( @ModelAttribute PageContentStructure page,
+                            ViewElementBuilderContext builderContext ) {
+
+    // Render a tab layout
+    page.setRenderAsTabs( true );
+
+    // Manually create a menu structure
+    Menu menu = new PathBasedMenuBuilder()
+        .item( "/one", "One", "#" ).order( 1 ).and()
+        .group( "/advanced", "Advanced settings" )
+        .order( 2 )
+        .attribute( "html:class", "pull-right" )
+        .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
+        .and()
+        .item( "/advanced/trash", "Move to trash", "#" )
+        .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+        .and()
+        .build();
+    menu.sort();
+
+    page.setPageTitle( "Some page title..." );
+    page.addToPageTitleSubText( new GlyphIcon( GlyphIcon.ALERT ) );
+
+    // Convert our menu to a tab nav
+    page.addToNav( bootstrapUiComponentFactory.nav( menu ).tabs().build( builderContext ) );
+    page.addToFeedback(
+        bootstrapUiFactory.alert().danger().dismissible().text( "Hello!" )
+                            .build( builderContext )
+    );
+
+    page.addChild( TextViewElement.text( "Some body content..." ) );
+
+    return PageContentStructure.TEMPLATE;
+}
+----

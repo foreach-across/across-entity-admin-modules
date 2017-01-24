@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package config;
+package admin.config;
 
 import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;

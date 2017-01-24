@@ -28,6 +28,12 @@ public final class AdminWeb extends PrefixingPathContext
 	public static final String LAYOUT_TEMPLATE_CSS = "/static/adminweb/css/adminweb.css";
 	public static final String LAYOUT_TEMPLATE = "th/adminweb/layouts/adminPage";
 
+	/**
+	 * Template name of a simple page that holds a standard <b>pageContentStructure</b> model attribute
+	 * that is a {@link com.foreach.across.modules.web.ui.ViewElement}.
+	 */
+	public static final String PAGE_CONTENT = "th/adminweb/pageContentStructure";
+
 	@Autowired
 	private AdminWebModuleSettings settings;
 
