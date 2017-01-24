@@ -79,4 +79,6 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 	DateTimeFormElementBuilder datetime();
 
 	NumericFormElementBuilder numeric();
+
+	AlertViewElementBuilder alert();
 }

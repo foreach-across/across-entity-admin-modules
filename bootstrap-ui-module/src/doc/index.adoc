@@ -115,6 +115,10 @@ The builder implementation is rarely created directly but through the `Bootstrap
 |Builder
 |Description
 
+|`AlertViewElement`
+|`AlertViewElementBuilder`
+|Create a Bootstrap alert component.
+
 |`ButtonViewElement`
 |`ButtonViewElementBuilder`
 |Create buttons or button links.

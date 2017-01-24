@@ -49,8 +49,6 @@ public class TableViewElementModelBuilder extends AbstractHtmlViewElementModelWr
 
 			addStyle( model, cell.getStyle() );
 			model.addAttribute( "colspan", cell.getColumnSpan() );
-
-			model.addText( cell.getText() );
 		}
 	}
 

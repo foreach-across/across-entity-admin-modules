@@ -17,6 +17,7 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.AbstractTextNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 
 import java.util.ArrayList;
@@ -108,27 +109,10 @@ public class FieldsetFormElement extends AbstractNodeViewElement
 		return elements;
 	}
 
-	public static class Legend extends AbstractNodeViewElement implements ConfigurableTextViewElement
+	public static class Legend extends AbstractTextNodeViewElement implements ConfigurableTextViewElement
 	{
-		private String text;
-
 		public Legend() {
 			super( "legend" );
-		}
-
-		@Override
-		public String getText() {
-			return text;
-		}
-
-		@Override
-		public void setText( String text ) {
-			this.text = text;
-		}
-
-		@Override
-		public boolean hasChildren() {
-			return super.hasChildren() || text != null;
 		}
 	}
 }

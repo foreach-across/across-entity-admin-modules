@@ -16,7 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
-import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import com.foreach.across.modules.web.ui.elements.AbstractTextNodeViewElement;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -117,22 +117,10 @@ public class TableViewElement extends AbstractNodeViewElement
 		styles.clear();
 	}
 
-	public static class Caption extends AbstractNodeViewElement implements ConfigurableTextViewElement
+	public static class Caption extends AbstractTextNodeViewElement
 	{
-		private String text;
-
 		public Caption() {
 			super( "caption" );
-		}
-
-		@Override
-		public String getText() {
-			return text;
-		}
-
-		@Override
-		public void setText( String text ) {
-			this.text = text;
 		}
 	}
 
@@ -198,10 +186,9 @@ public class TableViewElement extends AbstractNodeViewElement
 		}
 	}
 
-	public static class Cell extends AbstractNodeViewElement implements ConfigurableTextViewElement
+	public static class Cell extends AbstractTextNodeViewElement
 	{
 		private boolean heading;
-		private String text;
 		private Style style;
 		private Integer columnSpan;
 
@@ -232,16 +219,6 @@ public class TableViewElement extends AbstractNodeViewElement
 
 		public void setColumnSpan( Integer columnSpan ) {
 			this.columnSpan = columnSpan;
-		}
-
-		@Override
-		public String getText() {
-			return text;
-		}
-
-		@Override
-		public void setText( String text ) {
-			this.text = text;
 		}
 	}
 }

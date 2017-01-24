@@ -16,33 +16,20 @@
 
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
-import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import com.foreach.across.modules.web.ui.elements.AbstractTextNodeViewElement;
 
 /**
  * @author Arne Vandamme
  * @since 1.0.0
  */
-public class LinkViewElement extends AbstractNodeViewElement implements ConfigurableTextViewElement
+public class LinkViewElement extends AbstractTextNodeViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.LINK;
-
-	private String text;
 
 	public LinkViewElement() {
 		super( ELEMENT_TYPE );
 		setTagName( "a" );
 		setUrl( "#" );
-	}
-
-	@Override
-	public String getText() {
-		return text;
-	}
-
-	@Override
-	public void setText( String text ) {
-		this.text = text;
 	}
 
 	public String getTitle() {

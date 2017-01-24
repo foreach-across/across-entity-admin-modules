@@ -168,4 +168,9 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	public NumericFormElementBuilder numeric() {
 		return new NumericFormElementBuilder();
 	}
+
+	@Override
+	public AlertViewElementBuilder alert() {
+		return new AlertViewElementBuilder();
+	}
 }
