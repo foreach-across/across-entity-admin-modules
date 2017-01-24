@@ -27,11 +27,9 @@
 			<directory>${project.basedir}/bootstrap-ui-module/target/apidocs</directory>
 			<outputDirectory>${project.version}/javadoc</outputDirectory>
 		</fileSet>
-		<!--
 		<fileSet>
 			<directory>${project.basedir}/bootstrap-ui-module/target/site</directory>
 			<outputDirectory>.</outputDirectory>
 		</fileSet>
-		-->
 	</fileSets>
 </assembly>
