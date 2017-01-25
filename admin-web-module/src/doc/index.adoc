@@ -307,18 +307,19 @@ The `PageContentStructure` is a `ViewElement` that represents the different sect
 * _body_ section holding the main content
 * _footer_ section at the bottom
 
-You can create the `PageContentStructure` as a model attribute and if you use the default template `PageContentStructure.TEMPLATE` this will render the entire page.
+`PageContentStructure` can be autowired as a request-scoped bean.
+If you then use the default template `PageContentStructure.TEMPLATE` this will render the entire page.
 This requires you to add all content as `ViewElement` components, but of course you can still specify one or more of the `ViewElement` values to use a custom template for rendering.
 
-Alternatively you can use your own page template and simply render some of the `ViewElement` properties of the `PageContentStructure` where and when you want them.
-
-.Example creating a default page structure
+.Example using the default page structure
 [source,java,indent=0]
 [subs="verbatim,attributes"]
 ----
+@Autowired
+private PageContentStructure page;
+
 @RequestMapping("/page")
-public String pageContent( @ModelAttribute PageContentStructure page,
-                            ViewElementBuilderContext builderContext ) {
+public String pageContent( ViewElementBuilderContext builderContext ) {
 
     // Render a tab layout
     page.setRenderAsTabs( true );
@@ -352,3 +353,20 @@ public String pageContent( @ModelAttribute PageContentStructure page,
     return PageContentStructure.TEMPLATE;
 }
 ----
+
+If you do not want to use the request scoped `PageContentStructure`, you can always manually create an instance.
+For the default template to work, it requires the structure to be available on the model as the default *pageContentStructure* attribute.
+
+.Example using a custom page structure
+[source,java,indent=0]
+[subs="verbatim,attributes"]
+----
+@RequestMapping("/page")
+public String pageContent( @ModelAttribute PageContentStructure page ) {
+    ...
+
+    return PageContentStructure.TEMPLATE;
+}
+----
+
+Instead of using the default template `PageContentStructure.TEMPLATE`, you can always use your own page template and simply render some of the `ViewElement` properties of the `PageContentStructure` where and when you want them.

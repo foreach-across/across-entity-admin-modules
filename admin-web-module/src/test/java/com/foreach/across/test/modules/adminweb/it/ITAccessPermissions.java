@@ -18,9 +18,9 @@ package com.foreach.across.test.modules.adminweb.it;
 
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
-import com.foreach.across.modules.spring.security.authority.NamedGrantedAuthority;
 import com.foreach.across.test.AcrossTestWebContext;
 import org.junit.Test;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.foreach.across.test.support.AcrossTestBuilders.web;
@@ -80,12 +80,12 @@ public class ITAccessPermissions
 	}
 
 	private void assertAllowed( MockMvc mvc, String permission ) throws Exception {
-		mvc.perform( get( "/admin/" ).with( user( "user" ).authorities( new NamedGrantedAuthority( permission ) ) ) )
+		mvc.perform( get( "/admin/" ).with( user( "user" ).authorities( new SimpleGrantedAuthority( permission ) ) ) )
 		   .andExpect( status().isOk() );
 	}
 
 	private void assertNotAllowed( MockMvc mvc, String permission ) throws Exception {
-		mvc.perform( get( "/admin/" ).with( user( "user" ).authorities( new NamedGrantedAuthority( permission ) ) ) )
+		mvc.perform( get( "/admin/" ).with( user( "user" ).authorities( new SimpleGrantedAuthority( permission ) ) ) )
 		   .andExpect( status().isForbidden() );
 	}
 }

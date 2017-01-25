@@ -45,6 +45,10 @@ import java.util.function.Consumer;
  * <p/>
  * Children added directly to the {@link PageContentStructure} will be added to the body section when rendering.
  * If rendered as a tab layout, this will be the active tab pane.
+ * <p/>
+ * <strong>Request-bound bean:</strong> {@link PageContentStructure} is declared as an exposed request-bound bean.
+ * This means a controller can write a {@link PageContentStructure} that will be put on the request under the default
+ * attribute name.  Any model attribute set directly will replace the bean structure!
  *
  * @author Arne Vandamme
  * @since 2.0.0

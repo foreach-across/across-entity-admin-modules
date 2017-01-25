@@ -26,6 +26,7 @@ import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.config.support.AdminWebConfigurerAdapter;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.resource.AdminBootstrapWebResourcePackage;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.web.context.PrefixingPathRegistry;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.mvc.InterceptorRegistry;
@@ -37,8 +38,14 @@ import com.foreach.across.modules.web.template.WebTemplateRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Arne Vandamme
@@ -122,7 +129,7 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 		return webResourcePackageManager;
 	}
 
-	// todo: verify thymeleaf support is enabled
+	@ConditionalOnBean(SpringTemplateEngine.class)
 	@Bean
 	public LayoutTemplateProcessorAdapterBean adminLayoutTemplateProcessor() {
 		return new LayoutTemplateProcessorAdapterBean( AdminWeb.NAME, AdminWeb.LAYOUT_TEMPLATE )
@@ -139,5 +146,14 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 				menuFactory.buildMenu( AdminMenu.NAME, AdminMenu.class );
 			}
 		};
+	}
+
+	@Bean
+	@Exposed
+	@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public PageContentStructure pageContentStructure( HttpServletRequest request ) {
+		PageContentStructure page = new PageContentStructure();
+		request.setAttribute( PageContentStructure.MODEL_ATTRIBUTE, page );
+		return page;
 	}
 }
