@@ -35,6 +35,7 @@ import com.foreach.across.modules.web.resource.*;
 import com.foreach.across.modules.web.template.LayoutTemplateProcessorAdapterBean;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import com.foreach.across.modules.web.template.WebTemplateRegistry;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContextInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,13 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	public void addInterceptors( InterceptorRegistry interceptorRegistry ) {
 		interceptorRegistry.addInterceptor( new WebAppPathResolverExposingInterceptor( adminWeb() ) );
 		interceptorRegistry.addInterceptor( adminWebResourceRegistryInterceptor() );
+		interceptorRegistry.addInterceptor( adminWebViewElementBuilderContextInterceptor() );
 		interceptorRegistry.addInterceptor( adminWebTemplateInterceptor() );
+	}
+
+	@Bean
+	public ViewElementBuilderContextInterceptor adminWebViewElementBuilderContextInterceptor() {
+		return new ViewElementBuilderContextInterceptor();
 	}
 
 	@Bean(name = AdminWeb.NAME)
