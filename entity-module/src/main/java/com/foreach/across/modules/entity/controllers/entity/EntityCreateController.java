@@ -17,7 +17,6 @@ package com.foreach.across.modules.entity.controllers.entity;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
@@ -106,13 +105,6 @@ public class EntityCreateController extends EntityControllerSupport
 			@PathVariable(VAR_ENTITY) EntityConfiguration<?> entityConfiguration,
 			ModelMap model ) {
 		EntityView view = viewRequest.createView( model );
-
-		view.setEntityMenu( menuFactory.buildMenu( new EntityAdminMenu<>( entityConfiguration.getEntityType() ) ) );
-
-		if ( view.getPageTitle() == null ) {
-			view.setPageTitle( view.getEntityMessages().createPageTitle() );
-		}
-
 		return view.getTemplate();
 	}
 }

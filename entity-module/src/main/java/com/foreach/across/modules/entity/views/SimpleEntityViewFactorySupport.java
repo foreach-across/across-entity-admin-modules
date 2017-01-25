@@ -15,11 +15,15 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
@@ -51,6 +55,9 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	private EntityMessageCodeResolver messageCodeResolver;
 	private EntityLinkBuilder entityLinkBuilder;
 	private String[] messagePrefixes = new String[] { "entityViews" };
+
+	@Autowired
+	protected BootstrapUiFactory bootstrapUi;
 
 	/**
 	 * @param template Template that should be used to render this view.
@@ -164,6 +171,8 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		view.setMessageCodeResolver( codeResolver );
 		view.setEntityMessages( createEntityMessages( codeResolver ) );
 
+		preparePageContentStructure( view.getPageContentStructure(), creationContext, view );
+
 		preProcessEntityView( creationContext, view );
 
 		buildViewModel( creationContext, entityConfiguration, codeResolver, view );
@@ -171,6 +180,24 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		postProcessEntityView( creationContext, view );
 
 		return view;
+	}
+
+	protected void preparePageContentStructure( PageContentStructure page, V creationContext, T view ) {
+		String successMessage = view.getAttribute( "successMessage" );
+
+		if ( successMessage != null ) {
+			EntityMessages messages = view.getEntityMessages();
+			Object entity = view.getEntity();
+			String entityLabel = entity != null ? view.getEntityConfiguration().getLabel( entity ) : "";
+
+			page.addToFeedback(
+					bootstrapUi.alert()
+					           .success()
+					           .dismissible()
+					           .text( messages.withNameSingular( successMessage, entityLabel ) )
+					           .build( new DefaultViewElementBuilderContext() )
+			);
+		}
 	}
 
 	/**

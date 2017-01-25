@@ -19,7 +19,6 @@ package com.foreach.across.modules.entity.controllers.entity;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
-import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
@@ -114,16 +113,6 @@ public class EntityDeleteController extends EntityControllerSupport
 		adminMenu.breadcrumbLeaf( entityConfiguration.getLabel( original ) );
 
 		EntityView view = viewRequest.createView( model );
-		view.setEntityMenu(
-				menuFactory.buildMenu( new EntityAdminMenu( entityConfiguration.getEntityType(),
-				                                            original ) )
-		);
-
-		if ( view.getPageTitle() == null ) {
-			view.setPageTitle(
-					view.getEntityMessages().deletePageTitle( entityConfiguration.getLabel( original ) )
-			);
-		}
 
 		return view.getTemplate();
 	}

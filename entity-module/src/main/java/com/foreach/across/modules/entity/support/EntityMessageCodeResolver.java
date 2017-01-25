@@ -199,6 +199,14 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 		);
 	}
 
+	public String getMessage( MessageSourceResolvable messageSourceResolvable ) {
+		return messageSource.getMessage( messageSourceResolvable, LocaleContextHolder.getLocale() );
+	}
+
+	public String getMessage( MessageSourceResolvable messageSourceResolvable, Locale locale ) {
+		return messageSource.getMessage( messageSourceResolvable, locale );
+	}
+
 	@Override
 	public String[] resolveMessageCodes( String errorCode, String objectName ) {
 		return addPrefixesToMessageCodes( errorCodesResolver.resolveMessageCodes( errorCode, objectName ), true );

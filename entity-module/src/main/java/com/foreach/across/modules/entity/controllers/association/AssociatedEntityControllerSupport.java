@@ -16,6 +16,8 @@
 package com.foreach.across.modules.entity.controllers.association;
 
 import com.foreach.across.core.development.AcrossDevelopmentMode;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.bootstrapui.elements.builder.AlertViewElementBuilder;
 import com.foreach.across.modules.entity.controllers.AbstractEntityModuleController;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.controllers.ViewRequestValidator;
@@ -25,8 +27,10 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.WebViewCreationContextImpl;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +139,15 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 
 		initViewFactoryBinder( request );
 
+		model.addAttribute( PageContentStructure.MODEL_ATTRIBUTE, createPageContentStructure() );
+
 		return viewRequest;
+	}
+
+	protected PageContentStructure createPageContentStructure() {
+		PageContentStructure structure = new PageContentStructure();
+		structure.setRenderAsTabs( true );
+		return structure;
 	}
 
 	protected boolean isDefaultView( String viewName ) {
@@ -258,8 +270,18 @@ public abstract class AssociatedEntityControllerSupport extends AbstractEntityMo
 		           exceptionId,
 		           thrown );
 
-		model.addAttribute( "errorDetails", thrown.toString() );
-		model.addAttribute( "errorCode", exceptionId );
-		model.addAttribute( "errorMessage", message );
+		EntityMessages messages = (EntityMessages) model.get( EntityView.ATTRIBUTE_MESSAGES );
+		Object entity = model.get( EntityView.ATTRIBUTE_ENTITY );
+		String entityLabel = entity != null ? entityConfiguration.getLabel( entity ) : "";
+
+		PageContentStructure page = (PageContentStructure) model.get( PageContentStructure.MODEL_ATTRIBUTE );
+
+		page.addToFeedback(
+				new AlertViewElementBuilder()
+						.danger()
+						.dismissible()
+						.text( messages.withNameSingular( message, entityLabel, thrown.toString(), exceptionId ) )
+						.build( new DefaultViewElementBuilderContext() )
+		);
 	}
 }

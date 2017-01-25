@@ -15,7 +15,11 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.BindingResultUtils;
 
 /**
  * @author Arne Vandamme
@@ -26,7 +30,8 @@ public class EntityFormView extends EntityView
 	public static final String UPDATE_VIEW_NAME = "updateView";
 	public static final String DELETE_VIEW_NAME = "deleteView";
 
-	public static final String VIEW_TEMPLATE = "th/entity/edit";
+	// todo: remove
+	public static final String VIEW_TEMPLATE = PageContentStructure.TEMPLATE;
 
 	// Will contain the original (unmodified) entity for which the form is being rendered
 	public static final String ATTRIBUTE_ORIGINAL_ENTITY = "originalEntity";
@@ -49,5 +54,12 @@ public class EntityFormView extends EntityView
 	public boolean isUpdate() {
 		Object original = getOriginalEntity();
 		return original != null;
+	}
+
+	/**
+	 * @return the binding result for the view request
+	 */
+	public BindingResult getBindingResult() {
+		return BindingResultUtils.getBindingResult( asMap(), EntityControllerAttributes.VIEW_REQUEST );
 	}
 }

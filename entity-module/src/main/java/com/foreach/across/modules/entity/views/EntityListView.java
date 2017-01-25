@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.ui.ModelMap;
@@ -29,7 +30,8 @@ public class EntityListView extends EntityView
 	public static final String SUMMARY_VIEW_NAME = "listSummaryView";
 
 	public static final String VIEW_NAME = "listView";
-	public static final String VIEW_TEMPLATE = "th/entity/list";
+	// todo remove
+	public static final String VIEW_TEMPLATE = PageContentStructure.TEMPLATE;
 
 	public static final String ATTRIBUTE_PAGEABLE = "pageable";
 	public static final String ATTRIBUTE_PAGE = "page";

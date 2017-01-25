@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.processor.ControlNamePrefixingPostProcessor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -46,9 +45,6 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		extends SimpleEntityViewFactorySupport<V, T>
 {
 	protected static final Logger LOG = LoggerFactory.getLogger( ConfigurablePropertiesEntityViewFactorySupport.class );
-
-	@Autowired
-	protected BootstrapUiFactory bootstrapUi;
 
 	@Autowired
 	protected EntityViewElementBuilderService viewElementBuilderService;

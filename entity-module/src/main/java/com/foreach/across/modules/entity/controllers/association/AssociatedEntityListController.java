@@ -16,13 +16,11 @@
 package com.foreach.across.modules.entity.controllers.association;
 
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.controllers.entity.EntityViewController;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -75,13 +73,6 @@ public class AssociatedEntityListController extends AssociatedEntityControllerSu
 		model.addAttribute( EntityListView.ATTRIBUTE_PAGEABLE, pageable );
 
 		EntityView entityView = viewRequest.createView( model );
-		entityView.setPageTitle(
-				new EntityMessages( entityConfiguration.getEntityMessageCodeResolver() )
-						.updatePageTitle( entityConfiguration.getLabel( sourceEntity ) )
-		);
-		entityView.setEntityMenu(
-				menuFactory.buildMenu( new EntityAdminMenu( entityConfiguration.getEntityType(), sourceEntity ) )
-		);
 
 		return entityView.getTemplate();
 	}

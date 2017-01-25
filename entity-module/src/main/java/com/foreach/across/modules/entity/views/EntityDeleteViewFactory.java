@@ -17,6 +17,9 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.core.events.AcrossEventPublisher;
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
@@ -30,6 +33,10 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.events.BuildEntityDeleteViewEvent;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
+import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.menu.MenuFactory;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
@@ -37,6 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
+
+import java.util.Optional;
 
 /**
  * Creates the delete form for an entity.
@@ -54,6 +63,19 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 	private BootstrapUiFactory bootstrapUi;
 	private AcrossEventPublisher eventPublisher;
 
+	private MenuFactory menuFactory;
+	private BootstrapUiComponentFactory bootstrapUiComponentFactory;
+
+	@Autowired
+	public void setMenuFactory( MenuFactory menuFactory ) {
+		this.menuFactory = menuFactory;
+	}
+
+	@Autowired
+	public void setBootstrapUiComponentFactory( BootstrapUiComponentFactory bootstrapUiComponentFactory ) {
+		this.bootstrapUiComponentFactory = bootstrapUiComponentFactory;
+	}
+
 	@Autowired
 	public void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
 		this.bootstrapUi = bootstrapUiFactory;
@@ -70,6 +92,41 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 	}
 
 	@Override
+	protected void preparePageContentStructure( PageContentStructure page, V creationContext, EntityView view ) {
+		super.preparePageContentStructure( page, creationContext, view );
+
+		EntityMessages entityMessages = view.getEntityMessages();
+		EntityConfiguration<Object> entityConfiguration = view.getEntityConfiguration();
+
+		Object entity = view.getEntity();
+
+		if ( creationContext.isForAssociation() ) {
+			entity = view.getParentEntity();
+			entityConfiguration = creationContext.getEntityAssociation().getSourceEntityConfiguration();
+			entityMessages = new EntityMessages( entityConfiguration.getEntityMessageCodeResolver() );
+		}
+
+		String entityLabel = entityConfiguration.getLabel( entity );
+
+		if ( creationContext.isForAssociation() ) {
+
+			Class<?> entityType = entityConfiguration.getEntityType();
+			Menu menu = menuFactory.buildMenu( new EntityAdminMenu( entityConfiguration.getEntityType(),
+			                                                        entityType.cast( entity ) ) );
+			page.setPageTitle( entityMessages.updatePageTitle( entityLabel ) );
+			page.addToNav(
+					bootstrapUiComponentFactory.nav( menu )
+					                           .tabs()
+					                           .replaceGroupBySelectedItem()
+					                           .build( new DefaultViewElementBuilderContext() )
+			);
+		}
+		else {
+			page.setPageTitle( entityMessages.deletePageTitle( entityLabel ) );
+		}
+	}
+
+	@Override
 	protected void buildViewModel( V viewCreationContext,
 	                               EntityConfiguration entityConfiguration,
 	                               EntityMessageCodeResolver codeResolver,
@@ -82,7 +139,8 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		BuildEntityDeleteViewEvent viewConfiguration = buildViewConfiguration( entityConfiguration, view,
 		                                                                       builderContext, messages );
 
-		ContainerViewElementBuilder buttons = buildButtons( linkBuilder, messages, viewConfiguration );
+		ContainerViewElementBuilder buttons = buildButtons( linkBuilder, messages, viewConfiguration,
+		                                                    viewCreationContext );
 
 		String confirmationMessage = messages.withNameSingular( "views.deleteView.confirmation" );
 		if ( viewConfiguration.isDeleteDisabled() ) {
@@ -127,8 +185,13 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 
 	private ContainerViewElementBuilder buildButtons( EntityLinkBuilder linkBuilder,
 	                                                  EntityMessages messages,
-	                                                  BuildEntityDeleteViewEvent viewConfiguration ) {
+	                                                  BuildEntityDeleteViewEvent viewConfiguration,
+	                                                  V viewCreationContext ) {
 		ContainerViewElementBuilder buttons = bootstrapUi.container().name( "buttons" );
+
+		Optional<String> fromUrl = Optional.ofNullable( retrieveFromUrl( viewCreationContext ) );
+		String cancelUrl = fromUrl.orElseGet( linkBuilder::overview );
+
 		if ( !viewConfiguration.isDeleteDisabled() ) {
 			buttons.add(
 					bootstrapUi.button()
@@ -141,11 +204,15 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		buttons.add(
 				bootstrapUi.button()
 				           .name( "btn-cancel" )
-				           .link( linkBuilder.overview() )
+				           .link( cancelUrl )
 				           .style( viewConfiguration.isDeleteDisabled() ? Style.PRIMARY : Style.Button.LINK )
 				           .text( messages.messageWithFallback( "actions.cancel" ) )
 		);
 		return buttons;
+	}
+
+	private String retrieveFromUrl( ViewCreationContext viewCreationContext ) {
+		return ( (WebViewCreationContext) viewCreationContext ).getRequest().getParameter( "from" );
 	}
 
 	private BuildEntityDeleteViewEvent buildViewConfiguration( EntityConfiguration<?> entityConfiguration,

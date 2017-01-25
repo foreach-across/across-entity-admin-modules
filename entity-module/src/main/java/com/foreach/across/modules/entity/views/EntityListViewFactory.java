@@ -15,6 +15,9 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
@@ -35,6 +38,9 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
+import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.menu.MenuFactory;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -66,10 +72,23 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	private Collection<String> sortableProperties;
 	private EntityListViewPageFetcher pageFetcher;
 
+	private MenuFactory menuFactory;
+	private BootstrapUiComponentFactory bootstrapUiComponentFactory;
+
 	public EntityListViewFactory() {
 		getPropertySelector().setFilter(
 				EntityPropertyFilters.composite( EntityPropertyFilters.NOT_HIDDEN, EntityPropertyFilters.READABLE )
 		);
+	}
+
+	@Autowired
+	public void setMenuFactory( MenuFactory menuFactory ) {
+		this.menuFactory = menuFactory;
+	}
+
+	@Autowired
+	public void setBootstrapUiComponentFactory( BootstrapUiComponentFactory bootstrapUiComponentFactory ) {
+		this.bootstrapUiComponentFactory = bootstrapUiComponentFactory;
 	}
 
 	public EntityListViewPageFetcher getPageFetcher() {
@@ -130,6 +149,32 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	@Override
 	protected EntityListView createEntityView( ModelMap model ) {
 		return new EntityListView( model );
+	}
+
+	@Override
+	protected void preparePageContentStructure( PageContentStructure page, V creationContext, EntityListView view ) {
+		super.preparePageContentStructure( page, creationContext, view );
+
+		if ( creationContext.isForAssociation() ) {
+			EntityConfiguration<Object> entityConfiguration =
+					creationContext.getEntityAssociation().getSourceEntityConfiguration();
+			EntityMessages entityMessages = new EntityMessages( entityConfiguration.getEntityMessageCodeResolver() );
+
+			String entityLabel = entityConfiguration.getLabel( view.getParentEntity() );
+			Class<?> entityType = entityConfiguration.getEntityType();
+			Menu menu = menuFactory.buildMenu( new EntityAdminMenu( entityConfiguration.getEntityType(),
+			                                                        entityType.cast( view.getParentEntity() ) ) );
+			page.setPageTitle( entityMessages.updatePageTitle( entityLabel ) );
+
+			if ( menu != null ) {
+				page.addToNav(
+						bootstrapUiComponentFactory.nav( menu )
+						                           .tabs()
+						                           .replaceGroupBySelectedItem()
+						                           .build( new DefaultViewElementBuilderContext() )
+				);
+			}
+		}
 	}
 
 	@Override

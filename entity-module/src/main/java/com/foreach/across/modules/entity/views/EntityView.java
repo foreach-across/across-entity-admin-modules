@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
@@ -127,6 +128,17 @@ public class EntityView implements Model
 	 */
 	public void setViewElements( ContainerViewElement container ) {
 		Assert.notNull( container );
+
+		PageContentStructure page = getAttribute( PageContentStructure.MODEL_ATTRIBUTE );
+
+		if ( page != null ) {
+			ContainerViewElement current = getViewElements();
+			if ( current != null ) {
+				page.removeChild( current );
+			}
+			page.addChild( container );
+		}
+
 		model.put( ATTRIBUTE_VIEW_ELEMENTS, container );
 	}
 
@@ -151,18 +163,22 @@ public class EntityView implements Model
 		addAttribute( ATTRIBUTE_PARENT_ENTITY, entity );
 	}
 
+	@Deprecated
 	public String getPageTitle() {
 		return getAttribute( ATTRIBUTE_PAGE_TITLE );
 	}
 
+	@Deprecated
 	public void setPageTitle( String pageTitle ) {
 		model.put( ATTRIBUTE_PAGE_TITLE, pageTitle );
 	}
 
+	@Deprecated
 	public Menu getEntityMenu() {
 		return getAttribute( ATTRIBUTE_ENTITY_MENU );
 	}
 
+	@Deprecated
 	public void setEntityMenu( Menu menu ) {
 		model.put( ATTRIBUTE_ENTITY_MENU, menu );
 	}
@@ -210,5 +226,9 @@ public class EntityView implements Model
 	@Override
 	public Map<String, Object> asMap() {
 		return model;
+	}
+
+	public PageContentStructure getPageContentStructure() {
+		return getAttribute( PageContentStructure.MODEL_ATTRIBUTE );
 	}
 }

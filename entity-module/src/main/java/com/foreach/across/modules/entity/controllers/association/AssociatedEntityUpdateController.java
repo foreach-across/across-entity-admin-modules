@@ -17,13 +17,11 @@ package com.foreach.across.modules.entity.controllers.association;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,14 +111,6 @@ public class AssociatedEntityUpdateController extends AssociatedEntityController
 			@ModelAttribute(VIEW_REQUEST) EntityViewRequest viewRequest,
 			ModelMap model ) {
 		EntityView view = viewRequest.createView( model );
-		view.setPageTitle(
-				new EntityMessages( entityConfiguration.getEntityMessageCodeResolver() )
-						.updatePageTitle( entityConfiguration.getLabel( sourceEntity ) )
-		);
-		view.setEntityMenu(
-				menuFactory.buildMenu( new EntityAdminMenu( entityConfiguration.getEntityType(), sourceEntity ) )
-		);
-
 		return view.getTemplate();
 	}
 }

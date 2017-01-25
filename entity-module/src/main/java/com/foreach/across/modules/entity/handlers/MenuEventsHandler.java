@@ -19,6 +19,8 @@ import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenuEvent;
+import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -119,6 +121,24 @@ public class MenuEventsHandler
 
 					builder.item( association.getName(), itemTitle, associatedLinkBuilder.overview() );
 				}
+			}
+
+			// Generate advanced options
+			builder.group( "/advanced-options",
+			               messageCodeResolver.getMessageWithFallback( "menu.advanced", "Advanced" ) )
+			       .attribute( "html:class", "pull-right" )
+			       .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.COG ) )
+			       .attribute( NavComponentBuilder.ATTR_KEEP_GROUP_ITEM, true )
+			       .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );
+
+			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
+			if ( allowableActions.contains( AllowableAction.DELETE ) ) {
+				builder.item( "/advanced-options/delete",
+				              messageCodeResolver.getMessageWithFallback( "menu.delete", "Delete" ),
+				              linkBuilder.delete( menu.getEntity() ) + "?from=javascript:history.back()" )
+				       .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+				       .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.BEFORE )
+				       .order( Ordered.LOWEST_PRECEDENCE );
 			}
 		}
 		else {

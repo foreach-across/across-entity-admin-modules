@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.controllers.entity;
 
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.controllers.EntityOverviewController;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -43,6 +44,13 @@ public class EntityListController extends EntityControllerSupport
 			NativeWebRequest request,
 			ModelMap model ) {
 		return super.buildViewRequest( entityConfiguration, false, false, null, request, model );
+	}
+
+	@Override
+	protected PageContentStructure createPageContentStructure() {
+		PageContentStructure structure = super.createPageContentStructure();
+		structure.setRenderAsTabs( false );
+		return structure;
 	}
 
 	@Override
