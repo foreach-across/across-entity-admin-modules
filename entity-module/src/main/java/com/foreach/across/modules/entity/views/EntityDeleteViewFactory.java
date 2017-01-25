@@ -20,7 +20,6 @@ import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
@@ -60,7 +59,6 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 
 	public static final String FORM_NAME = "entityDeleteForm";
 
-	private BootstrapUiFactory bootstrapUi;
 	private AcrossEventPublisher eventPublisher;
 
 	private MenuFactory menuFactory;
@@ -74,11 +72,6 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 	@Autowired
 	public void setBootstrapUiComponentFactory( BootstrapUiComponentFactory bootstrapUiComponentFactory ) {
 		this.bootstrapUiComponentFactory = bootstrapUiComponentFactory;
-	}
-
-	@Autowired
-	public void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUi = bootstrapUiFactory;
 	}
 
 	@Autowired
@@ -181,6 +174,9 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 						.add( buttons )
 						.build( builderContext )
 		);
+
+		// todo: simplify
+		page.addChild( view.getViewElements() );
 	}
 
 	private ContainerViewElementBuilder buildButtons( EntityLinkBuilder linkBuilder,

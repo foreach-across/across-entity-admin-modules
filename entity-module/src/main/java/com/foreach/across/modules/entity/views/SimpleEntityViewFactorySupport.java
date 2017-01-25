@@ -57,6 +57,9 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	private String[] messagePrefixes = new String[] { "entityViews" };
 
 	@Autowired
+	protected PageContentStructure page;
+
+	@Autowired
 	protected BootstrapUiFactory bootstrapUi;
 
 	/**
@@ -171,7 +174,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		view.setMessageCodeResolver( codeResolver );
 		view.setEntityMessages( createEntityMessages( codeResolver ) );
 
-		preparePageContentStructure( view.getPageContentStructure(), creationContext, view );
+		preparePageContentStructure( page, creationContext, view );
 
 		preProcessEntityView( creationContext, view );
 

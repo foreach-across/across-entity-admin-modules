@@ -18,6 +18,7 @@ package it.com.foreach.across.modules.entity.views;
 
 import com.foreach.across.config.EnableAcrossContext;
 import com.foreach.across.core.events.AcrossEventPublisher;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
@@ -30,6 +31,7 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewCreationContext;
 import com.foreach.across.modules.entity.views.events.BuildEntityDeleteViewEvent;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.test.AcrossWebAppConfiguration;
@@ -39,9 +41,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -207,8 +211,9 @@ public class TestEntityDeleteViewFactory
 	}
 
 	private EntityView buildView( EntityConfiguration entityConfiguration ) {
-		ViewCreationContext creationContext = mock( ViewCreationContext.class );
+		WebViewCreationContext creationContext = mock( WebViewCreationContext.class );
 		when( creationContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
+		when( creationContext.getRequest() ).thenReturn( mock( NativeWebRequest.class ) );
 
 		EntityViewCommand cmd = mock( EntityViewCommand.class );
 
@@ -241,6 +246,12 @@ public class TestEntityDeleteViewFactory
 			entityDeleteViewFactory.setEntityLinkBuilder( linkBuilder );
 
 			return entityDeleteViewFactory;
+		}
+
+		@Bean
+		@Scope("prototype")
+		public PageContentStructure pageContentStructure() {
+			return new PageContentStructure();
 		}
 	}
 }

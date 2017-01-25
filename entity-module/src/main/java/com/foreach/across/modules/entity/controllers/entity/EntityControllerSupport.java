@@ -32,6 +32,7 @@ import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,9 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 	private static final String ATTRIBUTE_DATABINDER = EntityViewRequest.class.getName() + ".DataBinder";
 
 	protected final Logger LOG = LoggerFactory.getLogger( getClass() );
+
+	@Autowired
+	private PageContentStructure page;
 
 	@Autowired
 	private ConversionService mvcConversionService;
@@ -146,15 +150,13 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 
 		initViewFactoryBinder( request );
 
-		model.addAttribute( PageContentStructure.MODEL_ATTRIBUTE, createPageContentStructure() );
+		preparePageContent( page );
 
 		return viewRequest;
 	}
 
-	protected PageContentStructure createPageContentStructure() {
-		PageContentStructure structure = new PageContentStructure();
-		structure.setRenderAsTabs( true );
-		return structure;
+	protected void preparePageContent( PageContentStructure page ) {
+		page.setRenderAsTabs( true );
 	}
 
 	protected boolean isAllowedAccess( EntityConfiguration entityConfiguration, AllowableActions allowableActions ) {
@@ -257,17 +259,16 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 		           exceptionId,
 		           thrown );
 
-		EntityMessages messages = (EntityMessages) model.get( EntityView.ATTRIBUTE_MESSAGES );
+		EntityMessages messages = new EntityMessages( entityConfiguration.getEntityMessageCodeResolver() );
 		Object entity = model.get( EntityView.ATTRIBUTE_ENTITY );
 		String entityLabel = entity != null ? entityConfiguration.getLabel( entity ) : "";
-
-		PageContentStructure page = (PageContentStructure) model.get( PageContentStructure.MODEL_ATTRIBUTE );
 
 		page.addToFeedback(
 				new AlertViewElementBuilder()
 						.danger()
 						.dismissible()
-						.text( messages.withNameSingular( message, entityLabel, thrown.toString(), exceptionId ) )
+						.add( TextViewElement.html( messages.withNameSingular( message, entityLabel, thrown.toString(),
+						                                                       exceptionId ) ) )
 						.build( new DefaultViewElementBuilderContext() )
 		);
 	}

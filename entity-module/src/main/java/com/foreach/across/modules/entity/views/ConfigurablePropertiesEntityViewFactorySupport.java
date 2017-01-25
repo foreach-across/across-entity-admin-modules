@@ -113,6 +113,9 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		view.setViewElements(
 				buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver )
 		);
+
+		// todo: simplify
+		page.addChild( view.getViewElements() );
 	}
 
 	protected EntityViewElementBuilderContext<T> createEntityViewElementBuilderContext( T view ) {

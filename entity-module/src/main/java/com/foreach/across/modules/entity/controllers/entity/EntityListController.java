@@ -47,10 +47,8 @@ public class EntityListController extends EntityControllerSupport
 	}
 
 	@Override
-	protected PageContentStructure createPageContentStructure() {
-		PageContentStructure structure = super.createPageContentStructure();
-		structure.setRenderAsTabs( false );
-		return structure;
+	protected void preparePageContent( PageContentStructure page ) {
+		page.setRenderAsTabs( false );
 	}
 
 	@Override

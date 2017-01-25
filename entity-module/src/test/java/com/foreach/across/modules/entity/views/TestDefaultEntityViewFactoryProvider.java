@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
@@ -114,7 +115,7 @@ public class TestDefaultEntityViewFactoryProvider
 		EntityListViewFactory factory = provider.create( config, EntityListViewFactory.class );
 		assertSame( expected, factory );
 
-		verify( factory ).setTemplate( EntityListView.VIEW_TEMPLATE );
+		verify( factory, times( 2 ) ).setTemplate( PageContentStructure.TEMPLATE );
 		verify( factory ).setMessagePrefixes( "entityViews" );
 		verify( factory ).setPropertyRegistry( subPropertyRegistry );
 //		verify( factory ).setPropertyFilter( any() );
