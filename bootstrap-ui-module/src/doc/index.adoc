@@ -95,6 +95,16 @@ It is a way to pass attributes required for building the elements, and it also g
 
 {module-name} comes with a number of default `ViewElementBuilder` implementations for both simple elements and more complex components.
 
+==== Global ViewElementBuilderContext
+Most `ViewElementBuilder` implementations extend `GlobalContextSupportingViewElementBuilder`.
+This class provides a parameterless `build()` method that will attempt to retrieve a `ViewElementBuilderContext` from the current thread, or from the request attached to the thread.
+If no global `ViewElementBuilderContext` is registered however, calls to `build()` will throw an exception.
+
+See the `ViewElementBuilderContextInterceptor` for an interceptor that creates a global `ViewElementBuilderContext`.
+
+==== ViewElementBuilderContext in controllers
+If there is a global `ViewElementBuilderContext` available, you can also `ViewElementBuilderContext` as a method argument in web controller methods.
+
 ==== Creating application links
 The `ViewElementBuilderContext` provides a `buildLink(String)` method that will resolve a link using the `WebAppLinkBuilder` attribute that is available on the builder context.
 By default the request-bound `WebAppLinkBuilder` is already set.
