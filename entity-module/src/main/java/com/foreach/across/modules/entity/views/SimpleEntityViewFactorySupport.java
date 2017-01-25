@@ -22,7 +22,6 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
-import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.ModelMap;
@@ -198,7 +197,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 					           .success()
 					           .dismissible()
 					           .text( messages.withNameSingular( successMessage, entityLabel ) )
-					           .build( new DefaultViewElementBuilderContext() )
+					           .build()
 			);
 		}
 	}

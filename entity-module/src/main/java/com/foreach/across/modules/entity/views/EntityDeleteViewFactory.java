@@ -35,7 +35,6 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
-import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
@@ -111,7 +110,7 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 					bootstrapUiComponentFactory.nav( menu )
 					                           .tabs()
 					                           .replaceGroupBySelectedItem()
-					                           .build( new DefaultViewElementBuilderContext() )
+					                           .build()
 			);
 		}
 		else {

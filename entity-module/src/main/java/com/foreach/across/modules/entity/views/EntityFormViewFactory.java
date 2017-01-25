@@ -30,7 +30,6 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
-import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.val;
@@ -106,7 +105,7 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 					bootstrapUiComponentFactory.nav( menu )
 					                           .tabs()
 					                           .replaceGroupBySelectedItem()
-					                           .build( new DefaultViewElementBuilderContext() )
+					                           .build()
 			);
 		}
 	}

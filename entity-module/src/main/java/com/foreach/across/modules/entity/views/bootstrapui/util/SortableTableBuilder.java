@@ -50,7 +50,7 @@ import static com.foreach.across.modules.entity.views.ViewElementMode.LIST_VALUE
  * @author Arne Vandamme
  */
 @Scope("prototype")
-public class SortableTableBuilder implements ViewElementBuilder<ViewElement>
+public class SortableTableBuilder extends GlobalContextSupportingViewElementBuilder<ViewElement>
 {
 	/**
 	 * Sets an 'odd' or 'even' class on a table row depending on the iterator index.

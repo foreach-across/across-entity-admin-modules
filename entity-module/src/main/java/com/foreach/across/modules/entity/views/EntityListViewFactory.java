@@ -40,7 +40,6 @@ import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
-import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -171,7 +170,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 						bootstrapUiComponentFactory.nav( menu )
 						                           .tabs()
 						                           .replaceGroupBySelectedItem()
-						                           .build( new DefaultViewElementBuilderContext() )
+						                           .build()
 				);
 			}
 		}

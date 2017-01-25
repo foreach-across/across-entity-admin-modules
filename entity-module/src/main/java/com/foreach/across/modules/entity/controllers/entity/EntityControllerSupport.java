@@ -31,7 +31,6 @@ import com.foreach.across.modules.entity.web.WebViewCreationContextImpl;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
-import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -269,7 +268,7 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 						.dismissible()
 						.add( TextViewElement.html( messages.withNameSingular( message, entityLabel, thrown.toString(),
 						                                                       exceptionId ) ) )
-						.build( new DefaultViewElementBuilderContext() )
+						.build()
 		);
 	}
 }
