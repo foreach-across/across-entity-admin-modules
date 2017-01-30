@@ -16,7 +16,12 @@
 
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
+import com.foreach.across.modules.bootstrapui.elements.AutosuggestFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
+import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +29,36 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeViewElementBuilder<NodeViewElement, AutoSuggestFormElementBuilder>
 {
+	public static final String TYPEAHEAD_CLASS = "js-typeahead";
+	public static final String TYPEAHEAD_INPUT_CLASS = "js-typeahead-input";
+	public static final String ATTRIBUTE_DATA_AUTOSUGGEST = "data-autosuggest";
+
 	private final BootstrapUiFactory bootstrapUiFactory;
+	private AutosuggestFormElementConfiguration configuration;
+
+	@Override
+	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.addPackage(
+				JQueryWebResources.NAME ); //both bloodhound.js and typeahead.jquery.js have a dependency on jQuery 1.9+
+		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
+		webResourceRegistry.addWithKey( WebResource.CSS, "autosuggest",
+		                                "/static/BootstrapUiModule/css/autosuggest.css",
+		                                WebResource.VIEWS );
+	}
+
+	public AutoSuggestFormElementBuilder configuration( AutosuggestFormElementConfiguration configuration ) {
+		this.configuration = configuration;
+		return this;
+	}
 
 	@Override
 	protected NodeViewElement createElement( ViewElementBuilderContext viewElementBuilderContext ) {
+		//TODO how to make this cleaner @Arne
+		configuration.setEndPoint( buildLink( configuration.getEndPoint(), viewElementBuilderContext ) );
 		return bootstrapUiFactory.div()
-		                         .add( bootstrapUiFactory.textbox() )
+		                         .css( TYPEAHEAD_CLASS )
+		                         .attribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration )
+		                         .add( bootstrapUiFactory.textbox().css( TYPEAHEAD_INPUT_CLASS ) )
 		                         .build( viewElementBuilderContext );
 	}
 }

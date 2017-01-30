@@ -78,6 +78,72 @@ var BootstrapUiModule = {
          * Find and activate all autogrow textarea elements.
          */
         autosize( $('.js-autosize', node ) );
+
+        $.each( $( '.js-typeahead' ), function ( i, $typeahead )
+        {
+            var configuration = $( this ).data( 'autosuggest' );
+            var map = {};
+
+            var container = $( this );
+            var $typeaheadInstance = $( this ).find( ".js-typeahead-input" );
+            var url = configuration.endPoint + '?query=%QUERY';
+            var engine = new Bloodhound( {
+                datumTokenizer: Bloodhound.tokenizers.whitespace,
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    wildcard: '%QUERY', url: url, filter: function ( data )
+                    {
+                        var suggestions = [];
+                        map = {};
+                        $.each( data, function ( i, suggestion )
+                        {
+                            map[suggestion.description] = suggestion;
+                            suggestions.push( suggestion );
+                        } );
+                        return suggestions;
+                    }
+                }
+            } );
+            engine.initialize();
+            $typeaheadInstance.typeahead( {
+                                              highlight: true, minLength: 1
+                                          }, {
+                                              source: engine.ttAdapter(), display: 'description', templates: {
+                    notFound: ['<div class="empty-message"><b>Not Found</b></div>'], suggestion: function ( item )
+                    {
+                        return '<div>' + item.description + '</div>';
+                    }
+                }
+                                          } );
+            $typeaheadInstance.on( 'typeahead:select', function ( evt, item )
+            {
+                if ( container.find( '.js-typeahead-item input[value=' + item.id + ']' ).length == 0 ) {
+                    var template = container.find( '.js-typeahead-template' ).clone( false );
+                    template.removeClass( 'hidden js-typeahead-template' );
+                    template.addClass( 'js-typeahead-item' );
+
+                    template.find( '[data-as-property]' ).each( function ( i, node )
+                                                                {
+                                                                    node.innerText =
+                                                                            item[$( node ).attr( 'data-as-property' )];
+                                                                } );
+                    template.find( '[type=hidden]' ).val( item.id ).removeAttr( 'disabled' );
+                    container.find( 'table' ).append( template );
+
+                    template.find( 'a' ).on( 'click', function ()
+                    {
+                        $( this ).closest( 'tr' ).remove();
+                    } );
+                }
+
+                $typeaheadInstance.typeahead( 'val', '' );
+            } );
+
+            container.find( '.js-typeahead-item a' ).on( 'click', function ()
+            {
+                $( this ).closest( 'tr' ).remove();
+            } )
+        } );
     }
 };
 

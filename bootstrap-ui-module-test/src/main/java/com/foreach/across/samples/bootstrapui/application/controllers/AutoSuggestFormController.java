@@ -16,6 +16,7 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
+import com.foreach.across.modules.bootstrapui.elements.AutosuggestFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.web.menu.Menu;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Generates Bootstrap based tabs from a {@link Menu} instance.
@@ -40,9 +45,45 @@ public class AutoSuggestFormController
 	@RequestMapping(method = RequestMethod.GET)
 	public String autosuggest( ModelMap model ) {
 
-		model.addAttribute( "autosuggest", bootstrapUiFactory.autosuggest().build() );
+		AutosuggestFormElementConfiguration configuration = new AutosuggestFormElementConfiguration(
+				"/bootstrapAutosuggest/suggest" );
+		model.addAttribute( "autosuggest", bootstrapUiFactory.autosuggest()
+		                                                     .configuration( configuration )
+		                                                     .build() );
 
 		return "th/bootstrapUiTest/autosuggest";
 	}
 
+	@RequestMapping(method = RequestMethod.GET, value = "/suggest", produces = "application/json; charset=UTF-8")
+	@ResponseBody
+	public List<Suggestion> suggetions() {
+
+		return Arrays.asList(
+				new Suggestion( 1, "AAA" ),
+				new Suggestion( 2, "ABC" ),
+				new Suggestion( 3, "BBB" )
+		);
+	}
+
+	private class Suggestion
+	{
+		private int id;
+		private String description;
+
+		public Suggestion() {
+		}
+
+		public Suggestion( int id, String description ) {
+			this.id = id;
+			this.description = description;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+	}
 }
