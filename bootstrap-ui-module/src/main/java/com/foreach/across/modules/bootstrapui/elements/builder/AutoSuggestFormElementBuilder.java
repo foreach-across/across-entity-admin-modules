@@ -136,24 +136,24 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		                                            .collect( Collectors.toList() ) );
 	}
 
-	private TableViewElementBuilder.Row getItemTemplate( String classForRow,
-	                                                     List<String> properties ) {
+	private TableViewElementBuilder getItemTemplate( String classForRow,
+	                                                 List<String> properties ) {
 		TableViewElementBuilder table = bootstrapUiFactory.table();
-		return table.row()
-		            .css( classForRow )
-		            .addAll( properties.stream()
-		                               .map( prop -> table.cell()
-		                                                  .attribute( "data-as-property", prop ) )
-		                               .collect( Collectors.toList() ) )
-		            .add( table.cell()
-		                       .css( "row-actions" )
-		                       .add( bootstrapUiFactory
-				                             .link()
-				                             .title( "REMOVE" ) //TODO make configurable
-				                             .add( new GlyphIcon( GlyphIcon.REMOVE ) ) )
-		                       .add( bootstrapUiFactory
-				                             .hidden()
-				                             .controlName( idProperty ) ) );
+		return table.add( table.row()
+		                       .css( classForRow )
+		                       .addAll( properties.stream()
+		                                          .map( prop -> table.cell()
+		                                                             .attribute( "data-as-property", prop ) )
+		                                          .collect( Collectors.toList() ) )
+		                       .add( table.cell()
+		                                  .css( "row-actions" )
+		                                  .add( bootstrapUiFactory
+				                                        .link()
+				                                        .title( "REMOVE" ) //TODO make configurable
+				                                        .add( new GlyphIcon( GlyphIcon.REMOVE ) ) )
+		                                  .add( bootstrapUiFactory
+				                                        .hidden()
+				                                        .controlName( idProperty ) ) ) );
 	}
 
 	private TableViewElementBuilder.Row renderPrefill( TableViewElementBuilder table,
