@@ -19,8 +19,14 @@
 	<title>Bootstrap rendering demo page for autosuggest</title>
 </head>
 <body th:fragment="content">
+<h1>
+	Autosuggest with defaults
+</h1>
+<across:view element="${autosuggest1}"/>
 
-<across:view element="${autosuggest}"/>
-
+<h1>
+	Autosuggest with prefill
+</h1>
+<across:view element="${autosuggest2}"/>
 </body>
 </html>

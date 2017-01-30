@@ -20,35 +20,45 @@ import com.foreach.across.modules.bootstrapui.elements.AutosuggestFormElementCon
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
-import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeViewElementBuilder<NodeViewElement, AutoSuggestFormElementBuilder>
 {
-	public static final String TYPEAHEAD_CLASS = "js-typeahead";
-	public static final String TYPEAHEAD_INPUT_CLASS = "js-typeahead-input";
-	public static final String TYPEAHEAD_ITEM_CLASS = "js-typeahead-item";
+	public static final String CSS_TYPEAHEAD_CLASS = "js-typeahead";
+	public static final String CSS_TYPEAHEAD_INPUT = "js-typeahead-input";
+	public static final String CSS_TYPEAHEAD_ITEM_CLASS = "js-typeahead-item";
+	public static final String CSS_PREFILL_TABLE = "js-typeahead-prefill";
+
+	public static final String CSS_SUGGESTION_TEMPLATE = "js-typeahead-suggestion-template";
+	public static final String CSS_ITEM_TEMPLATE = "js-typeahead-template";
+	public static final String CSS_EMPTY_TEMPLATE = "js-typeahead-empty-template";
 
 	public static final String ATTRIBUTE_DATA_AUTOSUGGEST = "data-autosuggest";
+	public static final String DEFAULT_PROPERTY = "label";
 
 	private final BootstrapUiFactory bootstrapUiFactory;
-	private AutosuggestFormElementConfiguration configuration;
-	private String controlName;
-	private List<String> prefillValues = Collections.emptyList();
+	private AutosuggestFormElementConfiguration configuration = new AutosuggestFormElementConfiguration();
+
+	private String idProperty = "id";
+
+	private List<String> properties = Collections.singletonList( DEFAULT_PROPERTY );
+	private List<Map<String, Object>> prefill = Collections.emptyList();
 
 	@Override
 	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
-		webResourceRegistry.addPackage(
-				JQueryWebResources.NAME ); //both bloodhound.js and typeahead.jquery.js have a dependency on jQuery 1.9+
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 		webResourceRegistry.addWithKey( WebResource.CSS, "autosuggest",
 		                                "/static/BootstrapUiModule/css/autosuggest.css",
@@ -60,46 +70,104 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		return this;
 	}
 
-	public AutoSuggestFormElementBuilder controlName( String controlName ) {
-		this.controlName = controlName;
+	public AutoSuggestFormElementBuilder idProperty( String idProperty ) {
+		this.idProperty = idProperty;
 		return this;
 	}
 
-	public AutoSuggestFormElementBuilder prefillValues( List<String> prefillValues ) {
-		this.prefillValues = prefillValues;
+	public AutoSuggestFormElementBuilder prefill( List<Map<String, Object>> prefillValues ) {
+		this.prefill = prefillValues;
+		return this;
+	}
+
+	public AutoSuggestFormElementBuilder properties( String... properties ) {
+		this.properties = Arrays.asList( properties );
 		return this;
 	}
 
 	@Override
 	protected NodeViewElement createElement( ViewElementBuilderContext viewElementBuilderContext ) {
 		//TODO how to make this cleaner @Arne
-		configuration.setEndPoint( buildLink( configuration.getEndPoint(), viewElementBuilderContext ) );
-		return bootstrapUiFactory.div()
-		                         .css( TYPEAHEAD_CLASS )
-		                         .attribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration )
-		                         .add( bootstrapUiFactory.textbox().css( TYPEAHEAD_INPUT_CLASS ),
-		                               bootstrapUiFactory.table()
-		                                                 .add( new TableViewElementBuilder.Row()
-				                                                       .css( "js-typeahead-template hidden" ) )
-		                                                 .addAll( prefillValues.stream()
-		                                                                       .map( it -> new TableViewElementBuilder.Row()
-				                                                                       .css( TYPEAHEAD_ITEM_CLASS )
-				                                                                       .add( new TableViewElementBuilder.Cell()
-						                                                                             .text( it ) )
-				                                                                       .add( new TableViewElementBuilder.Cell()
-						                                                                             .css( "row-actions" )
-						                                                                             .add( bootstrapUiFactory
-								                                                                                   .link()
-								                                                                                   .title( "REMOVE" ) //TODO make configurable
-								                                                                                   .add( new GlyphIcon(
-										                                                                                   GlyphIcon.REMOVE ) ) )
-						                                                                             .add( bootstrapUiFactory
-								                                                                                   .hidden()
-								                                                                                   .value( it )
-								                                                                                   .controlName(
-										                                                                                   controlName ) ) ) )
-		                                                                       .collect( Collectors.toSet() ) ) )
+		if ( StringUtils.isNotBlank( configuration.getEndPoint() ) ) {
+			configuration.setEndPoint( buildLink( configuration.getEndPoint(), viewElementBuilderContext ) );
+		}
 
+		TableViewElementBuilder prefillTableElement = bootstrapUiFactory.table();
+		return bootstrapUiFactory.div()
+		                         .css( CSS_TYPEAHEAD_CLASS )
+		                         .attribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration )
+		                         .add( renderTemplates() )
+		                         .add( bootstrapUiFactory.textbox().css( CSS_TYPEAHEAD_INPUT ),
+		                               prefillTableElement.css( CSS_PREFILL_TABLE )
+		                                                  .addAll( prefill.stream().map( it -> renderPrefill(
+				                                                  prefillTableElement, CSS_TYPEAHEAD_ITEM_CLASS, it ) )
+		                                                                  .collect( Collectors.toList() ) ) )
 		                         .build( viewElementBuilderContext );
 	}
+
+	private NodeViewElementBuilder renderTemplates() {
+		return bootstrapUiFactory.div()
+		                         .css( "hidden" )
+		                         .add( getSuggestionTemplate( properties ),
+		                               getItemTemplate( CSS_ITEM_TEMPLATE, properties ),
+		                               getNotFoundTemplate() );
+	}
+
+	private NodeViewElementBuilder getNotFoundTemplate() {
+		return bootstrapUiFactory.div()
+		                         .css( CSS_EMPTY_TEMPLATE, " empty-message" )
+		                         .add( bootstrapUiFactory.text( "Not Found" ) );
+	}
+
+	private NodeViewElementBuilder getSuggestionTemplate( List<String> properties ) {
+		return bootstrapUiFactory.div()
+		                         .css( CSS_SUGGESTION_TEMPLATE )
+		                         .addAll( properties.stream()
+		                                            .map( prop -> bootstrapUiFactory.div()
+		                                                                            .attribute( "data-as-property",
+		                                                                                        prop ) )
+		                                            .collect( Collectors.toList() ) );
+	}
+
+	private TableViewElementBuilder.Row getItemTemplate( String classForRow,
+	                                                     List<String> properties ) {
+		TableViewElementBuilder table = bootstrapUiFactory.table();
+		return table.row()
+		            .css( classForRow )
+		            .addAll( properties.stream()
+		                               .map( prop -> table.cell()
+		                                                  .attribute( "data-as-property", prop ) )
+		                               .collect( Collectors.toList() ) )
+		            .add( table.cell()
+		                       .css( "row-actions" )
+		                       .add( bootstrapUiFactory
+				                             .link()
+				                             .title( "REMOVE" ) //TODO make configurable
+				                             .add( new GlyphIcon( GlyphIcon.REMOVE ) ) )
+		                       .add( bootstrapUiFactory
+				                             .hidden()
+				                             .controlName( idProperty ) ) );
+	}
+
+	private TableViewElementBuilder.Row renderPrefill( TableViewElementBuilder table,
+	                                                   String classForRow,
+	                                                   Map<String, Object> items ) {
+		return table.row()
+		            .css( classForRow )
+		            .addAll( items.entrySet().stream()
+		                          .map( prop -> table.cell()
+		                                             .text( prop.getValue().toString() ) )
+		                          .collect( Collectors.toList() ) )
+		            .add( table.cell()
+		                       .css( "row-actions" )
+		                       .add( bootstrapUiFactory
+				                             .link()
+				                             .title( "REMOVE" ) //TODO make configurable
+				                             .add( new GlyphIcon( GlyphIcon.REMOVE ) ) )
+		                       .add( bootstrapUiFactory
+				                             .hidden()
+				                             .value( items.get( idProperty ) )
+				                             .controlName( idProperty ) ) );
+	}
+
 }

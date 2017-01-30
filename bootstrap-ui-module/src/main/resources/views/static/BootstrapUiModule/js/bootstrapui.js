@@ -20,64 +20,74 @@ var BootstrapUiModule = {
      *
      * @param node optional parent to limit the scan
      */
-    initializeFormElements: function ( node ) {
+    initializeFormElements: function ( node )
+    {
         /**
          * Find and activate all date time pickers.
          */
-        $( '[data-bootstrapui-datetimepicker]', node ).each( function () {
-            var configuration = $( this ).data( 'bootstrapui-datetimepicker' );
-            var exportFormat = configuration.exportFormat;
+        $( '[data-bootstrapui-datetimepicker]', node ).each( function ()
+                                                             {
+                                                                 var configuration = $( this ).data(
+                                                                         'bootstrapui-datetimepicker' );
+                                                                 var exportFormat = configuration.exportFormat;
 
-            delete configuration.exportFormat;
+                                                                 delete configuration.exportFormat;
 
-            $( this ).datetimepicker( configuration )
-                    .on( 'dp.change', function ( e ) {
-                             var exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
-                             $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
-                         } );
-        } );
+                                                                 $( this ).datetimepicker( configuration )
+                                                                         .on( 'dp.change', function ( e )
+                                                                         {
+                                                                             var exchangeValue = e.date ? moment(
+                                                                                             e.date ).format(
+                                                                                             exportFormat ) : '';
+                                                                             $( 'input[type=hidden]', $( this ) ).attr(
+                                                                                     'value', exchangeValue );
+                                                                         } );
+                                                             } );
 
         /**
          * Find an activate all autoNumeric form elements.
          */
-        $( '[data-bootstrapui-numeric]', node ).each( function () {
-            var configuration = $( this ).data( 'bootstrapui-numeric' );
-            var name = $( this ).attr( 'name' );
+        $( '[data-bootstrapui-numeric]', node ).each( function ()
+                                                      {
+                                                          var configuration = $( this ).data( 'bootstrapui-numeric' );
+                                                          var name = $( this ).attr( 'name' );
 
-            var multiplier = configuration.multiplier ? configuration.multiplier : 1;
+                                                          var multiplier = configuration.multiplier ? configuration.multiplier : 1;
 
-            var multiplied;
+                                                          var multiplied;
 
-            if ( multiplier != 1 ) {
-                var currentValue = $( this ).val();
-                if ( currentValue && !isNaN( currentValue ) ) {
-                    multiplied = parseFloat( currentValue ) * multiplier;
-                }
-            }
+                                                          if ( multiplier != 1 ) {
+                                                              var currentValue = $( this ).val();
+                                                              if ( currentValue && !isNaN( currentValue ) ) {
+                                                                  multiplied = parseFloat( currentValue ) * multiplier;
+                                                              }
+                                                          }
 
-            $( this )
-                    .autoNumeric( 'init', configuration )
-                    .bind( 'blur focusout keypress keyup', function () {
-                               if ( name.length > 1 && name[0] == '_' ) {
-                                   var val = $( this ).autoNumeric( 'get' );
+                                                          $( this )
+                                                                  .autoNumeric( 'init', configuration )
+                                                                  .bind( 'blur focusout keypress keyup', function ()
+                                                                  {
+                                                                      if ( name.length > 1 && name[0] == '_' ) {
+                                                                          var val = $( this ).autoNumeric( 'get' );
 
-                                   if ( multiplier != 1 ) {
-                                       val = val / multiplier;
-                                   }
+                                                                          if ( multiplier != 1 ) {
+                                                                              val = val / multiplier;
+                                                                          }
 
-                                   $( 'input[type=hidden][name="' + name.substring( 1 ) + '"]' ).val( val );
-                               }
-                           } );
+                                                                          $( 'input[type=hidden][name="' + name.substring(
+                                                                                     1 ) + '"]' ).val( val );
+                                                                      }
+                                                                  } );
 
-            if ( multiplied ) {
-                $( this ).autoNumeric( 'set', multiplied );
-            }
-        } );
+                                                          if ( multiplied ) {
+                                                              $( this ).autoNumeric( 'set', multiplied );
+                                                          }
+                                                      } );
 
         /**
          * Find and activate all autogrow textarea elements.
          */
-        autosize( $('.js-autosize', node ) );
+        autosize( $( '.js-autosize', node ) );
 
         $.each( $( '.js-typeahead' ), function ( i, $typeahead )
         {
@@ -108,10 +118,17 @@ var BootstrapUiModule = {
             $typeaheadInstance.typeahead( {
                                               highlight: true, minLength: 1
                                           }, {
-                                              source: engine.ttAdapter(), display: 'description', templates: {
-                    notFound: ['<div class="empty-message"><b>Not Found</b></div>'], suggestion: function ( item )
+                                              source: engine.ttAdapter(), display: 'other', templates: {
+                    notFound: [container.find( '.js-typeahead-empty-template' ).clone( false ).html()],
+                    suggestion: function ( item )
                     {
-                        return '<div>' + item.description + '</div>';
+                        var template = container.find( '.js-typeahead-suggestion-template' ).clone( false );
+                        template.find( '[data-as-property]' ).each( function ( i, node )
+                                                                    {
+                                                                        node.innerText = item[$( node ).attr(
+                                                                                'data-as-property' )];
+                                                                    } );
+                        return '<div>' + template.html() + '</div>';
                     }
                 }
                                           } );
@@ -128,7 +145,7 @@ var BootstrapUiModule = {
                                                                             item[$( node ).attr( 'data-as-property' )];
                                                                 } );
                     template.find( '[type=hidden]' ).val( item.id ).removeAttr( 'disabled' );
-                    container.find( 'table' ).append( template );
+                    container.find( '.js-typeahead-prefill' ).append( template );
 
                     template.find( 'a' ).on( 'click', function ()
                     {
@@ -147,6 +164,7 @@ var BootstrapUiModule = {
     }
 };
 
-$( document ).ready( function () {
-    BootstrapUiModule.initializeFormElements();
-} );
+$( document ).ready( function ()
+                     {
+                         BootstrapUiModule.initializeFormElements();
+                     } );

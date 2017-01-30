@@ -19,15 +19,20 @@ package com.foreach.across.samples.bootstrapui.application.controllers;
 import com.foreach.across.modules.bootstrapui.elements.AutosuggestFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.web.menu.Menu;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Generates Bootstrap based tabs from a {@link Menu} instance.
@@ -47,44 +52,63 @@ public class AutoSuggestFormController
 
 		AutosuggestFormElementConfiguration configuration = new AutosuggestFormElementConfiguration(
 				"/bootstrapAutosuggest/suggest" );
-		model.addAttribute( "autosuggest", bootstrapUiFactory.autosuggest()
-		                                                     .configuration( configuration )
-		                                                     .prefillValues( Arrays.asList( "abc", "def" ) )
+
+		model.addAttribute( "autosuggest1", bootstrapUiFactory.autosuggest()
 		                                                     .build() );
+
+		model.addAttribute( "autosuggest2", bootstrapUiFactory.autosuggest()
+		                                                      .configuration( configuration )
+		                                                      .idProperty( "id" )
+		                                                      .properties( "label", "other" )
+		                                                      .prefill( Arrays.asList( createPrefill( "abc" ),
+		                                                                               createPrefill( "def" ) )
+		                                                      )
+		                                                      .build() );
+
 
 		return "th/bootstrapUiTest/autosuggest";
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/suggest", produces = "application/json; charset=UTF-8")
-	@ResponseBody
-	public List<Suggestion> suggetions() {
-
-		return Arrays.asList(
-				new Suggestion( 1, "AAA" ),
-				new Suggestion( 2, "ABC" ),
-				new Suggestion( 3, "BBB" )
-		);
+	private Map<String, Object> createPrefill( String description ) {
+		HashMap item = new HashMap();
+		item.put( "label", description );
+		item.put( "other", "qksmjdfmlqsj" );
+		return item;
 	}
 
-	private class Suggestion
+	@RequestMapping(method = RequestMethod.GET, value = "/suggest", produces = "application/json; charset=UTF-8")
+	@ResponseBody
+	public List<Suggestion> suggetions( @RequestParam("query") String query ) {
+		List<Suggestion> suggestions = Arrays.asList(
+				Suggestion.builder()
+				          .id( 1 )
+				          .label( "AAAlabel" )
+				          .other( "123other" )
+				          .build(),
+				Suggestion.builder()
+				          .id( 2 )
+				          .label( "BBBlabel" )
+				          .other( "456other" )
+				          .build(),
+				Suggestion.builder()
+				          .id( 3 )
+				          .label( "ABClabel" )
+				          .other( "123other" )
+				          .build()
+		);
+		return suggestions.stream()
+		                  .filter( suggestion -> StringUtils.containsIgnoreCase( suggestion.getLabel(), query ) )
+		                  .collect( Collectors.toList() );
+	}
+
+	@Builder
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Data
+	static class Suggestion
 	{
 		private int id;
-		private String description;
-
-		public Suggestion() {
-		}
-
-		public Suggestion( int id, String description ) {
-			this.id = id;
-			this.description = description;
-		}
-
-		public int getId() {
-			return id;
-		}
-
-		public String getDescription() {
-			return description;
-		}
+		private String label;
+		private String other;
 	}
 }
