@@ -173,4 +173,9 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	public AlertViewElementBuilder alert() {
 		return new AlertViewElementBuilder();
 	}
+
+	@Override
+	public AutoSuggestFormElementBuilder autosuggest() {
+		return new AutoSuggestFormElementBuilder( this );
+	}
 }

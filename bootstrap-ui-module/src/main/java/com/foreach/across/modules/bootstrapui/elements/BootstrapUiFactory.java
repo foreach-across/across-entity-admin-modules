@@ -81,4 +81,6 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 	NumericFormElementBuilder numeric();
 
 	AlertViewElementBuilder alert();
+
+	AutoSuggestFormElementBuilder autosuggest();
 }
