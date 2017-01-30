@@ -20,12 +20,12 @@ import com.foreach.across.modules.bootstrapui.elements.AutosuggestFormElementCon
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
-import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Slf4j
 public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeViewElementBuilder<NodeViewElement, AutoSuggestFormElementBuilder>
 {
 	public static final String CSS_TYPEAHEAD_CLASS = "js-typeahead";
@@ -47,6 +48,7 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 	public static final String CSS_EMPTY_TEMPLATE = "js-typeahead-empty-template";
 
 	public static final String ATTRIBUTE_DATA_AUTOSUGGEST = "data-autosuggest";
+	public static final String ATTRIBUTE_DATA_PROPERTY = "data-as-property";
 	public static final String DEFAULT_PROPERTY = "label";
 
 	private final BootstrapUiFactory bootstrapUiFactory;
@@ -60,9 +62,6 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 	@Override
 	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-		webResourceRegistry.addWithKey( WebResource.CSS, "autosuggest",
-		                                "/static/BootstrapUiModule/css/autosuggest.css",
-		                                WebResource.VIEWS );
 	}
 
 	public AutoSuggestFormElementBuilder configuration( AutosuggestFormElementConfiguration configuration ) {
@@ -92,17 +91,25 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 			configuration.setEndPoint( buildLink( configuration.getEndPoint(), viewElementBuilderContext ) );
 		}
 
-		TableViewElementBuilder prefillTableElement = bootstrapUiFactory.table();
 		return bootstrapUiFactory.div()
 		                         .css( CSS_TYPEAHEAD_CLASS )
 		                         .attribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration )
 		                         .add( renderTemplates() )
-		                         .add( bootstrapUiFactory.textbox().css( CSS_TYPEAHEAD_INPUT ),
-		                               prefillTableElement.css( CSS_PREFILL_TABLE )
-		                                                  .addAll( prefill.stream().map( it -> renderPrefill(
-				                                                  prefillTableElement, CSS_TYPEAHEAD_ITEM_CLASS, it ) )
-		                                                                  .collect( Collectors.toList() ) ) )
+		                         .add( renderInputElement() )
+		                         .add( renderPrefillValues() )
 		                         .build( viewElementBuilderContext );
+	}
+
+	private TextboxFormElementBuilder renderInputElement() {
+		return bootstrapUiFactory.textbox().css( CSS_TYPEAHEAD_INPUT );
+	}
+
+	private TableViewElementBuilder renderPrefillValues() {
+		TableViewElementBuilder prefillTableElement = bootstrapUiFactory.table();
+		return prefillTableElement.css( CSS_PREFILL_TABLE )
+		                          .addAll( prefill.stream().map( it -> renderPrefill(
+				                          prefillTableElement, CSS_TYPEAHEAD_ITEM_CLASS, it ) )
+		                                          .collect( Collectors.toList() ) );
 	}
 
 	private NodeViewElementBuilder renderTemplates() {
@@ -115,8 +122,8 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 
 	private NodeViewElementBuilder getNotFoundTemplate() {
 		return bootstrapUiFactory.div()
-		                         .css( CSS_EMPTY_TEMPLATE, " empty-message" )
-		                         .add( bootstrapUiFactory.text( "Not Found" ) );
+		                         .css( CSS_EMPTY_TEMPLATE, "empty-message" )
+		                         .add( bootstrapUiFactory.text( "Not Found" ) ); //TODO make label
 	}
 
 	private NodeViewElementBuilder getSuggestionTemplate( List<String> properties ) {
@@ -124,7 +131,7 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		                         .css( CSS_SUGGESTION_TEMPLATE )
 		                         .addAll( properties.stream()
 		                                            .map( prop -> bootstrapUiFactory.div()
-		                                                                            .attribute( "data-as-property",
+		                                                                            .attribute( ATTRIBUTE_DATA_PROPERTY,
 		                                                                                        prop ) )
 		                                            .collect( Collectors.toList() ) );
 	}

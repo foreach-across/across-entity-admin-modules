@@ -60,7 +60,10 @@ public class BootstrapUiFormElementsWebResources extends SimpleWebResourcePackag
 				                 WebResource.VIEWS ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, "typeahead",
 				                 "https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js",
-				                 WebResource.EXTERNAL )
+				                 WebResource.EXTERNAL ),
+				new WebResource( WebResource.CSS, "autosuggest",
+				                 "/static/BootstrapUiModule/css/bootstrapui.css",
+				                 WebResource.VIEWS )
 		);
 	}
 }
