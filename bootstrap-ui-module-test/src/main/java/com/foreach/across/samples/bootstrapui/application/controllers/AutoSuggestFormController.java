@@ -49,6 +49,7 @@ public class AutoSuggestFormController
 				"/bootstrapAutosuggest/suggest" );
 		model.addAttribute( "autosuggest", bootstrapUiFactory.autosuggest()
 		                                                     .configuration( configuration )
+		                                                     .prefillValues( Arrays.asList( "abc", "def" ) )
 		                                                     .build() );
 
 		return "th/bootstrapUiTest/autosuggest";

@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.AutosuggestFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
 import com.foreach.across.modules.web.resource.WebResource;
@@ -26,15 +27,23 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeViewElementBuilder<NodeViewElement, AutoSuggestFormElementBuilder>
 {
 	public static final String TYPEAHEAD_CLASS = "js-typeahead";
 	public static final String TYPEAHEAD_INPUT_CLASS = "js-typeahead-input";
+	public static final String TYPEAHEAD_ITEM_CLASS = "js-typeahead-item";
+
 	public static final String ATTRIBUTE_DATA_AUTOSUGGEST = "data-autosuggest";
 
 	private final BootstrapUiFactory bootstrapUiFactory;
 	private AutosuggestFormElementConfiguration configuration;
+	private String controlName;
+	private List<String> prefillValues = Collections.emptyList();
 
 	@Override
 	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
@@ -51,6 +60,16 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		return this;
 	}
 
+	public AutoSuggestFormElementBuilder controlName( String controlName ) {
+		this.controlName = controlName;
+		return this;
+	}
+
+	public AutoSuggestFormElementBuilder prefillValues( List<String> prefillValues ) {
+		this.prefillValues = prefillValues;
+		return this;
+	}
+
 	@Override
 	protected NodeViewElement createElement( ViewElementBuilderContext viewElementBuilderContext ) {
 		//TODO how to make this cleaner @Arne
@@ -58,7 +77,29 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		return bootstrapUiFactory.div()
 		                         .css( TYPEAHEAD_CLASS )
 		                         .attribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration )
-		                         .add( bootstrapUiFactory.textbox().css( TYPEAHEAD_INPUT_CLASS ) )
+		                         .add( bootstrapUiFactory.textbox().css( TYPEAHEAD_INPUT_CLASS ),
+		                               bootstrapUiFactory.table()
+		                                                 .add( new TableViewElementBuilder.Row()
+				                                                       .css( "js-typeahead-template hidden" ) )
+		                                                 .addAll( prefillValues.stream()
+		                                                                       .map( it -> new TableViewElementBuilder.Row()
+				                                                                       .css( TYPEAHEAD_ITEM_CLASS )
+				                                                                       .add( new TableViewElementBuilder.Cell()
+						                                                                             .text( it ) )
+				                                                                       .add( new TableViewElementBuilder.Cell()
+						                                                                             .css( "row-actions" )
+						                                                                             .add( bootstrapUiFactory
+								                                                                                   .link()
+								                                                                                   .title( "REMOVE" ) //TODO make configurable
+								                                                                                   .add( new GlyphIcon(
+										                                                                                   GlyphIcon.REMOVE ) ) )
+						                                                                             .add( bootstrapUiFactory
+								                                                                                   .hidden()
+								                                                                                   .value( it )
+								                                                                                   .controlName(
+										                                                                                   controlName ) ) ) )
+		                                                                       .collect( Collectors.toSet() ) ) )
+
 		                         .build( viewElementBuilderContext );
 	}
 }
