@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * Generates Bootstrap based tabs from a {@link Menu} instance.
  *
  * @author Arne Vandamme
- * @since 2.0.0
+ * @since 1.0.0
  */
 @RequiredArgsConstructor
 @Controller
