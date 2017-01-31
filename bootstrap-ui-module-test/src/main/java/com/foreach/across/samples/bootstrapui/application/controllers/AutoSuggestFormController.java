@@ -18,6 +18,10 @@ package com.foreach.across.samples.bootstrapui.application.controllers;
 
 import com.foreach.across.modules.bootstrapui.elements.AutosuggestFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.builder.AutoSuggestFormElementBuilder;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -32,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.foreach.across.modules.bootstrapui.elements.builder.AutoSuggestFormElementBuilder.CSS_PREFILL_TABLE;
 
 /**
  * Generates Twitter Typeahead autosuggest instances with
@@ -53,7 +59,7 @@ public class AutoSuggestFormController
 				"/bootstrapAutosuggest/suggest" );
 
 		model.addAttribute( "autosuggest1", bootstrapUiFactory.autosuggest()
-		                                                     .build() );
+		                                                      .build() );
 
 		model.addAttribute( "autosuggest2", bootstrapUiFactory.autosuggest()
 		                                                      .configuration( configuration )
@@ -64,6 +70,23 @@ public class AutoSuggestFormController
 		                                                      )
 		                                                      .build() );
 
+		NodeViewElement container = new NodeViewElementBuilder( "ul" )
+				.css( CSS_PREFILL_TABLE )
+				.build( new DefaultViewElementBuilderContext() );
+		NodeViewElement item = new NodeViewElementBuilder( "ul" )
+				.add( bootstrapUiFactory.node( "li" )
+				                        .css( AutoSuggestFormElementBuilder.CSS_ITEM_TEMPLATE )
+				                        .add( bootstrapUiFactory
+						                              .div()
+						                              .attribute( AutoSuggestFormElementBuilder.ATTRIBUTE_DATA_PROPERTY,
+						                                          "label" )
+				                        )
+				)
+				.build( new DefaultViewElementBuilderContext() );
+		model.addAttribute( "autosuggest3", bootstrapUiFactory.autosuggest()
+		                                                      .configuration( configuration )
+		                                                      .itemTemplate( container, item )
+		                                                      .build() );
 
 		return "th/bootstrapUiTest/autosuggest";
 	}

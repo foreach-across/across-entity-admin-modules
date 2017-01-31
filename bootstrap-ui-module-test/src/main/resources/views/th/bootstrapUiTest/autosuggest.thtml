@@ -28,5 +28,10 @@
 	Autosuggest with prefill
 </h1>
 <across:view element="${autosuggest2}"/>
+
+<h1>
+	Autosuggest with ul items
+</h1>
+<across:view element="${autosuggest3}"/>
 </body>
 </html>
