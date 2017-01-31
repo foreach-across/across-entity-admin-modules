@@ -24,12 +24,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author: sander
- * @date: 30/01/2017
+ * @author: Sander Van Loock
+ * @since 1.0.0
  */
 public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElementTest
 {
-
 	private AutoSuggestFormElementBuilder builder;
 	private DefaultViewElementBuilderContext context;
 
@@ -46,6 +45,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 		renderAndExpect( actual,
 		                 "" +
 				                 "<div data-autosuggest=\"{&quot;endPoint&quot;:&quot;/autosuggest&quot;}\" class=\"js-typeahead\">\n" +
+				                 "   <input type=\"text\" class=\"js-typeahead-input form-control\"/>\n" +
 				                 "   <div class=\"hidden\">\n" +
 				                 "      <div class=\"js-typeahead-suggestion-template\">\n" +
 				                 "         <div data-as-property=\"label\"></div>\n" +
@@ -58,8 +58,34 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 				                 "      </table>\n" +
 				                 "      <div class=\"js-typeahead-empty-template empty-message\">Not Found</div>\n" +
 				                 "   </div>\n" +
-				                 "   <input type=\"text\" class=\"js-typeahead-input form-control\"/>\n" +
 				                 "   <table class=\"js-typeahead-prefill table\"></table>\n" +
 				                 "</div>" );
+	}
+
+	@Test
+	public void customEndPointMarkup() throws Exception {
+		String endPoint = "/my-custom-endppoint";
+		builder.endPoint( endPoint );
+		NodeViewElement actual = builder.createElement( context );
+
+		renderAndExpect( actual,
+		                 String.format( "" +
+				                                "<div data-autosuggest=\"{&quot;endPoint&quot;:&quot;%1$s&quot;}\" class=\"js-typeahead\">\n" +
+				                                "   <input type=\"text\" class=\"js-typeahead-input form-control\"/>\n" +
+				                                "   <div class=\"hidden\">\n" +
+				                                "      <div class=\"js-typeahead-suggestion-template\">\n" +
+				                                "         <div data-as-property=\"label\"></div>\n" +
+				                                "      </div>\n" +
+				                                "      <table class=\"table\">\n" +
+				                                "            <tr class=\"js-typeahead-template\">\n" +
+				                                "               <td data-as-property=\"label\"></td>\n" +
+				                                "               <td class=\"row-actions\"><a href=\"#\" title=\"REMOVE\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a><input name=\"id\" type=\"hidden\"/></td>\n" +
+				                                "            </tr>\n" +
+				                                "      </table>\n" +
+				                                "      <div class=\"js-typeahead-empty-template empty-message\">Not Found</div>\n" +
+				                                "   </div>\n" +
+				                                "   <table class=\"js-typeahead-prefill table\"></table>\n" +
+				                                "</div>", endPoint ) );
+
 	}
 }

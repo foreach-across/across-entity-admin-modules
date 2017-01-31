@@ -27,6 +27,7 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,14 +56,10 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 	private AutosuggestFormElementConfiguration configuration = new AutosuggestFormElementConfiguration();
 
 	private String idProperty = "id";
+	private String endPoint;
 
 	private List<String> properties = Collections.singletonList( DEFAULT_PROPERTY );
 	private List<Map<String, Object>> prefill = Collections.emptyList();
-
-	@Override
-	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
-		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-	}
 
 	public AutoSuggestFormElementBuilder configuration( AutosuggestFormElementConfiguration configuration ) {
 		this.configuration = configuration;
@@ -84,20 +81,32 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		return this;
 	}
 
+	public AutoSuggestFormElementBuilder endPoint( String endPoint ) {
+		this.endPoint = endPoint;
+		return this;
+	}
+
 	@Override
 	protected NodeViewElement createElement( ViewElementBuilderContext viewElementBuilderContext ) {
-		//TODO how to make this cleaner @Arne
-		if ( StringUtils.isNotBlank( configuration.getEndPoint() ) ) {
-			configuration.setEndPoint( buildLink( configuration.getEndPoint(), viewElementBuilderContext ) );
+		if ( StringUtils.isNotBlank( endPoint ) ) {
+			this.configuration.setEndPoint( buildLink( endPoint, viewElementBuilderContext ) );
+		}
+		if ( configuration != null ) {
+			this.configuration = configuration.localize( LocaleContextHolder.getLocale() );
 		}
 
 		return bootstrapUiFactory.div()
 		                         .css( CSS_TYPEAHEAD_CLASS )
 		                         .attribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration )
-		                         .add( renderTemplates() )
 		                         .add( renderInputElement() )
+		                         .add( renderTemplates() )
 		                         .add( renderPrefillValues() )
 		                         .build( viewElementBuilderContext );
+	}
+
+	@Override
+	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 	}
 
 	private TextboxFormElementBuilder renderInputElement() {

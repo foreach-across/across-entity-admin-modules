@@ -18,7 +18,6 @@ package com.foreach.across.samples.bootstrapui.application.controllers;
 
 import com.foreach.across.modules.bootstrapui.elements.AutosuggestFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.web.menu.Menu;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -35,9 +34,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Generates Bootstrap based tabs from a {@link Menu} instance.
+ * Generates Twitter Typeahead autosuggest instances with
  *
- * @author Arne Vandamme
+ * @author Sander Van Loock
  * @since 2.0.0
  */
 @RequiredArgsConstructor

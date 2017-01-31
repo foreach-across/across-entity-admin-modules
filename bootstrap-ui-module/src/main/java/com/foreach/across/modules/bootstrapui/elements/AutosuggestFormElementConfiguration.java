@@ -16,7 +16,11 @@
 
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Configuration class for a {@link AutoSuggestFormElementBuilder} based on
@@ -28,12 +32,20 @@ public class AutosuggestFormElementConfiguration extends HashMap<String, Object>
 {
 	public static final String END_POINT_KEY = "endPoint";
 
+	@JsonIgnore
+	private Locale locale = LocaleContextHolder.getLocale();
+
 	public AutosuggestFormElementConfiguration() {
+		setEndPoint( "/autosuggest" );
 	}
 
 	public AutosuggestFormElementConfiguration( String endPoint ) {
 		this();
 		setEndPoint( endPoint );
+	}
+
+	public AutosuggestFormElementConfiguration( AutosuggestFormElementConfiguration configuration ) {
+		putAll( configuration );
 	}
 
 	/**
@@ -49,4 +61,10 @@ public class AutosuggestFormElementConfiguration extends HashMap<String, Object>
 		return (String) getOrDefault( END_POINT_KEY, "/autosuggest" );
 	}
 
+	public AutosuggestFormElementConfiguration localize( Locale locale ) {
+		AutosuggestFormElementConfiguration clone = new AutosuggestFormElementConfiguration( this );
+		clone.locale = locale;
+
+		return clone;
+	}
 }

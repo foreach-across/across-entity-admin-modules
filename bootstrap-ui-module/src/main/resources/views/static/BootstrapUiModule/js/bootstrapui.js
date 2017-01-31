@@ -45,7 +45,7 @@ var BootstrapUiModule = {
                                                              } );
 
         /**
-         * Find an activate all autoNumeric form elements.
+         * Find and activate all autoNumeric form elements.
          */
         $( '[data-bootstrapui-numeric]', node ).each( function ()
                                                       {
@@ -89,32 +89,8 @@ var BootstrapUiModule = {
          */
         autosize( $( '.js-autosize', node ) );
 
-        $.each( $( '.js-typeahead' ), function ( i, $typeahead )
+        var createTypeaheadInstance = function ( $typeaheadInstance, engine, container )
         {
-            var configuration = $( this ).data( 'autosuggest' );
-            var map = {};
-
-            var container = $( this );
-            var $typeaheadInstance = $( this ).find( ".js-typeahead-input" );
-            var url = configuration.endPoint + '?query=%QUERY';
-            var engine = new Bloodhound( {
-                datumTokenizer: Bloodhound.tokenizers.whitespace,
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
-                remote: {
-                    wildcard: '%QUERY', url: url, filter: function ( data )
-                    {
-                        var suggestions = [];
-                        map = {};
-                        $.each( data, function ( i, suggestion )
-                        {
-                            map[suggestion.description] = suggestion;
-                            suggestions.push( suggestion );
-                        } );
-                        return suggestions;
-                    }
-                }
-            } );
-            engine.initialize();
             $typeaheadInstance.typeahead( {
                                               highlight: true, minLength: 1
                                           }, {
@@ -132,35 +108,69 @@ var BootstrapUiModule = {
                     }
                 }
                                           } );
-            $typeaheadInstance.on( 'typeahead:select', function ( evt, item )
-            {
-                if ( container.find( '.js-typeahead-item input[value=' + item.id + ']' ).length == 0 ) {
-                    var template = container.find( '.js-typeahead-template' ).clone( false );
-                    template.removeClass( 'hidden js-typeahead-template' );
-                    template.addClass( 'js-typeahead-item' );
+        };
+        /**
+         * Find and activate all typeahead autosuggest form elements.
+         */
+        $( '.js-typeahead', node ).each( function ()
+                                         {
+                                             var configuration = $( this ).data( 'autosuggest' );
+                                             var map = {};
 
-                    template.find( '[data-as-property]' ).each( function ( i, node )
-                                                                {
-                                                                    node.innerText =
-                                                                            item[$( node ).attr( 'data-as-property' )];
-                                                                } );
-                    template.find( '[type=hidden]' ).val( item.id ).removeAttr( 'disabled' );
-                    container.find( '.js-typeahead-prefill' ).append( template );
+                                             var container = $( this );
+                                             var $typeaheadInstance = $( this ).find( ".js-typeahead-input" );
+                                             var url = configuration.endPoint + '?query=%QUERY';
+                                             var engine = new Bloodhound( {
+                                                 datumTokenizer: Bloodhound.tokenizers.whitespace,
+                                                 queryTokenizer: Bloodhound.tokenizers.whitespace,
+                                                 remote: {
+                                                     wildcard: '%QUERY', url: url, filter: function ( data )
+                                                     {
+                                                         var suggestions = [];
+                                                         map = {};
+                                                         $.each( data, function ( i, suggestion )
+                                                         {
+                                                             map[suggestion.description] = suggestion;
+                                                             suggestions.push( suggestion );
+                                                         } );
+                                                         return suggestions;
+                                                     }
+                                                 }
+                                             } );
+                                             engine.initialize();
+                                             createTypeaheadInstance( $typeaheadInstance, engine, container );
+                                             var removeElementHandler = function ()
+                                             {
+                                                 $( this ).closest( 'tr' ).remove();
+                                             };
+                                             var typeaheadSelectHandler = function ( evt, item )
+                                             {
+                                                 if ( container.find(
+                                                                 '.js-typeahead-item input[value=' + item.id + ']' ).length == 0 ) {
+                                                     var template = container.find( '.js-typeahead-template' ).clone(
+                                                             false );
+                                                     template.removeClass( 'hidden js-typeahead-template' );
+                                                     template.addClass( 'js-typeahead-item' );
 
-                    template.find( 'a' ).on( 'click', function ()
-                    {
-                        $( this ).closest( 'tr' ).remove();
-                    } );
-                }
+                                                     template.find( '[data-as-property]' ).each( function ( i, node )
+                                                                                                 {
+                                                                                                     node.innerText =
+                                                                                                             item[$( node ).attr(
+                                                                                                                     'data-as-property' )];
+                                                                                                 } );
+                                                     template.find( '[type=hidden]' ).val( item.id ).removeAttr(
+                                                             'disabled' );
+                                                     container.find( '.js-typeahead-prefill' ).append( template );
 
-                $typeaheadInstance.typeahead( 'val', '' );
-            } );
+                                                     template.find( 'a' ).on( 'click', removeElementHandler );
+                                                 }
 
-            container.find( '.js-typeahead-item a' ).on( 'click', function ()
-            {
-                $( this ).closest( 'tr' ).remove();
-            } )
-        } );
+                                                 $typeaheadInstance.typeahead( 'val', '' );
+                                             };
+                                             $typeaheadInstance.on( 'typeahead:select', typeaheadSelectHandler );
+                                             container.find( '.js-typeahead-item a' ).on( 'click',
+                                                                                          removeElementHandler )
+                                         } );
     }
 };
 
