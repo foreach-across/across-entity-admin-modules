@@ -60,6 +60,7 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 	private List<String> properties = Collections.singletonList( DEFAULT_PROPERTY );
 	private List<Map<String, Object>> prefill = Collections.emptyList();
 	private Optional<ElementOrBuilder> notFoundTemplate = Optional.empty();
+	private Optional<ElementOrBuilder> suggestionTemplate = Optional.empty();
 
 	public AutoSuggestFormElementBuilder configuration( AutosuggestFormElementConfiguration configuration ) {
 		this.configuration = configuration;
@@ -86,13 +87,32 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		return this;
 	}
 
-	public AutoSuggestFormElementBuilder setNotFoundTemplate( ViewElement notFoundTemplate ) {
+	public AutoSuggestFormElementBuilder notFoundTemplate( ViewElement notFoundTemplate ) {
 		this.notFoundTemplate = Optional.of( ElementOrBuilder.wrap( notFoundTemplate ) );
 		return this;
 	}
 
-	public AutoSuggestFormElementBuilder setNotFoundTemplate( ViewElementBuilder notFoundTemplate ) {
+	public AutoSuggestFormElementBuilder notFoundTemplate( ViewElementBuilder notFoundTemplate ) {
 		this.notFoundTemplate = Optional.of( ElementOrBuilder.wrap( notFoundTemplate ) );
+		return this;
+	}
+
+	/**
+	 * Use a custom {@code ViewElementBuilder} that will be used as a template for the rendering of suggestions
+	 * in the suggestion dropdown.  If you want to reuse properties from this {@code AutoSuggestFormElementBuilder}
+	 * instance, make sure to add an attribute {@code ATTRIBUTE_DATA_PROPERTY}to the node element which inner HTML should
+	 * be replaced
+	 */
+	public AutoSuggestFormElementBuilder suggestionTemplate( ViewElementBuilder template ) {
+		this.suggestionTemplate = Optional.of( ElementOrBuilder.wrap( template ) );
+		return this;
+	}
+
+	/**
+	 * {@see com.foreach.across.modules.bootstrapui.elements.builder.AutoSuggestFormElementBuilder#suggestionTemplate}
+	 */
+	public AutoSuggestFormElementBuilder suggestionTemplate( ViewElement template ) {
+		this.suggestionTemplate = Optional.of( ElementOrBuilder.wrap( template ) );
 		return this;
 	}
 
@@ -134,7 +154,7 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 	private NodeViewElementBuilder renderTemplates( ViewElementBuilderContext viewElementBuilderContext ) {
 		return bootstrapUiFactory.div()
 		                         .css( "hidden" )
-		                         .add( getSuggestionTemplate( properties ) )
+		                         .add( getSuggestionTemplate( viewElementBuilderContext ) )
 		                         .add( getItemTemplate( CSS_ITEM_TEMPLATE, properties ) )
 		                         .add( getNotFoundTemplate( viewElementBuilderContext ) );
 	}
@@ -148,14 +168,19 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		                                              .get( viewElementBuilderContext ) );
 	}
 
-	private NodeViewElementBuilder getSuggestionTemplate( List<String> properties ) {
-		return bootstrapUiFactory.div()
-		                         .css( CSS_SUGGESTION_TEMPLATE )
-		                         .addAll( properties.stream()
-		                                            .map( prop -> bootstrapUiFactory.div()
-		                                                                            .attribute( ATTRIBUTE_DATA_PROPERTY,
-		                                                                                        prop ) )
-		                                            .collect( Collectors.toList() ) );
+	private NodeViewElementBuilder getSuggestionTemplate( ViewElementBuilderContext viewElementBuilderContext ) {
+		NodeViewElementBuilder suggestionContainer = bootstrapUiFactory.div()
+		                                                               .css( CSS_SUGGESTION_TEMPLATE );
+		ElementOrBuilder defaultSuggestionElementOrBuilder =
+				ElementOrBuilder.wrap( bootstrapUiFactory.container()
+				                                         .addAll( properties.stream()
+				                                                            .map( prop -> bootstrapUiFactory.div()
+				                                                                                            .attribute(
+						                                                                                            ATTRIBUTE_DATA_PROPERTY,
+						                                                                                            prop ) )
+				                                                            .collect( Collectors.toList() ) ) );
+		return suggestionContainer
+				.add( suggestionTemplate.orElse( defaultSuggestionElementOrBuilder ).get( viewElementBuilderContext ) );
 	}
 
 	private TableViewElementBuilder getItemTemplate( String classForRow,

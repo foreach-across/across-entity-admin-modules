@@ -19,8 +19,10 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
 import com.foreach.across.modules.bootstrapui.elements.AlertViewElement;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
+import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -92,7 +94,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 
 	@Test
 	public void customNotFoundTemplateWithViewElement() throws Exception {
-		builder.setNotFoundTemplate( new AlertViewElement() );
+		builder.notFoundTemplate( new AlertViewElement() );
 		NodeViewElement actual = builder.createElement( context );
 
 		renderAndExpect( actual,
@@ -118,7 +120,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 
 	@Test
 	public void customNotFoundTemplateWithBuilder() throws Exception {
-		builder.setNotFoundTemplate( new AlertViewElementBuilder() );
+		builder.notFoundTemplate( new AlertViewElementBuilder() );
 		NodeViewElement actual = builder.createElement( context );
 
 		renderAndExpect( actual,
@@ -141,4 +143,35 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 				                 "</div>" );
 
 	}
+
+	@Test
+	public void customSuggestionTemplateWithViewElement() throws Exception {
+		BootstrapUiFactoryImpl bootstrapUiFactory = new BootstrapUiFactoryImpl();
+		NodeViewElementBuilder suggestionTemplate = bootstrapUiFactory.span().attribute(
+				AutoSuggestFormElementBuilder.ATTRIBUTE_DATA_PROPERTY, "link" )
+		                                                              .add( new GlyphIcon( GlyphIcon.ASTERISK ) );
+		builder.suggestionTemplate( suggestionTemplate );
+		builder.properties( "link" );
+		NodeViewElement actual = builder.createElement( context );
+
+		renderAndExpect( actual,
+		                 "" +
+				                 "<div data-autosuggest=\"{&quot;endPoint&quot;:&quot;/autosuggest&quot;}\" class=\"js-typeahead\">\n" +
+				                 "   <input type=\"text\" class=\"js-typeahead-input form-control\"/>\n" +
+				                 "   <div class=\"hidden\">\n" +
+				                 "      <div class=\"js-typeahead-suggestion-template\">\n" +
+				                 "         <span data-as-property=\"link\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-asterisk\"></span></span>\n" +
+				                 "      </div>\n" +
+				                 "      <table class=\"table\">\n" +
+				                 "            <tr class=\"js-typeahead-template\">\n" +
+				                 "               <td data-as-property=\"link\"></td>\n" +
+				                 "               <td class=\"row-actions\"><a href=\"#\" title=\"REMOVE\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a><input name=\"id\" type=\"hidden\"/></td>\n" +
+				                 "            </tr>\n" +
+				                 "      </table>\n" +
+				                 "      <div class=\"js-typeahead-empty-template empty-message\">Not Found</div>\n" +
+				                 "   </div>\n" +
+				                 "   <table class=\"js-typeahead-prefill table\"></table>\n" +
+				                 "</div>" );
+	}
+
 }
