@@ -22,9 +22,12 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.junit.Before;
 import org.junit.Test;
+
+import static com.foreach.across.modules.bootstrapui.elements.builder.AutoSuggestFormElementBuilder.CSS_PREFILL_TABLE;
 
 /**
  * @author: Sander Van Loock
@@ -59,7 +62,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 				                 "               <td class=\"row-actions\"><a href=\"#\" title=\"REMOVE\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a><input name=\"id\" type=\"hidden\"/></td>\n" +
 				                 "            </tr>\n" +
 				                 "      </table>\n" +
-				                 "      <div class=\"js-typeahead-empty-template empty-message\">Not Found</div>\n" +
+				                 "      <div class=\"js-typeahead-empty-template \">Not Found</div>\n" +
 				                 "   </div>\n" +
 				                 "   <table class=\"js-typeahead-prefill table\"></table>\n" +
 				                 "</div>" );
@@ -85,7 +88,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 				                                "               <td class=\"row-actions\"><a href=\"#\" title=\"REMOVE\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a><input name=\"id\" type=\"hidden\"/></td>\n" +
 				                                "            </tr>\n" +
 				                                "      </table>\n" +
-				                                "      <div class=\"js-typeahead-empty-template empty-message\">Not Found</div>\n" +
+				                                "      <div class=\"js-typeahead-empty-template \">Not Found</div>\n" +
 				                                "   </div>\n" +
 				                                "   <table class=\"js-typeahead-prefill table\"></table>\n" +
 				                                "</div>", endPoint ) );
@@ -111,7 +114,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 				                 "               <td class=\"row-actions\"><a href=\"#\" title=\"REMOVE\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a><input name=\"id\" type=\"hidden\"/></td>\n" +
 				                 "            </tr>\n" +
 				                 "      </table>\n" +
-				                 "      <div class=\"js-typeahead-empty-template empty-message\"><div class='alert' role='alert'></div></div>\n" +
+				                 "      <div class=\"js-typeahead-empty-template \"><div class='alert' role='alert'></div></div>\n" +
 				                 "   </div>\n" +
 				                 "   <table class=\"js-typeahead-prefill table\"></table>\n" +
 				                 "</div>" );
@@ -137,7 +140,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 				                 "               <td class=\"row-actions\"><a href=\"#\" title=\"REMOVE\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a><input name=\"id\" type=\"hidden\"/></td>\n" +
 				                 "            </tr>\n" +
 				                 "      </table>\n" +
-				                 "      <div class=\"js-typeahead-empty-template empty-message\"><div class='alert' role='alert'></div></div>\n" +
+				                 "      <div class=\"js-typeahead-empty-template \"><div class='alert' role='alert'></div></div>\n" +
 				                 "   </div>\n" +
 				                 "   <table class=\"js-typeahead-prefill table\"></table>\n" +
 				                 "</div>" );
@@ -168,10 +171,41 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 				                 "               <td class=\"row-actions\"><a href=\"#\" title=\"REMOVE\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a><input name=\"id\" type=\"hidden\"/></td>\n" +
 				                 "            </tr>\n" +
 				                 "      </table>\n" +
-				                 "      <div class=\"js-typeahead-empty-template empty-message\">Not Found</div>\n" +
+				                 "      <div class=\"js-typeahead-empty-template\">Not Found</div>\n" +
 				                 "   </div>\n" +
 				                 "   <table class=\"js-typeahead-prefill table\"></table>\n" +
 				                 "</div>" );
 	}
 
+	@Test
+	public void customItemTemplateWithViewElement() throws Exception {
+		NodeViewElement container = new NodeViewElementBuilder( "ul" )
+				.css( CSS_PREFILL_TABLE )
+				.build( new DefaultViewElementBuilderContext() );
+		NodeViewElement item = new NodeViewElementBuilder( "ul" )
+				.add( new TemplateViewElement( "th/test/customItemList :: item" ) )
+				.build( new DefaultViewElementBuilderContext() );
+		builder.itemTemplate( container, item );
+		builder.properties( "name" );
+		NodeViewElement actual = builder.createElement( context );
+
+		renderAndExpect( actual,
+		                 "" +
+				                 "<div data-autosuggest=\"{&quot;endPoint&quot;:&quot;/autosuggest&quot;}\" class=\"js-typeahead\">\n" +
+				                 "   <input type=\"text\" class=\"js-typeahead-input form-control\"/>\n" +
+				                 "   <div class=\"hidden\">\n" +
+				                 "      <div class=\"js-typeahead-suggestion-template\">\n" +
+				                 "         <div data-as-property=\"name\"></div>\n" +
+				                 "      </div>\n" +
+				                 "      <ul>\n" +
+				                 "            <li class=\"js-typeahead-template\">\n" +
+				                 "               <div data-as-property=\"name\"></div>\n" +
+				                 "               <a>delete</a>\n" +
+				                 "            </li>\n" +
+				                 "      </ul>\n" +
+				                 "      <div class=\"js-typeahead-empty-template\">Not Found</div>\n" +
+				                 "   </div>\n" +
+				                 "      <ul class=\"js-typeahead-prefill\"></ul>\n" +
+				                 "</div>" );
+	}
 }
