@@ -17,6 +17,7 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
+import com.foreach.across.modules.bootstrapui.elements.AlertViewElement;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -86,6 +87,58 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 				                                "   </div>\n" +
 				                                "   <table class=\"js-typeahead-prefill table\"></table>\n" +
 				                                "</div>", endPoint ) );
+
+	}
+
+	@Test
+	public void customNotFoundTemplateWithViewElement() throws Exception {
+		builder.setNotFoundTemplate( new AlertViewElement() );
+		NodeViewElement actual = builder.createElement( context );
+
+		renderAndExpect( actual,
+		                 "" +
+				                 "<div data-autosuggest=\"{&quot;endPoint&quot;:&quot;/autosuggest&quot;}\" class=\"js-typeahead\">\n" +
+				                 "   <input type=\"text\" class=\"js-typeahead-input form-control\"/>\n" +
+				                 "   <div class=\"hidden\">\n" +
+				                 "      <div class=\"js-typeahead-suggestion-template\">\n" +
+				                 "         <div data-as-property=\"label\"></div>\n" +
+				                 "      </div>\n" +
+				                 "      <table class=\"table\">\n" +
+				                 "            <tr class=\"js-typeahead-template\">\n" +
+				                 "               <td data-as-property=\"label\"></td>\n" +
+				                 "               <td class=\"row-actions\"><a href=\"#\" title=\"REMOVE\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a><input name=\"id\" type=\"hidden\"/></td>\n" +
+				                 "            </tr>\n" +
+				                 "      </table>\n" +
+				                 "      <div class=\"js-typeahead-empty-template empty-message\"><div class='alert' role='alert'></div></div>\n" +
+				                 "   </div>\n" +
+				                 "   <table class=\"js-typeahead-prefill table\"></table>\n" +
+				                 "</div>" );
+
+	}
+
+	@Test
+	public void customNotFoundTemplateWithBuilder() throws Exception {
+		builder.setNotFoundTemplate( new AlertViewElementBuilder() );
+		NodeViewElement actual = builder.createElement( context );
+
+		renderAndExpect( actual,
+		                 "" +
+				                 "<div data-autosuggest=\"{&quot;endPoint&quot;:&quot;/autosuggest&quot;}\" class=\"js-typeahead\">\n" +
+				                 "   <input type=\"text\" class=\"js-typeahead-input form-control\"/>\n" +
+				                 "   <div class=\"hidden\">\n" +
+				                 "      <div class=\"js-typeahead-suggestion-template\">\n" +
+				                 "         <div data-as-property=\"label\"></div>\n" +
+				                 "      </div>\n" +
+				                 "      <table class=\"table\">\n" +
+				                 "            <tr class=\"js-typeahead-template\">\n" +
+				                 "               <td data-as-property=\"label\"></td>\n" +
+				                 "               <td class=\"row-actions\"><a href=\"#\" title=\"REMOVE\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a><input name=\"id\" type=\"hidden\"/></td>\n" +
+				                 "            </tr>\n" +
+				                 "      </table>\n" +
+				                 "      <div class=\"js-typeahead-empty-template empty-message\"><div class='alert' role='alert'></div></div>\n" +
+				                 "   </div>\n" +
+				                 "   <table class=\"js-typeahead-prefill table\"></table>\n" +
+				                 "</div>" );
 
 	}
 }

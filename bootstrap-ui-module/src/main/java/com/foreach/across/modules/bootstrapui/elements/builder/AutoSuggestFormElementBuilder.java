@@ -21,6 +21,8 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
@@ -29,10 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -60,6 +59,7 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 
 	private List<String> properties = Collections.singletonList( DEFAULT_PROPERTY );
 	private List<Map<String, Object>> prefill = Collections.emptyList();
+	private Optional<ElementOrBuilder> notFoundTemplate = Optional.empty();
 
 	public AutoSuggestFormElementBuilder configuration( AutosuggestFormElementConfiguration configuration ) {
 		this.configuration = configuration;
@@ -86,6 +86,16 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		return this;
 	}
 
+	public AutoSuggestFormElementBuilder setNotFoundTemplate( ViewElement notFoundTemplate ) {
+		this.notFoundTemplate = Optional.of( ElementOrBuilder.wrap( notFoundTemplate ) );
+		return this;
+	}
+
+	public AutoSuggestFormElementBuilder setNotFoundTemplate( ViewElementBuilder notFoundTemplate ) {
+		this.notFoundTemplate = Optional.of( ElementOrBuilder.wrap( notFoundTemplate ) );
+		return this;
+	}
+
 	@Override
 	protected NodeViewElement createElement( ViewElementBuilderContext viewElementBuilderContext ) {
 		if ( StringUtils.isNotBlank( endPoint ) ) {
@@ -99,7 +109,7 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		                         .css( CSS_TYPEAHEAD_CLASS )
 		                         .attribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration )
 		                         .add( renderInputElement() )
-		                         .add( renderTemplates() )
+		                         .add( renderTemplates( viewElementBuilderContext ) )
 		                         .add( renderPrefillValues() )
 		                         .build( viewElementBuilderContext );
 	}
@@ -121,18 +131,21 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		                                          .collect( Collectors.toList() ) );
 	}
 
-	private NodeViewElementBuilder renderTemplates() {
+	private NodeViewElementBuilder renderTemplates( ViewElementBuilderContext viewElementBuilderContext ) {
 		return bootstrapUiFactory.div()
 		                         .css( "hidden" )
-		                         .add( getSuggestionTemplate( properties ),
-		                               getItemTemplate( CSS_ITEM_TEMPLATE, properties ),
-		                               getNotFoundTemplate() );
+		                         .add( getSuggestionTemplate( properties ) )
+		                         .add( getItemTemplate( CSS_ITEM_TEMPLATE, properties ) )
+		                         .add( getNotFoundTemplate( viewElementBuilderContext ) );
 	}
 
-	private NodeViewElementBuilder getNotFoundTemplate() {
-		return bootstrapUiFactory.div()
-		                         .css( CSS_EMPTY_TEMPLATE, "empty-message" )
-		                         .add( bootstrapUiFactory.text( "Not Found" ) ); //TODO make label
+	private NodeViewElementBuilder getNotFoundTemplate( ViewElementBuilderContext viewElementBuilderContext ) {
+		NodeViewElementBuilder notFoundContainer = bootstrapUiFactory.div()
+		                                                             .css( CSS_EMPTY_TEMPLATE, "empty-message" );
+		ElementOrBuilder defaultNotFoundElementOrBuilder = ElementOrBuilder.wrap(
+				bootstrapUiFactory.text( "Not Found" ) );//TODO make label
+		return notFoundContainer.add( notFoundTemplate.orElse( defaultNotFoundElementOrBuilder )
+		                                              .get( viewElementBuilderContext ) );
 	}
 
 	private NodeViewElementBuilder getSuggestionTemplate( List<String> properties ) {
@@ -185,5 +198,4 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 				                             .value( items.get( idProperty ) )
 				                             .controlName( idProperty ) ) );
 	}
-
 }
