@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 import com.foreach.across.modules.bootstrapui.elements.FormViewElement;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
+import org.springframework.http.HttpMethod;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
@@ -77,14 +78,21 @@ public class FormViewElementModelWriter extends AbstractHtmlViewElementModelWrit
 
 		if ( extraHiddenFields != null && extraHiddenFields.size() > 0 ) {
 			extraHiddenFields.forEach( ( fieldName, fieldValue ) -> {
-				writer.addOpenElement( "input" );
-				writer.addAttribute( "type", "hidden" );
-				writer.addAttribute( "name", fieldName );
-				writer.addAttribute( "value", fieldValue );
-				writer.addCloseElement();
+				if ( shouldWriteExtraField( fieldName, viewElement.getMethod() ) ) {
+					writer.addOpenElement( "input" );
+					writer.addAttribute( "type", "hidden" );
+					writer.addAttribute( "name", fieldName );
+					writer.addAttribute( "value", fieldValue );
+					writer.addCloseElement();
+				}
 			} );
 		}
 
 		super.writeCloseElement( viewElement, writer );
+	}
+
+	private boolean shouldWriteExtraField( String fieldName, HttpMethod httpMethod ) {
+		// only write a CSRF token if http method is not get
+		return httpMethod != HttpMethod.GET || !"_csrf".equals( fieldName );
 	}
 }
