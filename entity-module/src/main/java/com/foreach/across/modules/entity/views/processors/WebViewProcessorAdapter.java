@@ -18,6 +18,8 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
+import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.WebDataBinder;
  *
  * @author Andy Somers, Arne Vandamme
  */
+@Deprecated
 public class WebViewProcessorAdapter<U extends EntityView>
 		implements EntityViewProcessor<WebViewCreationContext, U>
 {
@@ -104,6 +107,58 @@ public class WebViewProcessorAdapter<U extends EntityView>
 	}
 
 	protected void registerWebResources( WebResourceRegistry resourceRegistry ) {
+
+	}
+
+	@Override
+	public void prepareEntityViewContext( ConfigurableEntityViewContext entityViewContext ) {
+
+	}
+
+	@Override
+	public void validateRequest( EntityViewRequest entityViewRequest ) {
+
+	}
+
+	@Override
+	public void initializeCommandObject( EntityViewRequest entityViewRequest,
+	                                     com.foreach.across.modules.entity.views.request.EntityViewCommand command,
+	                                     WebDataBinder dataBinder ) {
+
+	}
+
+	@Override
+	public void preProcess( EntityViewRequest entityViewRequest, EntityView entityView ) {
+
+	}
+
+	@Override
+	public void doControl( EntityViewRequest entityViewRequest,
+	                       EntityView entityView,
+	                       com.foreach.across.modules.entity.views.request.EntityViewCommand command ) {
+
+	}
+
+	@Override
+	public void render( EntityViewRequest entityViewRequest,
+	                    EntityView entityView ) {
+
+	}
+
+	@Override
+	public void preRender( EntityViewRequest entityViewRequest,
+	                       EntityView entityView ) {
+
+	}
+
+	@Override
+	public void postRender( EntityViewRequest entityViewRequest,
+	                        EntityView entityView ) {
+
+	}
+
+	@Override
+	public void postProcess( EntityViewRequest entityViewRequest, EntityView entityView ) {
 
 	}
 }

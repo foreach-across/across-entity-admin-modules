@@ -169,7 +169,7 @@ public abstract class EntityControllerSupport extends AbstractEntityModuleContro
 	protected abstract String getDefaultViewName();
 
 	/**
-	 * Create a DTO for a given entity.  This will load the source entity, add it to the model and then
+	 * Create a DTO for a given entity.  This will loadForEntity the source entity, add it to the model and then
 	 * create a dto for it.
 	 */
 	@SuppressWarnings("unchecked")

@@ -27,7 +27,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
-import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -403,7 +403,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		if ( actual == null ) {
 			if ( resolvedPagingMessages == null ) {
 				resolvedPagingMessages
-						= new ListViewEntityMessages( getEntityConfiguration().getEntityMessageCodeResolver() );
+						= new EntityMessages( getEntityConfiguration().getEntityMessageCodeResolver() );
 			}
 			actual = resolvedPagingMessages;
 		}

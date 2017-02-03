@@ -25,6 +25,7 @@ import org.springframework.ui.ModelMap;
  *
  * @see EntityListViewFactory
  */
+@Deprecated
 public class EntityListView extends EntityView
 {
 	public static final String SUMMARY_VIEW_NAME = "listSummaryView";
@@ -41,7 +42,7 @@ public class EntityListView extends EntityView
 	}
 
 	public Pageable getPageable() {
-		return getAttribute( ATTRIBUTE_PAGEABLE );
+		return getAttribute( ATTRIBUTE_PAGEABLE, Pageable.class );
 	}
 
 	public void setPageable( Pageable pageable ) {
@@ -49,7 +50,7 @@ public class EntityListView extends EntityView
 	}
 
 	public Page getPage() {
-		return getAttribute( ATTRIBUTE_PAGE );
+		return getAttribute( ATTRIBUTE_PAGE, Page.class );
 	}
 
 	public void setPage( Page page ) {

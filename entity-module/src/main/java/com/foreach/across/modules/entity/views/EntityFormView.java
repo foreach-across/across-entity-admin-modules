@@ -24,6 +24,7 @@ import org.springframework.validation.BindingResultUtils;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class EntityFormView extends EntityView
 {
 	public static final String CREATE_VIEW_NAME = "createView";

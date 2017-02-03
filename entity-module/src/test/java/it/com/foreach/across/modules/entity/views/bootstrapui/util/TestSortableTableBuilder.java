@@ -52,7 +52,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.foreach.across.modules.entity.views.support.ListViewEntityMessages.RESULTS_FOUND;
+import static com.foreach.across.modules.entity.views.support.EntityMessages.RESULTS_FOUND;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 

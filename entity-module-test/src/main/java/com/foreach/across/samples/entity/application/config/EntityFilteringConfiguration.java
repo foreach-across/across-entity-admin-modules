@@ -133,7 +133,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 
 		@Override
 		public Page fetchPage( WebViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
-			EntityViewRequest request = model.getAttribute( "viewRequest" );
+			EntityViewRequest request = model.getAttribute( "viewRequest", EntityViewRequest.class );
 
 			String filter = (String) request.getExtensions().get( "filter" );
 
@@ -177,7 +177,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 
 		@Override
 		public Page fetchPage( WebViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
-			EntityViewRequest request = model.getAttribute( "viewRequest" );
+			EntityViewRequest request = model.getAttribute( "viewRequest", EntityViewRequest.class );
 			Group group = (Group) model.getParentEntity();
 			String filter = (String) request.getExtensions().get( "filter" );
 

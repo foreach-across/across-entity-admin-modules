@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.web.WebViewCreationContext;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Deprecated
 public class ListViewProcessorAdapter extends WebViewProcessorAdapter<EntityListView> implements SortableTableEntityListViewProcessor
 {
 	@Override
@@ -31,4 +32,6 @@ public class ListViewProcessorAdapter extends WebViewProcessorAdapter<EntityList
 	                                    EntityListView view,
 	                                    SortableTableBuilder sortableTableBuilder ) {
 	}
+
+
 }

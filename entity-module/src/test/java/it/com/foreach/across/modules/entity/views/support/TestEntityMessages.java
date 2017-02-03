@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
 import it.com.foreach.across.modules.entity.registrars.repository.repository.TestRepositoryEntityRegistrar;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +76,7 @@ public class TestEntityMessages
 
 	@Test
 	public void listViewMessages() {
-		ListViewEntityMessages messages = new ListViewEntityMessages( messageCodeResolver );
+		EntityMessages messages = new EntityMessages( messageCodeResolver );
 
 		Page page = mock( Page.class );
 		when( page.getNumber() ).thenReturn( 2 );

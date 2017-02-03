@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.web.WebViewCreationContext;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Deprecated
 public interface SortableTableEntityListViewProcessor
 {
 	void configureSortableTable( WebViewCreationContext creationContext,

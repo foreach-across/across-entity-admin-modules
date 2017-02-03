@@ -20,6 +20,8 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.validation.DataBinder;
+import org.springframework.web.bind.WebDataBinder;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -101,6 +104,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	 *
 	 * @param messagePrefixes One or more message key prefixes.
 	 */
+	@Deprecated
 	public void setMessagePrefixes( String... messagePrefixes ) {
 		this.messagePrefixes = messagePrefixes;
 	}
@@ -185,7 +189,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	}
 
 	protected void preparePageContentStructure( PageContentStructure page, V creationContext, T view ) {
-		String successMessage = view.getAttribute( "successMessage" );
+		String successMessage = view.getAttribute( "successMessage", String.class );
 
 		if ( successMessage != null ) {
 			EntityMessages messages = view.getEntityMessages();
@@ -277,4 +281,26 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	                                        EntityConfiguration entityConfiguration,
 	                                        EntityMessageCodeResolver codeResolver,
 	                                        T view );
+
+	@Override
+	public void prepareEntityViewContext( ConfigurableEntityViewContext entityViewContext ) {
+
+	}
+
+	@Override
+	public void initializeCommandObject( EntityViewRequest entityViewRequest,
+	                                     com.foreach.across.modules.entity.views.request.EntityViewCommand command,
+	                                     WebDataBinder dataBinder ) {
+
+	}
+
+	@Override
+	public EntityView createView( EntityViewRequest entityViewRequest ) {
+		return null;
+	}
+
+	@Override
+	public void validateRequest( EntityViewRequest entityViewRequest ) {
+
+	}
 }

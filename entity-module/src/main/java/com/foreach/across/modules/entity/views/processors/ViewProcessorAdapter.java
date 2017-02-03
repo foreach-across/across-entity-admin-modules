@@ -19,15 +19,19 @@ import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.ViewCreationContext;
+import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.DataBinder;
+import org.springframework.web.bind.WebDataBinder;
 
 /**
- * Convenient helper combining the different view processors and providing most common extension points.
+ * Default implementation of an {@link EntityViewProcessor}.
  *
  * @author Andy Somers, Arne Vandamme
  */
+@Deprecated
 public class ViewProcessorAdapter<T extends ViewCreationContext, U extends EntityView>
 		implements EntityViewProcessor<T, U>
 {
@@ -65,6 +69,58 @@ public class ViewProcessorAdapter<T extends ViewCreationContext, U extends Entit
 	}
 
 	protected void modifyViewElements( ContainerViewElement elements ) {
+
+	}
+
+	@Override
+	public void prepareEntityViewContext( ConfigurableEntityViewContext entityViewContext ) {
+
+	}
+
+	@Override
+	public void validateRequest( EntityViewRequest entityViewRequest ) {
+
+	}
+
+	@Override
+	public void initializeCommandObject( EntityViewRequest entityViewRequest,
+	                                     com.foreach.across.modules.entity.views.request.EntityViewCommand command,
+	                                     WebDataBinder dataBinder ) {
+
+	}
+
+	@Override
+	public void preProcess( EntityViewRequest entityViewRequest, EntityView entityView ) {
+
+	}
+
+	@Override
+	public void doControl( EntityViewRequest entityViewRequest,
+	                       EntityView entityView,
+	                       com.foreach.across.modules.entity.views.request.EntityViewCommand command ) {
+
+	}
+
+	@Override
+	public void render( EntityViewRequest entityViewRequest,
+	                    EntityView entityView ) {
+
+	}
+
+	@Override
+	public void preRender( EntityViewRequest entityViewRequest,
+	                       EntityView entityView ) {
+
+	}
+
+	@Override
+	public void postRender( EntityViewRequest entityViewRequest,
+	                        EntityView entityView ) {
+
+	}
+
+	@Override
+	public void postProcess( EntityViewRequest entityViewRequest, EntityView entityView ) {
 
 	}
 }

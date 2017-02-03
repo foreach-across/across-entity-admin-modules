@@ -68,7 +68,7 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 
 	@Override
 	protected void extendViewModel( EntityListView view ) {
-		EntityViewRequest request = view.getAttribute( "viewRequest" );
+		EntityViewRequest request = view.getAttribute( "viewRequest", EntityViewRequest.class );
 		String filter = (String) request.getExtensions().get( PARAM );
 
 		ContainerViewElement elements = view.getViewElements();
@@ -106,7 +106,7 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 
 					h.addChild( row.build() );
 
-					String errorMessage = view.getAttribute( "filterError" );
+					String errorMessage = view.getAttribute( "filterError", String.class );
 
 					if ( !StringUtils.isBlank( errorMessage ) ) {
 						h.addChild(
@@ -123,7 +123,7 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 	@Override
 	@SuppressWarnings("unchecked")
 	public Page fetchPage( WebViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
-		EntityViewRequest request = model.getAttribute( "viewRequest" );
+		EntityViewRequest request = model.getAttribute( "viewRequest", EntityViewRequest.class );
 		String filter = (String) request.getExtensions().get( PARAM );
 
 		try {

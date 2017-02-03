@@ -24,6 +24,7 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class EntityViewCommand
 {
 	private String entityName;

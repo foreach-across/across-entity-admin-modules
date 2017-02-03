@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public interface ViewCreationContext extends WritableAttributes
 {
 	/**

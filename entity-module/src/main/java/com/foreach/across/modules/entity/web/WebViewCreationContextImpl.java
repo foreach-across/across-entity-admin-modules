@@ -27,6 +27,7 @@ import java.util.Optional;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class WebViewCreationContextImpl extends AttributeSupport implements WebViewCreationContext
 {
 	private NativeWebRequest request;

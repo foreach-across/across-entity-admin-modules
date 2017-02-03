@@ -33,7 +33,6 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.element.En
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.views.processors.SortableTableEntityListViewProcessor;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
@@ -235,7 +234,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			tableBuilder.formName( FORM_NAME );
 			tableBuilder.entityConfiguration( entityConfiguration );
 			tableBuilder.properties( descriptors );
-			tableBuilder.pagingMessages( (ListViewEntityMessages) view.getEntityMessages() );
+			tableBuilder.pagingMessages( view.getEntityMessages() );
 			tableBuilder.items( page );
 			tableBuilder.sortableOn( getSortableProperties() );
 			tableBuilder.showResultNumber( isShowResultNumber() );
@@ -274,10 +273,5 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 		}
 
 		return EntityUtils.translateSort( existing, getPropertyRegistry( view.getEntityConfiguration() ) );
-	}
-
-	@Override
-	protected ListViewEntityMessages createEntityMessages( EntityMessageCodeResolver codeResolver ) {
-		return new ListViewEntityMessages( codeResolver );
 	}
 }

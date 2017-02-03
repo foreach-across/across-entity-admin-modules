@@ -26,6 +26,7 @@ import org.springframework.validation.Validator;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class ViewRequestValidator implements Validator
 {
 	@EntityValidator

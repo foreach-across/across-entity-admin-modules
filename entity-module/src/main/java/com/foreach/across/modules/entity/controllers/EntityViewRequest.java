@@ -25,6 +25,7 @@ import org.springframework.web.bind.WebDataBinder;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class EntityViewRequest extends EntityViewCommand
 {
 	private String viewName;

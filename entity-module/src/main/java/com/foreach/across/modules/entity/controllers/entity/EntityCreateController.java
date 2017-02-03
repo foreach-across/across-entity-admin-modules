@@ -25,7 +25,6 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
-import com.foreach.across.modules.web.menu.MenuFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -51,9 +50,6 @@ public class EntityCreateController extends EntityControllerSupport
 
 	@Autowired
 	private AdminWeb adminWeb;
-
-	@Autowired
-	private MenuFactory menuFactory;
 
 	@Override
 	protected String getDefaultViewName() {
