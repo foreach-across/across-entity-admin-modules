@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.bootstrapui.elements.processor.ControlNamePrefixingPostProcessor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -30,6 +31,8 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
@@ -52,6 +55,9 @@ import java.util.stream.Collectors;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Component
+@Exposed
+@Scope("prototype")
 public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 {
 	public static final String ATTRIBUTE_PROPERTY_BUILDERS = "propertyBuildersMap";

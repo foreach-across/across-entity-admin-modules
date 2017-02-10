@@ -27,7 +27,7 @@ import com.foreach.across.modules.entity.views.support.EntityMessages;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class MessagePrefixingViewProcessor extends ViewProcessorAdapter
+public class MessagePrefixingViewProcessor extends EntityViewProcessorAdapter
 {
 	private final String[] messagePrefixes;
 

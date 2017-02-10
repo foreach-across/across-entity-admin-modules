@@ -17,10 +17,13 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.helpers.EntityViewElementBatch;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -98,6 +101,24 @@ public class EntityViewElementBuilderHelper
 		EntityConfiguration<V> entityConfiguration = entityRegistry.getEntityConfiguration( entityType );
 
 		return tableBuilder.entityConfiguration( entityConfiguration );
+	}
+
+	/**
+	 * Create a new {@link SortableTableBuilder} instance for a specific {@link EntityViewContext}.
+	 * The table builder will be initialized with the {@link EntityConfiguration}, {@link EntityPropertyRegistry} and {@link EntityMessages}
+	 * configured on the {@link EntityViewContext}.
+	 *
+	 * @param entityViewContext to use for initializing the table builder
+	 * @return table builders
+	 */
+	public SortableTableBuilder createSortableTableBuilder( EntityViewContext entityViewContext ) {
+		Assert.notNull( entityViewContext );
+
+		SortableTableBuilder tableBuilder = createSortableTableBuilder();
+		tableBuilder.entityConfiguration( entityViewContext.getEntityConfiguration() );
+		tableBuilder.propertyRegistry( entityViewContext.getPropertyRegistry() );
+		tableBuilder.pagingMessages( entityViewContext.getEntityMessages() );
+		return tableBuilder;
 	}
 
 	/**

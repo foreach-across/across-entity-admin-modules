@@ -63,6 +63,7 @@ public class EntitySummaryViewActionProcessor implements ViewElementPostProcesso
 	 * @param tableBuilder        where the summary view should be added to the value rows
 	 * @param viewName            name of the expanding view
 	 */
+	@Deprecated
 	public static void autoRegister( ViewCreationContext viewCreationContext,
 	                                 SortableTableBuilder tableBuilder,
 	                                 String viewName ) {

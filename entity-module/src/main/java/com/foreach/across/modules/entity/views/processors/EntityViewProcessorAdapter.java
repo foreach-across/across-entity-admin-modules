@@ -28,7 +28,6 @@ import com.foreach.across.modules.web.resource.WebResourceUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.ui.ModelMap;
@@ -48,7 +47,7 @@ import static com.foreach.across.modules.entity.views.DispatchingEntityViewFacto
  * <li>{@link #registerWebResources(EntityViewRequest, EntityView, WebResourceRegistry)}</li>
  * <li>{@link #prepareViewElementBuilderContext(EntityViewRequest, EntityView, ViewElementBuilderContext)}</li>
  * <li>{@link #createViewElementBuilders(EntityViewRequest, EntityView, ViewElementBuilderMap)}</li>
- * <li>{@link #render(EntityViewRequest, EntityView, ContainerViewElementBuilder, ViewElementBuilderMap, ViewElementBuilderContext)}</li>
+ * <li>{@link #render(EntityViewRequest, EntityView, ContainerViewElementBuilderSupport, ViewElementBuilderMap, ViewElementBuilderContext)}</li>
  * <li>{@link #postRender(EntityViewRequest, EntityView, ContainerViewElement, ViewElementBuilderContext)}</li>
  * </ul>
  *
