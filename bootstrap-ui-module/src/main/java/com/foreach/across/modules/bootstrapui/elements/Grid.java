@@ -2,11 +2,25 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import liquibase.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+/**
+ * Helper class that represents a Bootstrap grid layout: a number of columns ({@link Grid.Position}) with
+ * one or more specifiers (eg. hidden, pull-right, width for different devices etc).
+ * <p />
+ * The static convenience methods {@link #create(int...)} help you easily create basic grids.
+ * Example more complex grid layout:
+ * <pre>
+ *     Grid.create(
+ *       Grid.position( Device.MD.hidden(), Device.LG.width( Width.QUARTER ).asOffset() ),
+ *       Grid.position( Device.SM.width( Width.THREE_QUARTERS ) )
+ *     );
+ * </pre>
+ * Would result in:
+ * <pre>
+ *     Grid{[hidden-md col-lg-offset-3],[col-sm-9]}
+ * </pre>
+ */
 public class Grid extends ArrayList<Grid.Position>
 {
 	public static class Width
@@ -224,6 +238,19 @@ public class Grid extends ArrayList<Grid.Position>
 		}
 
 		return "Grid{" + StringUtils.join( strings, "," ) + "}";
+	}
+
+	/**
+	 * Create a simple grid with the number of columns specified by the width parameter values.
+	 * Columns will only have values registered for {@link Device#MD}.
+	 *
+	 * @param widths for the columns
+	 * @return grid
+	 */
+	public static Grid create( int... widths ) {
+		Grid grid = new Grid();
+		Arrays.stream( widths ).forEach( w -> grid.add( position( Device.MD.width( w ) ) ) );
+		return grid;
 	}
 
 	public static Grid create( Position... positions ) {

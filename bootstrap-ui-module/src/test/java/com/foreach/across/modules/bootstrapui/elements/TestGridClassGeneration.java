@@ -69,6 +69,15 @@ public class TestGridClassGeneration
 	}
 
 	@Test
+	public void simpleGrid() {
+		Grid grid = Grid.create( Width.FULL );
+		assertEquals( "Grid{[col-md-12]}", grid.toString() );
+
+		grid = Grid.create( Width.HALF, Width.QUARTER, Width.QUARTER );
+		assertEquals( "Grid{[col-md-6],[col-md-3],[col-md-3]}", grid.toString() );
+	}
+
+	@Test
 	public void equality() {
 		assertEquals( Device.MD.visible(), Device.MD.visible() );
 		assertEquals( Device.LG.width( 3 ), Device.LG.width( 3 ) );
