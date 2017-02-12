@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+package com.foreach.across.modules.entity.views.processors;
+
+import com.foreach.across.modules.entity.views.EntityView;
 
 /**
+ * Simple implementation of {@link EntityFetchingViewProcessorAdapter} that delegates to a {@link java.util.function.BiFunction}
+ * for getting the actual items.  The {@link java.util.function.BiFunction} loses the specific {@link EntityView} context,
+ * if you really require it you should implement {@link EntityFetchingViewProcessorAdapter} directly.
+ *
  * @author Arne Vandamme
+ * @since 2.0.0
  */
-@Deprecated
-public interface EntityListViewPageFetcher<V extends ViewCreationContext>
+public final class SimpleEntityFetchingViewProcessor extends EntityFetchingViewProcessorAdapter
 {
-	Page fetchPage( V viewCreationContext, Pageable pageable, EntityView model );
+
 }

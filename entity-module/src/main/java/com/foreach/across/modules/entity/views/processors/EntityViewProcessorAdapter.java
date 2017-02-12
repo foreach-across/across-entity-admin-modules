@@ -25,12 +25,14 @@ import com.foreach.across.modules.entity.views.processors.support.ViewElementBui
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceUtils;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
 
@@ -38,20 +40,24 @@ import static com.foreach.across.modules.entity.views.DispatchingEntityViewFacto
 import static com.foreach.across.modules.entity.views.DispatchingEntityViewFactory.ATTRIBUTE_CONTAINER_ELEMENT;
 
 /**
- * Adapter implementation for a default {@link EntityViewProcessor} following the common {@link com.foreach.across.modules.web.ui.ViewElement}
+ * Adapter implementation for a default {@link EntityViewProcessor} following the common {@link ViewElement}
  * based rendering approach.  Adds several more fine-grained extension methods for that use case:
  * <ul>
  * <li>{@link #doGet(EntityViewRequest, EntityView, com.foreach.across.modules.entity.views.request.EntityViewCommand)}</li>
- * <li>{@link #doPost(EntityViewRequest, EntityView, com.foreach.across.modules.entity.views.request.EntityViewCommand)}</li>
- * <li>{@link #doControl(EntityViewRequest, EntityView, com.foreach.across.modules.entity.views.request.EntityViewCommand, HttpMethod)}</li>
+ * <li>{@link #doPost(EntityViewRequest, EntityView, com.foreach.across.modules.entity.views.request.EntityViewCommand, BindingResult)}</li>
+ * <li>{@link #doControl(EntityViewRequest, EntityView, com.foreach.across.modules.entity.views.request.EntityViewCommand, BindingResult, HttpMethod)}</li>
  * <li>{@link #registerWebResources(EntityViewRequest, EntityView, WebResourceRegistry)}</li>
  * <li>{@link #prepareViewElementBuilderContext(EntityViewRequest, EntityView, ViewElementBuilderContext)}</li>
  * <li>{@link #createViewElementBuilders(EntityViewRequest, EntityView, ViewElementBuilderMap)}</li>
  * <li>{@link #render(EntityViewRequest, EntityView, ContainerViewElementBuilderSupport, ViewElementBuilderMap, ViewElementBuilderContext)}</li>
  * <li>{@link #postRender(EntityViewRequest, EntityView, ContainerViewElement, ViewElementBuilderContext)}</li>
  * </ul>
+ * <p/>
+ * This implementation introduces some overhead by managing default attributes and dispatching to additional methods.
+ * If you do not need any of those, you should consider using the {@link SimpleEntityViewProcessorAdapter} instead.
  *
  * @author Arne Vandamme
+ * @see SimpleEntityViewProcessorAdapter
  * @since 2.0.0
  */
 public class EntityViewProcessorAdapter implements EntityViewProcessor<ViewCreationContext, EntityView>
@@ -59,22 +65,22 @@ public class EntityViewProcessorAdapter implements EntityViewProcessor<ViewCreat
 	private static final String ATTRIBUTE_BUILDER_MAP = "entityViewBuilderMap";
 
 	@Override
-	public void prepareModelAndCommand( String viewName, ViewCreationContext creationContext, EntityViewCommand command, ModelMap model ) {
+	public final void prepareModelAndCommand( String viewName, ViewCreationContext creationContext, EntityViewCommand command, ModelMap model ) {
 
 	}
 
 	@Override
-	public void prepareDataBinder( String viewName, ViewCreationContext creationContext, EntityViewCommand command, DataBinder dataBinder ) {
+	public final void prepareDataBinder( String viewName, ViewCreationContext creationContext, EntityViewCommand command, DataBinder dataBinder ) {
 
 	}
 
 	@Override
-	public void preProcess( ViewCreationContext creationContext, EntityView view ) {
+	public final void preProcess( ViewCreationContext creationContext, EntityView view ) {
 
 	}
 
 	@Override
-	public void postProcess( ViewCreationContext creationContext, EntityView view ) {
+	public final void postProcess( ViewCreationContext creationContext, EntityView view ) {
 	}
 
 	@Override
@@ -100,13 +106,13 @@ public class EntityViewProcessorAdapter implements EntityViewProcessor<ViewCreat
 	                             EntityView entityView,
 	                             com.foreach.across.modules.entity.views.request.EntityViewCommand command ) {
 		HttpMethod httpMethod = entityViewRequest.getHttpMethod();
-		doControl( entityViewRequest, entityView, command, httpMethod );
+		doControl( entityViewRequest, entityView, command, entityViewRequest.getBindingResult(), httpMethod );
 
 		if ( HttpMethod.GET == httpMethod ) {
 			doGet( entityViewRequest, entityView, command );
 		}
 		else if ( HttpMethod.POST == httpMethod ) {
-			doPost( entityViewRequest, entityView, command );
+			doPost( entityViewRequest, entityView, command, entityViewRequest.getBindingResult() );
 		}
 	}
 
@@ -116,11 +122,13 @@ public class EntityViewProcessorAdapter implements EntityViewProcessor<ViewCreat
 	 * @param entityViewRequest view request
 	 * @param entityView        view generated
 	 * @param command           object
+	 * @param bindingResult     for the command object
 	 * @param httpMethod        http method requested
 	 */
 	protected void doControl( EntityViewRequest entityViewRequest,
 	                          EntityView entityView,
 	                          com.foreach.across.modules.entity.views.request.EntityViewCommand command,
+	                          BindingResult bindingResult,
 	                          HttpMethod httpMethod ) {
 	}
 
@@ -142,11 +150,13 @@ public class EntityViewProcessorAdapter implements EntityViewProcessor<ViewCreat
 	 * @param entityViewRequest view request
 	 * @param entityView        view generated
 	 * @param command           object
+	 * @param bindingResult     for the command object
 	 */
 
 	protected void doPost( EntityViewRequest entityViewRequest,
 	                       EntityView entityView,
-	                       com.foreach.across.modules.entity.views.request.EntityViewCommand command ) {
+	                       com.foreach.across.modules.entity.views.request.EntityViewCommand command,
+	                       BindingResult bindingResult ) {
 	}
 
 	@Override
@@ -239,7 +249,7 @@ public class EntityViewProcessorAdapter implements EntityViewProcessor<ViewCreat
 	}
 
 	/**
-	 * Modify the built container of {@link com.foreach.across.modules.web.ui.ViewElement}s.
+	 * Modify the built container of {@link ViewElement}s.
 	 *
 	 * @param entityViewRequest view request
 	 * @param entityView        view generated

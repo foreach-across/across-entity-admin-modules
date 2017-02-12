@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+package com.foreach.across.modules.entity.views.processors;
+
+import lombok.Setter;
 
 /**
+ * Builds the default page structure for a single entity page.  Adds page title, sets page layout and optionally adds the entity menu.
+ * <p/>
+ * If {@link #setAddEntityMenu(boolean)} is {@code true}, the {@link com.foreach.across.modules.adminweb.menu.EntityAdminMenuEvent} will be published
+ * for the entity and the resulting menu will be added to the page.
+ *
  * @author Arne Vandamme
+ * @since 2.0.0
  */
-@Deprecated
-public interface EntityListViewPageFetcher<V extends ViewCreationContext>
+public class SingleEntityPageStructureViewProcessor
 {
-	Page fetchPage( V viewCreationContext, Pageable pageable, EntityView model );
+	/**
+	 * Should the entity menu be generated and added to the page nav.
+	 */
+	@Setter
+	private boolean addEntityMenu;
 }

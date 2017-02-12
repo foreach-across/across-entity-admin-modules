@@ -132,10 +132,9 @@ public class GenericEntityViewController implements EntityControllerAttributes
 
 	@RequestMapping(value = { "", PATH_ENTITY_ID, PATH_ENTITY_ID + "/{action:delete|update}" })
 	public Object executeView(
-			@PathVariable(value = VAR_ENTITY_ID, required = false) Serializable entityId,
-			@PathVariable(value = "action", required = false) String action,
 			@ModelAttribute("entityViewCommand") @Valid EntityViewCommand command,
 			BindingResult bindingResult
+
 	) {
 		entityViewRequest.setBindingResult( bindingResult );
 

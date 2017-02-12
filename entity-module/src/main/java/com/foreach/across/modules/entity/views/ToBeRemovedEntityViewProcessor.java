@@ -26,6 +26,7 @@ import org.springframework.validation.DataBinder;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Deprecated
 public abstract class ToBeRemovedEntityViewProcessor implements EntityViewProcessor<ViewCreationContext, EntityView>
 {
 	@Override

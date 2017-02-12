@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+package com.foreach.across.modules.entity.views.processors;
 
 /**
+ * Responsible for rending the create or update form view of an entity, and performing the action if required.
+ *
  * @author Arne Vandamme
+ * @since 2.0.0
  */
-@Deprecated
-public interface EntityListViewPageFetcher<V extends ViewCreationContext>
+public class SaveEntityViewProcessor
 {
-	Page fetchPage( V viewCreationContext, Pageable pageable, EntityView model );
+
 }

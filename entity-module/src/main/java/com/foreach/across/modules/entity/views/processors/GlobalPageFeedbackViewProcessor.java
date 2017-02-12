@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+package com.foreach.across.modules.entity.views.processors;
 
 /**
+ * Checks if there is global feedback present on the model and renders it in the {@link com.foreach.across.modules.adminweb.ui.PageContentStructure}.
+ *
  * @author Arne Vandamme
+ * @since 2.0.0
  */
-@Deprecated
-public interface EntityListViewPageFetcher<V extends ViewCreationContext>
+public class GlobalPageFeedbackViewProcessor
 {
-	Page fetchPage( V viewCreationContext, Pageable pageable, EntityView model );
+
 }

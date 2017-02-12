@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.views;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+package com.foreach.across.modules.entity.views.processors;
 
 /**
+ * Responsible for rendering the actual delete entity page, and performing the delete action if necessary.
+ *
  * @author Arne Vandamme
+ * @since 2.0.0
  */
-@Deprecated
-public interface EntityListViewPageFetcher<V extends ViewCreationContext>
+public class DeleteEntityViewProcessor
 {
-	Page fetchPage( V viewCreationContext, Pageable pageable, EntityView model );
+	// set title
 }

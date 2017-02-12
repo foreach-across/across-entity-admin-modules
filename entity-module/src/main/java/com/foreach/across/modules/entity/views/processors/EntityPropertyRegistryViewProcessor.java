@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class EntityPropertyRegistryViewProcessor extends EntityViewProcessorAdapter
+public class EntityPropertyRegistryViewProcessor extends SimpleEntityViewProcessorAdapter
 {
 	private final EntityPropertyRegistry propertyRegistry;
 
