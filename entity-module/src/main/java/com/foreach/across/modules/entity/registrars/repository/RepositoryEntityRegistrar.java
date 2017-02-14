@@ -149,9 +149,9 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 			AcrossModuleInfo moduleInfo,
 			MutableEntityRegistry entityRegistry,
 			Class<?> entityType,
-			RepositoryFactoryInformation repositoryFactoryInformation,
-			Repository repository ) {
-		String entityTypeName = determineUniqueEntityTypeName( entityRegistry, entityType );
+		RepositoryFactoryInformation repositoryFactoryInformation,
+		Repository repository ) {
+			String entityTypeName = determineUniqueEntityTypeName( entityRegistry, entityType );
 
 		if ( entityTypeName != null ) {
 			EntityConfigurationImpl entityConfiguration = new EntityConfigurationImpl<>( entityTypeName, entityType );
