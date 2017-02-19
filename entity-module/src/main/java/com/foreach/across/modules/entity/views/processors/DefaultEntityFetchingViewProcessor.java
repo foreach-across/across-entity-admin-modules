@@ -21,7 +21,7 @@ package com.foreach.across.modules.entity.views.processors;
  * Will use the repository attached to the {@link com.foreach.across.modules.entity.registry.EntityConfiguration} that is being used, and will
  * attempt to resolve association properties.
  * <p />
- * This implementation will by default only execute if there is no {@link SortableTableRenderingViewProcessor#ATTRIBUTE_ITEMS} registered.
+ * This implementation will by default only execute if there is no {@link EntityFetchingViewProcessorAdapter#ATTRIBUTE_ITEMS} registered.
  *
  * @author Arne Vandamme
  * @since 2.0.0

@@ -78,7 +78,7 @@ public class ViewProcessorAdapter<T extends ViewCreationContext, U extends Entit
 	}
 
 	@Override
-	public void validateRequest( EntityViewRequest entityViewRequest ) {
+	public void authorizeRequest( EntityViewRequest entityViewRequest ) {
 
 	}
 

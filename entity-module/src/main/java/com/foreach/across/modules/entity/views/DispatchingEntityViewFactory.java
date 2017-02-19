@@ -76,8 +76,8 @@ public class DispatchingEntityViewFactory extends ToBeRemovedEntityViewFactory
 	}
 
 	@Override
-	public void validateRequest( EntityViewRequest entityViewRequest ) {
-		dispatchToProcessors( EntityViewProcessor.class, p -> p.validateRequest( entityViewRequest ) );
+	public void authorizeRequest( EntityViewRequest entityViewRequest ) {
+		dispatchToProcessors( EntityViewProcessor.class, p -> p.authorizeRequest( entityViewRequest ) );
 	}
 
 	@Override

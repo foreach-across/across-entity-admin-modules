@@ -43,7 +43,7 @@ import java.util.Collection;
 /**
  * Renders a list of items as a sortable table using a {@link com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder}.
  * Expects either a {@link org.springframework.data.domain.Page} or {@link java.util.List} attribute to be available on
- * the {@link com.foreach.across.modules.entity.views.EntityView} under the name {@link #ATTRIBUTE_ITEMS}.
+ * the {@link com.foreach.across.modules.entity.views.EntityView} under the name {@link EntityFetchingViewProcessorAdapter#ATTRIBUTE_ITEMS}.
  * If no {@link Page} is available as that attribute, the table will not get created.
  * <p/>
  * Will create a {@link com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder} and store it as {@link #TABLE_BUILDER}
@@ -61,7 +61,6 @@ import java.util.Collection;
 @Scope("prototype")
 public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdapter
 {
-	public static final String ATTRIBUTE_ITEMS = "items";
 	public static final String TABLE_BUILDER = "sortableTableBuilder";
 
 	private BootstrapUiFactory bootstrapUiFactory;
@@ -99,7 +98,7 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 
 	@Override
 	protected void createViewElementBuilders( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap ) {
-		Iterable<?> items = entityView.getAttribute( ATTRIBUTE_ITEMS, Iterable.class );
+		Iterable<?> items = entityView.getAttribute( EntityFetchingViewProcessorAdapter.ATTRIBUTE_ITEMS, Iterable.class );
 
 		if ( items != null ) {
 			EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();

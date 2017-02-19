@@ -110,7 +110,7 @@ public class GenericEntityViewController implements EntityControllerAttributes
 
 		viewFactory.prepareEntityViewContext( entityViewContext );
 
-		viewFactory.validateRequest( entityViewRequest );
+		viewFactory.authorizeRequest( entityViewRequest );
 
 		model.addAttribute( "entityViewRequest", entityViewRequest );
 		model.addAttribute( "entityViewCommand", entityViewRequest.getCommand() );

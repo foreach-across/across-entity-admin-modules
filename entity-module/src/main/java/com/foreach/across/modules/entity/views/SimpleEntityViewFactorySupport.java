@@ -300,7 +300,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	}
 
 	@Override
-	public void validateRequest( EntityViewRequest entityViewRequest ) {
+	public void authorizeRequest( EntityViewRequest entityViewRequest ) {
 
 	}
 }

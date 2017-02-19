@@ -18,7 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 /**
  * Adapter for {@link com.foreach.across.modules.entity.views.EntityViewProcessor} that fetches an {@link Iterable}
- * of entity items and registers the result as {@link SortableTableRenderingViewProcessor#ATTRIBUTE_ITEMS}.
+ * of entity items and registers the result as {@link EntityFetchingViewProcessorAdapter#ATTRIBUTE_ITEMS}.
  * <p/>
  * Mostly used together with a {@link SortableTableRenderingViewProcessor} that will perform the rendering of the items,
  * and {@link ListViewProcessor} that will initialize the {@link org.springframework.data.domain.Pageable} before data binding.
@@ -31,5 +31,6 @@ package com.foreach.across.modules.entity.views.processors;
  */
 public abstract class EntityFetchingViewProcessorAdapter
 {
+	public static final String ATTRIBUTE_ITEMS = "items";
 	// replace yes or no?
 }

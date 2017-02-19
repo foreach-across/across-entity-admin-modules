@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * Represents an entity view command object.  In case of a form view will usually hold the DTO of the
- * entity being created or updated..  Additionally extension objects can be registered that
+ * entity being created or updated.  Additionally extension objects can be registered that
  * will be bound and validated as well.
  *
  * @author Arne Vandamme

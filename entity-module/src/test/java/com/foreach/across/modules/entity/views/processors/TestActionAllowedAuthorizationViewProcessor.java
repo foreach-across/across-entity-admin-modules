@@ -71,25 +71,25 @@ public class TestActionAllowedAuthorizationViewProcessor
 	@Test(expected = AccessDeniedException.class)
 	public void hiddenEntityConfigurationThrowsAccessDenied() {
 		when( configuration.isHidden() ).thenReturn( true );
-		processor.validateRequest( viewRequest );
+		processor.authorizeRequest( viewRequest );
 	}
 
 	@Test(expected = AccessDeniedException.class)
 	public void hiddenEntityAssociationThrowsAccessDenied() {
 		when( viewContext.isForAssociation() ).thenReturn( true );
 		when( association.isHidden() ).thenReturn( true );
-		processor.validateRequest( viewRequest );
+		processor.authorizeRequest( viewRequest );
 	}
 
 	@Test(expected = AccessDeniedException.class)
 	public void actionNotAllowedThrowsException() {
 		processor.setRequiredAllowableAction( AllowableAction.CREATE );
-		processor.validateRequest( viewRequest );
+		processor.authorizeRequest( viewRequest );
 	}
 
 	@Test
 	public void visibleEntityConfigurationAndNoRequired() {
-		processor.validateRequest( viewRequest );
+		processor.authorizeRequest( viewRequest );
 	}
 
 	@Test
@@ -97,6 +97,6 @@ public class TestActionAllowedAuthorizationViewProcessor
 		processor.setRequiredAllowableAction( AllowableAction.CREATE );
 		when( allowableActions.contains( AllowableAction.CREATE ) ).thenReturn( true );
 
-		processor.validateRequest( viewRequest );
+		processor.authorizeRequest( viewRequest );
 	}
 }

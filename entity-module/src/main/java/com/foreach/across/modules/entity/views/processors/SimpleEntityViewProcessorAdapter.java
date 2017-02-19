@@ -63,7 +63,7 @@ public class SimpleEntityViewProcessorAdapter implements EntityViewProcessor<Vie
 	}
 
 	@Override
-	public void validateRequest( EntityViewRequest entityViewRequest ) {
+	public void authorizeRequest( EntityViewRequest entityViewRequest ) {
 
 	}
 

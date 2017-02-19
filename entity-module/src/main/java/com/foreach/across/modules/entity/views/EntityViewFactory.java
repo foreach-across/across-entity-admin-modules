@@ -46,7 +46,7 @@ public interface EntityViewFactory<T extends ViewCreationContext>
 	 * Call this method before creating an {@link com.foreach.across.modules.entity.views.request.EntityViewRequest}
 	 * that uses the context.
 	 * <p/>
-	 * This method is called first, before {@link #validateRequest(EntityViewRequest)} in the default view rendering.
+	 * This method is called first, before {@link #authorizeRequest(EntityViewRequest)} in the default view rendering.
 	 *
 	 * @param entityViewContext to modify
 	 */
@@ -63,7 +63,7 @@ public interface EntityViewFactory<T extends ViewCreationContext>
 	 *
 	 * @param entityViewRequest request to validate
 	 */
-	void validateRequest( EntityViewRequest entityViewRequest );
+	void authorizeRequest( EntityViewRequest entityViewRequest );
 
 	/**
 	 * Initialize the {@link com.foreach.across.modules.entity.views.request.EntityViewCommand} for the given request.

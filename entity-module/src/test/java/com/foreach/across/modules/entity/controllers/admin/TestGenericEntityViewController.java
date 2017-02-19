@@ -319,7 +319,7 @@ public class TestGenericEntityViewController
 	private void verifyViewFactoryCalls() {
 		InOrder inOrder = inOrder( viewFactory );
 		inOrder.verify( viewFactory ).prepareEntityViewContext( viewContext );
-		inOrder.verify( viewFactory ).validateRequest( viewRequest );
+		inOrder.verify( viewFactory ).authorizeRequest( viewRequest );
 		inOrder.verify( viewFactory ).initializeCommandObject( same( viewRequest ), same( command ), any() );
 		inOrder.verify( viewFactory ).createView( viewRequest );
 	}

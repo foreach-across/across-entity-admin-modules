@@ -46,7 +46,7 @@ public class ActionAllowedAuthorizationViewProcessor extends SimpleEntityViewPro
 	private AllowableAction requiredAllowableAction;
 
 	@Override
-	public void validateRequest( EntityViewRequest entityViewRequest ) {
+	public void authorizeRequest( EntityViewRequest entityViewRequest ) {
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 
 		if ( entityViewContext.isForAssociation() ) {

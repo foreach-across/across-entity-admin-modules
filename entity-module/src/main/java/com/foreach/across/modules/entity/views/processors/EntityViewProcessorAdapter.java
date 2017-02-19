@@ -88,7 +88,7 @@ public class EntityViewProcessorAdapter implements EntityViewProcessor<ViewCreat
 	}
 
 	@Override
-	public void validateRequest( EntityViewRequest entityViewRequest ) {
+	public void authorizeRequest( EntityViewRequest entityViewRequest ) {
 	}
 
 	@Override

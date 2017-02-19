@@ -116,7 +116,7 @@ public class WebViewProcessorAdapter<U extends EntityView>
 	}
 
 	@Override
-	public void validateRequest( EntityViewRequest entityViewRequest ) {
+	public void authorizeRequest( EntityViewRequest entityViewRequest ) {
 
 	}
 
