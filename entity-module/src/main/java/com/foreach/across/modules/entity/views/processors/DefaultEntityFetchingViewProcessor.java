@@ -16,17 +16,75 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
+import com.foreach.across.modules.entity.query.EntityQuery;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.Repository;
+
 /**
  * Default implementation that attempts to fetch the items based on the {@link com.foreach.across.modules.entity.views.context.EntityViewContext}.
  * Will use the repository attached to the {@link com.foreach.across.modules.entity.registry.EntityConfiguration} that is being used, and will
  * attempt to resolve association properties.
- * <p />
- * This implementation will by default only execute if there is no {@link EntityFetchingViewProcessorAdapter#ATTRIBUTE_ITEMS} registered.
  *
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public final class DefaultEntityFetchingViewProcessor extends EntityFetchingViewProcessorAdapter
+public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetchingViewProcessor
 {
+	@Override
+	protected Iterable<Object> fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 
+		if ( entityViewContext.isForAssociation() ) {
+			return fetchItemsForEntityAssociation(
+					entityViewContext.getEntityAssociation(), entityViewContext.getParentContext().getEntity( Object.class ), pageable
+			);
+		}
+
+		return fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), pageable );
+	}
+
+	@SuppressWarnings("unchecked")
+	private Iterable<Object> fetchItemsForEntityConfiguration( EntityConfiguration entityConfiguration, Pageable pageable ) {
+		Repository repository = entityConfiguration.getAttribute( Repository.class );
+
+		if ( repository instanceof PagingAndSortingRepository ) {
+			return ( (PagingAndSortingRepository) repository ).findAll( pageable );
+		}
+
+		EntityQueryExecutor entityQueryExecutor = entityConfiguration.getAttribute( EntityQueryExecutor.class );
+
+		if ( entityQueryExecutor != null ) {
+			return entityQueryExecutor.findAll( EntityQuery.all(), pageable );
+		}
+
+		// return all results - ignore paging
+		if ( repository instanceof CrudRepository ) {
+			return ( (CrudRepository) repository ).findAll();
+		}
+
+		throw new IllegalStateException(
+				"Neither a CrudRepository nor an EntityQueryExecutor are configured on entity configuration " + entityConfiguration.getName() );
+	}
+
+	@SuppressWarnings("unchecked")
+	private Iterable<Object> fetchItemsForEntityAssociation( EntityAssociation association, Object parentEntity, Pageable pageable ) {
+		AssociatedEntityQueryExecutor associatedEntityQueryExecutor = association.getAttribute( AssociatedEntityQueryExecutor.class );
+
+		if ( associatedEntityQueryExecutor != null ) {
+			return associatedEntityQueryExecutor.findAll( parentEntity, EntityQuery.all(), pageable );
+		}
+
+		throw new IllegalStateException(
+				"No AssociatedEntityQueryExecutor found for association " + association.getName()
+		);
+	}
 }

@@ -78,4 +78,8 @@ public class EntityViewCommand
 	public void addExtensions( String name, Object extension ) {
 		extensions.put( name, extension );
 	}
+
+	public <Y> Y getExtension( String extensionName, Class<Y> extensionType ) {
+		return extensionType.cast( extensions.get( extensionName ) );
+	}
 }

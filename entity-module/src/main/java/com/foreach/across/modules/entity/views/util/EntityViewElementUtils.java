@@ -15,9 +15,8 @@
  */
 package com.foreach.across.modules.entity.views.util;
 
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
+import com.foreach.across.modules.entity.views.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 
 /**
  * Contains utility methods related to view elements and view building in an entity context.
@@ -32,26 +31,26 @@ public class EntityViewElementUtils
 	/**
 	 * <p>Retrieve the current entity being processed in the builder context.  In case of a
 	 * {@link IteratorViewElementBuilderContext} the entity of the iterator will be returned,
-	 * in all other cases the attribute {@link EntityViewElementBuilderContext#ENTITY}.</p>
+	 * in all other cases the attribute {@link ViewElementBuilderContext#ENTITY}.</p>
 	 * <p>Will return null if no entity can be found.</p>
 	 *
 	 * @param builderContext curret builder context
 	 * @return entity or null if none found
 	 */
-	public static Object currentEntity( ViewElementBuilderContext builderContext ) {
+	public static Object currentEntity( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext ) {
 		return currentEntity( builderContext, Object.class );
 	}
 
 	/**
 	 * <p>Retrieve the current entity being processed in the builder context.  In case of a
 	 * {@link IteratorViewElementBuilderContext} the entity of the iterator will be returned,
-	 * in all other cases the attribute {@link EntityViewElementBuilderContext#ENTITY}.</p>
+	 * in all other cases the attribute {@link ViewElementBuilderContext#ENTITY}.</p>
 	 * <p>Will return null if no entity can be found or if the entity is not of the expected type.</p>
 	 *
 	 * @param builderContext curret builder context
 	 * @return entity or null if none found or not of the expected type
 	 */
-	public static <U> U currentEntity( ViewElementBuilderContext builderContext, Class<U> expectedType ) {
+	public static <U> U currentEntity( com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext, Class<U> expectedType ) {
 		if ( builderContext == null ) {
 			return null;
 		}
@@ -62,7 +61,7 @@ public class EntityViewElementUtils
 			value = ( (IteratorViewElementBuilderContext) builderContext ).getItem();
 		}
 		else {
-			value = builderContext.getAttribute( EntityViewElementBuilderContext.ENTITY );
+			value = builderContext.getAttribute( ViewElementBuilderContext.ENTITY );
 		}
 
 		return expectedType.isInstance( value ) ? expectedType.cast( value ) : null;

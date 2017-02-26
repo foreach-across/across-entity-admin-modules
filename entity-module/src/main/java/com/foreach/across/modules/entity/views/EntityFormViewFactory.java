@@ -30,7 +30,6 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,7 @@ import java.util.Optional;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class EntityFormViewFactory<V extends ViewCreationContext>
 		extends SingleEntityViewFactory<V, EntityFormView>
 {
@@ -112,7 +112,7 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 
 	@Override
 	protected ContainerViewElement buildViewElements( V viewCreationContext,
-	                                                  EntityViewElementBuilderContext<EntityFormView> viewElementBuilderContext,
+	                                                  ViewElementBuilderContext<EntityFormView> viewElementBuilderContext,
 	                                                  EntityMessageCodeResolver messageCodeResolver ) {
 		Optional<String> fromUrl = Optional.ofNullable( retrieveFromUrl( viewCreationContext ) );
 
@@ -191,7 +191,7 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 	private void addGlobalFormErrors( EntityMessageCodeResolver messageCodeResolver,
 	                                  EntityFormView entityView,
 	                                  EntityMessages messages,
-	                                  ViewElementBuilderContext ctx,
+	                                  com.foreach.across.modules.web.ui.ViewElementBuilderContext ctx,
 	                                  FormViewElement form ) {
 		BindingResult errors = entityView.getBindingResult();
 
@@ -226,7 +226,7 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 		return ( (WebViewCreationContext) viewCreationContext ).getRequest().getParameter( "from" );
 	}
 
-	private String buildActionUrl( EntityViewElementBuilderContext<EntityFormView> viewElementBuilderContext ) {
+	private String buildActionUrl( ViewElementBuilderContext<EntityFormView> viewElementBuilderContext ) {
 		EntityFormView formView = viewElementBuilderContext.getEntityView();
 
 		if ( formView.isUpdate() ) {

@@ -117,7 +117,7 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	}
 
 	@Autowired
-	public void setViewElementBuilderService( EntityViewElementBuilderService viewElementBuilderService ) {
+	void setViewElementBuilderService( EntityViewElementBuilderService viewElementBuilderService ) {
 		this.viewElementBuilderService = viewElementBuilderService;
 	}
 }

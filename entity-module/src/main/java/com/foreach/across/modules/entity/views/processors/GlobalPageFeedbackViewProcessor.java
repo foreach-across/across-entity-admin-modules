@@ -67,6 +67,7 @@ public class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAdapter
 			PageContentStructure page = entityViewRequest.getPageContentStructure();
 			EntityMessages messages = entityViewContext.getEntityMessages();
 
+			// todo: move to EntityViewPageHelper
 			feedback.forEach( ( messageCode, style ) -> {
 				page.addToFeedback(
 						bootstrapUiFactory.alert()

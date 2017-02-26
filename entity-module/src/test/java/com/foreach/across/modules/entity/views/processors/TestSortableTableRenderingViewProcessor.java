@@ -96,7 +96,7 @@ public class TestSortableTableRenderingViewProcessor
 		when( entityView.asMap() ).thenReturn( model );
 
 		when( builderHelper.createSortableTableBuilder( viewContext ) ).thenReturn( sortableTable );
-		when( entityView.getAttribute( EntityFetchingViewProcessorAdapter.ATTRIBUTE_ITEMS, Iterable.class ) ).thenReturn( page );
+		when( entityView.getAttribute( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME, Iterable.class ) ).thenReturn( page );
 	}
 
 	@After
@@ -106,10 +106,10 @@ public class TestSortableTableRenderingViewProcessor
 
 	@Test
 	public void noTableIsBuiltIfNoPageIsPresent() {
-		when( entityView.getAttribute( EntityFetchingViewProcessorAdapter.ATTRIBUTE_ITEMS, Iterable.class ) ).thenReturn( null );
+		when( entityView.getAttribute( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME, Iterable.class ) ).thenReturn( null );
 
 		processor.createViewElementBuilders( viewRequest, entityView, builderMap );
-		verify( entityView ).getAttribute( EntityFetchingViewProcessorAdapter.ATTRIBUTE_ITEMS, Iterable.class );
+		verify( entityView ).getAttribute( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME, Iterable.class );
 		verifyNoMoreInteractions( builderMap );
 	}
 
@@ -138,7 +138,7 @@ public class TestSortableTableRenderingViewProcessor
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 
 		List<?> items = new ArrayList<>();
-		when( entityView.getAttribute( EntityFetchingViewProcessorAdapter.ATTRIBUTE_ITEMS, Iterable.class ) ).thenReturn( items );
+		when( entityView.getAttribute( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME, Iterable.class ) ).thenReturn( items );
 
 		processor.setFormName( "form-name" );
 		processor.setTableName( "table-name" );
@@ -164,7 +164,7 @@ public class TestSortableTableRenderingViewProcessor
 	@Test
 	public void summaryViewNotAddedBecauseNotExisting() {
 		Page page = mock( Page.class );
-		when( entityView.getAttribute( EntityFetchingViewProcessorAdapter.ATTRIBUTE_ITEMS, Iterable.class ) ).thenReturn( page );
+		when( entityView.getAttribute( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME, Iterable.class ) ).thenReturn( page );
 		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 

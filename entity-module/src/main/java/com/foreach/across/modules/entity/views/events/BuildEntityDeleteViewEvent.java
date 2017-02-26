@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.views.events;
 
 import com.foreach.across.core.events.ParameterizedAcrossEvent;
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.core.ResolvableType;
 
@@ -37,12 +37,12 @@ import org.springframework.core.ResolvableType;
 public class BuildEntityDeleteViewEvent<T> implements ParameterizedAcrossEvent
 {
 	private final T entity;
-	private final EntityViewElementBuilderContext<?> builderContext;
+	private final ViewElementBuilderContext builderContext;
 
 	private boolean deleteDisabled;
 	private ContainerViewElement messages, associations;
 
-	public BuildEntityDeleteViewEvent( T entity, EntityViewElementBuilderContext<?> builderContext ) {
+	public BuildEntityDeleteViewEvent( T entity, ViewElementBuilderContext builderContext ) {
 		this.entity = entity;
 		this.builderContext = builderContext;
 	}
@@ -87,7 +87,7 @@ public class BuildEntityDeleteViewEvent<T> implements ParameterizedAcrossEvent
 	/**
 	 * @return the current builder context
 	 */
-	public EntityViewElementBuilderContext<?> getBuilderContext() {
+	public ViewElementBuilderContext getBuilderContext() {
 		return builderContext;
 	}
 

@@ -16,13 +16,60 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.entity.registry.EntityModel;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
+
 /**
- * Responsible for rending the create or update form view of an entity, and performing the action if required.
+ * Responsible for saving a single entity after a form submit.  Will redirect when saved and will only save if the {@link BindingResult}
+ * has no errors.
  *
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class SaveEntityViewProcessor
+@Component
+@Exposed
+@Scope("prototype")
+public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 {
+	private EntityViewPageHelper entityViewPageHelper;
 
+	// todo: listen to specific action only
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void doPost( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command, BindingResult bindingResult ) {
+		if ( !bindingResult.hasErrors() ) {
+			try {
+				EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+				EntityModel<Object, ?> entityModel = entityViewContext.getEntityModel();
+
+				Object entityToSave = command.getEntity();
+				boolean isNew = entityModel.isNew( entityToSave );
+				Object savedEntity = entityModel.save( entityToSave );
+
+				entityViewPageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.SUCCESS,
+				                                                     isNew ? "feedback.entityCreated" : "feedback.entityUpdated" );
+
+				entityView.setRedirectUrl( "@adminWeb:" + entityViewContext.getLinkBuilder().update( savedEntity ) );
+			}
+			catch ( RuntimeException e ) {
+				entityViewPageHelper.throwOrAddExceptionFeedback( entityViewRequest, "feedback.entitySaveFailed", e );
+			}
+		}
+	}
+
+	@Autowired
+	void setEntityViewPageHelper( EntityViewPageHelper entityViewPageHelper ) {
+		this.entityViewPageHelper = entityViewPageHelper;
+	}
 }

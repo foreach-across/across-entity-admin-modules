@@ -16,14 +16,22 @@
 
 package com.foreach.across.modules.entity.views.processors.support;
 
+import com.foreach.across.core.development.AcrossDevelopmentMode;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor.FEEDBACK_ATTRIBUTE_KEY;
 import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor.addFeedbackMessage;
@@ -37,8 +45,13 @@ import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedb
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Slf4j
+@Service
 public class EntityViewPageHelper
 {
+	private AcrossDevelopmentMode developmentMode;
+	private BootstrapUiFactory bootstrapUiFactory;
+
 	/**
 	 * Should flash attributes be used for redirect attributes.
 	 */
@@ -67,7 +80,48 @@ public class EntityViewPageHelper
 		model.compute( FEEDBACK_ATTRIBUTE_KEY, ( key, value ) -> addFeedbackMessage( (String) value, feedbackStyle, messageCode ) );
 	}
 
-	// EntityViewPageUtils.throwOrAddExceptionFeedback( entityViewRequest, "feedback.entitySaveFailed", e );
-	// EntityViewPageUtils.addExceptionFeedback( entityViewRequest, "feedback.entitySaveFailed", e );
+	public void throwOrAddExceptionFeedback( EntityViewRequest viewRequest, String messageCode, Throwable exception ) {
+		if ( developmentMode.isActive() ) {
+			throw exception instanceof RuntimeException ? (RuntimeException) exception : new RuntimeException( exception );
+		}
+
+		addExceptionFeedback( viewRequest, messageCode, exception );
+	}
+
+	public void addExceptionFeedback( EntityViewRequest viewRequest, String messageCode, Throwable exception ) {
+		EntityViewContext entityViewContext = viewRequest.getEntityViewContext();
+		UUID exceptionId = UUID.randomUUID();
+
+		LOG.error( "Exception [{}] occurred when for view request on entity configuration {}",
+		           exceptionId,
+		           entityViewContext.getEntityConfiguration().getName(),
+		           exception );
+
+		EntityMessages messages = entityViewContext.getEntityMessages();
+
+		viewRequest.getPageContentStructure().addToFeedback(
+				bootstrapUiFactory
+						.alert()
+						.danger()
+						.dismissible()
+						.add(
+								TextViewElement.html(
+										messages.withNameSingular( messageCode, entityViewContext.getEntityLabel(), exception.toString(), exceptionId )
+								)
+						)
+						.build()
+		);
+	}
+
 	// EntityViewPageUtils.addGlobalFeedback( entityViewRequest, INFO, "feedback.entitySaved", e  );
+
+	@Autowired
+	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
+		this.bootstrapUiFactory = bootstrapUiFactory;
+	}
+
+	@Autowired
+	void setDevelopmentMode( AcrossDevelopmentMode developmentMode ) {
+		this.developmentMode = developmentMode;
+	}
 }

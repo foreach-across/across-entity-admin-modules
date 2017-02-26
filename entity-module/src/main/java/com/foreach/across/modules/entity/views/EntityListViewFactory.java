@@ -56,6 +56,7 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class EntityListViewFactory<V extends ViewCreationContext> extends ConfigurablePropertiesEntityViewFactorySupport<V, EntityListView>
 {
 	private static final String FORM_NAME = "entityList-form";
@@ -177,7 +178,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 
 	@Override
 	protected ContainerViewElement buildViewElements( V viewCreationContext,
-	                                                  EntityViewElementBuilderContext<EntityListView> viewElementBuilderContext,
+	                                                  ViewElementBuilderContext<EntityListView> viewElementBuilderContext,
 	                                                  EntityMessageCodeResolver messageCodeResolver ) {
 		EntityListView view = viewElementBuilderContext.getEntityView();
 		final EntityLinkBuilder linkBuilder = view.getEntityLinkBuilder();

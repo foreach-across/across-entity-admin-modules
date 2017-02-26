@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 /**
- * Extension of a {@link HashMap} that reprensents a collection of {@link ViewElementBuilder}s
- * by name.  Adds type coercing methods.
+ * Extension of a {@link HashMap} that represents a collection of {@link ViewElementBuilder}s by name.
+ * Adds type coercing methods.
  *
  * @author Arne Vandamme
  * @since 2.0.0

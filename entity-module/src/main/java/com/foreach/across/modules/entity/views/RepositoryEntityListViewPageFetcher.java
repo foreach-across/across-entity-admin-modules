@@ -25,6 +25,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class RepositoryEntityListViewPageFetcher implements EntityListViewPageFetcher<ViewCreationContext>
 {
 	private CrudRepository repository;

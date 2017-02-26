@@ -29,6 +29,7 @@ import java.util.List;
  * Simple implementation of {@link ConfigurablePropertiesEntityViewFactorySupport} that builds the view elements
  * in the mode specified, for the properties configured.
  */
+@Deprecated
 public abstract class SingleEntityViewFactory<V extends ViewCreationContext, T extends EntityView>
 		extends ConfigurablePropertiesEntityViewFactorySupport<V, T>
 {
@@ -51,7 +52,7 @@ public abstract class SingleEntityViewFactory<V extends ViewCreationContext, T e
 	@Override
 	protected ContainerViewElement buildViewElements(
 			V viewCreationContext,
-			EntityViewElementBuilderContext<T> viewElementBuilderContext,
+			ViewElementBuilderContext<T> viewElementBuilderContext,
 			EntityMessageCodeResolver messageCodeResolver
 	) {
 		EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();

@@ -19,11 +19,10 @@ package it.com.foreach.across.modules.entity.views.bootstrapui.options;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
+import com.foreach.across.modules.entity.views.ViewElementBuilderContext;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EnumOptionIterableBuilder;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -43,7 +42,7 @@ public class TestEnumOptionIterableBuilder
 {
 	private EnumOptionIterableBuilder iterableBuilder;
 	private ValueFetcher<String> valueFetcher;
-	private ViewElementBuilderContext elementBuilderContext;
+	private com.foreach.across.modules.web.ui.ViewElementBuilderContext elementBuilderContext;
 	private Map<Counter, OptionFormElementBuilder> options = new HashMap<>();
 
 	@Before
@@ -74,7 +73,7 @@ public class TestEnumOptionIterableBuilder
 
 	@Test
 	public void noValueFetcherMeansNoOptionSelected() {
-		elementBuilderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( Counter.TWO );
 
 		iterableBuilder.setValueFetcher( null );
@@ -91,7 +90,7 @@ public class TestEnumOptionIterableBuilder
 
 	@Test
 	public void entityWithoutOptionSelected() {
-		elementBuilderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
 
 		build();
 		assertNotSelected( Counter.ONE, Counter.TWO, Counter.THREE );
@@ -99,7 +98,7 @@ public class TestEnumOptionIterableBuilder
 
 	@Test
 	public void singleOptionSelected() {
-		elementBuilderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( Counter.TWO );
 
 		build();
@@ -110,7 +109,7 @@ public class TestEnumOptionIterableBuilder
 
 	@Test
 	public void multipleOptionsSelectedAsCollection() {
-		elementBuilderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( Arrays.asList( Counter.ONE, Counter.THREE ) );
 
 		build();
@@ -118,7 +117,7 @@ public class TestEnumOptionIterableBuilder
 		assertSelected( Counter.ONE, Counter.THREE );
 		assertNotSelected( Counter.TWO );
 
-		elementBuilderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) )
 				.thenReturn( new HashSet<>( Arrays.asList( Counter.TWO, Counter.THREE ) ) );
 
@@ -130,7 +129,7 @@ public class TestEnumOptionIterableBuilder
 
 	@Test
 	public void multipleOptionsSelectedAsArray() {
-		elementBuilderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( new Counter[] { Counter.ONE, Counter.THREE } );
 
 		build();
@@ -141,7 +140,7 @@ public class TestEnumOptionIterableBuilder
 
 	@Test
 	public void differentValueReturnedFromFetcher() {
-		elementBuilderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( 123L );
 
 		build();

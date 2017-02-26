@@ -22,6 +22,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public interface WebViewCreationContext extends ViewCreationContext
 {
 	NativeWebRequest getRequest();

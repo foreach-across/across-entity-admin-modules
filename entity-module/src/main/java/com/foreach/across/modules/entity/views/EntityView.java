@@ -93,6 +93,7 @@ public class EntityView implements Model
 		return getAttribute( ATTRIBUTE_VIEW_NAME, String.class );
 	}
 
+	@Deprecated
 	public void setName( String name ) {
 		model.put( ATTRIBUTE_VIEW_NAME, name );
 	}
@@ -110,6 +111,7 @@ public class EntityView implements Model
 		return getAttribute( ATTRIBUTE_ENTITY_CONFIGURATION, EntityConfiguration.class );
 	}
 
+	@Deprecated
 	public void setEntityConfiguration( EntityConfiguration entityConfiguration ) {
 		model.addAttribute( ATTRIBUTE_ENTITY_CONFIGURATION, entityConfiguration );
 	}
@@ -119,6 +121,7 @@ public class EntityView implements Model
 		return getAttribute( ATTRIBUTE_ENTITY_LINKS, EntityLinkBuilder.class );
 	}
 
+	@Deprecated
 	public void setEntityLinkBuilder( EntityLinkBuilder entityLinks ) {
 		model.addAttribute( ATTRIBUTE_ENTITY_LINKS, entityLinks );
 	}
@@ -128,6 +131,7 @@ public class EntityView implements Model
 		return getAttribute( EntityMessageCodeResolver.class.getName(), EntityMessageCodeResolver.class );
 	}
 
+	@Deprecated
 	public void setMessageCodeResolver( EntityMessageCodeResolver codeResolver ) {
 		addAttribute( EntityMessageCodeResolver.class.getName(), codeResolver );
 	}
@@ -137,6 +141,7 @@ public class EntityView implements Model
 		return getAttribute( ATTRIBUTE_MESSAGES, EntityMessages.class );
 	}
 
+	@Deprecated
 	public void setEntityMessages( EntityMessages messages ) {
 		model.addAttribute( ATTRIBUTE_MESSAGES, messages );
 	}
@@ -154,6 +159,7 @@ public class EntityView implements Model
 	 *
 	 * @param container with the view elements
 	 */
+	@Deprecated
 	public void setViewElements( ContainerViewElement container ) {
 		Assert.notNull( container );
 		model.put( ATTRIBUTE_VIEW_ELEMENTS, container );
@@ -165,6 +171,7 @@ public class EntityView implements Model
 		return (V) getAttribute( ATTRIBUTE_ENTITY );
 	}
 
+	@Deprecated
 	public void setEntity( Object entity ) {
 		model.put( ATTRIBUTE_ENTITY, entity );
 	}
@@ -178,6 +185,7 @@ public class EntityView implements Model
 		return getAttribute( ATTRIBUTE_PARENT_ENTITY );
 	}
 
+	@Deprecated
 	public void setParentEntity( Object entity ) {
 		addAttribute( ATTRIBUTE_PARENT_ENTITY, entity );
 	}

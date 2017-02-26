@@ -51,6 +51,7 @@ import java.util.Optional;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Deprecated
 public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		extends SimpleEntityViewFactorySupport<V, EntityView>
 {
@@ -123,7 +124,7 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 	                               EntityConfiguration entityConfiguration,
 	                               EntityMessageCodeResolver codeResolver,
 	                               EntityView view ) {
-		EntityViewElementBuilderContext<EntityView> builderContext = new EntityViewElementBuilderContext<>( view );
+		ViewElementBuilderContext<EntityView> builderContext = new ViewElementBuilderContext<>( view );
 
 		EntityLinkBuilder linkBuilder = view.getEntityLinkBuilder();
 		EntityMessages messages = view.getEntityMessages();
@@ -212,7 +213,7 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 
 	private BuildEntityDeleteViewEvent buildViewConfiguration( EntityConfiguration<?> entityConfiguration,
 	                                                           EntityView view,
-	                                                           EntityViewElementBuilderContext<EntityView> builderContext,
+	                                                           ViewElementBuilderContext<EntityView> builderContext,
 	                                                           EntityMessages messages ) {
 		BuildEntityDeleteViewEvent<?> event = new BuildEntityDeleteViewEvent<>( view.getEntity(), builderContext );
 		event.setDeleteDisabled( false );

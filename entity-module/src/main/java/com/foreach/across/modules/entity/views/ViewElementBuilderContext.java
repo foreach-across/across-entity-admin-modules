@@ -22,13 +22,13 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
  * @author Arne Vandamme
  */
 @Deprecated
-public class EntityViewElementBuilderContext<T extends EntityView> extends DefaultViewElementBuilderContext
+public class ViewElementBuilderContext<T extends EntityView> extends DefaultViewElementBuilderContext
 {
 	public static final String ENTITY = "entity";
 
 	private final T entityView;
 
-	public EntityViewElementBuilderContext( T view ) {
+	public ViewElementBuilderContext( T view ) {
 		super( view );
 
 		this.entityView = view;

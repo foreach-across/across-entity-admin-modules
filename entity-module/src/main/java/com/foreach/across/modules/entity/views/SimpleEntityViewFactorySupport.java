@@ -46,6 +46,7 @@ import java.util.function.Consumer;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationContext, T extends EntityView> implements EntityViewFactory<V>
 {
 	public static final String CONTAINER = "_entityView";

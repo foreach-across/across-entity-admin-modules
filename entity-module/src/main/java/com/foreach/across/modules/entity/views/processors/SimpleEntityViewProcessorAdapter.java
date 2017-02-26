@@ -35,7 +35,7 @@ import org.springframework.web.bind.WebDataBinder;
  * @see EntityViewProcessorAdapter
  * @since 2.0.0
  */
-public class SimpleEntityViewProcessorAdapter implements EntityViewProcessor<ViewCreationContext, EntityView>
+public abstract class SimpleEntityViewProcessorAdapter implements EntityViewProcessor<ViewCreationContext, EntityView>
 {
 	@Override
 	public final void prepareModelAndCommand( String viewName, ViewCreationContext creationContext, EntityViewCommand command, ModelMap model ) {
@@ -71,7 +71,6 @@ public class SimpleEntityViewProcessorAdapter implements EntityViewProcessor<Vie
 	public void initializeCommandObject( EntityViewRequest entityViewRequest,
 	                                     com.foreach.across.modules.entity.views.request.EntityViewCommand command,
 	                                     WebDataBinder dataBinder ) {
-
 	}
 
 	@Override

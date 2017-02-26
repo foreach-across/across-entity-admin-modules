@@ -22,7 +22,6 @@ import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewCon
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
@@ -89,7 +88,7 @@ public class DispatchingEntityViewFactory extends ToBeRemovedEntityViewFactory
 
 	@Override
 	public EntityView createView( EntityViewRequest entityViewRequest ) {
-		Optional<ViewElementBuilderContext> existingBuilderContext
+		Optional<com.foreach.across.modules.web.ui.ViewElementBuilderContext> existingBuilderContext
 				= ViewElementBuilderContextHolder.setViewElementBuilderContext( createViewElementBuilderContext( entityViewRequest ) );
 
 		EntityView entityView = new EntityView( entityViewRequest.getModel(), entityViewRequest.getRedirectAttributes() );
@@ -140,11 +139,11 @@ public class DispatchingEntityViewFactory extends ToBeRemovedEntityViewFactory
 	}
 
 	/**
-	 * Create a custom {@link ViewElementBuilderContext} for the view request.
+	 * Create a custom {@link com.foreach.across.modules.web.ui.ViewElementBuilderContext} for the view request.
 	 */
-	protected ViewElementBuilderContext createViewElementBuilderContext( EntityViewRequest entityViewRequest ) {
-		ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( entityViewRequest.getModel() );
-		builderContext.setAttribute( EntityViewElementBuilderContext.ENTITY, entityViewRequest.getEntityViewContext().getEntity( Object.class ) );
+	protected com.foreach.across.modules.web.ui.ViewElementBuilderContext createViewElementBuilderContext( EntityViewRequest entityViewRequest ) {
+		com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( entityViewRequest.getModel() );
+		builderContext.setAttribute( ViewElementBuilderContext.ENTITY, entityViewRequest.getEntityViewContext().getEntity( Object.class ) );
 		builderContext.setAttribute( EntityMessageCodeResolver.class, entityViewRequest.getEntityViewContext().getMessageCodeResolver() );
 		builderContext.setAttribute( EntityViewRequest.class, entityViewRequest );
 
@@ -164,7 +163,7 @@ public class DispatchingEntityViewFactory extends ToBeRemovedEntityViewFactory
 	}
 
 	@Autowired
-	public void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
+	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
 		this.bootstrapUiFactory = bootstrapUiFactory;
 	}
 }

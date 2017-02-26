@@ -60,7 +60,7 @@ import static com.foreach.across.modules.entity.views.DispatchingEntityViewFacto
  * @see SimpleEntityViewProcessorAdapter
  * @since 2.0.0
  */
-public class EntityViewProcessorAdapter implements EntityViewProcessor<ViewCreationContext, EntityView>
+public abstract class EntityViewProcessorAdapter implements EntityViewProcessor<ViewCreationContext, EntityView>
 {
 	private static final String ATTRIBUTE_BUILDER_MAP = "entityViewBuilderMap";
 

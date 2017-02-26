@@ -41,6 +41,7 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends ViewCreationContext, T extends EntityView>
 		extends SimpleEntityViewFactorySupport<V, T>
 {
@@ -108,7 +109,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	                               EntityConfiguration entityConfiguration,
 	                               EntityMessageCodeResolver messageCodeResolver,
 	                               T view ) {
-		EntityViewElementBuilderContext<T> viewElementBuilderContext = createEntityViewElementBuilderContext( view );
+		ViewElementBuilderContext<T> viewElementBuilderContext = createEntityViewElementBuilderContext( view );
 
 		view.setViewElements(
 				buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver )
@@ -118,8 +119,8 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		page.addChild( view.getViewElements() );
 	}
 
-	protected EntityViewElementBuilderContext<T> createEntityViewElementBuilderContext( T view ) {
-		EntityViewElementBuilderContext<T> builderContext = new EntityViewElementBuilderContext<>( view );
+	protected ViewElementBuilderContext<T> createEntityViewElementBuilderContext( T view ) {
+		ViewElementBuilderContext<T> builderContext = new ViewElementBuilderContext<>( view );
 		DefaultViewElementPostProcessor.add( builderContext, new ControlNamePrefixingPostProcessor<>( "entity" ) );
 
 		return builderContext;
@@ -186,7 +187,7 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 
 	protected abstract ContainerViewElement buildViewElements(
 			V viewCreationContext,
-			EntityViewElementBuilderContext<T> viewElementBuilderContext,
+			ViewElementBuilderContext<T> viewElementBuilderContext,
 			EntityMessageCodeResolver messageCodeResolver
 	);
 }
