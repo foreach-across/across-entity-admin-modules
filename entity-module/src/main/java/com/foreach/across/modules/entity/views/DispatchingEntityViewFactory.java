@@ -26,7 +26,10 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.WebDataBinder;
 
 import java.util.ArrayDeque;
@@ -48,7 +51,21 @@ public class DispatchingEntityViewFactory extends ToBeRemovedEntityViewFactory
 
 	private final Collection<EntityViewProcessor> processors = new ArrayDeque<>();
 
+	private TransactionTemplate transactionTemplate;
+
 	private BootstrapUiFactory bootstrapUiFactory;
+
+	/**
+	 * Set the transaction template that should be used for methods that require executing in a transaction.
+	 * If set this will execute all {@link EntityViewProcessor#doControl(EntityViewRequest, EntityView, EntityViewCommand)} in a single transaction
+	 * if they occur with a state altering {@link HttpMethod} like {@link HttpMethod#POST}.
+	 *
+	 * @param transactionTemplate to use - can be null if no transactions are every required
+	 * @see #shouldDispatchInTransaction(EntityViewRequest)
+	 */
+	public void setTransactionTemplate( TransactionTemplate transactionTemplate ) {
+		this.transactionTemplate = transactionTemplate;
+	}
 
 	/**
 	 * Set the collection of {@link EntityViewProcessor}s that should be called when building the {@link EntityView}.
@@ -91,14 +108,17 @@ public class DispatchingEntityViewFactory extends ToBeRemovedEntityViewFactory
 		Optional<com.foreach.across.modules.web.ui.ViewElementBuilderContext> existingBuilderContext
 				= ViewElementBuilderContextHolder.setViewElementBuilderContext( createViewElementBuilderContext( entityViewRequest ) );
 
-		EntityView entityView = new EntityView( entityViewRequest.getModel(), entityViewRequest.getRedirectAttributes() );
+		final EntityView entityView = new EntityView( entityViewRequest.getModel(), entityViewRequest.getRedirectAttributes() );
 
 		try {
 			// pre-process the view
 			dispatchToProcessors( EntityViewProcessor.class, p -> p.preProcess( entityViewRequest, entityView ) );
 
-			// perform controller logic
-			dispatchToProcessors( EntityViewProcessor.class, p -> p.doControl( entityViewRequest, entityView, entityViewRequest.getCommand() ) );
+			// perform controller logic - optionally do so in a single transaction
+			dispatchInTransaction(
+					entityViewRequest,
+					( r ) -> dispatchToProcessors( EntityViewProcessor.class, p -> p.doControl( r, entityView, entityViewRequest.getCommand() ) )
+			);
 
 			// check if rendering is required
 			if ( entityView.shouldRender() ) {
@@ -150,6 +170,32 @@ public class DispatchingEntityViewFactory extends ToBeRemovedEntityViewFactory
 		return builderContext;
 	}
 
+	protected final void dispatchInTransaction( EntityViewRequest entityViewRequest, Consumer<EntityViewRequest> invocation ) {
+
+		/*
+		Advised advised = (Advised) clientRepository;
+		Stream.of( advised.getAdvisors() )
+		      .map( Advisor::getAdvice )
+		      .filter( TransactionInterceptor.class::isInstance )
+		      .map( TransactionInterceptor.class::cast )
+		      .findFirst()
+		      .ifPresent( ti -> System.err.println(ti.getTransactionManager()) );
+		*/
+		// if repository, get the interceptors - if TransactionInterceptor is present, get the transactionManagerBeanName
+		// if set, retrieve the transaction manager from the bean factory, else get the transactionManager from the interceptor,
+		// if set, use that one - else use the default transaction manager
+
+		if ( transactionTemplate != null && shouldDispatchInTransaction( entityViewRequest ) ) {
+			transactionTemplate.execute( ( status ) -> {
+				invocation.accept( entityViewRequest );
+				return null;
+			} );
+		}
+		else {
+			invocation.accept( entityViewRequest );
+		}
+	}
+
 	/**
 	 * Call a method on all processors of a given type.
 	 *
@@ -160,6 +206,22 @@ public class DispatchingEntityViewFactory extends ToBeRemovedEntityViewFactory
 		processors.stream()
 		          .filter( processorType::isInstance )
 		          .forEach( p -> consumer.accept( processorType.cast( p ) ) );
+	}
+
+	/**
+	 * Should the {@link EntityViewProcessor#doControl(EntityViewRequest, EntityView, EntityViewCommand)} be executed in a wrapping transaction?
+	 * By default this is the case for all state modifying {@link HttpMethod}s.
+	 * <p/>
+	 * Requires a {@link #transactionTemplate} to be set as well before a transaction will be used.
+	 *
+	 * @param entityViewRequest to check
+	 * @return true if transaction should be used
+	 */
+	protected boolean shouldDispatchInTransaction( EntityViewRequest entityViewRequest ) {
+		return ArrayUtils.contains(
+				new HttpMethod[] { HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.DELETE },
+				entityViewRequest.getHttpMethod()
+		);
 	}
 
 	@Autowired
