@@ -53,6 +53,7 @@ import java.util.UUID;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public abstract class AssociatedEntityControllerSupport extends AbstractEntityModuleController
 {
 	private static final String ATTRIBUTE_DATABINDER = EntityViewRequest.class.getName() + ".DataBinder";

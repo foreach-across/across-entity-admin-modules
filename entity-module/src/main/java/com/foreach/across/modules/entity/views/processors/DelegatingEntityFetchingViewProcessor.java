@@ -26,7 +26,7 @@ import java.util.function.Function;
 
 /**
  * Simple implementation of {@link AbstractEntityFetchingViewProcessor} that delegates to either a {@link java.util.function.Function} or
- * a {@link java.util.function.BiFunction} for getting the actual items.  The delegates lose the specific {@link EntityView} that is being rendered,
+ * a {@link java.util.function.BiFunction} for getting the actual items.  The delegates loses the specific {@link EntityView} that is being rendered,
  * if you really require it you should implement {@link AbstractEntityFetchingViewProcessor} directly.
  *
  * @author Arne Vandamme

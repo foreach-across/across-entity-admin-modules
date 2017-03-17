@@ -24,11 +24,11 @@ import org.springframework.web.bind.WebDataBinder;
 
 /**
  * Default processor interface for entity view processing.  Whereas there is only a single
- * {@link EntityViewFactory}, if that factory implements {@link DispatchingEntityViewFactory}
+ * {@link EntityViewFactory}, if that factory implements {@link DefaultEntityViewFactory}
  * there can be multiple processors that modify the resulting view.
  *
  * @author Arne Vandamme
- * @see DispatchingEntityViewFactory
+ * @see DefaultEntityViewFactory
  */
 public interface EntityViewProcessor<V extends ViewCreationContext, T extends EntityView>
 {

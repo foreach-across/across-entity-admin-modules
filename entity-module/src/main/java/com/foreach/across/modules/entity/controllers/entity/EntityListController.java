@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.controllers.EntityOverviewController;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityListView;
+import com.foreach.across.modules.entity.views.EntityView;
 import org.springframework.data.domain.Pageable;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,8 +32,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 /**
  * Lists all entities of a particular type.
  */
+@Deprecated
 @AdminWebController
-@RequestMapping(EntityListController.PATH)
+@RequestMapping("/old" + EntityListController.PATH)
 @SuppressWarnings("unchecked")
 public class EntityListController extends EntityControllerSupport
 {
@@ -53,7 +55,7 @@ public class EntityListController extends EntityControllerSupport
 
 	@Override
 	protected String getDefaultViewName() {
-		return EntityListView.VIEW_NAME;
+		return EntityView.LIST_VIEW_NAME;
 	}
 
 	@RequestMapping

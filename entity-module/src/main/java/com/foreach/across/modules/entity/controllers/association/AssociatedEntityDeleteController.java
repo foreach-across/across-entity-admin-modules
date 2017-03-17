@@ -43,8 +43,9 @@ import java.io.Serializable;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Deprecated
 @AdminWebController
-@RequestMapping(AssociatedEntityDeleteController.PATH)
+@RequestMapping("/old" + AssociatedEntityDeleteController.PATH)
 public class AssociatedEntityDeleteController extends AssociatedEntityControllerSupport
 {
 	public static final String PATH = AssociatedEntityListController.PATH + PATH_ASSOCIATION_ID + "/delete";
@@ -57,7 +58,7 @@ public class AssociatedEntityDeleteController extends AssociatedEntityController
 
 	@Override
 	protected String getDefaultViewName() {
-		return EntityFormView.DELETE_VIEW_NAME;
+		return EntityView.DELETE_VIEW_NAME;
 	}
 
 	@ModelAttribute(VIEW_REQUEST)

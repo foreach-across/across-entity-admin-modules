@@ -17,7 +17,13 @@ package com.foreach.across.modules.entity.registrars.repository;
 
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.processors.*;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 /**
  * Attempts to create default views for an EntityConfiguration.
@@ -28,6 +34,9 @@ public class RepositoryEntityViewsBuilder
 	@Autowired
 	private EntityViewFactoryProvider entityViewFactoryProvider;
 
+	@Autowired
+	private AutowireCapableBeanFactory beanFactory;
+
 	public void buildViews( MutableEntityConfiguration entityConfiguration ) {
 		buildCreateView( entityConfiguration );
 		buildUpdateView( entityConfiguration );
@@ -36,34 +45,139 @@ public class RepositoryEntityViewsBuilder
 	}
 
 	private void buildCreateView( MutableEntityConfiguration entityConfiguration ) {
-		EntityFormViewFactory viewFactory
+		EntityFormViewFactory oldViewFactory
 				= entityViewFactoryProvider.create( entityConfiguration, EntityFormViewFactory.class );
-		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.CREATE_VIEW_NAME, "entityViews" );
+		oldViewFactory.setMessagePrefixes( "entityViews." + EntityView.CREATE_VIEW_NAME, "entityViews" );
+		entityConfiguration.registerView( EntityView.CREATE_VIEW_NAME, oldViewFactory );
 
-		entityConfiguration.registerView( EntityFormView.CREATE_VIEW_NAME, viewFactory );
+		DefaultEntityViewFactory viewFactory = beanFactory.createBean( DefaultEntityViewFactory.class );
+		viewFactory.addProcessor( new MessagePrefixingViewProcessor( "entityViews." + EntityView.CREATE_VIEW_NAME, "entityViews" ) );
+
+		ActionAllowedAuthorizationViewProcessor actionAllowedAuthorizationViewProcessor = new ActionAllowedAuthorizationViewProcessor();
+		actionAllowedAuthorizationViewProcessor.setRequiredAllowableAction( AllowableAction.CREATE );
+		viewFactory.addProcessor( actionAllowedAuthorizationViewProcessor );
+
+		viewFactory.addProcessor( beanFactory.createBean( GlobalPageFeedbackViewProcessor.class ) );
+
+		PropertyRenderingViewProcessor propertyRenderingViewProcessor = beanFactory.createBean( PropertyRenderingViewProcessor.class );
+		propertyRenderingViewProcessor.setViewElementMode( ViewElementMode.FORM_WRITE );
+		viewFactory.addProcessor( propertyRenderingViewProcessor );
+
+		SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
+		pageStructureViewProcessor.setAddEntityMenu( true );
+		pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_CREATE );
+		viewFactory.addProcessor( pageStructureViewProcessor );
+
+		SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
+		formViewProcessor.setAddDefaultButtons( true );
+		formViewProcessor.setAddGlobalBindingErrors( true );
+		viewFactory.addProcessor( formViewProcessor );
+
+		SaveEntityViewProcessor saveEntityViewProcessor = beanFactory.createBean( SaveEntityViewProcessor.class );
+		viewFactory.addProcessor( saveEntityViewProcessor );
+
+		entityConfiguration.registerView( "new-" + EntityView.CREATE_VIEW_NAME, viewFactory );
 	}
 
 	private void buildUpdateView( MutableEntityConfiguration entityConfiguration ) {
-		EntityFormViewFactory viewFactory
+		EntityFormViewFactory oldViewFactory
 				= entityViewFactoryProvider.create( entityConfiguration, EntityFormViewFactory.class );
-		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.UPDATE_VIEW_NAME, "entityViews" );
+		oldViewFactory.setMessagePrefixes( "entityViews." + EntityView.UPDATE_VIEW_NAME, "entityViews" );
+		entityConfiguration.registerView( EntityView.UPDATE_VIEW_NAME, oldViewFactory );
 
-		entityConfiguration.registerView( EntityFormView.UPDATE_VIEW_NAME, viewFactory );
+		DefaultEntityViewFactory viewFactory = beanFactory.createBean( DefaultEntityViewFactory.class );
+		viewFactory.addProcessor( new MessagePrefixingViewProcessor( "entityViews." + EntityView.CREATE_VIEW_NAME, "entityViews" ) );
+
+		ActionAllowedAuthorizationViewProcessor actionAllowedAuthorizationViewProcessor = new ActionAllowedAuthorizationViewProcessor();
+		actionAllowedAuthorizationViewProcessor.setRequiredAllowableAction( AllowableAction.CREATE );
+		viewFactory.addProcessor( actionAllowedAuthorizationViewProcessor );
+
+		viewFactory.addProcessor( beanFactory.createBean( GlobalPageFeedbackViewProcessor.class ) );
+
+		PropertyRenderingViewProcessor propertyRenderingViewProcessor = beanFactory.createBean( PropertyRenderingViewProcessor.class );
+		propertyRenderingViewProcessor.setViewElementMode( ViewElementMode.FORM_WRITE );
+		viewFactory.addProcessor( propertyRenderingViewProcessor );
+
+		SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
+		pageStructureViewProcessor.setAddEntityMenu( true );
+		pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE );
+		viewFactory.addProcessor( pageStructureViewProcessor );
+
+		SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
+		formViewProcessor.setAddDefaultButtons( true );
+		formViewProcessor.setAddGlobalBindingErrors( true );
+		viewFactory.addProcessor( formViewProcessor );
+
+		SaveEntityViewProcessor saveEntityViewProcessor = beanFactory.createBean( SaveEntityViewProcessor.class );
+		viewFactory.addProcessor( saveEntityViewProcessor );
+
+		entityConfiguration.registerView( "new-" + EntityView.UPDATE_VIEW_NAME, viewFactory );
 	}
 
 	private void buildDeleteView( MutableEntityConfiguration entityConfiguration ) {
-		EntityDeleteViewFactory viewFactory
+		EntityDeleteViewFactory oldViewFactory
 				= entityViewFactoryProvider.create( entityConfiguration, EntityDeleteViewFactory.class );
-		viewFactory.setMessagePrefixes( "entityViews." + EntityFormView.DELETE_VIEW_NAME, "entityViews" );
+		oldViewFactory.setMessagePrefixes( "entityViews." + EntityView.DELETE_VIEW_NAME, "entityViews" );
+		entityConfiguration.registerView( EntityView.DELETE_VIEW_NAME, oldViewFactory );
 
-		entityConfiguration.registerView( EntityFormView.DELETE_VIEW_NAME, viewFactory );
+		DefaultEntityViewFactory viewFactory = beanFactory.createBean( DefaultEntityViewFactory.class );
+		viewFactory.addProcessor( new MessagePrefixingViewProcessor( "entityViews." + EntityView.DELETE_VIEW_NAME, "entityViews" ) );
+
+		ActionAllowedAuthorizationViewProcessor actionAllowedAuthorizationViewProcessor = new ActionAllowedAuthorizationViewProcessor();
+		actionAllowedAuthorizationViewProcessor.setRequiredAllowableAction( AllowableAction.DELETE );
+		viewFactory.addProcessor( actionAllowedAuthorizationViewProcessor );
+
+		viewFactory.addProcessor( beanFactory.createBean( GlobalPageFeedbackViewProcessor.class ) );
+
+		SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
+		pageStructureViewProcessor.setAddEntityMenu( false );
+		pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_DELETE );
+		viewFactory.addProcessor( pageStructureViewProcessor );
+
+		SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
+		formViewProcessor.setAddDefaultButtons( true );
+		formViewProcessor.setAddGlobalBindingErrors( true );
+		viewFactory.addProcessor( formViewProcessor );
+
+		DeleteEntityViewProcessor deleteEntityViewProcessor = beanFactory.createBean( DeleteEntityViewProcessor.class );
+		viewFactory.addProcessor( deleteEntityViewProcessor );
+
+		entityConfiguration.registerView( "new-" + EntityView.DELETE_VIEW_NAME, viewFactory );
 	}
 
 	private void buildListView( MutableEntityConfiguration entityConfiguration ) {
-		EntityListViewFactory viewFactory
-				= entityViewFactoryProvider.create( entityConfiguration, EntityListViewFactory.class );
-		viewFactory.setMessagePrefixes( "entityViews." + EntityListView.VIEW_NAME, "entityViews" );
 
-		entityConfiguration.registerView( EntityListView.VIEW_NAME, viewFactory );
+		EntityListViewFactory oldViewFactory
+				= entityViewFactoryProvider.create( entityConfiguration, EntityListViewFactory.class );
+		oldViewFactory.setMessagePrefixes( "entityViews." + EntityView.LIST_VIEW_NAME, "entityViews" );
+		entityConfiguration.registerView( EntityView.LIST_VIEW_NAME, oldViewFactory );
+
+		DefaultEntityViewFactory viewFactory = beanFactory.createBean( DefaultEntityViewFactory.class );
+		viewFactory.addProcessor( new MessagePrefixingViewProcessor( "entityView." + EntityView.LIST_VIEW_NAME, "entityViews" ) );
+
+		ActionAllowedAuthorizationViewProcessor actionAllowedAuthorizationViewProcessor = new ActionAllowedAuthorizationViewProcessor();
+		actionAllowedAuthorizationViewProcessor.setRequiredAllowableAction( AllowableAction.READ );
+		viewFactory.addProcessor( actionAllowedAuthorizationViewProcessor );
+
+		viewFactory.addProcessor( beanFactory.createBean( GlobalPageFeedbackViewProcessor.class ) );
+
+		PageableExtensionViewProcessor pageableExtensionViewProcessor = new PageableExtensionViewProcessor();
+		pageableExtensionViewProcessor.setDefaultPageable( new PageRequest( 0, 20, new Sort( Sort.Direction.DESC, "name" ) ) );
+		viewFactory.addProcessor( pageableExtensionViewProcessor );
+
+		ListFormViewProcessor listFormViewProcessor = beanFactory.createBean( ListFormViewProcessor.class );
+		listFormViewProcessor.setAddDefaultButtons( true );
+		viewFactory.addProcessor( listFormViewProcessor );
+
+		viewFactory.addProcessor( beanFactory.createBean( EntityQueryFilterProcessor.class ) );
+
+		DefaultEntityFetchingViewProcessor pageFetcher = new DefaultEntityFetchingViewProcessor();
+		viewFactory.addProcessor( pageFetcher );
+
+		SortableTableRenderingViewProcessor tableRenderingViewProcessor = beanFactory.createBean( SortableTableRenderingViewProcessor.class );
+		tableRenderingViewProcessor.setIncludeDefaultActions( true );
+		viewFactory.addProcessor( tableRenderingViewProcessor );
+
+		entityConfiguration.registerView( "new-" + EntityView.LIST_VIEW_NAME, viewFactory );
 	}
 }

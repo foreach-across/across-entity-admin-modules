@@ -78,7 +78,7 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 	                       ViewElementBuilderContext builderContext ) {
 		EntityViewContext entityViewContext = resolveEntityViewContext( entityViewRequest );
 		PageContentStructure page = entityViewRequest.getPageContentStructure();
-
+		page.setRenderAsTabs( true );
 		// todo: update breadcrumb adminMenu.breadcrumbLeaf( entityConfiguration.getLabel( original ) );
 
 		page.setPageTitle( entityViewContext.getEntityMessages().withNameSingular( titleMessageCode, entityViewContext.getEntityLabel() ) );

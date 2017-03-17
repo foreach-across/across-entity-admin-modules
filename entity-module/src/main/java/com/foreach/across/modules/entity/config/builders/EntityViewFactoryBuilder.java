@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  * Builder for creating a single {@link com.foreach.across.modules.entity.views.EntityViewFactory}.
  * Supports {@link SimpleEntityViewFactorySupport} and
  * {@link com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport}.  Which properties
- * will apply will depend on the actuals {@link #factoryType(Class)} configured.
+ * will apply will depend on the actual {@link #factoryType(Class)} configured.
  *
  * @author Arne Vandamme
  * @since 2.0.0

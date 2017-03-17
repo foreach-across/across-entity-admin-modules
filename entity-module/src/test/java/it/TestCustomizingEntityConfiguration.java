@@ -112,7 +112,7 @@ public class TestCustomizingEntityConfiguration
 
 	@Test
 	public void crudListViewShouldBeModified() {
-		EntityViewFactory viewFactory = configuration.getViewFactory( EntityListView.VIEW_NAME );
+		EntityViewFactory viewFactory = configuration.getViewFactory( EntityView.LIST_VIEW_NAME );
 		assertNotNull( viewFactory );
 	}
 

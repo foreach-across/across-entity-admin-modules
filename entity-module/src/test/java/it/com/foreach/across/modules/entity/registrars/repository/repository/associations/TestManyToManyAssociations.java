@@ -103,7 +103,7 @@ public class TestManyToManyAssociations
 				"company.representatives", association.getName()
 		);
 
-		EntityListViewFactory listViewFactory = association.getViewFactory( EntityListView.VIEW_NAME );
+		EntityListViewFactory listViewFactory = association.getViewFactory( EntityView.LIST_VIEW_NAME );
 		assertNotNull( listViewFactory );
 
 		pageFetcher = listViewFactory.getPageFetcher();
@@ -133,7 +133,7 @@ public class TestManyToManyAssociations
 				"company.representatives", association.getName()
 		);
 
-		EntityListViewFactory listViewFactory = association.getViewFactory( EntityListView.VIEW_NAME );
+		EntityListViewFactory listViewFactory = association.getViewFactory( EntityView.LIST_VIEW_NAME );
 		assertNotNull( listViewFactory );
 
 		pageFetcher = listViewFactory.getPageFetcher();

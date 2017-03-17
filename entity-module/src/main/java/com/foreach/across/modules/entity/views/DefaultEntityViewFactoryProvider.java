@@ -44,6 +44,7 @@ import java.util.function.BiConsumer;
  * @see com.foreach.across.modules.entity.config.builders.EntityListViewFactoryBuilder
  * @since 2.0.0
  */
+@Deprecated
 @Component
 public class DefaultEntityViewFactoryProvider implements EntityViewFactoryProvider
 {

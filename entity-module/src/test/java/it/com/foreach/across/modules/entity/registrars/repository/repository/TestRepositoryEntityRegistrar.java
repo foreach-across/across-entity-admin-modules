@@ -28,7 +28,10 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.EntityFormViewFactory;
+import com.foreach.across.modules.entity.views.EntityListViewFactory;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestConfiguration;
@@ -108,7 +111,7 @@ public class TestRepositoryEntityRegistrar
 		EntityModel model = configuration.getEntityModel();
 		assertNotNull( model );
 
-		EntityViewFactory viewFactory = configuration.getViewFactory( EntityListView.VIEW_NAME );
+		EntityViewFactory viewFactory = configuration.getViewFactory( EntityView.LIST_VIEW_NAME );
 		assertNotNull( viewFactory );
 	}
 
@@ -119,7 +122,7 @@ public class TestRepositoryEntityRegistrar
 		EntityAssociation association = configuration.association( "representatives" );
 
 		assertNotNull( association );
-		assertTrue( association.hasView( EntityListView.VIEW_NAME ) );
+		assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
 	}
 
 	@Ignore
@@ -129,7 +132,7 @@ public class TestRepositoryEntityRegistrar
 		EntityAssociation association = configuration.association( "company.representatives" );
 
 		assertNotNull( association );
-		assertTrue( association.hasView( EntityListView.VIEW_NAME ) );
+		assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
 	}
 
 	@Test
@@ -265,9 +268,9 @@ public class TestRepositoryEntityRegistrar
 	@Test
 	public void verifyListView() {
 		EntityConfiguration<Client> configuration = entityRegistry.getEntityConfiguration( Client.class );
-		assertTrue( configuration.hasView( EntityListView.VIEW_NAME ) );
+		assertTrue( configuration.hasView( EntityView.LIST_VIEW_NAME ) );
 
-		EntityListViewFactory viewFactory = configuration.getViewFactory( EntityListView.VIEW_NAME );
+		EntityListViewFactory viewFactory = configuration.getViewFactory( EntityView.LIST_VIEW_NAME );
 		assertNotNull( viewFactory );
 
 		assertNotNull( viewFactory.getPageFetcher() );
@@ -280,9 +283,9 @@ public class TestRepositoryEntityRegistrar
 	@Test
 	public void verifyCreateView() {
 		EntityConfiguration<Client> configuration = entityRegistry.getEntityConfiguration( Client.class );
-		assertTrue( configuration.hasView( EntityFormView.CREATE_VIEW_NAME ) );
+		assertTrue( configuration.hasView( EntityView.CREATE_VIEW_NAME ) );
 
-		EntityFormViewFactory viewFactory = configuration.getViewFactory( EntityFormView.CREATE_VIEW_NAME );
+		EntityFormViewFactory viewFactory = configuration.getViewFactory( EntityView.CREATE_VIEW_NAME );
 		assertNotNull( viewFactory );
 	}
 

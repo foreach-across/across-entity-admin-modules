@@ -28,9 +28,6 @@ import org.springframework.ui.ModelMap;
 @Deprecated
 public class EntityListView extends EntityView
 {
-	public static final String SUMMARY_VIEW_NAME = "listSummaryView";
-
-	public static final String VIEW_NAME = "listView";
 	// todo remove
 	public static final String VIEW_TEMPLATE = PageContentStructure.TEMPLATE;
 

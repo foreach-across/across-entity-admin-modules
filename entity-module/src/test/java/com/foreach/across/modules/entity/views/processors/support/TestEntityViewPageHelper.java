@@ -67,9 +67,9 @@ public class TestEntityViewPageHelper
 	public void addGlobalFeedbackUsesFlashByDefault() {
 		assertNull( flashAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
 		pageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.DANGER, "my.message" );
-		assertEquals( "danger:my.message", flashAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
+		assertEquals( "alert-danger:my.message", flashAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
 		pageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.INFO, "other.message" );
-		assertEquals( "danger:my.message,info:other.message", flashAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
+		assertEquals( "alert-danger:my.message,alert-info:other.message", flashAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
 
 		assertTrue( redirectAttributes.isEmpty() );
 	}
@@ -80,9 +80,9 @@ public class TestEntityViewPageHelper
 
 		assertNull( redirectAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
 		pageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.DANGER, "my.message" );
-		assertEquals( "danger:my.message", redirectAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
+		assertEquals( "alert-danger:my.message", redirectAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
 		pageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.INFO, "other.message" );
-		assertEquals( "danger:my.message,info:other.message", redirectAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
+		assertEquals( "alert-danger:my.message,alert-info:other.message", redirectAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
 
 		assertTrue( flashAttributes.isEmpty() );
 	}

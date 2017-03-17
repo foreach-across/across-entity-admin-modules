@@ -27,10 +27,6 @@ import org.springframework.validation.BindingResultUtils;
 @Deprecated
 public class EntityFormView extends EntityView
 {
-	public static final String CREATE_VIEW_NAME = "createView";
-	public static final String UPDATE_VIEW_NAME = "updateView";
-	public static final String DELETE_VIEW_NAME = "deleteView";
-
 	// todo: remove
 	public static final String VIEW_TEMPLATE = PageContentStructure.TEMPLATE;
 

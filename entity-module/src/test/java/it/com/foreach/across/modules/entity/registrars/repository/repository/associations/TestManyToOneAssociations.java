@@ -116,7 +116,7 @@ public class TestManyToOneAssociations
 		assertNotNull( association.getTargetProperty() );
 		assertSame( client.getPropertyRegistry().getProperty( "company" ), association.getTargetProperty() );
 
-		assertTrue( association.hasView( EntityListView.VIEW_NAME ) );
+		assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
 	}
 
 	// todo: implement once supporting MappingContext items
@@ -144,7 +144,7 @@ public class TestManyToOneAssociations
 		assertNotNull( association.getTargetProperty() );
 		assertSame( clientGroup.getPropertyRegistry().getProperty( "company" ), association.getTargetProperty() );
 
-		assertTrue( association.hasView( EntityListView.VIEW_NAME ) );
+		assertTrue( association.hasView( EntityListView.LIST_VIEW_NAME ) );
 	}
 	*/
 
@@ -181,7 +181,7 @@ public class TestManyToOneAssociations
 
 		assertNotNull( association );
 
-		EntityListViewFactory listViewFactory = association.getViewFactory( EntityListView.VIEW_NAME );
+		EntityListViewFactory listViewFactory = association.getViewFactory( EntityView.LIST_VIEW_NAME );
 		assertNotNull( listViewFactory );
 
 		pageFetcher = listViewFactory.getPageFetcher();

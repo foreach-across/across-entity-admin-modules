@@ -20,7 +20,7 @@ import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.processors.OldEntityQueryFilterProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -142,7 +142,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 
 	/**
 	 * Enable default {@link com.foreach.across.modules.entity.query.EntityQuery} based filtering for this list.
-	 * Amounts to the same as manually registering a {@link EntityQueryFilterProcessor} using {@link #filter(EntityViewProcessor)}.
+	 * Amounts to the same as manually registering a {@link OldEntityQueryFilterProcessor} using {@link #filter(EntityViewProcessor)}.
 	 * <p/>
 	 * Calling with {@code false} will remove the processor if it was activated before.  But you will have to manually
 	 * reset the {@link #pageFetcher(EntityListViewPageFetcher)} to the instance you want used.
@@ -180,7 +180,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		if ( rawViewFactory instanceof EntityListViewFactory ) {
 			EntityListViewFactory viewFactory = (EntityListViewFactory) rawViewFactory;
 			if ( entityQueryFilter != null ) {
-				EntityQueryFilterProcessor processor = getBean( EntityQueryFilterProcessor.class );
+				OldEntityQueryFilterProcessor processor = getBean( OldEntityQueryFilterProcessor.class );
 				if ( entityQueryFilter ) {
 					viewFactory.setPageFetcher( processor );
 					viewFactory.setProcessors( Collections.singleton( processor ) );
@@ -207,7 +207,8 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 			}
 		}
 		else {
-			throw new IllegalArgumentException( "Registered view factory was not of type EntityListViewFactory" );
+			// todo: bugrit
+			// throw new IllegalArgumentException( "Registered view factory was not of type EntityListViewFactory" );
 		}
 	}
 }

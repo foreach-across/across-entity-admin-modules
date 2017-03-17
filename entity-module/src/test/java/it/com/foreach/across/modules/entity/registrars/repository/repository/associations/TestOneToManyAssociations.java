@@ -141,7 +141,7 @@ public class TestOneToManyAssociations
 		assertSame( client.getPropertyRegistry().getProperty( "groups" ), association.getSourceProperty() );
 		assertEquals( "id.client", association.getTargetProperty().getName() );
 
-		assertTrue( association.hasView( EntityListView.VIEW_NAME ) );
+		assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
 	}
 
 	@Test
@@ -174,7 +174,7 @@ public class TestOneToManyAssociations
 
 		assertNotNull( association );
 
-		EntityListViewFactory listViewFactory = association.getViewFactory( EntityListView.VIEW_NAME );
+		EntityListViewFactory listViewFactory = association.getViewFactory( EntityView.LIST_VIEW_NAME );
 		assertNotNull( listViewFactory );
 
 		pageFetcher = listViewFactory.getPageFetcher();

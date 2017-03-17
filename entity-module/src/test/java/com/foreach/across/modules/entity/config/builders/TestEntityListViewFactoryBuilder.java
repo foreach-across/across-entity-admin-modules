@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.EntityViewViewFactory;
-import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.processors.OldEntityQueryFilterProcessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,7 +100,7 @@ public class TestEntityListViewFactoryBuilder
 
 	@Test
 	public void customFilter() {
-		EntityQueryFilterProcessor filter = mock( EntityQueryFilterProcessor.class );
+		OldEntityQueryFilterProcessor filter = mock( OldEntityQueryFilterProcessor.class );
 		EntityListViewFactory factory = mock( EntityListViewFactory.class );
 
 		builder.filter( filter ).apply( factory );
@@ -111,8 +111,8 @@ public class TestEntityListViewFactoryBuilder
 
 	@Test
 	public void entityQueryFilterEnabled() {
-		EntityQueryFilterProcessor filter = mock( EntityQueryFilterProcessor.class );
-		when( beanFactory.getBean( EntityQueryFilterProcessor.class ) ).thenReturn( filter );
+		OldEntityQueryFilterProcessor filter = mock( OldEntityQueryFilterProcessor.class );
+		when( beanFactory.getBean( OldEntityQueryFilterProcessor.class ) ).thenReturn( filter );
 
 		EntityListViewFactory factory = mock( EntityListViewFactory.class );
 
@@ -124,8 +124,8 @@ public class TestEntityListViewFactoryBuilder
 
 	@Test
 	public void entityQueryFilterDisabledAgain() {
-		EntityQueryFilterProcessor filter = mock( EntityQueryFilterProcessor.class );
-		when( beanFactory.getBean( EntityQueryFilterProcessor.class ) ).thenReturn( filter );
+		OldEntityQueryFilterProcessor filter = mock( OldEntityQueryFilterProcessor.class );
+		when( beanFactory.getBean( OldEntityQueryFilterProcessor.class ) ).thenReturn( filter );
 
 		EntityListViewFactory factory = mock( EntityListViewFactory.class );
 
@@ -139,8 +139,8 @@ public class TestEntityListViewFactoryBuilder
 
 	@Test
 	public void customPageFetcherIsKept() {
-		EntityQueryFilterProcessor filter = mock( EntityQueryFilterProcessor.class );
-		when( beanFactory.getBean( EntityQueryFilterProcessor.class ) ).thenReturn( filter );
+		OldEntityQueryFilterProcessor filter = mock( OldEntityQueryFilterProcessor.class );
+		when( beanFactory.getBean( OldEntityQueryFilterProcessor.class ) ).thenReturn( filter );
 
 		EntityListViewFactory factory = mock( EntityListViewFactory.class );
 		EntityListViewPageFetcher pageFetcher = mock( EntityListViewPageFetcher.class );

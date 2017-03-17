@@ -47,11 +47,19 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  * @see EntityViewFactory
- * @see DispatchingEntityViewFactory
+ * @see DefaultEntityViewFactory
  */
 @Data
 public class EntityView implements Model
 {
+	// default view names
+	public static final String CREATE_VIEW_NAME = "createView";
+	public static final String UPDATE_VIEW_NAME = "updateView";
+	public static final String DELETE_VIEW_NAME = "deleteView";
+	public static final String LIST_VIEW_NAME = "listView";
+	public static final String SUMMARY_VIEW_NAME = "listSummaryView";
+
+	// todo: most of these are deprecated and should be removed
 	public static final String ATTRIBUTE_VIEW_NAME = "entityViewName";
 	public static final String ATTRIBUTE_ENTITY = "entity";
 	public static final String ATTRIBUTE_ENTITY_CONFIGURATION = "entityConfiguration";

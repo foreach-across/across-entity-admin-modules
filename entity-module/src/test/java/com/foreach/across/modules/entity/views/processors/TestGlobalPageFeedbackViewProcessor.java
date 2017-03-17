@@ -35,11 +35,11 @@ public class TestGlobalPageFeedbackViewProcessor
 {
 	@Test
 	public void addFeedbackMessages() {
-		assertEquals( "danger:my.message", addFeedbackMessage( null, Style.DANGER, "my.message" ) );
-		assertEquals( "info:some.other.message", addFeedbackMessage( "", Style.INFO, "some.other.message" ) );
+		assertEquals( "alert-danger:my.message", addFeedbackMessage( null, Style.DANGER, "my.message" ) );
+		assertEquals( "alert-info:some.other.message", addFeedbackMessage( "", Style.INFO, "some.other.message" ) );
 		assertEquals(
-				"danger:my.message,info:some.other.message",
-				addFeedbackMessage( "danger:my.message", Style.INFO, "some.other.message" )
+				"danger:my.message,somestyle:some.other.message",
+				addFeedbackMessage( "danger:my.message", new Style( "somestyle" ), "some.other.message" )
 		);
 	}
 

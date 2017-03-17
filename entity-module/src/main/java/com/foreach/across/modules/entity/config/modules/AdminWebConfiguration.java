@@ -20,6 +20,7 @@ import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
+import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.controllers.association.*;
 import com.foreach.across.modules.entity.controllers.entity.*;
 import com.foreach.across.modules.entity.handlers.MenuEventsHandler;
@@ -28,7 +29,9 @@ import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
 import com.foreach.across.modules.entity.web.EntityAssociationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
+import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,9 +48,19 @@ public class AdminWebConfiguration implements EntityConfigurer
 	@Autowired
 	private AdminWeb adminWeb;
 
+	@Autowired
+	public void registerEntityModuleWebResources( WebResourcePackageManager adminWebResourcePackageManager ) {
+		adminWebResourcePackageManager.register( EntityModuleWebResources.NAME, new EntityModuleWebResources() );
+	}
+
 	@Bean
 	public MenuEventsHandler menuEventsHandler() {
 		return new MenuEventsHandler();
+	}
+
+	@Bean
+	public GenericEntityViewController genericEntityViewController() {
+		return new GenericEntityViewController();
 	}
 
 	@Bean

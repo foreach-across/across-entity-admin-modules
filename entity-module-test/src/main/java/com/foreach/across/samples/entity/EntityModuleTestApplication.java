@@ -22,32 +22,22 @@ import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-
-import javax.sql.DataSource;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
-
-@Import(LocalDevToolsAutoConfiguration.class)
 @AcrossApplication(modules = { AdminWebModule.NAME, EntityModule.NAME, DebugWebModule.NAME })
+@Import(DataSourceAutoConfiguration.class)
 public class EntityModuleTestApplication
 {
 	@Bean
-	public DataSource acrossDataSource() {
-		return new EmbeddedDatabaseBuilder().build();
-	}
-
-	@Bean
 	public AcrossHibernateJpaModule acrossHibernateJpaModule() {
-		//
 		AcrossHibernateJpaModule hibernateModule = new AcrossHibernateJpaModule();
-		hibernateModule.setHibernateProperty( "hibernate.hbm2ddl.auto", "create" );
+		hibernateModule.setHibernateProperty( "hibernate.hbm2ddl.auto", "update" );
 		return hibernateModule;
 	}
 

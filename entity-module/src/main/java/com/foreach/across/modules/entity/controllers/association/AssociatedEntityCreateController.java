@@ -20,7 +20,6 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
-import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.web.menu.MenuFactory;
@@ -41,8 +40,9 @@ import java.io.Serializable;
  * @author Niels Doucet, Arne Vandamme
  * @since 9/02/2015
  */
+@Deprecated
 @AdminWebController
-@RequestMapping(AssociatedEntityCreateController.PATH)
+@RequestMapping("/old" + AssociatedEntityCreateController.PATH)
 public class AssociatedEntityCreateController extends AssociatedEntityControllerSupport
 {
 	public static final String PATH = AssociatedEntityListController.PATH + "/create";
@@ -55,7 +55,7 @@ public class AssociatedEntityCreateController extends AssociatedEntityController
 
 	@Override
 	protected String getDefaultViewName() {
-		return EntityFormView.CREATE_VIEW_NAME;
+		return EntityView.CREATE_VIEW_NAME;
 	}
 
 	@ModelAttribute(VIEW_REQUEST)

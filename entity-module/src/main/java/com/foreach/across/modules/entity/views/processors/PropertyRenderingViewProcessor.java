@@ -61,7 +61,8 @@ import java.util.stream.Collectors;
 public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 {
 	public static final String ATTRIBUTE_PROPERTY_BUILDERS = "propertyBuildersMap";
-	public static final String ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER = "propertiesContainerBuilder";
+	// todo: make configurable
+	public static final String ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER = "entityForm-column-0";
 
 	private final ControlNamePrefixingPostProcessor prefixingPostProcessor = new ControlNamePrefixingPostProcessor<>( "entity" );
 

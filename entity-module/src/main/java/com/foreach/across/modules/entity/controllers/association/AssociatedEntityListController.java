@@ -35,8 +35,9 @@ import java.io.Serializable;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 @AdminWebController
-@RequestMapping(AssociatedEntityListController.PATH)
+@RequestMapping("/old" + AssociatedEntityListController.PATH)
 public class AssociatedEntityListController extends AssociatedEntityControllerSupport
 {
 	public static final String PATH = EntityViewController.PATH + PATH_ASSOCIATION;
@@ -58,7 +59,7 @@ public class AssociatedEntityListController extends AssociatedEntityControllerSu
 
 	@Override
 	protected String getDefaultViewName() {
-		return EntityListView.VIEW_NAME;
+		return EntityView.LIST_VIEW_NAME;
 	}
 
 	@RequestMapping

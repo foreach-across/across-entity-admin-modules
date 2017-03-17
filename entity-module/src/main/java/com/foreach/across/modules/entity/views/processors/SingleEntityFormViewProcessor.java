@@ -38,8 +38,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -110,8 +110,16 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 			addGlobalBindingErrors( entityViewRequest, form );
 		}
 
-		ColumnViewElementBuilder leftColumn = addFormColumnsAndReturnFirst( form );
-		builderMap.put( PropertyRenderingViewProcessor.ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER, leftColumn );
+		builderMap.put( "entityForm", form );
+
+		val formColumns = buildFormColumns();
+
+		NodeViewElementBuilder columnRow = bootstrapUiFactory.row();
+		formColumns.forEach( ( name, column ) -> {
+			columnRow.add( column );
+			builderMap.put( name, column );
+		} );
+		form.add( columnRow );
 
 		String fromUrl = resolveFromUrl( entityViewRequest, form );
 
@@ -165,18 +173,8 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 		}
 	}
 
-	private ColumnViewElementBuilder addFormColumnsAndReturnFirst( FormViewElementBuilder form ) {
-		List<ColumnViewElementBuilder> columns = buildFormColumns();
-
-		NodeViewElementBuilder columnRow = bootstrapUiFactory.row();
-		columns.forEach( columnRow::add );
-		form.add( columnRow );
-
-		return columns.get( 0 );
-	}
-
 	private String resolveFromUrl( EntityViewRequest entityViewRequest, FormViewElementBuilder form ) {
-		Optional<String> fromUrl = Optional.ofNullable( entityViewRequest.getWebRequest().getParameter( "form" ) );
+		Optional<String> fromUrl = Optional.ofNullable( entityViewRequest.getWebRequest().getParameter( "from" ) );
 		fromUrl.ifPresent( url -> form.add( bootstrapUiFactory.hidden().controlName( "from" ).value( url ) ) );
 
 		return fromUrl.orElseGet( entityViewRequest.getEntityViewContext().getLinkBuilder()::overview );
@@ -203,15 +201,17 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 				);
 	}
 
-	private List<ColumnViewElementBuilder> buildFormColumns() {
-		List<ColumnViewElementBuilder> columns = new ArrayList<>( grid.size() );
+	private Map<String, ColumnViewElementBuilder> buildFormColumns() {
+		Map<String, ColumnViewElementBuilder> columns = new HashMap<>( grid.size() );
 
 		for ( int i = 0; i < grid.size(); i++ ) {
 			Grid.Position position = grid.get( i );
-			columns.add(
+			String name = "entityForm-column-" + i;
+			columns.put(
+					name,
 					bootstrapUiFactory
 							.column( position.toArray( new Grid.DeviceGridLayout[position.size()] ) )
-							.name( "entityForm-column-" + i )
+							.name( name )
 			);
 		}
 

@@ -21,7 +21,6 @@ import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
-import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
@@ -87,8 +86,9 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 				.get();
 
 		String formHeaderName = formName + "-header";
-		ColumnViewElementBuilder formHeader = bootstrapUiFactory.column( Grid.Device.MD.width( Grid.Width.FULL ) ).name( formHeaderName );
-		listForm.add( bootstrapUiFactory.row().add( formHeader ) );
+		NodeViewElementBuilder formHeader = bootstrapUiFactory.row().name( formHeaderName );
+
+		listForm.add( formHeader );
 
 		builderMap.put( formName, listForm );
 		builderMap.put( formHeaderName, formHeader );
@@ -98,12 +98,12 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 	}
 
 	private void addViewNameHiddenElement( EntityViewRequest entityViewRequest, FormViewElementBuilder listForm ) {
-		if ( !EntityListView.VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
+		if ( !EntityView.LIST_VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
 			listForm.add( bootstrapUiFactory.hidden().controlName( "view" ).value( entityViewRequest.getViewName() ) );
 		}
 	}
 
-	private void addDefaultButtons( EntityViewRequest entityViewRequest, ColumnViewElementBuilder formHeader, ViewElementBuilderMap builderMap ) {
+	private void addDefaultButtons( EntityViewRequest entityViewRequest, NodeViewElementBuilder formHeader, ViewElementBuilderMap builderMap ) {
 		if ( addDefaultButtons ) {
 			EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 
@@ -114,16 +114,16 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 
 			if ( allowableActions.contains( AllowableAction.CREATE ) ) {
 				String formActionsName = formName + "-actions";
-				NodeViewElementBuilder actions = bootstrapUiFactory.div()
-				                                                   .name( formActionsName )
-				                                                   .css( "list-header" )
-				                                                   .add(
-						                                                   bootstrapUiFactory.button()
-						                                                                     .name( "btn-create" )
-						                                                                     .link( linkBuilder.create() )
-						                                                                     .style( Style.Button.PRIMARY )
-						                                                                     .text( entityMessages.createAction() )
-				                                                   );
+				ColumnViewElementBuilder actions = bootstrapUiFactory.column( Grid.Device.MD.width( Grid.Width.FULL ) )
+				                                                     .name( formActionsName )
+				                                                     .css( "list-header" )
+				                                                     .add(
+						                                                     bootstrapUiFactory.button()
+						                                                                       .name( "btn-create" )
+						                                                                       .link( linkBuilder.create() )
+						                                                                       .style( Style.Button.PRIMARY )
+						                                                                       .text( entityMessages.createAction() )
+				                                                     );
 				builderMap.put( formActionsName, actions );
 				formHeader.add( actions );
 			}

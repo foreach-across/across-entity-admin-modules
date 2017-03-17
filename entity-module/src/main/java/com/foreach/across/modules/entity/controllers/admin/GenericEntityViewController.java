@@ -19,28 +19,28 @@ package com.foreach.across.modules.entity.controllers.admin;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityListView;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
+import com.foreach.across.modules.entity.views.context.DefaultEntityViewContext;
 import com.foreach.across.modules.entity.views.context.EntityViewContextLoader;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewCommandValidator;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -56,9 +56,8 @@ import static com.foreach.across.modules.entity.controllers.EntityControllerAttr
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@Controller
 @AdminWebController
-@RequestMapping("/new-entities" + PATH_ENTITY)
+@RequestMapping("/entities" + PATH_ENTITY)
 public class GenericEntityViewController implements EntityControllerAttributes
 {
 	private ConfigurableEntityViewContext entityViewContext;
@@ -76,16 +75,18 @@ public class GenericEntityViewController implements EntityControllerAttributes
 	public void createEntityViewRequest(
 			@PathVariable(VAR_ENTITY) String entityName,
 			@PathVariable(value = VAR_ENTITY_ID, required = false) Serializable entityId,
+			@PathVariable(value = VAR_ASSOCIATION, required = false) String associationName,
+			@PathVariable(value = VAR_ASSOCIATION_ID, required = false) Serializable associatedEntityId,
 			@PathVariable(value = "action", required = false) String action,
 			HttpMethod httpMethod,
 			NativeWebRequest webRequest,
 			ModelMap model,
 			RedirectAttributes redirectAttributes
 	) {
-		buildEntityViewContext( entityName, entityId );
+		buildEntityViewContext( entityName, entityId, associationName, associatedEntityId );
 
 		// add the basic properties
-		String viewName = resolveViewName( webRequest, entityId, action );
+		String viewName = resolveViewName( webRequest, entityViewContext.isForAssociation() ? associatedEntityId : entityId, action );
 
 		entityViewRequest.setModel( model );
 		entityViewRequest.setRedirectAttributes( redirectAttributes );
@@ -100,8 +101,10 @@ public class GenericEntityViewController implements EntityControllerAttributes
 		);
 
 		// retrieve and set the view factory
-		EntityViewFactory viewFactory = entityViewContext.getEntityConfiguration()
-		                                                 .getViewFactory( viewName );
+		EntityViewFactory viewFactory = entityViewContext.isForAssociation()
+				? entityViewContext.getEntityAssociation().getViewFactory( viewName )
+				: entityViewContext.getEntityConfiguration().getViewFactory( viewName );
+
 		if ( viewFactory == null ) {
 			throw new IllegalStateException( "No registered EntityViewFactory with name: " + viewName );
 		}
@@ -117,12 +120,17 @@ public class GenericEntityViewController implements EntityControllerAttributes
 		model.addAttribute( "entityViewContext", entityViewContext );
 	}
 
+	@ModelAttribute
+	public void registerWebResources( WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.addPackage( EntityModuleWebResources.NAME );
+	}
+
 	@InitBinder("entityViewCommand")
 	public void initViewCommandBinder( WebDataBinder dataBinder, HttpMethod httpMethod ) {
 		dataBinder.setMessageCodesResolver( entityViewContext.getMessageCodeResolver() );
 
-		// by default register command validation for post and put requests
-		if ( httpMethod == HttpMethod.POST || httpMethod == HttpMethod.PUT ) {
+		// by default register command validation for post, put and patch requests
+		if ( httpMethod == HttpMethod.POST || httpMethod == HttpMethod.PUT || httpMethod == HttpMethod.PATCH ) {
 			dataBinder.setValidator( entityViewCommandValidator );
 		}
 
@@ -130,11 +138,30 @@ public class GenericEntityViewController implements EntityControllerAttributes
 		viewFactory.initializeCommandObject( entityViewRequest, entityViewRequest.getCommand(), dataBinder );
 	}
 
-	@RequestMapping(value = { "", PATH_ENTITY_ID, PATH_ENTITY_ID + "/{action:delete|update}" })
+	@RequestMapping(value = { "",
+	                          PATH_ENTITY_ID,
+	                          PATH_ENTITY_ID + "/{action:delete|update}",
+	                          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}",
+	                          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}/{associatedEntityId}",
+	                          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}/{associatedEntityId}/{action:delete|update}"
+	})
+	public Object executeView( @ModelAttribute("entityViewCommand") EntityViewCommand command ) {
+		return executeView( command, null );
+	}
+
+	@RequestMapping(
+			value = { "",
+			          PATH_ENTITY_ID,
+			          PATH_ENTITY_ID + "/{action:delete|update}",
+			          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}",
+			          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}/{associatedEntityId}",
+			          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}/{associatedEntityId}/{action:delete|update}"
+			},
+			method = { RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH }
+	)
 	public Object executeView(
 			@ModelAttribute("entityViewCommand") @Valid EntityViewCommand command,
 			BindingResult bindingResult
-
 	) {
 		entityViewRequest.setBindingResult( bindingResult );
 
@@ -151,12 +178,35 @@ public class GenericEntityViewController implements EntityControllerAttributes
 	}
 
 	@SuppressWarnings("unchecked")
-	private void buildEntityViewContext( @PathVariable(VAR_ENTITY) String entityName,
-	                                     @PathVariable(value = VAR_ENTITY_ID, required = false) Serializable entityId ) {
-		entityViewContextLoader.loadForEntityConfiguration( entityViewContext, entityName );
+	private void buildEntityViewContext( String entityName,
+	                                     Serializable entityId,
+	                                     String associationName,
+	                                     Serializable associatedEntityId ) {
+		if ( associationName != null ) {
+			DefaultEntityViewContext parentViewContext = new DefaultEntityViewContext();
+			entityViewContextLoader.loadForEntityConfiguration( parentViewContext, entityName );
+			EntityConfiguration parentEntityConfiguration = parentViewContext.getEntityConfiguration();
+			parentViewContext.setEntity( parentEntityConfiguration.getEntityModel().findOne( entityId ) );
 
-		if ( isPossibleEntityId( entityId ) ) {
-			entityViewContext.setEntity( entityViewContext.getEntityModel().findOne( entityId ) );
+			EntityAssociation association = parentEntityConfiguration.association( associationName );
+			entityViewContextLoader.loadForEntityConfiguration( entityViewContext, association.getTargetEntityConfiguration() );
+			entityViewContext.setEntityAssociation( association );
+			entityViewContext.setParentContext( parentViewContext );
+			entityViewContext.setLinkBuilder(
+					association.getAttribute( EntityLinkBuilder.class )
+					           .asAssociationFor( parentViewContext.getLinkBuilder(), parentViewContext.getEntity() )
+			);
+
+			if ( isPossibleEntityId( associatedEntityId ) ) {
+				entityViewContext.setEntity( entityViewContext.getEntityModel().findOne( associatedEntityId ) );
+			}
+		}
+		else {
+			entityViewContextLoader.loadForEntityConfiguration( entityViewContext, entityName );
+
+			if ( isPossibleEntityId( entityId ) ) {
+				entityViewContext.setEntity( entityViewContext.getEntityModel().findOne( entityId ) );
+			}
 		}
 	}
 
@@ -170,17 +220,17 @@ public class GenericEntityViewController implements EntityControllerAttributes
 				.orElseGet( () -> {
 					if ( entityViewContext.holdsEntity() ) {
 						if ( "delete".equals( action ) ) {
-							return EntityFormView.DELETE_VIEW_NAME;
+							return "new-" + EntityView.DELETE_VIEW_NAME;
 						}
 						else if ( "update".equals( action ) ) {
-							return EntityFormView.UPDATE_VIEW_NAME;
+							return "new-" + EntityView.UPDATE_VIEW_NAME;
 						}
 
-						return "view";
+						return "new-view";
 					}
 
 					return "create".equals( entityId )
-							? EntityFormView.CREATE_VIEW_NAME : EntityListView.VIEW_NAME;
+							? "new-" + EntityView.CREATE_VIEW_NAME : "new-" + EntityView.LIST_VIEW_NAME;
 				} );
 	}
 

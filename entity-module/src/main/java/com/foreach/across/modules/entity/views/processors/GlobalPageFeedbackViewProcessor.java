@@ -83,8 +83,12 @@ public class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAdapter
 	private Map<String, Style> retrieveFeedbackMessage( EntityViewRequest entityViewRequest ) {
 		Map<String, Style> feedback = new LinkedHashMap<>();
 
-		Stream.of( entityViewRequest.getWebRequest().getParameterValues( FEEDBACK_ATTRIBUTE_KEY ) )
-		      .forEach( paramValue -> feedback.putAll( decodeFeedbackMessages( paramValue ) ) );
+		String[] parameterValues = entityViewRequest.getWebRequest().getParameterValues( FEEDBACK_ATTRIBUTE_KEY );
+
+		if ( parameterValues != null ) {
+			Stream.of( parameterValues )
+			      .forEach( paramValue -> feedback.putAll( decodeFeedbackMessages( paramValue ) ) );
+		}
 
 		feedback.putAll( decodeFeedbackMessages( (String) entityViewRequest.getModel().get( FEEDBACK_ATTRIBUTE_KEY ) ) );
 
@@ -125,7 +129,8 @@ public class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAdapter
 		Assert.notNull( feedbackStyle );
 		Assert.notNull( messageCode );
 
-		String feedbackToken = feedbackStyle.getName() + ":" + messageCode;
+		String feedbackToken = ( feedbackStyle.isDefaultStyle() ? feedbackStyle.forPrefix( "alert" ) : feedbackStyle.getName() )
+				+ ":" + messageCode;
 		return StringUtils.defaultString( currentValue ).isEmpty() ? feedbackToken : currentValue + "," + feedbackToken;
 	}
 }

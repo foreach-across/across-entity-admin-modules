@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.foreach.across.modules.entity.views.DispatchingEntityViewFactory.ATTRIBUTE_CONTAINER_BUILDER;
+import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_BUILDER;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 

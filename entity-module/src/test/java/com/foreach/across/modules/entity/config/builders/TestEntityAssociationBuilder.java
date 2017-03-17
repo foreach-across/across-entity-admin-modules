@@ -20,8 +20,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactoryProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,7 +81,7 @@ public class TestEntityAssociationBuilder
 		EntityPropertyDescriptor targetProperty = mock( EntityPropertyDescriptor.class );
 		when( targetRegistry.getProperty( "id" ) ).thenReturn( targetProperty );
 
-		when( association.hasView( EntityListView.VIEW_NAME ) ).thenReturn( false );
+		when( association.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( false );
 		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
 		when( viewFactoryProvider.create( target, EntityListViewFactory.class ) ).thenReturn( listViewFactory );
 
@@ -104,7 +104,7 @@ public class TestEntityAssociationBuilder
 		verify( association ).setHidden( false );
 		verify( association ).setAttributes( Collections.singletonMap( "someAttribute", "someAttributeValue" ) );
 		verify( association ).setParentDeleteMode( EntityAssociation.ParentDeleteMode.SUPPRESS );
-		verify( association ).registerView( EntityListView.VIEW_NAME, listViewFactory );
+		verify( association ).registerView( EntityView.LIST_VIEW_NAME, listViewFactory );
 	}
 
 	@Test
@@ -126,9 +126,9 @@ public class TestEntityAssociationBuilder
 		EntityPropertyDescriptor targetProperty = mock( EntityPropertyDescriptor.class );
 		when( targetRegistry.getProperty( "id" ) ).thenReturn( targetProperty );
 
-		when( association.hasView( EntityListView.VIEW_NAME ) ).thenReturn( true );
+		when( association.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
 		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
-		when( association.getViewFactory( EntityListView.VIEW_NAME ) ).thenReturn( listViewFactory );
+		when( association.getViewFactory( EntityView.LIST_VIEW_NAME ) ).thenReturn( listViewFactory );
 
 		builder.name( "users" )
 		       .hidden( false )

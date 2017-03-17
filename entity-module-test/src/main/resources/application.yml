@@ -13,11 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-across.development.active=false
+spring:
+  datasource:
+    url: jdbc:h2:../db/entity-module
+    username: sa
 
-debugWebModule.security.enabled=false
+across:
+  development:
+    active: false
 
-adminWebModule.title=Entity Test Application
-adminWebModule.login.rememberMe.key=test
+acrossModule:
+  EntityModule:
+    resources: ../entity-module/src/main/resources
 
-acrossModule.EntityModule.resources=../entity-module/src/main/resources
+adminWebModule:
+  title: Entity Test Application
+  login:
+    rememberMe:
+      key: test
+
+debugWebModule:
+  security:
+    enabled: false

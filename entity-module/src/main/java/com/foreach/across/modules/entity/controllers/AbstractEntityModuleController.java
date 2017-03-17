@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public abstract class AbstractEntityModuleController implements EntityControllerAttributes
 {
 	@ModelAttribute

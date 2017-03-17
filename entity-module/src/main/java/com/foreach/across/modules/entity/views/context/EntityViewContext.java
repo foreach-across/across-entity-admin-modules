@@ -41,6 +41,13 @@ import com.foreach.across.modules.spring.security.actions.AllowableActions;
 public interface EntityViewContext
 {
 	/**
+	 * Get the current entity being viewed as raw object.
+	 *
+	 * @return entity or {@code null} if none present
+	 */
+	Object getEntity();
+
+	/**
 	 * Get the current entity being viewed.
 	 *
 	 * @param <T> type the entity should have

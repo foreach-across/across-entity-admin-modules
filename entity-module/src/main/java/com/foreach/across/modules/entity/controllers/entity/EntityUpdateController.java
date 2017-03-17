@@ -40,8 +40,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.io.Serializable;
 
+@Deprecated
 @AdminWebController
-@RequestMapping(EntityUpdateController.PATH)
+@RequestMapping("/old" + EntityUpdateController.PATH)
 public class EntityUpdateController extends EntityControllerSupport
 {
 	public static final String PATH = EntityViewController.PATH + "/update";
@@ -54,7 +55,7 @@ public class EntityUpdateController extends EntityControllerSupport
 
 	@Override
 	protected String getDefaultViewName() {
-		return EntityFormView.UPDATE_VIEW_NAME;
+		return EntityView.UPDATE_VIEW_NAME;
 	}
 
 	@Override

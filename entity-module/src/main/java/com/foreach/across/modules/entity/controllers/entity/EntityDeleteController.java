@@ -41,8 +41,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.io.Serializable;
 
+@Deprecated
 @AdminWebController
-@RequestMapping(EntityDeleteController.PATH)
+@RequestMapping("/old" + EntityDeleteController.PATH)
 public class EntityDeleteController extends EntityControllerSupport
 {
 	public static final String PATH = EntityViewController.PATH + "/delete";
@@ -55,7 +56,7 @@ public class EntityDeleteController extends EntityControllerSupport
 
 	@Override
 	protected String getDefaultViewName() {
-		return EntityFormView.DELETE_VIEW_NAME;
+		return EntityView.DELETE_VIEW_NAME;
 	}
 
 	@Override

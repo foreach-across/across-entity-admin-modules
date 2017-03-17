@@ -36,8 +36,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
 
-import static com.foreach.across.modules.entity.views.DispatchingEntityViewFactory.ATTRIBUTE_CONTAINER_BUILDER;
-import static com.foreach.across.modules.entity.views.DispatchingEntityViewFactory.ATTRIBUTE_CONTAINER_ELEMENT;
+import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_BUILDER;
+import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_ELEMENT;
 
 /**
  * Adapter implementation for a default {@link EntityViewProcessor} following the common {@link ViewElement}
@@ -266,13 +266,13 @@ public abstract class EntityViewProcessorAdapter implements EntityViewProcessor<
 	public void postProcess( EntityViewRequest entityViewRequest, EntityView entityView ) {
 	}
 
-	private ViewElementBuilderMap retrieveEntityViewElementBuilderMap( EntityView entityView ) {
+	static ViewElementBuilderMap retrieveEntityViewElementBuilderMap( EntityView entityView ) {
 		return (ViewElementBuilderMap) entityView
 				.asMap()
 				.computeIfAbsent( ATTRIBUTE_BUILDER_MAP, key -> new ViewElementBuilderMap() );
 	}
 
-	private ViewElementBuilderContext retrieveBuilderContext() {
+	static ViewElementBuilderContext retrieveBuilderContext() {
 		return ViewElementBuilderContextHolder
 				.getViewElementBuilderContext()
 				.orElseThrow( () -> new IllegalStateException( "A global ViewElementBuilderContext is required" ) );

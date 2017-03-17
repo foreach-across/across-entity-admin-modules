@@ -260,10 +260,10 @@ public class TestEntityConfigurationBuilder
 	public void existingListView() {
 		builder.listView( lvb -> lvb.template( "hello" ) );
 
-		when( config.hasView( EntityListView.VIEW_NAME ) ).thenReturn( true );
+		when( config.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
 
 		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
-		when( config.getViewFactory( EntityListView.VIEW_NAME ) ).thenReturn( listViewFactory );
+		when( config.getViewFactory( EntityView.LIST_VIEW_NAME ) ).thenReturn( listViewFactory );
 
 		builder.apply( config, false );
 		verify( listViewFactory ).setTemplate( "hello" );
@@ -299,7 +299,7 @@ public class TestEntityConfigurationBuilder
 		inOrder.verify( formViewFactory ).setTemplate( "form-template" );
 		inOrder.verify( config ).registerView( "formView", formViewFactory );
 		inOrder.verify( deleteViewFactory ).setTemplate( "delete-template" );
-		inOrder.verify( config ).registerView( EntityFormView.DELETE_VIEW_NAME, deleteViewFactory );
+		inOrder.verify( config ).registerView( EntityView.DELETE_VIEW_NAME, deleteViewFactory );
 		inOrder.verify( customViewFactory ).setTemplate( "custom-template" );
 		inOrder.verify( config ).registerView( "customView", customViewFactory );
 	}

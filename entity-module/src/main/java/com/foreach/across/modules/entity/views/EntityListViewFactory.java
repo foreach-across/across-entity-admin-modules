@@ -219,7 +219,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			);
 		}
 
-		if ( !EntityListView.VIEW_NAME.equals( view.getName() ) ) {
+		if ( !EntityView.LIST_VIEW_NAME.equals( view.getName() ) ) {
 			HiddenFormElement viewNameControl = new HiddenFormElement();
 			viewNameControl.setControlName( "view" );
 			viewNameControl.setValue( view.getName() );
@@ -246,7 +246,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 			tableBuilder.valueRowProcessor( actionsProcessor );
 
 			EntitySummaryViewActionProcessor.autoRegister( viewCreationContext, tableBuilder,
-			                                               EntityListView.SUMMARY_VIEW_NAME );
+			                                               EntityView.SUMMARY_VIEW_NAME );
 
 			configureSortableTableBuilder( tableBuilder, entityConfiguration );
 

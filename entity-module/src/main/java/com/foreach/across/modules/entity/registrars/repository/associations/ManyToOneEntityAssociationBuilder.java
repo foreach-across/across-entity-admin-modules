@@ -23,11 +23,14 @@ import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
 import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.fetchers.AssociationListViewPageFetcher;
+import com.foreach.across.modules.entity.views.processors.*;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +47,7 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 	private static final Logger LOG = LoggerFactory.getLogger( ManyToOneEntityAssociationBuilder.class );
 
 	@Autowired
-	private BeanFactory beanFactory;
+	private AutowireCapableBeanFactory beanFactory;
 
 	@Override
 	public boolean supports( PersistentProperty<?> sourceProperty ) {
@@ -64,6 +67,7 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 			association.setTargetProperty( to.getPropertyRegistry().getProperty( property.getName() ) );
 
 			buildCreateView( association );
+			buildUpdateView( association );
 			buildListView( association, property );
 			buildDeleteView( association );
 		}
@@ -83,10 +87,10 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 	public void buildListView( MutableEntityAssociation association, final PersistentProperty property ) {
 		EntityConfiguration to = association.getTargetEntityConfiguration();
 
-		EntityListViewFactory viewFactory = beanFactory.getBean( EntityListViewFactory.class );
-		BeanUtils.copyProperties( to.getViewFactory( EntityListView.VIEW_NAME ), viewFactory );
+		EntityListViewFactory oldViewFactory = beanFactory.getBean( EntityListViewFactory.class );
+		BeanUtils.copyProperties( to.getViewFactory( EntityView.LIST_VIEW_NAME ), oldViewFactory );
 
-		viewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".listView",
+		oldViewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".listView",
 		                                "entityViews.listView",
 		                                "entityViews" );
 
@@ -97,7 +101,7 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 					AssociatedEntityQueryExecutor.class,
 					new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), queryExecutor )
 			);
-			viewFactory.setPageFetcher(
+			oldViewFactory.setPageFetcher(
 					new AssociationListViewPageFetcher( association.getTargetProperty(), queryExecutor )
 			);
 		}
@@ -106,30 +110,153 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 			          association.getName() );
 		}
 
-		association.registerView( EntityListView.VIEW_NAME, viewFactory );
+		association.registerView( EntityView.LIST_VIEW_NAME, oldViewFactory );
+
+		DefaultEntityViewFactory viewFactory = beanFactory.createBean( DefaultEntityViewFactory.class );
+		viewFactory.addProcessor( new MessagePrefixingViewProcessor( "entityViews.association." + association.getName() + ".listView",
+		                                                             "entityViews.listView",
+		                                                             "entityViews" ) );
+
+		ActionAllowedAuthorizationViewProcessor actionAllowedAuthorizationViewProcessor = new ActionAllowedAuthorizationViewProcessor();
+		actionAllowedAuthorizationViewProcessor.setRequiredAllowableAction( AllowableAction.READ );
+		viewFactory.addProcessor( actionAllowedAuthorizationViewProcessor );
+
+		viewFactory.addProcessor( beanFactory.createBean( GlobalPageFeedbackViewProcessor.class ) );
+
+		PageableExtensionViewProcessor pageableExtensionViewProcessor = new PageableExtensionViewProcessor();
+		viewFactory.addProcessor( pageableExtensionViewProcessor );
+
+		ListFormViewProcessor listFormViewProcessor = beanFactory.createBean( ListFormViewProcessor.class );
+		listFormViewProcessor.setAddDefaultButtons( true );
+		viewFactory.addProcessor( listFormViewProcessor );
+
+		DefaultEntityFetchingViewProcessor pageFetcher = new DefaultEntityFetchingViewProcessor();
+		viewFactory.addProcessor( pageFetcher );
+
+		SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
+		pageStructureViewProcessor.setAddEntityMenu( true );
+		pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE );
+		viewFactory.addProcessor( pageStructureViewProcessor );
+
+		SortableTableRenderingViewProcessor tableRenderingViewProcessor = beanFactory.createBean( SortableTableRenderingViewProcessor.class );
+		tableRenderingViewProcessor.setIncludeDefaultActions( true );
+		viewFactory.addProcessor( tableRenderingViewProcessor );
+
+		association.registerView( "new-" + EntityView.LIST_VIEW_NAME, viewFactory );
 	}
 
 	public void buildCreateView( MutableEntityAssociation association ) {
 		EntityConfiguration to = association.getTargetEntityConfiguration();
 
-		EntityFormViewFactory viewFactory = beanFactory.getBean( EntityFormViewFactory.class );
-		BeanUtils.copyProperties( to.getViewFactory( EntityFormView.CREATE_VIEW_NAME ), viewFactory );
-		viewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".createView",
+		EntityFormViewFactory oldViewFactory = beanFactory.getBean( EntityFormViewFactory.class );
+		BeanUtils.copyProperties( to.getViewFactory( EntityView.CREATE_VIEW_NAME ), oldViewFactory );
+		oldViewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".createView",
 		                                "entityViews.createView",
 		                                "entityViews" );
 
-		association.registerView( EntityFormView.CREATE_VIEW_NAME, viewFactory );
+		association.registerView( EntityView.CREATE_VIEW_NAME, oldViewFactory );
+
+		DefaultEntityViewFactory viewFactory = beanFactory.createBean( DefaultEntityViewFactory.class );
+		viewFactory.addProcessor( new MessagePrefixingViewProcessor(  "entityViews.association." + association.getName() + ".createView",
+		                                                              "entityViews.createView",
+		                                                              "entityViews" ) );
+
+		ActionAllowedAuthorizationViewProcessor actionAllowedAuthorizationViewProcessor = new ActionAllowedAuthorizationViewProcessor();
+		actionAllowedAuthorizationViewProcessor.setRequiredAllowableAction( AllowableAction.CREATE );
+		viewFactory.addProcessor( actionAllowedAuthorizationViewProcessor );
+
+		viewFactory.addProcessor( beanFactory.createBean( GlobalPageFeedbackViewProcessor.class ) );
+
+		PropertyRenderingViewProcessor propertyRenderingViewProcessor = beanFactory.createBean( PropertyRenderingViewProcessor.class );
+		propertyRenderingViewProcessor.setViewElementMode( ViewElementMode.FORM_WRITE );
+		viewFactory.addProcessor( propertyRenderingViewProcessor );
+
+		SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
+		pageStructureViewProcessor.setAddEntityMenu( true );
+		pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE );
+		viewFactory.addProcessor( pageStructureViewProcessor );
+
+		SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
+		formViewProcessor.setAddDefaultButtons( true );
+		formViewProcessor.setAddGlobalBindingErrors( true );
+		viewFactory.addProcessor( formViewProcessor );
+
+		SaveEntityViewProcessor saveEntityViewProcessor = beanFactory.createBean( SaveEntityViewProcessor.class );
+		viewFactory.addProcessor( saveEntityViewProcessor );
+
+		association.registerView( "new-" + EntityView.CREATE_VIEW_NAME, viewFactory );
+	}
+
+	public void buildUpdateView( MutableEntityAssociation association ) {
+		EntityConfiguration to = association.getTargetEntityConfiguration();
+
+
+		DefaultEntityViewFactory viewFactory = beanFactory.createBean( DefaultEntityViewFactory.class );
+		viewFactory.addProcessor( new MessagePrefixingViewProcessor(  "entityViews.association." + association.getName() + ".updateView",
+		                                                              "entityViews.updateView",
+		                                                              "entityViews" ) );
+
+		ActionAllowedAuthorizationViewProcessor actionAllowedAuthorizationViewProcessor = new ActionAllowedAuthorizationViewProcessor();
+		actionAllowedAuthorizationViewProcessor.setRequiredAllowableAction( AllowableAction.UPDATE );
+		viewFactory.addProcessor( actionAllowedAuthorizationViewProcessor );
+
+		viewFactory.addProcessor( beanFactory.createBean( GlobalPageFeedbackViewProcessor.class ) );
+
+		PropertyRenderingViewProcessor propertyRenderingViewProcessor = beanFactory.createBean( PropertyRenderingViewProcessor.class );
+		propertyRenderingViewProcessor.setViewElementMode( ViewElementMode.FORM_WRITE );
+		viewFactory.addProcessor( propertyRenderingViewProcessor );
+
+		SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
+		pageStructureViewProcessor.setAddEntityMenu( true );
+		pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE );
+		viewFactory.addProcessor( pageStructureViewProcessor );
+
+		SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
+		formViewProcessor.setAddDefaultButtons( true );
+		formViewProcessor.setAddGlobalBindingErrors( true );
+		viewFactory.addProcessor( formViewProcessor );
+
+		SaveEntityViewProcessor saveEntityViewProcessor = beanFactory.createBean( SaveEntityViewProcessor.class );
+		viewFactory.addProcessor( saveEntityViewProcessor );
+
+		association.registerView( "new-" + EntityView.UPDATE_VIEW_NAME, viewFactory );
 	}
 
 	public void buildDeleteView( MutableEntityAssociation association ) {
 		EntityConfiguration to = association.getTargetEntityConfiguration();
 
-		EntityDeleteViewFactory viewFactory = beanFactory.getBean( EntityDeleteViewFactory.class );
-		BeanUtils.copyProperties( to.getViewFactory( EntityFormView.DELETE_VIEW_NAME ), viewFactory );
-		viewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".deleteView",
+		EntityDeleteViewFactory oldViewFactory = beanFactory.getBean( EntityDeleteViewFactory.class );
+		BeanUtils.copyProperties( to.getViewFactory( EntityView.DELETE_VIEW_NAME ), oldViewFactory );
+		oldViewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".deleteView",
 		                                "entityViews.deleteView",
 		                                "entityViews" );
 
-		association.registerView( EntityFormView.DELETE_VIEW_NAME, viewFactory );
+		association.registerView( EntityView.DELETE_VIEW_NAME, oldViewFactory );
+
+		DefaultEntityViewFactory viewFactory = beanFactory.createBean( DefaultEntityViewFactory.class );
+		viewFactory.addProcessor( new MessagePrefixingViewProcessor(  "entityViews.association." + association.getName() + ".deleteView",
+		                                                              "entityViews.deleteView",
+		                                                              "entityViews" ) );
+
+		ActionAllowedAuthorizationViewProcessor actionAllowedAuthorizationViewProcessor = new ActionAllowedAuthorizationViewProcessor();
+		actionAllowedAuthorizationViewProcessor.setRequiredAllowableAction( AllowableAction.DELETE );
+		viewFactory.addProcessor( actionAllowedAuthorizationViewProcessor );
+
+		viewFactory.addProcessor( beanFactory.createBean( GlobalPageFeedbackViewProcessor.class ) );
+
+		SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
+		pageStructureViewProcessor.setAddEntityMenu( false );
+		pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE );
+		viewFactory.addProcessor( pageStructureViewProcessor );
+
+		SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
+		formViewProcessor.setAddDefaultButtons( true );
+		formViewProcessor.setAddGlobalBindingErrors( true );
+		viewFactory.addProcessor( formViewProcessor );
+
+		DeleteEntityViewProcessor deleteEntityViewProcessor = beanFactory.createBean( DeleteEntityViewProcessor.class );
+		viewFactory.addProcessor( deleteEntityViewProcessor );
+
+		association.registerView( "new-" + EntityView.DELETE_VIEW_NAME, viewFactory );
 	}
 }

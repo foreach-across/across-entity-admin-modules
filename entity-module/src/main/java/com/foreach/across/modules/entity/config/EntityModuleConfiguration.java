@@ -30,7 +30,10 @@ import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
 import com.foreach.across.modules.entity.views.EntityFormViewFactory;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewViewFactory;
-import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.processors.OldEntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +49,7 @@ import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
-@ComponentScan(basePackageClasses = EntityRegistry.class)
+@ComponentScan(basePackageClasses = { EntityRegistry.class, EntityViewRequest.class, EntityViewContext.class, EntityViewPageHelper.class })
 public class EntityModuleConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityModuleConfiguration.class );
@@ -117,7 +120,7 @@ public class EntityModuleConfiguration
 
 	@Bean
 	@Exposed
-	public EntityQueryFilterProcessor entityQueryFilterProcessor() {
-		return new EntityQueryFilterProcessor();
+	public OldEntityQueryFilterProcessor entityQueryFilterProcessor() {
+		return new OldEntityQueryFilterProcessor();
 	}
 }

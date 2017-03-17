@@ -51,7 +51,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder listView( Consumer<EntityListViewFactoryBuilder> consumer ) {
-		return listView( EntityListView.VIEW_NAME, consumer );
+		return listView( EntityView.LIST_VIEW_NAME, consumer );
 	}
 
 	/**
@@ -90,7 +90,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder createFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		return formView( EntityFormView.CREATE_VIEW_NAME, consumer );
+		return formView( EntityView.CREATE_VIEW_NAME, consumer );
 	}
 
 	/**
@@ -101,7 +101,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder updateFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		return formView( EntityFormView.UPDATE_VIEW_NAME, consumer );
+		return formView( EntityView.UPDATE_VIEW_NAME, consumer );
 	}
 
 	/**
@@ -112,7 +112,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder deleteFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		deleteViewConsumers.computeIfAbsent( EntityFormView.DELETE_VIEW_NAME, k -> new ArrayDeque<>() ).add( consumer );
+		deleteViewConsumers.computeIfAbsent( EntityView.DELETE_VIEW_NAME, k -> new ArrayDeque<>() ).add( consumer );
 		return this;
 	}
 

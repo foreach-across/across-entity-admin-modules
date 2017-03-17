@@ -31,8 +31,9 @@ import java.io.Serializable;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 @AdminWebController
-@RequestMapping(EntityViewController.PATH)
+@RequestMapping("/old" + EntityViewController.PATH)
 public class EntityViewController extends EntityControllerSupport
 {
 	public static final String PATH = EntityListController.PATH + PATH_ENTITY_ID;

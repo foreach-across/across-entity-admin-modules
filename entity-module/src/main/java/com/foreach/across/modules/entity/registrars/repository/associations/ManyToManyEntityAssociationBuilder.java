@@ -123,7 +123,7 @@ public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuil
 		EntityConfiguration to = association.getTargetEntityConfiguration();
 
 		EntityListViewFactory viewFactory = beanFactory.getBean( EntityListViewFactory.class );
-		BeanUtils.copyProperties( to.getViewFactory( EntityListView.VIEW_NAME ), viewFactory );
+		BeanUtils.copyProperties( to.getViewFactory( EntityView.LIST_VIEW_NAME ), viewFactory );
 
 		viewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".listView",
 		                                "entityViews.listView",
@@ -131,31 +131,31 @@ public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuil
 
 		viewFactory.setPageFetcher( buildManyToManyListViewPageFetcher( association ) );
 
-		association.registerView( EntityListView.VIEW_NAME, viewFactory );
+		association.registerView( EntityView.LIST_VIEW_NAME, viewFactory );
 	}
 
 	public void buildCreateView( MutableEntityAssociation association ) {
 		EntityConfiguration to = association.getTargetEntityConfiguration();
 
 		EntityFormViewFactory viewFactory = beanFactory.getBean( EntityFormViewFactory.class );
-		BeanUtils.copyProperties( to.getViewFactory( EntityFormView.CREATE_VIEW_NAME ), viewFactory );
+		BeanUtils.copyProperties( to.getViewFactory( EntityView.CREATE_VIEW_NAME ), viewFactory );
 		viewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".createView",
 		                                "entityViews.createView",
 		                                "entityViews" );
 
-		association.registerView( EntityFormView.CREATE_VIEW_NAME, viewFactory );
+		association.registerView( EntityView.CREATE_VIEW_NAME, viewFactory );
 	}
 
 	public void buildDeleteView( MutableEntityAssociation association ) {
 		EntityConfiguration to = association.getTargetEntityConfiguration();
 
 		EntityDeleteViewFactory viewFactory = beanFactory.getBean( EntityDeleteViewFactory.class );
-		BeanUtils.copyProperties( to.getViewFactory( EntityFormView.DELETE_VIEW_NAME ), viewFactory );
+		BeanUtils.copyProperties( to.getViewFactory( EntityView.DELETE_VIEW_NAME ), viewFactory );
 		viewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".deleteView",
 		                                "entityViews.deleteView",
 		                                "entityViews" );
 
-		association.registerView( EntityFormView.DELETE_VIEW_NAME, viewFactory );
+		association.registerView( EntityView.DELETE_VIEW_NAME, viewFactory );
 	}
 
 	private EntityListViewPageFetcher buildManyToManyListViewPageFetcher( MutableEntityAssociation association ) {

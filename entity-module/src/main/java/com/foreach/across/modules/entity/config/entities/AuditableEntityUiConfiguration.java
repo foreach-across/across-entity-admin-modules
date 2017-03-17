@@ -20,8 +20,8 @@ import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
-import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityListViewFactory;
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.AuditablePrincipalPropertyViewElementBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.AuditablePropertyViewElementBuilder;
@@ -94,7 +94,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 
 		// Add default sort to list views if no default sort configured
 		builder.postProcessor( entityConfiguration -> {
-			EntityListViewFactory listViewFactory = entityConfiguration.getViewFactory( EntityListView.VIEW_NAME );
+			EntityListViewFactory listViewFactory = entityConfiguration.getViewFactory( EntityView.LIST_VIEW_NAME );
 
 			if ( listViewFactory != null && listViewFactory.getDefaultSort() == null ) {
 				listViewFactory.setDefaultSort( new Sort( Sort.Direction.DESC, "lastModifiedDate" ) );

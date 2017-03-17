@@ -20,7 +20,6 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
-import com.foreach.across.modules.entity.views.EntityFormView;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
@@ -40,10 +39,12 @@ import javax.validation.Valid;
 /**
  * Controller for creating a new entity instance.
  *
- * @author Arne Vandamme
+ * @author
+ * Arne Vandamme
  */
+@Deprecated
 @AdminWebController
-@RequestMapping(EntityCreateController.PATH)
+@RequestMapping("/old" + EntityCreateController.PATH)
 public class EntityCreateController extends EntityControllerSupport
 {
 	public static final String PATH = EntityListController.PATH + "/create";
@@ -53,7 +54,7 @@ public class EntityCreateController extends EntityControllerSupport
 
 	@Override
 	protected String getDefaultViewName() {
-		return EntityFormView.CREATE_VIEW_NAME;
+		return EntityView.CREATE_VIEW_NAME;
 	}
 
 	@Override
