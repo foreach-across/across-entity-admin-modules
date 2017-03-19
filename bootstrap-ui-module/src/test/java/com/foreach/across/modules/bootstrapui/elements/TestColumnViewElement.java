@@ -43,4 +43,28 @@ public class TestColumnViewElement extends AbstractBootstrapViewElementTest
 				"<div class='col-md-6 hidden-xs'></div>"
 		);
 	}
+
+	@Test
+	public void layoutsAndCustomCss() {
+		ColumnViewElement column = new ColumnViewElement();
+		column.addCssClass( "custom-css" );
+		column.addLayout( Grid.Device.MEDIUM.width( Grid.Width.HALF ) );
+		column.addCssClass( "other-css" );
+
+		renderAndExpect(
+				column,
+				"<div class='custom-css col-md-6 other-css'></div>"
+		);
+	}
+
+	@Test
+	public void setLayoutsReplacesExisting() {
+		ColumnViewElement column = new ColumnViewElement();
+		column.addLayout( Grid.Device.MEDIUM.width( Grid.Width.HALF ) );
+
+		renderAndExpect( column, "<div class='col-md-6'></div>" );
+
+		column.setLayouts( Grid.Device.XS.hidden() );
+		renderAndExpect( column, "<div class='hidden-xs'></div>" );
+	}
 }

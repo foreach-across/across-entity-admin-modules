@@ -43,9 +43,9 @@ public class ColumnViewElementBuilder extends AbstractNodeViewElementBuilder<Col
 
 	@Override
 	protected ColumnViewElement createElement( ViewElementBuilderContext builderContext ) {
-		ColumnViewElement column = new ColumnViewElement();
+		ColumnViewElement column =  apply( new ColumnViewElement(), builderContext );
 		column.setLayouts( position );
 
-		return apply( column, builderContext );
+		return column;
 	}
 }
