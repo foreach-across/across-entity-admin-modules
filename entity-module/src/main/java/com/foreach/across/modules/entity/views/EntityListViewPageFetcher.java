@@ -22,7 +22,7 @@ import org.springframework.data.domain.Pageable;
  * @author Arne Vandamme
  */
 @Deprecated
-public interface EntityListViewPageFetcher<V extends ViewCreationContext>
+public interface EntityListViewPageFetcher
 {
-	Page fetchPage( V viewCreationContext, Pageable pageable, EntityView model );
+	Page fetchPage( Pageable pageable, EntityView model );
 }

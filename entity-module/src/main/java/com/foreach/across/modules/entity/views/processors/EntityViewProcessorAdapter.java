@@ -16,13 +16,11 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
-import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceUtils;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -31,9 +29,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import org.springframework.http.HttpMethod;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
 
 import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_BUILDER;
@@ -63,25 +59,6 @@ import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.A
 public abstract class EntityViewProcessorAdapter implements EntityViewProcessor
 {
 	private static final String ATTRIBUTE_BUILDER_MAP = "entityViewBuilderMap";
-
-	@Override
-	public final void prepareModelAndCommand( String viewName, WebViewCreationContext creationContext, EntityViewCommand command, ModelMap model ) {
-
-	}
-
-	@Override
-	public final void prepareDataBinder( String viewName, WebViewCreationContext creationContext, EntityViewCommand command, DataBinder dataBinder ) {
-
-	}
-
-	@Override
-	public final void preProcess( WebViewCreationContext creationContext, EntityView view ) {
-
-	}
-
-	@Override
-	public final void postProcess( WebViewCreationContext creationContext, EntityView view ) {
-	}
 
 	@Override
 	public void prepareEntityViewContext( ConfigurableEntityViewContext entityViewContext ) {

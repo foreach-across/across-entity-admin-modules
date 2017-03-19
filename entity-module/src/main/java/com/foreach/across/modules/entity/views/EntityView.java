@@ -57,6 +57,7 @@ public class EntityView implements Model
 	public static final String UPDATE_VIEW_NAME = "updateView";
 	public static final String DELETE_VIEW_NAME = "deleteView";
 	public static final String LIST_VIEW_NAME = "listView";
+	public static final String GENERIC_VIEW_NAME = "genericView";
 	public static final String SUMMARY_VIEW_NAME = "listSummaryView";
 
 	// todo: most of these are deprecated and should be removed

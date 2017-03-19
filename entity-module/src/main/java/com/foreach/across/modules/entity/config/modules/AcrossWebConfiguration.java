@@ -16,21 +16,15 @@
 package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
-import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityModuleSettings;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
-import com.foreach.across.modules.entity.controllers.ViewRequestValidator;
-import com.foreach.across.modules.entity.views.ViewCreationContext;
-import com.foreach.across.modules.entity.web.WebViewCreationContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.MethodParameter;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Sort;
@@ -43,10 +37,7 @@ import org.springframework.data.web.config.SpringDataWebConfiguration;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.annotation.PostConstruct;
@@ -126,6 +117,7 @@ public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 //		}
 	}
 
+	@Deprecated
 	@Autowired(required = false)
 	public void registerFallbackSort( SortHandlerMethodArgumentResolver sortHandlerMethodArgumentResolver ) {
 		if ( sortHandlerMethodArgumentResolver != null ) {
@@ -138,6 +130,7 @@ public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 		}
 	}
 
+	@Deprecated
 	@Autowired(required = false)
 	public void registerFallbackPageable( PageableHandlerMethodArgumentResolver pageableHandlerMethodArgumentResolver ) {
 		if ( pageableHandlerMethodArgumentResolver != null ) {
@@ -147,29 +140,6 @@ public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 			LOG.warn( "No PageableHandlerMethodArgumentResolver found - paging in EntityModule might not work.  " +
 					          "EntityModule expects a null Pageable to be set as fallback." );
 		}
-	}
-
-	@Override
-	public void addArgumentResolvers( List<HandlerMethodArgumentResolver> argumentResolvers ) {
-		// todo: move to a decent class - ensure only one creation context per request (?)
-		argumentResolvers.add( new HandlerMethodArgumentResolver()
-		{
-			@Override
-			public boolean supportsParameter( MethodParameter parameter ) {
-				return ViewCreationContext.class.isAssignableFrom( parameter.getParameterType() );
-			}
-
-			@Override
-			public Object resolveArgument( MethodParameter parameter,
-			                               ModelAndViewContainer mavContainer,
-			                               NativeWebRequest webRequest,
-			                               WebDataBinderFactory binderFactory ) throws Exception {
-				WebViewCreationContextImpl ctx = new WebViewCreationContextImpl();
-				ctx.setRequest( webRequest );
-
-				return ctx;
-			}
-		} );
 	}
 
 	/**
@@ -182,12 +152,6 @@ public class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 		}
 
 		return null;
-	}
-
-	@Bean
-	@Exposed
-	protected ViewRequestValidator viewRequestValidator() {
-		return new ViewRequestValidator();
 	}
 
 	private boolean shouldRegisterThymeleafDialect() {

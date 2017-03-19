@@ -16,14 +16,10 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
-import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.entity.web.WebViewCreationContext;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
 
 /**
@@ -37,26 +33,6 @@ import org.springframework.web.bind.WebDataBinder;
  */
 public abstract class SimpleEntityViewProcessorAdapter implements EntityViewProcessor
 {
-	@Override
-	public final void prepareModelAndCommand( String viewName, WebViewCreationContext creationContext, EntityViewCommand command, ModelMap model ) {
-
-	}
-
-	@Override
-	public final void prepareDataBinder( String viewName, WebViewCreationContext creationContext, EntityViewCommand command, DataBinder dataBinder ) {
-
-	}
-
-	@Override
-	public final void preProcess( WebViewCreationContext creationContext, EntityView view ) {
-
-	}
-
-	@Override
-	public final void postProcess( WebViewCreationContext creationContext, EntityView view ) {
-
-	}
-
 	@Override
 	public void prepareEntityViewContext( ConfigurableEntityViewContext entityViewContext ) {
 

@@ -26,6 +26,8 @@ import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.processors.TemplateViewProcessor;
+import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
@@ -47,6 +49,8 @@ import testmodules.springdata.SpringDataJpaModule;
 import testmodules.springdata.business.Client;
 import testmodules.springdata.business.Company;
 import testmodules.springdata.repositories.ClientRepository;
+
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -122,24 +126,12 @@ public class TestCustomizingEntityConfiguration
 
 		EntityViewFactory viewFactory = configuration.getViewFactory( "some-extra-view" );
 		assertNotNull( viewFactory );
-		assertTrue( viewFactory instanceof SimpleEntityViewFactorySupport );
+		assertTrue( viewFactory instanceof DispatchingEntityViewFactory );
 
-		ConfigurablePropertiesEntityViewFactorySupport common =
-				(ConfigurablePropertiesEntityViewFactorySupport) viewFactory;
-		assertEquals( "th/someTemplate", common.getTemplate() );
-
-		EntityPropertyDescriptor calculated = common.getPropertyRegistry().getProperty( "calculated" );
-		assertNotNull( calculated );
-		assertEquals( "Calculated", calculated.getDisplayName() );
-		assertTrue( calculated.getValueFetcher() instanceof SpelValueFetcher );
-
-		EntityPropertyDescriptor groupMembership = common.getPropertyRegistry().getProperty( "group-membership" );
-		assertNotNull( groupMembership );
-		assertEquals( "Group membership", groupMembership.getDisplayName() );
-		assertTrue( groupMembership.getValueFetcher() instanceof SpelValueFetcher );
-
-		assertTrue( configuration.hasView( "some-other-view" ) );
-		assertNotNull( configuration.getViewFactory( "some-other-view" ) );
+		EntityViewProcessorRegistry processors = ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry();
+		Optional<TemplateViewProcessor> templateViewProcessor = processors.getProcessor( TemplateViewProcessor.class.getName(), TemplateViewProcessor.class );
+		assertTrue( templateViewProcessor.isPresent() );
+		templateViewProcessor.ifPresent( p -> assertEquals( new TemplateViewProcessor( "th/someTemplate" ), p ) );
 	}
 
 	@Test
@@ -217,10 +209,6 @@ public class TestCustomizingEntityConfiguration
 									                .property( "group-membership" ).displayName( "Group membership" )
 									                .spelValueFetcher( "groups.size()" )
 					                )
-			        )
-			        .view(
-					        "some-other-view",
-					        vb -> vb.factory( mock( ConfigurablePropertiesEntityViewFactorySupport.class ) )
 			        );
 		}
 	}

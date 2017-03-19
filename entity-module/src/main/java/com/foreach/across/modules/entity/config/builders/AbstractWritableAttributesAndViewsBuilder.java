@@ -190,7 +190,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 		registerViews( EntityListViewFactoryBuilder.class, EntityView.LIST_VIEW_NAME, listViewConsumers, viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityView.UPDATE_VIEW_NAME, formViewConsumers, viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityView.DELETE_VIEW_NAME, deleteViewConsumers, viewRegistry );
-		registerViews( EntityViewFactoryBuilder.class, "view", customViewConsumers, viewRegistry );
+		registerViews( EntityViewFactoryBuilder.class, EntityView.GENERIC_VIEW_NAME, customViewConsumers, viewRegistry );
 	}
 
 	@SuppressWarnings("unchecked")

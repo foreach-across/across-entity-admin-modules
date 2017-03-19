@@ -32,7 +32,7 @@ import com.foreach.across.modules.entity.views.processors.support.EntityViewProc
  * @see com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry
  * @since 2.0.0
  */
-public interface DispatchingEntityViewFactory<T extends ViewCreationContext> extends EntityViewFactory<T>
+public interface DispatchingEntityViewFactory extends EntityViewFactory
 {
 	/**
 	 * @return the configurable registry of view processors

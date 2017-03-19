@@ -17,7 +17,6 @@ package com.foreach.across.modules.entity.views.fetchers;
 
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.ViewCreationContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.data.domain.Page;
@@ -35,7 +34,7 @@ import java.util.List;
  * @author Arne Vandamme
  */
 @Deprecated
-public class AssociationPropertyListViewPageFetcher implements EntityListViewPageFetcher<ViewCreationContext>
+public class AssociationPropertyListViewPageFetcher implements EntityListViewPageFetcher
 {
 	private final String propertyName;
 
@@ -45,7 +44,7 @@ public class AssociationPropertyListViewPageFetcher implements EntityListViewPag
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Page fetchPage( ViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
+	public Page fetchPage( Pageable pageable, EntityView model ) {
 		BeanWrapper beanWrapper = new BeanWrapperImpl( model.getParentEntity() );
 		Object itemsValue = beanWrapper.getPropertyValue( propertyName );
 

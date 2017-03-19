@@ -17,12 +17,8 @@ package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.ViewCreationContext;
-import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
-import com.foreach.across.modules.entity.web.WebViewCreationContext;
-import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -53,32 +49,5 @@ public class EntitySummaryViewActionProcessor implements ViewElementPostProcesso
 				                      .queryParam( "_partial", "content" )
 				                      .toUriString()
 		);
-	}
-
-	/**
-	 * Automatically registers the post processor to a {@link SortableTableBuilder} if the view with the given
-	 * name is present in the configuration being rendered.
-	 *
-	 * @param viewCreationContext global context of the view being created
-	 * @param tableBuilder        where the summary view should be added to the value rows
-	 * @param viewName            name of the expanding view
-	 */
-	@Deprecated
-	public static void autoRegister( ViewCreationContext viewCreationContext,
-	                                 SortableTableBuilder tableBuilder,
-	                                 String viewName ) {
-		boolean hasSummaryView = viewCreationContext.isForAssociation()
-				? viewCreationContext.getEntityAssociation().hasView( viewName )
-				: viewCreationContext.getEntityConfiguration().hasView( viewName );
-
-		if ( hasSummaryView ) {
-			tableBuilder.valueRowProcessor( new EntitySummaryViewActionProcessor( viewName ) );
-
-			if ( viewCreationContext instanceof WebViewCreationContext ) {
-				( (WebViewCreationContext) viewCreationContext )
-						.getWebResourceRegistry()
-						.add( WebResource.JAVASCRIPT_PAGE_END, "/js/entity/expandable.js", WebResource.VIEWS );
-			}
-		}
 	}
 }

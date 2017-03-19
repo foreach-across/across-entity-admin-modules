@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityModel;
-import com.foreach.across.modules.entity.views.ViewElementBuilderContext;
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EntityQueryOptionIterableBuilder;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
@@ -95,7 +95,7 @@ public class TestEntityQueryOptionIterableBuilder
 
 	@Test
 	public void noValueFetcherMeansNoOptionSelected() {
-		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( TWO );
 
 		iterableBuilder.setValueFetcher( null );
@@ -112,7 +112,7 @@ public class TestEntityQueryOptionIterableBuilder
 
 	@Test
 	public void entityWithoutOptionSelected() {
-		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, "entity" );
 
 		build( true );
 		assertNotSelected( ONE, TWO, THREE );
@@ -120,7 +120,7 @@ public class TestEntityQueryOptionIterableBuilder
 
 	@Test
 	public void singleOptionSelected() {
-		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( TWO );
 
 		build( true );
@@ -131,7 +131,7 @@ public class TestEntityQueryOptionIterableBuilder
 
 	@Test
 	public void multipleOptionsSelectedAsCollection() {
-		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( Arrays.asList( ONE, THREE ) );
 
 		build( true );
@@ -139,7 +139,7 @@ public class TestEntityQueryOptionIterableBuilder
 		assertSelected( ONE, THREE );
 		assertNotSelected( TWO );
 
-		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) )
 				.thenReturn( new HashSet<>( Arrays.asList( TWO, THREE ) ) );
 
@@ -151,7 +151,7 @@ public class TestEntityQueryOptionIterableBuilder
 
 	@Test
 	public void multipleOptionsSelectedAsArray() {
-		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( new Entity[] { ONE, THREE } );
 
 		build( true );
@@ -162,7 +162,7 @@ public class TestEntityQueryOptionIterableBuilder
 
 	@Test
 	public void differentValueReturnedFromFetcher() {
-		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, "entity" );
+		elementBuilderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( 123L );
 
 		build( true );
@@ -182,7 +182,7 @@ public class TestEntityQueryOptionIterableBuilder
 
 	@Test
 	public void selfOptionNotIncluded() {
-		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, TWO );
+		elementBuilderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, TWO );
 		when( valueFetcher.getValue( TWO ) ).thenReturn( new Entity[] { ONE } );
 
 		build( false );
@@ -196,7 +196,7 @@ public class TestEntityQueryOptionIterableBuilder
 
 	@Test
 	public void selfOptionIncluded() {
-		elementBuilderContext.setAttribute( ViewElementBuilderContext.ENTITY, TWO );
+		elementBuilderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, TWO );
 		when( valueFetcher.getValue( TWO ) ).thenReturn( new Entity[] { ONE } );
 
 		iterableBuilder.setSelfOptionIncluded( true );

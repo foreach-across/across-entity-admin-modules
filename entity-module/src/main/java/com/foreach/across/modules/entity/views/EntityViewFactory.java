@@ -15,11 +15,8 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
 
 /**
@@ -27,20 +24,8 @@ import org.springframework.web.bind.WebDataBinder;
  *
  * @author Arne Vandamme
  */
-public interface EntityViewFactory<T extends ViewCreationContext>
+public interface EntityViewFactory
 {
-	@Deprecated
-	void prepareModelAndCommand( String viewName,
-	                             T creationContext,
-	                             EntityViewCommand command,
-	                             ModelMap model );
-
-	@Deprecated
-	void prepareDataBinder( String viewName, T creationContext, EntityViewCommand viewRequest, DataBinder dataBinder );
-
-	@Deprecated
-	EntityView create( String viewName, T creationContext, ModelMap model );
-
 	/**
 	 * Apply possible factory modifications to the {@link ConfigurableEntityViewContext}.
 	 * Call this method before creating an {@link com.foreach.across.modules.entity.views.request.EntityViewRequest}

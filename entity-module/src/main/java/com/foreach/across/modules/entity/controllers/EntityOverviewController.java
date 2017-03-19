@@ -26,9 +26,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 @AdminWebController
 @RequestMapping(EntityOverviewController.PATH)
-public class EntityOverviewController extends AbstractEntityModuleController
+public class EntityOverviewController
 {
 	public static final String PATH = EntityControllerAttributes.ROOT_PATH;
 

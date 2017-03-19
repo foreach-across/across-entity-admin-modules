@@ -47,7 +47,7 @@ import java.util.Optional;
  * @see TransactionalEntityViewProcessorRegistry
  * @since 2.0.0
  */
-public class DefaultEntityViewFactory extends ToBeRemovedEntityViewFactory implements DispatchingEntityViewFactory<ViewCreationContext>
+public class DefaultEntityViewFactory implements DispatchingEntityViewFactory
 {
 	public static final String ATTRIBUTE_CONTAINER_BUILDER = "entityViewContainerBuilder";
 	public static final String ATTRIBUTE_CONTAINER_ELEMENT = "entityViewContainer";
@@ -158,7 +158,7 @@ public class DefaultEntityViewFactory extends ToBeRemovedEntityViewFactory imple
 	protected com.foreach.across.modules.web.ui.ViewElementBuilderContext createViewElementBuilderContext( EntityViewRequest entityViewRequest ) {
 		com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( entityViewRequest.getModel() );
 		if ( entityViewRequest.getEntityViewContext().holdsEntity() ) {
-			builderContext.setAttribute( ViewElementBuilderContext.ENTITY, entityViewRequest.getEntityViewContext().getEntity( Object.class ) );
+			builderContext.setAttribute( EntityView.ATTRIBUTE_ENTITY, entityViewRequest.getEntityViewContext().getEntity( Object.class ) );
 		}
 		builderContext.setAttribute( EntityMessageCodeResolver.class, entityViewRequest.getEntityViewContext().getMessageCodeResolver() );
 		builderContext.setAttribute( EntityViewRequest.class, entityViewRequest );

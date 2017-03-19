@@ -21,8 +21,6 @@ import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
-import com.foreach.across.modules.entity.controllers.association.*;
-import com.foreach.across.modules.entity.controllers.entity.*;
 import com.foreach.across.modules.entity.handlers.MenuEventsHandler;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
@@ -61,56 +59,6 @@ public class AdminWebConfiguration implements EntityConfigurer
 	@Bean
 	public GenericEntityViewController genericEntityViewController() {
 		return new GenericEntityViewController();
-	}
-
-	@Bean
-	public EntityListController entityController() {
-		return new EntityListController();
-	}
-
-	@Bean
-	public EntityCreateController entityCreateController() {
-		return new EntityCreateController();
-	}
-
-	@Bean
-	public EntityUpdateController entitySaveController() {
-		return new EntityUpdateController();
-	}
-
-	@Bean
-	public EntityDeleteController entityDeleteController() {
-		return new EntityDeleteController();
-	}
-
-	@Bean
-	public EntityViewController entityViewController() {
-		return new EntityViewController();
-	}
-
-	@Bean
-	public AssociatedEntityViewController associatedEntityViewController() {
-		return new AssociatedEntityViewController();
-	}
-
-	@Bean
-	public AssociatedEntityListController associatedEntityController() {
-		return new AssociatedEntityListController();
-	}
-
-	@Bean
-	public AssociatedEntityCreateController associatedEntityCreateController() {
-		return new AssociatedEntityCreateController();
-	}
-
-	@Bean
-	public AssociatedEntityUpdateController associatedEntityUpdateController() {
-		return new AssociatedEntityUpdateController();
-	}
-
-	@Bean
-	public AssociatedEntityDeleteController associatedEntityDeleteController() {
-		return new AssociatedEntityDeleteController();
 	}
 
 	@Override

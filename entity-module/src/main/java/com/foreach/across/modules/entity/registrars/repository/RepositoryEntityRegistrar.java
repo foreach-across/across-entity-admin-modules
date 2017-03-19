@@ -70,9 +70,6 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	@Autowired
 	private RepositoryEntityPropertyRegistryBuilder propertyRegistryBuilder;
 
-	//@Autowired
-	//private RepositoryEntityViewsBuilder viewsBuilder;
-
 	@Autowired
 	private RepositoryEntityAssociationsBuilder associationsBuilder;
 
@@ -143,7 +140,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 			associationsBuilder.buildAssociations( entityRegistry, entityConfiguration );
 		}
 
-		LOG.info( "Registered {} entities from module {}", registered.size(), moduleInfo.getName() );
+		LOG.debug( "Registered {} entities from module {}", registered.size(), moduleInfo.getName() );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -151,9 +148,9 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 			AcrossModuleInfo moduleInfo,
 			MutableEntityRegistry entityRegistry,
 			Class<?> entityType,
-		RepositoryFactoryInformation repositoryFactoryInformation,
-		Repository repository ) {
-			String entityTypeName = determineUniqueEntityTypeName( entityRegistry, entityType );
+			RepositoryFactoryInformation repositoryFactoryInformation,
+			Repository repository ) {
+		String entityTypeName = determineUniqueEntityTypeName( entityRegistry, entityType );
 
 		if ( entityTypeName != null ) {
 			EntityConfigurationImpl entityConfiguration = new EntityConfigurationImpl<>( entityTypeName, entityType );
@@ -175,8 +172,6 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 			entityModelBuilder.buildEntityModel( entityConfiguration );
 
 			registerEntityQueryExecutor( entityConfiguration );
-
-			//viewsBuilder.buildViews( entityConfiguration );
 
 			entityRegistry.register( entityConfiguration );
 

@@ -18,11 +18,6 @@ package com.foreach.across.modules.entity.config.entities;
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter;
-import com.foreach.across.modules.hibernate.repositories.Undeletable;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
 
 /**
  * Configures some basic settings for {@link com.foreach.across.modules.hibernate.repositories.Undeletable} entities.
@@ -35,24 +30,24 @@ public class UndeletableEntityUiConfiguration implements EntityConfigurer
 {
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
-		entities.assignableTo( Undeletable.class )
-		        .updateFormView(
-				        fvb -> fvb.viewProcessor( new WebViewProcessorAdapter()
-				        {
-					        @Override
-					        protected void extendViewModel( EntityView view ) {
-						        Undeletable undeletable = view.getEntity();
-
-						        if ( undeletable.isDeleted() ) {
-							        NodeViewElement message = new NodeViewElement( "div" );
-							        message.addCssClass( "alert", "alert-danger" );
-							        message.addChild( new TextViewElement( "You are watching a deleted entity." ) );
-
-							        view.getViewElements().addFirstChild( message );
-						        }
-						        //view.getViewElements().addFirst(  );
-					        }
-				        } )
-		        );
+//		entities.assignableTo( Undeletable.class )
+//		        .updateFormView(
+//				        fvb -> fvb.viewProcessor( new WebViewProcessorAdapter()
+//				        {
+//					        @Override
+//					        protected void extendViewModel( EntityView view ) {
+//						        Undeletable undeletable = view.getEntity();
+//
+//						        if ( undeletable.isDeleted() ) {
+//							        NodeViewElement message = new NodeViewElement( "div" );
+//							        message.addCssClass( "alert", "alert-danger" );
+//							        message.addChild( new TextViewElement( "You are watching a deleted entity." ) );
+//
+//							        view.getViewElements().addFirstChild( message );
+//						        }
+//						        //view.getViewElements().addFirst(  );
+//					        }
+//				        } )
+//		        );
 	}
 }

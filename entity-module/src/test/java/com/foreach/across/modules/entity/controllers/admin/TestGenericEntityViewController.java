@@ -26,7 +26,11 @@ import com.foreach.across.modules.entity.views.context.EntityViewContextLoader;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewCommandValidator;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.web.EntityModuleWebResources;
+import com.foreach.across.modules.web.context.AcrossWebArgumentResolver;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.resource.WebResourceUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +44,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
@@ -87,6 +95,9 @@ public class TestGenericEntityViewController
 	@Mock
 	private WebAppPathResolver webAppPathResolver;
 
+	@Mock
+	private WebResourceRegistry webResourceRegistry;
+
 	@InjectMocks
 	private GenericEntityViewController controller;
 
@@ -94,7 +105,17 @@ public class TestGenericEntityViewController
 
 	@Before
 	public void setUp() throws Exception {
-		mockMvc = MockMvcBuilders.standaloneSetup( controller ).build();
+		mockMvc = MockMvcBuilders.standaloneSetup( controller )
+		                         .setCustomArgumentResolvers( new AcrossWebArgumentResolver() )
+		                         .addInterceptors( new HandlerInterceptorAdapter()
+		                         {
+			                         @Override
+			                         public boolean preHandle( HttpServletRequest request, HttpServletResponse response, Object handler ) throws Exception {
+				                         WebResourceUtils.storeRegistry( webResourceRegistry, request );
+				                         return true;
+			                         }
+		                         } )
+		                         .build();
 
 		when( entityModel.findOne( "123" ) ).thenReturn( "some entity" );
 		when( viewContext.getEntityModel() ).thenReturn( entityModel );
@@ -110,6 +131,14 @@ public class TestGenericEntityViewController
 		when( entityView.getTemplate() ).thenReturn( "view-template" );
 
 		when( validator.supports( any() ) ).thenReturn( true );
+	}
+
+	@Test
+	public void webResourcePackageShouldBeAdded() throws Exception {
+		mockMvc.perform( get( "/entities/type?view=someListView" ) )
+		       .andExpect( status().isOk() );
+
+		verify( webResourceRegistry ).addPackage( EntityModuleWebResources.NAME );
 	}
 
 	@Test

@@ -26,14 +26,9 @@ import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
 import com.foreach.across.modules.entity.query.support.EQStringToDateConverter;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
-import com.foreach.across.modules.entity.views.EntityFormViewFactory;
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewViewFactory;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
-import com.foreach.across.modules.entity.views.processors.OldEntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import org.slf4j.Logger;
@@ -44,7 +39,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.SmartValidator;
@@ -90,39 +84,5 @@ public class EntityModuleConfiguration
 	@Bean
 	public MessageSource messageSource() {
 		return new AcrossModuleMessageSource();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public EntityViewViewFactory entityViewViewFactory() {
-		return new EntityViewViewFactory();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public EntityListViewFactory entityListViewFactory() {
-		return new EntityListViewFactory();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public EntityFormViewFactory entityFormViewFactory() {
-		return new EntityFormViewFactory();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public EntityDeleteViewFactory entityDeleteViewFactory() {
-		return new EntityDeleteViewFactory();
-	}
-
-	@Bean
-	@Exposed
-	public OldEntityQueryFilterProcessor entityQueryFilterProcessor() {
-		return new OldEntityQueryFilterProcessor();
 	}
 }

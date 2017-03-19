@@ -20,13 +20,18 @@ import com.foreach.across.modules.entity.registry.EntityConfigurationProvider;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
+import com.foreach.across.modules.entity.views.processors.TemplateViewProcessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.io.Serializable;
@@ -34,12 +39,14 @@ import java.util.Collections;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  */
-@RunWith(MockitoJUnitRunner.class)
+@PrepareForTest(EntityViewFactoryBuilderInitializer.class)
+@RunWith(PowerMockRunner.class)
 @SuppressWarnings("unchecked")
 public class TestEntityConfigurationBuilder
 {
@@ -262,46 +269,36 @@ public class TestEntityConfigurationBuilder
 
 		when( config.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
 
-		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
-		when( config.getViewFactory( EntityView.LIST_VIEW_NAME ) ).thenReturn( listViewFactory );
+		DefaultEntityViewFactory viewFactory = new DefaultEntityViewFactory();
+		when( config.getViewFactory( EntityView.LIST_VIEW_NAME ) ).thenReturn( viewFactory );
 
 		builder.apply( config, false );
-		verify( listViewFactory ).setTemplate( "hello" );
+		assertTrue( viewFactory.getProcessorRegistry().contains( TemplateViewProcessor.class.getName() ) );
 	}
 
 	@Test
 	public void newViewsOfRightType() {
+		EntityViewFactoryBuilderInitializer builderInitializer = PowerMockito.mock( EntityViewFactoryBuilderInitializer.class );
+		when( beanFactory.getBean( EntityViewFactoryBuilderInitializer.class ) ).thenReturn( builderInitializer );
+
 		builder.view( "customView", vb -> vb.template( "custom-template" ) )
 		       .formView( "formView", fvb -> fvb.template( "form-template" ) )
 		       .listView( "listView", lvb -> lvb.template( "list-template" ) )
 		       .deleteFormView( dvb -> dvb.template( "delete-template" ) );
 
-		EntityViewFactoryProvider viewFactoryProvider = mock( EntityViewFactoryProvider.class );
-		when( beanFactory.getBean( EntityViewFactoryProvider.class ) ).thenReturn( viewFactoryProvider );
-
-		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
-		when( viewFactoryProvider.create( config, EntityListViewFactory.class ) ).thenReturn( listViewFactory );
-
-		EntityFormViewFactory formViewFactory = mock( EntityFormViewFactory.class );
-		when( viewFactoryProvider.create( config, EntityFormViewFactory.class ) ).thenReturn( formViewFactory );
-
-		EntityViewViewFactory customViewFactory = mock( EntityViewViewFactory.class );
-		when( viewFactoryProvider.create( config, EntityViewViewFactory.class ) ).thenReturn( customViewFactory );
-
-		EntityDeleteViewFactory deleteViewFactory = mock( EntityDeleteViewFactory.class );
-		when( viewFactoryProvider.create( config, EntityDeleteViewFactory.class ) ).thenReturn( deleteViewFactory );
+		when( beanFactory.createBean( EntityListViewFactoryBuilder.class ) ).thenReturn( mock( EntityListViewFactoryBuilder.class ) );
+		when( beanFactory.createBean( EntityViewFactoryBuilder.class ) ).thenReturn( mock( EntityViewFactoryBuilder.class ) );
 
 		builder.apply( config, false );
 
-		InOrder inOrder = inOrder( config, listViewFactory, formViewFactory, deleteViewFactory, customViewFactory );
-		inOrder.verify( listViewFactory ).setTemplate( "list-template" );
-		inOrder.verify( config ).registerView( "listView", listViewFactory );
-		inOrder.verify( formViewFactory ).setTemplate( "form-template" );
-		inOrder.verify( config ).registerView( "formView", formViewFactory );
-		inOrder.verify( deleteViewFactory ).setTemplate( "delete-template" );
-		inOrder.verify( config ).registerView( EntityView.DELETE_VIEW_NAME, deleteViewFactory );
-		inOrder.verify( customViewFactory ).setTemplate( "custom-template" );
-		inOrder.verify( config ).registerView( "customView", customViewFactory );
+		verify( builderInitializer ).initialize( eq( "customView" ), eq( EntityView.GENERIC_VIEW_NAME ), eq( config ),
+		                                         isA( EntityViewFactoryBuilder.class ) );
+		verify( builderInitializer ).initialize( eq( "formView" ), eq( EntityView.UPDATE_VIEW_NAME ), eq( config ),
+		                                         isA( EntityViewFactoryBuilder.class ) );
+		verify( builderInitializer ).initialize( eq( "listView" ), eq( EntityView.LIST_VIEW_NAME ), eq( config ),
+		                                         isA( EntityListViewFactoryBuilder.class ) );
+		verify( builderInitializer ).initialize( eq( EntityView.DELETE_VIEW_NAME ), eq( EntityView.DELETE_VIEW_NAME ), eq( config ),
+		                                         isA( EntityViewFactoryBuilder.class ) );
 	}
 
 	@Test

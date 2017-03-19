@@ -79,7 +79,7 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 
 	@Override
 	protected void prepareViewElementBuilderContext( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderContext builderContext ) {
-		builderContext.setAttribute( com.foreach.across.modules.entity.views.ViewElementBuilderContext.ENTITY, entityViewRequest.getCommand().getEntity() );
+		builderContext.setAttribute( com.foreach.across.modules.entity.views.EntityView.ATTRIBUTE_ENTITY, entityViewRequest.getCommand().getEntity() );
 	}
 
 	@SuppressWarnings("unchecked")

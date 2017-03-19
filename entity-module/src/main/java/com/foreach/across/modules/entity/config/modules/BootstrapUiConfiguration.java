@@ -17,11 +17,13 @@ package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderServiceImpl;
 import com.foreach.across.modules.entity.views.bootstrapui.*;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -44,11 +46,6 @@ public class BootstrapUiConfiguration
 	@Bean
 	public EntityViewElementBuilderHelper entityViewElementBuilderHelper( BeanFactory beanFactory ) {
 		return new EntityViewElementBuilderHelper( beanFactory );
-	}
-
-	@Bean
-	public EntityViewFactoryProvider entityViewFactoryProvider( AutowireCapableBeanFactory beanFactory ) {
-		return new DefaultEntityViewFactoryProvider( beanFactory );
 	}
 
 	@Bean

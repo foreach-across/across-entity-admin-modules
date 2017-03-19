@@ -15,12 +15,8 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.entity.web.WebViewCreationContext;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
 
 /**
@@ -33,21 +29,6 @@ import org.springframework.web.bind.WebDataBinder;
  */
 public interface EntityViewProcessor
 {
-	@Deprecated
-	void prepareModelAndCommand( String viewName,
-	                             WebViewCreationContext creationContext,
-	                             EntityViewCommand command,
-	                             ModelMap model );
-
-	@Deprecated
-	void prepareDataBinder( String viewName, WebViewCreationContext creationContext, EntityViewCommand command, DataBinder dataBinder );
-
-	@Deprecated
-	void preProcess( WebViewCreationContext creationContext, EntityView view );
-
-	@Deprecated
-	void postProcess( WebViewCreationContext creationContext, EntityView view );
-
 	/**
 	 * Apply possible factory modifications to the {@link ConfigurableEntityViewContext}.
 	 * Call this method before creating an {@link com.foreach.across.modules.entity.views.request.EntityViewRequest}

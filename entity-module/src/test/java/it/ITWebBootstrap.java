@@ -19,6 +19,7 @@ package it;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestConfiguration;
@@ -48,7 +49,7 @@ public class ITWebBootstrap
 
 	@Test
 	public void bootstrappedOk() {
-		assertNotNull( beanRegistry.getBeanFromModule( EntityModule.NAME, "entityCreateController" ) );
+		assertNotNull( beanRegistry.getBeanOfType( EntityRegistry.class ) );
 	}
 
 	@Configuration

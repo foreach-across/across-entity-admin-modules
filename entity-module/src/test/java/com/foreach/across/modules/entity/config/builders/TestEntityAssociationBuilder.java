@@ -20,14 +20,16 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
+import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.EntityViewFactoryProvider;
+import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Collections;
@@ -38,7 +40,8 @@ import static org.mockito.Mockito.*;
 /**
  * @author Arne Vandamme
  */
-@RunWith(MockitoJUnitRunner.class)
+@PrepareForTest(EntityViewFactoryBuilderInitializer.class)
+@RunWith(PowerMockRunner.class)
 @SuppressWarnings("unchecked")
 public class TestEntityAssociationBuilder
 {
@@ -52,18 +55,20 @@ public class TestEntityAssociationBuilder
 	private MutableEntityConfiguration configuration;
 
 	private EntityAssociationBuilder builder;
+	private EntityViewFactoryBuilderInitializer builderInitializer;
 
 	@Before
 	public void reset() {
+		builderInitializer = PowerMockito.mock( EntityViewFactoryBuilderInitializer.class );
+
 		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistry );
 		builder = new EntityAssociationBuilder( beanFactory );
+
+		when( beanFactory.getBean( EntityViewFactoryBuilderInitializer.class ) ).thenReturn( builderInitializer );
 	}
 
 	@Test
 	public void newAssociation() {
-		EntityViewFactoryProvider viewFactoryProvider = mock( EntityViewFactoryProvider.class );
-		when( beanFactory.getBean( EntityViewFactoryProvider.class ) ).thenReturn( viewFactoryProvider );
-
 		MutableEntityAssociation association = mock( MutableEntityAssociation.class );
 		when( configuration.createAssociation( "users" ) ).thenReturn( association );
 		when( association.getSourceEntityConfiguration() ).thenReturn( configuration );
@@ -82,8 +87,8 @@ public class TestEntityAssociationBuilder
 		when( targetRegistry.getProperty( "id" ) ).thenReturn( targetProperty );
 
 		when( association.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( false );
-		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
-		when( viewFactoryProvider.create( target, EntityListViewFactory.class ) ).thenReturn( listViewFactory );
+		DefaultEntityViewFactory listViewFactory = new DefaultEntityViewFactory();
+		when( beanFactory.createBean( DefaultEntityViewFactory.class ) ).thenReturn( listViewFactory );
 
 		builder.name( "users" )
 		       .hidden( false )
@@ -127,9 +132,8 @@ public class TestEntityAssociationBuilder
 		when( targetRegistry.getProperty( "id" ) ).thenReturn( targetProperty );
 
 		when( association.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
-		EntityListViewFactory listViewFactory = mock( EntityListViewFactory.class );
-		when( association.getViewFactory( EntityView.LIST_VIEW_NAME ) ).thenReturn( listViewFactory );
-
+		DefaultEntityViewFactory listViewFactory = mock( DefaultEntityViewFactory.class );
+		when( beanFactory.createBean( DefaultEntityViewFactory.class ) ).thenReturn( listViewFactory );
 		builder.name( "users" )
 		       .hidden( false )
 		       .associationType( EMBEDDED )
@@ -149,6 +153,5 @@ public class TestEntityAssociationBuilder
 		verify( association ).setHidden( false );
 		verify( association ).setAttributes( Collections.singletonMap( "someAttribute", "someAttributeValue" ) );
 		verify( association ).setParentDeleteMode( EntityAssociation.ParentDeleteMode.WARN );
-		verify( listViewFactory ).setTemplate( "hello" );
 	}
 }
