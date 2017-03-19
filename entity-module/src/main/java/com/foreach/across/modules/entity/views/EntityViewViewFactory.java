@@ -23,7 +23,7 @@ import org.springframework.ui.ModelMap;
  * @author Arne Vandamme
  */
 @Deprecated
-public class EntityViewViewFactory extends SingleEntityViewFactory<ViewCreationContext, EntityView>
+public class EntityViewViewFactory extends SingleEntityViewFactory
 {
 	@Override
 	public ViewElementMode getViewElementMode() {

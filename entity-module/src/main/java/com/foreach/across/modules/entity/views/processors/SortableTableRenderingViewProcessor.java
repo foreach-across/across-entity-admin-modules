@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertySelec
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityListActionsProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntitySummaryViewActionProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
@@ -39,6 +40,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Renders a list of items as a sortable table using a {@link com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder}.
@@ -96,6 +98,12 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 	@Setter
 	private EntityPropertySelector propertySelector = EntityPropertySelector.of( EntityPropertySelector.ALL );
 
+	/**
+	 * ViewElement mode for the value rows.
+	 */
+	@Setter
+	private ViewElementMode viewElementMode = ViewElementMode.LIST_VALUE;
+
 	@Override
 	protected void createViewElementBuilders( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap ) {
 		Iterable<?> items = entityView.getAttribute( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME, Iterable.class );
@@ -107,6 +115,8 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 			tableBuilder.tableName( tableName );
 			tableBuilder.formName( formName );
 			tableBuilder.showResultNumber( showResultNumber );
+			tableBuilder.setValueViewElementMode( viewElementMode );
+
 			if ( sortableProperties != null ) {
 				tableBuilder.sortableOn( sortableProperties );
 			}
@@ -165,6 +175,31 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 			tableBuilder.headerRowProcessor( actionsProcessor );
 			tableBuilder.valueRowProcessor( actionsProcessor );
 		}
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( o == null || getClass() != o.getClass() ) {
+			return false;
+		}
+		SortableTableRenderingViewProcessor that = (SortableTableRenderingViewProcessor) o;
+		return showResultNumber == that.showResultNumber &&
+				includeDefaultActions == that.includeDefaultActions &&
+				Objects.equals( summaryViewName, that.summaryViewName ) &&
+				Objects.equals( tableName, that.tableName ) &&
+				Objects.equals( formName, that.formName ) &&
+				Objects.equals( sortableProperties, that.sortableProperties ) &&
+				Objects.equals( propertySelector, that.propertySelector ) &&
+				Objects.equals( viewElementMode, that.viewElementMode );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( showResultNumber, includeDefaultActions, summaryViewName, tableName, formName, sortableProperties, propertySelector,
+		                     viewElementMode );
 	}
 
 	@Autowired

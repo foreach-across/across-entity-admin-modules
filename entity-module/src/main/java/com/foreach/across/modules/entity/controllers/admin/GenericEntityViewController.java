@@ -220,17 +220,16 @@ public class GenericEntityViewController implements EntityControllerAttributes
 				.orElseGet( () -> {
 					if ( entityViewContext.holdsEntity() ) {
 						if ( "delete".equals( action ) ) {
-							return "new-" + EntityView.DELETE_VIEW_NAME;
+							return EntityView.DELETE_VIEW_NAME;
 						}
 						else if ( "update".equals( action ) ) {
-							return "new-" + EntityView.UPDATE_VIEW_NAME;
+							return EntityView.UPDATE_VIEW_NAME;
 						}
 
-						return "new-view";
+						return "view";
 					}
 
-					return "create".equals( entityId )
-							? "new-" + EntityView.CREATE_VIEW_NAME : "new-" + EntityView.LIST_VIEW_NAME;
+					return "create".equals( entityId ) ? EntityView.CREATE_VIEW_NAME : EntityView.LIST_VIEW_NAME;
 				} );
 	}
 

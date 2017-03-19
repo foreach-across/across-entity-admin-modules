@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 /**
  * @author Arne Vandamme
  */
+@Deprecated
 public class AssociationListViewPageFetcher implements EntityListViewPageFetcher<ViewCreationContext>
 {
 	private final EntityPropertyDescriptor property;

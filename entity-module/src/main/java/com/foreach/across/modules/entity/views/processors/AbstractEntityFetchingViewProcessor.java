@@ -37,6 +37,7 @@ import org.springframework.data.domain.Pageable;
  * @see PageableExtensionViewProcessor
  * @see SortableTableRenderingViewProcessor
  * @see DelegatingEntityFetchingViewProcessor
+ * @see DefaultEntityFetchingViewProcessor
  * @since 2.0.0
  */
 public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityViewProcessorAdapter

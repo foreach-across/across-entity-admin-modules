@@ -16,9 +16,15 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.DispatchingEntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewProcessor;
+import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.processors.*;
+import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,11 +32,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -44,16 +49,25 @@ public class TestEntityViewFactoryBuilder
 	@Mock
 	private AutowireCapableBeanFactory beanFactory;
 
+	@Mock
+	private DispatchingEntityViewFactory dispatchingViewFactory;
+
 	private EntityViewFactoryBuilder builder;
+	private EntityViewProcessorRegistry processors;
 
 	@Before
 	public void before() {
-		builder = new EntityViewFactoryBuilder( beanFactory );
+		processors = new EntityViewProcessorRegistry();
+
+		when( dispatchingViewFactory.getProcessorRegistry() ).thenReturn( processors );
+		when( beanFactory.createBean( DispatchingEntityViewFactory.class ) ).thenReturn( dispatchingViewFactory );
+
+		builder = new EntityViewFactoryBuilder( beanFactory ).factoryType( DispatchingEntityViewFactory.class );
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void buildRequiresAFactoryToBeSet() {
-		builder.build();
+		builder.factoryType( null ).build();
 	}
 
 	@Test
@@ -67,77 +81,185 @@ public class TestEntityViewFactoryBuilder
 	}
 
 	@Test
-	public void specificTypeCreation() {
-		EntityViewViewFactory f = mock( EntityViewViewFactory.class );
-		when( beanFactory.createBean( EntityViewViewFactory.class ) ).thenReturn( f );
+	public void postProcessHasNullRegistryIfFactoryTypeNotDispatching() {
+		AtomicReference<EntityViewFactory> factoryRef = new AtomicReference<>();
+		AtomicReference<EntityViewProcessorRegistry> registryRef = new AtomicReference<>();
 
-		builder.factoryType( EntityViewViewFactory.class )
-		       .template( "templateName" );
+		builder.factoryType( EntityViewFactory.class )
+		       .postProcess( ( factory, registry ) -> {
+			       factoryRef.set( factory );
+			       registryRef.set( registry );
+		       } );
 
-		EntityViewFactory built = builder.build();
+		EntityViewFactory factory = mock( EntityViewFactory.class );
+		when( beanFactory.createBean( EntityViewFactory.class ) ).thenReturn( factory );
 
-		assertSame( built, f );
-		verify( f ).setTemplate( "templateName" );
+		assertSame( factory, builder.build() );
+		assertSame( factory, factoryRef.get() );
+		assertNull( registryRef.get() );
+	}
+
+	@Test
+	public void postProcessSingleProcessor() {
+		AtomicReference<EntityViewProcessor> postProcessed = new AtomicReference<>();
+
+		EntityViewProcessor viewProcessor = mock( EntityViewProcessor.class );
+		builder.viewProcessor( viewProcessor )
+		       .postProcess( viewProcessor.getClass(), postProcessed::set )
+		       .build();
+
+		assertSame( viewProcessor, postProcessed.get() );
+	}
+
+	@Test
+	public void postProcessSingleProcessorNotCalledIfProcessorNotPresent() {
+		EntityViewProcessor viewProcessor = mock( EntityViewProcessor.class );
+		builder
+				.postProcess( viewProcessor.getClass(), p -> {
+					throw new IllegalStateException( "should not get here" );
+				} )
+				.build();
+	}
+
+	@Test
+	public void postProcessSingleProcessorNotCalledIfNotDispatching() {
+		EntityViewProcessor viewProcessor = mock( EntityViewProcessor.class );
+		builder.factory( mock( EntityViewFactory.class ) )
+		       .viewProcessor( viewProcessor )
+		       .postProcess( viewProcessor.getClass(), p -> {
+			       throw new IllegalStateException( "should not get here" );
+		       } )
+		       .build();
+	}
+
+	@Test
+	public void templateValue() {
+		assertSame( builder, builder.template( "templateName" ) );
+		assertSame( dispatchingViewFactory, builder.build() );
+
+		Optional<TemplateViewProcessor> templateViewProcessor = processors.getProcessor( TemplateViewProcessor.class.getName(), TemplateViewProcessor.class );
+		assertTrue( templateViewProcessor.isPresent() );
+		templateViewProcessor.ifPresent( p -> assertEquals( new TemplateViewProcessor( "templateName" ), p ) );
+
+		builder.template( "other" ).build();
+		templateViewProcessor = processors.getProcessor( TemplateViewProcessor.class.getName(), TemplateViewProcessor.class );
+		assertTrue( templateViewProcessor.isPresent() );
+		templateViewProcessor.ifPresent( p -> assertEquals( new TemplateViewProcessor( "other" ), p ) );
+	}
+
+	@Test
+	public void messagePrefixes() {
+		assertSame( builder, builder.messagePrefix( "one", "two" ) );
+		assertSame( dispatchingViewFactory, builder.build() );
+
+		Optional<MessagePrefixingViewProcessor> processor
+				= processors.getProcessor( MessagePrefixingViewProcessor.class.getName(), MessagePrefixingViewProcessor.class );
+		assertTrue( processor.isPresent() );
+		processor.ifPresent( p -> assertEquals( new MessagePrefixingViewProcessor( "one", "two" ), p ) );
+
+		builder.messagePrefix( "other" ).build();
+		processor
+				= processors.getProcessor( MessagePrefixingViewProcessor.class.getName(), MessagePrefixingViewProcessor.class );
+		assertTrue( processor.isPresent() );
+		processor.ifPresent( p -> assertEquals( new MessagePrefixingViewProcessor( "other" ), p ) );
+	}
+
+	@Test
+	public void allowableAction() {
+		assertSame( builder, builder.requiredAllowableAction( AllowableAction.ADMINISTER ) );
+		assertSame( dispatchingViewFactory, builder.build() );
+
+		Optional<ActionAllowedAuthorizationViewProcessor> processor
+				= processors.getProcessor( ActionAllowedAuthorizationViewProcessor.class.getName(), ActionAllowedAuthorizationViewProcessor.class );
+		assertTrue( processor.isPresent() );
+		processor.ifPresent( p -> assertEquals( AllowableAction.ADMINISTER, p.getRequiredAllowableAction() ) );
+
+		builder.requiredAllowableAction( AllowableAction.CREATE ).build();
+		processor
+				= processors.getProcessor( ActionAllowedAuthorizationViewProcessor.class.getName(), ActionAllowedAuthorizationViewProcessor.class );
+		assertTrue( processor.isPresent() );
+		processor.ifPresent( p -> assertEquals( AllowableAction.CREATE, p.getRequiredAllowableAction() ) );
+	}
+
+	@Test
+	public void propertyRegistry() {
+		MutableEntityPropertyRegistry propertyRegistry = mock( MutableEntityPropertyRegistry.class );
+		assertSame( builder, builder.propertyRegistry( propertyRegistry ) );
+		assertSame( dispatchingViewFactory, builder.build() );
+
+		Optional<EntityPropertyRegistryViewProcessor> processor
+				= processors.getProcessor( EntityPropertyRegistryViewProcessor.class.getName(), EntityPropertyRegistryViewProcessor.class );
+		assertTrue( processor.isPresent() );
+		processor.ifPresent( p -> assertEquals( new EntityPropertyRegistryViewProcessor( propertyRegistry ), p ) );
+	}
+
+	@Test
+	public void configureProperties() {
+		MutableEntityPropertyRegistry propertyRegistry = mock( MutableEntityPropertyRegistry.class );
+		assertSame( dispatchingViewFactory, builder.propertyRegistry( propertyRegistry ).build() );
+		assertSame( builder, builder.properties( props -> props.property( "name" ).displayName( "test" ) ) );
+		assertSame( dispatchingViewFactory, builder.build() );
+
+		verify( propertyRegistry ).register( any() );
+	}
+
+	@Test
+	public void propertiesToShowAndViewElementMode() {
+		PropertyRenderingViewProcessor renderingViewProcessor = new PropertyRenderingViewProcessor();
+		when( beanFactory.createBean( PropertyRenderingViewProcessor.class ) ).thenReturn( renderingViewProcessor );
+
+		assertSame( builder, builder.showProperties( "one", "two" ) );
+		assertSame( dispatchingViewFactory, builder.build() );
+
+		Optional<PropertyRenderingViewProcessor> processor
+				= processors.getProcessor( PropertyRenderingViewProcessor.class.getName(), PropertyRenderingViewProcessor.class );
+		assertTrue( processor.isPresent() );
+		processor.ifPresent( p -> assertSame( renderingViewProcessor, p ) );
+
+		PropertyRenderingViewProcessor expected = new PropertyRenderingViewProcessor();
+		expected.setSelector( EntityPropertySelector.of( "one", "two" ) );
+		assertEquals( expected, renderingViewProcessor );
+
+		builder.viewElementMode( ViewElementMode.CONTROL ).build();
+		expected.setViewElementMode( ViewElementMode.CONTROL );
+		assertEquals( expected, renderingViewProcessor );
+
+		builder.showProperties( "*" ).viewElementMode( ViewElementMode.VALUE ).build();
+		expected.setSelector( EntityPropertySelector.of( "*" ) );
+		expected.setViewElementMode( ViewElementMode.VALUE );
+		assertEquals( expected, renderingViewProcessor );
+	}
+
+	@Test
+	public void processors() {
+		EntityViewProcessor one = mock( EntityViewProcessor.class );
+
+		assertSame( dispatchingViewFactory, builder.viewProcessor( one ).viewProcessor( "two", one ).build() );
+
+		Optional<EntityViewProcessorRegistry.EntityViewProcessorRegistration> actual = processors.getProcessorRegistration( one.getClass().getName() );
+		assertTrue( actual.isPresent() );
+		actual.ifPresent( r -> assertSame( one, r.getProcessor() ) );
+
+		actual = processors.getProcessorRegistration( "two" );
+		assertTrue( actual.isPresent() );
+		actual.ifPresent( r -> assertSame( one, r.getProcessor() ) );
+
+		before();
+
+		builder.removeViewProcessor( one.getClass().getName() ).removeViewProcessor( "two" ).viewProcessor( one ).build();
+		assertTrue( processors.contains( one.getClass().getName() ) );
+		assertFalse( processors.contains( "two" ) );
 	}
 
 	@Test
 	public void factoryInstanceTakePrecedence() {
-		EntityViewFactory expected = mock( EntityViewViewFactory.class );
+		EntityViewFactory expected = mock( EntityViewFactory.class );
 
-		builder.factoryType( EntityViewViewFactory.class )
+		builder.factoryType( DispatchingEntityViewFactory.class )
 		       .factory( expected );
 
 		EntityViewFactory built = builder.build();
 		assertSame( expected, built );
 		verify( beanFactory, never() ).createBean( any() );
-	}
-
-	@Test
-	public void applySimpleEntityViewFactory() {
-		SimpleEntityViewFactorySupport factory = mock( SimpleEntityViewFactorySupport.class );
-
-		EntityViewProcessor one = mock( EntityViewProcessor.class );
-		EntityViewProcessor two = mock( EntityViewProcessor.class );
-
-		builder.template( "template" )
-		       .showProperties( "one", "two" )
-		       .properties( props -> props.property( "name" ).displayName( "test" ) )
-		       .viewProcessor( one )
-		       .viewProcessor( two )
-		       .apply( factory );
-
-		verify( factory ).setTemplate( "template" );
-		verify( factory ).setProcessors( new LinkedHashSet<>( Arrays.asList( one, two ) ) );
-		verifyNoMoreInteractions( factory );
-	}
-
-	@Test
-	public void applyConfigurablePropertiesViewFactory() {
-		ConfigurablePropertiesEntityViewFactorySupport factory = mock(
-				ConfigurablePropertiesEntityViewFactorySupport.class );
-		MutableEntityPropertyRegistry propertyRegistry = mock( MutableEntityPropertyRegistry.class );
-		when( factory.getPropertyRegistry() ).thenReturn( propertyRegistry );
-
-		EntityViewProcessor one = mock( EntityViewProcessor.class );
-		EntityViewProcessor two = mock( EntityViewProcessor.class );
-		EntityViewProcessor three = mock( EntityViewProcessor.class );
-
-		Collection<EntityViewProcessor> processors = mock( Collection.class );
-		when( factory.getProcessors() ).thenReturn( processors );
-
-		builder.template( "template" )
-		       .showProperties( "one", "two" )
-		       .properties( props -> props.property( "name" ).displayName( "test" ) )
-		       .viewProcessor( one )
-		       .viewProcessor( three )
-		       .viewProcessor( two )
-		       .removeViewProcessor( three )
-		       .apply( factory );
-
-		verify( factory ).setTemplate( "template" );
-		verify( factory ).setProcessors( new LinkedHashSet<>( Arrays.asList( one, two ) ) );
-		verify( factory ).setPropertyComparator( EntityPropertyComparators.ordered( "one", "two" ) );
-		verify( propertyRegistry ).register( any() );
-		verify( processors ).remove( three );
 	}
 }

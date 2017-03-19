@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import org.springframework.core.Ordered;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -39,6 +40,11 @@ import org.springframework.data.repository.Repository;
  */
 public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetchingViewProcessor
 {
+	/**
+	 * Default order that this processor will have if it has been added through the {@link com.foreach.across.modules.entity.views.builders.ListViewInitializer}.
+	 */
+	public static final int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE;
+
 	@Override
 	protected Iterable<Object> fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();

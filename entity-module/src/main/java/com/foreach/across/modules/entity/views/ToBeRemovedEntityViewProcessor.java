@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.DataBinder;
 
@@ -27,11 +28,11 @@ import org.springframework.validation.DataBinder;
  * @since 2.0.0
  */
 @Deprecated
-public abstract class ToBeRemovedEntityViewProcessor implements EntityViewProcessor<ViewCreationContext, EntityView>
+public abstract class ToBeRemovedEntityViewProcessor implements EntityViewProcessor
 {
 	@Override
 	public void prepareModelAndCommand( String viewName,
-	                                    ViewCreationContext creationContext,
+	                                    WebViewCreationContext creationContext,
 	                                    EntityViewCommand command,
 	                                    ModelMap model ) {
 
@@ -39,19 +40,19 @@ public abstract class ToBeRemovedEntityViewProcessor implements EntityViewProces
 
 	@Override
 	public void prepareDataBinder( String viewName,
-	                               ViewCreationContext creationContext,
+	                               WebViewCreationContext creationContext,
 	                               EntityViewCommand command,
 	                               DataBinder dataBinder ) {
 
 	}
 
 	@Override
-	public void preProcess( ViewCreationContext creationContext, EntityView view ) {
+	public void preProcess( WebViewCreationContext creationContext, EntityView view ) {
 
 	}
 
 	@Override
-	public void postProcess( ViewCreationContext creationContext, EntityView view ) {
+	public void postProcess( WebViewCreationContext creationContext, EntityView view ) {
 
 	}
 }

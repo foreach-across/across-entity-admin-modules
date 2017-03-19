@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyFilte
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.ui.DefaultViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -42,8 +43,8 @@ import java.util.List;
  * @author Arne Vandamme
  */
 @Deprecated
-public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends ViewCreationContext, T extends EntityView>
-		extends SimpleEntityViewFactorySupport<V, T>
+public abstract class ConfigurablePropertiesEntityViewFactorySupport
+		extends SimpleEntityViewFactorySupport
 {
 	protected static final Logger LOG = LoggerFactory.getLogger( ConfigurablePropertiesEntityViewFactorySupport.class );
 
@@ -105,11 +106,11 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	}
 
 	@Override
-	protected void buildViewModel( V viewCreationContext,
+	protected void buildViewModel( WebViewCreationContext viewCreationContext,
 	                               EntityConfiguration entityConfiguration,
 	                               EntityMessageCodeResolver messageCodeResolver,
-	                               T view ) {
-		ViewElementBuilderContext<T> viewElementBuilderContext = createEntityViewElementBuilderContext( view );
+	                               EntityView view ) {
+		ViewElementBuilderContext<EntityView> viewElementBuilderContext = createEntityViewElementBuilderContext( view );
 
 		view.setViewElements(
 				buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver )
@@ -119,8 +120,8 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 		page.addChild( view.getViewElements() );
 	}
 
-	protected ViewElementBuilderContext<T> createEntityViewElementBuilderContext( T view ) {
-		ViewElementBuilderContext<T> builderContext = new ViewElementBuilderContext<>( view );
+	protected ViewElementBuilderContext<EntityView> createEntityViewElementBuilderContext( EntityView view ) {
+		ViewElementBuilderContext<EntityView> builderContext = new ViewElementBuilderContext<>( view );
 		DefaultViewElementPostProcessor.add( builderContext, new ControlNamePrefixingPostProcessor<>( "entity" ) );
 
 		return builderContext;
@@ -186,8 +187,8 @@ public abstract class ConfigurablePropertiesEntityViewFactorySupport<V extends V
 	}
 
 	protected abstract ContainerViewElement buildViewElements(
-			V viewCreationContext,
-			ViewElementBuilderContext<T> viewElementBuilderContext,
+			WebViewCreationContext viewCreationContext,
+			ViewElementBuilderContext<EntityView> viewElementBuilderContext,
 			EntityMessageCodeResolver messageCodeResolver
 	);
 }

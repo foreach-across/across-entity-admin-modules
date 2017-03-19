@@ -39,7 +39,7 @@ import javax.persistence.ManyToMany;
  * @author Andy Somers
  */
 @Component
-public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuilder
+class ManyToManyEntityAssociationBuilder implements EntityAssociationBuilder
 {
 	private static final Logger LOG = LoggerFactory.getLogger( ManyToManyEntityAssociationBuilder.class );
 
@@ -75,8 +75,8 @@ public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuil
 				// By default hide this association as it would be managed as a regular property
 				association.setHidden( true );
 
-				buildCreateView( association );
-				buildListView( association );
+//				buildCreateView( association );
+//				buildListView( association );
 			}
 			else {
 				LOG.info( "Skipping automatic registration of association {} on {} as it is already registered.",
@@ -96,9 +96,9 @@ public class ManyToManyEntityAssociationBuilder implements EntityAssociationBuil
 					);
 					association.setAttribute( PersistentProperty.class, property );
 
-					buildCreateView( association );
-					buildListView( association );
-					buildDeleteView( association );
+//					buildCreateView( association );
+//					buildListView( association );
+//					buildDeleteView( association );
 				}
 			}
 			else {

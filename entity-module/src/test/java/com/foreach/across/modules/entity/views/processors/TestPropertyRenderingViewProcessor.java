@@ -47,6 +47,7 @@ import java.util.Map;
 
 import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_BUILDER;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -214,5 +215,24 @@ public class TestPropertyRenderingViewProcessor
 		processor.render( viewRequest, entityView );
 
 		verify( propertiesContainerBuilder ).addAll( Arrays.asList( elementOne, elementTwo ) );
+	}
+
+	@Test
+	public void equalsIfSameElementModeAndSelector() {
+		PropertyRenderingViewProcessor one = new PropertyRenderingViewProcessor();
+		PropertyRenderingViewProcessor two = new PropertyRenderingViewProcessor();
+
+		one.setSelector( EntityPropertySelector.of( "one", "two" ) );
+		one.setViewElementMode( ViewElementMode.FORM_WRITE );
+		two.setSelector( EntityPropertySelector.of( "one", "two" ) );
+		two.setViewElementMode( ViewElementMode.FORM_WRITE );
+		assertEquals( one, two );
+
+		one.setViewElementMode( ViewElementMode.CONTROL );
+		assertNotEquals( one, two );
+
+		two.setViewElementMode( ViewElementMode.CONTROL );
+		two.setSelector( EntityPropertySelector.of( "*" ) );
+		assertNotEquals( one, two );
 	}
 }

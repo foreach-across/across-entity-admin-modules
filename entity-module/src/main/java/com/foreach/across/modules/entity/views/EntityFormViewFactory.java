@@ -42,8 +42,8 @@ import java.util.Optional;
  * @author Arne Vandamme
  */
 @Deprecated
-public class EntityFormViewFactory<V extends ViewCreationContext>
-		extends SingleEntityViewFactory<V, EntityFormView>
+public class EntityFormViewFactory
+		extends SingleEntityViewFactory
 {
 	public static final String FORM_NAME = "entityForm";
 	public static final String FORM_LEFT = "entityForm-left";
@@ -72,13 +72,13 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 	}
 
 	@Override
-	protected void preparePageContentStructure( PageContentStructure page, V creationContext, EntityFormView view ) {
+	protected void preparePageContentStructure( PageContentStructure page, WebViewCreationContext creationContext, EntityView view ) {
 		super.preparePageContentStructure( page, creationContext, view );
 
 		EntityMessages entityMessages = view.getEntityMessages();
 		EntityConfiguration<Object> entityConfiguration = view.getEntityConfiguration();
 
-		Object entity = view.getOriginalEntity();
+		Object entity = ( (EntityFormView) view ).getOriginalEntity();
 
 		if ( creationContext.isForAssociation() ) {
 			entity = view.getParentEntity();
@@ -111,15 +111,15 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 	}
 
 	@Override
-	protected ContainerViewElement buildViewElements( V viewCreationContext,
-	                                                  ViewElementBuilderContext<EntityFormView> viewElementBuilderContext,
+	protected ContainerViewElement buildViewElements( WebViewCreationContext viewCreationContext,
+	                                                  ViewElementBuilderContext viewElementBuilderContext,
 	                                                  EntityMessageCodeResolver messageCodeResolver ) {
 		Optional<String> fromUrl = Optional.ofNullable( retrieveFromUrl( viewCreationContext ) );
 
 		ContainerViewElement elements
 				= super.buildViewElements( viewCreationContext, viewElementBuilderContext, messageCodeResolver );
 
-		EntityFormView entityView = viewElementBuilderContext.getEntityView();
+		EntityFormView entityView = (EntityFormView) viewElementBuilderContext.getEntityView();
 		EntityLinkBuilder linkBuilder = entityView.getEntityLinkBuilder();
 		EntityMessages messages = entityView.getEntityMessages();
 
@@ -222,8 +222,8 @@ public class EntityFormViewFactory<V extends ViewCreationContext>
 		}
 	}
 
-	private String retrieveFromUrl( ViewCreationContext viewCreationContext ) {
-		return ( (WebViewCreationContext) viewCreationContext ).getRequest().getParameter( "from" );
+	private String retrieveFromUrl( WebViewCreationContext viewCreationContext ) {
+		return ( viewCreationContext ).getRequest().getParameter( "from" );
 	}
 
 	private String buildActionUrl( ViewElementBuilderContext<EntityFormView> viewElementBuilderContext ) {

@@ -27,6 +27,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -39,9 +40,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 
 import java.util.*;
-
-import static com.foreach.across.modules.entity.views.ViewElementMode.LIST_LABEL;
-import static com.foreach.across.modules.entity.views.ViewElementMode.LIST_VALUE;
 
 /**
  * Helper that aids in building a sortable {@link com.foreach.across.modules.bootstrapui.elements.TableViewElement}
@@ -99,6 +97,9 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors = new ArrayList<>();
 	private String formName;
 
+	private ViewElementMode valueViewElementMode = ViewElementMode.LIST_VALUE;
+	private ViewElementMode labelViewElementMode = ViewElementMode.LIST_LABEL;
+
 	private PagingMessages resolvedPagingMessages;
 	private Collection<EntityPropertyDescriptor> resolvedPropertyDescriptors;
 
@@ -143,6 +144,28 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	 */
 	public SortableTableBuilder noResults( ViewElementBuilder builder ) {
 		this.noResultsElement = ViewElementBuilderSupport.ElementOrBuilder.wrap( builder );
+		return this;
+	}
+
+	/**
+	 * Set the rendering mode for the values of an entity.  Defaults to {@link ViewElementMode#LIST_VALUE}.
+	 *
+	 * @param valueViewElementMode element mode
+	 * @return current builder
+	 */
+	public SortableTableBuilder setValueViewElementMode( ViewElementMode valueViewElementMode ) {
+		this.valueViewElementMode = valueViewElementMode;
+		return this;
+	}
+
+	/**
+	 * Set the rendering mode for the label of an entity (header row).  Defaults to {@link ViewElementMode#LIST_LABEL}.
+	 *
+	 * @param labelViewElementMode element mode
+	 * @return current builder
+	 */
+	public SortableTableBuilder setLabelViewElementMode( ViewElementMode labelViewElementMode ) {
+		this.labelViewElementMode = labelViewElementMode;
 		return this;
 	}
 
@@ -596,11 +619,11 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	}
 
 	protected ViewElementBuilder createLabel( EntityPropertyDescriptor descriptor ) {
-		return viewElementBuilderService.getElementBuilder( descriptor, LIST_LABEL );
+		return viewElementBuilderService.getElementBuilder( descriptor, labelViewElementMode );
 	}
 
 	protected ViewElementBuilder createValue( EntityPropertyDescriptor descriptor ) {
-		return viewElementBuilderService.getElementBuilder( descriptor, LIST_VALUE );
+		return viewElementBuilderService.getElementBuilder( descriptor, valueViewElementMode );
 	}
 
 	protected NodeViewElementBuilder createPanelForTable( TableViewElementBuilder tableBody ) {

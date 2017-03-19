@@ -322,6 +322,34 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	}
 
 	@Test
+	public void customElementTypes() {
+		when( viewElementBuilderService.getElementBuilder( descriptor, ViewElementMode.LIST_LABEL ) ).thenReturn( null );
+		when( viewElementBuilderService.getElementBuilder( descriptor, ViewElementMode.LIST_VALUE ) ).thenReturn( null );
+
+		when( viewElementBuilderService.getElementBuilder( descriptor, ViewElementMode.LABEL ) )
+				.thenReturn( new TextViewElementBuilder().text( "Property name" ) );
+		when( viewElementBuilderService.getElementBuilder( descriptor, ViewElementMode.LIST_CONTROL ) )
+				.thenReturn( new TextViewElementBuilder().text( "Property value" ) );
+
+		EntityPropertyRegistry propertyRegistry = mock( EntityPropertyRegistry.class );
+		when( propertyRegistry.select( new EntityPropertySelector( "myprop" ) ) )
+				.thenReturn( Collections.singletonList( descriptor ) );
+
+		when( entityConfiguration.getPropertyRegistry() ).thenReturn( propertyRegistry );
+
+		tableBuilder = new SortableTableBuilder( viewElementBuilderService, bootstrapUiFactory )
+				.setLabelViewElementMode( ViewElementMode.LABEL )
+				.setValueViewElementMode( ViewElementMode.LIST_CONTROL )
+				.noSorting()
+				.entityConfiguration( entityConfiguration )
+				.properties( new EntityPropertySelector( "myprop" ) )
+				.items( Collections.singletonList( "test" ) )
+				.tableOnly();
+
+		expect( TABLE_WITH_RESULT_NUMBER );
+	}
+
+	@Test
 	public void customNoResultsElement() {
 		Page page = new PageImpl<>( Collections.emptyList() );
 		tableBuilder.items( page );

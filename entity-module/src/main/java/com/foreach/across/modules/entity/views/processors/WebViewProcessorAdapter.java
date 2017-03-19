@@ -35,8 +35,8 @@ import org.springframework.web.bind.WebDataBinder;
  * @author Andy Somers, Arne Vandamme
  */
 @Deprecated
-public class WebViewProcessorAdapter<U extends EntityView>
-		implements EntityViewProcessor<WebViewCreationContext, U>
+public class WebViewProcessorAdapter
+		implements EntityViewProcessor
 {
 	@Override
 	public final void prepareModelAndCommand( String viewName,
@@ -76,16 +76,16 @@ public class WebViewProcessorAdapter<U extends EntityView>
 	}
 
 	@Override
-	public final void preProcess( WebViewCreationContext creationContext, U view ) {
+	public final void preProcess( WebViewCreationContext creationContext, EntityView view ) {
 		applyCustomPreProcessing( creationContext, view );
 	}
 
-	protected void applyCustomPreProcessing( WebViewCreationContext creationContext, U view ) {
+	protected void applyCustomPreProcessing( WebViewCreationContext creationContext, EntityView view ) {
 
 	}
 
 	@Override
-	public final void postProcess( WebViewCreationContext creationContext, U view ) {
+	public final void postProcess( WebViewCreationContext creationContext, EntityView view ) {
 		registerWebResources( creationContext.getWebResourceRegistry() );
 
 		applyCustomPostProcessing( creationContext, view );
@@ -94,11 +94,11 @@ public class WebViewProcessorAdapter<U extends EntityView>
 		modifyViewElements( view.getViewElements() );
 	}
 
-	protected void applyCustomPostProcessing( WebViewCreationContext creationContext, U view ) {
+	protected void applyCustomPostProcessing( WebViewCreationContext creationContext, EntityView view ) {
 
 	}
 
-	protected void extendViewModel( U view ) {
+	protected void extendViewModel( EntityView view ) {
 
 	}
 

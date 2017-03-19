@@ -24,8 +24,10 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
  * or {@link com.foreach.across.modules.entity.registry.EntityAssociation}.
  *
  * @author Arne Vandamme
+ * @see com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder
  * @since 2.0.0
  */
+@Deprecated
 public interface EntityViewFactoryProvider
 {
 	/**

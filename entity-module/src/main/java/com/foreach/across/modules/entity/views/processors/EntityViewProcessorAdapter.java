@@ -19,10 +19,10 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.ViewCreationContext;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.resource.WebResourceUtils;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -60,27 +60,27 @@ import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.A
  * @see SimpleEntityViewProcessorAdapter
  * @since 2.0.0
  */
-public abstract class EntityViewProcessorAdapter implements EntityViewProcessor<ViewCreationContext, EntityView>
+public abstract class EntityViewProcessorAdapter implements EntityViewProcessor
 {
 	private static final String ATTRIBUTE_BUILDER_MAP = "entityViewBuilderMap";
 
 	@Override
-	public final void prepareModelAndCommand( String viewName, ViewCreationContext creationContext, EntityViewCommand command, ModelMap model ) {
+	public final void prepareModelAndCommand( String viewName, WebViewCreationContext creationContext, EntityViewCommand command, ModelMap model ) {
 
 	}
 
 	@Override
-	public final void prepareDataBinder( String viewName, ViewCreationContext creationContext, EntityViewCommand command, DataBinder dataBinder ) {
+	public final void prepareDataBinder( String viewName, WebViewCreationContext creationContext, EntityViewCommand command, DataBinder dataBinder ) {
 
 	}
 
 	@Override
-	public final void preProcess( ViewCreationContext creationContext, EntityView view ) {
+	public final void preProcess( WebViewCreationContext creationContext, EntityView view ) {
 
 	}
 
 	@Override
-	public final void postProcess( ViewCreationContext creationContext, EntityView view ) {
+	public final void postProcess( WebViewCreationContext creationContext, EntityView view ) {
 	}
 
 	@Override

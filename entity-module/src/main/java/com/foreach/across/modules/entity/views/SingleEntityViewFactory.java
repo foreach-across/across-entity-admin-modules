@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
@@ -30,8 +31,8 @@ import java.util.List;
  * in the mode specified, for the properties configured.
  */
 @Deprecated
-public abstract class SingleEntityViewFactory<V extends ViewCreationContext, T extends EntityView>
-		extends ConfigurablePropertiesEntityViewFactorySupport<V, T>
+public abstract class SingleEntityViewFactory
+		extends ConfigurablePropertiesEntityViewFactorySupport
 {
 	private ViewElementMode viewElementMode = ViewElementMode.FORM_READ;
 
@@ -51,8 +52,8 @@ public abstract class SingleEntityViewFactory<V extends ViewCreationContext, T e
 
 	@Override
 	protected ContainerViewElement buildViewElements(
-			V viewCreationContext,
-			ViewElementBuilderContext<T> viewElementBuilderContext,
+			WebViewCreationContext viewCreationContext,
+			ViewElementBuilderContext<EntityView> viewElementBuilderContext,
 			EntityMessageCodeResolver messageCodeResolver
 	) {
 		EntityConfiguration entityConfiguration = viewCreationContext.getEntityConfiguration();

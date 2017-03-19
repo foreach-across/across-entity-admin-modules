@@ -34,6 +34,7 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class AssociationPropertyListViewPageFetcher implements EntityListViewPageFetcher<ViewCreationContext>
 {
 	private final String propertyName;

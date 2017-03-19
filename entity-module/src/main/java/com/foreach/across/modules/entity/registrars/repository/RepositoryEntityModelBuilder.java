@@ -26,6 +26,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.data.repository.support.RepositoryInvoker;
 import org.springframework.format.Printer;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Locale;
@@ -35,7 +36,8 @@ import static org.springframework.data.repository.support.RepositoryInvokerUtils
 /**
  * Builds an {@link com.foreach.across.modules.entity.registry.EntityModel} for a Spring data repository.
  */
-public class RepositoryEntityModelBuilder
+@Component
+class RepositoryEntityModelBuilder
 {
 	@Autowired
 	private ConversionService mvcConversionService;

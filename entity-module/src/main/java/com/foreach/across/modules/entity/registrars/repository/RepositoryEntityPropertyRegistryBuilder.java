@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
+import org.springframework.stereotype.Component;
 
 import javax.validation.ValidatorFactory;
 import javax.validation.metadata.BeanDescriptor;
@@ -36,7 +37,8 @@ import java.util.List;
  * <p>Puts every EntityPropertyRegistry in the central registry so properties of associated entities
  * can be determined as well.</p>
  */
-public class RepositoryEntityPropertyRegistryBuilder
+@Component
+class RepositoryEntityPropertyRegistryBuilder
 {
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityPropertyRegistryBuilder.class );
 

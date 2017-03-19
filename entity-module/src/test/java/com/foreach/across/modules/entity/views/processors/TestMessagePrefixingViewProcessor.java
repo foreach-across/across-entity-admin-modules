@@ -24,6 +24,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -62,5 +64,18 @@ public class TestMessagePrefixingViewProcessor
 		new MessagePrefixingViewProcessor( "other", "secondOther" ).prepareEntityViewContext( viewContext );
 		verify( viewContext ).setMessageCodeResolver( newResolver );
 		verify( viewContext ).setEntityMessages( any() );
+	}
+
+	@Test
+	public void equalsIfSamePrefixes() {
+		String[] prefixes = new String[] { "one", "two" };
+		assertEquals(
+				new MessagePrefixingViewProcessor( prefixes ),
+				new MessagePrefixingViewProcessor( prefixes )
+		);
+		assertNotEquals(
+				new MessagePrefixingViewProcessor( prefixes ),
+				new MessagePrefixingViewProcessor( "one" )
+		);
 	}
 }

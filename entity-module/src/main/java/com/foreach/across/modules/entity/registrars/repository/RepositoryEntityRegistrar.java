@@ -41,6 +41,7 @@ import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -58,7 +59,8 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
-public class RepositoryEntityRegistrar implements EntityRegistrar
+@Component
+class RepositoryEntityRegistrar implements EntityRegistrar
 {
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityRegistrar.class );
 
@@ -68,8 +70,8 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 	@Autowired
 	private RepositoryEntityPropertyRegistryBuilder propertyRegistryBuilder;
 
-	@Autowired
-	private RepositoryEntityViewsBuilder viewsBuilder;
+	//@Autowired
+	//private RepositoryEntityViewsBuilder viewsBuilder;
 
 	@Autowired
 	private RepositoryEntityAssociationsBuilder associationsBuilder;
@@ -174,7 +176,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 
 			registerEntityQueryExecutor( entityConfiguration );
 
-			viewsBuilder.buildViews( entityConfiguration );
+			//viewsBuilder.buildViews( entityConfiguration );
 
 			entityRegistry.register( entityConfiguration );
 

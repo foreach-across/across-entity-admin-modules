@@ -23,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -46,5 +48,18 @@ public class TestEntityPropertyRegistryViewProcessor
 		EntityPropertyRegistry propertyRegistry = mock( EntityPropertyRegistry.class );
 		new EntityPropertyRegistryViewProcessor( propertyRegistry ).prepareEntityViewContext( viewContext );
 		verify( viewContext ).setPropertyRegistry( propertyRegistry );
+	}
+
+	@Test
+	public void equalsIfSameRegistry() {
+		EntityPropertyRegistry propertyRegistry = mock( EntityPropertyRegistry.class );
+		assertEquals(
+				new EntityPropertyRegistryViewProcessor( propertyRegistry ),
+				new EntityPropertyRegistryViewProcessor( propertyRegistry )
+		);
+		assertNotEquals(
+				new EntityPropertyRegistryViewProcessor( propertyRegistry ),
+				new EntityPropertyRegistryViewProcessor( mock( EntityPropertyRegistry.class ) )
+		);
 	}
 }

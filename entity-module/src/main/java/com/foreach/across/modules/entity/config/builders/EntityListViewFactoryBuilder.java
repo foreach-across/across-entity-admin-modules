@@ -16,27 +16,37 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
-import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.processors.OldEntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.processors.DelegatingEntityFetchingViewProcessor;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
+import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
+import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
- * Extends the default {@link EntityViewFactoryBuilder} with properties for a list view of entities
- * instead of a single entity view.
+ * Extends the default {@link EntityViewFactoryBuilder} with properties for a list view of entities instead of a single entity view.
  *
  * @author Arne Vandamme
  * @since 2.0.0
@@ -49,7 +59,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	private Integer pageSize;
 	private Sort defaultSort;
 	private Collection<String> sortableProperties;
-	private EntityListViewPageFetcher pageFetcher;
+	private BiFunction<EntityViewContext, Pageable, Iterable<?>> pageFetcher;
 
 	@Autowired
 	public EntityListViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
@@ -81,13 +91,66 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		return (EntityListViewFactoryBuilder) super.viewProcessor( processor );
 	}
 
+	@Override
+	public EntityListViewFactoryBuilder factory( EntityViewFactory factory ) {
+		return (EntityListViewFactoryBuilder) super.factory( factory );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder propertyRegistry( EntityPropertyRegistry propertyRegistry ) {
+		return (EntityListViewFactoryBuilder) super.propertyRegistry( propertyRegistry );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder viewElementMode( ViewElementMode viewElementMode ) {
+		return (EntityListViewFactoryBuilder) super.viewElementMode( viewElementMode );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder viewProcessor( String processorName, EntityViewProcessor processor ) {
+		return (EntityListViewFactoryBuilder) super.viewProcessor( processorName, processor );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder messagePrefix( String... messagePrefixes ) {
+		return (EntityListViewFactoryBuilder) super.messagePrefix( messagePrefixes );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder requiredAllowableAction( AllowableAction action ) {
+		return (EntityListViewFactoryBuilder) super.requiredAllowableAction( action );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder removeViewProcessor( String processorName ) {
+		return (EntityListViewFactoryBuilder) super.removeViewProcessor( processorName );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder postProcess( BiConsumer<EntityViewFactory, EntityViewProcessorRegistry> postProcessor ) {
+		return (EntityListViewFactoryBuilder) super.postProcess( postProcessor );
+	}
+
 	/**
-	 * Configure the page fetcher on the view.
+	 * Configure a page fetching function that will retrieve the entities requested by a specific {@link Pageable}.
+	 * This will result in a {@link com.foreach.across.modules.entity.views.processors.DelegatingEntityFetchingViewProcessor} being added.
 	 *
-	 * @param pageFetcher instance - may not be null
+	 * @param pageFetcher function - may not be null
 	 * @return current builder
 	 */
-	public EntityListViewFactoryBuilder pageFetcher( EntityListViewPageFetcher pageFetcher ) {
+	public EntityListViewFactoryBuilder pageFetcher( Function<Pageable, Iterable<?>> pageFetcher ) {
+		Assert.notNull( pageFetcher );
+		return pageFetcher( ( ctx, pageable ) -> pageFetcher.apply( pageable ) );
+	}
+
+	/**
+	 * Configure a page fetching function that will retrieve the entities requested by a specific {@link Pageable}.
+	 * This will result in a {@link com.foreach.across.modules.entity.views.processors.DelegatingEntityFetchingViewProcessor} being added.
+	 *
+	 * @param pageFetcher function - may not be null
+	 * @return current builder
+	 */
+	public EntityListViewFactoryBuilder pageFetcher( BiFunction<EntityViewContext, Pageable, Iterable<?>> pageFetcher ) {
 		Assert.notNull( pageFetcher );
 		this.pageFetcher = pageFetcher;
 		return this;
@@ -142,10 +205,9 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 
 	/**
 	 * Enable default {@link com.foreach.across.modules.entity.query.EntityQuery} based filtering for this list.
-	 * Amounts to the same as manually registering a {@link OldEntityQueryFilterProcessor} using {@link #filter(EntityViewProcessor)}.
+	 * Amounts to the same as manually registering a {@link EntityQueryFilterProcessor} using {@link #viewProcessor(EntityViewProcessor)}.
 	 * <p/>
-	 * Calling with {@code false} will remove the processor if it was activated before.  But you will have to manually
-	 * reset the {@link #pageFetcher(EntityListViewPageFetcher)} to the instance you want used.
+	 * Calling with {@code false} will remove the processor if it was activated before.
 	 *
 	 * @param enabled true if filter should be added, false if not (or removed again)
 	 * @return current builder
@@ -155,60 +217,84 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		return this;
 	}
 
-	/**
-	 * Configure a filter to apply to the list view.  Shortcut to adding both a
-	 * {@link #viewProcessor(EntityViewProcessor)} and {@link #pageFetcher(EntityListViewPageFetcher)}.
-	 * Use {@link #entityQueryFilter(boolean)} if you only want the default query language based filter to be added.
-	 *
-	 * @param filterProcessor instance
-	 * @param <U>             filter type
-	 * @return current builder
-	 */
-	public <U extends EntityViewProcessor & EntityListViewPageFetcher> EntityListViewFactoryBuilder filter( U filterProcessor ) {
-		Assert.notNull( filterProcessor );
-
-		viewProcessor( filterProcessor );
-		pageFetcher( filterProcessor );
-		return this;
+	@Override
+	protected void configureRenderingProcessors( EntityViewProcessorRegistry processorRegistry, String[] propertiesToShow, ViewElementMode viewElementMode ) {
+		configurePageableProcessor( processorRegistry );
+		configureSortableTableProcessor( processorRegistry, propertiesToShow, viewElementMode );
+		configureEntityQueryFilter( processorRegistry );
+		configurePageFetcher( processorRegistry );
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	void apply( EntityViewFactory rawViewFactory ) {
-		super.apply( rawViewFactory );
+	private void configurePageFetcher( EntityViewProcessorRegistry processorRegistry ) {
+		if ( pageFetcher != null ) {
+			processorRegistry.remove( DelegatingEntityFetchingViewProcessor.class.getName() );
+			processorRegistry.addProcessor(
+					DelegatingEntityFetchingViewProcessor.class.getName(),
+					new DelegatingEntityFetchingViewProcessor( pageFetcher ),
+					DelegatingEntityFetchingViewProcessor.DEFAULT_ORDER
+			);
+		}
+	}
 
-		if ( rawViewFactory instanceof EntityListViewFactory ) {
-			EntityListViewFactory viewFactory = (EntityListViewFactory) rawViewFactory;
-			if ( entityQueryFilter != null ) {
-				OldEntityQueryFilterProcessor processor = getBean( OldEntityQueryFilterProcessor.class );
-				if ( entityQueryFilter ) {
-					viewFactory.setPageFetcher( processor );
-					viewFactory.setProcessors( Collections.singleton( processor ) );
-				}
-				else {
-					// only removes the processor
-					viewFactory.getProcessors().remove( processor );
+	private void configureEntityQueryFilter( EntityViewProcessorRegistry processorRegistry ) {
+		if ( entityQueryFilter != null ) {
+			if ( entityQueryFilter ) {
+				if ( !processorRegistry.contains( EntityQueryFilterProcessor.class.getName() ) ) {
+					processorRegistry.addProcessor( createBean( EntityQueryFilterProcessor.class ) );
 				}
 			}
-			if ( pageFetcher != null ) {
-				viewFactory.setPageFetcher( pageFetcher );
-			}
-			if ( pageSize != null ) {
-				viewFactory.setPageSize( pageSize );
-			}
-			if ( sortableProperties != null ) {
-				viewFactory.setSortableProperties( sortableProperties );
-			}
-			if ( defaultSort != null ) {
-				viewFactory.setDefaultSort( defaultSort );
-			}
-			if ( showResultNumber != null ) {
-				viewFactory.setShowResultNumber( showResultNumber );
+			else {
+				processorRegistry.remove( EntityQueryFilterProcessor.class.getName() );
 			}
 		}
-		else {
-			// todo: bugrit
-			// throw new IllegalArgumentException( "Registered view factory was not of type EntityListViewFactory" );
+	}
+
+	private void configurePageableProcessor( EntityViewProcessorRegistry processorRegistry ) {
+		if ( pageSize != null || defaultSort != null ) {
+			PageableExtensionViewProcessor pageableExtensionViewProcessor = processorRegistry
+					.getProcessor( PageableExtensionViewProcessor.class.getName(), PageableExtensionViewProcessor.class )
+					.orElseGet( () -> {
+						PageableExtensionViewProcessor pageableProcessor = createBean( PageableExtensionViewProcessor.class );
+						processorRegistry.addProcessor( pageableProcessor );
+						return pageableProcessor;
+					} );
+
+			Pageable currentPageable = pageableExtensionViewProcessor.getDefaultPageable();
+			pageableExtensionViewProcessor.setDefaultPageable(
+					new PageRequest(
+							currentPageable.getPageNumber(),
+							pageSize != null ? pageSize : currentPageable.getPageSize(),
+							defaultSort != null ? defaultSort : currentPageable.getSort()
+					)
+			);
+		}
+	}
+
+	private void configureSortableTableProcessor( EntityViewProcessorRegistry processorRegistry, String[] propertiesToShow, ViewElementMode viewElementMode ) {
+		if ( propertiesToShow != null || viewElementMode != null || showResultNumber != null || sortableProperties != null ) {
+			SortableTableRenderingViewProcessor tableRenderingViewProcessor = processorRegistry
+					.getProcessor( SortableTableRenderingViewProcessor.class.getName(), SortableTableRenderingViewProcessor.class )
+					.orElseGet( () -> {
+						SortableTableRenderingViewProcessor processor = createBean( SortableTableRenderingViewProcessor.class );
+						processorRegistry.addProcessor( processor );
+						return processor;
+					} );
+
+			if ( propertiesToShow != null ) {
+				tableRenderingViewProcessor.setPropertySelector( EntityPropertySelector.of( propertiesToShow ) );
+			}
+
+			if ( showResultNumber != null ) {
+				tableRenderingViewProcessor.setShowResultNumber( showResultNumber );
+			}
+
+			if ( sortableProperties != null ) {
+				tableRenderingViewProcessor.setSortableProperties( sortableProperties );
+			}
+
+			if ( viewElementMode != null ) {
+				tableRenderingViewProcessor.setViewElementMode( viewElementMode );
+			}
 		}
 	}
 }

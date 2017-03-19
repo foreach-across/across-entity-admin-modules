@@ -28,7 +28,6 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.ViewCreationContext;
 import com.foreach.across.modules.entity.views.events.BuildEntityDeleteViewEvent;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
@@ -70,7 +69,7 @@ public class TestEntityDeleteViewFactory
 	private final String entity = "my entity";
 
 	@Autowired
-	private EntityDeleteViewFactory<ViewCreationContext> deleteViewFactory;
+	private EntityDeleteViewFactory deleteViewFactory;
 
 	@Autowired
 	private AcrossEventPublisher eventPublisher;
@@ -235,11 +234,11 @@ public class TestEntityDeleteViewFactory
 		}
 
 		@Bean
-		public EntityDeleteViewFactory<ViewCreationContext> entityDeleteViewFactory() {
+		public EntityDeleteViewFactory entityDeleteViewFactory() {
 			EntityMessageCodeResolver messageCodeResolver = mock( EntityMessageCodeResolver.class );
 			when( messageCodeResolver.prefixedResolver( anyVararg() ) ).thenReturn( messageCodeResolver );
 
-			EntityDeleteViewFactory<ViewCreationContext> entityDeleteViewFactory = new EntityDeleteViewFactory<>();
+			EntityDeleteViewFactory entityDeleteViewFactory = new EntityDeleteViewFactory();
 			entityDeleteViewFactory.setMessageCodeResolver( messageCodeResolver );
 
 			EntityLinkBuilder linkBuilder = mock( EntityLinkBuilder.class );

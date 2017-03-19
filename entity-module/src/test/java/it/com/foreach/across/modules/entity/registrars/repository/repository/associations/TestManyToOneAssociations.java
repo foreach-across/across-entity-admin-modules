@@ -119,6 +119,21 @@ public class TestManyToOneAssociations
 		assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
 	}
 
+	@Test
+	public void companyHasClients() {
+		EntityConfiguration company = entityRegistry.getEntityConfiguration( Company.class );
+		EntityAssociation association = company.association( "client.company" );
+
+		assertNotNull( association );
+
+		AssociatedEntityQueryExecutor<Client> executor
+				= association.getAttribute( AssociatedEntityQueryExecutor.class );
+
+		verifyClients( executor, one, john );
+		verifyClients( executor, two, joe, peter );
+		verifyClients( executor, three );
+	}
+
 	// todo: implement once supporting MappingContext items
 	/*
 	@Test
@@ -157,21 +172,6 @@ public class TestManyToOneAssociations
 
 		EntityAssociation association = company.association( "car.company" );
 		assertNull( association );
-	}
-
-	@Test
-	public void companyHasClients() {
-		EntityConfiguration company = entityRegistry.getEntityConfiguration( Company.class );
-		EntityAssociation association = company.association( "client.company" );
-
-		assertNotNull( association );
-
-		AssociatedEntityQueryExecutor<Client> executor
-				= association.getAttribute( AssociatedEntityQueryExecutor.class );
-
-		verifyClients( executor, one, john );
-		verifyClients( executor, two, joe, peter );
-		verifyClients( executor, three );
 	}
 
 	@Test

@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -36,13 +37,14 @@ import org.springframework.security.access.AccessDeniedException;
  * @since 2.0.0
  */
 @Slf4j
-public class ActionAllowedAuthorizationViewProcessor extends SimpleEntityViewProcessorAdapter
+public final class ActionAllowedAuthorizationViewProcessor extends SimpleEntityViewProcessorAdapter
 {
 	/**
 	 * Set the {@link AllowableAction} that the principal should have on the {@link com.foreach.across.modules.entity.registry.EntityConfiguration}
 	 * being viewed.  This will take the entity instance into account if there is one.
 	 */
 	@Setter
+	@Getter
 	private AllowableAction requiredAllowableAction;
 
 	@Override

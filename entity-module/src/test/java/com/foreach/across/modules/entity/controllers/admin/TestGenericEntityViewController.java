@@ -28,7 +28,6 @@ import com.foreach.across.modules.entity.views.request.EntityViewCommandValidato
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -52,7 +51,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class TestGenericEntityViewController
 {
@@ -118,7 +116,7 @@ public class TestGenericEntityViewController
 	public void defaultViewName() throws Exception {
 		when( entityView.getTemplate() ).thenReturn( null );
 
-		mockMvc.perform( get( "/new-entities/type?view=someListView" ) )
+		mockMvc.perform( get( "/entities/type?view=someListView" ) )
 		       .andExpect( status().isOk() )
 		       .andExpect( view().name( PageContentStructure.TEMPLATE ) );
 	}
@@ -129,7 +127,7 @@ public class TestGenericEntityViewController
 		when( entityView.getRedirectUrl() ).thenReturn( "url" );
 		when( webAppPathResolver.redirect( "url" ) ).thenReturn( "redirect:url" );
 
-		mockMvc.perform( get( "/new-entities/type" ) )
+		mockMvc.perform( get( "/entities/type" ) )
 		       .andExpect( status().is3xxRedirection() )
 		       .andExpect( view().name( "redirect:url" ) );
 	}
@@ -139,18 +137,18 @@ public class TestGenericEntityViewController
 		when( entityView.isCustomView() ).thenReturn( true );
 		when( entityView.getCustomView() ).thenReturn( "custom view" );
 
-		mockMvc.perform( get( "/new-entities/type" ) )
+		mockMvc.perform( get( "/entities/type" ) )
 		       .andExpect( status().isOk() )
 		       .andExpect( view().name( "custom view" ) );
 	}
 
 	@Test
 	public void customViewAndPartialParameter() throws Exception {
-		mockMvc.perform( get( "/new-entities/type?view=someListView" ) )
+		mockMvc.perform( get( "/entities/type?view=someListView" ) )
 		       .andExpect( status().isOk() );
 		verify( viewRequest ).setViewName( "someListView" );
 
-		mockMvc.perform( get( "/new-entities/type/create?view=otherView&_partial=header" ) )
+		mockMvc.perform( get( "/entities/type/create?view=otherView&_partial=header" ) )
 		       .andExpect( status().isOk() );
 		verify( viewRequest ).setViewName( "otherView" );
 		verify( viewRequest ).setPartialFragment( "header" );
@@ -158,7 +156,7 @@ public class TestGenericEntityViewController
 
 	@Test
 	public void validatorNotRegisteredForGet() throws Exception {
-		mockMvc.perform( get( "/new-entities/type/create" ) )
+		mockMvc.perform( get( "/entities/type/create" ) )
 		       .andExpect( status().isOk() );
 
 		verify( validator, never() ).validate( same( command ), any() );
@@ -166,7 +164,7 @@ public class TestGenericEntityViewController
 
 	@Test
 	public void validatorRegisteredForPost() throws Exception {
-		mockMvc.perform( post( "/new-entities/type/create" ) )
+		mockMvc.perform( post( "/entities/type/create" ) )
 		       .andExpect( status().isOk() );
 
 		verify( validator ).validate( same( command ), any() );
@@ -174,7 +172,7 @@ public class TestGenericEntityViewController
 
 	@Test
 	public void validatorRegisteredForPut() throws Exception {
-		mockMvc.perform( put( "/new-entities/type/create" ) )
+		mockMvc.perform( put( "/entities/type/create" ) )
 		       .andExpect( status().isOk() );
 
 		verify( validator ).validate( same( command ), any() );
@@ -182,7 +180,7 @@ public class TestGenericEntityViewController
 
 	@Test
 	public void listView() throws Exception {
-		mockMvc.perform( get( "/new-entities/type" ) )
+		mockMvc.perform( get( "/entities/type" ) )
 		       .andExpect( status().isOk() )
 		       .andExpect( model().attribute( "entityViewContext", viewContext ) )
 		       .andExpect( model().attribute( "entityViewRequest", viewRequest ) )
@@ -208,7 +206,7 @@ public class TestGenericEntityViewController
 
 	@Test
 	public void createView() throws Exception {
-		mockMvc.perform( get( "/new-entities/type/create" ) )
+		mockMvc.perform( get( "/entities/type/create" ) )
 		       .andExpect( status().isOk() )
 		       .andExpect( model().attribute( "entityViewContext", viewContext ) )
 		       .andExpect( model().attribute( "entityViewRequest", viewRequest ) )
@@ -236,7 +234,7 @@ public class TestGenericEntityViewController
 	public void genericView() throws Exception {
 		when( viewContext.holdsEntity() ).thenReturn( true );
 
-		mockMvc.perform( post( "/new-entities/type/123" ) )
+		mockMvc.perform( post( "/entities/type/123" ) )
 		       .andExpect( status().isOk() )
 		       .andExpect( model().attribute( "entityViewContext", viewContext ) )
 		       .andExpect( model().attribute( "entityViewRequest", viewRequest ) )
@@ -264,7 +262,7 @@ public class TestGenericEntityViewController
 	public void updateView() throws Exception {
 		when( viewContext.holdsEntity() ).thenReturn( true );
 
-		mockMvc.perform( get( "/new-entities/type/123/update" ) )
+		mockMvc.perform( get( "/entities/type/123/update" ) )
 		       .andExpect( status().isOk() )
 		       .andExpect( model().attribute( "entityViewContext", viewContext ) )
 		       .andExpect( model().attribute( "entityViewRequest", viewRequest ) )
@@ -292,7 +290,7 @@ public class TestGenericEntityViewController
 	public void deleteView() throws Exception {
 		when( viewContext.holdsEntity() ).thenReturn( true );
 
-		mockMvc.perform( get( "/new-entities/type/123/delete" ) )
+		mockMvc.perform( get( "/entities/type/123/delete" ) )
 		       .andExpect( status().isOk() )
 		       .andExpect( model().attribute( "entityViewContext", viewContext ) )
 		       .andExpect( model().attribute( "entityViewRequest", viewRequest ) )

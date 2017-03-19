@@ -18,15 +18,19 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.MethodParameter;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import java.util.Objects;
 
 /**
  * Supports creating a {@link org.springframework.data.domain.Pageable} from request parameters and assigning it to a specific extension attribute.
@@ -62,18 +66,24 @@ public final class PageableExtensionViewProcessor extends SimpleEntityViewProces
 	@Setter
 	private String extensionName = DEFAULT_EXTENSION_NAME;
 
+	@Getter
+	private Pageable defaultPageable = new PageRequest( 0, 20 );
+
+	private String prefix;
+
 	/**
 	 * Set the default {@link Pageable} that should be used if no parameters specified on the request.
 	 */
 	public void setDefaultPageable( Pageable defaultPageable ) {
+		this.defaultPageable = defaultPageable;
 		pageableResolver.setFallbackPageable( defaultPageable );
 	}
 
 	/**
-	 *  Set the prefix for all page related request parameter names.
+	 * Set the prefix for all page related request parameter names.
 	 */
 	public void setRequestParameterPrefix( String requestParameterPrefix ) {
-		String prefix = StringUtils.defaultString( requestParameterPrefix );
+		prefix = StringUtils.defaultString( requestParameterPrefix );
 
 		pageableResolver.setPrefix( prefix );
 		sortResolver.setSortParameter( prefix + "sort" );
@@ -85,5 +95,24 @@ public final class PageableExtensionViewProcessor extends SimpleEntityViewProces
 
 		Pageable pageable = pageableResolver.resolveArgument( METHOD_PARAMETER, null, webRequest, null );
 		command.addExtensions( extensionName, pageable );
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( o == null || getClass() != o.getClass() ) {
+			return false;
+		}
+		PageableExtensionViewProcessor that = (PageableExtensionViewProcessor) o;
+		return Objects.equals( extensionName, that.extensionName ) &&
+				Objects.equals( defaultPageable, that.defaultPageable ) &&
+				Objects.equals( prefix, that.prefix );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( extensionName, defaultPageable, prefix );
 	}
 }

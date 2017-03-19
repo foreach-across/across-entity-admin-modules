@@ -23,7 +23,6 @@ import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.views.EntityListView;
 import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.web.WebViewCreationContext;
@@ -51,7 +50,7 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  * @since 2.0.0
  */
 @Deprecated
-public class OldEntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
+public class OldEntityQueryFilterProcessor extends WebViewProcessorAdapter implements EntityListViewPageFetcher<WebViewCreationContext>
 {
 	private static final String PARAM = "eqFilter";
 
@@ -67,8 +66,9 @@ public class OldEntityQueryFilterProcessor extends WebViewProcessorAdapter<Entit
 		command.addExtensions( PARAM, "" );
 	}
 
+
 	@Override
-	protected void extendViewModel( EntityListView view ) {
+	protected void extendViewModel( EntityView view ) {
 		EntityViewRequest request = view.getAttribute( "viewRequest", EntityViewRequest.class );
 		String filter = (String) request.getExtensions().get( PARAM );
 

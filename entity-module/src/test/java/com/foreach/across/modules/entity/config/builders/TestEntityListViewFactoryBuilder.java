@@ -16,27 +16,33 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
-import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
-import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
-import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.EntityViewViewFactory;
-import com.foreach.across.modules.entity.views.processors.OldEntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
+import com.foreach.across.modules.entity.views.DispatchingEntityViewFactory;
+import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.processors.DelegatingEntityFetchingViewProcessor;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
+import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
+import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -49,110 +55,116 @@ public class TestEntityListViewFactoryBuilder
 	@Mock
 	private AutowireCapableBeanFactory beanFactory;
 
+	@Mock
+	private DispatchingEntityViewFactory dispatchingViewFactory;
+
 	private EntityListViewFactoryBuilder builder;
+	private EntityViewProcessorRegistry processors;
 
 	@Before
 	public void before() {
-		builder = new EntityListViewFactoryBuilder( beanFactory );
-	}
+		processors = new EntityViewProcessorRegistry();
 
-	@Test(expected = IllegalArgumentException.class)
-	public void buildRequiresAFactoryToBeSet() {
-		builder.build();
-	}
+		when( dispatchingViewFactory.getProcessorRegistry() ).thenReturn( processors );
+		when( beanFactory.createBean( DispatchingEntityViewFactory.class ) ).thenReturn( dispatchingViewFactory );
 
-	@Test(expected = IllegalArgumentException.class)
-	public void factoryMustBeListViewFactory() {
-		builder.factory( mock( EntityViewViewFactory.class ) ).build();
+		builder = new EntityListViewFactoryBuilder( beanFactory ).factoryType( DispatchingEntityViewFactory.class );
 	}
 
 	@Test
-	public void applyListViewFactory() {
-		EntityListViewFactory factory = mock( EntityListViewFactory.class );
-		MutableEntityPropertyRegistry propertyRegistry = mock( MutableEntityPropertyRegistry.class );
-		when( factory.getPropertyRegistry() ).thenReturn( propertyRegistry );
+	public void propertiesToShowAndViewElementMode() {
+		SortableTableRenderingViewProcessor tableRenderingViewProcessor = new SortableTableRenderingViewProcessor();
+		when( beanFactory.createBean( SortableTableRenderingViewProcessor.class ) ).thenReturn( tableRenderingViewProcessor );
 
-		EntityViewProcessor one = mock( EntityViewProcessor.class );
-		EntityViewProcessor two = mock( EntityViewProcessor.class );
+		assertSame( builder, builder.showProperties( "one", "two" )
+		                            .viewElementMode( ViewElementMode.CONTROL )
+		                            .sortableOn( "three", "four" )
+		                            .showResultNumber( false ) );
+		assertSame( dispatchingViewFactory, builder.build() );
 
-		builder.template( "template" )
-		       .showProperties( "one", "two" )
-		       .properties( props -> props.property( "name" ).displayName( "test" ) )
-		       .viewProcessor( one )
-		       .viewProcessor( two )
-		       .defaultSort( "name" )
-		       .pageFetcher( mock( EntityListViewPageFetcher.class ) )
-		       .showResultNumber( false )
-		       .pageSize( 25 )
-		       .sortableOn( "two" )
-		       .apply( factory );
+		Optional<SortableTableRenderingViewProcessor> processor
+				= processors.getProcessor( SortableTableRenderingViewProcessor.class.getName(), SortableTableRenderingViewProcessor.class );
+		assertTrue( processor.isPresent() );
+		processor.ifPresent( p -> assertSame( tableRenderingViewProcessor, p ) );
 
-		verify( factory ).setTemplate( "template" );
-		verify( factory ).setProcessors( new LinkedHashSet<>( Arrays.asList( one, two ) ) );
-		verify( factory ).setPropertyComparator( EntityPropertyComparators.ordered( "one", "two" ) );
-		verify( propertyRegistry ).register( any() );
-		verify( factory ).setDefaultSort( new Sort( ASC, "name" ) );
-		verify( factory ).setPageSize( 25 );
-		verify( factory ).setPageFetcher( any() );
-		verify( factory ).setShowResultNumber( false );
-		verify( factory ).setSortableProperties( Arrays.asList( "two" ) );
+		SortableTableRenderingViewProcessor expected = new SortableTableRenderingViewProcessor();
+		expected.setViewElementMode( ViewElementMode.CONTROL );
+		expected.setSortableProperties( Arrays.asList( "three", "four" ) );
+		expected.setShowResultNumber( false );
+		expected.setPropertySelector( EntityPropertySelector.of( "one", "two" ) );
+		assertEquals( expected, tableRenderingViewProcessor );
 	}
 
 	@Test
-	public void customFilter() {
-		OldEntityQueryFilterProcessor filter = mock( OldEntityQueryFilterProcessor.class );
-		EntityListViewFactory factory = mock( EntityListViewFactory.class );
+	public void pageableProperties() {
+		PageableExtensionViewProcessor pageableProcessor = new PageableExtensionViewProcessor();
+		when( beanFactory.createBean( PageableExtensionViewProcessor.class ) ).thenReturn( pageableProcessor );
 
-		builder.filter( filter ).apply( factory );
+		assertSame( builder, builder.pageSize( 200 ) );
+		assertSame( dispatchingViewFactory, builder.build() );
 
-		verify( factory ).setProcessors( Collections.singleton( filter ) );
-		verify( factory ).setPageFetcher( filter );
+		Optional<PageableExtensionViewProcessor> processor
+				= processors.getProcessor( PageableExtensionViewProcessor.class.getName(), PageableExtensionViewProcessor.class );
+		assertTrue( processor.isPresent() );
+		processor.ifPresent( p -> assertSame( pageableProcessor, p ) );
+
+		PageableExtensionViewProcessor expected = new PageableExtensionViewProcessor();
+		expected.setDefaultPageable( new PageRequest( 0, 200 ) );
+		assertEquals( expected, pageableProcessor );
+
+		builder.defaultSort( "name" ).build();
+		expected.setDefaultPageable( new PageRequest( 0, 200, new Sort( "name" ) ) );
+		assertEquals( expected, pageableProcessor );
+
+		builder.pageSize( 10 ).build();
+		expected.setDefaultPageable( new PageRequest( 0, 10, new Sort( "name" ) ) );
+		assertEquals( expected, pageableProcessor );
 	}
 
 	@Test
 	public void entityQueryFilterEnabled() {
-		OldEntityQueryFilterProcessor filter = mock( OldEntityQueryFilterProcessor.class );
-		when( beanFactory.getBean( OldEntityQueryFilterProcessor.class ) ).thenReturn( filter );
+		EntityQueryFilterProcessor queryFilterProcessor = mock( EntityQueryFilterProcessor.class );
+		when( beanFactory.createBean( EntityQueryFilterProcessor.class ) ).thenReturn( queryFilterProcessor );
 
-		EntityListViewFactory factory = mock( EntityListViewFactory.class );
+		builder.entityQueryFilter( true ).build();
 
-		builder.entityQueryFilter( true ).apply( factory );
+		Optional<EntityQueryFilterProcessor> processor
+				= processors.getProcessor( EntityQueryFilterProcessor.class.getName(), EntityQueryFilterProcessor.class );
+		assertTrue( processor.isPresent() );
+		processor.ifPresent( p -> assertSame( queryFilterProcessor, p ) );
 
-		verify( factory ).setProcessors( Collections.singleton( filter ) );
-		verify( factory ).setPageFetcher( filter );
+		builder.entityQueryFilter( true ).build();
+		processor = processors.getProcessor( EntityQueryFilterProcessor.class.getName(), EntityQueryFilterProcessor.class );
+		assertTrue( processor.isPresent() );
+		processor.ifPresent( p -> assertSame( queryFilterProcessor, p ) );
+
+		builder.entityQueryFilter( false ).build();
+		assertFalse( processors.contains( EntityQueryFilterProcessor.class.getName() ) );
 	}
 
 	@Test
-	public void entityQueryFilterDisabledAgain() {
-		OldEntityQueryFilterProcessor filter = mock( OldEntityQueryFilterProcessor.class );
-		when( beanFactory.getBean( OldEntityQueryFilterProcessor.class ) ).thenReturn( filter );
+	public void customPageFetcher() {
+		BiFunction<EntityViewContext, Pageable, Iterable<?>> consumer = ( ctx, pageable ) -> null;
 
-		EntityListViewFactory factory = mock( EntityListViewFactory.class );
+		assertSame( builder, builder.pageFetcher( consumer ) );
+		assertSame( dispatchingViewFactory, builder.build() );
 
-		builder.entityQueryFilter( true )
-		       .entityQueryFilter( false )
-		       .apply( factory );
+		Optional<EntityViewProcessorRegistry.EntityViewProcessorRegistration> registration
+				= processors.getProcessorRegistration( DelegatingEntityFetchingViewProcessor.class.getName() );
+		assertTrue( registration.isPresent() );
+		registration.ifPresent( r -> {
+			assertEquals( DelegatingEntityFetchingViewProcessor.DEFAULT_ORDER, r.getOrder() );
+			assertEquals( new DelegatingEntityFetchingViewProcessor( consumer ), r.getProcessor() );
+		} );
 
-		verify( factory, never() ).setProcessors( any() );
-		verify( factory, never() ).setPageFetcher( any() );
-	}
+		builder.pageFetcher( pageable -> Collections.emptyList() ).build();
 
-	@Test
-	public void customPageFetcherIsKept() {
-		OldEntityQueryFilterProcessor filter = mock( OldEntityQueryFilterProcessor.class );
-		when( beanFactory.getBean( OldEntityQueryFilterProcessor.class ) ).thenReturn( filter );
-
-		EntityListViewFactory factory = mock( EntityListViewFactory.class );
-		EntityListViewPageFetcher pageFetcher = mock( EntityListViewPageFetcher.class );
-		EntityViewProcessor one = mock( EntityViewProcessor.class );
-
-		builder.entityQueryFilter( true )
-		       .viewProcessor( one )
-		       .pageFetcher( pageFetcher )
-		       .entityQueryFilter( false )
-		       .apply( factory );
-
-		verify( factory ).setProcessors( Collections.singleton( one ) );
-		verify( factory ).setPageFetcher( pageFetcher );
+		registration = processors.getProcessorRegistration( DelegatingEntityFetchingViewProcessor.class.getName() );
+		assertTrue( registration.isPresent() );
+		registration.ifPresent( r -> {
+			assertEquals( DelegatingEntityFetchingViewProcessor.DEFAULT_ORDER, r.getOrder() );
+			assertNotNull( r.getProcessor( DelegatingEntityFetchingViewProcessor.class ) );
+			assertNotEquals( new DelegatingEntityFetchingViewProcessor( consumer ), r.getProcessor() );
+		} );
 	}
 }

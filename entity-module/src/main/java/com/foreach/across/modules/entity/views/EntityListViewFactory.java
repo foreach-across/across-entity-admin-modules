@@ -57,7 +57,7 @@ import java.util.List;
  * @author Arne Vandamme
  */
 @Deprecated
-public class EntityListViewFactory<V extends ViewCreationContext> extends ConfigurablePropertiesEntityViewFactorySupport<V, EntityListView>
+public class EntityListViewFactory extends ConfigurablePropertiesEntityViewFactorySupport
 {
 	private static final String FORM_NAME = "entityList-form";
 
@@ -151,7 +151,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	}
 
 	@Override
-	protected void preparePageContentStructure( PageContentStructure page, V creationContext, EntityListView view ) {
+	protected void preparePageContentStructure( PageContentStructure page, WebViewCreationContext creationContext, EntityView view ) {
 		super.preparePageContentStructure( page, creationContext, view );
 
 		if ( creationContext.isForAssociation() ) {
@@ -177,10 +177,10 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 	}
 
 	@Override
-	protected ContainerViewElement buildViewElements( V viewCreationContext,
-	                                                  ViewElementBuilderContext<EntityListView> viewElementBuilderContext,
+	protected ContainerViewElement buildViewElements( WebViewCreationContext viewCreationContext,
+	                                                  ViewElementBuilderContext viewElementBuilderContext,
 	                                                  EntityMessageCodeResolver messageCodeResolver ) {
-		EntityListView view = viewElementBuilderContext.getEntityView();
+		EntityListView view = (EntityListView) viewElementBuilderContext.getEntityView();
 		final EntityLinkBuilder linkBuilder = view.getEntityLinkBuilder();
 
 		Pageable pageable = buildPageable( view );
@@ -252,7 +252,7 @@ public class EntityListViewFactory<V extends ViewCreationContext> extends Config
 
 			dispatchToProcessors(
 					SortableTableEntityListViewProcessor.class,
-					p -> p.configureSortableTable( (WebViewCreationContext) viewCreationContext, view, tableBuilder )
+					p -> p.configureSortableTable(  viewCreationContext, view, tableBuilder )
 			);
 
 			container.add( tableBuilder );

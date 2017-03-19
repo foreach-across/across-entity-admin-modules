@@ -36,6 +36,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -58,7 +59,7 @@ import java.util.stream.Collectors;
 @Component
 @Exposed
 @Scope("prototype")
-public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
+public final class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 {
 	public static final String ATTRIBUTE_PROPERTY_BUILDERS = "propertyBuildersMap";
 	// todo: make configurable
@@ -115,6 +116,24 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 		return (ViewElementBuilderMap) entityView
 				.asMap()
 				.computeIfAbsent( ATTRIBUTE_PROPERTY_BUILDERS, key -> new ViewElementBuilderMap() );
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( o == null || getClass() != o.getClass() ) {
+			return false;
+		}
+		PropertyRenderingViewProcessor that = (PropertyRenderingViewProcessor) o;
+		return Objects.equals( selector, that.selector ) &&
+				Objects.equals( viewElementMode, that.viewElementMode );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( selector, viewElementMode );
 	}
 
 	@Autowired

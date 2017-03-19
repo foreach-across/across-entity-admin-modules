@@ -52,8 +52,8 @@ import java.util.Optional;
  * @since 2.0.0
  */
 @Deprecated
-public class EntityDeleteViewFactory<V extends ViewCreationContext>
-		extends SimpleEntityViewFactorySupport<V, EntityView>
+public class EntityDeleteViewFactory
+		extends SimpleEntityViewFactorySupport
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityDeleteViewFactory.class );
 
@@ -85,7 +85,7 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 	}
 
 	@Override
-	protected void preparePageContentStructure( PageContentStructure page, V creationContext, EntityView view ) {
+	protected void preparePageContentStructure( PageContentStructure page, WebViewCreationContext creationContext, EntityView view ) {
 		super.preparePageContentStructure( page, creationContext, view );
 
 		EntityMessages entityMessages = view.getEntityMessages();
@@ -120,7 +120,7 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 	}
 
 	@Override
-	protected void buildViewModel( V viewCreationContext,
+	protected void buildViewModel( WebViewCreationContext WebViewCreationContext,
 	                               EntityConfiguration entityConfiguration,
 	                               EntityMessageCodeResolver codeResolver,
 	                               EntityView view ) {
@@ -133,7 +133,7 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		                                                                       builderContext, messages );
 
 		ContainerViewElementBuilder buttons = buildButtons( linkBuilder, messages, viewConfiguration,
-		                                                    viewCreationContext );
+		                                                    WebViewCreationContext );
 
 		String confirmationMessage = messages.withNameSingular( "views.deleteView.confirmation" );
 		if ( viewConfiguration.isDeleteDisabled() ) {
@@ -182,10 +182,10 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 	private ContainerViewElementBuilder buildButtons( EntityLinkBuilder linkBuilder,
 	                                                  EntityMessages messages,
 	                                                  BuildEntityDeleteViewEvent viewConfiguration,
-	                                                  V viewCreationContext ) {
+	                                                  WebViewCreationContext WebViewCreationContext ) {
 		ContainerViewElementBuilder buttons = bootstrapUi.container().name( "buttons" );
 
-		Optional<String> fromUrl = Optional.ofNullable( retrieveFromUrl( viewCreationContext ) );
+		Optional<String> fromUrl = Optional.ofNullable( retrieveFromUrl( WebViewCreationContext ) );
 		String cancelUrl = fromUrl.orElseGet( linkBuilder::overview );
 
 		if ( !viewConfiguration.isDeleteDisabled() ) {
@@ -207,8 +207,8 @@ public class EntityDeleteViewFactory<V extends ViewCreationContext>
 		return buttons;
 	}
 
-	private String retrieveFromUrl( ViewCreationContext viewCreationContext ) {
-		return ( (WebViewCreationContext) viewCreationContext ).getRequest().getParameter( "from" );
+	private String retrieveFromUrl( WebViewCreationContext webViewCreationContext ) {
+		return webViewCreationContext.getRequest().getParameter( "from" );
 	}
 
 	private BuildEntityDeleteViewEvent buildViewConfiguration( EntityConfiguration<?> entityConfiguration,

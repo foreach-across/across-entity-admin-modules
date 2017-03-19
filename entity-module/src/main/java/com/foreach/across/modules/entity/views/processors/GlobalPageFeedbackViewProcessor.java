@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.Style;
@@ -28,6 +29,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.LinkedHashMap;
@@ -48,7 +50,9 @@ import java.util.stream.Stream;
  * @see com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper#addGlobalFeedbackAfterRedirect(EntityViewRequest, Style, String)
  * @since 2.0.0
  */
-public class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAdapter
+@Component
+@Exposed
+public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAdapter
 {
 	public static final String FEEDBACK_ATTRIBUTE_KEY = "feedbackMessageCodes";
 

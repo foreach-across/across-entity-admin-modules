@@ -16,11 +16,13 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.modules.entity.config.builders.EntityListViewFactoryBuilder;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -34,6 +36,11 @@ import java.util.function.Function;
  */
 public final class DelegatingEntityFetchingViewProcessor extends AbstractEntityFetchingViewProcessor
 {
+	/**
+	 * Default order that this processor will have if it has been added via the {@link EntityListViewFactoryBuilder}.
+	 */
+	public static final int DEFAULT_ORDER = DefaultEntityFetchingViewProcessor.DEFAULT_ORDER - 100;
+
 	private BiFunction<EntityViewContext, Pageable, Iterable<?>> delegate;
 
 	public DelegatingEntityFetchingViewProcessor() {
@@ -69,5 +76,22 @@ public final class DelegatingEntityFetchingViewProcessor extends AbstractEntityF
 		}
 
 		return (Iterable<Object>) delegate.apply( entityViewRequest.getEntityViewContext(), pageable );
+	}
+
+	@Override
+	public boolean equals( Object o ) {
+		if ( this == o ) {
+			return true;
+		}
+		if ( o == null || getClass() != o.getClass() ) {
+			return false;
+		}
+		DelegatingEntityFetchingViewProcessor that = (DelegatingEntityFetchingViewProcessor) o;
+		return Objects.equals( delegate, that.delegate );
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash( delegate );
 	}
 }

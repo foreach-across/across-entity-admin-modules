@@ -22,17 +22,12 @@ import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
-import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
-import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.ViewCreationContext;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.samples.entity.EntityModuleTestApplication;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -123,15 +118,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        )
 						        .deleteMethod( categoryRepository::remove )
 		        )
-		        .listView( lvb -> lvb.pageFetcher( new EntityListViewPageFetcher()
-		        {
-			        @Override
-			        public Page fetchPage( ViewCreationContext viewCreationContext,
-			                               Pageable pageable,
-			                               EntityView model ) {
-				        return new PageImpl<>( categoryRepository );
-			        }
-		        } ) )
+		        .listView( lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( categoryRepository ) ) )
 		        .createFormView( fvb -> fvb.showProperties( "id", "name" ) )
 		        .updateFormView( fvb -> fvb.showProperties( "name" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )

@@ -18,9 +18,9 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.modules.entity.controllers.EntityViewCommand;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.ViewCreationContext;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.DataBinder;
@@ -32,39 +32,39 @@ import org.springframework.web.bind.WebDataBinder;
  * @author Andy Somers, Arne Vandamme
  */
 @Deprecated
-public class ViewProcessorAdapter<T extends ViewCreationContext, U extends EntityView>
-		implements EntityViewProcessor<T, U>
+public class ViewProcessorAdapter
+		implements EntityViewProcessor
 {
 	@Override
 	public void prepareModelAndCommand( String viewName,
-	                                    T creationContext,
+	                                    WebViewCreationContext creationContext,
 	                                    EntityViewCommand command,
 	                                    ModelMap model ) {
 	}
 
 	@Override
 	public void prepareDataBinder( String viewName,
-	                               T creationContext,
+	                               WebViewCreationContext creationContext,
 	                               EntityViewCommand command,
 	                               DataBinder dataBinder ) {
 	}
 
 	@Override
-	public final void preProcess( T creationContext, U view ) {
+	public final void preProcess( WebViewCreationContext creationContext, EntityView view ) {
 		applyCustomPreProcessing( creationContext, view );
 	}
 
-	protected void applyCustomPreProcessing( T creationContext, U view ) {
+	protected void applyCustomPreProcessing( WebViewCreationContext creationContext, EntityView view ) {
 	}
 
 	@Override
-	public final void postProcess( T creationContext, U view ) {
+	public final void postProcess( WebViewCreationContext creationContext, EntityView view ) {
 		applyCustomPostProcessing( creationContext, view );
 
 		modifyViewElements( view.getViewElements() );
 	}
 
-	protected void applyCustomPostProcessing( T creationContext, U view ) {
+	protected void applyCustomPostProcessing( WebViewCreationContext creationContext, EntityView view ) {
 
 	}
 

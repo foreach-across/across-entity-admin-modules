@@ -24,6 +24,7 @@ import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.mapping.SimpleAssociationHandler;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -34,7 +35,8 @@ import java.util.Collection;
  *
  * @author Arne Vandamme
  */
-public class RepositoryEntityAssociationsBuilder
+@Component
+class RepositoryEntityAssociationsBuilder
 {
 	@Autowired
 	private Collection<EntityAssociationBuilder> entityAssociationBuilders;

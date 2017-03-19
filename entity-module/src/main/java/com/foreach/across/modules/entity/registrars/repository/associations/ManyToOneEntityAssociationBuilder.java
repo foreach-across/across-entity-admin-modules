@@ -42,7 +42,7 @@ import javax.persistence.ManyToOne;
  * @author Andy Somers, Arne Vandamme
  */
 @Component
-public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuilder
+class ManyToOneEntityAssociationBuilder implements EntityAssociationBuilder
 {
 	private static final Logger LOG = LoggerFactory.getLogger( ManyToOneEntityAssociationBuilder.class );
 
@@ -66,10 +66,16 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 			association.setTargetEntityConfiguration( to );
 			association.setTargetProperty( to.getPropertyRegistry().getProperty( property.getName() ) );
 
-			buildCreateView( association );
-			buildUpdateView( association );
-			buildListView( association, property );
-			buildDeleteView( association );
+			EntityQueryExecutor<?> queryExecutor = to.getAttribute( EntityQueryExecutor.class );
+			association.setAttribute(
+					AssociatedEntityQueryExecutor.class,
+					new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), queryExecutor )
+			);
+
+//			buildCreateView( association );
+//			buildUpdateView( association );
+//			buildListView( association, property );
+//			buildDeleteView( association );
 		}
 	}
 

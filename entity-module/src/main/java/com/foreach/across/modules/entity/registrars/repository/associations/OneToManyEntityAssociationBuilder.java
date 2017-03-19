@@ -42,7 +42,7 @@ import javax.persistence.OneToMany;
  * @author Andy Somers
  */
 @Component
-public class OneToManyEntityAssociationBuilder implements EntityAssociationBuilder
+class OneToManyEntityAssociationBuilder implements EntityAssociationBuilder
 {
 	private static final Logger LOG = LoggerFactory.getLogger( OneToManyEntityAssociationBuilder.class );
 
@@ -81,9 +81,9 @@ public class OneToManyEntityAssociationBuilder implements EntityAssociationBuild
 				// Hide by default as will be managed through the property
 				association.setHidden( true );
 
-				buildCreateView( association );
-				buildListView( association, property );
-				buildDeleteView( association );
+//				buildCreateView( association );
+//				buildListView( association, property );
+//				buildDeleteView( association );
 			}
 		}
 	}

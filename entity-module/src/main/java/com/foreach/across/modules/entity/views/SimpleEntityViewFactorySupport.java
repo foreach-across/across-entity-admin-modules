@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewCon
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.WebViewCreationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.ModelMap;
@@ -47,11 +48,11 @@ import java.util.function.Consumer;
  * @author Arne Vandamme
  */
 @Deprecated
-public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationContext, T extends EntityView> implements EntityViewFactory<V>
+public abstract class SimpleEntityViewFactorySupport implements EntityViewFactory<WebViewCreationContext>
 {
 	public static final String CONTAINER = "_entityView";
 
-	private Collection<EntityViewProcessor<V, T>> processors = new ArrayDeque<>();
+	private Collection<EntityViewProcessor> processors = new ArrayDeque<>();
 
 	private String template;
 	private MessageSource messageSource;
@@ -119,7 +120,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		this.entityLinkBuilder = entityLinkBuilder;
 	}
 
-	public Collection<EntityViewProcessor<V, T>> getProcessors() {
+	public Collection<EntityViewProcessor> getProcessors() {
 		return processors;
 	}
 
@@ -128,13 +129,13 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	 *
 	 * @param processors A Collection of ViewPreProcessors
 	 */
-	public void setProcessors( Collection<EntityViewProcessor<V, T>> processors ) {
+	public void setProcessors( Collection<EntityViewProcessor> processors ) {
 		this.processors.addAll( processors );
 	}
 
 	@Override
 	public void prepareModelAndCommand( String viewName,
-	                                    V creationContext,
+	                                    WebViewCreationContext creationContext,
 	                                    EntityViewCommand command,
 	                                    ModelMap model ) {
 		registerLinkBuilder( creationContext, model );
@@ -148,7 +149,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 
 	@Override
 	public void prepareDataBinder( String viewName,
-	                               V creationContext,
+	                               WebViewCreationContext creationContext,
 	                               EntityViewCommand command,
 	                               DataBinder dataBinder ) {
 		dispatchToProcessors(
@@ -165,11 +166,11 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	}
 
 	@Override
-	public EntityView create( String viewName, V creationContext, ModelMap model ) {
+	public EntityView create( String viewName, WebViewCreationContext creationContext, ModelMap model ) {
 		EntityConfiguration entityConfiguration = creationContext.getEntityConfiguration();
 		Assert.notNull( entityConfiguration );
 
-		T view = createEntityView( model );
+		EntityView view = createEntityView( model );
 		view.setName( viewName );
 		view.setTemplate( template );
 		view.setEntityConfiguration( entityConfiguration );
@@ -189,7 +190,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		return view;
 	}
 
-	protected void preparePageContentStructure( PageContentStructure page, V creationContext, T view ) {
+	protected void preparePageContentStructure( PageContentStructure page, WebViewCreationContext creationContext, EntityView view ) {
 		String successMessage = view.getAttribute( "successMessage", String.class );
 
 		if ( successMessage != null ) {
@@ -211,7 +212,7 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 	 * This registers the {@link com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder} in the model so it can
 	 * be used for redirect actions without rendering the actual view.
 	 */
-	protected void registerLinkBuilder( V creationContext, ModelMap model ) {
+	protected void registerLinkBuilder( WebViewCreationContext creationContext, ModelMap model ) {
 		EntityLinkBuilder linkBuilder = null;
 
 		if ( entityLinkBuilder != null ) {
@@ -244,14 +245,14 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		model.addAttribute( EntityView.ATTRIBUTE_ENTITY_LINKS, linkBuilder );
 	}
 
-	protected void preProcessEntityView( V creationContext, T view ) {
-		for ( EntityViewProcessor<V, T> processor : processors ) {
+	protected void preProcessEntityView( WebViewCreationContext creationContext, EntityView view ) {
+		for ( EntityViewProcessor processor : processors ) {
 			processor.preProcess( creationContext, view );
 		}
 	}
 
-	protected void postProcessEntityView( V creationContext, T view ) {
-		for ( EntityViewProcessor<V, T> processor : processors ) {
+	protected void postProcessEntityView( WebViewCreationContext creationContext, EntityView view ) {
+		for ( EntityViewProcessor processor : processors ) {
 			processor.postProcess( creationContext, view );
 		}
 	}
@@ -276,12 +277,12 @@ public abstract class SimpleEntityViewFactorySupport<V extends ViewCreationConte
 		return codeResolver;
 	}
 
-	protected abstract T createEntityView( ModelMap model );
+	protected abstract EntityView createEntityView( ModelMap model );
 
-	protected abstract void buildViewModel( V viewCreationContext,
+	protected abstract void buildViewModel( WebViewCreationContext WebViewCreationContext,
 	                                        EntityConfiguration entityConfiguration,
 	                                        EntityMessageCodeResolver codeResolver,
-	                                        T view );
+	                                        EntityView view );
 
 	@Override
 	public void prepareEntityViewContext( ConfigurableEntityViewContext entityViewContext ) {

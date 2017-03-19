@@ -16,48 +16,59 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport;
-import com.foreach.across.modules.entity.views.EntityViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.SimpleEntityViewFactorySupport;
+import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.processors.*;
+import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
  * Builder for creating a single {@link com.foreach.across.modules.entity.views.EntityViewFactory}.
+ * <p>
  * Supports {@link SimpleEntityViewFactorySupport} and
  * {@link com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport}.  Which properties
  * will apply will depend on the actual {@link #factoryType(Class)} configured.
  *
  * @author Arne Vandamme
+ * @see DispatchingEntityViewFactory
  * @since 2.0.0
  */
+@Slf4j
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class EntityViewFactoryBuilder
 {
 	private final AutowireCapableBeanFactory beanFactory;
 	private final Collection<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayDeque<>();
-	private final Collection<EntityViewProcessor> processors = new LinkedHashSet<>();
+	private final Collection<ProcessorEntry> processors = new ArrayDeque<>();
 	private final Collection<EntityViewProcessor> processorsToRemove = new LinkedHashSet<>();
+	private final Collection<BiConsumer<EntityViewFactory, EntityViewProcessorRegistry>> postProcessors = new ArrayDeque<>();
 
 	private Class<? extends EntityViewFactory> factoryType;
 	private EntityViewFactory factory;
 	private String[] propertiesToShow;
+	private ViewElementMode viewElementMode;
+	private String[] messagePrefixes;
 	private String template;
+	private AllowableAction requiredAllowableAction;
+	private EntityPropertyRegistry propertyRegistry;
 
 	@Autowired
 	public EntityViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
@@ -85,7 +96,7 @@ public class EntityViewFactoryBuilder
 	}
 
 	/**
-	 * Configure the specific of {@link EntityViewFactory} that should be used for this view.
+	 * Configure the specific {@link EntityViewFactory} that should be used for this view.
 	 * This will take precedence over a registered {@link #factoryType(Class)}.
 	 *
 	 * @param factory to use
@@ -99,10 +110,10 @@ public class EntityViewFactoryBuilder
 
 	/**
 	 * Configures the template this {@link EntityViewFactory} should use.
-	 * This requires the factory type to be a at least of type {@link SimpleEntityViewFactorySupport}.
 	 *
 	 * @param template the view should render
 	 * @return current builder
+	 * @see TemplateViewProcessor
 	 */
 	public EntityViewFactoryBuilder template( String template ) {
 		this.template = template;
@@ -110,7 +121,19 @@ public class EntityViewFactoryBuilder
 	}
 
 	/**
-	 * Customize the property registry attached to this view.
+	 * Set the property registry that should be attached to this view.  Will add a {@link EntityPropertyRegistryViewProcessor}.
+	 * This is required before a property registry can be customized using {@link #properties(Consumer)}.
+	 *
+	 * @param propertyRegistry to attach
+	 * @return current builder
+	 */
+	public EntityViewFactoryBuilder propertyRegistry( EntityPropertyRegistry propertyRegistry ) {
+		this.propertyRegistry = propertyRegistry;
+		return this;
+	}
+
+	/**
+	 * Customize the property registry attached to this view.  Requires a {@link EntityPropertyRegistryViewProcessor} to be set.
 	 *
 	 * @param registryConsumer to customize the property registry builder
 	 * @return current builder
@@ -133,29 +156,141 @@ public class EntityViewFactoryBuilder
 	}
 
 	/**
-	 * Add a processor object that should be applied to the view factory.
+	 * Configure the rendering mode for the properties.
 	 *
-	 * @param processor instance - should not be null
+	 * @param viewElementMode mode
 	 * @return current builder
-	 * @see com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter
 	 */
-	public EntityViewFactoryBuilder viewProcessor( EntityViewProcessor processor ) {
-		Assert.notNull( processor );
-		processors.add( processor );
-
+	public EntityViewFactoryBuilder viewElementMode( ViewElementMode viewElementMode ) {
+		this.viewElementMode = viewElementMode;
 		return this;
 	}
 
 	/**
-	 * Removes a previously registered processor instance.
+	 * Add a processor object that should be applied to the view factory.
 	 *
 	 * @param processor instance - should not be null
 	 * @return current builder
+	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
+	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
 	 */
-	public EntityViewFactoryBuilder removeViewProcessor( EntityViewProcessor processor ) {
+	public EntityViewFactoryBuilder viewProcessor( EntityViewProcessor processor ) {
 		Assert.notNull( processor );
-		processors.remove( processor );
-		processorsToRemove.add( processor );
+		return viewProcessor( viewProcessorName( processor.getClass() ), processor );
+	}
+
+	private String viewProcessorName( Class<?> processorType ) {
+		return ClassUtils.getUserClass( processorType ).getName();
+	}
+
+	/**
+	 * Add a processor object that should be applied to the view factory.
+	 * Register the processor under the given name.
+	 *
+	 * @param processorName unique processor name
+	 * @param processor     instance - should not be null
+	 * @return current builder
+	 * @see #postProcess(BiConsumer)
+	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
+	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
+	 */
+	public EntityViewFactoryBuilder viewProcessor( String processorName, EntityViewProcessor processor ) {
+		Assert.notNull( processorName );
+		Assert.notNull( processor );
+		processors.add( new ProcessorEntry( processorName, processor ) );
+		return this;
+	}
+
+	/**
+	 * Configure one or more message prefixes to use when rendering this view.
+	 *
+	 * @param messagePrefixes prefixes
+	 * @return current builder
+	 * @see com.foreach.across.modules.entity.views.processors.MessagePrefixingViewProcessor
+	 */
+	public EntityViewFactoryBuilder messagePrefix( String... messagePrefixes ) {
+		this.messagePrefixes = messagePrefixes;
+		return this;
+	}
+
+	/**
+	 * Configure the {@link AllowableAction} that the authenticated principal should have to access this view.
+	 *
+	 * @param action that is required
+	 * @return current builder
+	 * @see com.foreach.across.modules.entity.views.processors.ActionAllowedAuthorizationViewProcessor
+	 */
+	public EntityViewFactoryBuilder requiredAllowableAction( AllowableAction action ) {
+		this.requiredAllowableAction = action;
+		return this;
+	}
+
+	/**
+	 * Removes a processor with the given name.
+	 *
+	 * @param processorName unique name of the processor
+	 * @return current builder
+	 */
+	public EntityViewFactoryBuilder removeViewProcessor( String processorName ) {
+		Assert.notNull( processorName );
+		processors.add( new ProcessorEntry( processorName, null ) );
+		return this;
+	}
+
+	/**
+	 * Add a post processor for a single {@link EntityViewProcessor} with the default name determined by its implementing class.
+	 * Shortcut for easy post-processing of the default {@link EntityViewProcessor}s.
+	 *
+	 * @param viewProcessorType type of the view processor (will determine its name)
+	 * @param postProcessor     post processor
+	 * @param <U>               type of the view processor
+	 * @return current builder
+	 */
+	public <U extends EntityViewProcessor> EntityViewFactoryBuilder postProcess( Class<U> viewProcessorType, Consumer<U> postProcessor ) {
+		Assert.notNull( viewProcessorType );
+		Assert.notNull( postProcessor );
+		return postProcess( viewProcessorName( viewProcessorType ), viewProcessorType, postProcessor );
+	}
+
+	/**
+	 * Add a post processor for a single {@link EntityViewProcessor}.
+	 * Shortcut for easy post-processing of the default {@link EntityViewProcessor}s.
+	 *
+	 * @param viewProcessorName name of the view processor
+	 * @param viewProcessorType expected type of the view processor
+	 * @param postProcessor     post processor
+	 * @param <U>               type of the view processor
+	 * @return current builder
+	 */
+	public <U extends EntityViewProcessor> EntityViewFactoryBuilder postProcess( String viewProcessorName,
+	                                                                             Class<U> viewProcessorType,
+	                                                                             Consumer<U> postProcessor ) {
+		Assert.notNull( viewProcessorName );
+		Assert.notNull( viewProcessorType );
+		Assert.notNull( postProcessor );
+		postProcessors.add( ( factory, registry ) -> {
+			if ( registry != null ) {
+				registry.getProcessor( viewProcessorName, viewProcessorType )
+				        .ifPresent( postProcessor );
+			}
+		} );
+		return this;
+	}
+
+	/**
+	 * Add a post processor for this entire view factory.  If the view factory is not of type {@link DispatchingEntityViewFactory},
+	 * the second parameter ({@link EntityViewProcessorRegistry} will be {@code null}.
+	 * <p/>
+	 * Use this method if you want to make global modifications like changing the {@link EntityViewProcessor} ordering.
+	 * <p/>
+	 * The post processors will be called after general building.
+	 *
+	 * @param postProcessor post processor
+	 * @return current builder
+	 */
+	public EntityViewFactoryBuilder postProcess( BiConsumer<EntityViewFactory, EntityViewProcessorRegistry> postProcessor ) {
+		Assert.notNull( postProcessor );
+		postProcessors.add( postProcessor );
 		return this;
 	}
 
@@ -170,6 +305,7 @@ public class EntityViewFactoryBuilder
 
 		EntityViewFactory viewFactory = factory != null ? factory : createNewViewFactory( factoryType );
 		apply( viewFactory );
+		postProcess( viewFactory );
 
 		return viewFactory;
 	}
@@ -184,30 +320,71 @@ public class EntityViewFactoryBuilder
 	 * @param viewFactory to apply the builder settings to
 	 */
 	void apply( EntityViewFactory viewFactory ) {
-		if ( viewFactory instanceof SimpleEntityViewFactorySupport ) {
-			applySimpleAttributes( (SimpleEntityViewFactorySupport) viewFactory );
+		if ( viewFactory instanceof DispatchingEntityViewFactory ) {
+			buildViewProcessors( ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry() );
 		}
-		if ( viewFactory instanceof ConfigurablePropertiesEntityViewFactorySupport ) {
-			applyPropertyConfiguration( (ConfigurablePropertiesEntityViewFactorySupport) viewFactory );
+		else {
+			LOG.debug( "Custom view factory is not a DispatchingEntityViewFactory - the properties of this builder will be skipped" );
 		}
 	}
 
-	private void applyPropertyConfiguration( ConfigurablePropertiesEntityViewFactorySupport viewFactory ) {
-		if ( propertiesToShow != null ) {
-			EntityPropertySelector selector = viewFactory.getPropertySelector();
-			if ( selector != null ) {
-				selector.configure( propertiesToShow );
+	private void buildViewProcessors( EntityViewProcessorRegistry processorRegistry ) {
+		processors.forEach( entry -> {
+			if ( entry.isRemove() ) {
+				processorRegistry.remove( entry.name );
 			}
-			viewFactory.setPropertyComparator( EntityPropertyComparators.ordered( propertiesToShow ) );
+			else {
+				processorRegistry.addProcessor( entry.name, entry.processor );
+			}
+		} );
+
+		configureTemplateProcessor( processorRegistry );
+		configureMessagePrefixingProcessor( processorRegistry );
+		configureAuthorizationProcessor( processorRegistry );
+		configurePropertyRegistryProcessor( processorRegistry );
+		configureRenderingProcessors( processorRegistry, propertiesToShow, viewElementMode );
+	}
+
+	protected void configureRenderingProcessors( EntityViewProcessorRegistry processorRegistry, String[] propertiesToShow, ViewElementMode viewElementMode ) {
+		if ( propertiesToShow != null || viewElementMode != null ) {
+			PropertyRenderingViewProcessor renderingViewProcessor
+					= processorRegistry.getProcessor( PropertyRenderingViewProcessor.class.getName(), PropertyRenderingViewProcessor.class )
+					                   .orElseGet( () -> {
+						                   PropertyRenderingViewProcessor propertyRenderingViewProcessor = beanFactory.createBean(
+								                   PropertyRenderingViewProcessor.class );
+						                   processorRegistry.addProcessor( propertyRenderingViewProcessor );
+						                   return propertyRenderingViewProcessor;
+					                   } );
+
+			if ( propertiesToShow != null ) {
+				renderingViewProcessor.setSelector( EntityPropertySelector.of( propertiesToShow ) );
+			}
+
+			if ( viewElementMode != null ) {
+				renderingViewProcessor.setViewElementMode( viewElementMode );
+			}
+		}
+	}
+
+	private void configurePropertyRegistryProcessor( EntityViewProcessorRegistry processorRegistry ) {
+		if ( propertyRegistry != null ) {
+			processorRegistry.remove( EntityPropertyRegistryViewProcessor.class.getName() );
+			processorRegistry.addProcessor( new EntityPropertyRegistryViewProcessor( propertyRegistry ) );
 		}
 
 		if ( !registryConsumers.isEmpty() ) {
-			EntityPropertyRegistry propertyRegistry = viewFactory.getPropertyRegistry();
+			EntityPropertyRegistry registryToConfigure
+					= processorRegistry.getProcessor( EntityPropertyRegistryViewProcessor.class.getName(), EntityPropertyRegistryViewProcessor.class )
+					                   .orElseThrow( () -> new IllegalStateException(
+							                   "Attempting to modify properties but no default EntityPropertyRegistryViewProcessor named: " + EntityPropertyRegistryViewProcessor.class
+									                   .getName() )
+					                   )
+					                   .getPropertyRegistry();
 
-			if ( propertyRegistry instanceof MutableEntityPropertyRegistry ) {
+			if ( registryToConfigure instanceof MutableEntityPropertyRegistry ) {
 				EntityPropertyRegistryBuilder registryBuilder = new EntityPropertyRegistryBuilder();
 				registryConsumers.forEach( c -> c.accept( registryBuilder ) );
-				registryBuilder.apply( (MutableEntityPropertyRegistry) viewFactory.getPropertyRegistry() );
+				registryBuilder.apply( (MutableEntityPropertyRegistry) registryToConfigure );
 			}
 			else {
 				throw new IllegalStateException(
@@ -216,18 +393,51 @@ public class EntityViewFactoryBuilder
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void applySimpleAttributes( SimpleEntityViewFactorySupport viewFactory ) {
+	private void configureAuthorizationProcessor( EntityViewProcessorRegistry processorRegistry ) {
+		if ( requiredAllowableAction != null ) {
+			processorRegistry.getProcessor( ActionAllowedAuthorizationViewProcessor.class.getName(), ActionAllowedAuthorizationViewProcessor.class )
+			                 .orElseGet( () -> {
+				                 ActionAllowedAuthorizationViewProcessor authorizationViewProcessor = new ActionAllowedAuthorizationViewProcessor();
+				                 processorRegistry.addProcessor( authorizationViewProcessor );
+				                 return authorizationViewProcessor;
+			                 } )
+			                 .setRequiredAllowableAction( requiredAllowableAction );
+		}
+	}
+
+	private void configureMessagePrefixingProcessor( EntityViewProcessorRegistry processorRegistry ) {
+		if ( messagePrefixes != null ) {
+			processorRegistry.remove( MessagePrefixingViewProcessor.class.getName() );
+			processorRegistry.addProcessor( new MessagePrefixingViewProcessor( messagePrefixes ) );
+		}
+	}
+
+	private void configureTemplateProcessor( EntityViewProcessorRegistry processorRegistry ) {
 		if ( template != null ) {
-			viewFactory.setTemplate( template );
+			processorRegistry.remove( TemplateViewProcessor.class.getName() );
+			processorRegistry.addProcessor( new TemplateViewProcessor( template ) );
 		}
+	}
 
-		if ( !processors.isEmpty() ) {
-			viewFactory.setProcessors( processors );
-		}
+	/**
+	 * Post process the {@link EntityViewFactory}.
+	 *
+	 * @param viewFactory to post process
+	 */
+	void postProcess( EntityViewFactory viewFactory ) {
+		EntityViewProcessorRegistry processorRegistry =
+				viewFactory instanceof DispatchingEntityViewFactory ? ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry() : null;
+		postProcessors.forEach( pp -> pp.accept( viewFactory, processorRegistry ) );
+	}
 
-		if ( !processorsToRemove.isEmpty() ) {
-			processorsToRemove.forEach( viewFactory.getProcessors()::remove );
+	@RequiredArgsConstructor
+	private static class ProcessorEntry
+	{
+		private final String name;
+		private final EntityViewProcessor processor;
+
+		public boolean isRemove() {
+			return processor == null;
 		}
 	}
 }
