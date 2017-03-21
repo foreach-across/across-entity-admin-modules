@@ -16,7 +16,6 @@
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
-import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -31,16 +30,16 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class EntitySummaryViewActionProcessor implements ViewElementPostProcessor<TableViewElement.Row>
 {
 	private final String viewName;
+	private final EntityLinkBuilder linkBuilder;
 
-	public EntitySummaryViewActionProcessor( String viewName ) {
+	public EntitySummaryViewActionProcessor( EntityLinkBuilder linkBuilder, String viewName ) {
+		this.linkBuilder = linkBuilder;
 		this.viewName = viewName;
 	}
 
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row element ) {
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		EntityLinkBuilder linkBuilder
-				= builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY_LINKS, EntityLinkBuilder.class );
 
 		element.setAttribute( "data-summary-url",
 		                      ServletUriComponentsBuilder

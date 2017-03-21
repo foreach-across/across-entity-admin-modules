@@ -30,6 +30,7 @@ public interface EntityPropertyRegistry
 {
 	/**
 	 * Name of the label property.
+	 *
 	 * @see com.foreach.across.modules.entity.registry.properties.registrars.LabelPropertiesRegistrar
 	 */
 	String LABEL = "#label";
@@ -45,9 +46,6 @@ public interface EntityPropertyRegistry
 	List<EntityPropertyDescriptor> getProperties();
 
 	List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter );
-
-	List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter,
-	                                              Comparator<EntityPropertyDescriptor> comparator );
 
 	List<EntityPropertyDescriptor> select( EntityPropertySelector selector );
 

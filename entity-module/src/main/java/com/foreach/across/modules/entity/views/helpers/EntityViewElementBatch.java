@@ -18,9 +18,9 @@ package com.foreach.across.modules.entity.views.helpers;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
-import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.web.EntityModelAttributes;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -79,7 +79,7 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 	 * @param entity instance
 	 */
 	public void setEntity( T entity ) {
-		setAttribute( EntityView.ATTRIBUTE_ENTITY, entity );
+		setAttribute( EntityModelAttributes.ENTITY, entity );
 	}
 
 	/**

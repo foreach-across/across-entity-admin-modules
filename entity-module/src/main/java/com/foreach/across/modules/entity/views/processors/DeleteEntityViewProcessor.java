@@ -57,7 +57,7 @@ import org.springframework.validation.BindingResult;
 @Scope("prototype")
 public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 {
-	private static final String DELETE_CONFIGURATION = "deleteEntityConfiguration";
+	static final String DELETE_CONFIGURATION = "deleteEntityConfiguration";
 
 	private AcrossEventPublisher eventPublisher;
 	private BootstrapUiFactory bootstrapUiFactory;
@@ -152,7 +152,7 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 		com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext = EntityViewProcessorAdapter.retrieveBuilderContext();
 
 		BuildEntityDeleteViewEvent<?> event
-				= new BuildEntityDeleteViewEvent<>( entityViewContext.getEntity( Object.class ), builderContext );
+				= new BuildEntityDeleteViewEvent<>( entityViewContext.getEntity(), builderContext );
 		event.setDeleteDisabled( false );
 
 		ContainerViewElement associations = bootstrapUiFactory.node( "ul" ).build( builderContext );

@@ -21,11 +21,11 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.entity.web.EntityModelAttributes;
 import com.foreach.common.test.MockedLoader;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -178,7 +178,7 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 		                                 any( TypeDescriptor.class ) ) )
 				.thenReturn( "converted-value" );
 
-		when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
+		when( builderContext.getAttribute( EntityModelAttributes.ENTITY ) ).thenReturn( "entity" );
 
 		TextareaFormElement textarea = assembleAndVerify( "noValidator", false );
 		assertEquals( "converted-value", textarea.getText() );

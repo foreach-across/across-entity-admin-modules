@@ -28,5 +28,6 @@ public interface EntityAssociationBuilder
 
 	void buildAssociation( MutableEntityRegistry entityRegistry,
 	                       MutableEntityConfiguration entityConfiguration,
-	                       PersistentProperty property );
+	                       PersistentProperty property,
+	                       String propertyPrefix );
 }

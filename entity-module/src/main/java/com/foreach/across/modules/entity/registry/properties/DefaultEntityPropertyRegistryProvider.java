@@ -18,7 +18,7 @@ package com.foreach.across.modules.entity.registry.properties;
 import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.modules.entity.registry.properties.registrars.DefaultPropertiesRegistrar;
 import com.foreach.across.modules.entity.registry.properties.registrars.LabelPropertiesRegistrar;
-import com.foreach.across.modules.entity.registry.properties.registrars.PersistenceMetadataPropertiesRegistrar;
+import com.foreach.across.modules.entity.registrars.repository.PersistenceMetadataPropertiesRegistrar;
 import com.foreach.across.modules.entity.registry.properties.registrars.ValidationMetadataPropertiesRegistrar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

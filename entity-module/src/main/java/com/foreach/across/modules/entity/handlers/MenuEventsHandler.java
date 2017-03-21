@@ -46,7 +46,7 @@ public class MenuEventsHandler
 	@Event
 	public void adminMenu( AdminMenuEvent adminMenuEvent ) {
 		PathBasedMenuBuilder builder = adminMenuEvent.builder();
-		builder.group( "/entities", "Entity management" );
+		builder.item( "/entities", "Entity management" );
 
 		for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions();

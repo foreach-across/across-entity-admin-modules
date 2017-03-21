@@ -250,8 +250,8 @@ public abstract class EntityViewProcessorAdapter implements EntityViewProcessor
 	}
 
 	static ViewElementBuilderContext retrieveBuilderContext() {
-		return ViewElementBuilderContextHolder
-				.getViewElementBuilderContext()
-				.orElseThrow( () -> new IllegalStateException( "A global ViewElementBuilderContext is required" ) );
+		return ViewElementBuilderContext
+				.retrieveGlobalBuilderContext()
+				.orElseThrow( () -> new IllegalStateException( "A global or request-bound ViewElementBuilderContext is required" ) );
 	}
 }

@@ -21,11 +21,9 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
 import it.com.foreach.across.modules.entity.registrars.repository.repository.TestRepositoryEntityRegistrar;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,12 +67,8 @@ public class TestManyToOneAssociations
 	@Autowired
 	private ClientRepository clientRepository;
 
-	private EntityListViewPageFetcher pageFetcher;
-
 	@Before
 	public void insertTestData() {
-		pageFetcher = null;
-
 		if ( !inserted ) {
 			inserted = true;
 
@@ -173,22 +167,16 @@ public class TestManyToOneAssociations
 		assertNull( association );
 	}
 
-	@Ignore
 	@Test
-	public void companyClientsListView() {
-//		EntityConfiguration company = entityRegistry.getEntityConfiguration( Company.class );
-//		EntityAssociation association = company.association( "client.company" );
-//
-//		assertNotNull( association );
-//
-//		EntityListViewFactory listViewFactory = association.getViewFactory( EntityView.LIST_VIEW_NAME );
-//		assertNotNull( listViewFactory );
-//
-//		pageFetcher = listViewFactory.getPageFetcher();
-//
-//		verifyClients( one, john );
-//		verifyClients( two, joe, peter );
-//		verifyClients( three );
+	public void companyClientDefaultViewsView() {
+		EntityConfiguration company = entityRegistry.getEntityConfiguration( Company.class );
+		EntityAssociation association = company.association( "client.company" );
+
+		assertNotNull( association );
+		assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
+		assertTrue( association.hasView( EntityView.CREATE_VIEW_NAME ) );
+		assertTrue( association.hasView( EntityView.UPDATE_VIEW_NAME ) );
+		assertTrue( association.hasView( EntityView.DELETE_VIEW_NAME ) );
 	}
 
 	private void verifyClients( AssociatedEntityQueryExecutor<Client> executor, Company company, Client... clients ) {
@@ -198,19 +186,5 @@ public class TestManyToOneAssociations
 		assertNotNull( result );
 		assertEquals( clients.length, result.size() );
 		assertTrue( result.containsAll( Arrays.asList( clients ) ) );
-	}
-
-	@SuppressWarnings("unchecked")
-	private void verifyClients( Company company, Client... clients ) {
-//		assertNotNull( pageFetcher );
-//
-//		ViewCreationContext cc = mock( ViewCreationContext.class );
-//		EntityView ev = new EntityListView( new ModelMap() );
-//		ev.setParentEntity( company );
-//
-//		Page page = pageFetcher.fetchPage( cc, null, ev );
-//		assertNotNull( page );
-//		assertEquals( clients.length, page.getTotalElements() );
-//		assertTrue( page.getContent().containsAll( Arrays.asList( clients ) ) );
 	}
 }

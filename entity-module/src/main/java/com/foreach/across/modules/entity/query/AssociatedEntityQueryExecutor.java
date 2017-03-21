@@ -17,9 +17,15 @@
 package com.foreach.across.modules.entity.query;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,11 +47,36 @@ public class AssociatedEntityQueryExecutor<T>
 	}
 
 	public List<T> findAll( Object parent, EntityQuery query ) {
-		return parentExecutor.findAll( EntityQuery.and( query, buildEqualsOrContainsCondition( parent ) ) );
+		return parentExecutor == null
+				? propertyValue( parent )
+				: parentExecutor.findAll( EntityQuery.and( query, buildEqualsOrContainsCondition( parent ) ) );
 	}
 
 	public Page<T> findAll( Object parent, EntityQuery query, Pageable pageable ) {
-		return parentExecutor.findAll( EntityQuery.and( query, buildEqualsOrContainsCondition( parent ) ), pageable );
+		return parentExecutor == null
+				? new PageImpl<>( propertyValue( parent ) )
+				: parentExecutor.findAll( EntityQuery.and( query, buildEqualsOrContainsCondition( parent ) ), pageable );
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<T> propertyValue( Object parent ) {
+		BeanWrapper beanWrapper = new BeanWrapperImpl( parent );
+		Object itemsValue = beanWrapper.getPropertyValue( property.getName() );
+
+		List items = Collections.emptyList();
+
+		if ( itemsValue != null ) {
+			if ( itemsValue instanceof Collection ) {
+				items = new ArrayList<>( (Collection) itemsValue );
+			}
+			else {
+				throw new IllegalArgumentException(
+						"Property " + property.getName() + " was expected to be a collection type but is a " + itemsValue
+								.getClass().getName() );
+			}
+		}
+
+		return items;
 	}
 
 	private EntityQueryCondition buildEqualsOrContainsCondition( Object value ) {
@@ -54,5 +85,16 @@ public class AssociatedEntityQueryExecutor<T>
 				property.getPropertyTypeDescriptor().isCollection() ? EntityQueryOps.CONTAINS : EntityQueryOps.EQ,
 				value
 		);
+	}
+
+	/**
+	 * Create a fixed query executor that does not support any parameters but will always return the value of the property
+	 * on the parent entity.
+	 *
+	 * @param property on the parent that contains the result
+	 * @return items
+	 */
+	public static AssociatedEntityQueryExecutor<?> forBeanProperty( EntityPropertyDescriptor property ) {
+		return new AssociatedEntityQueryExecutor<>( property, null );
 	}
 }

@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.views.util;
 
-import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.web.EntityModelAttributes;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 
 /**
@@ -31,7 +31,7 @@ public class EntityViewElementUtils
 	/**
 	 * <p>Retrieve the current entity being processed in the builder context.  In case of a
 	 * {@link IteratorViewElementBuilderContext} the entity of the iterator will be returned,
-	 * in all other cases the attribute {@link EntityView#ATTRIBUTE_ENTITY}.</p>
+	 * in all other cases the attribute {@link EntityModelAttributes#ENTITY}.</p>
 	 * <p>Will return null if no entity can be found.</p>
 	 *
 	 * @param builderContext curret builder context
@@ -44,7 +44,7 @@ public class EntityViewElementUtils
 	/**
 	 * <p>Retrieve the current entity being processed in the builder context.  In case of a
 	 * {@link IteratorViewElementBuilderContext} the entity of the iterator will be returned,
-	 * in all other cases the attribute {@link EntityView#ATTRIBUTE_ENTITY}.</p>
+	 * in all other cases the attribute {@link EntityModelAttributes#ENTITY}.</p>
 	 * <p>Will return null if no entity can be found or if the entity is not of the expected type.</p>
 	 *
 	 * @param builderContext curret builder context
@@ -61,7 +61,7 @@ public class EntityViewElementUtils
 			value = ( (IteratorViewElementBuilderContext) builderContext ).getItem();
 		}
 		else {
-			value = builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY );
+			value = builderContext.getAttribute( EntityModelAttributes.ENTITY );
 		}
 
 		return expectedType.isInstance( value ) ? expectedType.cast( value ) : null;

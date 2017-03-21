@@ -94,7 +94,7 @@ public final class PageableExtensionViewProcessor extends SimpleEntityViewProces
 		NativeWebRequest webRequest = entityViewRequest.getWebRequest();
 
 		Pageable pageable = pageableResolver.resolveArgument( METHOD_PARAMETER, null, webRequest, null );
-		command.addExtensions( extensionName, pageable );
+		command.addExtension( extensionName, pageable );
 	}
 
 	@Override

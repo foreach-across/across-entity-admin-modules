@@ -17,9 +17,10 @@
 package testmodules.springdata.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import testmodules.springdata.business.ClientGroup;
 import testmodules.springdata.business.ClientGroupId;
 
-public interface ClientGroupRepository extends JpaRepository<ClientGroup, ClientGroupId>
+public interface ClientGroupRepository extends JpaRepository<ClientGroup, ClientGroupId>, JpaSpecificationExecutor<ClientGroup>
 {
 }

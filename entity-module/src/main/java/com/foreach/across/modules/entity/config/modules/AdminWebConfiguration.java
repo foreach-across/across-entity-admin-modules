@@ -17,9 +17,10 @@ package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.modules.adminweb.AdminWeb;
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
+import com.foreach.across.modules.entity.controllers.admin.EntityOverviewController;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.handlers.MenuEventsHandler;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -32,12 +33,14 @@ import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-@AcrossDepends(required = "AdminWebModule")
+@AcrossDepends(required = AdminWebModule.NAME)
 @Configuration
+@ComponentScan(basePackageClasses = EntityOverviewController.class)
 public class AdminWebConfiguration implements EntityConfigurer
 {
 	@Autowired
@@ -54,11 +57,6 @@ public class AdminWebConfiguration implements EntityConfigurer
 	@Bean
 	public MenuEventsHandler menuEventsHandler() {
 		return new MenuEventsHandler();
-	}
-
-	@Bean
-	public GenericEntityViewController genericEntityViewController() {
-		return new GenericEntityViewController();
 	}
 
 	@Override
@@ -85,7 +83,7 @@ public class AdminWebConfiguration implements EntityConfigurer
 					entityConfiguration.setAttribute(
 							EntityLinkBuilder.class,
 							new EntityConfigurationLinkBuilder(
-									EntityControllerAttributes.ROOT_PATH, entityConfiguration, mvcConversionService,
+									GenericEntityViewController.ROOT_PATH, entityConfiguration, mvcConversionService,
 									servletContextResolver
 							)
 					);

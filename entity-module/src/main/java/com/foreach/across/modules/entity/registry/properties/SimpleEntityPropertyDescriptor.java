@@ -135,4 +135,9 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	public void setPropertyRegistry( EntityPropertyRegistry propertyRegistry ) {
 		this.propertyRegistry = propertyRegistry;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

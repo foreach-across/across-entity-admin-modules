@@ -34,7 +34,6 @@ import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossWebAppConfiguration;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +51,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 import testmodules.springdata.SpringDataJpaModule;
-import testmodules.springdata.business.Client;
-import testmodules.springdata.business.Company;
-import testmodules.springdata.business.Representative;
+import testmodules.springdata.business.*;
 import testmodules.springdata.repositories.ClientRepository;
 
 import javax.validation.metadata.PropertyDescriptor;
@@ -81,6 +78,127 @@ public class TestRepositoryEntityRegistrar
 
 	@EntityValidator
 	private SmartValidator entityValidator;
+
+	@Test
+	public void expectedEntitiesShouldBeRegisteredWithTheirAssociations() {
+		verify( Client.class )
+				.hasRepository()
+				.hasAssociation( "client.groups", false ).from( "groups" ).to( ClientGroup.class, "id.client" ).and()
+				.hasAssociation( "clientGroup.id.client", true ).from( null ).to( ClientGroup.class, "id.client" );
+
+		verify( Company.class )
+				.hasRepository()
+				.hasAssociation( "client.company", true ).from( null ).to( Client.class, "company" ).and()
+				.hasAssociation( "company.representatives", false ).from( "representatives" ).to( Representative.class );
+
+		// not a JpaSpecificationExecutor so associations can't be built
+		verify( Car.class )
+				.hasRepository();
+
+		verify( Group.class )
+				.hasRepository()
+				.hasAssociation( "company.group", true ).from( null ).to( Company.class, "group" ).and()
+				.hasAssociation( "clientGroup.id.group", ClientGroup.class, true );
+
+		verify( ClientGroup.class )
+				.hasRepository();
+
+		verify( Representative.class )
+				.hasRepository()
+				.hasAssociation( "company.representatives", true ).from( null ).to( Company.class, "representatives" );
+	}
+
+	private EntityVerifier verify( Class<?> entityType ) {
+		return new EntityVerifier( entityType );
+	}
+
+	private class EntityVerifier
+	{
+		private final EntityConfiguration<?> configuration;
+
+		public EntityVerifier( Class<?> entityType ) {
+			configuration = entityRegistry.getEntityConfiguration( entityType );
+			assertNotNull( configuration );
+		}
+
+		public EntityVerifier hasRepository() {
+			assertTrue( "Repository not present", configuration.hasAttribute( Repository.class ) );
+			return this;
+		}
+
+		public EntityAssociationVerifier hasAssociation( String associationName, boolean visible ) {
+			return new EntityAssociationVerifier( this, configuration, associationName ).visible( visible );
+		}
+
+		public EntityVerifier hasAssociation( String associationName, Class<?> targetClass, boolean visible ) {
+			EntityAssociation association = configuration.association( associationName );
+			assertNotNull( "Association " + associationName + " not present", association );
+			assertSame( entityRegistry.getEntityConfiguration( targetClass ), association.getTargetEntityConfiguration() );
+
+			assertNotEquals( visible, association.isHidden() );
+			assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
+			assertTrue( association.hasView( EntityView.CREATE_VIEW_NAME ) );
+			assertTrue( association.hasView( EntityView.UPDATE_VIEW_NAME ) );
+			assertTrue( association.hasView( EntityView.DELETE_VIEW_NAME ) );
+
+			return this;
+		}
+	}
+
+	private class EntityAssociationVerifier
+	{
+		private final EntityAssociation association;
+		private final EntityVerifier parent;
+
+		public EntityAssociationVerifier( EntityVerifier parent, EntityConfiguration<?> configuration, String associationName ) {
+			this.parent = parent;
+			association = configuration.association( associationName );
+			assertNotNull( "Association " + associationName + " not present", association );
+
+			assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
+			assertTrue( association.hasView( EntityView.CREATE_VIEW_NAME ) );
+			assertTrue( association.hasView( EntityView.UPDATE_VIEW_NAME ) );
+			assertTrue( association.hasView( EntityView.DELETE_VIEW_NAME ) );
+		}
+
+		public EntityAssociationVerifier from( String propertyName ) {
+			if ( propertyName == null ) {
+				assertNull( association.getSourceProperty() );
+			}
+			else {
+				assertEquals( propertyName, association.getSourceProperty().getName() );
+			}
+			return this;
+		}
+
+		public EntityAssociationVerifier to( Class<?> targetClass ) {
+			return to( targetClass, null );
+		}
+
+		public EntityAssociationVerifier to( Class<?> targetClass, String targetPropertyName ) {
+			assertSame( entityRegistry.getEntityConfiguration( targetClass ), association.getTargetEntityConfiguration() );
+			if ( targetPropertyName == null ) {
+				assertNull( "No target property was expected", association.getTargetProperty() );
+
+			}
+			else {
+				assertSame(
+						association.getTargetProperty(),
+						association.getTargetEntityConfiguration().getPropertyRegistry().getProperty( targetPropertyName )
+				);
+			}
+			return this;
+		}
+
+		public EntityAssociationVerifier visible( boolean visible ) {
+			assertNotEquals( visible, association.isHidden() );
+			return this;
+		}
+
+		public EntityVerifier and() {
+			return parent;
+		}
+	}
 
 	@Test
 	public void clientShouldBeRegisteredWithRepositoryInformation() {
@@ -113,17 +231,15 @@ public class TestRepositoryEntityRegistrar
 		assertNotNull( viewFactory );
 	}
 
-	@Ignore
 	@Test
 	public void companyShouldHaveAnAssociationToItsRepresentatives() throws Exception {
 		EntityConfiguration configuration = entityRegistry.getEntityConfiguration( Company.class );
-		EntityAssociation association = configuration.association( "representatives" );
+		EntityAssociation association = configuration.association( "company.representatives" );
 
 		assertNotNull( association );
 		assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
 	}
 
-	@Ignore
 	@Test
 	public void representativeShouldHaveAnAssociationToItsCompanies() throws Exception {
 		EntityConfiguration configuration = entityRegistry.getEntityConfiguration( Representative.class );
@@ -219,7 +335,6 @@ public class TestRepositoryEntityRegistrar
 		assertEquals( client, converted );
 	}
 
-	//@SuppressWarnings("unchecked")
 	@Test
 	public void verifyEntityModel() {
 		EntityConfiguration<Client> configuration = entityRegistry.getEntityConfiguration( Client.class );
@@ -263,30 +378,13 @@ public class TestRepositoryEntityRegistrar
 		assertNull( model.findOne( 10L ) );
 	}
 
-	@Ignore
 	@Test
-	public void verifyListView() {
-//		EntityConfiguration<Client> configuration = entityRegistry.getEntityConfiguration( Client.class );
-//		assertTrue( configuration.hasView( EntityView.LIST_VIEW_NAME ) );
-//
-//		EntityListViewFactory viewFactory = configuration.getViewFactory( EntityView.LIST_VIEW_NAME );
-//		assertNotNull( viewFactory );
-//
-//		assertNotNull( viewFactory.getPageFetcher() );
-//		assertEquals( 50, viewFactory.getPageSize() );
-//		assertNull( viewFactory.getSortableProperties() );
-//		assertNull( viewFactory.getDefaultSort() );
-		//assertEquals( new Sort( "name" ), viewFactory.getDefaultSort() );
-	}
-
-	@Deprecated
-	@Test
-	public void verifyCreateView() {
-//		EntityConfiguration<Client> configuration = entityRegistry.getEntityConfiguration( Client.class );
-//		assertTrue( configuration.hasView( EntityView.CREATE_VIEW_NAME ) );
-//
-//		EntityFormViewFactory viewFactory = configuration.getViewFactory( EntityView.CREATE_VIEW_NAME );
-//		assertNotNull( viewFactory );
+	public void defaultViewsShouldBePresent() {
+		EntityConfiguration<Client> configuration = entityRegistry.getEntityConfiguration( Client.class );
+		assertTrue( configuration.hasView( EntityView.LIST_VIEW_NAME ) );
+		assertTrue( configuration.hasView( EntityView.CREATE_VIEW_NAME ) );
+		assertTrue( configuration.hasView( EntityView.UPDATE_VIEW_NAME ) );
+		assertTrue( configuration.hasView( EntityView.DELETE_VIEW_NAME ) );
 	}
 
 	@Test

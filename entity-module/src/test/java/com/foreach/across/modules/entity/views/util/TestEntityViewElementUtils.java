@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.views.util;
 
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.web.EntityModelAttributes;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.IteratorItemStatsImpl;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
@@ -58,7 +59,7 @@ public class TestEntityViewElementUtils
 		ViewElementBuilderContext ctx = new DefaultViewElementBuilderContext( view );
 		assertNull( currentEntity( ctx ) );
 
-		view.addAttribute( EntityView.ATTRIBUTE_ENTITY, SOME_ENTITY );
+		view.addAttribute( EntityModelAttributes.ENTITY, SOME_ENTITY );
 		assertSame( SOME_ENTITY, currentEntity( ctx ) );
 		assertSame( SOME_ENTITY, currentEntity( ctx, String.class ) );
 		assertNull( currentEntity( ctx, Integer.class ) );

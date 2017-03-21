@@ -30,24 +30,17 @@ import java.util.Map;
  */
 public class EntityViewCommand
 {
-	private String entityName;
-
 	@Valid
 	private Object entity;
 
 	@Valid
-	private Map<String, Object> extensions = new HashMap<>();
+	private final Map<String, Object> extensions = new HashMap<>();
 
 	public EntityViewCommand() {
 	}
 
-	@Deprecated
-	public String getEntityName() {
-		return entityName;
-	}
-
-	public void setEntityName( String entityName ) {
-		this.entityName = entityName;
+	public void setEntity( Object entity ) {
+		this.entity = entity;
 	}
 
 	/**
@@ -58,14 +51,10 @@ public class EntityViewCommand
 	}
 
 	/**
-	 * @return the entity if of the expected type, null otherwise
+	 * @return the entity cast as type
 	 */
 	public <V> V getEntity( Class<V> entityType ) {
-		return entityType.isInstance( entity ) ? (V) entity : null;
-	}
-
-	public void setEntity( Object entity ) {
-		this.entity = entity;
+		return entityType.cast( getEntity() );
 	}
 
 	/**
@@ -75,11 +64,51 @@ public class EntityViewCommand
 		return extensions;
 	}
 
-	public void addExtensions( String name, Object extension ) {
+	/**
+	 * Add an extension object under the given key.  Will replace any previously registered extension.
+	 *
+	 * @param name      of the extension object
+	 * @param extension object - data binding will also happen on this extension as well as validation if default binding occurs
+	 */
+	public void addExtension( String name, Object extension ) {
 		extensions.put( name, extension );
 	}
 
+	/**
+	 * Return the extension with the given name and coerce it to the expected type.
+	 *
+	 * @param extensionName name of the extension
+	 * @param extensionType type of the extension object
+	 * @param <Y>           type of the extension object
+	 * @return extension value
+	 */
 	public <Y> Y getExtension( String extensionName, Class<Y> extensionType ) {
 		return extensionType.cast( extensions.get( extensionName ) );
+	}
+
+	/**
+	 * @return {@code true} if an entity is set on this command
+	 */
+	public boolean holdsEntity() {
+		return entity != null;
+	}
+
+	/**
+	 * Check if an extension was registered under the given name.  Note that the extension value can be {@code null}.
+	 *
+	 * @param extensionName name of the extension
+	 * @return {@code true} if extension was registered
+	 */
+	public boolean hasExtension( String extensionName ) {
+		return extensions.containsKey( extensionName );
+	}
+
+	/**
+	 * Remove the extension with that name.
+	 *
+	 * @param extensionName name of the extension
+	 */
+	public void removeExtension( String extensionName ) {
+		extensions.remove( extensionName );
 	}
 }

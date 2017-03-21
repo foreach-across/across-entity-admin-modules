@@ -20,9 +20,9 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.HiddenFormElementBuilderFactory;
+import com.foreach.across.modules.entity.web.EntityModelAttributes;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +65,7 @@ public class TestHiddenFormElementBuilderFactory extends ViewElementBuilderFacto
 		when( conversionService.convert( eq( "fetchedValue" ), any( TypeDescriptor.class ),
 		                                 any( TypeDescriptor.class ) ) )
 				.thenReturn( "some value" );
-		when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
+		when( builderContext.getAttribute( EntityModelAttributes.ENTITY ) ).thenReturn( "entity" );
 
 		HiddenFormElement hidden = assembleAndVerify( "name" );
 		assertEquals( "some value", hidden.getValue() );
@@ -77,7 +77,7 @@ public class TestHiddenFormElementBuilderFactory extends ViewElementBuilderFacto
 		when( conversionService.convert( eq( 123L ), any( TypeDescriptor.class ),
 		                                 any( TypeDescriptor.class ) ) )
 				.thenReturn( "321" );
-		when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
+		when( builderContext.getAttribute( EntityModelAttributes.ENTITY ) ).thenReturn( "entity" );
 
 		HiddenFormElement hidden = assembleAndVerify( "number" );
 		assertEquals( "321", hidden.getValue() );
@@ -90,7 +90,7 @@ public class TestHiddenFormElementBuilderFactory extends ViewElementBuilderFacto
 		when( conversionService.convert( eq( client ), any( TypeDescriptor.class ),
 		                                 any( TypeDescriptor.class ) ) )
 				.thenReturn( "some client" );
-		when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
+		when( builderContext.getAttribute( EntityModelAttributes.ENTITY ) ).thenReturn( "entity" );
 
 		HiddenFormElement hidden = assembleAndVerify( "client" );
 		assertEquals( "some client", hidden.getValue() );
@@ -109,7 +109,7 @@ public class TestHiddenFormElementBuilderFactory extends ViewElementBuilderFacto
 
 		when( conversionService.convert( eq( 9999L ), eq( String.class ) ) ).thenReturn( "ENTITY ID" );
 
-		when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
+		when( builderContext.getAttribute( EntityModelAttributes.ENTITY ) ).thenReturn( "entity" );
 
 		HiddenFormElement hidden = assembleAndVerify( "client" );
 		assertEquals( "ENTITY ID", hidden.getValue() );

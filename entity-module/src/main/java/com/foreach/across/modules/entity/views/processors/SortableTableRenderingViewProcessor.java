@@ -155,7 +155,7 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 
 	private void registerSummaryView( EntityViewContext entityViewContext, SortableTableBuilder tableBuilder ) {
 		if ( hasSummaryView( entityViewContext ) ) {
-			tableBuilder.valueRowProcessor( new EntitySummaryViewActionProcessor( summaryViewName ) );
+			tableBuilder.valueRowProcessor( new EntitySummaryViewActionProcessor( entityViewContext.getLinkBuilder(), summaryViewName ) );
 		}
 	}
 

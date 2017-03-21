@@ -21,12 +21,12 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
-import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.NumericFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.entity.web.EntityModelAttributes;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.common.test.MockedLoader;
@@ -165,7 +165,7 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 	@Test
 	public void valueOrderIsPrinterFormatNumericConfigurationAndConversionService() {
 		ValueFetcher valueFetcher = mock( ValueFetcher.class );
-		when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
+		when( builderContext.getAttribute( EntityModelAttributes.ENTITY ) ).thenReturn( "entity" );
 		when( valueFetcher.getValue( any() ) ).thenReturn( 123L );
 		when( properties.get( "decimal" ).getValueFetcher() ).thenReturn( valueFetcher );
 		when( mvcConversionService.convert( eq( 123L ), any(), any() ) ).thenReturn( "fromConversionService" );

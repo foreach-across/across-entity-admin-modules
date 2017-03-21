@@ -16,16 +16,19 @@
 
 package it.com.foreach.across.modules.entity.registrars.repository.repository.associations;
 
+import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
+import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import it.com.foreach.across.modules.entity.registrars.repository.repository.TestRepositoryEntityRegistrar;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -64,12 +67,8 @@ public class TestManyToManyAssociations
 	@Autowired
 	private CompanyRepository companyRepository;
 
-	private EntityListViewPageFetcher pageFetcher;
-
 	@Before
 	public void insertTestData() {
-		pageFetcher = null;
-
 		if ( !inserted ) {
 			inserted = true;
 
@@ -90,26 +89,22 @@ public class TestManyToManyAssociations
 		}
 	}
 
-	@Ignore
 	@Test
 	public void companyHasRepresentatives() {
-//		EntityConfiguration company = entityRegistry.getEntityConfiguration( Company.class );
-//		EntityAssociation association = company.association( "company.representatives" );
-//
-//		assertNotNull( association );
-//		assertEquals(
-//				"Association name should be source entity name joined with source property name",
-//				"company.representatives", association.getName()
-//		);
-//
-//		EntityListViewFactory listViewFactory = association.getViewFactory( EntityView.LIST_VIEW_NAME );
-//		assertNotNull( listViewFactory );
-//
-//		pageFetcher = listViewFactory.getPageFetcher();
-//
-//		verifyRepresentatives( one, john );
-//		verifyRepresentatives( two, john, joe, peter );
-//		verifyRepresentatives( three, peter );
+		EntityConfiguration company = entityRegistry.getEntityConfiguration( Company.class );
+		EntityAssociation association = company.association( "company.representatives" );
+
+		assertNotNull( association );
+		assertEquals(
+				"Association name should be source entity name joined with source property name",
+				"company.representatives", association.getName()
+		);
+
+		AssociatedEntityQueryExecutor<Representative> queryExecutor = association.getAttribute( AssociatedEntityQueryExecutor.class );
+
+		verifyRelatedItems( queryExecutor, one, john );
+		verifyRelatedItems( queryExecutor, two, john, joe, peter );
+		verifyRelatedItems( queryExecutor, three, peter );
 	}
 
 	@Test
@@ -121,26 +116,22 @@ public class TestManyToManyAssociations
 		assertTrue( association.isHidden() );
 	}
 
-	@Ignore
 	@Test
 	public void representativeHasCompanies() {
-//		EntityConfiguration representative = entityRegistry.getEntityConfiguration( Representative.class );
-//		EntityAssociation association = representative.association( "company.representatives" );
-//
-//		assertNotNull( association );
-//		assertEquals(
-//				"Association name should be the reverse source entity name joined with source property name",
-//				"company.representatives", association.getName()
-//		);
-//
-//		EntityListViewFactory listViewFactory = association.getViewFactory( EntityView.LIST_VIEW_NAME );
-//		assertNotNull( listViewFactory );
-//
-//		pageFetcher = listViewFactory.getPageFetcher();
-//
-//		verifyCompanies( john, one, two );
-//		verifyCompanies( joe, two );
-//		verifyCompanies( peter, two, three );
+		EntityConfiguration representative = entityRegistry.getEntityConfiguration( Representative.class );
+		EntityAssociation association = representative.association( "company.representatives" );
+
+		assertNotNull( association );
+		assertEquals(
+				"Association name should be the reverse source entity name joined with source property name",
+				"company.representatives", association.getName()
+		);
+
+		AssociatedEntityQueryExecutor<Company> queryExecutor = association.getAttribute( AssociatedEntityQueryExecutor.class );
+
+		verifyRelatedItems( queryExecutor, john, one, two );
+		verifyRelatedItems( queryExecutor, joe, two );
+		verifyRelatedItems( queryExecutor, peter, two, three );
 	}
 
 	@Test
@@ -153,30 +144,12 @@ public class TestManyToManyAssociations
 	}
 
 	@SuppressWarnings("unchecked")
-	private void verifyCompanies( Representative representative, Company... companies ) {
-//		assertNotNull( pageFetcher );
-//
-//		ViewCreationContext cc = mock( ViewCreationContext.class );
-//		EntityView ev = new EntityListView( new ModelMap() );
-//		ev.setParentEntity( representative );
-//
-//		Page page = pageFetcher.fetchPage( cc, null, ev );
-//		assertNotNull( page );
-//		assertEquals( companies.length, page.getTotalElements() );
-//		assertTrue( page.getContent().containsAll( Arrays.asList( companies ) ) );
-	}
+	private void verifyRelatedItems( AssociatedEntityQueryExecutor queryExecutor, Object parent, Object... reps ) {
+		assertNotNull( queryExecutor );
 
-	@SuppressWarnings("unchecked")
-	private void verifyRepresentatives( Company company, Representative... reps ) {
-//		assertNotNull( pageFetcher );
-//
-//		ViewCreationContext cc = mock( ViewCreationContext.class );
-//		EntityView ev = new EntityListView( new ModelMap() );
-//		ev.setParentEntity( company );
-//
-//		Page page = pageFetcher.fetchPage( cc, null, ev );
-//		assertNotNull( page );
-//		assertEquals( reps.length, page.getTotalElements() );
-//		assertTrue( page.getContent().containsAll( Arrays.asList( reps ) ) );
+		Page page = queryExecutor.findAll( parent, EntityQuery.all(), new PageRequest( 0, 100 ) );
+		assertNotNull( page );
+		assertEquals( reps.length, page.getTotalElements() );
+		assertTrue( page.getContent().containsAll( Arrays.asList( reps ) ) );
 	}
 }

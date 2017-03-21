@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.controllers.admin;
 
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -30,6 +29,7 @@ import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewCommandValidator;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.EntityModelAttributes;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -48,7 +48,7 @@ import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.Optional;
 
-import static com.foreach.across.modules.entity.controllers.EntityControllerAttributes.PATH_ENTITY;
+import static com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController.PATH_ENTITY_TYPE;
 
 /**
  * Generic controller for building entity views of non-associated entities.
@@ -57,9 +57,22 @@ import static com.foreach.across.modules.entity.controllers.EntityControllerAttr
  * @since 2.0.0
  */
 @AdminWebController
-@RequestMapping("/entities" + PATH_ENTITY)
-public class GenericEntityViewController implements EntityControllerAttributes
+@RequestMapping(PATH_ENTITY_TYPE)
+public class GenericEntityViewController
 {
+	public static final String ROOT_PATH = "/entities";
+
+	static final String PATH_ENTITY_TYPE = ROOT_PATH + "/{entityConfig:.+}";
+
+	private static final String VAR_ENTITY_ID = "entityId";
+	private static final String VAR_ENTITY = "entityConfig";
+	private static final String VAR_ASSOCIATION = "associatedConfig";
+	private static final String VAR_ASSOCIATED_ENTITY_ID = "associatedEntityId";
+
+	private static final String PATH_ENTITY = "/{entityId}";
+	private static final String PATH_ASSOCIATION = PATH_ENTITY + "/associations/{associatedConfig:.+}";
+	private static final String PATH_ASSOCIATED_ENTITY = PATH_ASSOCIATION + "/{associatedEntityId}";
+
 	private ConfigurableEntityViewContext entityViewContext;
 	private EntityViewRequest entityViewRequest;
 	private PageContentStructure pageContentStructure;
@@ -76,7 +89,7 @@ public class GenericEntityViewController implements EntityControllerAttributes
 			@PathVariable(VAR_ENTITY) String entityName,
 			@PathVariable(value = VAR_ENTITY_ID, required = false) Serializable entityId,
 			@PathVariable(value = VAR_ASSOCIATION, required = false) String associationName,
-			@PathVariable(value = VAR_ASSOCIATION_ID, required = false) Serializable associatedEntityId,
+			@PathVariable(value = VAR_ASSOCIATED_ENTITY_ID, required = false) Serializable associatedEntityId,
 			@PathVariable(value = "action", required = false) String action,
 			HttpMethod httpMethod,
 			NativeWebRequest webRequest,
@@ -115,9 +128,9 @@ public class GenericEntityViewController implements EntityControllerAttributes
 
 		viewFactory.authorizeRequest( entityViewRequest );
 
-		model.addAttribute( "entityViewRequest", entityViewRequest );
-		model.addAttribute( "entityViewCommand", entityViewRequest.getCommand() );
-		model.addAttribute( "entityViewContext", entityViewContext );
+		model.addAttribute( EntityModelAttributes.VIEW_REQUEST, entityViewRequest );
+		model.addAttribute( EntityModelAttributes.VIEW_COMMAND, entityViewRequest.getCommand() );
+		model.addAttribute( EntityModelAttributes.VIEW_CONTEXT, entityViewContext );
 	}
 
 	@ModelAttribute
@@ -125,7 +138,7 @@ public class GenericEntityViewController implements EntityControllerAttributes
 		webResourceRegistry.addPackage( EntityModuleWebResources.NAME );
 	}
 
-	@InitBinder("entityViewCommand")
+	@InitBinder(EntityModelAttributes.VIEW_COMMAND)
 	public void initViewCommandBinder( WebDataBinder dataBinder, HttpMethod httpMethod ) {
 		dataBinder.setMessageCodesResolver( entityViewContext.getMessageCodeResolver() );
 
@@ -139,28 +152,28 @@ public class GenericEntityViewController implements EntityControllerAttributes
 	}
 
 	@RequestMapping(value = { "",
-	                          PATH_ENTITY_ID,
-	                          PATH_ENTITY_ID + "/{action:delete|update}",
-	                          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}",
-	                          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}/{associatedEntityId}",
-	                          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}/{associatedEntityId}/{action:delete|update}"
+	                          PATH_ENTITY,
+	                          PATH_ENTITY + "/{action:delete|update}",
+	                          PATH_ASSOCIATION,
+	                          PATH_ASSOCIATED_ENTITY,
+	                          PATH_ASSOCIATED_ENTITY + "/{action:delete|update}"
 	})
-	public Object executeView( @ModelAttribute("entityViewCommand") EntityViewCommand command ) {
+	public Object executeView( @ModelAttribute(EntityModelAttributes.VIEW_COMMAND) EntityViewCommand command ) {
 		return executeView( command, null );
 	}
 
 	@RequestMapping(
 			value = { "",
-			          PATH_ENTITY_ID,
-			          PATH_ENTITY_ID + "/{action:delete|update}",
-			          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}",
-			          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}/{associatedEntityId}",
-			          PATH_ENTITY_ID + "/associations/{associatedConfig:.+}/{associatedEntityId}/{action:delete|update}"
+			          PATH_ENTITY,
+			          PATH_ENTITY + "/{action:delete|update}",
+			          PATH_ASSOCIATION,
+			          PATH_ASSOCIATED_ENTITY,
+			          PATH_ASSOCIATED_ENTITY + "/{action:delete|update}"
 			},
 			method = { RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH }
 	)
 	public Object executeView(
-			@ModelAttribute("entityViewCommand") @Valid EntityViewCommand command,
+			@ModelAttribute(EntityModelAttributes.VIEW_COMMAND) @Valid EntityViewCommand command,
 			BindingResult bindingResult
 	) {
 		entityViewRequest.setBindingResult( bindingResult );

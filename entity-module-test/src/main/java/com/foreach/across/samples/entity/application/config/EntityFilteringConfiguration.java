@@ -112,7 +112,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		public void initializeCommandObject( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
 		                                     com.foreach.across.modules.entity.views.request.EntityViewCommand command,
 		                                     WebDataBinder dataBinder ) {
-			command.addExtensions( "filter", "" );
+			command.addExtension( "filter", "" );
 		}
 
 		@Override
@@ -162,7 +162,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		public void initializeCommandObject( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
 		                                     com.foreach.across.modules.entity.views.request.EntityViewCommand command,
 		                                     WebDataBinder dataBinder ) {
-			command.addExtensions( "filter", "" );
+			command.addExtension( "filter", "" );
 		}
 
 		@Override

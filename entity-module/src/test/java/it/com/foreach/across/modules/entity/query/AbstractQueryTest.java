@@ -54,6 +54,7 @@ public abstract class AbstractQueryTest
 
 	protected static Company one, two, three;
 	protected static Representative john, joe, peter;
+	protected static Group groupOne, groupTwo;
 
 	@Autowired
 	protected RepresentativeRepository representativeRepository;
@@ -69,8 +70,8 @@ public abstract class AbstractQueryTest
 		if ( !inserted ) {
 			inserted = true;
 
-			Group groupOne = new Group( "groupOne" );
-			Group groupTwo = new Group( "groupTwo" );
+			groupOne = new Group( "groupOne" );
+			groupTwo = new Group( "groupTwo" );
 			groupRepository.save( Arrays.asList( groupOne, groupTwo ) );
 
 			john = new Representative( "john", "John" );

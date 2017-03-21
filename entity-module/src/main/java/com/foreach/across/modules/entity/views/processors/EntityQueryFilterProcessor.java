@@ -63,7 +63,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	public void initializeCommandObject( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
 	                                     com.foreach.across.modules.entity.views.request.EntityViewCommand command,
 	                                     WebDataBinder dataBinder ) {
-		command.addExtensions( PARAM, "" );
+		command.addExtension( PARAM, "" );
 	}
 
 	@SuppressWarnings("unchecked")

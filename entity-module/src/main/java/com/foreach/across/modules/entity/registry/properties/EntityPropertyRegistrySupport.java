@@ -78,16 +78,6 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 		return fetchProperties( filter, getDefaultOrder() );
 	}
 
-	@Deprecated
-	@Override
-	public List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter,
-	                                                     Comparator<EntityPropertyDescriptor> comparator ) {
-		Assert.notNull( filter );
-		Assert.notNull( comparator );
-
-		return fetchProperties( filter, comparator.thenComparing( getDefaultOrder() ) );
-	}
-
 	public void setPropertyOrder( String propertyName, int order ) {
 		Assert.notNull( propertyName );
 		propertyOrder.put( propertyName, order );

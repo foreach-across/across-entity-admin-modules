@@ -15,11 +15,6 @@
  */
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -60,19 +55,6 @@ public class EntityView implements Model
 	public static final String GENERIC_VIEW_NAME = "genericView";
 	public static final String SUMMARY_VIEW_NAME = "listSummaryView";
 
-	// todo: most of these are deprecated and should be removed
-	public static final String ATTRIBUTE_VIEW_NAME = "entityViewName";
-	public static final String ATTRIBUTE_ENTITY = "entity";
-	public static final String ATTRIBUTE_ENTITY_CONFIGURATION = "entityConfiguration";
-	public static final String ATTRIBUTE_ENTITY_LINKS = "entityLinks";
-	public static final String ATTRIBUTE_MESSAGES = "messages";
-	public static final String ATTRIBUTE_VIEW_ELEMENTS = "viewElements";
-	public static final String ATTRIBUTE_ENTITY_MENU = "entityMenu";
-	public static final String ATTRIBUTE_PAGE_TITLE = "pageTitle";
-
-	// Will contain the entity that is the parent of the association, if applicable
-	public static final String ATTRIBUTE_PARENT_ENTITY = "parentEntity";
-
 	private final ModelMap model;
 	private final RedirectAttributes redirectAttributes;
 
@@ -83,28 +65,11 @@ public class EntityView implements Model
 	@Getter(AccessLevel.NONE)
 	private boolean shouldRender = true;
 
-	@Deprecated
-	public EntityView( ModelMap model ) {
-		Assert.notNull( model );
-		this.model = model;
-		this.redirectAttributes = null;
-	}
-
 	public EntityView( ModelMap model, RedirectAttributes redirectAttributes ) {
 		Assert.notNull( model );
 		Assert.notNull( redirectAttributes );
 		this.model = model;
 		this.redirectAttributes = redirectAttributes;
-	}
-
-	@Deprecated
-	public String getName() {
-		return getAttribute( ATTRIBUTE_VIEW_NAME, String.class );
-	}
-
-	@Deprecated
-	public void setName( String name ) {
-		model.put( ATTRIBUTE_VIEW_NAME, name );
 	}
 
 	public String getTemplate() {
@@ -113,90 +78,6 @@ public class EntityView implements Model
 
 	public void setTemplate( String template ) {
 		this.template = template;
-	}
-
-	@Deprecated
-	public EntityConfiguration getEntityConfiguration() {
-		return getAttribute( ATTRIBUTE_ENTITY_CONFIGURATION, EntityConfiguration.class );
-	}
-
-	@Deprecated
-	public void setEntityConfiguration( EntityConfiguration entityConfiguration ) {
-		model.addAttribute( ATTRIBUTE_ENTITY_CONFIGURATION, entityConfiguration );
-	}
-
-	@Deprecated
-	public EntityLinkBuilder getEntityLinkBuilder() {
-		return getAttribute( ATTRIBUTE_ENTITY_LINKS, EntityLinkBuilder.class );
-	}
-
-	@Deprecated
-	public void setEntityLinkBuilder( EntityLinkBuilder entityLinks ) {
-		model.addAttribute( ATTRIBUTE_ENTITY_LINKS, entityLinks );
-	}
-
-	@Deprecated
-	public EntityMessageCodeResolver getMessageCodeResolver() {
-		return getAttribute( EntityMessageCodeResolver.class.getName(), EntityMessageCodeResolver.class );
-	}
-
-	@Deprecated
-	public void setMessageCodeResolver( EntityMessageCodeResolver codeResolver ) {
-		addAttribute( EntityMessageCodeResolver.class.getName(), codeResolver );
-	}
-
-	@Deprecated
-	public EntityMessages getEntityMessages() {
-		return getAttribute( ATTRIBUTE_MESSAGES, EntityMessages.class );
-	}
-
-	@Deprecated
-	public void setEntityMessages( EntityMessages messages ) {
-		model.addAttribute( ATTRIBUTE_MESSAGES, messages );
-	}
-
-	@Deprecated
-	/**
-	 * @return the container of all view elements for this view
-	 */
-	public ContainerViewElement getViewElements() {
-		return getAttribute( ATTRIBUTE_VIEW_ELEMENTS, ContainerViewElement.class );
-	}
-
-	/**
-	 * Set the container with all view elements for this view.
-	 *
-	 * @param container with the view elements
-	 */
-	@Deprecated
-	public void setViewElements( ContainerViewElement container ) {
-		Assert.notNull( container );
-		model.put( ATTRIBUTE_VIEW_ELEMENTS, container );
-	}
-
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	public <V> V getEntity() {
-		return (V) getAttribute( ATTRIBUTE_ENTITY );
-	}
-
-	@Deprecated
-	public void setEntity( Object entity ) {
-		model.put( ATTRIBUTE_ENTITY, entity );
-	}
-
-	/**
-	 * @return The parent entity in case of an associated entity view.  The parent is usually the context for which
-	 * the current entity is being viewed.
-	 */
-	@Deprecated
-	public Object getParentEntity() {
-		return getAttribute( ATTRIBUTE_PARENT_ENTITY );
-	}
-
-	@Deprecated
-	public void setParentEntity( Object entity ) {
-		addAttribute( ATTRIBUTE_PARENT_ENTITY, entity );
 	}
 
 	/**

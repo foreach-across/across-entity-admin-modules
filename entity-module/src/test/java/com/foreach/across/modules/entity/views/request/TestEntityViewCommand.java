@@ -16,10 +16,67 @@
 
 package com.foreach.across.modules.entity.views.request;
 
+import lombok.val;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
 public class TestEntityViewCommand
 {
+	private EntityViewCommand command;
+
+	@Before
+	public void setUp() throws Exception {
+		command = new EntityViewCommand();
+	}
+
+	@Test
+	public void defaultValues() {
+		assertNull( command.getEntity() );
+		assertFalse( command.holdsEntity() );
+		assertNull( command.getExtension( "some-extension", String.class ) );
+		assertFalse( command.hasExtension( "some-extension" ) );
+	}
+
+	@Test
+	public void getTypedEntity() {
+		command.setEntity( "myEntity" );
+		assertTrue( command.holdsEntity() );
+		String value = command.getEntity( String.class );
+		assertEquals( "myEntity", value );
+		command.setEntity( null );
+		assertFalse( command.holdsEntity() );
+	}
+
+	@Test(expected = ClassCastException.class)
+	public void exceptionWhenCoercingEntityToWrongType() {
+		command.setEntity( 123L );
+		command.getEntity( String.class );
+	}
+
+	@Test
+	public void getExtension() {
+		val map = new HashMap<>();
+		command.addExtension( "my-extension", map );
+		assertTrue( command.hasExtension( "my-extension" ) );
+		assertSame( map, command.getExtension( "my-extension", Map.class ) );
+		command.removeExtension( "my-extension" );
+		assertFalse( command.hasExtension( "my-extension" ) );
+	}
+
+	@Test(expected = ClassCastException.class)
+	public void exceptionWhenCoercingExtensionToWrongType() {
+		val map = new HashMap<>();
+		command.addExtension( "my-extension", map );
+		command.getExtension( "my-extension", HashSet.class );
+	}
 }

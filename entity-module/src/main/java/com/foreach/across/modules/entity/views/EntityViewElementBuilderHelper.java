@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBui
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.helpers.EntityViewElementBatch;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.entity.web.EntityModelAttributes;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class EntityViewElementBuilderHelper
 	/**
 	 * Create a new batch builder for a given entity.  Requires an {@link EntityConfiguration} to exist for that
 	 * entity type.  The default {@link com.foreach.across.modules.entity.support.EntityMessageCodeResolver} for
-	 * the configuration will be used.  The entity will be set as {@link EntityView#ATTRIBUTE_ENTITY} attribute.
+	 * the configuration will be used.  The entity will be set as {@link EntityModelAttributes#ENTITY} attribute.
 	 *
 	 * @param entity instance, should not be null
 	 * @return batch instance

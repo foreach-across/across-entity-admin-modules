@@ -19,10 +19,10 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
-import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.CheckboxFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.entity.web.EntityModelAttributes;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,7 +85,7 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 				return new AtomicBoolean( true );
 			}
 		} );
-		when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
+		when( builderContext.getAttribute( EntityModelAttributes.ENTITY ) ).thenReturn( "entity" );
 
 		CheckboxFormElement checkbox = assembleAndVerify( "primitive", false );
 		assertTrue( checkbox.isChecked() );
@@ -120,7 +120,7 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 				return new AtomicBoolean( false );
 			}
 		} );
-		when( builderContext.getAttribute( EntityView.ATTRIBUTE_ENTITY ) ).thenReturn( "entity" );
+		when( builderContext.getAttribute( EntityModelAttributes.ENTITY ) ).thenReturn( "entity" );
 
 		CheckboxFormElement checkbox = assembleAndVerify( "primitive", false );
 		assertFalse( checkbox.isChecked() );

@@ -21,11 +21,9 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
 import it.com.foreach.across.modules.entity.registrars.repository.repository.TestRepositoryEntityRegistrar;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,12 +76,8 @@ public class TestOneToManyAssociations
 	@Autowired
 	private CompanyRepository companyRepository;
 
-	private EntityListViewPageFetcher pageFetcher;
-
 	@Before
 	public void insertTestData() {
-		pageFetcher = null;
-
 		if ( !inserted ) {
 			inserted = true;
 
@@ -151,34 +145,15 @@ public class TestOneToManyAssociations
 		assertTrue( association.isHidden() );
 	}
 
-	// todo: looks like the associated entity query executor doesn't work because there is no parent executor?
-	@Ignore
 	@Test
 	public void clientHasGroup() {
 		EntityConfiguration client = entityRegistry.getEntityConfiguration( Client.class );
 		EntityAssociation association = client.association( "client.groups" );
 
 		assertNotNull( association );
-		AssociatedEntityQueryExecutor<ClientGroup> executor
-				= association.getAttribute( AssociatedEntityQueryExecutor.class );
+		AssociatedEntityQueryExecutor<ClientGroup> executor = association.getAttribute( AssociatedEntityQueryExecutor.class );
 
 		verifyClientGroups( executor, john, clientGroup );
-	}
-
-	@Ignore
-	@Test
-	public void clientHasGroupListView() {
-//		EntityConfiguration client = entityRegistry.getEntityConfiguration( Client.class );
-//		EntityAssociation association = client.association( "client.groups" );
-//
-//		assertNotNull( association );
-//
-//		EntityListViewFactory listViewFactory = association.getViewFactory( EntityView.LIST_VIEW_NAME );
-//		assertNotNull( listViewFactory );
-//
-//		pageFetcher = listViewFactory.getPageFetcher();
-//
-//		verifyClientGroups( john, clientGroup );
 	}
 
 	private void verifyClientGroups( AssociatedEntityQueryExecutor<ClientGroup> executor,
@@ -190,19 +165,5 @@ public class TestOneToManyAssociations
 		assertNotNull( result );
 		assertEquals( groups.length, result.size() );
 		assertTrue( result.containsAll( Arrays.asList( groups ) ) );
-	}
-
-	@SuppressWarnings("unchecked")
-	private void verifyClientGroups( Client client, ClientGroup... groups ) {
-//		assertNotNull( pageFetcher );
-//
-//		ViewCreationContext cc = mock( ViewCreationContext.class );
-//		EntityView ev = new EntityListView( new ModelMap() );
-//		ev.setParentEntity( client );
-//
-//		Page page = pageFetcher.fetchPage( cc, null, ev );
-//		assertNotNull( page );
-//		assertEquals( groups.length, page.getTotalElements() );
-//		assertTrue( page.getContent().containsAll( Arrays.asList( groups ) ) );
 	}
 }

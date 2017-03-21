@@ -24,7 +24,6 @@ import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registrars.EntityRegistrar;
 import com.foreach.across.modules.entity.registry.*;
-import com.foreach.across.modules.entity.registry.properties.registrars.PersistenceMetadataPropertiesRegistrar;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.context.MappingContext;
@@ -77,13 +75,10 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	private MessageSource messageSource;
 
 	@Autowired
-	private PersistenceMetadataPropertiesRegistrar mappingMetaDataBuilder;
+	private MappingContextRegistry mappingContextRegistry;
 
 	@EntityValidator
 	private SmartValidator entityValidator;
-
-	@Autowired
-	private ConversionService mvcConversionService;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -92,7 +87,8 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	                              AcrossContextBeanRegistry beanRegistry ) {
 		ApplicationContext applicationContext = moduleInfo.getApplicationContext();
 
-		mappingMetaDataBuilder.addMappingContexts( applicationContext.getBeansOfType( MappingContext.class ).values() );
+		applicationContext.getBeansOfType( MappingContext.class )
+		                  .forEach( ( name, bean ) -> mappingContextRegistry.addMappingContext( bean ) );
 
 		Map<String, RepositoryFactoryInformation> repositoryFactoryInformationMap
 				= applicationContext.getBeansOfType( RepositoryFactoryInformation.class );

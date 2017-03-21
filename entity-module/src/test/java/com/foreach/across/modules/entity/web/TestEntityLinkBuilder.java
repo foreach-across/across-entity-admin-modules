@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.web;
 
-import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
+import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
@@ -61,7 +61,7 @@ public class TestEntityLinkBuilder
 		when( conversionService.convert( new BigDecimal( "100.01" ), String.class ) ).thenReturn( "10001" );
 
 		EntityConfigurationLinkBuilder url = new EntityConfigurationLinkBuilder(
-				EntityControllerAttributes.ROOT_PATH, entityConfiguration, conversionService, TEST_RESOLVER
+				GenericEntityViewController.ROOT_PATH, entityConfiguration, conversionService, TEST_RESOLVER
 		);
 
 		assertEquals( "/test/entities/basicPrincipal", url.overview() );
@@ -87,7 +87,7 @@ public class TestEntityLinkBuilder
 		when( conversionService.convert( new BigDecimal( "100.01" ), String.class ) ).thenReturn( "10001" );
 
 		EntityConfigurationLinkBuilder url = new EntityConfigurationLinkBuilder(
-				EntityControllerAttributes.ROOT_PATH, entityConfiguration, conversionService
+				GenericEntityViewController.ROOT_PATH, entityConfiguration, conversionService
 		);
 
 		assertEquals( "/entities/basicPrincipal", url.overview() );
@@ -114,7 +114,7 @@ public class TestEntityLinkBuilder
 		when( conversionService.convert( "someStringId", String.class ) ).thenReturn( "someStringId" );
 
 		EntityLinkBuilder url =
-				new EntityConfigurationLinkBuilder( EntityControllerAttributes.ROOT_PATH, entityConfiguration,
+				new EntityConfigurationLinkBuilder( GenericEntityViewController.ROOT_PATH, entityConfiguration,
 				                                    conversionService );
 
 		assertEquals( "/entities/basicPrincipal", url.overview() );
@@ -152,7 +152,7 @@ public class TestEntityLinkBuilder
 		when( conversionService.convert( 123, String.class ) ).thenReturn( "123" );
 
 		EntityLinkBuilder parent =
-				new EntityConfigurationLinkBuilder( EntityControllerAttributes.ROOT_PATH, parentConfig,
+				new EntityConfigurationLinkBuilder( GenericEntityViewController.ROOT_PATH, parentConfig,
 				                                    conversionService, TEST_RESOLVER );
 
 		EntityAssociationLinkBuilder url = new EntityAssociationLinkBuilder( association, conversionService );
@@ -214,7 +214,7 @@ public class TestEntityLinkBuilder
 		when( conversionService.convert( 123, String.class ) ).thenReturn( "123" );
 
 		EntityLinkBuilder parent =
-				new EntityConfigurationLinkBuilder( EntityControllerAttributes.ROOT_PATH, parentConfig,
+				new EntityConfigurationLinkBuilder( GenericEntityViewController.ROOT_PATH, parentConfig,
 				                                    conversionService, TEST_RESOLVER );
 
 		EntityAssociationLinkBuilder url = new EntityAssociationLinkBuilder( association, conversionService );

@@ -50,6 +50,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.foreach.across.modules.entity.web.EntityModelAttributes.*;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -211,9 +212,9 @@ public class TestGenericEntityViewController
 	public void listView() throws Exception {
 		mockMvc.perform( get( "/entities/type" ) )
 		       .andExpect( status().isOk() )
-		       .andExpect( model().attribute( "entityViewContext", viewContext ) )
-		       .andExpect( model().attribute( "entityViewRequest", viewRequest ) )
-		       .andExpect( model().attribute( "entityViewCommand", command ) )
+		       .andExpect( model().attribute( VIEW_CONTEXT, viewContext ) )
+		       .andExpect( model().attribute( VIEW_REQUEST, viewRequest ) )
+		       .andExpect( model().attribute( VIEW_COMMAND, command ) )
 		       .andExpect( view().name( "view-template" ) );
 
 		verify( viewContextLoader ).loadForEntityConfiguration( viewContext, "type" );
@@ -237,9 +238,9 @@ public class TestGenericEntityViewController
 	public void createView() throws Exception {
 		mockMvc.perform( get( "/entities/type/create" ) )
 		       .andExpect( status().isOk() )
-		       .andExpect( model().attribute( "entityViewContext", viewContext ) )
-		       .andExpect( model().attribute( "entityViewRequest", viewRequest ) )
-		       .andExpect( model().attribute( "entityViewCommand", command ) )
+		       .andExpect( model().attribute( VIEW_CONTEXT, viewContext ) )
+		       .andExpect( model().attribute( VIEW_REQUEST, viewRequest ) )
+		       .andExpect( model().attribute( VIEW_COMMAND, command ) )
 		       .andExpect( view().name( "view-template" ) );
 
 		verify( viewContextLoader ).loadForEntityConfiguration( viewContext, "type" );
@@ -265,9 +266,9 @@ public class TestGenericEntityViewController
 
 		mockMvc.perform( post( "/entities/type/123" ) )
 		       .andExpect( status().isOk() )
-		       .andExpect( model().attribute( "entityViewContext", viewContext ) )
-		       .andExpect( model().attribute( "entityViewRequest", viewRequest ) )
-		       .andExpect( model().attribute( "entityViewCommand", command ) )
+		       .andExpect( model().attribute( VIEW_CONTEXT, viewContext ) )
+		       .andExpect( model().attribute( VIEW_REQUEST, viewRequest ) )
+		       .andExpect( model().attribute( VIEW_COMMAND, command ) )
 		       .andExpect( view().name( "view-template" ) );
 
 		verify( viewContextLoader ).loadForEntityConfiguration( viewContext, "type" );
@@ -293,9 +294,9 @@ public class TestGenericEntityViewController
 
 		mockMvc.perform( get( "/entities/type/123/update" ) )
 		       .andExpect( status().isOk() )
-		       .andExpect( model().attribute( "entityViewContext", viewContext ) )
-		       .andExpect( model().attribute( "entityViewRequest", viewRequest ) )
-		       .andExpect( model().attribute( "entityViewCommand", command ) )
+		       .andExpect( model().attribute( VIEW_CONTEXT, viewContext ) )
+		       .andExpect( model().attribute( VIEW_REQUEST, viewRequest ) )
+		       .andExpect( model().attribute( VIEW_COMMAND, command ) )
 		       .andExpect( view().name( "view-template" ) );
 
 		verify( viewContextLoader ).loadForEntityConfiguration( viewContext, "type" );
@@ -321,9 +322,9 @@ public class TestGenericEntityViewController
 
 		mockMvc.perform( get( "/entities/type/123/delete" ) )
 		       .andExpect( status().isOk() )
-		       .andExpect( model().attribute( "entityViewContext", viewContext ) )
-		       .andExpect( model().attribute( "entityViewRequest", viewRequest ) )
-		       .andExpect( model().attribute( "entityViewCommand", command ) )
+		       .andExpect( model().attribute( VIEW_CONTEXT, viewContext ) )
+		       .andExpect( model().attribute( VIEW_REQUEST, viewRequest ) )
+		       .andExpect( model().attribute( VIEW_COMMAND, command ) )
 		       .andExpect( view().name( "view-template" ) );
 
 		verify( viewContextLoader ).loadForEntityConfiguration( viewContext, "type" );

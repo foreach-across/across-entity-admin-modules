@@ -96,8 +96,8 @@ public class TestEntityViewCommandValidator
 	@Test
 	public void extensionValidation() {
 		EntityViewCommand command = new EntityViewCommand();
-		command.addExtensions( "someExtension", "123" );
-		command.addExtensions( "other", "456" );
+		command.addExtension( "someExtension", "123" );
+		command.addExtension( "other", "456" );
 
 		validator.validate( command, errors );
 		InOrder ordered = inOrder( fallbackValidator, errors );
