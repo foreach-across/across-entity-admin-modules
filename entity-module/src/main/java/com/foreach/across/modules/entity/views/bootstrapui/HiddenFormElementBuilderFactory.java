@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
@@ -43,15 +44,11 @@ import java.io.Serializable;
  *
  * @author Arne Vandamme
  */
+@Component
 public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<HiddenFormElementBuilder>
 {
-	@Autowired
 	private ConversionService conversionService;
-
-	@Autowired
 	private EntityRegistry entityRegistry;
-
-	@Autowired
 	private BootstrapUiFactory bootstrapUi;
 
 	@Override
@@ -70,6 +67,21 @@ public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFac
 						                  entityRegistry, conversionService, propertyDescriptor
 				                  )
 		                  );
+	}
+
+	@Autowired
+	public void setConversionService( ConversionService conversionService ) {
+		this.conversionService = conversionService;
+	}
+
+	@Autowired
+	public void setEntityRegistry( EntityRegistry entityRegistry ) {
+		this.entityRegistry = entityRegistry;
+	}
+
+	@Autowired
+	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
 	}
 
 	/**

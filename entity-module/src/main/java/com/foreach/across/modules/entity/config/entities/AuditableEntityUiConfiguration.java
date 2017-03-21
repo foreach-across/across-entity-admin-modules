@@ -26,7 +26,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.Audi
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -40,10 +40,10 @@ import org.springframework.data.domain.Sort;
 @Configuration
 @OrderInModule(2)
 @AcrossDepends(required = SpringSecurityModule.NAME)
+@RequiredArgsConstructor
 public class AuditableEntityUiConfiguration implements EntityConfigurer
 {
-	@Autowired
-	private ConversionService mvcConversionService;
+	private final ConversionService mvcConversionService;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {

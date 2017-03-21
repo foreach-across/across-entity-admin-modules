@@ -160,7 +160,7 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 	{
 		@Bean
 		public CheckboxFormElementBuilderFactory checkboxFormElementBuilderFactory() {
-			return new CheckboxFormElementBuilderFactory();
+			return new CheckboxFormElementBuilderFactory( bootstrapUiFactory() );
 		}
 
 		@Bean

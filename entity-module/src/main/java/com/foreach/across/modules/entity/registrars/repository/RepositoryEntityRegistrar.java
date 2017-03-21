@@ -62,22 +62,11 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 {
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityRegistrar.class );
 
-	@Autowired
 	private RepositoryEntityModelBuilder entityModelBuilder;
-
-	@Autowired
 	private RepositoryEntityPropertyRegistryBuilder propertyRegistryBuilder;
-
-	@Autowired
 	private RepositoryEntityAssociationsBuilder associationsBuilder;
-
-	@Autowired
 	private MessageSource messageSource;
-
-	@Autowired
 	private MappingContextRegistry mappingContextRegistry;
-
-	@EntityValidator
 	private SmartValidator entityValidator;
 
 	@SuppressWarnings("unchecked")
@@ -273,5 +262,35 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 		}
 
 		return name;
+	}
+
+	@Autowired
+	public void setEntityModelBuilder( RepositoryEntityModelBuilder entityModelBuilder ) {
+		this.entityModelBuilder = entityModelBuilder;
+	}
+
+	@Autowired
+	public void setPropertyRegistryBuilder( RepositoryEntityPropertyRegistryBuilder propertyRegistryBuilder ) {
+		this.propertyRegistryBuilder = propertyRegistryBuilder;
+	}
+
+	@Autowired
+	public void setAssociationsBuilder( RepositoryEntityAssociationsBuilder associationsBuilder ) {
+		this.associationsBuilder = associationsBuilder;
+	}
+
+	@Autowired
+	public void setMessageSource( MessageSource messageSource ) {
+		this.messageSource = messageSource;
+	}
+
+	@Autowired
+	public void setMappingContextRegistry( MappingContextRegistry mappingContextRegistry ) {
+		this.mappingContextRegistry = mappingContextRegistry;
+	}
+
+	@EntityValidator
+	public void setEntityValidator( SmartValidator entityValidator ) {
+		this.entityValidator = entityValidator;
 	}
 }

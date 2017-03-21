@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.helpers.EntityViewElementBatch;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityModelAttributes;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,19 +33,18 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
+ * Provides methods to creating helper beans for view element generation.
+ *
  * @author Arne Vandamme
+ * @since 2.0.0
  */
 @Service
+@RequiredArgsConstructor
 public class EntityViewElementBuilderHelper
 {
-	@Autowired
-	private EntityViewElementBuilderService builderService;
-
-	@Autowired
-	private EntityRegistry entityRegistry;
-
-	@Autowired
-	private BeanFactory beanFactory;
+	private final EntityViewElementBuilderService builderService;
+	private final EntityRegistry entityRegistry;
+	private final BeanFactory beanFactory;
 
 	@Autowired
 	public EntityViewElementBuilderHelper( BeanFactory beanFactory ) {

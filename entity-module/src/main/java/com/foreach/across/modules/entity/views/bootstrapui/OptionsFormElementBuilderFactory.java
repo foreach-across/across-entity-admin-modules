@@ -36,6 +36,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.mapping.PersistentProperty;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
@@ -51,12 +52,10 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
+@Component
 public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<OptionsFormElementBuilder>
 {
-	@Autowired
 	private BootstrapUiFactory bootstrapUi;
-
-	@Autowired
 	private EntityRegistry entityRegistry;
 
 	public OptionsFormElementBuilderFactory() {
@@ -145,6 +144,16 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		return null;
+	}
+
+	@Autowired
+	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
+	}
+
+	@Autowired
+	public void setEntityRegistry( EntityRegistry entityRegistry ) {
+		this.entityRegistry = entityRegistry;
 	}
 
 	public static class OptionsRequiredBuilderProcessor

@@ -31,9 +31,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import testmodules.springdata.business.Car;
-import testmodules.springdata.business.Client;
-import testmodules.springdata.business.Company;
+import testmodules.springdata.business.*;
 import testmodules.springdata.repositories.ClientRepository;
 import testmodules.springdata.repositories.CompanyRepository;
 
@@ -127,22 +125,20 @@ public class TestManyToOneAssociations
 		verifyClients( executor, three );
 	}
 
-	// todo: implement once supporting MappingContext items
-	/*
 	@Test
-	public void companyShouldHaveAnAssociationToItsClientGroups() {
-		EntityConfiguration company = entityRegistry.getEntityConfiguration( Company.class );
+	public void groupShouldHaveAnAssociationToItsClientGroups() {
+		EntityConfiguration group = entityRegistry.getEntityConfiguration( Group.class );
 		EntityConfiguration clientGroup = entityRegistry.getEntityConfiguration( ClientGroup.class );
 
-		EntityAssociation association = company.association( "clientGroup.id.company" );
+		EntityAssociation association = group.association( "clientGroup.id.group" );
 
 		assertNotNull( association );
 		assertEquals(
 				"Association name should be target entity name joined with target property name",
-				"clientGroup.id.company", association.getName()
+				"clientGroup.id.group", association.getName()
 		);
 
-		assertSame( company, association.getSourceEntityConfiguration() );
+		assertSame( group, association.getSourceEntityConfiguration() );
 		assertSame( clientGroup, association.getTargetEntityConfiguration() );
 
 		assertNull(
@@ -150,11 +146,10 @@ public class TestManyToOneAssociations
 				association.getSourceProperty()
 		);
 		assertNotNull( association.getTargetProperty() );
-		assertSame( clientGroup.getPropertyRegistry().getProperty( "company" ), association.getTargetProperty() );
+		assertSame( clientGroup.getPropertyRegistry().getProperty( "id.group" ), association.getTargetProperty() );
 
-		assertTrue( association.hasView( EntityListView.LIST_VIEW_NAME ) );
+		assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
 	}
-	*/
 
 	@Test
 	public void companyShouldNotHaveAssociationToItsCarsAsTheRepositoryDoesNotSupportSpecifications() {

@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.events.AcrossEventPublisher;
+import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
@@ -79,12 +80,24 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		EntityViewContext entityViewContext = resolveEntityViewContext( entityViewRequest );
 		PageContentStructure page = entityViewRequest.getPageContentStructure();
 		page.setRenderAsTabs( true );
-		// todo: update breadcrumb adminMenu.breadcrumbLeaf( entityConfiguration.getLabel( original ) );
+
+		configureBreadcumb( entityViewContext );
 
 		page.setPageTitle( entityViewContext.getEntityMessages().withNameSingular( titleMessageCode, entityViewContext.getEntityLabel() ) );
 
 		if ( addEntityMenu ) {
 			buildEntityMenu( entityViewContext, page, builderContext );
+		}
+	}
+
+	private void configureBreadcumb( EntityViewContext entityViewContext ) {
+		AdminMenu adminMenu = (AdminMenu) menuFactory.getMenuWithName( AdminMenu.NAME );
+		if ( adminMenu != null && entityViewContext.holdsEntity() ) {
+			adminMenu.breadcrumbLeaf(
+					entityViewContext.isForAssociation()
+							? entityViewContext.getParentContext().getEntityLabel()
+							: entityViewContext.getEntityLabel()
+			);
 		}
 	}
 

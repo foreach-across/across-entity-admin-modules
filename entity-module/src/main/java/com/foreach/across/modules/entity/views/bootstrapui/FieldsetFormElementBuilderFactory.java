@@ -34,6 +34,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Builds a {@link com.foreach.across.modules.bootstrapui.elements.builder.FieldsetFormElementBuilder}
@@ -44,12 +45,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Arne Vandamme
  * @see com.foreach.across.modules.entity.EntityAttributes#FIELDSET_PROPERTY_SELECTOR
  */
+@Component
 public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<FieldsetFormElementBuilder>
 {
-	@Autowired
 	private BootstrapUiFactory bootstrapUi;
-
-	@Autowired
 	private EntityViewElementBuilderService entityViewElementBuilderService;
 
 	@Override
@@ -99,6 +98,16 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 		}
 
 		return selector;
+	}
+
+	@Autowired
+	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
+	}
+
+	@Autowired
+	public void setEntityViewElementBuilderService( EntityViewElementBuilderService entityViewElementBuilderService ) {
+		this.entityViewElementBuilderService = entityViewElementBuilderService;
 	}
 
 	/**

@@ -21,6 +21,7 @@ import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
 import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.repositories.GroupRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Page;
@@ -34,12 +35,12 @@ import java.util.stream.Stream;
  */
 @Order(1)
 @Installer(description = "Installs a number of test groups for filtering", phase = InstallerPhase.AfterModuleBootstrap)
+@RequiredArgsConstructor
 public class TestGroupInstaller
 {
 	private long groupId = -1;
 
-	@Autowired
-	private GroupRepository groupRepository;
+	private final GroupRepository groupRepository;
 
 	@InstallerMethod
 	public void installTestGroups() {

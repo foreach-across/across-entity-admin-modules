@@ -19,6 +19,7 @@ import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyComparators;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +39,13 @@ import java.util.List;
  * can be determined as well.</p>
  */
 @Component
+@RequiredArgsConstructor
 class RepositoryEntityPropertyRegistryBuilder
 {
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityPropertyRegistryBuilder.class );
 
-	@Autowired
-	private ValidatorFactory validatorFactory;
-	@Autowired
-	private EntityPropertyRegistryProvider entityPropertyRegistryProvider;
+	private final ValidatorFactory validatorFactory;
+	private final EntityPropertyRegistryProvider entityPropertyRegistryProvider;
 
 	public <T> void buildEntityPropertyRegistry( MutableEntityConfiguration<T> entityConfiguration ) {
 		Class<? extends T> entityType = entityConfiguration.getEntityType();

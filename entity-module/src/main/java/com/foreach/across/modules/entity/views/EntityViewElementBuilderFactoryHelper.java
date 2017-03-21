@@ -34,7 +34,6 @@ import java.text.Format;
 @Service
 public class EntityViewElementBuilderFactoryHelper
 {
-	@Autowired
 	private ConversionService mvcConversionService;
 
 	/**
@@ -56,5 +55,10 @@ public class EntityViewElementBuilderFactoryHelper
 		}
 
 		return new ConversionServiceValueTextPostProcessor<>( descriptor, mvcConversionService );
+	}
+
+	@Autowired
+	void setMvcConversionService( ConversionService mvcConversionService ) {
+		this.mvcConversionService = mvcConversionService;
 	}
 }

@@ -55,11 +55,10 @@ public class TestEntityAssociationBuilder
 	private MutableEntityConfiguration configuration;
 
 	private EntityAssociationBuilder builder;
-	private EntityViewFactoryBuilderInitializer builderInitializer;
 
 	@Before
 	public void reset() {
-		builderInitializer = PowerMockito.mock( EntityViewFactoryBuilderInitializer.class );
+		EntityViewFactoryBuilderInitializer builderInitializer = PowerMockito.mock( EntityViewFactoryBuilderInitializer.class );
 
 		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistry );
 		builder = new EntityAssociationBuilder( beanFactory );

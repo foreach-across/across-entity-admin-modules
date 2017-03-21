@@ -81,11 +81,9 @@ public class TestSortableTableRenderingViewProcessor
 	@InjectMocks
 	private SortableTableRenderingViewProcessor processor;
 
-	private Map<String, Object> model;
-
 	@Before
 	public void setUp() throws Exception {
-		model = new HashMap<>();
+		Map<String, Object> model = new HashMap<>();
 
 		ViewElementBuilderContextHolder.setViewElementBuilderContext( mock( ViewElementBuilderContext.class ) );
 

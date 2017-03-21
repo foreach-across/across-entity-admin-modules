@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.entity.config.modules;
+
+package com.foreach.across.modules.entity.config;
 
 import com.foreach.across.modules.entity.EntityModuleSettings;
 import com.foreach.across.modules.entity.annotations.EntityValidator;

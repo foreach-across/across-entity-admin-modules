@@ -31,6 +31,7 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.WebResourcePackageManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -41,13 +42,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @AcrossDepends(required = AdminWebModule.NAME)
 @Configuration
 @ComponentScan(basePackageClasses = EntityOverviewController.class)
+@RequiredArgsConstructor
 public class AdminWebConfiguration implements EntityConfigurer
 {
-	@Autowired
-	private ConversionService mvcConversionService;
-
-	@Autowired
-	private AdminWeb adminWeb;
+	private final ConversionService mvcConversionService;
+	private final AdminWeb adminWeb;
 
 	@Autowired
 	public void registerEntityModuleWebResources( WebResourcePackageManager adminWebResourcePackageManager ) {

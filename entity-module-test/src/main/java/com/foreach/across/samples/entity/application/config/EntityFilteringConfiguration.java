@@ -105,7 +105,6 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	 */
 	private static class PartnerFilterProcessor extends EntityViewProcessorAdapter
 	{
-		@Autowired
 		private PartnerRepository partnerRepository;
 
 		@Override
@@ -148,6 +147,11 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 					}
 			);
 		}
+
+		@Autowired
+		void setPartnerRepository( PartnerRepository partnerRepository ) {
+			this.partnerRepository = partnerRepository;
+		}
 	}
 
 	/**
@@ -155,7 +159,6 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	 */
 	private static class UserInGroupFilterProcessor extends EntityViewProcessorAdapter
 	{
-		@Autowired
 		private UserRepository userRepository;
 
 		@Override
@@ -199,6 +202,11 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 						h.addChild( new TemplateViewElement( "th/entityModuleTest/filters :: filterForm" ) );
 					}
 			);
+		}
+
+		@Autowired
+		void setUserRepository( UserRepository userRepository ) {
+			this.userRepository = userRepository;
 		}
 	}
 }

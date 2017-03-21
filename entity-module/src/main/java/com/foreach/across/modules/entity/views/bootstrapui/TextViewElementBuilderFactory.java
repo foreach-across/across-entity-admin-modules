@@ -23,18 +23,17 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySu
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Creates a text value element for a given property.
  *
  * @author Arne Vandamme
  */
+@Component
 public class TextViewElementBuilderFactory extends EntityViewElementBuilderFactorySupport<TextViewElementBuilder>
 {
-	@Autowired
 	private BootstrapUiFactory bootstrapUi;
-
-	@Autowired
 	private EntityViewElementBuilderFactoryHelper builderFactoryHelper;
 
 	@Override
@@ -48,5 +47,15 @@ public class TextViewElementBuilderFactory extends EntityViewElementBuilderFacto
 		return bootstrapUi
 				.text()
 				.postProcessor( builderFactoryHelper.createDefaultValueTextPostProcessor( propertyDescriptor ) );
+	}
+
+	@Autowired
+	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
+	}
+
+	@Autowired
+	public void setBuilderFactoryHelper( EntityViewElementBuilderFactoryHelper builderFactoryHelper ) {
+		this.builderFactoryHelper = builderFactoryHelper;
 	}
 }

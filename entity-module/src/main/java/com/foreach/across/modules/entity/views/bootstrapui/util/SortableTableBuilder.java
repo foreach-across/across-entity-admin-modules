@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
@@ -47,6 +48,7 @@ import java.util.*;
  *
  * @author Arne Vandamme
  */
+@Component
 @Scope("prototype")
 public class SortableTableBuilder extends GlobalContextSupportingViewElementBuilder<ViewElement>
 {

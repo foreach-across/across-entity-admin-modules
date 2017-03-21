@@ -40,7 +40,6 @@ public class MenuEventsHandler
 {
 	private static final Logger LOG = LoggerFactory.getLogger( MenuEventsHandler.class );
 
-	@Autowired
 	private EntityRegistry entityRegistry;
 
 	@Event
@@ -146,5 +145,10 @@ public class MenuEventsHandler
 			              messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
 		}
+	}
+
+	@Autowired
+	void setEntityRegistry( EntityRegistry entityRegistry ) {
+		this.entityRegistry = entityRegistry;
 	}
 }

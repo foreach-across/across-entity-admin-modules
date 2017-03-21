@@ -34,11 +34,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestAssociatedEntityQueryExecutor
 {
-	private AssociatedEntityQueryExecutor executor;
-
 	@Test
 	public void fixedPropertyAlwaysReturnsFullList() {
-		executor = AssociatedEntityQueryExecutor.forBeanProperty( new SimpleEntityPropertyDescriptor( "representatives" ) );
+		AssociatedEntityQueryExecutor executor = AssociatedEntityQueryExecutor.forBeanProperty( new SimpleEntityPropertyDescriptor( "representatives" ) );
 
 		Company company = new Company();
 		Representative one = new Representative();

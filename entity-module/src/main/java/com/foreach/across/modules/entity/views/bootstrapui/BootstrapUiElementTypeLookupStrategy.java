@@ -22,8 +22,10 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Date;
@@ -32,9 +34,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * @author Arne Vandamme
  */
+@Component
+@RequiredArgsConstructor
 public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLookupStrategy
 {
-	@Autowired
 	private EntityRegistry entityRegistry;
 
 	@Override
@@ -125,5 +128,10 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		}
 
 		return null;
+	}
+
+	@Autowired
+	void setEntityRegistry( EntityRegistry entityRegistry ) {
+		this.entityRegistry = entityRegistry;
 	}
 }

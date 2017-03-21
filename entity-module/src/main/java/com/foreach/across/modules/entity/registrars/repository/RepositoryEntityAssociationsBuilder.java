@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.registrars.repository;
 import com.foreach.across.modules.entity.registrars.repository.associations.EntityAssociationBuilder;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
@@ -35,13 +36,11 @@ import java.util.Collection;
  * @author Arne Vandamme
  */
 @Component
+@RequiredArgsConstructor
 class RepositoryEntityAssociationsBuilder
 {
-	@Autowired
-	private Collection<EntityAssociationBuilder> entityAssociationBuilders;
-
-	@Autowired
-	private MappingContextRegistry mappingContextRegistry;
+	private final Collection<EntityAssociationBuilder> entityAssociationBuilders;
+	private final MappingContextRegistry mappingContextRegistry;
 
 	public <T> void buildAssociations( final MutableEntityRegistry entityRegistry,
 	                                   final MutableEntityConfiguration entityConfiguration ) {

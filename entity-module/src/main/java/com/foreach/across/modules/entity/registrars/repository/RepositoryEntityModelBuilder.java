@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.PersistentEntityFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.repository.Repository;
@@ -37,10 +38,10 @@ import static org.springframework.data.repository.support.RepositoryInvokerUtils
  * Builds an {@link com.foreach.across.modules.entity.registry.EntityModel} for a Spring data repository.
  */
 @Component
+@RequiredArgsConstructor
 class RepositoryEntityModelBuilder
 {
-	@Autowired
-	private ConversionService mvcConversionService;
+	private final ConversionService mvcConversionService;
 
 	@SuppressWarnings("unchecked")
 	public <T> void buildEntityModel( MutableEntityConfiguration<T> entityConfiguration ) {

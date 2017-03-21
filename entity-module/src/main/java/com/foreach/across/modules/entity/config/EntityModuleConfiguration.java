@@ -26,11 +26,7 @@ import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
 import com.foreach.across.modules.entity.query.support.EQStringToDateConverter;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
-import com.foreach.across.modules.entity.views.context.EntityViewContext;
-import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
-import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
-import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.views.EntityView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +41,7 @@ import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
-@ComponentScan(basePackageClasses = { EntityRegistry.class, EntityViewRequest.class, EntityViewContext.class, EntityViewPageHelper.class,
-                                      ModuleEntityRegistration.class, EntityViewFactoryBuilderInitializer.class, EntityViewProcessorAdapter.class })
+@ComponentScan(basePackageClasses = { EntityRegistry.class, ModuleEntityRegistration.class, EntityView.class })
 public class EntityModuleConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityModuleConfiguration.class );

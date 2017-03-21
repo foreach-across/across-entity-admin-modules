@@ -31,6 +31,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.element.Pl
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.Size;
 import javax.validation.metadata.ConstraintDescriptor;
@@ -42,12 +43,10 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
+@Component
 public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<TextboxFormElementBuilder>
 {
-	@Autowired
 	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
-
-	@Autowired
 	private BootstrapUiFactory bootstrapUi;
 
 	private int maximumSingleLineLength = 300;
@@ -91,6 +90,16 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		return textboxBuilder;
+	}
+
+	@Autowired
+	public void setBuilderFactoryHelpers( EntityViewElementBuilderFactoryHelper builderFactoryHelpers ) {
+		this.builderFactoryHelpers = builderFactoryHelpers;
+	}
+
+	@Autowired
+	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
 	}
 
 	/**
