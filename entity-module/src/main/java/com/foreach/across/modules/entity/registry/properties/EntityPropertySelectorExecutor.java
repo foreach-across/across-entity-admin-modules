@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.registry.properties;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * @author Arne Vandamme
@@ -26,6 +27,10 @@ public class EntityPropertySelectorExecutor
 {
 	private EntityPropertyRegistry current;
 	private EntityPropertyRegistryProvider propertyRegistries;
+
+	private static final Predicate<EntityPropertyDescriptor> ALL = entityPropertyDescriptor -> true;
+	private static final Predicate<EntityPropertyDescriptor> WRITABLE = EntityPropertyDescriptor::isWritable;
+	private static final Predicate<EntityPropertyDescriptor> READABLE = EntityPropertyDescriptor::isReadable;
 
 	public EntityPropertySelectorExecutor( EntityPropertyRegistry current,
 	                                       EntityPropertyRegistryProvider propertyRegistries ) {
@@ -37,9 +42,25 @@ public class EntityPropertySelectorExecutor
 		LinkedHashSet<EntityPropertyDescriptor> properties = new LinkedHashSet<>();
 		Set<String> excluded = new HashSet<>();
 
+		Predicate<EntityPropertyDescriptor> predicate = selector.hasPredicate() ? selector.getPredicate() : ALL;
+
 		for ( Map.Entry<String, Boolean> candidate : selector.propertiesToSelect().entrySet() ) {
 			String propertyName = candidate.getKey();
-			if ( candidate.getValue() ) {
+			boolean include = candidate.getValue();
+
+			if ( EntityPropertySelector.WRITABLE.equals( propertyName ) ) {
+				current.getProperties()
+				       .stream()
+				       .filter( include ? WRITABLE : WRITABLE.negate() )
+				       .forEach( properties::add );
+			}
+			else if ( EntityPropertySelector.READABLE.equals( propertyName ) ) {
+				current.getProperties()
+				       .stream()
+				       .filter( include ? READABLE : READABLE.negate() )
+				       .forEach( properties::add );
+			}
+			else if ( include ) {
 				if ( EntityPropertySelector.ALL.equals( propertyName ) ) {
 					properties.addAll( current.getProperties() );
 				}
@@ -71,19 +92,7 @@ public class EntityPropertySelectorExecutor
 			}
 		}
 
-		EntityPropertyFilter filter = selector.getFilter();
-
-		if ( filter == null ) {
-			filter = EntityPropertyFilters.NOOP;
-		}
-
-		Iterator<EntityPropertyDescriptor> iterator = properties.iterator();
-		while ( iterator.hasNext() ) {
-			EntityPropertyDescriptor candidate = iterator.next();
-			if ( excluded.contains( candidate.getName() ) || !filter.shouldInclude( candidate ) ) {
-				iterator.remove();
-			}
-		}
+		properties.removeIf( candidate -> excluded.contains( candidate.getName() ) || !predicate.test( candidate ) );
 
 		return new ArrayList<>( properties );
 	}

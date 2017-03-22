@@ -95,7 +95,6 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 	/**
 	 * Selector for the properties that should be rendered on the table.
 	 */
-	@Setter
 	private EntityPropertySelector propertySelector = EntityPropertySelector.of( EntityPropertySelector.ALL );
 
 	/**
@@ -103,6 +102,10 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 	 */
 	@Setter
 	private ViewElementMode viewElementMode = ViewElementMode.LIST_VALUE;
+
+	public void setPropertySelector( EntityPropertySelector propertySelector ) {
+		this.propertySelector = this.propertySelector.combine( propertySelector );
+	}
 
 	@Override
 	protected void createViewElementBuilders( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap ) {

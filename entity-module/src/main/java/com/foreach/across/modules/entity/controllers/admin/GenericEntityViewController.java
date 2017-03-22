@@ -29,7 +29,7 @@ import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewCommandValidator;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
-import com.foreach.across.modules.entity.web.EntityModelAttributes;
+import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -128,9 +128,9 @@ public class GenericEntityViewController
 
 		viewFactory.authorizeRequest( entityViewRequest );
 
-		model.addAttribute( EntityModelAttributes.VIEW_REQUEST, entityViewRequest );
-		model.addAttribute( EntityModelAttributes.VIEW_COMMAND, entityViewRequest.getCommand() );
-		model.addAttribute( EntityModelAttributes.VIEW_CONTEXT, entityViewContext );
+		model.addAttribute( EntityViewModel.VIEW_REQUEST, entityViewRequest );
+		model.addAttribute( EntityViewModel.VIEW_COMMAND, entityViewRequest.getCommand() );
+		model.addAttribute( EntityViewModel.VIEW_CONTEXT, entityViewContext );
 	}
 
 	@ModelAttribute
@@ -138,7 +138,7 @@ public class GenericEntityViewController
 		webResourceRegistry.addPackage( EntityModuleWebResources.NAME );
 	}
 
-	@InitBinder(EntityModelAttributes.VIEW_COMMAND)
+	@InitBinder(EntityViewModel.VIEW_COMMAND)
 	public void initViewCommandBinder( WebDataBinder dataBinder, HttpMethod httpMethod ) {
 		dataBinder.setMessageCodesResolver( entityViewContext.getMessageCodeResolver() );
 
@@ -158,7 +158,7 @@ public class GenericEntityViewController
 	                          PATH_ASSOCIATED_ENTITY,
 	                          PATH_ASSOCIATED_ENTITY + "/{action:delete|update}"
 	})
-	public Object executeView( @ModelAttribute(EntityModelAttributes.VIEW_COMMAND) EntityViewCommand command ) {
+	public Object executeView( @ModelAttribute(EntityViewModel.VIEW_COMMAND) EntityViewCommand command ) {
 		return executeView( command, null );
 	}
 
@@ -173,7 +173,7 @@ public class GenericEntityViewController
 			method = { RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH }
 	)
 	public Object executeView(
-			@ModelAttribute(EntityModelAttributes.VIEW_COMMAND) @Valid EntityViewCommand command,
+			@ModelAttribute(EntityViewModel.VIEW_COMMAND) @Valid EntityViewCommand command,
 			BindingResult bindingResult
 	) {
 		entityViewRequest.setBindingResult( bindingResult );

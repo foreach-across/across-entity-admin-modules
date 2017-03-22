@@ -55,7 +55,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	 */
 	public DefaultEntityPropertyRegistry( EntityPropertyRegistryProvider registryProvider ) {
 		super( registryProvider );
-		setDefaultFilter( EntityPropertyFilters.NOT_HIDDEN );
+		setDefaultFilter( entityPropertyDescriptor -> !entityPropertyDescriptor.isHidden() );
 	}
 
 	@Override

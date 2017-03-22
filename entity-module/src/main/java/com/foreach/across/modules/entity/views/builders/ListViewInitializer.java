@@ -31,6 +31,7 @@ import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.function.BiConsumer;
@@ -87,17 +88,22 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 	private String determineDefaultSort( EntityConfiguration<?> entityConfiguration ) {
 		EntityPropertyRegistry propertyRegistry = entityConfiguration.getPropertyRegistry();
 
-		if ( propertyRegistry.contains( "name" ) ) {
+		if ( isSortable( propertyRegistry.getProperty( "name" ) ) ) {
 			return "name";
 		}
-		if ( propertyRegistry.contains( "title" ) ) {
+		if ( isSortable( propertyRegistry.getProperty( "title" ) ) ) {
 			return "title";
 		}
-		if ( propertyRegistry.contains( "label" ) ) {
+		if ( isSortable( propertyRegistry.getProperty( "label" ) ) ) {
 			return "label";
 		}
 
 		return null;
+	}
+
+	// only consider persistent properties by default
+	private boolean isSortable( EntityPropertyDescriptor descriptor ) {
+		return descriptor != null && descriptor.hasAttribute( PersistentProperty.class );
 	}
 
 	@Override

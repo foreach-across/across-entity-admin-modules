@@ -64,6 +64,16 @@ import java.util.Optional;
 @Scope("prototype")
 public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 {
+	/**
+	 * Default name of the left column element in case of a default form with a 2 column grid.
+	 */
+	public static final String LEFT_COLUMN = "entityForm-column-0";
+
+	/**
+	 * Default name of the right column element in case of a default form with a 2 column grid.
+	 */
+	public static final String RIGHT_COLUMN = "entityForm-column-1";
+
 	private BootstrapUiFactory bootstrapUiFactory;
 
 	/**

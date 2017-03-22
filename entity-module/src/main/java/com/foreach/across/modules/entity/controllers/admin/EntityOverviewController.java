@@ -50,11 +50,12 @@ public class EntityOverviewController
 
 	@RequestMapping(GenericEntityViewController.ROOT_PATH)
 	public String listAllEntityTypes() {
-		Map<String, List<EntityConfiguration>> entitiesByGroup = entityRegistry.getEntities()
-		                                                                       .stream()
-		                                                                       .sorted( Comparator.comparing( EntityConfiguration::getDisplayName ) )
-		                                                                       .filter( c -> c.getAllowableActions().contains( AllowableAction.READ ) )
-		                                                                       .collect( Collectors.groupingBy( this::determineGroupName ) );
+		Map<String, List<EntityConfiguration>> entitiesByGroup = entityRegistry
+				.getEntities()
+				.stream()
+				.sorted( Comparator.comparing( EntityConfiguration::getDisplayName ) )
+				.filter( c -> !c.isHidden() && c.getAllowableActions().contains( AllowableAction.READ ) )
+				.collect( Collectors.groupingBy( this::determineGroupName ) );
 
 		NodeViewElementBuilder row = bootstrapUiFactory.row();
 

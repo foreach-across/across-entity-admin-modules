@@ -42,12 +42,12 @@ import java.util.Collection;
  */
 @Scope("prototype")
 @Component
-final class DefaultEntityViewRegistration implements EntityConfigurer
+final class DefaultEntityViewsRegistrar implements EntityConfigurer
 {
 	private EntityRegistry entityRegistry;
 
 	@Autowired
-	public DefaultEntityViewRegistration( EntityRegistry entityRegistry ) {
+	public DefaultEntityViewsRegistrar( EntityRegistry entityRegistry ) {
 		this.entityRegistry = entityRegistry;
 	}
 

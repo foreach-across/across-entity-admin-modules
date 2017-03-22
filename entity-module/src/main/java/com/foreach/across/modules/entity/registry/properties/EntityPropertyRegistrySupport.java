@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * @author Arne Vandamme
@@ -31,7 +32,7 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	private final EntityPropertyRegistryProvider registryProvider;
 	private final EntityPropertySelectorExecutor selectorExecutor;
 
-	private EntityPropertyFilter defaultFilter;
+	private Predicate<EntityPropertyDescriptor> defaultFilter;
 	private Comparator<EntityPropertyDescriptor> defaultOrder = null;
 
 	protected EntityPropertyRegistrySupport( EntityPropertyRegistryProvider registryProvider ) {
@@ -44,13 +45,13 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	}
 
 	@Override
-	public EntityPropertyFilter getDefaultFilter() {
+	public Predicate<EntityPropertyDescriptor> getDefaultFilter() {
 		return defaultFilter;
 	}
 
 	@Override
-	public void setDefaultFilter( EntityPropertyFilter filter ) {
-		defaultFilter = filter;
+	public void setDefaultFilter( Predicate<EntityPropertyDescriptor> defaultFilter ) {
+		this.defaultFilter = defaultFilter;
 	}
 
 	@Override
@@ -74,8 +75,8 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	}
 
 	@Override
-	public List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter ) {
-		return fetchProperties( filter, getDefaultOrder() );
+	public List<EntityPropertyDescriptor> getProperties( Predicate<EntityPropertyDescriptor> predicate ) {
+		return fetchProperties( predicate, getDefaultOrder() );
 	}
 
 	public void setPropertyOrder( String propertyName, int order ) {
@@ -83,34 +84,23 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 		propertyOrder.put( propertyName, order );
 	}
 
-	private List<EntityPropertyDescriptor> fetchProperties( EntityPropertyFilter filter,
+	private List<EntityPropertyDescriptor> fetchProperties( Predicate<EntityPropertyDescriptor> predicate,
 	                                                        Comparator<EntityPropertyDescriptor> comparator ) {
-		EntityPropertyFilter filterToUse = filter != null ? filter : getDefaultFilter();
+		Predicate<EntityPropertyDescriptor> filterToUse = predicate != null ? predicate : getDefaultFilter();
 
 		if ( filterToUse == null ) {
-			filterToUse = EntityPropertyFilters.NOOP;
+			filterToUse = entityPropertyDescriptor -> true;
 		}
 
 		List<EntityPropertyDescriptor> filtered = new ArrayList<>();
-
-		if ( filterToUse instanceof EntityPropertyFilter.Inclusive ) {
-			for ( String propertyName : ( (EntityPropertyFilter.Inclusive) filterToUse ) ) {
-				EntityPropertyDescriptor descriptor = getProperty( propertyName );
-				if ( descriptor != null ) {
-					filtered.add( descriptor );
-				}
-			}
-		}
-		else {
-			for ( EntityPropertyDescriptor candidate : getRegisteredDescriptors() ) {
-				if ( !isNestedProperty( candidate.getName() ) && filterToUse.shouldInclude( candidate ) ) {
-					filtered.add( candidate );
-				}
+		for ( EntityPropertyDescriptor candidate : getRegisteredDescriptors() ) {
+			if ( !isNestedProperty( candidate.getName() ) && filterToUse.test( candidate ) ) {
+				filtered.add( candidate );
 			}
 		}
 
 		if ( comparator != null ) {
-			Collections.sort( filtered, comparator );
+			filtered.sort( comparator );
 		}
 
 		return filtered;

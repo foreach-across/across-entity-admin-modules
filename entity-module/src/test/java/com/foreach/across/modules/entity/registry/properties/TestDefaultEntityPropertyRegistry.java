@@ -26,8 +26,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Date;
 
-import static com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters.exclude;
-import static com.foreach.across.modules.entity.registry.properties.EntityPropertyFilters.include;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.*;
@@ -74,8 +72,6 @@ public class TestDefaultEntityPropertyRegistry
 
 	@Test
 	public void defaultFilterReturnsNonHidden() {
-		assertSame( EntityPropertyFilters.NOT_HIDDEN, registry.getDefaultFilter() );
-
 		registry.getProperty( "id" ).setHidden( true );
 
 		assertEquals(
@@ -87,7 +83,7 @@ public class TestDefaultEntityPropertyRegistry
 
 	@Test
 	public void customDefaultFilter() {
-		registry.setDefaultFilter( EntityPropertyFilters.NOOP );
+		registry.setDefaultFilter( entityPropertyDescriptor -> true );
 		assertEquals(
 				Sets.newSet( "name", "created", "id" ),
 				registry.getProperties()
@@ -101,7 +97,7 @@ public class TestDefaultEntityPropertyRegistry
 
 		assertEquals(
 				Arrays.asList( "created", "name", "id" ),
-				registry.getProperties( include( "name", "created", "id" ) )
+				registry.getProperties( entityPropertyDescriptor -> Arrays.asList( "name", "created", "id" ).contains( entityPropertyDescriptor.getName() ) )
 				        .stream().map( EntityPropertyDescriptor::getName ).collect( toList() )
 		);
 	}
@@ -112,7 +108,7 @@ public class TestDefaultEntityPropertyRegistry
 
 		assertEquals(
 				Arrays.asList( "created", "id" ),
-				registry.getProperties( exclude( "name" ) )
+				registry.getProperties( entityPropertyDescriptor -> !"name".equals( entityPropertyDescriptor.getName() ) )
 				        .stream().map( EntityPropertyDescriptor::getName ).collect( toList() )
 		);
 	}

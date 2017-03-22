@@ -25,7 +25,7 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.entity.web.EntityModelAttributes;
+import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -76,11 +76,14 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 
 			command.setEntity( newDto );
 		}
+
+		// set the dto as the entity
+		entityViewRequest.getModel().addAttribute( EntityViewModel.ENTITY, command.getEntity() );
 	}
 
 	@Override
 	protected void prepareViewElementBuilderContext( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderContext builderContext ) {
-		builderContext.setAttribute( EntityModelAttributes.ENTITY, entityViewRequest.getCommand().getEntity() );
+		builderContext.setAttribute( EntityViewModel.ENTITY, entityViewRequest.getCommand().getEntity() );
 	}
 
 	@SuppressWarnings("unchecked")

@@ -69,11 +69,14 @@ public final class PropertyRenderingViewProcessor extends EntityViewProcessorAda
 
 	private EntityViewElementBuilderService viewElementBuilderService;
 
-	@Setter
 	private EntityPropertySelector selector = EntityPropertySelector.of( EntityPropertySelector.ALL );
 
 	@Setter
 	private ViewElementMode viewElementMode = ViewElementMode.FORM_READ;
+
+	public void setSelector( EntityPropertySelector selector ) {
+		this.selector = this.selector.combine( selector );
+	}
 
 	@Override
 	protected void createViewElementBuilders( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap ) {

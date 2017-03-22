@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewCon
 import com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.entity.web.EntityModelAttributes;
+import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -149,7 +149,8 @@ public class DefaultEntityViewFactory implements DispatchingEntityViewFactory
 	protected com.foreach.across.modules.web.ui.ViewElementBuilderContext createViewElementBuilderContext( EntityViewRequest entityViewRequest ) {
 		com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( entityViewRequest.getModel() );
 		if ( entityViewRequest.getEntityViewContext().holdsEntity() ) {
-			builderContext.setAttribute( EntityModelAttributes.ENTITY, entityViewRequest.getEntityViewContext().getEntity( Object.class ) );
+			Object entity = entityViewRequest.getEntityViewContext().getEntity();
+			entityViewRequest.getModel().addAttribute( EntityViewModel.ENTITY, entity );
 		}
 		builderContext.setAttribute( EntityMessageCodeResolver.class, entityViewRequest.getEntityViewContext().getMessageCodeResolver() );
 		builderContext.setAttribute( EntityViewRequest.class, entityViewRequest );

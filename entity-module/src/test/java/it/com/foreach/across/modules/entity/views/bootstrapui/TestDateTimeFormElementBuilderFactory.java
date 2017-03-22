@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.DateTimeFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
-import com.foreach.across.modules.entity.web.EntityModelAttributes;
+import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.common.test.MockedLoader;
@@ -168,7 +168,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		Date date = DateUtils.parseDate( "2015-08-07 10:31", "yyyy-MM-dd HH:mm" );
 
 		when( properties.get( "date" ).getValueFetcher() ).thenReturn( entity -> date );
-		when( builderContext.getAttribute( EntityModelAttributes.ENTITY ) ).thenReturn( "entity" );
+		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
 
 		DateTimeFormElement datetime = assembleAndVerify( "date", false );
 		assertEquals( date, datetime.getValue() );
@@ -194,7 +194,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 		try {
 			ValueFetcher valueFetcher = mock( ValueFetcher.class );
-			when( builderContext.getAttribute( EntityModelAttributes.ENTITY ) ).thenReturn( "entity" );
+			when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
 			when( valueFetcher.getValue( any() ) ).thenReturn( PRINT_DATE );
 			when( properties.get( "required" ).getValueFetcher() ).thenReturn( valueFetcher );
 

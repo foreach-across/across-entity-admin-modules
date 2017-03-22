@@ -22,7 +22,7 @@ package com.foreach.across.modules.entity.web;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public interface EntityModelAttributes
+public interface EntityViewModel
 {
 	/**
 	 * When set, expected to hold the current entity that is being modified.

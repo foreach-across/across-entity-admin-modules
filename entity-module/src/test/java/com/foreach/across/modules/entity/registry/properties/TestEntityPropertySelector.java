@@ -29,17 +29,10 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestEntityPropertySelector
 {
-	private EntityPropertySelector selector;
-
-	@Before
-	public void setUp() throws Exception {
-		selector = new EntityPropertySelector();
-	}
-
 	@Test
 	public void simpleProperties() {
-		selector.configure( "one" );
-		selector.configure( "id", "name", "product.title" );
+		EntityPropertySelector selector = EntityPropertySelector.of( "one" );
+		selector = selector.combine( EntityPropertySelector.of( "id", "name", "product.title" ) );
 
 		Map<String, Boolean> expected = new LinkedHashMap<>();
 		expected.put( "id", true );
@@ -53,8 +46,8 @@ public class TestEntityPropertySelector
 
 	@Test
 	public void incrementalBuild() {
-		selector.configure( "id" );
-		selector.configure( ".", "name", "product.title" );
+		EntityPropertySelector selector = EntityPropertySelector.of( "id" );
+		selector = selector.combine( EntityPropertySelector.of( ".", "name", "product.title" ) );
 
 		Map<String, Boolean> expected = new LinkedHashMap<>();
 		expected.put( "id", true );
@@ -68,8 +61,8 @@ public class TestEntityPropertySelector
 
 	@Test
 	public void incrementalWithExclusion() {
-		selector.configure( "id", "name" );
-		selector.configure( "~id", "product.title", "~date", "." );
+		EntityPropertySelector selector = EntityPropertySelector.of( "id", "name" );
+		selector = selector.combine( EntityPropertySelector.of( "~id", "product.title", "~date", "." ) );
 
 		Map<String, Boolean> expected = new LinkedHashMap<>();
 		expected.put( "id", false );
@@ -80,5 +73,21 @@ public class TestEntityPropertySelector
 		assertEquals( expected, selector.propertiesToSelect() );
 		assertArrayEquals( new String[] { "id", "name", "product.title", "date" },
 		                   selector.propertiesToSelect().keySet().toArray( new String[4] ) );
+		assertEquals( EntityPropertySelector.of( "~id", "name", "product.title", "~date" ), selector );
+	}
+
+	@Test
+	public void combineSemantics() {
+		EntityPropertySelector one = EntityPropertySelector.all();
+		EntityPropertySelector combined = one.combine( EntityPropertySelector.of( "~name", "id" ) );
+		assertEquals( EntityPropertySelector.of( "~name", "id" ), combined );
+
+		combined = combined.combine( EntityPropertySelector.of( ".", "name", "product.name" ) );
+		assertEquals( EntityPropertySelector.of( "id", "name", "product.name" ), combined );
+
+		assertEquals(
+				EntityPropertySelector.of( "*", "name", "**" ),
+				EntityPropertySelector.all().combine( EntityPropertySelector.of( ".", "name" ).combine( EntityPropertySelector.of( ".", "**" ) ) )
+		);
 	}
 }

@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
 import java.util.function.Consumer;
 
 /**
- * Builder for managing as specific {@link EntityAssociation} on a {@link EntityConfiguration}.
+ * Builder for managing a specific {@link EntityAssociation} on a {@link EntityConfiguration}.
  *
  * @author Arne Vandamme
  * @since 1.1.1

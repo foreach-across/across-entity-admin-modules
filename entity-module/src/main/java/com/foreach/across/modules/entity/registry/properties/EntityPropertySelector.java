@@ -17,10 +17,11 @@ package com.foreach.across.modules.entity.registry.properties;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * Selection predicate for a number of properties.  Allows incremental building of the selector.
@@ -43,43 +44,75 @@ import java.util.Objects;
  */
 public class EntityPropertySelector
 {
+	/**
+	 * Keep the previously configured property rules when another selector combines with this one.
+	 */
 	public static final String CONFIGURED = ".";
+
+	/**
+	 * All properties in the property registry, but applying any default filtering that the registry might apply.
+	 */
 	public static final String ALL = "*";
+
+	/**
+	 * All properties known in the property registry, ignoring any default filtering that the registry might apply.
+	 */
 	public static final String ALL_REGISTERED = "**";
 
-	private final Map<String, Boolean> propertiesToSelect = new LinkedHashMap<>();
+	/**
+	 * All properties that are readable.
+	 */
+	public static final String READABLE = ":readable";
 
-	private EntityPropertyFilter filter;
+	/**
+	 * All properties that are writable.
+	 */
+	public static final String WRITABLE = ":writable";
+
+	private boolean keepConfiguredRules;
+	private final Map<String, Boolean> propertiesToSelect;
+
+	private Predicate<EntityPropertyDescriptor> predicate;
 
 	public EntityPropertySelector() {
+		this( new LinkedHashMap<>() );
 	}
 
 	public EntityPropertySelector( String... propertyNames ) {
+		this();
 		configure( propertyNames );
 	}
 
-	public EntityPropertyFilter getFilter() {
-		return filter;
+	private EntityPropertySelector( Map<String, Boolean> propertiesToSelect ) {
+		this.propertiesToSelect = new LinkedHashMap<>( propertiesToSelect );
 	}
 
-	public void setFilter( EntityPropertyFilter filter ) {
-		this.filter = filter;
+	/**
+	 * @return optional predicate that should apply
+	 */
+	Predicate<EntityPropertyDescriptor> getPredicate() {
+		return predicate;
+	}
+
+	boolean hasPredicate() {
+		return predicate != null;
 	}
 
 	/**
 	 * @return map of property names with boolean indicated if they should be selected or not
 	 */
-	public Map<String, Boolean> propertiesToSelect() {
-		return Collections.unmodifiableMap( propertiesToSelect );
+	Map<String, Boolean> propertiesToSelect() {
+		return propertiesToSelect;
 	}
 
-	public void configure( String... propertyNames ) {
+	private void configure( String... propertyNames ) {
 		boolean keepAlreadyConfigured = false;
 		Map<String, Boolean> newProperties = new LinkedHashMap<>();
 
 		for ( String propertyName : propertyNames ) {
 			if ( CONFIGURED.equals( propertyName ) ) {
 				keepAlreadyConfigured = true;
+				keepConfiguredRules = true;
 			}
 			else {
 				if ( propertyName.startsWith( "~" ) ) {
@@ -106,6 +139,43 @@ public class EntityPropertySelector
 		return ALL.equals( propertyName ) || ALL_REGISTERED.equals( propertyName ) || CONFIGURED.equals( propertyName );
 	}
 
+	/**
+	 * Combines the current selector with another selector.  If the other selector contains the {@link #CONFIGURED} property, then
+	 * the result will be a merged selector.  In any other case, the other selector will in fact replace the current selector.
+	 *
+	 * @param other selector to combine with
+	 * @return other selector or a union of current and other selector if the other contains the {@link #CONFIGURED} rule
+	 */
+	public EntityPropertySelector combine( EntityPropertySelector other ) {
+		if ( other.keepConfiguredRules ) {
+			EntityPropertySelector selector = new EntityPropertySelector( propertiesToSelect );
+			selector.keepConfiguredRules = true;
+			selector.predicate = predicate;
+
+			if ( other.hasPredicate() ) {
+				if ( selector.hasPredicate() ) {
+					selector.predicate = selector.predicate.and( other.predicate );
+				}
+				else {
+					selector.predicate = other.predicate;
+				}
+			}
+
+			other.propertiesToSelect.forEach(
+					( propertyName, include ) -> {
+						if ( include ) {
+							selector.propertiesToSelect.remove( propertyName );
+						}
+						selector.propertiesToSelect.put( propertyName, include );
+					}
+			);
+
+			return selector;
+		}
+
+		return other;
+	}
+
 	@Override
 	public boolean equals( Object o ) {
 		if ( this == o ) {
@@ -115,16 +185,63 @@ public class EntityPropertySelector
 			return false;
 		}
 		EntityPropertySelector that = (EntityPropertySelector) o;
-		return Objects.equals( propertiesToSelect, that.propertiesToSelect ) &&
-				Objects.equals( filter, that.filter );
+		return Objects.equals( propertiesToSelect, that.propertiesToSelect )
+				&& Objects.equals( new ArrayList<>( propertiesToSelect.keySet() ), new ArrayList<>( that.propertiesToSelect.keySet() ) )
+				&& Objects.equals( predicate, that.predicate );
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash( propertiesToSelect, filter );
+		return Objects.hash( propertiesToSelect, predicate );
+	}
+
+	@Override
+	public String toString() {
+		return "EntityPropertySelector{" +
+				"keepConfiguredRules=" + keepConfiguredRules +
+				", propertiesToSelect=" + propertiesToSelect +
+				", predicate=" + predicate +
+				'}';
 	}
 
 	public static EntityPropertySelector of( String... propertyNames ) {
 		return new EntityPropertySelector( propertyNames );
+	}
+
+	public static EntityPropertySelector all() {
+		return new EntityPropertySelector( ALL );
+	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	/**
+	 * Builder for a combination of selected properties and a predicate they should additionally match.
+	 */
+	public static final class Builder
+	{
+		private String[] propertyNames = null;
+		private Predicate<EntityPropertyDescriptor> predicate = null;
+
+		private Builder() {
+		}
+
+		public Builder properties( String... propertyNames ) {
+			this.propertyNames = propertyNames;
+			return this;
+		}
+
+		public Builder predicate( Predicate<EntityPropertyDescriptor> predicate ) {
+			this.predicate = predicate;
+			return this;
+		}
+
+		public EntityPropertySelector build() {
+			EntityPropertySelector selector = EntityPropertySelector.of( propertyNames != null ? propertyNames : new String[0] );
+			selector.keepConfiguredRules = propertyNames == null;
+			selector.predicate = predicate;
+			return selector;
+		}
 	}
 }

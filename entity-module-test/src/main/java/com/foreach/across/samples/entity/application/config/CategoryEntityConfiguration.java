@@ -123,7 +123,6 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 		        .updateFormView( fvb -> fvb.showProperties( "name" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
 		        .show();
-
 	}
 
 	@Bean
