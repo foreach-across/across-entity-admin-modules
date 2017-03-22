@@ -118,7 +118,7 @@ public class TestSortableTableRenderingViewProcessor
 
 		processor.createViewElementBuilders( viewRequest, entityView, builderMap );
 
-		verify( sortableTable ).properties( EntityPropertySelector.of( EntityPropertySelector.ALL ) );
+		verify( sortableTable ).properties( EntityPropertySelector.of( EntityPropertySelector.READABLE ) );
 		verify( sortableTable ).items( page );
 		verify( sortableTable ).tableName( "itemsTable" );
 		verify( sortableTable ).formName( null );

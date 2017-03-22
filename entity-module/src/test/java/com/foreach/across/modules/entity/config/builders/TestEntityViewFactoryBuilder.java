@@ -208,7 +208,7 @@ public class TestEntityViewFactoryBuilder
 		PropertyRenderingViewProcessor renderingViewProcessor = new PropertyRenderingViewProcessor();
 		when( beanFactory.createBean( PropertyRenderingViewProcessor.class ) ).thenReturn( renderingViewProcessor );
 
-		assertSame( builder, builder.showProperties( "one", "two" ) );
+		assertSame( builder, builder.showProperties( "one", "two" ).showProperties( ".", "three" ) );
 		assertSame( dispatchingViewFactory, builder.build() );
 
 		Optional<PropertyRenderingViewProcessor> processor
@@ -217,7 +217,7 @@ public class TestEntityViewFactoryBuilder
 		processor.ifPresent( p -> assertSame( renderingViewProcessor, p ) );
 
 		PropertyRenderingViewProcessor expected = new PropertyRenderingViewProcessor();
-		expected.setSelector( EntityPropertySelector.of( "one", "two" ) );
+		expected.setSelector( EntityPropertySelector.of( "one", "two", "three" ) );
 		assertEquals( expected, renderingViewProcessor );
 
 		builder.viewElementMode( ViewElementMode.CONTROL ).build();

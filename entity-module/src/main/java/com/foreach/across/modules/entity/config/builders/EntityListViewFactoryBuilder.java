@@ -218,7 +218,9 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	}
 
 	@Override
-	protected void configureRenderingProcessors( EntityViewProcessorRegistry processorRegistry, String[] propertiesToShow, ViewElementMode viewElementMode ) {
+	protected void configureRenderingProcessors( EntityViewProcessorRegistry processorRegistry,
+	                                             EntityPropertySelector propertiesToShow,
+	                                             ViewElementMode viewElementMode ) {
 		configurePageableProcessor( processorRegistry );
 		configureSortableTableProcessor( processorRegistry, propertiesToShow, viewElementMode );
 		configureEntityQueryFilter( processorRegistry );
@@ -270,7 +272,9 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		}
 	}
 
-	private void configureSortableTableProcessor( EntityViewProcessorRegistry processorRegistry, String[] propertiesToShow, ViewElementMode viewElementMode ) {
+	private void configureSortableTableProcessor( EntityViewProcessorRegistry processorRegistry,
+	                                              EntityPropertySelector propertiesToShow,
+	                                              ViewElementMode viewElementMode ) {
 		if ( propertiesToShow != null || viewElementMode != null || showResultNumber != null || sortableProperties != null ) {
 			SortableTableRenderingViewProcessor tableRenderingViewProcessor = processorRegistry
 					.getProcessor( SortableTableRenderingViewProcessor.class.getName(), SortableTableRenderingViewProcessor.class )
@@ -281,7 +285,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 					} );
 
 			if ( propertiesToShow != null ) {
-				tableRenderingViewProcessor.setPropertySelector( EntityPropertySelector.of( propertiesToShow ) );
+				tableRenderingViewProcessor.setPropertySelector( propertiesToShow );
 			}
 
 			if ( showResultNumber != null ) {

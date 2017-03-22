@@ -115,7 +115,7 @@ public class TestPropertyRenderingViewProcessor
 		when( builderService.getElementBuilder( propOne, ViewElementMode.FORM_READ ) ).thenReturn( builderOne );
 		when( builderService.getElementBuilder( propTwo, ViewElementMode.FORM_READ ) ).thenReturn( builderTwo );
 
-		when( propertyRegistry.select( EntityPropertySelector.of( EntityPropertySelector.ALL ) ) ).thenReturn( Arrays.asList( propOne, propTwo ) );
+		when( propertyRegistry.select( EntityPropertySelector.of( EntityPropertySelector.READABLE ) ) ).thenReturn( Arrays.asList( propOne, propTwo ) );
 
 		processor.preRender( viewRequest, entityView );
 
@@ -153,7 +153,7 @@ public class TestPropertyRenderingViewProcessor
 		when( builderService.getElementBuilder( propOne, ViewElementMode.FORM_READ ) ).thenReturn( builderOne );
 		when( builderService.getElementBuilder( propTwo, ViewElementMode.FORM_READ ) ).thenReturn( builderTwo );
 
-		when( propertyRegistry.select( EntityPropertySelector.of( EntityPropertySelector.ALL ) ) ).thenReturn( Arrays.asList( propOne, propTwo ) );
+		when( propertyRegistry.select( EntityPropertySelector.of( EntityPropertySelector.READABLE ) ) ).thenReturn( Arrays.asList( propOne, propTwo ) );
 
 		processor.preRender( viewRequest, entityView );
 

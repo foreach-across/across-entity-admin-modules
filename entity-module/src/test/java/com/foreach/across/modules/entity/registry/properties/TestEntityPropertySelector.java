@@ -86,6 +86,11 @@ public class TestEntityPropertySelector
 		assertEquals( EntityPropertySelector.of( "id", "name", "product.name" ), combined );
 
 		assertEquals(
+				EntityPropertySelector.of( "name", "**" ),
+				EntityPropertySelector.all().combine( EntityPropertySelector.of( "name" ).combine( EntityPropertySelector.of( ".", "**" ) ) )
+		);
+
+		assertEquals(
 				EntityPropertySelector.of( "*", "name", "**" ),
 				EntityPropertySelector.all().combine( EntityPropertySelector.of( ".", "name" ).combine( EntityPropertySelector.of( ".", "**" ) ) )
 		);

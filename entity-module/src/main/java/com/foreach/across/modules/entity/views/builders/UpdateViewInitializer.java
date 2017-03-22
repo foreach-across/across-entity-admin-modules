@@ -62,7 +62,7 @@ final class UpdateViewInitializer extends AbstractViewInitializer<EntityViewFact
 			       .requiredAllowableAction( AllowableAction.UPDATE )
 			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
 			       .viewElementMode( ViewElementMode.FORM_WRITE )
-			       .showProperties( EntityPropertySelector.ALL )
+			       .showProperties( EntityPropertySelector.WRITABLE )
 			       .viewProcessor( beanFactory.getBean( GlobalPageFeedbackViewProcessor.class ) );
 
 			SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );

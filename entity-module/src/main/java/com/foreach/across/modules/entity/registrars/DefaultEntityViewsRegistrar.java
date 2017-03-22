@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.registrars;
 
+import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
@@ -40,6 +41,7 @@ import java.util.Collection;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@OrderInModule(0)
 @Scope("prototype")
 @Component
 final class DefaultEntityViewsRegistrar implements EntityConfigurer

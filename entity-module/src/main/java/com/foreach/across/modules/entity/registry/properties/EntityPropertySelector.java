@@ -30,17 +30,20 @@ import java.util.function.Predicate;
  * <li>.: keep all configured rules</li>
  * <li>*: represents all properties returned when applying the default filter</li>
  * <li>**: represents all properties registered, ignoring any default filter</li>
+ * <li>:readable: all readable properties</li>
+ * <li>:writable: all writable properties</li>
  * <li>propertyName: exactly that property</li>
  * <li>~propertyName: not that property</li>
  * </ul>
  * Selecting properties happens in 3 stages:
  * <ol>
  * <li>selecting all properties using the include selectors</li>
- * <li>applying the {@link EntityPropertyFilter} to those properties if there is one</li>
+ * <li>applying the {@link Predicate} to those properties if there is one</li>
  * <li>excluding all explicitly excluded properties</li>
  * </ol>
  *
  * @author Arne Vandamme
+ * @see Builder
  */
 public class EntityPropertySelector
 {
@@ -149,7 +152,8 @@ public class EntityPropertySelector
 	public EntityPropertySelector combine( EntityPropertySelector other ) {
 		if ( other.keepConfiguredRules ) {
 			EntityPropertySelector selector = new EntityPropertySelector( propertiesToSelect );
-			selector.keepConfiguredRules = true;
+			// combination keeps configured rules if original keeps them
+			selector.keepConfiguredRules = keepConfiguredRules;
 			selector.predicate = predicate;
 
 			if ( other.hasPredicate() ) {

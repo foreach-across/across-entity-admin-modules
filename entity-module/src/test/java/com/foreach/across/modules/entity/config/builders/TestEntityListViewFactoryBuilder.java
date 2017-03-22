@@ -77,6 +77,7 @@ public class TestEntityListViewFactoryBuilder
 		when( beanFactory.createBean( SortableTableRenderingViewProcessor.class ) ).thenReturn( tableRenderingViewProcessor );
 
 		assertSame( builder, builder.showProperties( "one", "two" )
+		                            .showProperties( "three", "." )
 		                            .viewElementMode( ViewElementMode.CONTROL )
 		                            .sortableOn( "three", "four" )
 		                            .showResultNumber( false ) );
@@ -91,7 +92,7 @@ public class TestEntityListViewFactoryBuilder
 		expected.setViewElementMode( ViewElementMode.CONTROL );
 		expected.setSortableProperties( Arrays.asList( "three", "four" ) );
 		expected.setShowResultNumber( false );
-		expected.setPropertySelector( EntityPropertySelector.of( "one", "two" ) );
+		expected.setPropertySelector( EntityPropertySelector.of( "one", "two", "three" ) );
 		assertEquals( expected, tableRenderingViewProcessor );
 	}
 

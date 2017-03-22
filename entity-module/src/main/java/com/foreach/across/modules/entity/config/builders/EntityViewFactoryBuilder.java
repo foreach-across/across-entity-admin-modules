@@ -19,7 +19,10 @@ package com.foreach.across.modules.entity.config.builders;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.DispatchingEntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewProcessor;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
@@ -35,19 +38,17 @@ import org.springframework.util.ClassUtils;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
  * Builder for creating a single {@link com.foreach.across.modules.entity.views.EntityViewFactory}.
- * <p>
- * Supports {@link SimpleEntityViewFactorySupport} and
- * {@link com.foreach.across.modules.entity.views.ConfigurablePropertiesEntityViewFactorySupport}.  Which properties
- * will apply will depend on the actual {@link #factoryType(Class)} configured.
+ * Supports configuring default processors on a {@link DispatchingEntityViewFactory}.  If a custom factory
+ * type is being used, most properties will have no effect.
  *
  * @author Arne Vandamme
  * @see DispatchingEntityViewFactory
+ * @see com.foreach.across.modules.entity.views.DefaultEntityViewFactory
  * @since 2.0.0
  */
 @Slf4j
@@ -58,12 +59,11 @@ public class EntityViewFactoryBuilder
 	private final AutowireCapableBeanFactory beanFactory;
 	private final Collection<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayDeque<>();
 	private final Collection<ProcessorEntry> processors = new ArrayDeque<>();
-	private final Collection<EntityViewProcessor> processorsToRemove = new LinkedHashSet<>();
 	private final Collection<BiConsumer<EntityViewFactory, EntityViewProcessorRegistry>> postProcessors = new ArrayDeque<>();
 
 	private Class<? extends EntityViewFactory> factoryType;
 	private EntityViewFactory factory;
-	private String[] propertiesToShow;
+	private EntityPropertySelector propertiesToShow;
 	private ViewElementMode viewElementMode;
 	private String[] messagePrefixes;
 	private String template;
@@ -151,7 +151,8 @@ public class EntityViewFactoryBuilder
 	 * @return current builder
 	 */
 	public EntityViewFactoryBuilder showProperties( String... propertyNames ) {
-		this.propertiesToShow = propertyNames;
+		EntityPropertySelector selector = EntityPropertySelector.of( propertyNames );
+		propertiesToShow = propertiesToShow != null ? propertiesToShow.combine( selector ) : selector;
 		return this;
 	}
 
@@ -345,7 +346,9 @@ public class EntityViewFactoryBuilder
 		configureRenderingProcessors( processorRegistry, propertiesToShow, viewElementMode );
 	}
 
-	protected void configureRenderingProcessors( EntityViewProcessorRegistry processorRegistry, String[] propertiesToShow, ViewElementMode viewElementMode ) {
+	protected void configureRenderingProcessors( EntityViewProcessorRegistry processorRegistry,
+	                                             EntityPropertySelector propertiesToShow,
+	                                             ViewElementMode viewElementMode ) {
 		if ( propertiesToShow != null || viewElementMode != null ) {
 			PropertyRenderingViewProcessor renderingViewProcessor
 					= processorRegistry.getProcessor( PropertyRenderingViewProcessor.class.getName(), PropertyRenderingViewProcessor.class )
@@ -357,7 +360,7 @@ public class EntityViewFactoryBuilder
 					                   } );
 
 			if ( propertiesToShow != null ) {
-				renderingViewProcessor.setSelector( EntityPropertySelector.of( propertiesToShow ) );
+				renderingViewProcessor.setSelector( propertiesToShow );
 			}
 
 			if ( viewElementMode != null ) {

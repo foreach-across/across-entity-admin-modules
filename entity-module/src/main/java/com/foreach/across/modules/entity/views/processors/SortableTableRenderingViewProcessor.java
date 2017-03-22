@@ -95,7 +95,7 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 	/**
 	 * Selector for the properties that should be rendered on the table.
 	 */
-	private EntityPropertySelector propertySelector = EntityPropertySelector.of( EntityPropertySelector.ALL );
+	private EntityPropertySelector propertySelector = EntityPropertySelector.of( EntityPropertySelector.READABLE );
 
 	/**
 	 * ViewElement mode for the value rows.
