@@ -20,6 +20,8 @@ import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.entity.testmodules.solr.SolrTestModule;
+import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -30,7 +32,8 @@ import org.springframework.context.annotation.Import;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@AcrossApplication(modules = { AdminWebModule.NAME, EntityModule.NAME, DebugWebModule.NAME })
+@AcrossApplication(modules =
+		{ AdminWebModule.NAME, EntityModule.NAME, DebugWebModule.NAME, SolrTestModule.NAME, SpringDataJpaModule.NAME })
 @Import(DataSourceAutoConfiguration.class)
 public class EntityModuleTestApplication
 {

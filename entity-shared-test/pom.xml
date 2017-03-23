@@ -25,11 +25,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>entity-module-test</artifactId>
-
-	<properties>
-		<sonar.skip>true</sonar.skip>
-	</properties>
+	<artifactId>entity-shared-test</artifactId>
 
 	<dependencies>
 		<dependency>
@@ -39,61 +35,42 @@
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>entity-shared-test</artifactId>
-			<version>2.0.0-SNAPSHOT</version>
+			<artifactId>across-hibernate-module</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>spring-security-module</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>admin-web-module</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>debug-web-module</artifactId>
+			<groupId>com.foreach.across</groupId>
+			<artifactId>across-test</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-solr</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<optional>true</optional>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.foreach.cwb</groupId>
-			<artifactId>cwb-core</artifactId>
-			<version>1.1.0.RELEASE</version>
+			<groupId>com.foreach.libs</groupId>
+			<artifactId>common-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.2</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>
