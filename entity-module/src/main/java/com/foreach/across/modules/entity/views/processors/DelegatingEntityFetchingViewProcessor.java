@@ -62,7 +62,7 @@ public final class DelegatingEntityFetchingViewProcessor extends AbstractEntityF
 	}
 
 	/**
-	 * Set the function that should be called for fetching the items.
+	 * Set the function that should be called for fetching the items.  Allows a BiFunction that has access to the actual view context.
 	 */
 	public void setDelegate( BiFunction<EntityViewContext, Pageable, Iterable<?>> delegate ) {
 		this.delegate = delegate;

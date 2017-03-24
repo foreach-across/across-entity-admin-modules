@@ -35,7 +35,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * full set of information:
  * <ul>
  * <li>the {@link com.foreach.across.modules.entity.views.context.EntityViewContext}</li>
- * <li>the {@link org.springframework.web.context.request.NativeWebRequest} for the view</li>
+ * <li>the {@link EntityViewCommand} and its {@link BindingResult}</li>
+ * <li>the {@link org.springframework.web.context.request.NativeWebRequest} that requested the view</li>
  * <li>the {@link com.foreach.across.modules.adminweb.ui.PageContentStructure} being built and the template information</li>
  * </ul>
  * <p>
@@ -50,6 +51,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Data
 public class EntityViewRequest
 {
+	/**
+	 * The contextual information of the entity type and entity being viewed.
+	 */
 	private EntityViewContext entityViewContext;
 
 	/**

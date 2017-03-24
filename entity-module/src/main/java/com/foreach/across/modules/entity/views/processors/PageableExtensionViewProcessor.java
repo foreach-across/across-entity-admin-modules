@@ -80,7 +80,8 @@ public final class PageableExtensionViewProcessor extends SimpleEntityViewProces
 	}
 
 	/**
-	 * Set the prefix for all page related request parameter names.
+	 * Set the request parameter prefix for all page related request parameter names.
+	 * Defaults to empty.
 	 */
 	public void setRequestParameterPrefix( String requestParameterPrefix ) {
 		prefix = StringUtils.defaultString( requestParameterPrefix );

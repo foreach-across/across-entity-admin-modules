@@ -1,103 +1,209 @@
+[[entity-views]]
 == Entity views
+EntityModule has the ability to generate automatic views for entities.
+When AdminWebModule is present, automatic CRUD pages for entities will be generated using these views.
 
-=== List view
+A view is an abstraction of web controller that allows you to take advantage of the EntityModule configuration system.
+Usually views are a rendering of one or more entities of a particular entity type.
 
-[[list-view-filter]]
-==== Filtering a list view
+Both `EntityConfiguration` and `EntityAssociation` can have their own views defined.
+They do so by implementing the `EntityViewRegistry` interface.
+Every view has a unique name within an `EntityViewRegistry`.
 
-By default a list view is not filtered.
-If your entity has an <<entity-query-executor,`EntityQueryExecutor`>> available you can easily activate a simple yet powerful <<entity-query-language,EQL-based filter>>.
-Activating `EntityQuery` based filtering can be done through the builders:
+=== Default views
+By default CRUD views will be created for every `EntityConfiguration with a `CrudRepository` or an `EntityQueryExecutor` registered.
+Likewise CRUD views will be created for every `EntityAssociation` with an `AssociatedEntityQueryExecutor` attribute.
 
+NOTE: Query executor attributes should be registered automatically in most cases.
+So you usually don't need to worry about those.
+See the <<entity-query-executor,chapter on `EntityQueryExecutor`>> for more information.
+
+The following default views will be created for an entity type:
+
+[cols="1,1,3",options="header"]
+|===
+
+|View name
+|View type
+|Description
+
+|listView
+(`EntityView.LIST_VIEW_NAME`)
+|list view
+|Shows the list of entities.
+
+|createView
+(`EntityView.CREATE_VIEW_NAME`)
+|form view
+|Renders and executes the form for creating a new entity.
+
+|updateView
+(`EntityView.UPDATE_VIEW_NAME`)
+|form view
+|Renders and executes the form for updating an entity.
+
+|deleteView
+(`EntityView.DELETE_VIEW_NAME`)
+|form view
+|Shows the confirmation page and performs the delete if allowed.
+
+|===
+
+The default views all render markup using the `ViewElement` infrastructure and the implementations provided by the BootstrapUiModule.
+
+=== How entity views work
+An `EntityView` is created by an `EntityViewFactory` based on an `EntityViewRequest`.
+A controller is still responsible for executing (usually rendering) the actual `EntityView`.
+
+The `GenericEntityViewController` is responsible for loading and rendering all default views in the AdminWebModule UI.
+
+The path of the web request to `GenericEntityViewController` will determine:
+* the name of the view that should be rendered
+* which `EntityViewRegistry` will be used for loading the view (`EntityConfiguration` or `EntityAssociation`)
+
+NOTE: You can force the view being rendered by simply providing the view name as a request parameter with key *view*.
+
+The controller creates an `EntityViewRequest`, retrieves the `EntityViewFactory` and builds the corresponding `EntityViewContext` and `EntityViewCommand`.
+
+==== EntityViewRequest
+Wraps together all the information of a specific entity view request:
+
+ * the web request that is creating the view
+ * the contextual information of the entity being viewed (represented by the `EntityViewContext`)
+ * the command that should be executed on the `EntityViewFactory` (represented by the `EntityViewCommand`)
+ * the name of the view being requested and the `EntityViewFactory` being used
+ * the `PageContentStructure` of the page being rendered (if applicable)
+
+Please refer to the {javadoc}/com/foreach/across/modules/entity/views/request/EntityViewRequest.html/[`EntityViewRequest` javadoc] for a description of all available properties.
+
+==== EntityViewContext
+The `EntityViewContext` contains contextual information and provides access to components that should be used for building a view.
+Contextual information is for example the entity type, specific entity or entity association being viewed.
+Components are things like the `EntityLinkBuilder`, `EntityMessages` or `AllowableActions`
+
+Please refer to the {javadoc}/com/foreach/across/modules/entity/views/context/EntityViewContext.html/[`EntityViewContext` javadoc] for a description of all available properties.
+
+NOTE: `EntityViewContext` is available as a request-scoped bean but only in case of a request passing through the `GenericEntityViewController` will the data be loaded.
+Loading the `EntityViewContext` attributes manually  can be done by using the `EntityViewContextLoader` bean.
+You should use the `ConfigurableEntityViewContext` interface to modify a view context.
+
+==== EntityViewCommand
+The `EntityViewCommand` represents the command that should be executed on the `EntityViewFactory` to create the corresponding `EntityView`.
+Most often the command represents the form of a view where the request parameters are bound to.
+
+An `EntityViewCommand` has 2 attributes: the (optional) entity DTO being bound and a map of named extensions.
+Customizing view processing can be done by registering additional extensions that will be rendered and validated upon binding.
+
+The `EntityViewCommand` will be validated for every state modifying request: web requests using POST, PUT, PATCH or DELETE.
+
+Please refer to the {javadoc}/com/foreach/across/modules/entity/views/request/EntityViewCommand.html/[`EntityViewCommand` javadoc] for a description of all available properties.
+
+==== EntityViewFactory
+Every view is built by an `EntityViewFactory`.
+An `EntityViewRegistry` (like `EntityConfiguration` or `EntiyAssociation`) is nothing but a map of `EntityViewFactory` by view name.
+
+An `EntityViewFactory` is a stateless controller with 4 controller methods that are expected to be called in a specific order.
+Please refer to the {javadoc}/com/foreach/across/modules/entity/views/EntityViewFactory.html[javadoc] for an overview of the different controller methods and their purpose.
+
+===== DispatchingEntityViewFactory and EntityViewProcessor
+EntityModule has only a single implementation of `EntityViewFactory` in the form of the `DefaultEntityViewFactory`.
+The `DefaultEntityViewFactory`:
+
+* supports `ViewElement` based rendering model - heavily used by EntityModule for building the HTML markup
+* dispatches its controller methods in a more fine-grained manner to a list of registered and ordered `EntityViewProcessor` instances.
+
+The default builders when <<configuring-views,configuring views>> only register `EntityViewProcessor` beans on the factory.
+When an `EntityViewFactory` controller method is being called, it will be translated into one or more processor methods and those method calls will be dispatched to all processors in order.
+
+Two adapter `EntityViewProcessor` classes are available:
+
+* use `EntityViewProcessorAdapter` for most use cases, it provides several adapter methods that also allow you to hook into the `ViewElement` generation lifecycle
+* use `SimpleEntityViewProcessorAdapter` if you do not need to hook into the `ViewElement` generation lifecycle
+
+NOTE: The `DefaultEntityViewFactory` will not execute any of the rendering related methods if any of the previous methods has marked the `EntityView` as being a redirect.
+
+Please refer to the {javadoc}/com/foreach/across/modules/entity/views/EntityViewProcessor.html[EntityViewProcessor], {javadoc}/com/foreach/across/modules/entity/views/processors/EntityViewProcessorAdapter.html[EntityViewProcessorAdapter] and {javadoc}/com/foreach/across/modules/entity/views/processors/SimpleEntityViewProcessorAdapter.html[SimpleEntityViewProcessorAdapter] for more details on the available processor methods.
+The appendix also provides a <<appendix-view-processors,list of all available general purpose processors>>.
+
+==== Model attributes
+The `GenericEntityViewController` exposes the following model attributes to the Spring MVC view:
+
+[cols="1,2",opts=header]
+|===
+
+|Attribute name
+|Value
+
+|*entityViewRequest*
+|`EntityViewRequest`
+
+|*entityViewCommand*
+|`EntityViewCommand`
+
+|*entityViewContext*
+|`EntityViewContext`
+
+|===
+
+=== Default view types
+EntityModule supports 3 view types by default.
+
+When defining a new view (see the next section) it will be one of these types.
+The view type determines the base template that will be used to setup the `EntityViewFactory`.
+
+The following view types are defined:
+
+[cols="1,1,3",options="header"]
+|===
+
+|View type
+|Template name
+|Description
+
+|list view
+|listView
+(`EntityView.LIST_VIEW_NAME`)
+|Base configuration for rendering a list of entities.
+
+|form view
+|updateView
+(`EntityView.UPDATE_VIEW_NAME`)
+|Base configuration for rendering a form for a single entity.
+
+|generic view
+|genericView
+(`EntityView.GENERIC_VIEW_NAME`)
+|Barebone configuration for visualizing a single entity.
+
+|===
+
+The template name can be used to replace the initializer for the `EntityViewFactoryBuilder`.
+See the chapter on the <<view-builder-initializer,EntityViewFactoryBuilderInitializer>>.
+
+See also the next chapters for more information on <<list-view,list view>>, <<form-view,form view>> and <<generic-view,generic view>>.
+
+[[configuring-views]]
+=== Configuring views
+Existing views can be modified or new ones registered using an `EntityViewFactoryBuilder` or `EntityListViewFactoryBuilder`.
+You usually don't create these manually but get a builder for the corresponding view from the configuration or association builder.
+
+The builders provide common properties that will configure one or more `EntityViewProcessor` instances on the view factory.
+They also allow you to modify the processor collection directly by adding or removing processors, or by post-processing the entire `EntityViewProcessorRegistry`.
+
+.Example adding an EntityViewProcessor to the default list view
 [source,java,indent=0]
 [subs="verbatim,quotes,attributes"]
 ----
-// Activate the EQL-based filter on every entity that has an EntityQueryExecutor
-configuration.matching( c -> c.hasAttribute( EntityQueryExecutor.class ) )
-             .listView( lvb -> lvb.entityQueryFilter( true ) );
+configuration.withType( MyEntity.class )
+             .listView( lvb -> lvb.viewProcessor( myProcessor ) );
 ----
 
-See <<entity-list-view-custom-filter,this chapter>> for information on how to configure a custom filter for a list view.
+The following chapters provide some more details on how to configure the default view types.
+
+include::chap-views-list-view.adoc[]
+
+include::chap-views-form-view.adoc[]
+
+include::chap-views-generic-view.adoc[]
 
 
-==== List summary view
-
-It is possible to activate a detail view inline in a list view.
-If the `EntityConfiguration` or `EntityAssociation` has a view named *listSummaryView* a summary pane will automatically become available when clicking on the item row in the table.
-The summary pane is called using AJAX and only the _content_ fragment of the page will be rendered.
-
-[source,java,indent=0]
-[subs="verbatim,quotes,attributes"]
-----
-// Activate a summary view in the main user results table using a custom Thymeleaf template
-configuration.withType( User.class )
-             .view( EntityListView.SUMMARY_VIEW_NAME, vb -> vb.template( "th/myModule/userSummary" ) );
-----
-
-
-
-[[delete-view]]
-=== Delete view
-A delete action will be available for all entities where `AllowableAction.DELETE` is present, this is the default unless more explicit permissions are configured.
-A delete will always redirect to a confirmation page by default.
-Because the possibility to delete an entity often depends on other factors (usually associations), the default `EntityDeleteViewFactory` publishes an event that allows customizing said confirmation page.
-
-By catching the `BuildEntityDeleteViewEvent` your code can:
-
-* suppress the ability to delete (by hiding the delete button)
-* add associations to the form
-* add custom feedback messages to the form (and optionally remove the associations block)
-
-This should be sufficient for most use cases without having to revert to custom `EntityViewProcessor` implementations.
-Of course the latter would work as well.
-
-.Entity associations
-The initial `BuildEntityDeleteViewEvent` is configured based on the `EntityAssociation` list of the entity.
-If associated items are detected, they influence the form settings depending on the *parentDeleteMode* property of the `EntityAssociation`:
-
-* `ParentDeleteMode.IGNORE`: item information is not printed nor influences the ability to delete
-* `ParentDeleteMode.WARN`: item information is printed on the form but does not influence the ability to delete
-* `ParentDeleteMode.SUPPRESS`: item information is printed on the form and disables the ability to delete, this is the default setting
-
-The event is published after the initial association information has been set.
-
-.Performing the delete
-The {module-name} simply calls the delete method of the `EntityModel`, usually a direct call to a repository `delete()`.
-You will have to take care yourself of complex delete scenarios - like deleting the associations - by either modifying the `EntityModel` or using another mechanism like the `EntityInterceptor`.
-
-=== Custom views
-
-=== EntityLinkBuilder
-
-An `EntityConfiguration` or `EntityAssociation` can have one or more `EntityLinkBuilder` instances registered in its attributes.
-An `EntityLinkBuilder` is used to create application links to management controllers for the entity.
-By default the `EntityModule` will create an `EntityLinkBuilder` for the management pages in admin web if `AdminWebModule` is present, and this link builder will be registered as the attribute with `EntityLinkBuilder` class as key.
-
-You can use the `EntityLinkBuilder` directly for example in redirects, often the specific `EntityLinkBuilder` is overridable per view.
-All links the `EntityLinkBuilder` generates are entirely configurable, please refer to the javadoc for all possible settings.
-
-[source,java,indent=0]
-[subs="verbatim,quotes,attributes"]
-----
-EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
-
-// Will create a link of the form "/entities/{parent}/{parentId}/update"
-String path = linkBuilder.update( parent );
-----
-
-==== EntityLinkBuilder for associations
-Associations usually also have an `EntityLinkBuilder` registered, it is possible to create links to items that are an association from a parent entity.
-To achieve this you must _scope_ the `EntityLinkBuilder` to the parent entity it belongs to.
-
-[source,java,indent=0]
-[subs="verbatim,quotes,attributes"]
-----
-EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
-
-EntityConfiguration associated = association.getTargetEntityConfiguration();
-EntityLinkBuilder associatedLinkBuilder = association.getAttribute( EntityLinkBuilder.class )
-                                                     .asAssociationFor( linkBuilder, parent );
-
-// Will create a link of the form "/entities/{parent}/{parentId}/associations/{associationName}/{childId}/update"
-String path = associatedLinkBuilder.update( child );
-----

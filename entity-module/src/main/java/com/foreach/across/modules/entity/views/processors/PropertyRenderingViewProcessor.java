@@ -71,9 +71,18 @@ public final class PropertyRenderingViewProcessor extends EntityViewProcessorAda
 
 	private EntityPropertySelector selector = EntityPropertySelector.of( EntityPropertySelector.READABLE );
 
+	/**
+	 * Which type of view elements should be created for the properties?
+	 */
 	@Setter
 	private ViewElementMode viewElementMode = ViewElementMode.FORM_READ;
 
+	/**
+	 * Define the properties that should be rendered.
+	 * Defaults to all readable properties, a new selector will be combined with the default.  If the new selector
+	 * defines the {@link EntityPropertySelector#CONFIGURED} property, the selector will be considered an extension
+	 * of the previously registered selector.
+	 */
 	public void setSelector( EntityPropertySelector selector ) {
 		this.selector = this.selector.combine( selector );
 	}

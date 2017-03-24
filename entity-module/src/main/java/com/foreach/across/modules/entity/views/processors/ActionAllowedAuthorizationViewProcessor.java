@@ -40,6 +40,7 @@ import org.springframework.security.access.AccessDeniedException;
 public final class ActionAllowedAuthorizationViewProcessor extends SimpleEntityViewProcessorAdapter
 {
 	/**
+	 * -- SETTER --
 	 * Set the {@link AllowableAction} that the principal should have on the {@link com.foreach.across.modules.entity.registry.EntityConfiguration}
 	 * being viewed.  This will take the entity instance into account if there is one.
 	 */
