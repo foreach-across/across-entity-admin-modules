@@ -202,6 +202,8 @@ public class TestSortableTableRenderingViewProcessor
 
 	@Test
 	public void byDefaultNoWebResourcesRegistered() {
+		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
+		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 		WebResourceRegistry registry = mock( WebResourceRegistry.class );
 		processor.registerWebResources( viewRequest, entityView, registry );
 		verifyNoMoreInteractions( registry );
