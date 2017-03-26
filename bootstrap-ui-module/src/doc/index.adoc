@@ -87,6 +87,24 @@ By default only Thymeleaf templates are supported.
 
 |===
 
+==== Custom template
+Every `ViewElement` allows you to configure a *customTemplate*.
+Only Thymeleaf fragments are supported, if you specify a Thymeleaf template without a fragment, a *render(component)* fragment will be appended.
+The *component* variable will always contain the `ViewElement` instance that is being rendered.
+
+You can use a different input variable by specifying the *${component}* manually in your template specification.
+
+.Examples:
+
+* `th/mymodule/mytemplate` results in `th/mymodule/mytemplate :: render(component)`
+* `th/mymodule/mytemplate :: myfragment` results in `th/mymodule/mytemplate :: myfragment(component)`
+* `th/mymodule/mytemplate :: myfragment(${someModelAttribute},${component})` results in `th/mymodule/mytemplate :: myfragment(attributeValue,component)`
+
+NOTE: You should only use model attributes that are sure to be available when the template is being rendered.
+It is usually best to pass the required values as attributes on the `ViewElement` itself.
+
+You can use the `TemplateViewElement` if you only want to render a custom template and optionally pass it some attributes.
+
 === ViewElementBuilder
 A `ViewElementBuilder` is a simple API for creating a `ViewElement` instance based on a configuration and a given `ViewElementBuilderContext`.
 
