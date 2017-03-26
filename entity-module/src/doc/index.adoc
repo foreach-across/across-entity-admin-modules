@@ -178,6 +178,13 @@ Default implementations exist for `JpaSpecificationExecutor` and `QueryDslPredic
 
 === Automatic registration of entity types
 
+==== Spring Data repositories
+
+===== JPA repositories
+TODO: Embedded ID
+register conversion service
+add json serializer
+
 [[automatic-attributes]]
 ==== Registered EntityConfiguration attributes
 

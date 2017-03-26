@@ -36,10 +36,8 @@ public class PersistableEntityUiConfiguration implements EntityConfigurer
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.assignableTo( Persistable.class )
 		        .properties(
-				             props -> props.property( "id" ).writable( false ).hidden( true )
-				                           .and()
-				                           .property( "new" ).readable( false ).hidden( true )
-		             );
+				        props -> props.property( "new" ).readable( false ).hidden( true )
+		        );
 
 		entities.assignableTo( SettableIdBasedEntity.class )
 		        .properties( props -> props.property( "newEntityId" ).readable( false ).hidden( true ) );

@@ -28,7 +28,9 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.entity.testmodules.springdata.business.*;
+import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
@@ -51,8 +53,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
-import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 
 import javax.validation.metadata.PropertyDescriptor;
 import java.io.Serializable;
@@ -403,6 +403,19 @@ public class TestRepositoryEntityRegistrar
 
 		assertNotNull( queryExecutor );
 		assertTrue( queryExecutor instanceof EntityQueryQueryDslExecutor );
+	}
+
+	@Test
+	public void generatedPropertiesShouldBeHiddenAndNotWritable() {
+		EntityConfiguration<Car> car = entityRegistry.getEntityConfiguration( Car.class );
+		EntityPropertyDescriptor descriptor = car.getPropertyRegistry().getProperty( "id" );
+		assertTrue( descriptor.isWritable() );
+		assertFalse( descriptor.isHidden() );
+
+		EntityConfiguration<Client> client  = entityRegistry.getEntityConfiguration( Client.class );
+		descriptor = client.getPropertyRegistry().getProperty( "id" );
+		assertFalse( descriptor.isWritable() );
+		assertTrue( descriptor.isHidden() );
 	}
 
 	@Configuration

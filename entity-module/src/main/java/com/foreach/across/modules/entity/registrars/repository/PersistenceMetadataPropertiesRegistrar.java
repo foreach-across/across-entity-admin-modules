@@ -32,6 +32,7 @@ import org.springframework.util.ClassUtils;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
+import javax.persistence.GeneratedValue;
 
 /**
  * Adds {@link org.springframework.data.mapping.PersistentProperty} and {@link PropertyPersistenceMetadata} attributes
@@ -51,7 +52,6 @@ public class PersistenceMetadataPropertiesRegistrar implements DefaultEntityProp
 		mappingContextRegistry
 				.getPersistentEntity( entityType )
 				.ifPresent( entity -> {
-
 					            for ( EntityPropertyDescriptor descriptor : registry.getRegisteredDescriptors() ) {
 						            PersistentProperty persistentProperty = entity.getPersistentProperty( descriptor.getName() );
 
@@ -93,6 +93,11 @@ public class PersistenceMetadataPropertiesRegistrar implements DefaultEntityProp
 
 		if ( mutable.isHidden() && mutable.isReadable() && metadata.isEmbedded() ) {
 			mutable.setHidden( false );
+		}
+
+		if ( persistentProperty.isAnnotationPresent( GeneratedValue.class ) ) {
+			mutable.setHidden( true );
+			mutable.setWritable( false );
 		}
 	}
 

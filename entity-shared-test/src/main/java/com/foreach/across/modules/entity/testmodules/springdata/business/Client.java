@@ -28,12 +28,12 @@ import java.util.Set;
 public class Client extends SettableIdBasedEntity<Client>
 {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "seq_test_client_id")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "seq_client_id")
 	@GenericGenerator(
-			name = "seq_test_client_id",
+			name = "seq_client_id",
 			strategy = AcrossSequenceGenerator.STRATEGY,
 			parameters = {
-					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_test_client_id"),
+					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_client_id"),
 					@org.hibernate.annotations.Parameter(name = "allocationSize", value = "1")
 			}
 	)

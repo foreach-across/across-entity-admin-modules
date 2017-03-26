@@ -16,13 +16,18 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.config;
 
+import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
+import com.foreach.across.modules.entity.testmodules.springdata.business.ClientGroupId;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Group;
+import com.foreach.across.modules.entity.testmodules.springdata.validators.CompanyValidator;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.entity.testmodules.springdata.validators.CompanyValidator;
+import org.springframework.core.convert.support.ConfigurableConversionService;
 
 @Configuration
 @EnableAcrossJpaRepositories(basePackageClasses = SpringDataJpaModule.class)
@@ -39,5 +44,21 @@ public class ClientConfig
 	@Bean
 	public CompanyValidator companyValidator() {
 		return new CompanyValidator();
+	}
+
+	@Autowired
+	public void registerClientGroupIdConverters( ConfigurableConversionService mvcConversionService ) {
+		mvcConversionService.addConverter( ClientGroupId.class, String.class, source -> {
+			return source.getClient().getId() + "-" + source.getGroup().getId();
+		} );
+
+		mvcConversionService.addConverter( String.class, ClientGroupId.class, source -> {
+			String[] parts = source.split( "-" );
+			ClientGroupId id = new ClientGroupId();
+			id.setClient( mvcConversionService.convert( parts[0], Client.class ) );
+			id.setGroup( mvcConversionService.convert( parts[1], Group.class ) );
+			return id;
+		} );
+
 	}
 }

@@ -20,11 +20,13 @@ spring:
 
 across:
   development:
-    active: false
+    active: true
 
 acrossModule:
   EntityModule:
     resources: ../entity-module/src/main/resources
+  springDataJpaModule:
+      resources: ../entity-shared-test/src/main/resources
 
 adminWebModule:
   title: Entity Test Application
@@ -35,3 +37,4 @@ adminWebModule:
 debugWebModule:
   security:
     enabled: false
+

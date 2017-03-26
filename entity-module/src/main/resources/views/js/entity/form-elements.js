@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-$(document).ready(function() {
+$( document ).ready( function() {
     //$('.js-form-element-datepicker').each(function(){
     //    var datepickerConfig = $( this ).data( 'datepicker-config' );
     //    if ( !datepickerConfig ) {
@@ -29,8 +29,45 @@ $(document).ready(function() {
     //    }
     //});
 
-    $('[data-dependson]').each(function(){
-        var dependsonConfig = $(this).data('dependson');
-        $(this).dependsOn(dependsonConfig, {hide: false});
-    });
-});
+    $( '[data-dependson]' ).each( function() {
+        var dependsonConfig = $( this ).data( 'dependson' );
+        $( this ).dependsOn( dependsonConfig, {hide: false} );
+    } );
+
+    /**
+     * Initialize multi value controls.
+     */
+    $( '.js-multi-value-control' ).each( function() {
+        var container = $( this );
+
+        container.find( '.js-multi-value-input' ).on( 'keypress', function( e ) {
+            var keyCode = (e.keyCode ? e.keyCode : e.which );
+            if ( keyCode == 13 ) {
+                e.preventDefault();
+                var value = $( this ).val();
+                if ( value ) {
+                    var template = container.find( '.js-multi-value-template' ).clone( false );
+                    template.removeClass( 'hidden js-multi-value-template' );
+                    template.addClass( 'js-multi-value-item' );
+
+                    template.find( '.js-multi-value-value' ).each( function( i, node ) {
+                        node.innerText = value;
+                    } );
+
+                    template.find( '[type=hidden]' ).val( value ).removeAttr( 'disabled' );
+                    container.find( 'table' ).append( template );
+
+                    template.find( 'a' ).on( 'click', function() {
+                        $( this ).closest( 'tr' ).remove();
+                    } );
+
+                    $( this ).val( '' );
+                }
+            }
+        } );
+
+        container.find( '.js-multi-value-item a' ).on( 'click', function() {
+            $( this ).closest( 'tr' ).remove();
+        } )
+    } )
+} );
