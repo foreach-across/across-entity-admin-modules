@@ -8,15 +8,20 @@ Arne Vandamme
 :module-artifact: entity-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/EntityModule
 :bootstrap-ui-module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
+:javadoc: http://across.foreach.be/docs/across-standard-modules/EntityModule/2.0.0-SNAPSHOT/javadoc
+:javadoc-processors: {javadoc}/com/foreach/across/modules/entity/views/processors
 
 [copyright,verbatim]
 --
-Copyright (C) 2014-2015 +
+Copyright (C) 2014-2017 +
 [small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
 --
 
 [abstract]
 == About
+The EntityModule is responsible for automatically generating an administration UI of entities built.
+It provides infrastructure to define an entity model and to generate default web pages based on that model.
+By default all Spring Data repositories are introspected and corresponding entity models are built for every repository.
 
 Module website: {module-url}
 
@@ -67,6 +72,7 @@ The public API modified accordingly with a focus on simplification and future ex
 
 * requires Across 2.0.0+
 * massive overhaul of the `EntitiesConfigurationBuilder` system - removed the `and()` concatenating of builder calls
+* massive overhaul of `EntityViewFactory`, `EntityViewProcessor` and the default administration controllers
 ** nested builder consumers are used instead - this greatly simplified the class hierarchy involved
 * externalized the entire `ViewElement` infrastructure to {bootstrap-ui-module-url}[BootstrapUiModule]
 ** if {bootstrap-ui-module-url}[BootstrapUiModule] is not present, default views will not be created
@@ -172,6 +178,13 @@ Default implementations exist for `JpaSpecificationExecutor` and `QueryDslPredic
 
 === Automatic registration of entity types
 
+==== Spring Data repositories
+
+===== JPA repositories
+TODO: Embedded ID
+register conversion service
+add json serializer
+
 [[automatic-attributes]]
 ==== Registered EntityConfiguration attributes
 
@@ -234,6 +247,41 @@ This way it is possible to generate management pages for associated entities, bu
 
 include::chap-entity-associations.adoc[]
 
+=== EntityLinkBuilder
+
+An `EntityConfiguration` or `EntityAssociation` can have one or more `EntityLinkBuilder` instances registered in its attributes.
+An `EntityLinkBuilder` is used to create application links to management controllers for the entity.
+By default the `EntityModule` will create an `EntityLinkBuilder` for the management pages in admin web if `AdminWebModule` is present, and this link builder will be registered as the attribute with `EntityLinkBuilder` class as key.
+
+You can use the `EntityLinkBuilder` directly for example in redirects, often the specific `EntityLinkBuilder` is overridable per view.
+All links the `EntityLinkBuilder` generates are entirely configurable, please refer to the javadoc for all possible settings.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
+
+// Will create a link of the form "/entities/{parent}/{parentId}/update"
+String path = linkBuilder.update( parent );
+----
+
+==== EntityLinkBuilder for associations
+Associations usually also have an `EntityLinkBuilder` registered, it is possible to create links to items that are an association from a parent entity.
+To achieve this you must _scope_ the `EntityLinkBuilder` to the parent entity it belongs to.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
+
+EntityConfiguration associated = association.getTargetEntityConfiguration();
+EntityLinkBuilder associatedLinkBuilder = association.getAttribute( EntityLinkBuilder.class )
+                                                     .asAssociationFor( linkBuilder, parent );
+
+// Will create a link of the form "/entities/{parent}/{parentId}/associations/{associationName}/{childId}/update"
+String path = associatedLinkBuilder.update( child );
+----
+
 include::chap-entity-views.adoc[]
 
 include::chap-entity-views-customizing.adoc[]
@@ -250,12 +298,4 @@ See the `AuditableEntityUiConfiguration` for full customization.
 
 include::chap-entity-query.adoc[]
 
-
-
-
-
-
-
-
-
-
+include::appendix-view-processors.adoc[]

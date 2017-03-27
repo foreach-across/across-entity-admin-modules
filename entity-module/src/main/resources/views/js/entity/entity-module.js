@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var SortableTable = function ( element )
-{
+var SortableTable = function( element ) {
     var table = $( element );
     var id = $( element ).attr( 'data-tbl' );
     var page = table.attr( 'data-tbl-current-page' );
@@ -36,60 +35,55 @@ var SortableTable = function ( element )
         var order = this.sort[i];
 
         $( "[data-tbl='" + id + "'][data-tbl-sort-property='" + order.prop + "']", table )
-                .each( function ()
-                       {
-                           if ( i == 0 ) {
-                               $( this ).addClass( order.dir == 'ASC' ? 'asc' : 'desc' );
-                           }
-                           // We send in the original property name
-                           order.prop = $( this ).data( 'tbl-field' );
-                       } );
+                .each( function() {
+                    if ( i == 0 ) {
+                        $( this ).addClass( order.dir == 'ASC' ? 'asc' : 'desc' );
+                    }
+                    // We send in the original property name
+                    order.prop = $( this ).data( 'tbl-field' );
+                } );
     }
 
     var pager = this;
 
-    $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( function ()
-                                                         {
-                                                             pager.moveToPage( $( this ).attr( 'data-tbl-page' ) );
-                                                             return false;
-                                                         } );
+    $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( function() {
+        pager.moveToPage( $( this ).attr( 'data-tbl-page' ) );
+        return false;
+    } );
 
     $( "input[type='text'][data-tbl='" + id + "'][data-tbl-page-selector]" )
-            .click( function ( event )
-                    {
-                        event.preventDefault();
-                        $( this ).select();
-                    } )
-            .keypress( function ( event )
-                       {
-                           if ( event.which == 13 ) {
-                               event.preventDefault();
-                               var pageNumber = $( this ).val();
+            .click( function( event ) {
+                event.preventDefault();
+                $( this ).select();
+            } )
+            .keypress( function( event ) {
+                var keyCode = (event.keyCode ? event.keyCode : event.which );
+                if ( keyCode == 13 ) {
+                    event.preventDefault();
+                    var pageNumber = $( this ).val();
 
-                               if ( isNaN( pageNumber ) ) {
-                                   $( this ).addClass( 'has-error' );
-                               }
-                               else {
-                                   $( this ).removeClass( 'has-error' );
-                                   if ( pageNumber < 1 ) {
-                                       pageNumber = 1;
-                                   }
-                                   else if ( pageNumber > pager.totalPages ) {
-                                       pageNumber = pager.totalPages;
-                                   }
-                                   pager.moveToPage( pageNumber - 1 );
-                               }
-                           }
-                       } );
+                    if ( isNaN( pageNumber ) ) {
+                        $( this ).addClass( 'has-error' );
+                    }
+                    else {
+                        $( this ).removeClass( 'has-error' );
+                        if ( pageNumber < 1 ) {
+                            pageNumber = 1;
+                        }
+                        else if ( pageNumber > pager.totalPages ) {
+                            pageNumber = pager.totalPages;
+                        }
+                        pager.moveToPage( pageNumber - 1 );
+                    }
+                }
+            } );
 
-    this.sortables.click( function ()
-                          {
-                              pager.sortOnProperty( $( this ).data( 'tbl-field' ) );
-                              return false;
-                          } );
+    this.sortables.click( function() {
+        pager.sortOnProperty( $( this ).data( 'tbl-field' ) );
+        return false;
+    } );
 
-    this.moveToPage = function ( pageNumber )
-    {
+    this.moveToPage = function( pageNumber ) {
         var params = {
             'page': pageNumber, 'size': this.size
         };
@@ -107,15 +101,14 @@ var SortableTable = function ( element )
         if ( this.formName ) {
             var form = $( 'form[name=' + this.formName + ']' );
 
-            var requireHiddenElement = function ( name, value )
-            {
+            var requireHiddenElement = function( name, value ) {
                 if ( value ) {
                     var hidden = $( 'input[name=' + name + ']', form );
                     if ( hidden.length ) {
                         hidden.value( value );
                     }
                     else {
-                        if ( $.isArray(value)) {
+                        if ( $.isArray( value ) ) {
                             for ( var i = 0; i < value.length; i++ ) {
                                 form.append( '<input type="hidden" name="' + name + '" value="' + value[i] + '" />' );
                             }
@@ -139,8 +132,7 @@ var SortableTable = function ( element )
         }
     };
 
-    this.sortOnProperty = function ( propertyName )
-    {
+    this.sortOnProperty = function( propertyName ) {
         var currentIndex = -1;
 
         for ( var i = 0; i < this.sort.length && currentIndex < 0; i++ ) {
@@ -172,11 +164,9 @@ var SortableTable = function ( element )
     };
 };
 
-$( document ).ready( function ()
-                     {
-                         $( '[data-tbl-type="paged"]' ).each( function ()
-                                                              {
-                                                                  $( this ).sortableTable =
-                                                                          new SortableTable( $( this ) );
-                                                              } );
-                     } );
+$( document ).ready( function() {
+    $( '[data-tbl-type="paged"]' ).each( function() {
+        $( this ).sortableTable =
+                new SortableTable( $( this ) );
+    } );
+} );

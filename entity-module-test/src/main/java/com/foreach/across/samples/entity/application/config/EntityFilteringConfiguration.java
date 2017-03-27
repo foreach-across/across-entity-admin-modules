@@ -23,6 +23,8 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -108,16 +110,14 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		private PartnerRepository partnerRepository;
 
 		@Override
-		public void initializeCommandObject( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
-		                                     com.foreach.across.modules.entity.views.request.EntityViewCommand command,
-		                                     WebDataBinder dataBinder ) {
+		public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
 			command.addExtension( "filter", "" );
 		}
 
 		@Override
-		protected void doControl( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
+		protected void doControl( EntityViewRequest entityViewRequest,
 		                          EntityView entityView,
-		                          com.foreach.across.modules.entity.views.request.EntityViewCommand command,
+		                          EntityViewCommand command,
 		                          BindingResult bindingResult,
 		                          HttpMethod httpMethod ) {
 			String filter = command.getExtension( "filter", String.class );
@@ -132,7 +132,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		}
 
 		@Override
-		protected void postRender( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
+		protected void postRender( EntityViewRequest entityViewRequest,
 		                           EntityView entityView,
 		                           ContainerViewElement container,
 		                           ViewElementBuilderContext builderContext ) {
@@ -162,16 +162,16 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		private UserRepository userRepository;
 
 		@Override
-		public void initializeCommandObject( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
-		                                     com.foreach.across.modules.entity.views.request.EntityViewCommand command,
+		public void initializeCommandObject( EntityViewRequest entityViewRequest,
+		                                     EntityViewCommand command,
 		                                     WebDataBinder dataBinder ) {
 			command.addExtension( "filter", "" );
 		}
 
 		@Override
-		protected void doControl( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
+		protected void doControl( EntityViewRequest entityViewRequest,
 		                          EntityView entityView,
-		                          com.foreach.across.modules.entity.views.request.EntityViewCommand command,
+		                          EntityViewCommand command,
 		                          BindingResult bindingResult,
 		                          HttpMethod httpMethod ) {
 			String filter = command.getExtension( "filter", String.class );
@@ -187,7 +187,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		}
 
 		@Override
-		protected void postRender( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
+		protected void postRender( EntityViewRequest entityViewRequest,
 		                           EntityView entityView,
 		                           ContainerViewElement container,
 		                           ViewElementBuilderContext builderContext ) {

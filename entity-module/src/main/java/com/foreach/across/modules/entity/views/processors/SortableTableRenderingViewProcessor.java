@@ -29,6 +29,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBui
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -68,18 +69,41 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 	private BootstrapUiFactory bootstrapUiFactory;
 	private EntityViewElementBuilderHelper builderHelper;
 
+	/**
+	 * Should the result number be shown as first column in the table?
+	 * Defaults to {@code true}.
+	 */
 	@Setter
 	private boolean showResultNumber = true;
 
+	/**
+	 * Should default actions be included for every entity?
+	 * These are an update and delete button and depend on the principal having
+	 * the {@link AllowableAction#UPDATE} or {@link AllowableAction#DELETE} respectively.
+	 * <p/>
+	 * Defaults to {@code false}.
+	 */
 	@Setter
 	private boolean includeDefaultActions = false;
 
+	/**
+	 * Name of the summary view.  If this is set and the view exists, a summary detail view will be available for every entity row.
+	 * Defaults to {@link EntityView#SUMMARY_VIEW_NAME}.
+	 */
 	@Setter
-	private String summaryViewName;
+	private String summaryViewName = EntityView.SUMMARY_VIEW_NAME;
 
+	/**
+	 * Set the name of the table, added as data attributes in the markup.
+	 * <p/>
+	 * Defaults to {@code itemsTable}.
+	 */
 	@Setter
 	private String tableName = "itemsTable";
 
+	/**
+	 * Set the name of the form that should be submitted when changing the page or sorting a column.
+	 */
 	@Setter
 	private String formName;
 
@@ -92,9 +116,6 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 	@Setter
 	private Collection<String> sortableProperties = null;
 
-	/**
-	 * Selector for the properties that should be rendered on the table.
-	 */
 	private EntityPropertySelector propertySelector = EntityPropertySelector.of( EntityPropertySelector.READABLE );
 
 	/**
@@ -103,6 +124,9 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 	@Setter
 	private ViewElementMode viewElementMode = ViewElementMode.LIST_VALUE;
 
+	/**
+	 * Set the selector for the properties that should be rendered on the table.
+	 */
 	public void setPropertySelector( EntityPropertySelector propertySelector ) {
 		this.propertySelector = this.propertySelector.combine( propertySelector );
 	}

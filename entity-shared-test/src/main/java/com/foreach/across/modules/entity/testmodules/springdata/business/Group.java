@@ -26,17 +26,17 @@ import javax.persistence.*;
 /**
  * @author Arne Vandamme
  */
-@Entity
-@Table(name = "test_group")
+@Entity(name = "tblGroup")
+@Table(name = "tbl_group")
 public class Group extends SettableIdBasedEntity<Group>
 {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "seq_test_group_id")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "seq_group_id")
 	@GenericGenerator(
-			name = "seq_test_group_id",
+			name = "seq_group_id",
 			strategy = AcrossSequenceGenerator.STRATEGY,
 			parameters = {
-					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_test_group_id"),
+					@org.hibernate.annotations.Parameter(name = "sequenceName", value = "seq_group_id"),
 					@org.hibernate.annotations.Parameter(name = "allocationSize", value = "1")
 			}
 	)

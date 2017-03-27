@@ -1,6 +1,5 @@
 [[entity-query]]
 == EntityQuery infrastructure
-
 {module-name} provides an abstraction layer for querying entities.
 This abstraction is built around the concept of an `EntityQuery`.
 
@@ -8,7 +7,6 @@ This chapter gives some insight in the setup and how to customize if so wanted.
 
 [[entity-query-executor]]
 === EntityQueryExecutor
-
 The `EntityQueryExecutor` is responsible for executing an `EntityQuery` and returning the entities requested.
 An `EntityConfiguration` can have a single `EntityQueryExecutor.class` attribute holding the executor instance.
 
@@ -17,10 +15,20 @@ This means that any entity configurations having a repository of this type will 
 
 NOTE: Since the `EntityQueryExecutor` is backed by a specific repository implementation, supported functionality also depends on the actual backing repository.
 
+The presence of the `EntityQueryExecutor` is a requirement for the default <<entity-views,entity views>>.
+
+==== AssociatedEntityQueryExecutor
+Like `EntityQueryExecutor` that is registered on the `EntityConfiguration`, every `EntityAssociation` can have an `AssociatedEntityQueryExecutor` registered.
+The `AssociatedEntityQueryExecutor` allows executing queries in the context of a single parent object.
+
+Like the `EntityQueryExecutor`, the `AssociatedEntityQueryExecutor` is usually added automatically.
+
+The presence of the `AssociatedEntityQueryExecutor` is a requirement for the default association <<entity-views,entity views>>.
+
 [[entity-query-language]]
 === EntityQuery Language (EQL)
 
-Apart from building an `EntityQuery` programmatically, one can be specified using the EntityQuery Language (EQL).
+Apart from building an `EntityQuery` in code, one can be specified using the EntityQuery Language (EQL).
 EQL provides an SQL-like syntax for building queries.  Some examples could be:
 
 * `name = 'john'`

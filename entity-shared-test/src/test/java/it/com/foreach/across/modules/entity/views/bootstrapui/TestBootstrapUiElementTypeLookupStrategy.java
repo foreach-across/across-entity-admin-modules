@@ -20,9 +20,12 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
+import com.foreach.across.modules.entity.testmodules.springdata.business.CompanyStatus;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
+import com.foreach.across.modules.entity.views.bootstrapui.MultiValueElementBuilderFactory;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,8 +37,6 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.entity.testmodules.springdata.business.CompanyStatus;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -245,6 +246,23 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
 
 		assertEquals( BootstrapUiElements.MULTI_CHECKBOX,
+		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+	}
+
+	@Test
+	public void stringSetsAreSupportedAsMultiValue() {
+		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
+
+		when( entityConfiguration.getEntityType() ).thenReturn( (Class) Client.class );
+		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
+
+		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
+		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
+				Set.class, TypeDescriptor.valueOf( String.class )
+		);
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
+
+		assertEquals( MultiValueElementBuilderFactory.ELEMENT_TYPE,
 		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
 	}
 

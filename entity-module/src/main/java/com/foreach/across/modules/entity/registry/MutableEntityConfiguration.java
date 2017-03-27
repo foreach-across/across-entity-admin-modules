@@ -32,8 +32,6 @@ import java.io.Serializable;
  */
 public interface MutableEntityConfiguration<T> extends EntityConfiguration<T>, WritableAttributes, ConfigurableEntityViewRegistry
 {
-
-
 	/**
 	 * Set the default display name for this entity type.
 	 *

@@ -16,13 +16,23 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import org.springframework.web.bind.WebDataBinder;
 
 /**
  * Central API for building custom entity views using the generic controllers.
+ * For correct assembly of a view, the methods of the EntityViewFactory are expected to be called in specific order:
+ * <ol>
+ *     <li>{@link #prepareEntityViewContext(ConfigurableEntityViewContext)}</li>
+ *     <li>{@link #authorizeRequest(EntityViewRequest)}</li>
+ *     <li>{@link #initializeCommandObject(EntityViewRequest, EntityViewCommand, WebDataBinder)}</li>
+ *     <li>{@link #createView(EntityViewRequest)}</li>
+ * </ol>
  *
  * @author Arne Vandamme
+ * @since 2.0.0
+ * @see com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController
  */
 public interface EntityViewFactory
 {
@@ -53,6 +63,8 @@ public interface EntityViewFactory
 	/**
 	 * Initialize the {@link com.foreach.across.modules.entity.views.request.EntityViewCommand} for the given request.
 	 * Optionally configure the {@link WebDataBinder} that will be used to bind the command object.
+	 * <p/>
+	 * Called after {@link #authorizeRequest(EntityViewRequest)} but before data binding.
 	 *
 	 * @param entityViewRequest request
 	 * @param command           object

@@ -16,19 +16,29 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.business;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
  * @author Arne Vandamme
  */
+@JsonSerialize(using = ClientGroupId.ClientGroupIdSerializer.class)
 @Embeddable
 public class ClientGroupId implements Serializable
 {
+	@NotNull
 	@ManyToOne
 	private Client client;
 
+	@NotNull
 	@ManyToOne
 	private Group group;
 
@@ -74,5 +84,17 @@ public class ClientGroupId implements Serializable
 		int result = client != null ? client.hashCode() : 0;
 		result = 31 * result + ( group != null ? group.hashCode() : 0 );
 		return result;
+	}
+
+	static class ClientGroupIdSerializer extends StdSerializer<ClientGroupId>
+	{
+		public ClientGroupIdSerializer() {
+			super( ClientGroupId.class );
+		}
+
+		@Override
+		public void serialize( ClientGroupId value, JsonGenerator gen, SerializerProvider provider ) throws IOException {
+			gen.writeRawValue( value.getClient().getId() + "-" + value.getGroup().getId() );
+		}
 	}
 }

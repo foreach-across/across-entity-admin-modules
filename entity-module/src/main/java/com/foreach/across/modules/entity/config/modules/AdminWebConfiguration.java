@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.controllers.admin.EntityOverviewControl
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.handlers.MenuEventsHandler;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
 import com.foreach.across.modules.entity.web.EntityAssociationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
@@ -32,6 +33,7 @@ import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.WebResourcePackageManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -43,6 +45,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Configuration
 @ComponentScan(basePackageClasses = EntityOverviewController.class)
 @RequiredArgsConstructor
+@Slf4j
 public class AdminWebConfiguration implements EntityConfigurer
 {
 	private final ConversionService mvcConversionService;
@@ -92,7 +95,40 @@ public class AdminWebConfiguration implements EntityConfigurer
 						mutable.setAttribute( EntityLinkBuilder.class,
 						                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
 					}
+
+					verifyIdTypeCanBeConverted( entityConfiguration, mvcConversionService );
 				} );
+	}
+
+	private void verifyIdTypeCanBeConverted( EntityConfiguration<?> entityConfiguration, ConversionService conversionService ) {
+		Class<?> idType = entityConfiguration.getIdType();
+
+		if ( idType != null ) {
+			LOG.trace( "Checking if conversion between {} and String can be performed", idType.getName() );
+
+			if ( !conversionService.canConvert( idType, String.class ) ) {
+				LOG.error(
+						"The mvcConversionService is unable to convert from {} to String: this conversion is required for managing entities '{}' in AdminWebModule.  " +
+								"Possibly you are using a composite id in which case you should manually register a converter.",
+						idType.getName(), entityConfiguration.getName()
+				);
+//				throw new IllegalStateException(
+//						"The mvcConversionService is unable to convert from " + idType.getName()
+//								+ " to String: this conversion is required for managing entity '" + entityConfiguration.getName() + "' in AdminWebModule.  "
+//								+ "Possibly you are using a composite id in which case you should manually register a converter." );
+			}
+			if ( !conversionService.canConvert( String.class, idType ) ) {
+				LOG.error(
+						"The mvcConversionService is unable to convert from String to {}: this conversion is required for managing entity '{}' in AdminWebModule.  " +
+								"Possibly you are using a composite id in which case you should manually register a converter.",
+						idType.getName(), entityConfiguration.getName()
+				);
+//				throw new IllegalStateException(
+//						"The mvcConversionService is unable to convert from String to " + idType.getName()
+//								+ ": this conversion is required for managing entities '" + entityConfiguration.getName() + "' in AdminWebModule.  "
+//								+ "Possibly you are using a composite id in which case you should manually register a converter." );
+			}
+		}
 
 	}
 }

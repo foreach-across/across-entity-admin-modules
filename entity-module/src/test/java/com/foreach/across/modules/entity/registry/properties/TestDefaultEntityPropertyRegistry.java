@@ -54,6 +54,18 @@ public class TestDefaultEntityPropertyRegistry
 	}
 
 	@Test
+	public void javaBeansSpecificationAllowsAllCapsPropertyNames() {
+		register( "URL", String.class );
+
+		// if second char of property requested is uppercase, assume registered as all-caps property
+		EntityPropertyDescriptor descriptor = registry.getProperty( "URL" );
+		assertNotNull( descriptor );
+		assertSame( descriptor, registry.getProperty( "uRL" ) );
+
+		assertNull( registry.getProperty( "url" ) );
+	}
+
+	@Test
 	public void initialOrderIsKeptAsFallback() {
 		registry.setDefaultOrder( "created", "name", "id" );
 		assertEquals(

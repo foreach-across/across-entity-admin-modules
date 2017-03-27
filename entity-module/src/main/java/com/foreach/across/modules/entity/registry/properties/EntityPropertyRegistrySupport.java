@@ -127,12 +127,18 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
 		EntityPropertyDescriptor descriptor = descriptorMap.get( propertyName );
 
+		if ( descriptor == null && StringUtils.length( propertyName ) > 1 && Character.isUpperCase( propertyName.charAt( 1 ) ) ) {
+			char chars[] = propertyName.toCharArray();
+			chars[0] = Character.toUpperCase( chars[0] );
+			descriptor = descriptorMap.get( new String( chars ) );
+		}
+
 		return descriptor instanceof MutableEntityPropertyDescriptor ? (MutableEntityPropertyDescriptor) descriptor : null;
 	}
 
 	@Override
 	public boolean contains( String propertyName ) {
-		return descriptorMap.containsKey( propertyName ) || getProperty( propertyName ) != null;
+		return getProperty( propertyName ) != null;
 	}
 
 	@Override
