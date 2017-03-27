@@ -65,9 +65,10 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 					}
 				}
 
-				if ( builder != null && lookupRegistry.isCacheable( mode ) ) {
-					lookupRegistry.cacheViewElementBuilder( mode, builder );
-				}
+				// todo: support caching when attribute value cloning is safer
+				//if ( builder != null && lookupRegistry.isCacheable( mode ) ) {
+				//	lookupRegistry.cacheViewElementBuilder( mode, builder );
+				//}
 
 				return builder;
 			}

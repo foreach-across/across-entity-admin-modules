@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
+import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import com.foreach.across.modules.entity.views.support.NestedValueFetcher;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
@@ -102,7 +104,16 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
 		}
 
+		// todo: fixe me decently
+		ViewElementLookupRegistryImpl existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+		ViewElementLookupRegistry lookupRegistry = new ViewElementLookupRegistryImpl();
+		if ( existingLookupRegistry != null ) {
+			existingLookupRegistry.mergeInto( lookupRegistry );
+		}
+
 		descriptor.setAttributes( child.attributeMap() );
+
+		descriptor.setAttribute( ViewElementLookupRegistry.class, lookupRegistry );
 
 		if ( child.hasAttribute( Sort.Order.class ) ) {
 			Sort.Order order = child.getAttribute( Sort.Order.class );

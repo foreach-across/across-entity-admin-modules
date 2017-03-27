@@ -637,7 +637,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		                                          .add(
 				                                          bootstrapUi.node( "div" )
 				                                                     .css( "panel-heading" )
-				                                                     .add( bootstrapUi.text( resultsFound ) )
+				                                                     .add( bootstrapUi.html( resultsFound ) )
 		                                          )
 		                                          .add(
 				                                          bootstrapUi.node( "div" )
@@ -662,7 +662,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		                  .add(
 				                  bootstrapUi.node( "div" )
 				                             .css( "panel-body", "text-warning" )
-				                             .add( bootstrapUi.text( getResolvedPagingMessages()
+				                             .add( bootstrapUi.html( getResolvedPagingMessages()
 						                                                     .resultsFound( getPage() ) ) )
 		                  );
 	}
@@ -691,7 +691,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 
 		pager.add(
 				bootstrapUi.label()
-				           .add( bootstrapUi.node( "span" ).add( bootstrapUi.text( messages.page( currentPage ) ) ) )
+				           .add( bootstrapUi.node( "span" ).add( bootstrapUi.html( messages.page( currentPage ) ) ) )
 				           .add(
 						           bootstrapUi.textbox()
 						                      .attribute( "data-tbl-page-selector", "selector" )
@@ -699,14 +699,14 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 						                      .text( String.valueOf( currentPage.getNumber() + 1 ) )
 				           )
 		)
-		     .add( bootstrapUi.node( "span" ).add( bootstrapUi.text( messages.ofPages( currentPage ) ) ) )
+		     .add( bootstrapUi.node( "span" ).add( bootstrapUi.html( messages.ofPages( currentPage ) ) ) )
 		     .add(
 				     bootstrapUi.link()
 				                .url( "#" )
 				                .css( "total-pages-link" )
 				                .attribute( DATA_ATTR_PAGE, currentPage.getTotalPages() - 1 )
 				                .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
-				                .add( bootstrapUi.text( String.valueOf( currentPage.getTotalPages() ) ) )
+				                .add( bootstrapUi.html( String.valueOf( currentPage.getTotalPages() ) ) )
 		     );
 
 		if ( currentPage.hasNext() ) {
