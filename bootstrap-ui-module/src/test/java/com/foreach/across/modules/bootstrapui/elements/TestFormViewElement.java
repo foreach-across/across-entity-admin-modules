@@ -163,4 +163,20 @@ public class TestFormViewElement extends AbstractBootstrapViewElementTest
 				"<form role='form' method='post'>" + CUSTOM_TEMPLATE_OUTPUT + "</form>"
 		);
 	}
+
+	@Test
+	public void formLayouts() {
+		FormViewElement form = new FormViewElement();
+		form.setFormLayout( FormLayout.horizontal( Grid.create( 3, 9 ) ) );
+		renderAndExpect(
+				form,
+				"<form role='form' method='post' class='form-horizontal'></form>"
+		);
+
+		form.setFormLayout( FormLayout.inline( false ) );
+		renderAndExpect(
+				form,
+				"<form role='form' method='post' class='form-inline'></form>"
+		);
+	}
 }

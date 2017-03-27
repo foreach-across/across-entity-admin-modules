@@ -61,7 +61,7 @@ public class ButtonViewElementModelWriter extends AbstractHtmlViewElementModelWr
 
 		// add text as child
 		if ( !EnumSet.of( INPUT, INPUT_RESET, INPUT_SUBMIT ).contains( button.getType() ) ) {
-			writer.addText( text );
+			writer.addHtml( text );
 		}
 	}
 

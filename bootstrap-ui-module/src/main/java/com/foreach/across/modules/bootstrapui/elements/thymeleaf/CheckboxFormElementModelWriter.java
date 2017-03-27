@@ -64,7 +64,7 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 		model.addCloseElement();
 
 		// add initial text
-		model.addText( control.getText() );
+		model.addHtml( control.getText() );
 
 		// add children after checkbox tag and text
 		super.writeChildren( control, model );

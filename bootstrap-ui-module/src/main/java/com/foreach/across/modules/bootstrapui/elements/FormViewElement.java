@@ -20,6 +20,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
 
+import static com.foreach.across.modules.bootstrapui.elements.FormLayout.Type.HORIZONTAL;
+import static com.foreach.across.modules.bootstrapui.elements.FormLayout.Type.INLINE;
+
 /**
  * Represents a HTML form element, supporting a Bootstrap {@link FormLayout} that will automatically
  * be applied to all controls of the form that do not have a separate layout specified.
@@ -52,12 +55,22 @@ public class FormViewElement extends AbstractNodeViewElement
 
 	/**
 	 * Set the {@link FormLayout} that should be applied to all {@link FormGroupElement} members
-	 * of this form.
+	 * of this form.  Also set the corresponding class.
 	 *
 	 * @param formLayout instance
 	 */
 	public void setFormLayout( FormLayout formLayout ) {
 		this.formLayout = formLayout;
+
+		removeCssClass( "form-horizontal", "form-inline" );
+		if ( formLayout != null ) {
+			if ( HORIZONTAL.equals( formLayout.getType() ) ) {
+				addCssClass( "form-horizontal" );
+			}
+			else if ( INLINE.equals( formLayout.getType() ) ) {
+				addCssClass( "form-inline" );
+			}
+		}
 	}
 
 	public String getCommandAttribute() {

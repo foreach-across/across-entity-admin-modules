@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
+import com.foreach.across.modules.bootstrapui.elements.FormLayout;
 import com.foreach.across.modules.bootstrapui.elements.FormViewElement;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
@@ -30,6 +31,8 @@ import org.thymeleaf.standard.expression.VariableExpression;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.Map;
+
+import static com.foreach.across.modules.bootstrapui.elements.FormLayout.Type.HORIZONTAL;
 
 /**
  * @author Arne Vandamme

@@ -31,6 +31,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import static com.foreach.across.modules.bootstrapui.elements.thymeleaf.FormViewElementModelWriter.VAR_CURRENT_BOOTSTRAP_FORM;
+
 /**
  * The FormGroupElementModelWriter is core to default Bootstrap based form rendering.
  * It supports a combination of control, label and optional help text.
@@ -62,16 +64,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 			model.addAttributeValue( "class", "radio" );
 		}
 
-		FormLayout layout = group.getFormLayout();
-
-		if ( layout == null ) {
-			layout = FormLayout.normal();
-		}
-		else if ( layout.getType() == FormLayout.Type.HORIZONTAL ) {
-			if ( layout.getGrid().size() != 2 ) {
-				throw new IllegalStateException( "Horizontal form requires a grid layout of 2 positions." );
-			}
-		}
+		FormLayout layout = determineFormLayout( group, model );
 
 		Consumer<ThymeleafModelBuilder> errorBuilder = null;
 
@@ -157,6 +150,29 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		}
 
 		writeCloseElement( group, model );
+	}
+
+	private FormLayout determineFormLayout( FormGroupElement group, ThymeleafModelBuilder model ) {
+		FormLayout layout = group.getFormLayout();
+
+		if ( layout == null ) {
+			FormViewElement form = (FormViewElement) model.getTemplateContext().getVariable( VAR_CURRENT_BOOTSTRAP_FORM );
+
+			if ( form != null ) {
+				layout = form.getFormLayout();
+			}
+
+			if ( layout == null ) {
+				layout = FormLayout.normal();
+			}
+		}
+
+		if ( layout.getType() == FormLayout.Type.HORIZONTAL ) {
+			if ( layout.getGrid().size() != 2 ) {
+				throw new IllegalStateException( "Horizontal form requires a grid layout of 2 positions." );
+			}
+		}
+		return layout;
 	}
 
 	/**

@@ -36,7 +36,7 @@ public class LabelFormElementModelWriter extends AbstractHtmlViewElementModelWri
 		writer.addAttributeValue( "class", "control-label" );
 		targetId( viewElement, writer ).ifPresent( id -> writer.addAttribute( "for", id ) );
 
-		writer.addText( viewElement.getText() );
+		writer.addHtml( viewElement.getText() );
 	}
 
 	private Optional<String> targetId( LabelFormElement label, ThymeleafModelBuilder writer ) {
