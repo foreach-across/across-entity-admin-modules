@@ -48,6 +48,7 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 	private boolean selected, wrapped = true;
 	private String text, label;
 	private Object value;
+	private Object rawValue;
 
 	public boolean isSelected() {
 		return selected;
@@ -67,6 +68,13 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 
 	public Object getValue() {
 		return value;
+	}
+
+	/**
+	 * @return the raw value (for example entity) that this option represents
+	 */
+	public Object getRawValue() {
+		return rawValue;
 	}
 
 	public OptionsFormElementBuilder.Type getType() {
@@ -111,6 +119,18 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 
 	public OptionFormElementBuilder<T> label( String label ) {
 		this.label = label;
+		return this;
+	}
+
+	/**
+	 * Set the raw value that this option represents.  This value will not be attached to the actual
+	 * generated form element but can be used to bulk select options.
+	 *
+	 * @param value raw value (for example entity)
+	 * @return current builder
+	 */
+	public OptionFormElementBuilder<T> rawValue( Object value ) {
+		this.rawValue = value;
 		return this;
 	}
 
