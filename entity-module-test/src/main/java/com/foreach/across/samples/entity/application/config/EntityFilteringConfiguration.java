@@ -16,6 +16,7 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
@@ -89,7 +90,8 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 						                     lvb -> lvb.defaultSort( new Sort( "name" ) )
 						                               .viewProcessor( userInGroupFilterProcessor() )
 				                     )
-		             );
+		             )
+		             .attribute( EntityAttributes.OPTIONS_ENTITY_QUERY, "name like 'animals%'" );
 	}
 
 	@Bean

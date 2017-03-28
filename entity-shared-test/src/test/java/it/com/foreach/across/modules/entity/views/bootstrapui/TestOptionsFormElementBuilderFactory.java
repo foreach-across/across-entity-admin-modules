@@ -19,10 +19,14 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.options.FixedOptionIterableBuilder;
+import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,8 +96,20 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void fixedIterableOnPropertyIsUsed() {
+		OptionIterableBuilder optionBuilder = new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
+		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
+				.thenReturn( optionBuilder );
 
-		SelectFormElement selectFormElement = assembleAndVerify( "enumNoValidator" );
+		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+
+		assertFalse( select.isRequired() );
+		assertFalse( select.isMultiple() );
+		assertEquals( 1, select.getChildren().size() );
+
+		SelectFormElement.Option option = (SelectFormElement.Option) ( (ContainerViewElement) select.getChildren().get( 0 ) ).getChildren().get( 1 );
+		assertTrue( option.isSelected() );
+		assertEquals( "test", option.getLabel() );
+		assertEquals( "fixed", option.getValue() );
 	}
 
 	@SuppressWarnings("unchecked")

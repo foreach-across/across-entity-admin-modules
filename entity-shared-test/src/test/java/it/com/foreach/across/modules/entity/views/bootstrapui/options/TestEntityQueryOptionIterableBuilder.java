@@ -17,24 +17,19 @@
 package it.com.foreach.across.modules.entity.views.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
-import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.query.EntityQueryCondition;
-import com.foreach.across.modules.entity.query.EntityQueryExecutor;
-import com.foreach.across.modules.entity.query.EntityQueryOps;
+import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EntityQueryOptionIterableBuilder;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
-import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
@@ -49,125 +44,40 @@ public class TestEntityQueryOptionIterableBuilder
 	private final Entity THREE = new Entity( "three" );
 
 	private EntityQueryOptionIterableBuilder iterableBuilder;
-	private ValueFetcher<Object> valueFetcher;
-	private com.foreach.across.modules.web.ui.ViewElementBuilderContext elementBuilderContext;
+	private ViewElementBuilderContext elementBuilderContext;
 	private EntityQueryExecutor entityQueryExecutor;
+	private EntityQueryParser entityQueryParser;
 
 	private Map<String, OptionFormElementBuilder> options = new HashMap<>();
 
 	@Before
 	@SuppressWarnings("unchecked")
 	public void before() {
-		valueFetcher = mock( ValueFetcher.class );
-
 		EntityModel entityModel = mock( EntityModel.class );
 		entityQueryExecutor = mock( EntityQueryExecutor.class );
+		entityQueryParser = mock( EntityQueryParser.class );
 
 		iterableBuilder = new EntityQueryOptionIterableBuilder();
 		iterableBuilder.setEntityModel( entityModel );
 		iterableBuilder.setEntityQueryExecutor( entityQueryExecutor );
-		iterableBuilder.setValueFetcher( valueFetcher );
 
 		elementBuilderContext = new DefaultViewElementBuilderContext();
 
 		when( entityQueryExecutor.findAll( any( EntityQuery.class ) ) ).thenReturn( Arrays.asList( ONE, TWO, THREE ) );
 
 		when( entityModel.getLabel( anyObject() ) )
-				.thenAnswer( new Answer<Object>()
-				{
-					@Override
-					public Object answer( InvocationOnMock invocation ) throws Throwable {
-						return ( (Entity) invocation.getArguments()[0] ).name;
-					}
-				} );
+				.thenAnswer( invocation -> ( (Entity) invocation.getArguments()[0] ).name );
 
 		when( entityModel.getId( anyObject() ) )
-				.thenAnswer( new Answer<Object>()
-				{
-					@Override
-					public Object answer( InvocationOnMock invocation ) throws Throwable {
-						return StringUtils.upperCase( ( (Entity) invocation.getArguments()[0] ).name );
-					}
-				} );
+				.thenAnswer( invocation -> StringUtils.upperCase( ( (Entity) invocation.getArguments()[0] ).name ) );
 
 		options.clear();
 	}
 
 	@Test
-	public void noValueFetcherMeansNoOptionSelected() {
-		elementBuilderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
-		when( valueFetcher.getValue( "entity" ) ).thenReturn( TWO );
-
-		iterableBuilder.setValueFetcher( null );
-
-		build( true );
-		assertNotSelected( ONE, TWO, THREE );
-	}
-
-	@Test
-	public void noEntitySetMeansNoOptionSelected() {
-		build( true );
-		assertNotSelected( ONE, TWO, THREE );
-	}
-
-	@Test
-	public void entityWithoutOptionSelected() {
-		elementBuilderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
-
-		build( true );
-		assertNotSelected( ONE, TWO, THREE );
-	}
-
-	@Test
-	public void singleOptionSelected() {
-		elementBuilderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
-		when( valueFetcher.getValue( "entity" ) ).thenReturn( TWO );
-
-		build( true );
-
-		assertSelected( TWO );
-		assertNotSelected( ONE, THREE );
-	}
-
-	@Test
-	public void multipleOptionsSelectedAsCollection() {
-		elementBuilderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
-		when( valueFetcher.getValue( "entity" ) ).thenReturn( Arrays.asList( ONE, THREE ) );
-
-		build( true );
-
-		assertSelected( ONE, THREE );
-		assertNotSelected( TWO );
-
-		elementBuilderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
-		when( valueFetcher.getValue( "entity" ) )
-				.thenReturn( new HashSet<>( Arrays.asList( TWO, THREE ) ) );
-
-		build( true );
-
-		assertSelected( TWO, THREE );
-		assertNotSelected( ONE );
-	}
-
-	@Test
-	public void multipleOptionsSelectedAsArray() {
-		elementBuilderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
-		when( valueFetcher.getValue( "entity" ) ).thenReturn( new Entity[] { ONE, THREE } );
-
-		build( true );
-
-		assertSelected( ONE, THREE );
-		assertNotSelected( TWO );
-	}
-
-	@Test
-	public void differentValueReturnedFromFetcher() {
-		elementBuilderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
-		when( valueFetcher.getValue( "entity" ) ).thenReturn( 123L );
-
-		build( true );
-
-		assertNotSelected( ONE, TWO, THREE );
+	public void defaultOptions() {
+		build();
+		assertOptions( ONE, TWO, THREE );
 	}
 
 	@Test
@@ -175,51 +85,31 @@ public class TestEntityQueryOptionIterableBuilder
 		EntityQuery query = EntityQuery.or( new EntityQueryCondition( "name", EntityQueryOps.EQ, "test" ) );
 		iterableBuilder.setEntityQuery( query );
 
-		build( true );
+		build();
 
 		verify( entityQueryExecutor ).findAll( query );
 	}
 
 	@Test
-	public void selfOptionNotIncluded() {
-		elementBuilderContext.setAttribute( EntityViewModel.ENTITY, TWO );
-		when( valueFetcher.getValue( TWO ) ).thenReturn( new Entity[] { ONE } );
+	public void customEntityQueryAsEQL() {
+		iterableBuilder.setEntityQueryParser( entityQueryParser );
+		iterableBuilder.setEntityQuery( "deleted = 1" );
 
-		build( false );
+		EntityQuery query = mock( EntityQuery.class );
+		when( entityQueryParser.parse( "deleted = 1" ) ).thenReturn( query );
 
-		assertEquals( 2, options.size() );
-		assertFalse( options.containsKey( TWO.name ) );
+		build();
 
-		assertSelected( ONE );
-		assertNotSelected( THREE );
+		verify( entityQueryExecutor ).findAll( query );
 	}
 
-	@Test
-	public void selfOptionIncluded() {
-		elementBuilderContext.setAttribute( EntityViewModel.ENTITY, TWO );
-		when( valueFetcher.getValue( TWO ) ).thenReturn( new Entity[] { ONE } );
-
-		iterableBuilder.setSelfOptionIncluded( true );
-
-		build( true );
-
-		assertSelected( ONE );
-		assertNotSelected( TWO, THREE );
-	}
-
-	private void assertNotSelected( Entity... entities ) {
+	private void assertOptions( Entity... entities ) {
 		for ( Entity entity : entities ) {
 			assertFalse( options.get( entity.name ).isSelected() );
 		}
 	}
 
-	private void assertSelected( Entity... entities ) {
-		for ( Entity entity : entities ) {
-			assertTrue( options.get( entity.name ).isSelected() );
-		}
-	}
-
-	private void build( boolean verify ) {
+	private void build() {
 		options.clear();
 
 		Iterable<OptionFormElementBuilder> iterable = iterableBuilder.buildOptions( elementBuilderContext );
@@ -231,18 +121,19 @@ public class TestEntityQueryOptionIterableBuilder
 			options.put( option.getLabel(), option );
 		}
 
-		if ( verify ) {
-			assertEquals( 3, optionsInOrder.size() );
+		assertEquals( 3, optionsInOrder.size() );
 
-			assertEquals( ONE.name, optionsInOrder.get( 0 ).getLabel() );
-			assertEquals( StringUtils.upperCase( ONE.name ), optionsInOrder.get( 0 ).getValue() );
+		assertEquals( ONE.name, optionsInOrder.get( 0 ).getLabel() );
+		assertEquals( StringUtils.upperCase( ONE.name ), optionsInOrder.get( 0 ).getValue() );
+		assertEquals( ONE, optionsInOrder.get( 0 ).getRawValue() );
 
-			assertEquals( TWO.name, optionsInOrder.get( 1 ).getLabel() );
-			assertEquals( StringUtils.upperCase( TWO.name ), optionsInOrder.get( 1 ).getValue() );
+		assertEquals( TWO.name, optionsInOrder.get( 1 ).getLabel() );
+		assertEquals( StringUtils.upperCase( TWO.name ), optionsInOrder.get( 1 ).getValue() );
+		assertEquals( TWO, optionsInOrder.get( 1 ).getRawValue() );
 
-			assertEquals( THREE.name, optionsInOrder.get( 2 ).getLabel() );
-			assertEquals( StringUtils.upperCase( THREE.name ), optionsInOrder.get( 2 ).getValue() );
-		}
+		assertEquals( THREE.name, optionsInOrder.get( 2 ).getLabel() );
+		assertEquals( StringUtils.upperCase( THREE.name ), optionsInOrder.get( 2 ).getValue() );
+		assertEquals( THREE, optionsInOrder.get( 2 ).getRawValue() );
 	}
 
 	static class Entity

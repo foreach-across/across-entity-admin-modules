@@ -13,51 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.EntityQueryParser;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
-import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * Generates {@link OptionFormElementBuilder}s for a particular entity type, where the list of options
  * is fetched through an {@link EntityQueryExecutor} and custom {@link EntityQuery}.
  * By default an {@link EntityQuery} without parameters will be used, resulting in all entities being returned.
+ * <p/>
+ * A query can be specified using either an {@link EntityQuery} instance or a EQL statement.  The latter requires
+ * an {@link EntityQueryParser} to be set.
+ * <p/>
+ * Use {@link #forEntityConfiguration(EntityConfiguration)} to easily create an  {@link EntityQueryOptionIterableBuilder}
+ * configured with the entity query support for a particular {@link EntityConfiguration}.
  *
  * @author Arne Vandamme
  */
-public class EntityQueryOptionIterableBuilder extends SelectedOptionIterableBuilderSupport
+public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 {
 	private EntityModel<Object, Serializable> entityModel;
 	private EntityQueryExecutor<Object> entityQueryExecutor;
+	private EntityQueryParser entityQueryParser;
 	private EntityQuery entityQuery = EntityQuery.all();
-	private boolean selfOptionIncluded;
-
-	/**
-	 * Creates an {@link EntityQueryOptionIterableBuilder} for all entities of a particular {@link EntityConfiguration}.
-	 * By default the current entity being treated will not be provided as an option.
-	 *
-	 * @param entityConfiguration whose options to select
-	 * @return option builder
-	 */
-	public static EntityQueryOptionIterableBuilder forEntityConfiguration( EntityConfiguration entityConfiguration ) {
-		EntityQueryOptionIterableBuilder iterableBuilder = new EntityQueryOptionIterableBuilder();
-		iterableBuilder.setEntityModel( entityConfiguration.getEntityModel() );
-		iterableBuilder.setEntityQueryExecutor( entityConfiguration.getAttribute( EntityQueryExecutor.class ) );
-		iterableBuilder.setSelfOptionIncluded( false );
-
-		return iterableBuilder;
-	}
+	private String eql = null;
 
 	public EntityModel getEntityModel() {
 		return entityModel;
@@ -69,17 +60,26 @@ public class EntityQueryOptionIterableBuilder extends SelectedOptionIterableBuil
 		this.entityModel = entityModel;
 	}
 
-	public EntityQuery getEntityQuery() {
-		return entityQuery;
-	}
-
+	/**
+	 * Set a typed entity query object.
+	 *
+	 * @param entityQuery to use
+	 */
 	public void setEntityQuery( EntityQuery entityQuery ) {
 		Assert.notNull( entityQuery );
 		this.entityQuery = entityQuery;
+		this.eql = null;
 	}
 
-	public EntityQueryExecutor getEntityQueryExecutor() {
-		return entityQueryExecutor;
+	/**
+	 * Set an entity query via an EQL statement.
+	 *
+	 * @param eql statement that represents the query to execute
+	 */
+	public void setEntityQuery( String eql ) {
+		Assert.notNull( eql );
+		this.entityQuery = null;
+		this.eql = eql;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -88,44 +88,56 @@ public class EntityQueryOptionIterableBuilder extends SelectedOptionIterableBuil
 		this.entityQueryExecutor = entityQueryExecutor;
 	}
 
-	public boolean isSelfOptionIncluded() {
-		return selfOptionIncluded;
-	}
-
-	/**
-	 * In case of options that are the same type as the entity being built, should the entity
-	 * itself be provided as an option.  Default value is {@code false}.
-	 *
-	 * @param selfOptionIncluded True when entity itself should be included.
-	 */
-	public void setSelfOptionIncluded( boolean selfOptionIncluded ) {
-		this.selfOptionIncluded = selfOptionIncluded;
+	public void setEntityQueryParser( EntityQueryParser entityQueryParser ) {
+		this.entityQueryParser = entityQueryParser;
 	}
 
 	@Override
 	public Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext ) {
+		EntityQuery query = retrieveEntityQuery();
+
 		Assert.notNull( entityModel );
 		Assert.notNull( entityQuery );
 		Assert.notNull( entityQueryExecutor );
 
 		List<OptionFormElementBuilder> options = new ArrayList<>();
 
-		Object entityBeingBuilt = EntityViewElementUtils.currentEntity( builderContext );
-		Collection selected = retrieveSelected( builderContext );
+		for ( Object entityOption : entityQueryExecutor.findAll( query ) ) {
 
-		for ( Object entityOption : entityQueryExecutor.findAll( entityQuery ) ) {
-			if ( selfOptionIncluded || !entityOption.equals( entityBeingBuilt ) ) {
-				OptionFormElementBuilder option = new OptionFormElementBuilder();
+			OptionFormElementBuilder option = new OptionFormElementBuilder();
 
-				option.label( entityModel.getLabel( entityOption ) );
-				option.value( entityModel.getId( entityOption ) );
+			option.rawValue( entityOption );
+			option.label( entityModel.getLabel( entityOption ) );
+			option.value( entityModel.getId( entityOption ) );
 
-				option.selected( selected.contains( entityOption ) );
-
-				options.add( option );
-			}
+			options.add( option );
 		}
 
 		return options;
+	}
+
+	private EntityQuery retrieveEntityQuery() {
+		if ( entityQuery == null ) {
+			Assert.notNull( eql, "Neither EntityQuery not EQL statement has been configured" );
+			Assert.notNull( entityQueryParser, "No EntityQueryParser is available to convert the EQL statement" );
+			entityQuery = entityQueryParser.parse( eql );
+		}
+
+		return entityQuery;
+	}
+
+	/**
+	 * Creates an {@link EntityQueryOptionIterableBuilder} for all entities of a particular {@link EntityConfiguration}.
+	 *
+	 * @param entityConfiguration whose options to select
+	 * @return option builder
+	 */
+	public static EntityQueryOptionIterableBuilder forEntityConfiguration( EntityConfiguration entityConfiguration ) {
+		EntityQueryOptionIterableBuilder iterableBuilder = new EntityQueryOptionIterableBuilder();
+		iterableBuilder.setEntityModel( entityConfiguration.getEntityModel() );
+		iterableBuilder.setEntityQueryExecutor( entityConfiguration.getAttribute( EntityQueryExecutor.class ) );
+		iterableBuilder.setEntityQueryParser( entityConfiguration.getAttribute( EntityQueryParser.class ) );
+
+		return iterableBuilder;
 	}
 }

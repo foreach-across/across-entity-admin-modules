@@ -212,6 +212,9 @@ Available if the `EntityQueryExecutor.class` attribute is present.
 
 |===
 
+TODO: OptionGenerator, OptionIterableBuilder, EntityAttribute.OPTIONS_ENTITY_QUERY
+
+
 ==== Registered EntityPropertyDescriptor attributes
 
 |===
@@ -230,6 +233,7 @@ When present this value will be used as the form control name instead of the des
 
 |===
 
+TODO: OptionGenerator, OptionIterableBuilder, EntityAttribute.OPTIONS_ENTITY_QUERY
 
 == Integration with other modules
 

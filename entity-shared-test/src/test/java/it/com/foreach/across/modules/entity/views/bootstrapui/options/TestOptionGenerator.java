@@ -22,36 +22,47 @@ import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElemen
 import com.foreach.across.modules.entity.views.bootstrapui.options.FixedOptionIterableBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
+import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
  */
+@RunWith(MockitoJUnitRunner.class)
 public class TestOptionGenerator
 {
 	private final OptionIterableBuilder noneSelected
-			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ),
-			                                  new OptionFormElementBuilder().label( "aaa" )
+			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ),
+			                                  new OptionFormElementBuilder().label( "aaa" ).rawValue( "2" )
 	);
 
 	private final OptionIterableBuilder withSelected
-			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ),
-			                                  new OptionFormElementBuilder().label( "aaa" ).selected()
+			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ),
+			                                  new OptionFormElementBuilder().label( "aaa" ).rawValue( "2" ).selected()
 	);
 
 	private OptionGenerator generator;
 	private OptionsFormElementBuilder options;
 	private ViewElementBuilderContext builderContext;
+
+	@Mock
+	private ValueFetcher<String> valueFetcher;
 
 	@Before
 	public void before() {
@@ -184,6 +195,98 @@ public class TestOptionGenerator
 
 		generator.setEmptyOption( null );
 		generated = build();
+		assertEquals( 2, generated.size() );
+		assertEquals( "aaa", generated.get( 0 ).getLabel() );
+		assertEquals( "bbb", generated.get( 1 ).getLabel() );
+	}
+
+	@Test
+	public void noOptionSelected() {
+		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
+		when( valueFetcher.getValue( "entity" ) ).thenReturn( null );
+
+		generator.setValueFetcher( valueFetcher );
+		generator.setSorted( true );
+		generator.setEmptyOption( null );
+		generator.setOptions( withSelected );
+		List<SelectFormElement.Option> generated = build();
+
+		assertEquals( 2, generated.size() );
+		assertFalse( generated.get( 0 ).isSelected() );
+		assertFalse( generated.get( 1 ).isSelected() );
+	}
+
+	@Test
+	public void singleOptionSelected() {
+		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
+		when( valueFetcher.getValue( "entity" ) ).thenReturn( 1L );
+
+		generator.setValueFetcher( valueFetcher );
+		generator.setSorted( true );
+		generator.setEmptyOption( null );
+		generator.setOptions( withSelected );
+		List<SelectFormElement.Option> generated = build();
+
+		assertEquals( 2, generated.size() );
+		assertFalse( generated.get( 0 ).isSelected() );
+		assertTrue( generated.get( 1 ).isSelected() );
+	}
+
+	@Test
+	public void multipleOptionsSelectedAsCollection() {
+		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
+		when( valueFetcher.getValue( "entity" ) ).thenReturn( Arrays.asList( "2", 1L ) );
+
+		generator.setValueFetcher( valueFetcher );
+		generator.setSorted( true );
+		generator.setEmptyOption( null );
+		generator.setOptions( noneSelected );
+		List<SelectFormElement.Option> generated = build();
+
+		assertEquals( 2, generated.size() );
+		assertTrue( generated.get( 0 ).isSelected() );
+		assertTrue( generated.get( 1 ).isSelected() );
+	}
+
+	@Test
+	public void multipleOptionsSelectedAsArray() {
+		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
+		when( valueFetcher.getValue( "entity" ) ).thenReturn( new Object[] { "2", 1L } );
+
+		generator.setValueFetcher( valueFetcher );
+		generator.setSorted( true );
+		generator.setEmptyOption( null );
+		generator.setOptions( noneSelected );
+		List<SelectFormElement.Option> generated = build();
+
+		assertEquals( 2, generated.size() );
+		assertTrue( generated.get( 0 ).isSelected() );
+		assertTrue( generated.get( 1 ).isSelected() );
+	}
+
+	@Test
+	public void selfOptionNotIncludedIsDefault() {
+		builderContext.setAttribute( EntityViewModel.ENTITY, "2" );
+
+		generator.setSorted( true );
+		generator.setEmptyOption( null );
+		generator.setOptions( noneSelected );
+		List<SelectFormElement.Option> generated = build();
+
+		assertEquals( 1, generated.size() );
+		assertEquals( "bbb", generated.get( 0 ).getLabel() );
+	}
+
+	@Test
+	public void selfOptionIncluded() {
+		builderContext.setAttribute( EntityViewModel.ENTITY, "2" );
+
+		generator.setSorted( true );
+		generator.setEmptyOption( null );
+		generator.setOptions( noneSelected );
+		generator.setSelfOptionIncluded( true );
+		List<SelectFormElement.Option> generated = build();
+
 		assertEquals( 2, generated.size() );
 		assertEquals( "aaa", generated.get( 0 ).getLabel() );
 		assertEquals( "bbb", generated.get( 1 ).getLabel() );
