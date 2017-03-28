@@ -306,7 +306,6 @@ public class EntityViewFactoryBuilder
 
 		EntityViewFactory viewFactory = factory != null ? factory : createNewViewFactory( factoryType );
 		apply( viewFactory );
-		postProcess( viewFactory );
 
 		return viewFactory;
 	}
@@ -327,6 +326,19 @@ public class EntityViewFactoryBuilder
 		else {
 			LOG.debug( "Custom view factory is not a DispatchingEntityViewFactory - the properties of this builder will be skipped" );
 		}
+
+		postProcess( viewFactory );
+	}
+
+	/**
+	 * Post process the {@link EntityViewFactory}.
+	 *
+	 * @param viewFactory to post process
+	 */
+	private void postProcess( EntityViewFactory viewFactory ) {
+		EntityViewProcessorRegistry processorRegistry =
+				viewFactory instanceof DispatchingEntityViewFactory ? ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry() : null;
+		postProcessors.forEach( pp -> pp.accept( viewFactory, processorRegistry ) );
 	}
 
 	private void buildViewProcessors( EntityViewProcessorRegistry processorRegistry ) {
@@ -420,17 +432,6 @@ public class EntityViewFactoryBuilder
 			processorRegistry.remove( TemplateViewProcessor.class.getName() );
 			processorRegistry.addProcessor( new TemplateViewProcessor( template ) );
 		}
-	}
-
-	/**
-	 * Post process the {@link EntityViewFactory}.
-	 *
-	 * @param viewFactory to post process
-	 */
-	void postProcess( EntityViewFactory viewFactory ) {
-		EntityViewProcessorRegistry processorRegistry =
-				viewFactory instanceof DispatchingEntityViewFactory ? ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry() : null;
-		postProcessors.forEach( pp -> pp.accept( viewFactory, processorRegistry ) );
 	}
 
 	@RequiredArgsConstructor

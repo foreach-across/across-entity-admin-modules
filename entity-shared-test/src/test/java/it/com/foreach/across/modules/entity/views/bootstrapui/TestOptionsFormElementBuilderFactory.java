@@ -90,6 +90,12 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		assertEquals( 1, select.getChildren().size() );
 	}
 
+	@Test
+	public void fixedIterableOnPropertyIsUsed() {
+
+		SelectFormElement selectFormElement = assembleAndVerify( "enumNoValidator" );
+	}
+
 	@SuppressWarnings("unchecked")
 	private <V> V assembleAndVerify( String propertyName ) {
 		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
