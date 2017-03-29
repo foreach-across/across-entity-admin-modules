@@ -16,9 +16,13 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.config;
 
+import com.foreach.across.modules.entity.config.EntityConfigurer;
+import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
 import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.testmodules.springdata.business.ClientGroupId;
+import com.foreach.across.modules.entity.testmodules.springdata.business.CompanyStatus;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Group;
 import com.foreach.across.modules.entity.testmodules.springdata.validators.CompanyValidator;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
@@ -31,8 +35,17 @@ import org.springframework.core.convert.support.ConfigurableConversionService;
 
 @Configuration
 @EnableAcrossJpaRepositories(basePackageClasses = SpringDataJpaModule.class)
-public class ClientConfig
+public class ClientConfig implements EntityConfigurer
 {
+	@Override
+	public void configure( EntitiesConfigurationBuilder entities ) {
+		registerCompanyStatusAsEntity( entities.create().as( CompanyStatus.class ) );
+	}
+
+	private void registerCompanyStatusAsEntity( EntityConfigurationBuilder<CompanyStatus> builder ) {
+		builder.entityType( CompanyStatus.class, true );
+	}
+
 	@Bean
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();

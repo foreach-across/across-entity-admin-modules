@@ -70,6 +70,7 @@ public class DefaultEntityConfigurationProvider implements EntityConfigurationPr
 		Assert.notNull( entityType );
 
 		MutableEntityConfiguration<T> configuration = new EntityConfigurationImpl<>( entityType );
+		configuration.setHidden( true );
 		configuration.setEntityMessageCodeResolver( createMessageCodeResolver( configuration ) );
 		configuration.setPropertyRegistry( propertyRegistryProvider.get( entityType ) );
 		postProcessors.forEach( p -> p.accept( configuration ) );
@@ -85,6 +86,7 @@ public class DefaultEntityConfigurationProvider implements EntityConfigurationPr
 		Assert.notNull( entityType );
 
 		MutableEntityConfiguration<T> configuration = new EntityConfigurationImpl<>( name, entityType );
+		configuration.setHidden( true );
 		configuration.setEntityMessageCodeResolver( createMessageCodeResolver( configuration ) );
 		configuration.setPropertyRegistry(
 				registerForClass

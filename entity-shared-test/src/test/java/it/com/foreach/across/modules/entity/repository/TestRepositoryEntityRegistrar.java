@@ -82,30 +82,40 @@ public class TestRepositoryEntityRegistrar
 	@Test
 	public void expectedEntitiesShouldBeRegisteredWithTheirAssociations() {
 		verify( Client.class )
+				.isVisible( true )
 				.hasRepository()
 				.hasAssociation( "client.groups", false ).from( "groups" ).to( ClientGroup.class, "id.client" ).and()
 				.hasAssociation( "clientGroup.id.client", true ).from( null ).to( ClientGroup.class, "id.client" );
 
 		verify( Company.class )
+				.isVisible( true )
 				.hasRepository()
 				.hasAssociation( "client.company", true ).from( null ).to( Client.class, "company" ).and()
 				.hasAssociation( "company.representatives", false ).from( "representatives" ).to( Representative.class );
 
 		// not a JpaSpecificationExecutor so associations can't be built
 		verify( Car.class )
+				.isVisible( true )
 				.hasRepository();
 
 		verify( Group.class )
+				.isVisible( true )
 				.hasRepository()
 				.hasAssociation( "company.group", true ).from( null ).to( Company.class, "group" ).and()
 				.hasAssociation( "clientGroup.id.group", ClientGroup.class, true );
 
 		verify( ClientGroup.class )
+				.isVisible( true )
 				.hasRepository();
 
 		verify( Representative.class )
+				.isVisible( true )
 				.hasRepository()
 				.hasAssociation( "company.representatives", true ).from( null ).to( Company.class, "representatives" );
+
+		// enum entity should not be visible
+		verify( CompanyStatus.class )
+				.isVisible( false );
 	}
 
 	private EntityVerifier verify( Class<?> entityType ) {
@@ -121,7 +131,13 @@ public class TestRepositoryEntityRegistrar
 			assertNotNull( configuration );
 		}
 
+		public EntityVerifier isVisible( boolean visible ) {
+			assertEquals( visible, !configuration.isHidden() );
+			return this;
+		}
+
 		public EntityVerifier hasRepository() {
+			assertTrue( "EntityModel not present", configuration.hasEntityModel() );
 			assertTrue( "Repository not present", configuration.hasAttribute( Repository.class ) );
 			return this;
 		}
@@ -202,7 +218,7 @@ public class TestRepositoryEntityRegistrar
 
 	@Test
 	public void clientShouldBeRegisteredWithRepositoryInformation() {
-		assertEquals( 6, entityRegistry.getEntities().size() );
+		assertEquals( 7, entityRegistry.getEntities().size() );
 		assertTrue( entityRegistry.contains( Client.class ) );
 
 		EntityConfiguration<?> configuration = entityRegistry.getEntityConfiguration( Client.class );
@@ -412,7 +428,7 @@ public class TestRepositoryEntityRegistrar
 		assertTrue( descriptor.isWritable() );
 		assertFalse( descriptor.isHidden() );
 
-		EntityConfiguration<Client> client  = entityRegistry.getEntityConfiguration( Client.class );
+		EntityConfiguration<Client> client = entityRegistry.getEntityConfiguration( Client.class );
 		descriptor = client.getPropertyRegistry().getProperty( "id" );
 		assertFalse( descriptor.isWritable() );
 		assertTrue( descriptor.isHidden() );

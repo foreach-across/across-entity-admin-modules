@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,10 +18,9 @@ package com.foreach.across.modules.entity.registrars.repository;
 import com.foreach.across.modules.entity.registry.DefaultEntityModel;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.PersistentEntityFactory;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.views.support.ConvertedValuePrinter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
@@ -30,7 +29,6 @@ import org.springframework.format.Printer;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Locale;
 
 import static org.springframework.data.repository.support.RepositoryInvokerUtils.createRepositoryInvoker;
 
@@ -73,22 +71,4 @@ class RepositoryEntityModelBuilder
 		);
 	}
 
-	private class ConvertedValuePrinter implements Printer
-	{
-		private final ConversionService conversionService;
-		private final EntityPropertyDescriptor descriptor;
-
-		public ConvertedValuePrinter( ConversionService conversionService,
-		                              EntityPropertyDescriptor descriptor ) {
-			this.conversionService = conversionService;
-			this.descriptor = descriptor;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public String print( Object object, Locale locale ) {
-			Object value = descriptor.getValueFetcher().getValue( object );
-			return value != null ? conversionService.convert( value, String.class ) : "";
-		}
-	}
 }

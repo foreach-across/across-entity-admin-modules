@@ -214,6 +214,7 @@ Available if the `EntityQueryExecutor.class` attribute is present.
 
 TODO: OptionGenerator, OptionIterableBuilder, EntityAttribute.OPTIONS_ENTITY_QUERY
 
+TODO: enums as entities!
 
 ==== Registered EntityPropertyDescriptor attributes
 

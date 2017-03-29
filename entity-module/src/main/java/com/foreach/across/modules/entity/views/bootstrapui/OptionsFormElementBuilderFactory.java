@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
@@ -133,34 +134,35 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	private OptionIterableBuilder determineOptionBuilder( EntityPropertyDescriptor descriptor, Class<?> memberType, EntityConfiguration optionConfiguration ) {
 		OptionIterableBuilder builderToUse = descriptor.getAttribute( OptionIterableBuilder.class );
 
+		if ( builderToUse == null && optionConfiguration != null ) {
+			builderToUse = optionConfiguration.getAttribute( OptionIterableBuilder.class );
+		}
+
 		if ( builderToUse == null ) {
 			if ( memberType.isEnum() ) {
 				EnumOptionIterableBuilder iterableBuilder = new EnumOptionIterableBuilder();
 				iterableBuilder.setEnumType( (Class<? extends Enum>) memberType );
+				if ( optionConfiguration != null && optionConfiguration.hasEntityModel() ) {
+					iterableBuilder.setEntityModel( optionConfiguration.getEntityModel() );
+				}
 				builderToUse = iterableBuilder;
 			}
-			else {
-				if ( optionConfiguration != null ) {
-					builderToUse = optionConfiguration.getAttribute( OptionIterableBuilder.class );
+			else if ( optionConfiguration != null && optionConfiguration.hasAttribute( EntityQueryExecutor.class ) ) {
+				EntityQueryOptionIterableBuilder eqBuilder = EntityQueryOptionIterableBuilder.forEntityConfiguration( optionConfiguration );
+				Object entityQueryToUse = determineEntityQuery( descriptor, optionConfiguration );
 
-					if ( builderToUse == null && optionConfiguration.hasAttribute( EntityQueryExecutor.class ) ) {
-						EntityQueryOptionIterableBuilder eqBuilder = EntityQueryOptionIterableBuilder.forEntityConfiguration( optionConfiguration );
-						Object entityQueryToUse = determineEntityQuery( descriptor, optionConfiguration );
-
-						if ( entityQueryToUse instanceof EntityQuery ) {
-							eqBuilder.setEntityQuery( (EntityQuery) entityQueryToUse );
-						}
-						else if ( entityQueryToUse instanceof String ) {
-							eqBuilder.setEntityQuery( (String) entityQueryToUse );
-						}
-						else if ( entityQueryToUse != null ) {
-							throw new IllegalStateException(
-									"Illegal " + EntityAttributes.OPTIONS_ENTITY_QUERY + " attribute - expected to be String or EntityQuery" );
-						}
-
-						builderToUse = eqBuilder;
-					}
+				if ( entityQueryToUse instanceof EntityQuery ) {
+					eqBuilder.setEntityQuery( (EntityQuery) entityQueryToUse );
 				}
+				else if ( entityQueryToUse instanceof String ) {
+					eqBuilder.setEntityQuery( (String) entityQueryToUse );
+				}
+				else if ( entityQueryToUse != null ) {
+					throw new IllegalStateException(
+							"Illegal " + EntityAttributes.OPTIONS_ENTITY_QUERY + " attribute - expected to be String or EntityQuery" );
+				}
+
+				builderToUse = eqBuilder;
 			}
 		}
 

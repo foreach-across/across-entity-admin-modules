@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.registry.DefaultEntityModel;
@@ -256,7 +257,7 @@ public class TestEntityConfigurationBuilder
 	}
 
 	@Test
-	public void newEntityModelCreated() {
+	public void newEntityModelCreatedAndConfiguration() {
 		assertSame( builder, builder.entityModel( mock( Consumer.class ) ) );
 		builder.apply( config, false );
 

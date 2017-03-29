@@ -17,6 +17,7 @@
 package it.com.foreach.across.modules.entity.views.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
+import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EnumOptionIterableBuilder;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static it.com.foreach.across.modules.entity.views.bootstrapui.options.TestEnumOptionIterableBuilder.Counter.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.anyString;
@@ -65,7 +67,39 @@ public class TestEnumOptionIterableBuilder
 	@Test
 	public void allEnumOptionsAreGenerated() {
 		build();
-		assertOptions( Counter.ONE, Counter.TWO, Counter.THREE );
+		assertOptions( ONE, Counter.TWO, Counter.THREE );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void entityModelIsUsedIfPresent() {
+		EntityModel model = mock( EntityModel.class );
+		when( model.getLabel( ONE ) ).thenReturn( "one" );
+		when( model.getLabel( Counter.TWO ) ).thenReturn( "two" );
+		when( model.getLabel( Counter.THREE ) ).thenReturn( "three" );
+		when( model.getId( ONE ) ).thenReturn( 1 );
+		when( model.getId( Counter.TWO ) ).thenReturn( 2 );
+		when( model.getId( Counter.THREE ) ).thenReturn( 3 );
+
+		iterableBuilder.setEntityModel( model );
+
+		Iterable<OptionFormElementBuilder> iterable = iterableBuilder.buildOptions( elementBuilderContext );
+		List<OptionFormElementBuilder> optionsInOrder = new ArrayList<>( 3 );
+
+		for ( OptionFormElementBuilder option : iterable ) {
+			optionsInOrder.add( option );
+		}
+
+		assertEquals( ONE, optionsInOrder.get( 0 ).getRawValue() );
+		assertEquals( TWO, optionsInOrder.get( 1 ).getRawValue() );
+		assertEquals( THREE, optionsInOrder.get( 2 ).getRawValue() );
+		assertEquals( "one", optionsInOrder.get( 0 ).getLabel() );
+		assertEquals( "two", optionsInOrder.get( 1 ).getLabel() );
+		assertEquals( "three", optionsInOrder.get( 2 ).getLabel() );
+		assertEquals( 1, optionsInOrder.get( 0 ).getValue() );
+		assertEquals( 2, optionsInOrder.get( 1 ).getValue() );
+		assertEquals( 3, optionsInOrder.get( 2 ).getValue() );
+
 	}
 
 	private void assertOptions( Counter... counters ) {
@@ -88,9 +122,9 @@ public class TestEnumOptionIterableBuilder
 
 		assertEquals( 3, optionsInOrder.size() );
 
-		assertEquals( EntityUtils.generateDisplayName( Counter.ONE.name() ), optionsInOrder.get( 0 ).getLabel() );
-		assertEquals( Counter.ONE.name(), optionsInOrder.get( 0 ).getValue() );
-		assertEquals( Counter.ONE, optionsInOrder.get( 0 ).getRawValue() );
+		assertEquals( EntityUtils.generateDisplayName( ONE.name() ), optionsInOrder.get( 0 ).getLabel() );
+		assertEquals( ONE.name(), optionsInOrder.get( 0 ).getValue() );
+		assertEquals( ONE, optionsInOrder.get( 0 ).getRawValue() );
 
 		assertEquals( EntityUtils.generateDisplayName( Counter.TWO.name() ), optionsInOrder.get( 1 ).getLabel() );
 		assertEquals( Counter.TWO.name(), optionsInOrder.get( 1 ).getValue() );
@@ -108,3 +142,4 @@ public class TestEnumOptionIterableBuilder
 		THREE
 	}
 }
+

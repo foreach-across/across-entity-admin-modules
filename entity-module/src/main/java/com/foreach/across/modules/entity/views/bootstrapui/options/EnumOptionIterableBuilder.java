@@ -17,10 +17,12 @@
 package com.foreach.across.modules.entity.views.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
+import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ import java.util.List;
 public class EnumOptionIterableBuilder implements OptionIterableBuilder
 {
 	private Class<? extends Enum> enumType;
+	private EntityModel<Object, Serializable> entityModel;
 
 	public Class<? extends Enum> getEnumType() {
 		return enumType;
@@ -41,6 +44,13 @@ public class EnumOptionIterableBuilder implements OptionIterableBuilder
 
 	public void setEnumType( Class<? extends Enum> enumType ) {
 		this.enumType = enumType;
+	}
+
+	/**
+	 * Optionally set an entity model that should be used for generating label and value instead of default enum serializing.
+	 */
+	public void setEntityModel( EntityModel<Object, Serializable> entityModel ) {
+		this.entityModel = entityModel;
 	}
 
 	@Override
@@ -52,13 +62,19 @@ public class EnumOptionIterableBuilder implements OptionIterableBuilder
 
 		for ( Enum enumValue : enumValues ) {
 			OptionFormElementBuilder option = new OptionFormElementBuilder();
+			option.rawValue( enumValue );
 
-			String messageCode = "enums." + enumType.getSimpleName() + "." + enumValue.name();
-			String defaultLabel = EntityUtils.generateDisplayName( enumValue.name() );
+			if ( entityModel == null ) {
+				String messageCode = "enums." + enumType.getSimpleName() + "." + enumValue.name();
+				String defaultLabel = EntityUtils.generateDisplayName( enumValue.name() );
 
-			option.rawValue( enumValue);
-			option.label( codeResolver.getMessageWithFallback( messageCode, defaultLabel ) );
-			option.value( enumValue.name() );
+				option.label( codeResolver.getMessageWithFallback( messageCode, defaultLabel ) );
+				option.value( enumValue.name() );
+			}
+			else {
+				option.label( entityModel.getLabel( enumValue ) );
+				option.value( entityModel.getId( enumValue ) );
+			}
 
 			options.add( option );
 		}
