@@ -114,7 +114,7 @@ public class TestRepositoryEntityRegistrar
 				.hasAssociation( "company.representatives", true ).from( null ).to( Company.class, "representatives" );
 
 		// enum entity should not be visible
-		verify( CompanyStatus.class )
+		verify( Country.class )
 				.isVisible( false );
 	}
 

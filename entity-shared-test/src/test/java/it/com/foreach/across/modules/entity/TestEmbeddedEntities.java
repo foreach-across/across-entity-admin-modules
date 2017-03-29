@@ -27,6 +27,10 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
+import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
+import com.foreach.across.modules.entity.testmodules.springdata.business.ClientGroup;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
@@ -37,10 +41,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.entity.testmodules.springdata.business.ClientGroup;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 
 import static org.junit.Assert.*;
 
@@ -103,9 +103,11 @@ public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 						"<label for='address.zipCode' class='control-label'>Zip code</label>" +
 						"<input type='text' class='numeric form-control' name='address.zipCode' id='address.zipCode' />" +
 						"</div>" +
+						"<div class=\"form-group\"><label for=\"address.country\" class=\"control-label\">Country</label><select name=\"address.country\" id=\"address.country\" class=\"form-control\"><option id=\"address.country1\" value=\"\"></option><option id=\"address.country2\" value=\"BE\">Belgium</option><option id=\"address.country3\" value=\"NL\">Netherlands</option><option id=\"address.country4\" value=\"UK\">United Kingdom</option></select></div>" +
 						"</fieldset>"
 		);
 	}
+
 
 	// view for: Element collection of primitive
 	// view for: Element collection of custom type
