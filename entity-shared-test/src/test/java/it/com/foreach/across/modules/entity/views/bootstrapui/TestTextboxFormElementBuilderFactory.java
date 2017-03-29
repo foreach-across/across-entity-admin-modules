@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -250,6 +251,11 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 		@Bean
 		public ConversionService conversionService() {
 			return mock( ConversionService.class );
+		}
+
+		@Bean
+		public EntityRegistry entityRegistry() {
+			return mock( EntityRegistry.class );
 		}
 
 		@Bean

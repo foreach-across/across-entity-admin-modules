@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -246,6 +247,11 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 		@Bean
 		public BootstrapUiFactory bootstrapUiFactory() {
 			return new BootstrapUiFactoryImpl();
+		}
+
+		@Bean
+		public EntityRegistry entityRegistry() {
+			return mock( EntityRegistry.class );
 		}
 
 		@Bean

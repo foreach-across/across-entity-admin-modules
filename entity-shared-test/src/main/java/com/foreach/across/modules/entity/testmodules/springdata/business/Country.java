@@ -16,48 +16,23 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.business;
 
-import org.hibernate.validator.constraints.Length;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-
 /**
  * @author Arne Vandamme
+ * @since 2.0.0
  */
-@Embeddable
-public class Address
+public enum Country
 {
-	@Column
-	@Length(max = 100)
-	private String street;
+	BE( "Belgium" ),
+	UK( "United Kingdom" ),
+	NL( "Netherlands" );
 
-	@Column
-	private int zipCode;
+	private String name;
 
-	@Column
-	private Country country;
-
-	public String getStreet() {
-		return street;
+	Country( String name ) {
+		this.name = name;
 	}
 
-	public void setStreet( String street ) {
-		this.street = street;
-	}
-
-	public int getZipCode() {
-		return zipCode;
-	}
-
-	public void setZipCode( int zipCode ) {
-		this.zipCode = zipCode;
-	}
-
-	public Country getCountry() {
-		return country;
-	}
-
-	public void setCountry( Country country ) {
-		this.country = country;
+	public String getName() {
+		return name;
 	}
 }

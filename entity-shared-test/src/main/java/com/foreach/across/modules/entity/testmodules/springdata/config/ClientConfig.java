@@ -20,10 +20,7 @@ import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
 import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.entity.testmodules.springdata.business.ClientGroupId;
-import com.foreach.across.modules.entity.testmodules.springdata.business.CompanyStatus;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Group;
+import com.foreach.across.modules.entity.testmodules.springdata.business.*;
 import com.foreach.across.modules.entity.testmodules.springdata.validators.CompanyValidator;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +36,14 @@ public class ClientConfig implements EntityConfigurer
 {
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
-		registerCompanyStatusAsEntity( entities.create().as( CompanyStatus.class ) );
+		registerCountryAsEntity( entities.create().as( Country.class ) );
+
+		entities.withType( Company.class )
+		        .listView( lvb -> lvb.showProperties( ".", "~address", "address.country" ) );
 	}
 
-	private void registerCompanyStatusAsEntity( EntityConfigurationBuilder<CompanyStatus> builder ) {
-		builder.entityType( CompanyStatus.class, true );
+	private void registerCountryAsEntity( EntityConfigurationBuilder<Country> builder ) {
+		builder.entityType( Country.class, true ).label( "name" );
 	}
 
 	@Bean
@@ -61,9 +61,9 @@ public class ClientConfig implements EntityConfigurer
 
 	@Autowired
 	public void registerClientGroupIdConverters( ConfigurableConversionService mvcConversionService ) {
-		mvcConversionService.addConverter( ClientGroupId.class, String.class, source -> {
-			return source.getClient().getId() + "-" + source.getGroup().getId();
-		} );
+		mvcConversionService.addConverter( ClientGroupId.class, String.class, source ->
+				source.getClient().getId() + "-" + source.getGroup().getId()
+		);
 
 		mvcConversionService.addConverter( String.class, ClientGroupId.class, source -> {
 			String[] parts = source.split( "-" );

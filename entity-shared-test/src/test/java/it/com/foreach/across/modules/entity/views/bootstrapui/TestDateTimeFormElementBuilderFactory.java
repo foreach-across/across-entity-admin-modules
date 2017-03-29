@@ -19,6 +19,7 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -283,6 +284,11 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		@Bean
 		public ConversionService conversionService() {
 			return mock( ConversionService.class );
+		}
+
+		@Bean
+		public EntityRegistry entityRegistry() {
+			return mock( EntityRegistry.class );
 		}
 
 		@Bean

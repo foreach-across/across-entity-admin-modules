@@ -16,38 +16,33 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
+import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import org.springframework.util.Assert;
 
-import java.lang.reflect.Array;
-import java.text.Format;
-import java.text.MessageFormat;
 import java.util.Locale;
 
 /**
- * Uses a fixed {@link java.text.Format} instance to convert the object to text.
+ * Expects the property value to be of the entity type represented by the entity model.
+ * Will use the {@link EntityModel#getLabel(Object, Locale)} method to convert to text.
  *
  * @author Arne Vandamme
+ * @since 2.0.0
  */
-public class FormatValueTextPostProcessor<T extends ConfigurableTextViewElement> extends AbstractValueTextPostProcessor<T>
+@SuppressWarnings( "unchecked" )
+public final class EntityModelTextPostProcessor<T extends ConfigurableTextViewElement> extends AbstractValueTextPostProcessor<T>
 {
-	private final Format format;
+	private final EntityModel entityModel;
 
-	public FormatValueTextPostProcessor( EntityPropertyDescriptor propertyDescriptor,
-	                                     Format format ) {
+	public EntityModelTextPostProcessor( EntityPropertyDescriptor propertyDescriptor, EntityModel entityModel ) {
 		super( propertyDescriptor );
-		this.format = format;
+		Assert.notNull( entityModel );
+		this.entityModel = entityModel;
 	}
 
 	@Override
 	protected String print( Object value, Locale locale ) {
-		if ( format instanceof MessageFormat ) {
-			// MessageFormat expects an array
-			if ( !Array.class.isInstance( value ) ) {
-				return format.format( new Object[] { value } );
-			}
-		}
-		return format.format( value );
+		return entityModel.getLabel( value, locale );
 	}
 }
-

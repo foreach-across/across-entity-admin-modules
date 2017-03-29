@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.business;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
@@ -33,6 +34,7 @@ public class Company implements Persistable<String>
 	private boolean isNew;
 
 	@Id
+	@Length(max = 20)
 	private String id;
 
 	@Column
@@ -52,6 +54,10 @@ public class Company implements Persistable<String>
 
 	@Embedded
 	private Address address = new Address();
+
+	public void setId( String id ) {
+		this.id = id;
+	}
 
 	@Override
 	public String getId() {
