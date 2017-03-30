@@ -18,6 +18,8 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -62,23 +64,37 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 			command.setEntity( entityModel.createDto( entityViewContext.getEntity( Object.class ) ) );
 		}
 		else {
-			Object newDto = entityModel.createNew();
+			Object newDto = createNewDto( entityViewContext, entityModel );
+			command.setEntity( newDto );
+		}
 
-			// todo: provide an easier way to set properties of entities, and to create a new entity for an association?
-			if ( entityViewContext.isForAssociation() ) {
+		// set the dto as the entity
+		entityViewRequest.getModel().addAttribute( EntityViewModel.ENTITY, command.getEntity() );
+	}
+
+	private Object createNewDto( EntityViewContext entityViewContext, EntityModel<Object, ?> entityModel ) {
+		if ( entityViewContext.isForAssociation() ) {
+			EntityAssociation entityAssociation = entityViewContext.getEntityAssociation();
+			EntityFactory associatedEntityFactory = entityAssociation.getAttribute( EntityFactory.class );
+
+			if ( associatedEntityFactory != null ) {
+				return associatedEntityFactory.createNew( entityViewContext.getParentContext().getEntity() );
+			}
+			else {
+				Object newDto = entityModel.createNew();
+
 				BeanWrapper beanWrapper = new BeanWrapperImpl( newDto );
 				EntityPropertyDescriptor propertyDescriptor = entityViewContext.getEntityAssociation().getTargetProperty();
 
 				if ( propertyDescriptor != null ) {
 					beanWrapper.setPropertyValue( propertyDescriptor.getName(), entityViewContext.getParentContext().getEntity() );
 				}
-			}
 
-			command.setEntity( newDto );
+				return newDto;
+			}
 		}
 
-		// set the dto as the entity
-		entityViewRequest.getModel().addAttribute( EntityViewModel.ENTITY, command.getEntity() );
+		return entityModel.createNew();
 	}
 
 	@Override
