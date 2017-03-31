@@ -37,7 +37,7 @@ import org.springframework.security.access.AccessDeniedException;
  * @since 2.0.0
  */
 @Slf4j
-public final class ActionAllowedAuthorizationViewProcessor extends SimpleEntityViewProcessorAdapter
+public class ActionAllowedAuthorizationViewProcessor extends SimpleEntityViewProcessorAdapter
 {
 	/**
 	 * -- SETTER --

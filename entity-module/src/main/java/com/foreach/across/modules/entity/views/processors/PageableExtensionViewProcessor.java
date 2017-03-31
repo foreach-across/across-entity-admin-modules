@@ -39,7 +39,7 @@ import java.util.Objects;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public final class PageableExtensionViewProcessor extends SimpleEntityViewProcessorAdapter
+public class PageableExtensionViewProcessor extends SimpleEntityViewProcessorAdapter
 {
 	/**
 	 * Default extension name.

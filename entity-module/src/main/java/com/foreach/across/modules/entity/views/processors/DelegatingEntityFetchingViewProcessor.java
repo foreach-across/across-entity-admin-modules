@@ -34,7 +34,7 @@ import java.util.function.Function;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public final class DelegatingEntityFetchingViewProcessor extends AbstractEntityFetchingViewProcessor
+public class DelegatingEntityFetchingViewProcessor extends AbstractEntityFetchingViewProcessor
 {
 	/**
 	 * Default order that this processor will have if it has been added via the {@link EntityListViewFactoryBuilder}.

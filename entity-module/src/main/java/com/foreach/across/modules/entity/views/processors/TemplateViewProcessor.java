@@ -32,7 +32,7 @@ import java.util.Objects;
  * @since 2.0.0
  */
 @AllArgsConstructor
-public final class TemplateViewProcessor extends SimpleEntityViewProcessorAdapter
+public class TemplateViewProcessor extends SimpleEntityViewProcessorAdapter
 {
 	@Getter
 	@Setter

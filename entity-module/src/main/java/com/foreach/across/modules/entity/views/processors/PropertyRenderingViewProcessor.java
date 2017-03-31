@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 @Component
 @Exposed
 @Scope("prototype")
-public final class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
+public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 {
 	public static final String ATTRIBUTE_PROPERTY_BUILDERS = "propertyBuildersMap";
 	// todo: make configurable
