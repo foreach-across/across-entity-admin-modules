@@ -312,7 +312,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 				return model -> {
 					model.addOpenElement( "div" );
 					model.addAttributeValue( "class", "small", "text-danger" );
-					model.addText( "" + StringUtils.join( fields.errors( propertyName ), " " ) );
+					model.addHtml( "" + StringUtils.join( fields.errors( propertyName ), " " ) );
 					model.addCloseElement();
 				};
 			}
