@@ -16,11 +16,11 @@
 var SortableTable = function( element ) {
     var table = $( element );
     var id = $( element ).attr( 'data-tbl' );
-    var page = table.attr( 'data-tbl-current-page' );
+    var page = parseInt( table.attr( 'data-tbl-current-page' ) );
     this.formName = $( element ).attr( 'data-tbl-form' );
 
-    this.size = table.attr( 'data-tbl-size' );
-    this.totalPages = table.attr( 'data-tbl-total-pages' );
+    this.size = parseInt( table.attr( 'data-tbl-size' ) );
+    this.totalPages = parseInt( table.attr( 'data-tbl-total-pages' ) );
     this.sort = [];
 
     var currentSort = table.data( 'tbl-sort' );
@@ -47,7 +47,7 @@ var SortableTable = function( element ) {
     var pager = this;
 
     $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( function() {
-        pager.moveToPage( $( this ).attr( 'data-tbl-page' ) );
+        pager.moveToPage( parseInt( $( this ).attr( 'data-tbl-page' ) ) );
         return false;
     } );
 
@@ -60,7 +60,7 @@ var SortableTable = function( element ) {
                 var keyCode = (event.keyCode ? event.keyCode : event.which );
                 if ( keyCode == 13 ) {
                     event.preventDefault();
-                    var pageNumber = $( this ).val();
+                    var pageNumber = parseInt( $( this ).val() );
 
                     if ( isNaN( pageNumber ) ) {
                         $( this ).addClass( 'has-error' );
