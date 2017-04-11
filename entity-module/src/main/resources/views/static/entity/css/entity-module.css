@@ -13,32 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 .sortable {
-  cursor: pointer;
-
-  :hover {
-    color: orange;
-  }
-
-  span.caret {
-    display: none;
-  }
-  &.dropup, &.dropdown {
-    span.caret {
-      display: inline-block;
-    }
-  }
-}
+  cursor: pointer; }
+  .sortable :hover {
+    color: orange; }
+  .sortable span.caret {
+    display: none; }
+  .sortable.dropup span.caret, .sortable.dropdown span.caret {
+    display: inline-block; }
 
 .table > thead > tr.odd {
   background-color: #ffffff; }
 
 .pager-form {
-  color: black;
-}
+  color: black; }
 
 table > tbody > tr > td.row-actions {
   text-align: right;
   padding-left: 20px;
-  padding-right: 20px;
-}
+  padding-right: 20px; }
+
+/*# sourceMappingURL=entity-module.css.map */

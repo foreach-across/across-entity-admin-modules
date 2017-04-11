@@ -219,7 +219,7 @@ public class TestSortableTableRenderingViewProcessor
 		processor.setSummaryViewName( "summary-view-name" );
 		processor.registerWebResources( viewRequest, entityView, registry );
 
-		verify( registry ).add( WebResource.JAVASCRIPT_PAGE_END, "/js/entity/expandable.js", WebResource.VIEWS );
+		verify( registry ).add( WebResource.JAVASCRIPT_PAGE_END, "/static/entity/js/expandable.js", WebResource.VIEWS );
 	}
 
 	@Test
@@ -233,6 +233,6 @@ public class TestSortableTableRenderingViewProcessor
 		processor.setSummaryViewName( "summary-view-name" );
 		processor.registerWebResources( viewRequest, entityView, registry );
 
-		verify( registry ).add( WebResource.JAVASCRIPT_PAGE_END, "/js/entity/expandable.js", WebResource.VIEWS );
+		verify( registry ).add( WebResource.JAVASCRIPT_PAGE_END, "/static/entity/js/expandable.js", WebResource.VIEWS );
 	}
 }

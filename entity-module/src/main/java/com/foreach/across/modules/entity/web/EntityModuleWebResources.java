@@ -32,13 +32,9 @@ public final class EntityModuleWebResources extends SimpleWebResourcePackage
 
 	public EntityModuleWebResources() {
 		setWebResources(
-				new WebResource( WebResource.CSS, EntityModule.NAME, "/css/entity/entity-module.css", WebResource.VIEWS ),
-				new WebResource( WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME,
-				                 "/js/entity/entity-module.js", WebResource.VIEWS ),
-				new WebResource( WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME + "-dependson",
-				                 "/js/entity/dependson.js", WebResource.VIEWS ),
-				new WebResource( WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME + "-form-elements",
-				                 "/js/entity/form-elements.js", WebResource.VIEWS )
+				new WebResource( WebResource.CSS, EntityModule.NAME, "/static/entity/css/entity-module.css", WebResource.VIEWS ),
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME + "-dependson", "/static/entity/js/dependson.js", WebResource.VIEWS ),
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME, "/static/entity/js/entity-module.js", WebResource.VIEWS )
 		);
 	}
 }

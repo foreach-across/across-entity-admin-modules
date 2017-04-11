@@ -165,7 +165,7 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 	@Override
 	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
 		if ( hasSummaryView( entityViewRequest.getEntityViewContext() ) ) {
-			webResourceRegistry.add( WebResource.JAVASCRIPT_PAGE_END, "/js/entity/expandable.js", WebResource.VIEWS );
+			webResourceRegistry.add( WebResource.JAVASCRIPT_PAGE_END, "/static/entity/js/expandable.js", WebResource.VIEWS );
 		}
 	}
 

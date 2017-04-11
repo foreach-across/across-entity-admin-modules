@@ -26,6 +26,8 @@ import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAda
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -68,7 +70,18 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.withType( User.class )
 		             .listView( lvb -> lvb.showProperties( "id", "name", "group", "registrationDate" )
-		                                  .showResultNumber( false ) );
+		                                  .showResultNumber( false )
+		                                  .viewProcessor( new EntityViewProcessorAdapter()
+		                                  {
+			                                  @Override
+			                                  protected void registerWebResources( EntityViewRequest entityViewRequest,
+			                                                                       EntityView entityView,
+			                                                                       WebResourceRegistry webResourceRegistry ) {
+				                                  webResourceRegistry.add( WebResource.JAVASCRIPT_PAGE_END, "/static/entityModuleTest/js/test.js", WebResource.VIEWS );
+			                                  }
+		                                  } )
+		             )
+		             .view( EntityView.SUMMARY_VIEW_NAME, vb -> vb.showProperties( "name", "group" ) );
 
 		configuration.matching( c -> c.hasAttribute( EntityQueryExecutor.class ) )
 		             .listView( lvb -> lvb.entityQueryFilter( true ) );
