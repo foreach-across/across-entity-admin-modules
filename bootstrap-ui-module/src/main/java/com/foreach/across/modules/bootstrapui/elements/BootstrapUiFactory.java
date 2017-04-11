@@ -44,6 +44,8 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 
 	ButtonViewElementBuilder button();
 
+	FileUploadFormElementBuilder file();
+
 	TextboxFormElementBuilder textbox();
 
 	TextboxFormElementBuilder textarea();

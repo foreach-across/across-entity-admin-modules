@@ -95,6 +95,11 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	}
 
 	@Override
+	public FileUploadFormElementBuilder file() {
+		return new FileUploadFormElementBuilder();
+	}
+
+	@Override
 	public TextboxFormElementBuilder textarea() {
 		return textbox().multiLine();
 	}
