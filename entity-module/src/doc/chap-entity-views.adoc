@@ -206,4 +206,5 @@ include::chap-views-form-view.adoc[]
 
 include::chap-views-generic-view.adoc[]
 
+include::chap-views-javascript.adoc[]
 

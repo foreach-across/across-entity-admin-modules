@@ -1,0 +1,46 @@
+=== AdminWebModule JQuery plugins
+The default EntityModule web resources add some JQuery based javascript plugins.
+
+==== EntityModule object
+
+.initialeFormElements()
+
+`EntityModule.initializeFormElements()`
+
+.registerInitializer()
+`EntityModule.registerInitializer()`
+
+==== Sortable tables
+The default list views support paging and sorting of the pages, where client-side code is used to trigger reloading of the page.
+
+[cols="1,4,4",opts=header]
+|===
+
+|Event
+|Description
+|Argument
+
+|emSortableTable:moveToPage
+|Trigger this event if you want to reload the data for a specific page.
+|Page number.
+
+|emSortableTable:sort
+|Trigger this event if you want to reload the data with different sorting.
+If the data is already sorted on the field specified, the sort order will be reversed.
+|Name of the field to sort on.
+Usually value of the _data-tbl-field_ attribute.
+
+|emSortableTable:prepareData
+|Called after determining page number, result size and fields to sort on.
+Subscribe to this event if you want to expand or modify the parameters that should be submitted.
+|Parameter map containing: _page_,_size_ and _sort_ keys.
+
+
+|emSortableTable:loadData
+|Called after the parameters for the data have been prepared.
+Subscribe to this event if you want to provide a custom method of fetching the data (eg AJAX based).
+Note that you have to prevent the default execution if you provide your own mechanism.
+|Parameters that should be used for fetching the data.
+
+|===
+
