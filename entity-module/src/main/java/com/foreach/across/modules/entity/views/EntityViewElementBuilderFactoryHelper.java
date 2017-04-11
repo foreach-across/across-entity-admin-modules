@@ -58,14 +58,17 @@ public class EntityViewElementBuilderFactoryHelper
 		}
 
 		Class<?> propertyType = descriptor.getPropertyType();
-		EntityConfiguration<?> entityConfiguration = entityRegistry.getEntityConfiguration( propertyType );
 
-		if ( entityConfiguration != null && entityConfiguration.hasEntityModel() ) {
-			return new EntityModelTextPostProcessor<>( descriptor, entityConfiguration.getEntityModel() );
-		}
+		if ( propertyType != null ) {
+			EntityConfiguration<?> entityConfiguration = entityRegistry.getEntityConfiguration( propertyType );
 
-		if ( propertyType.isEnum() ) {
-			return new EnumValueTextPostProcessor<>( descriptor, propertyType.asSubclass( Enum.class ) );
+			if ( entityConfiguration != null && entityConfiguration.hasEntityModel() ) {
+				return new EntityModelTextPostProcessor<>( descriptor, entityConfiguration.getEntityModel() );
+			}
+
+			if ( propertyType.isEnum() ) {
+				return new EnumValueTextPostProcessor<>( descriptor, propertyType.asSubclass( Enum.class ) );
+			}
 		}
 
 		return new ConversionServiceValueTextPostProcessor<>( descriptor, mvcConversionService );
