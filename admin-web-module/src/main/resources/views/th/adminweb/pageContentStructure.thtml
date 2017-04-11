@@ -19,7 +19,7 @@
 <head>
 	<title>Template for a PageContentStructure based page</title>
 </head>
-<body th:fragment="content">
+<body th:fragment="content" th:remove="tag">
 <across:view element="${pageContentStructure}"/>
 </body>
 </html>
