@@ -32,11 +32,10 @@ EntityModule.registerInitializer( function() {
                 } );
 
                 allParams = $.extend( allParams, params );
-                console.log( $.param( params, true ) );
 
                 $.get( '#', $.param( allParams, true ), function( data ) {
-                           var pcs = $( '.pcs' ).replaceWith( data );
-                           EntityModule.initializeFormElements( $('.pcs') );
+                           $( '.pcs' ).replaceWith( data );
+                           EntityModule.initializeFormElements( $( '.pcs' ) );
                        }
                 );
             } )

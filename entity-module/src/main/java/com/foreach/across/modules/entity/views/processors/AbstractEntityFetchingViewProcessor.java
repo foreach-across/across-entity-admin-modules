@@ -75,5 +75,5 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 		}
 	}
 
-	protected abstract Iterable<Object> fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable );
+	protected abstract Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable );
 }

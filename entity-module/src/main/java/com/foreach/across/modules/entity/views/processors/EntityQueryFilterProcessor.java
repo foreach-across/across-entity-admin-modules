@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.apache.commons.lang3.StringUtils;
@@ -68,9 +69,9 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected Iterable<Object> fetchItems( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
-	                                       EntityView entityView,
-	                                       Pageable pageable ) {
+	protected Iterable fetchItems( EntityViewRequest entityViewRequest,
+	                               EntityView entityView,
+	                               Pageable pageable ) {
 		EntityViewContext viewContext = entityViewRequest.getEntityViewContext();
 		String filter = entityViewRequest.getCommand().getExtension( PARAM, String.class );
 

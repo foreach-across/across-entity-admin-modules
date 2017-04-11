@@ -16,6 +16,9 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import lombok.Getter;
@@ -69,6 +72,18 @@ public class PageableExtensionViewProcessor extends SimpleEntityViewProcessorAda
 	@Getter
 	private Pageable defaultPageable = new PageRequest( 0, 20 );
 
+	/**
+	 * Should the incoming pageable be translated using the current {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry}
+	 * by calling {@link com.foreach.across.modules.entity.util.EntityUtils#translateSort(Pageable, EntityPropertyRegistry)}?
+	 * <p/>
+	 * This allows sorting to be specified using simple property and direction, but the actual property to sort on as well as null handling
+	 * or case ordering to be determined by the <em>Sort.Order.class</em> attribute on the corresponding {@link EntityPropertyDescriptor}.
+	 * <p/>
+	 * Defaults to {@code true}.
+	 */
+	@Setter
+	private boolean translatePageable = true;
+
 	private String prefix;
 
 	/**
@@ -77,6 +92,16 @@ public class PageableExtensionViewProcessor extends SimpleEntityViewProcessorAda
 	public void setDefaultPageable( Pageable defaultPageable ) {
 		this.defaultPageable = defaultPageable;
 		pageableResolver.setFallbackPageable( defaultPageable );
+	}
+
+	/**
+	 * Configures the maximum page size to be accepted. This allows to put an upper boundary of the page size to prevent
+	 * potential attacks trying to issue an {@link OutOfMemoryError}. Defaults to {@link PageableHandlerMethodArgumentResolver#DEFAULT_MAX_PAGE_SIZE}.
+	 *
+	 * @param maxPageSize the maxPageSize to set
+	 */
+	public void setMaxPageSize( int maxPageSize ) {
+		pageableResolver.setMaxPageSize( maxPageSize );
 	}
 
 	/**
@@ -95,7 +120,16 @@ public class PageableExtensionViewProcessor extends SimpleEntityViewProcessorAda
 		NativeWebRequest webRequest = entityViewRequest.getWebRequest();
 
 		Pageable pageable = pageableResolver.resolveArgument( METHOD_PARAMETER, null, webRequest, null );
+
+		if ( translatePageable ) {
+			pageable = translatePageable( pageable, entityViewRequest.getEntityViewContext().getPropertyRegistry() );
+		}
+
 		command.addExtension( extensionName, pageable );
+	}
+
+	protected Pageable translatePageable( Pageable pageable, EntityPropertyRegistry propertyRegistry ) {
+		return EntityUtils.translateSort( pageable, propertyRegistry );
 	}
 
 	@Override

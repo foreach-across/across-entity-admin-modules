@@ -21,6 +21,10 @@ TODO
 ==== Customizing a list view
 TODO
 
+.Custom sorting
+Customizing the sort behaviour of a specific property can be done by setting a `Sort.Order.class` attribute on the `EntityPropertyDescriptor`.
+You can use this to sort on a different property instead, or to specify behaviour for null handling and case sensitivity.
+
 [[list-view-filter]]
 ==== Filtering a list view
 

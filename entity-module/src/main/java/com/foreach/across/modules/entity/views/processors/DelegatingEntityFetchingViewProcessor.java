@@ -70,7 +70,7 @@ public class DelegatingEntityFetchingViewProcessor extends AbstractEntityFetchin
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected Iterable<Object> fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
+	protected Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
 		if ( delegate == null ) {
 			throw new IllegalStateException( "No delegate function has been configured" );
 		}

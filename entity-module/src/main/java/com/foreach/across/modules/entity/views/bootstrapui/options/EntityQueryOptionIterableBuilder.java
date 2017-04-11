@@ -103,7 +103,6 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 		List<OptionFormElementBuilder> options = new ArrayList<>();
 
 		for ( Object entityOption : entityQueryExecutor.findAll( query ) ) {
-
 			OptionFormElementBuilder option = new OptionFormElementBuilder();
 
 			option.rawValue( entityOption );

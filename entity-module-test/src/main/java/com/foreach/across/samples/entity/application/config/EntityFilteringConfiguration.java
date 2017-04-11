@@ -70,6 +70,9 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.withType( User.class )
 		             .listView( lvb -> lvb.showProperties( "id", "name", "group", "registrationDate" )
+		                                  .properties(
+				                                  props -> props.property( "id" ).attribute( Sort.Order.class, new Sort.Order( Sort.Direction.DESC, "name" ) )
+		                                  )
 		                                  .showResultNumber( false )
 		                                  .viewProcessor( new EntityViewProcessorAdapter()
 		                                  {
@@ -77,7 +80,8 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 			                                  protected void registerWebResources( EntityViewRequest entityViewRequest,
 			                                                                       EntityView entityView,
 			                                                                       WebResourceRegistry webResourceRegistry ) {
-				                                  webResourceRegistry.add( WebResource.JAVASCRIPT_PAGE_END, "/static/entityModuleTest/js/test.js", WebResource.VIEWS );
+				                                  webResourceRegistry.add( WebResource.JAVASCRIPT_PAGE_END, "/static/entityModuleTest/js/test.js",
+				                                                           WebResource.VIEWS );
 			                                  }
 		                                  } )
 		             )

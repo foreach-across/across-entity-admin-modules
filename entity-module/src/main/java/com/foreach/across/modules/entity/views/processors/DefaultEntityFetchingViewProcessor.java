@@ -46,7 +46,7 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 	public static final int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE;
 
 	@Override
-	protected Iterable<Object> fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
+	protected Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 
 		if ( entityViewContext.isForAssociation() ) {

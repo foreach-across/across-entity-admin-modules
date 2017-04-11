@@ -16,9 +16,26 @@
 
 // expose global var
 var EntityModule = (function( $ ) {
+    /**
+     * Trigger this event with the page number as parameter.
+     */
     var EVENT_MOVE_TO_PAGE = 'emSortableTable:moveToPage';
+
+    /**
+     * Trigger this event with the new field name to sort on as parameter.
+     */
     var EVENT_SORT = 'emSortableTable:sort';
+
+    /**
+     * Subscribe to this event if you want to modify the parameters for loading the data.
+     */
     var EVENT_PREPARE_DATA = 'emSortableTable:prepareData';
+
+    /**
+     * Subscribe to this event if you want to modify the parameters for loading the data,
+     * or if you want to implement custom data loading and rendering.
+     * Prevent the default event handling in the latter case.
+     */
     var EVENT_LOAD_DATA = 'emSortableTable:loadData';
 
     var SortableTable = function( element ) {
@@ -29,7 +46,6 @@ var EntityModule = (function( $ ) {
 
         this.size = parseInt( table.attr( 'data-tbl-size' ) );
         this.totalPages = parseInt( table.attr( 'data-tbl-total-pages' ) );
-        this.sort = [];
 
         var currentSort = table.data( 'tbl-sort' );
         this.sort = currentSort != null ? currentSort : [];
@@ -94,7 +110,7 @@ var EntityModule = (function( $ ) {
 
         this.sortables.click( function(e) {
             e.preventDefault();
-            table.trigger( EVENT_SORT, $( this ).data( 'tbl-field' ) );
+            table.trigger( EVENT_SORT, $( this ).data( 'tbl-sort-property' ) );
         } );
 
         jQuery.event.special[EVENT_LOAD_DATA] = {
