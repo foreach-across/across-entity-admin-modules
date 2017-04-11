@@ -24,7 +24,6 @@ import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registrars.EntityRegistrar;
 import com.foreach.across.modules.entity.registry.*;
-import com.foreach.across.modules.entity.registry.properties.registrars.PersistenceMetadataPropertiesRegistrar;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import org.apache.commons.lang3.StringUtils;
@@ -34,13 +33,13 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -58,33 +57,17 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
-public class RepositoryEntityRegistrar implements EntityRegistrar
+@Component
+class RepositoryEntityRegistrar implements EntityRegistrar
 {
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityRegistrar.class );
 
-	@Autowired
 	private RepositoryEntityModelBuilder entityModelBuilder;
-
-	@Autowired
 	private RepositoryEntityPropertyRegistryBuilder propertyRegistryBuilder;
-
-	@Autowired
-	private RepositoryEntityViewsBuilder viewsBuilder;
-
-	@Autowired
 	private RepositoryEntityAssociationsBuilder associationsBuilder;
-
-	@Autowired
 	private MessageSource messageSource;
-
-	@Autowired
-	private PersistenceMetadataPropertiesRegistrar mappingMetaDataBuilder;
-
-	@EntityValidator
+	private MappingContextRegistry mappingContextRegistry;
 	private SmartValidator entityValidator;
-
-	@Autowired
-	private ConversionService mvcConversionService;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -93,7 +76,8 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 	                              AcrossContextBeanRegistry beanRegistry ) {
 		ApplicationContext applicationContext = moduleInfo.getApplicationContext();
 
-		mappingMetaDataBuilder.addMappingContexts( applicationContext.getBeansOfType( MappingContext.class ).values() );
+		applicationContext.getBeansOfType( MappingContext.class )
+		                  .forEach( ( name, bean ) -> mappingContextRegistry.addMappingContext( bean ) );
 
 		Map<String, RepositoryFactoryInformation> repositoryFactoryInformationMap
 				= applicationContext.getBeansOfType( RepositoryFactoryInformation.class );
@@ -141,7 +125,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 			associationsBuilder.buildAssociations( entityRegistry, entityConfiguration );
 		}
 
-		LOG.info( "Registered {} entities from module {}", registered.size(), moduleInfo.getName() );
+		LOG.debug( "Registered {} entities from module {}", registered.size(), moduleInfo.getName() );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -173,8 +157,6 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 			entityModelBuilder.buildEntityModel( entityConfiguration );
 
 			registerEntityQueryExecutor( entityConfiguration );
-
-			viewsBuilder.buildViews( entityConfiguration );
 
 			entityRegistry.register( entityConfiguration );
 
@@ -280,5 +262,35 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 		}
 
 		return name;
+	}
+
+	@Autowired
+	public void setEntityModelBuilder( RepositoryEntityModelBuilder entityModelBuilder ) {
+		this.entityModelBuilder = entityModelBuilder;
+	}
+
+	@Autowired
+	public void setPropertyRegistryBuilder( RepositoryEntityPropertyRegistryBuilder propertyRegistryBuilder ) {
+		this.propertyRegistryBuilder = propertyRegistryBuilder;
+	}
+
+	@Autowired
+	public void setAssociationsBuilder( RepositoryEntityAssociationsBuilder associationsBuilder ) {
+		this.associationsBuilder = associationsBuilder;
+	}
+
+	@Autowired
+	public void setMessageSource( MessageSource messageSource ) {
+		this.messageSource = messageSource;
+	}
+
+	@Autowired
+	public void setMappingContextRegistry( MappingContextRegistry mappingContextRegistry ) {
+		this.mappingContextRegistry = mappingContextRegistry;
+	}
+
+	@EntityValidator
+	public void setEntityValidator( SmartValidator entityValidator ) {
+		this.entityValidator = entityValidator;
 	}
 }

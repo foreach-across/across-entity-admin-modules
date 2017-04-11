@@ -18,12 +18,13 @@ package com.foreach.across.modules.entity.registrars.repository;
 import com.foreach.across.modules.entity.registrars.repository.associations.EntityAssociationBuilder;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mapping.Association;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.mapping.SimpleAssociationHandler;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -34,10 +35,12 @@ import java.util.Collection;
  *
  * @author Arne Vandamme
  */
-public class RepositoryEntityAssociationsBuilder
+@Component
+@RequiredArgsConstructor
+class RepositoryEntityAssociationsBuilder
 {
-	@Autowired
-	private Collection<EntityAssociationBuilder> entityAssociationBuilders;
+	private final Collection<EntityAssociationBuilder> entityAssociationBuilders;
+	private final MappingContextRegistry mappingContextRegistry;
 
 	public <T> void buildAssociations( final MutableEntityRegistry entityRegistry,
 	                                   final MutableEntityConfiguration entityConfiguration ) {
@@ -46,33 +49,40 @@ public class RepositoryEntityAssociationsBuilder
 
 		if ( repositoryFactoryInformation != null ) {
 			final PersistentEntity persistentEntity = repositoryFactoryInformation.getPersistentEntity();
+			handleAssociations( entityRegistry, entityConfiguration, persistentEntity, "" );
+		}
+	}
 
-			persistentEntity.doWithAssociations(
-					new SimpleAssociationHandler()
-					{
-						@Override
-						public void doWithAssociation( Association<? extends PersistentProperty<?>> association ) {
-							PersistentProperty property = association.getInverse();
+	private void handleAssociations(
+			MutableEntityRegistry entityRegistry, MutableEntityConfiguration entityConfiguration, PersistentEntity persistentEntity, String prefix ) {
+		persistentEntity.doWithAssociations(
+				(SimpleAssociationHandler) association -> {
+					PersistentProperty property = association.getInverse();
 
-							if ( property.isAnnotationPresent( Embedded.class )
-									|| property.isAnnotationPresent( EmbeddedId.class ) ) {
-								// todo: implement embedded entity associations, as separate EntityAssociationBuilder ?
-							}
-							else {
-								for ( EntityAssociationBuilder builder : entityAssociationBuilders ) {
-									if ( builder.supports( property ) ) {
-										builder.buildAssociation(
-												entityRegistry,
-												entityConfiguration,
-												property
-										);
-									}
-								}
+					if ( property.isAnnotationPresent( Embedded.class ) || property.isAnnotationPresent( EmbeddedId.class ) ) {
+						// For embedded entities - handle the associations of the embedded entity as well
+						if ( property.isEntity() ) {
+							mappingContextRegistry
+									.getPersistentEntity( property.getActualType() )
+									.ifPresent(
+											entity -> handleAssociations( entityRegistry, entityConfiguration, entity, prefix + property.getName() + "." )
+									);
+						}
+					}
+					else {
+						for ( EntityAssociationBuilder builder : entityAssociationBuilders ) {
+							if ( builder.supports( property ) ) {
+								builder.buildAssociation(
+										entityRegistry,
+										entityConfiguration,
+										property,
+										prefix
+								);
 							}
 						}
 					}
-			);
-		}
+				}
+		);
 	}
 
 }

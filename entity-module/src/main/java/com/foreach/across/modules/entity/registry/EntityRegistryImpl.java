@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registry;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -29,6 +30,9 @@ import java.util.*;
  * Contains the registered entity definitions that are manageable.
  * Every registered {@link com.foreach.across.modules.entity.registry.MutableEntityConfiguration} must have
  * a unique name ({@link EntityConfiguration#getName()}) and entity type ({@link EntityConfiguration#getEntityType()}).
+ * <p/>
+ * WARNING: Although in most cases not an actual issue, EntityRegistry currently does not support registering multiple
+ * classes with the same name from different class loaders.
  */
 @Service
 public class EntityRegistryImpl implements MutableEntityRegistry
@@ -118,6 +122,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 		return registered;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> EntityConfiguration<T> getEntityConfiguration( T entity ) {
 		return entity != null ? getEntityConfiguration( (Class<T>) ClassUtils.getUserClass( entity ) ) : null;
@@ -127,7 +132,8 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 	@SuppressWarnings("unchecked")
 	public <T> MutableEntityConfiguration<T> getEntityConfiguration( Class<T> entityType ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
-			if ( configuration.getEntityType().equals( entityType ) ) {
+			// Consider 2 classes the same if they have the same name - workaround some issues with spring boot devtools classloader
+			if ( configuration.getEntityType().getName().equals( entityType.getName() ) ) {
 				return (MutableEntityConfiguration<T>) configuration;
 			}
 		}

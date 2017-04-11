@@ -40,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.format.annotation.NumberFormat;
+import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.util.Currency;
@@ -49,19 +50,15 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author Arne Vandamme
  */
+@Component
 public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<ViewElementBuilder>
 {
-	@Autowired
-	private BootstrapUiFactory bootstrapUi;
-
-	@Autowired
-	private EntityViewElementBuilderService viewElementBuilderService;
-
-	@Autowired
-	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
-
 	private final ControlBuilderFactory controlBuilderFactory = new ControlBuilderFactory();
 	private final ValueBuilderFactory valueBuilderFactory = new ValueBuilderFactory();
+
+	private BootstrapUiFactory bootstrapUi;
+	private EntityViewElementBuilderService viewElementBuilderService;
+	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
 
 	private boolean defaultForceWhitespaceAroundSign;
 
@@ -88,6 +85,21 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
+	}
+
+	@Autowired
+	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
+	}
+
+	@Autowired
+	public void setViewElementBuilderService( EntityViewElementBuilderService viewElementBuilderService ) {
+		this.viewElementBuilderService = viewElementBuilderService;
+	}
+
+	@Autowired
+	public void setBuilderFactoryHelpers( EntityViewElementBuilderFactoryHelper builderFactoryHelpers ) {
+		this.builderFactoryHelpers = builderFactoryHelpers;
 	}
 
 	/**

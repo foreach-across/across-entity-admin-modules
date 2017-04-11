@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import java.util.Comparator;
+import java.util.function.Predicate;
 
 /**
  * @author Arne Vandamme
@@ -38,5 +39,5 @@ public interface MutableEntityPropertyRegistry extends EntityPropertyRegistry
 
 	void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder );
 
-	void setDefaultFilter( EntityPropertyFilter filter );
+	void setDefaultFilter( Predicate<EntityPropertyDescriptor> filter );
 }

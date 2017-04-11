@@ -48,7 +48,6 @@ public class TestEntityPropertySelectorExecutor
 		productRegistry = mock( MutableEntityPropertyRegistry.class );
 
 		executor = new EntityPropertySelectorExecutor( propertyRegistry, registryProvider );
-		selector = new EntityPropertySelector();
 
 		result = null;
 
@@ -75,13 +74,14 @@ public class TestEntityPropertySelectorExecutor
 
 	@Test
 	public void emptyResults() {
+		selector = EntityPropertySelector.of();
 		select();
 		assertTrue( result.isEmpty() );
 	}
 
 	@Test
 	public void simpleProperties() {
-		selector.configure( "id", "displayName" );
+		selector = EntityPropertySelector.of( "id", "displayName" );
 		select();
 
 		assertResult( "id", "displayName" );
@@ -89,7 +89,7 @@ public class TestEntityPropertySelectorExecutor
 
 	@Test
 	public void duplicateSimpleProperties() {
-		selector.configure( "id", "displayName", "id" );
+		selector = EntityPropertySelector.of( "id", "displayName", "id" );
 		select();
 
 		assertResult( "id", "displayName" );
@@ -97,7 +97,7 @@ public class TestEntityPropertySelectorExecutor
 
 	@Test
 	public void simpleExclude() {
-		selector.configure( "id", "~displayName" );
+		selector = EntityPropertySelector.of( "id", "~displayName" );
 		select();
 
 		assertResult( "id" );
@@ -107,7 +107,7 @@ public class TestEntityPropertySelectorExecutor
 	public void allWithDefaultFilter() {
 		when( propertyRegistry.getProperties() ).thenReturn( Arrays.asList( displayName, name ) );
 
-		selector.configure( "*" );
+		selector = EntityPropertySelector.of( "*" );
 		select();
 
 		assertResult( "displayName", "name" );
@@ -117,7 +117,7 @@ public class TestEntityPropertySelectorExecutor
 	public void allWithAdditionalAndExclude() {
 		when( propertyRegistry.getProperties() ).thenReturn( Arrays.asList( displayName, name ) );
 
-		selector.configure( "*", "id", "name", "~displayName" );
+		selector = EntityPropertySelector.of( "*", "id", "name", "~displayName" );
 		select();
 
 		assertResult( "name", "id" );
@@ -127,7 +127,7 @@ public class TestEntityPropertySelectorExecutor
 	public void allRegistered() {
 		when( propertyRegistry.getRegisteredDescriptors() ).thenReturn( Arrays.asList( id, displayName, name ) );
 
-		selector.configure( "**" );
+		selector = EntityPropertySelector.of( "**" );
 		select();
 
 		assertResult( "id", "displayName", "name" );
@@ -137,7 +137,7 @@ public class TestEntityPropertySelectorExecutor
 	public void allRegisteredWithAdditionalAndExclude() {
 		when( propertyRegistry.getRegisteredDescriptors() ).thenReturn( Arrays.asList( id, displayName, name ) );
 
-		selector.configure( "product.title", "**", "~id" );
+		selector = EntityPropertySelector.of( "product.title", "**", "~id" );
 		select();
 
 		assertResult( "product.title", "displayName", "name" );
@@ -145,13 +145,13 @@ public class TestEntityPropertySelectorExecutor
 
 	@Test
 	public void allFromNested() {
-		EntityPropertySelector subSelector = new EntityPropertySelector( "*" );
+		EntityPropertySelector subSelector = EntityPropertySelector.all();
 		List<EntityPropertyDescriptor> descriptors
 				= Arrays.asList( nestedProperty( "id" ), nestedProperty( "title" ), nestedProperty( "date" ) );
 
 		when( productRegistry.select( subSelector ) ).thenReturn( descriptors );
 
-		selector.configure( "id", "product.*", "~product.date" );
+		selector = EntityPropertySelector.of( "id", "product.*", "~product.date" );
 		select();
 
 		assertResult( "id", "product.id", "product.title" );
@@ -166,13 +166,13 @@ public class TestEntityPropertySelectorExecutor
 
 	@Test
 	public void registeredFromNested() {
-		EntityPropertySelector subSelector = new EntityPropertySelector( "**" );
+		EntityPropertySelector subSelector = EntityPropertySelector.of( "**" );
 		List<EntityPropertyDescriptor> descriptors
 				= Arrays.asList( nestedProperty( "id" ), nestedProperty( "title" ), nestedProperty( "date" ) );
 
 		when( productRegistry.select( subSelector ) ).thenReturn( descriptors );
 
-		selector.configure( "id", "product.**", "~product.date" );
+		selector = EntityPropertySelector.of( "id", "product.**", "~product.date" );
 		select();
 
 		assertResult( "id", "product.id", "product.title" );
@@ -182,10 +182,11 @@ public class TestEntityPropertySelectorExecutor
 	public void allRegisteredWithAdditionalFilter() {
 		when( propertyRegistry.getRegisteredDescriptors() ).thenReturn( Arrays.asList( id, displayName, name ) );
 
-		EntityPropertyFilter filter = EntityPropertyFilters.exclude( "displayName" );
+		selector = EntityPropertySelector.builder()
+		                                 .predicate( entityPropertyDescriptor -> !"displayName".equals( entityPropertyDescriptor.getName() ) )
+		                                 .properties( "product.title", "**", "~id" )
+		                                 .build();
 
-		selector.setFilter( filter );
-		selector.configure( "product.title", "**", "~id" );
 		select();
 
 		assertResult( "product.title", "name" );

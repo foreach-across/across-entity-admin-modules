@@ -79,7 +79,7 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 
 	@Test
 	public void defaultOrderIsAccordingToDeclarationIfNotSpecified() {
-		List<String> propertyNames = propertyRegistry.getProperties( EntityPropertyFilters.NOOP )
+		List<String> propertyNames = propertyRegistry.getProperties( entityPropertyDescriptor -> true )
 		                                             .stream()
 		                                             .map( EntityPropertyDescriptor::getName )
 		                                             .collect( Collectors.toList() );

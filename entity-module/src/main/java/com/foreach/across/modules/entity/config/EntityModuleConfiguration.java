@@ -26,11 +26,7 @@ import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
 import com.foreach.across.modules.entity.query.support.EQStringToDateConverter;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.views.EntityDeleteViewFactory;
-import com.foreach.across.modules.entity.views.EntityFormViewFactory;
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewViewFactory;
-import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.EntityView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +35,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
-@ComponentScan(basePackageClasses = EntityRegistry.class)
+@ComponentScan(basePackageClasses = { EntityRegistry.class, ModuleEntityRegistration.class, EntityView.class })
 public class EntityModuleConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityModuleConfiguration.class );
@@ -77,47 +72,12 @@ public class EntityModuleConfiguration
 	/**
 	 * Ensures modules can configure entities through either EntityRegistrar or EntityConfigurer beans.
 	 */
-	@Bean
-	public ModuleEntityRegistration moduleEntityRegistration() {
-		return new ModuleEntityRegistration();
-	}
-
+//	@Bean
+//	public ModuleEntityRegistration moduleEntityRegistration() {
+//		return new ModuleEntityRegistration();
+//	}
 	@Bean
 	public MessageSource messageSource() {
 		return new AcrossModuleMessageSource();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public EntityViewViewFactory entityViewViewFactory() {
-		return new EntityViewViewFactory();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public EntityListViewFactory entityListViewFactory() {
-		return new EntityListViewFactory();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public EntityFormViewFactory entityFormViewFactory() {
-		return new EntityFormViewFactory();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public EntityDeleteViewFactory entityDeleteViewFactory() {
-		return new EntityDeleteViewFactory();
-	}
-
-	@Bean
-	@Exposed
-	public EntityQueryFilterProcessor entityQueryFilterProcessor() {
-		return new EntityQueryFilterProcessor();
 	}
 }

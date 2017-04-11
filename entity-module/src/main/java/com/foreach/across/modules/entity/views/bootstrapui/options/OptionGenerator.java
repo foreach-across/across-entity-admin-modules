@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
+import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>Wrapper that generates the children of an {@link OptionsFormElementBuilder}.
@@ -43,8 +45,10 @@ import java.util.List;
 public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 {
 	private OptionIterableBuilder options;
-	private boolean sorted;
+	private boolean sorted = false;
 	private OptionFormElementBuilder emptyOption;
+	private ValueFetcher<Object> valueFetcher;
+	private boolean selfOptionIncluded = false;
 
 	public OptionGenerator() {
 		emptyOption = new OptionFormElementBuilder().label( "" ).value( "" );
@@ -71,9 +75,29 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		this.emptyOption = emptyOption;
 	}
 
+	/**
+	 * @param valueFetcher to be used to auto-select values
+	 */
+	@SuppressWarnings("unchecked")
+	public void setValueFetcher( ValueFetcher valueFetcher ) {
+		this.valueFetcher = valueFetcher;
+	}
+
+	/**
+	 * In case of options that are the same type as the entity being built, should the entity
+	 * itself be provided as an option.  Default value is {@code false}.
+	 *
+	 * @param selfOptionIncluded True when entity itself should be included.
+	 */
+	public void setSelfOptionIncluded( boolean selfOptionIncluded ) {
+		this.selfOptionIncluded = selfOptionIncluded;
+	}
+
 	@Override
 	public ContainerViewElement build( ViewElementBuilderContext builderContext ) {
 		ContainerViewElement container = new ContainerViewElement();
+		Object entity = EntityViewElementUtils.currentEntity( builderContext );
+		Collection selectedValues = valueFetcher != null ? retrieveSelected( entity ) : null;
 
 		OptionsFormElementBuilder optionsBuilder = builderContext.getAttribute( OptionsFormElementBuilder.class );
 		Assert.notNull( optionsBuilder );
@@ -83,7 +107,10 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 
 		if ( options != null ) {
 			for ( OptionFormElementBuilder option : options.buildOptions( builderContext ) ) {
-				actual.add( option );
+				selectOption( option, selectedValues );
+				if ( isAllowed( option, entity ) ) {
+					actual.add( option );
+				}
 				hasSelected |= option.isSelected();
 			}
 
@@ -107,4 +134,33 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		return container;
 	}
 
+	private boolean isAllowed( OptionFormElementBuilder option, Object self ) {
+		return selfOptionIncluded || self == null || !Objects.equals( self, option.getRawValue() );
+	}
+
+	private void selectOption( OptionFormElementBuilder option, Collection selectedValues ) {
+		if ( selectedValues != null ) {
+			option.selected( selectedValues.contains( option.getRawValue() ) );
+		}
+	}
+
+	private Collection retrieveSelected( Object entity ) {
+		if ( entity != null && valueFetcher != null ) {
+			Object selected = valueFetcher.getValue( entity );
+
+			if ( selected != null ) {
+				if ( selected instanceof Collection ) {
+					return (Collection) selected;
+				}
+				else if ( selected.getClass().isArray() ) {
+					return CollectionUtils.arrayToList( selected );
+				}
+				else {
+					return Collections.singleton( selected );
+				}
+			}
+		}
+
+		return Collections.emptyList();
+	}
 }

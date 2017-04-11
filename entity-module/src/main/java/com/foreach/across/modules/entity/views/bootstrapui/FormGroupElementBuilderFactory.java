@@ -29,18 +29,17 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Arne Vandamme
  */
+@Component
 public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFactorySupport<FormGroupElementBuilder>
 {
 	public static final String NAME_PREFIX = "formGroup-";
 
-	@Autowired
 	private EntityViewElementBuilderService entityViewElementBuilderService;
-
-	@Autowired
 	private BootstrapUiFactory bootstrapUi;
 
 	private boolean renderHelpBlockBeforeControl = true;
@@ -111,6 +110,16 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		}
 
 		return formGroup;
+	}
+
+	@Autowired
+	public void setEntityViewElementBuilderService( EntityViewElementBuilderService entityViewElementBuilderService ) {
+		this.entityViewElementBuilderService = entityViewElementBuilderService;
+	}
+
+	@Autowired
+	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
 	}
 
 	/**

@@ -53,7 +53,7 @@ public interface EntityModel<T, U extends Serializable> extends EntityInformatio
 	 * Optionally a number of arguments can be passed, however for basic entity views the model
 	 * should support a new instance without any arguments.
 	 *
-	 * @param args optional list of argumens (eg. constructor parameters)
+	 * @param args optional list of arguments (eg. constructor parameters)
 	 * @return newly created entity
 	 */
 	T createNew( Object... args );

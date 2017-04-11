@@ -23,17 +23,19 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyValueCheckboxPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.TextCodeResolverPostProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 /**
  * Builds a {@link OptionFormElementBuilder} in the form of a checkbox for boolean attributes.
  *
  * @author Arne Vandamme
  */
+@Component
+@RequiredArgsConstructor
 public class CheckboxFormElementBuilderFactory implements EntityViewElementBuilderFactory<OptionFormElementBuilder>
 {
-	@Autowired
-	private BootstrapUiFactory bootstrapUi;
+	private final BootstrapUiFactory bootstrapUi;
 
 	@Override
 	public boolean supports( String viewElementType ) {

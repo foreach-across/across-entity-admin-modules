@@ -16,31 +16,32 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.ColumnViewElement;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
+import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
-import com.foreach.across.modules.entity.controllers.EntityViewCommand;
-import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.views.EntityListView;
-import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.web.WebViewCreationContext;
-import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.WebDataBinder;
 
+import java.util.Collections;
 import java.util.Optional;
 
+import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_ELEMENT;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
-import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.remove;
 
 /**
  * Processor and page executor for {@link com.foreach.across.modules.entity.query.EntityQuery} based approach.
@@ -50,35 +51,75 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
+@Component
+@Exposed
+@Scope("prototype")
+public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProcessor
 {
 	private static final String PARAM = "eqFilter";
 
 	private BootstrapUiFactory bootstrapUi;
 
-	@Autowired
-	public void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUi = bootstrapUiFactory;
+	@Override
+	public void initializeCommandObject( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
+	                                     com.foreach.across.modules.entity.views.request.EntityViewCommand command,
+	                                     WebDataBinder dataBinder ) {
+		command.addExtension( PARAM, "" );
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Iterable fetchItems( EntityViewRequest entityViewRequest,
+	                               EntityView entityView,
+	                               Pageable pageable ) {
+		EntityViewContext viewContext = entityViewRequest.getEntityViewContext();
+		String filter = entityViewRequest.getCommand().getExtension( PARAM, String.class );
+
+		try {
+			EntityQueryParser parser = viewContext.getEntityConfiguration().getAttribute( EntityQueryParser.class );
+			EntityQuery query = parser.parse( filter );
+			EntityQueryExecutor executor = viewContext.getEntityConfiguration().getAttribute( EntityQueryExecutor.class );
+
+			if ( viewContext.isForAssociation() ) {
+				EntityAssociation association = viewContext.getEntityAssociation();
+				AssociatedEntityQueryExecutor associatedExecutor = new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), executor );
+				return associatedExecutor.findAll( viewContext.getParentContext().getEntity( Object.class ), query, pageable );
+			}
+			else {
+				return executor.findAll( query, pageable );
+			}
+		}
+		catch ( EntityQueryParsingException pe ) {
+			String message = pe.getMessage();
+
+			if ( pe.hasErrorExpressionPosition() ) {
+				message += " ; position " + pe.getErrorExpressionPosition();
+			}
+
+			entityView.addAttribute( "filterError", message );
+
+		}
+		catch ( Exception e ) {
+			entityView.addAttribute( "filterError", ExceptionUtils.getRootCauseMessage( e ) );
+		}
+
+		// Explicitly return null to avoid "0 users found" along with an exception
+		return null;
 	}
 
 	@Override
-	protected void registerCommandExtensions( EntityViewCommand command ) {
-		command.addExtensions( PARAM, "" );
-	}
+	public void postRender( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest, EntityView entityView ) {
+		String filter = entityViewRequest.getCommand().getExtension( PARAM, String.class );
 
-	@Override
-	protected void extendViewModel( EntityListView view ) {
-		EntityViewRequest request = view.getAttribute( "viewRequest" );
-		String filter = (String) request.getExtensions().get( PARAM );
-
-		ContainerViewElement elements = view.getViewElements();
+		ContainerViewElement container = entityView.getAttribute( ATTRIBUTE_CONTAINER_ELEMENT, ContainerViewElement.class );
+		ViewElementBuilderContext builderContext = EntityViewProcessorAdapter.retrieveBuilderContext();
 
 		// move the original actions
-		Optional<ContainerViewElement> header = find( elements, "entityForm-header", ContainerViewElement.class );
+		Optional<ContainerViewElement> header = find( container, ListFormViewProcessor.DEFAULT_FORM_NAME + "-header", ContainerViewElement.class );
 
 		ColumnViewElementBuilder filterForm
-				= bootstrapUi.column()
-				             .css( "col-md-10" )
+				= bootstrapUi.column( Grid.Device.MD.width( 10 ) )
+				             .css( "list-header" )
 				             .add(
 						             bootstrapUi
 								             .inputGroup(
@@ -95,71 +136,36 @@ public class EntityQueryFilterProcessor extends WebViewProcessorAdapter<EntityLi
 
 		header.ifPresent(
 				h -> {
-					NodeViewElementBuilder row = bootstrapUi.row()
-					                                        .add( filterForm );
 
-					Optional<ViewElement> actions = remove( h, "entityForm-header-actions" );
-					actions.ifPresent( a -> {
-						( (NodeViewElement) a ).addCssClass( "col-md-2", "text-right" );
-						row.add( a );
-					} );
+					find( h, ListFormViewProcessor.DEFAULT_FORM_NAME + "-actions", ColumnViewElement.class )
+							.ifPresent( col -> {
+								col.setLayouts( Collections.singleton( Grid.Device.MD.width( 2 ) ) );
+								col.addCssClass( "text-right" );
+							} );
 
-					h.addChild( row.build() );
+					h.addFirstChild( filterForm.build( builderContext ) );
 
-					String errorMessage = view.getAttribute( "filterError" );
+					String errorMessage = entityView.getAttribute( "filterError", String.class );
 
 					if ( !StringUtils.isBlank( errorMessage ) ) {
 						h.addChild(
-								bootstrapUi.div()
-								           .css( "alert", "alert-danger" )
-								           .add( bootstrapUi.text( errorMessage ) )
-								           .build()
+								bootstrapUi.column( Grid.Device.MD.width( Grid.Width.FULL ) )
+								           .css( "list-header" )
+								           .add(
+										           bootstrapUi
+												           .alert()
+												           .danger()
+												           .add( bootstrapUi.text( errorMessage ) )
+								           )
+								           .build( builderContext )
 						);
 					}
 				}
 		);
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public Page fetchPage( WebViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
-		EntityViewRequest request = model.getAttribute( "viewRequest" );
-		String filter = (String) request.getExtensions().get( PARAM );
-
-		try {
-			EntityQueryParser parser = viewCreationContext.getEntityConfiguration().getAttribute(
-					EntityQueryParser.class );
-			EntityQuery query = parser.parse( filter );
-			EntityQueryExecutor executor = viewCreationContext.getEntityConfiguration().getAttribute(
-					EntityQueryExecutor.class );
-
-			if ( viewCreationContext.isForAssociation() ) {
-				EntityAssociation association = viewCreationContext.getEntityAssociation();
-				AssociatedEntityQueryExecutor associatedExecutor
-						= new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), executor );
-
-				return associatedExecutor.findAll( model.getParentEntity(), query, pageable );
-			}
-			else {
-				return executor.findAll( query, pageable );
-			}
-		}
-		catch ( EntityQueryParsingException pe ) {
-			String message = pe.getMessage();
-
-			if ( pe.hasErrorExpressionPosition() ) {
-				message += " ; position " + pe.getErrorExpressionPosition();
-			}
-
-			model.addAttribute( "filterError", message );
-
-		}
-		catch ( Exception e ) {
-			model.addAttribute( "filterError", ExceptionUtils.getRootCauseMessage( e ) );
-		}
-
-		// Explicitly return null to avoid "0 users found" along with an exception
-		return null;
+	@Autowired
+	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
+		this.bootstrapUi = bootstrapUiFactory;
 	}
-
 }

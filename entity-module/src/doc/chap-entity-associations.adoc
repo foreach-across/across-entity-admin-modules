@@ -1,3 +1,5 @@
+TODO: custom EntityFactory
+
 == Entity associations
 
 The `EntityModule` attempts to automatically detect related entities and creates associations mainly to facilitate UI generation.

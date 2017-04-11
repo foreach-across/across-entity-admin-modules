@@ -26,8 +26,9 @@ import com.foreach.across.core.events.AcrossModuleBootstrappedEvent;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
@@ -46,16 +47,13 @@ import java.util.Collection;
  * @see com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder
  * @see com.foreach.across.modules.entity.registrars.EntityRegistrar
  */
+@Component
+@RequiredArgsConstructor
 public class ModuleEntityRegistration
 {
-	@Autowired
-	private AcrossContextInfo contextInfo;
-
-	@Autowired
-	private MutableEntityRegistry entityRegistry;
-
-	@Autowired
-	private AutowireCapableBeanFactory beanFactory;
+	private final AcrossContextInfo contextInfo;
+	private final MutableEntityRegistry entityRegistry;
+	private final AutowireCapableBeanFactory beanFactory;
 
 	@SuppressWarnings("all")
 	@RefreshableCollection(includeModuleInternals = true, incremental = true)

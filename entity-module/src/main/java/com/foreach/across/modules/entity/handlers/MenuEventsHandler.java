@@ -40,13 +40,12 @@ public class MenuEventsHandler
 {
 	private static final Logger LOG = LoggerFactory.getLogger( MenuEventsHandler.class );
 
-	@Autowired
 	private EntityRegistry entityRegistry;
 
 	@Event
 	public void adminMenu( AdminMenuEvent adminMenuEvent ) {
 		PathBasedMenuBuilder builder = adminMenuEvent.builder();
-		builder.group( "/entities", "Entity management" );
+		builder.item( "/entities", "Entity management" );
 
 		for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions();
@@ -146,5 +145,10 @@ public class MenuEventsHandler
 			              messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
 		}
+	}
+
+	@Autowired
+	void setEntityRegistry( EntityRegistry entityRegistry ) {
+		this.entityRegistry = entityRegistry;
 	}
 }

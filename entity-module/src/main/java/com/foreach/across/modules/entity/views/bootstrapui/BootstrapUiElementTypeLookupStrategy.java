@@ -22,19 +22,24 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Arne Vandamme
  */
+@Component
+@RequiredArgsConstructor
 public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLookupStrategy
 {
-	@Autowired
 	private EntityRegistry entityRegistry;
 
 	@Override
@@ -99,6 +104,15 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 		if ( descriptor.isWritable() ) {
 			if ( propertyType != null ) {
+				TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+
+				if ( typeDescriptor != null
+						&& typeDescriptor.isCollection()
+						&& Set.class.isAssignableFrom( typeDescriptor.getObjectType() )
+						&& String.class.equals( typeDescriptor.getElementTypeDescriptor().getObjectType() ) ) {
+					return MultiValueElementBuilderFactory.ELEMENT_TYPE;
+				}
+
 				if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) ) {
 					return BootstrapUiElements.MULTI_CHECKBOX;
 				}
@@ -125,5 +139,10 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		}
 
 		return null;
+	}
+
+	@Autowired
+	void setEntityRegistry( EntityRegistry entityRegistry ) {
+		this.entityRegistry = entityRegistry;
 	}
 }

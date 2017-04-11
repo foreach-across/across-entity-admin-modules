@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -41,7 +42,7 @@ public class FormatValueTextPostProcessor<T extends ConfigurableTextViewElement>
 	@Override
 	protected String print( Object value, Locale locale ) {
 		if ( format instanceof MessageFormat ) {
-			// MessageFormat expects an arry
+			// MessageFormat expects an array
 			if ( !Array.class.isInstance( value ) ) {
 				return format.format( new Object[] { value } );
 			}

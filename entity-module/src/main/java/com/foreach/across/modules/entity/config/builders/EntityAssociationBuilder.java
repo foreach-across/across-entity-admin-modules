@@ -17,8 +17,7 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.EntityViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewFactoryProvider;
+import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -29,7 +28,7 @@ import org.springframework.util.Assert;
 import java.util.function.Consumer;
 
 /**
- * Builder for managing as specific {@link EntityAssociation} on a {@link EntityConfiguration}.
+ * Builder for managing a specific {@link EntityAssociation} on a {@link EntityConfiguration}.
  *
  * @author Arne Vandamme
  * @since 1.1.1
@@ -263,6 +262,26 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	}
 
 	@Override
+	public EntityAssociationBuilder listView() {
+		return (EntityAssociationBuilder) super.listView();
+	}
+
+	@Override
+	public EntityAssociationBuilder createFormView() {
+		return (EntityAssociationBuilder) super.createFormView();
+	}
+
+	@Override
+	public EntityAssociationBuilder updateFormView() {
+		return (EntityAssociationBuilder) super.updateFormView();
+	}
+
+	@Override
+	public EntityAssociationBuilder deleteFormView() {
+		return (EntityAssociationBuilder) super.deleteFormView();
+	}
+
+	@Override
 	public EntityAssociationBuilder attribute( String name, Object value ) {
 		return (EntityAssociationBuilder) super.attribute( name, value );
 	}
@@ -358,46 +377,17 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType ) {
 		if ( EntityListViewFactoryBuilder.class.isAssignableFrom( builderType ) ) {
-			return (U) new AssociationListViewFactoryBuilder( beanFactory );
+			return builderType.cast( new EntityListViewFactoryBuilder( beanFactory ) );
 		}
 
-		return (U) new AssociationViewFactoryBuilder( beanFactory );
+		return builderType.cast( new EntityViewFactoryBuilder( beanFactory ) );
 	}
 
-	/**
-	 * Inner class that delegates creation of a view factory to the {@link EntityViewFactoryProvider} using
-	 * the current entity being configured.
-	 */
-	private class AssociationViewFactoryBuilder extends EntityViewFactoryBuilder
-	{
-		AssociationViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
-			super( beanFactory );
-		}
-
-		@Override
-		protected EntityViewFactory createNewViewFactory( Class<? extends EntityViewFactory> viewFactoryType ) {
-			EntityViewFactoryProvider viewFactoryProvider = beanFactory.getBean( EntityViewFactoryProvider.class );
-			return viewFactoryProvider.create( associationBeingBuilt.getTargetEntityConfiguration(), viewFactoryType );
-		}
-	}
-
-	/**
-	 * Inner class that delegates creation of a view factory to the {@link EntityViewFactoryProvider} using
-	 * the current entity being configured.
-	 */
-	private class AssociationListViewFactoryBuilder extends EntityListViewFactoryBuilder
-	{
-		AssociationListViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
-			super( beanFactory );
-		}
-
-		@Override
-		protected EntityViewFactory createNewViewFactory( Class<? extends EntityViewFactory> viewFactoryType ) {
-			EntityViewFactoryProvider viewFactoryProvider = beanFactory.getBean( EntityViewFactoryProvider.class );
-			return viewFactoryProvider.create( associationBeingBuilt.getTargetEntityConfiguration(), viewFactoryType );
-		}
+	@Override
+	protected <U extends EntityViewFactoryBuilder> void initializeViewFactoryBuilder( String viewName, String templateName, U builder ) {
+		beanFactory.getBean( EntityViewFactoryBuilderInitializer.class )
+		           .initialize( viewName, templateName, associationBeingBuilt, builder );
 	}
 }

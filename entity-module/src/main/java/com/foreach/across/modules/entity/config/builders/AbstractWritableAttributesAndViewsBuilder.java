@@ -17,7 +17,9 @@
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.registry.ConfigurableEntityViewRegistry;
-import com.foreach.across.modules.entity.views.*;
+import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.EntityViewFactory;
 import org.springframework.util.Assert;
 
 import java.util.ArrayDeque;
@@ -44,6 +46,16 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 			= new LinkedHashMap<>();
 
 	/**
+	 * Configure a default list view builder for the entity being configured.
+	 * Does not customize the builder but ensures the view gets created using the default builder.
+	 *
+	 * @return current builder
+	 */
+	public AbstractWritableAttributesAndViewsBuilder listView() {
+		return listView( triggerBuild() );
+	}
+
+	/**
 	 * Configure the default list view builder for the entity being configured.
 	 * A default list view is usually available.
 	 *
@@ -51,7 +63,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder listView( Consumer<EntityListViewFactoryBuilder> consumer ) {
-		return listView( EntityListView.VIEW_NAME, consumer );
+		return listView( EntityView.LIST_VIEW_NAME, consumer );
 	}
 
 	/**
@@ -83,6 +95,16 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	}
 
 	/**
+	 * Configure a default create form view builder for the entity being configured.
+	 * Does not customize the builder but ensures the view gets created using the default builder.
+	 *
+	 * @return current builder
+	 */
+	public AbstractWritableAttributesAndViewsBuilder createFormView() {
+		return createFormView( triggerBuild() );
+	}
+
+	/**
 	 * Configure the create form view builder for the entity being configured.
 	 * A default create form view is usually available.
 	 *
@@ -90,7 +112,17 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder createFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		return formView( EntityFormView.CREATE_VIEW_NAME, consumer );
+		return formView( EntityView.CREATE_VIEW_NAME, consumer );
+	}
+
+	/**
+	 * Configure a default update form view builder for the entity being configured.
+	 * Does not customize the builder but ensures the view gets created using the default builder.
+	 *
+	 * @return current builder
+	 */
+	public AbstractWritableAttributesAndViewsBuilder updateFormView() {
+		return updateFormView( triggerBuild() );
 	}
 
 	/**
@@ -101,7 +133,17 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder updateFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		return formView( EntityFormView.UPDATE_VIEW_NAME, consumer );
+		return formView( EntityView.UPDATE_VIEW_NAME, consumer );
+	}
+
+	/**
+	 * Configure a default delete view builder for the entity being configured.
+	 * Does not customize the builder but ensures the view gets created using the default builder.
+	 *
+	 * @return current builder
+	 */
+	public AbstractWritableAttributesAndViewsBuilder deleteFormView() {
+		return deleteFormView( triggerBuild() );
 	}
 
 	/**
@@ -112,7 +154,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder deleteFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		deleteViewConsumers.computeIfAbsent( EntityFormView.DELETE_VIEW_NAME, k -> new ArrayDeque<>() ).add( consumer );
+		deleteViewConsumers.computeIfAbsent( EntityView.DELETE_VIEW_NAME, k -> new ArrayDeque<>() ).add( consumer );
 		return this;
 	}
 
@@ -145,18 +187,16 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	}
 
 	protected void applyViews( ConfigurableEntityViewRegistry viewRegistry ) {
-		registerViews( EntityListViewFactoryBuilder.class, EntityListViewFactory.class, listViewConsumers,
-		               viewRegistry );
-		registerViews( EntityViewFactoryBuilder.class, EntityFormViewFactory.class, formViewConsumers, viewRegistry );
-		registerViews( EntityViewFactoryBuilder.class, EntityDeleteViewFactory.class, deleteViewConsumers,
-		               viewRegistry );
-		registerViews( EntityViewFactoryBuilder.class, EntityViewViewFactory.class, customViewConsumers, viewRegistry );
+		registerViews( EntityListViewFactoryBuilder.class, EntityView.LIST_VIEW_NAME, listViewConsumers, viewRegistry );
+		registerViews( EntityViewFactoryBuilder.class, EntityView.UPDATE_VIEW_NAME, formViewConsumers, viewRegistry );
+		registerViews( EntityViewFactoryBuilder.class, EntityView.DELETE_VIEW_NAME, deleteViewConsumers, viewRegistry );
+		registerViews( EntityViewFactoryBuilder.class, EntityView.GENERIC_VIEW_NAME, customViewConsumers, viewRegistry );
 	}
 
 	@SuppressWarnings("unchecked")
 	private <U extends EntityViewFactoryBuilder, V extends EntityViewFactory> void registerViews(
 			Class<U> builderType,
-			Class<V> viewFactoryType,
+			String builderTemplateName,
 			Map<String, Collection<Consumer<U>>> consumers,
 			ConfigurableEntityViewRegistry viewRegistry
 	) {
@@ -171,7 +211,9 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 				builder.apply( viewFactory );
 			}
 			else {
-				builder.factoryType( viewFactoryType );
+				builder.factoryType( DefaultEntityViewFactory.class );
+				initializeViewFactoryBuilder( viewName, builderTemplateName, builder );
+
 				list.forEach( c -> c.accept( builder ) );
 				viewRegistry.registerView( viewName, builder.build() );
 			}
@@ -179,4 +221,11 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	}
 
 	protected abstract <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType );
+
+	protected abstract <U extends EntityViewFactoryBuilder> void initializeViewFactoryBuilder( String viewName, String templateName, U builder );
+
+	private static <U> Consumer<U> triggerBuild() {
+		return ( x ) -> {
+		};
+	}
 }

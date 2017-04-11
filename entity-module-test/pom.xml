@@ -29,6 +29,7 @@
 
 	<properties>
 		<sonar.skip>true</sonar.skip>
+		<cwb.version>1.1.0.RELEASE</cwb.version>
 	</properties>
 
 	<dependencies>
@@ -38,8 +39,13 @@
 			<version>2.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>entity-shared-test</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
@@ -55,7 +61,24 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.foreach.cwb</groupId>
+			<artifactId>cwb-core</artifactId>
+			<version>${cwb.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.foreach.cwb</groupId>
+			<artifactId>cwb-sahi</artifactId>
+			<version>${cwb.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

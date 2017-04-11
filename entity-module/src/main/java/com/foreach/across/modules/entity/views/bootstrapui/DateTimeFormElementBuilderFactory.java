@@ -39,6 +39,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PersistentProperty;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -52,19 +53,15 @@ import java.util.Map;
 /**
  * @author Arne Vandamme
  */
+@Component
 public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<ViewElementBuilder>
 {
-	@Autowired
-	private BootstrapUiFactory bootstrapUi;
-
-	@Autowired
-	private EntityViewElementBuilderService viewElementBuilderService;
-
-	@Autowired
-	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
-
 	private final ControlBuilderFactory controlBuilderFactory = new ControlBuilderFactory();
 	private final ValueBuilderFactory valueBuilderFactory = new ValueBuilderFactory();
+
+	private BootstrapUiFactory bootstrapUi;
+	private EntityViewElementBuilderService viewElementBuilderService;
+	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -80,6 +77,21 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 		}
 
 		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
+	}
+
+	@Autowired
+	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
+	}
+
+	@Autowired
+	public void setViewElementBuilderService( EntityViewElementBuilderService viewElementBuilderService ) {
+		this.viewElementBuilderService = viewElementBuilderService;
+	}
+
+	@Autowired
+	public void setBuilderFactoryHelpers( EntityViewElementBuilderFactoryHelper builderFactoryHelpers ) {
+		this.builderFactoryHelpers = builderFactoryHelpers;
 	}
 
 	/**

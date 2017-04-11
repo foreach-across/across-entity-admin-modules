@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
@@ -21,6 +22,8 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 /**
  * Interface for delegating building of {@link OptionFormElementBuilder} items until
  * a {@link ViewElementBuilderContext} is available.  Responsible for creating an {@link Iterable}.
+ * <p/>
+ * Implementations should set the the {@link OptionFormElementBuilder#rawValue(Object)} if they want auto-selection of options to work.
  *
  * @author Arne Vandamme
  * @see OptionGenerator

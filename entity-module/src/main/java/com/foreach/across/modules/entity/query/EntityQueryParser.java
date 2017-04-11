@@ -64,8 +64,8 @@ public class EntityQueryParser
 	/**
 	 * Convert a query string into a typed and validated {@link EntityQuery}.
 	 * The {@link #setMetadataProvider(EntityQueryMetadataProvider)}
-	 * value will be used for validating the query, and -when passing validation - query will be translated
-	 * by passing every separate expression to the {}
+	 * value will be used for validating the query, and - when passing validation - query will be translated
+	 * by the {@link EntityQueryTranslator}.
 	 * <p>
 	 * An exception will be thrown if the query cannot be converted.
 	 *

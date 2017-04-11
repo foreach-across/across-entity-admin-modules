@@ -17,10 +17,15 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.helpers.EntityViewElementBatch;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.entity.web.EntityViewModel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,19 +33,18 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
+ * Provides methods to creating helper beans for view element generation.
+ *
  * @author Arne Vandamme
+ * @since 2.0.0
  */
 @Service
+@RequiredArgsConstructor
 public class EntityViewElementBuilderHelper
 {
-	@Autowired
-	private EntityViewElementBuilderService builderService;
-
-	@Autowired
-	private EntityRegistry entityRegistry;
-
-	@Autowired
-	private BeanFactory beanFactory;
+	private final EntityViewElementBuilderService builderService;
+	private final EntityRegistry entityRegistry;
+	private final BeanFactory beanFactory;
 
 	@Autowired
 	public EntityViewElementBuilderHelper( BeanFactory beanFactory ) {
@@ -52,7 +56,7 @@ public class EntityViewElementBuilderHelper
 	/**
 	 * Create a new batch builder for a given entity.  Requires an {@link EntityConfiguration} to exist for that
 	 * entity type.  The default {@link com.foreach.across.modules.entity.support.EntityMessageCodeResolver} for
-	 * the configuration will be used.  The entity will be set as {@link EntityView#ATTRIBUTE_ENTITY} attribute.
+	 * the configuration will be used.  The entity will be set as {@link EntityViewModel#ENTITY} attribute.
 	 *
 	 * @param entity instance, should not be null
 	 * @return batch instance
@@ -98,6 +102,24 @@ public class EntityViewElementBuilderHelper
 		EntityConfiguration<V> entityConfiguration = entityRegistry.getEntityConfiguration( entityType );
 
 		return tableBuilder.entityConfiguration( entityConfiguration );
+	}
+
+	/**
+	 * Create a new {@link SortableTableBuilder} instance for a specific {@link EntityViewContext}.
+	 * The table builder will be initialized with the {@link EntityConfiguration}, {@link EntityPropertyRegistry} and {@link EntityMessages}
+	 * configured on the {@link EntityViewContext}.
+	 *
+	 * @param entityViewContext to use for initializing the table builder
+	 * @return table builders
+	 */
+	public SortableTableBuilder createSortableTableBuilder( EntityViewContext entityViewContext ) {
+		Assert.notNull( entityViewContext );
+
+		SortableTableBuilder tableBuilder = createSortableTableBuilder();
+		tableBuilder.entityConfiguration( entityViewContext.getEntityConfiguration() );
+		tableBuilder.propertyRegistry( entityViewContext.getPropertyRegistry() );
+		tableBuilder.pagingMessages( entityViewContext.getEntityMessages() );
+		return tableBuilder;
 	}
 
 	/**

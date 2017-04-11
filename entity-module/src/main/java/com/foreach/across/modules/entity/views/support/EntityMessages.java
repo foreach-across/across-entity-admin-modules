@@ -16,7 +16,9 @@
 package com.foreach.across.modules.entity.views.support;
 
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.bootstrapui.util.PagingMessages;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -24,7 +26,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Arne Vandamme
  */
-public class EntityMessages
+public class EntityMessages implements PagingMessages
 {
 	public static final String ACTION_CREATE = "actions.create";
 	public static final String ACTION_UPDATE = "actions.update";
@@ -36,7 +38,14 @@ public class EntityMessages
 	public static final String PAGE_TITLE_DELETE = "pageTitle.delete";
 	public static final String PAGE_TITLE_VIEW = "pageTitle.view";
 
-	protected final EntityMessageCodeResolver messageCodeResolver;
+	public static final String RESULTS_FOUND = "views.listView.resultsFound";
+	public static final String PAGER = "views.listView.pager";
+	public static final String PAGE = "views.listView.pager.page";
+	public static final String OF_PAGES = "views.listView.pager.ofPages";
+	public static final String NEXT_PAGE = "views.listView.pager.nextPage";
+	public static final String PREVIOUS_PAGE = "views.listView.pager.previousPage";
+
+	private final EntityMessageCodeResolver messageCodeResolver;
 
 	public EntityMessages( EntityMessageCodeResolver messageCodeResolver ) {
 		this.messageCodeResolver = messageCodeResolver;
@@ -72,6 +81,40 @@ public class EntityMessages
 
 	public String viewPageTitle( Object... arguments ) {
 		return withNameSingular( PAGE_TITLE_VIEW, arguments );
+	}
+
+	@Override
+	public String pagerText( Page currentPage, Object... args ) {
+		return messageWithFallback( PAGER, currentPage.getNumber() + 1, currentPage.getTotalPages(), args );
+	}
+
+	@Override
+	public String page( Page currentPage, Object... args ) {
+		return messageWithFallback( PAGE, currentPage.getNumber() + 1, currentPage.getTotalPages(), args );
+	}
+
+	@Override
+	public String ofPages( Page currentPage, Object... args ) {
+		return messageWithFallback( OF_PAGES, currentPage.getNumber() + 1, currentPage.getTotalPages(), args );
+	}
+
+	@Override
+	public String nextPage( Page currentPage, Object... args ) {
+		return messageWithFallback( NEXT_PAGE, currentPage.getNumber() + 2, args );
+	}
+
+	@Override
+	public String previousPage( Page currentPage, Object... args ) {
+		return messageWithFallback( PREVIOUS_PAGE, currentPage.getNumber(), args );
+	}
+
+	@Override
+	public String resultsFound( Page currentPage, Object... args ) {
+		return messageWithFallback( RESULTS_FOUND,
+		                            currentPage.getTotalElements(),
+		                            messageCodeResolver.getNameSingularInline(),
+		                            messageCodeResolver.getNamePluralInline(),
+		                            args );
 	}
 
 	public String withNameSingular( String code, Object... arguments ) {

@@ -27,7 +27,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
-import com.foreach.across.modules.entity.views.support.ListViewEntityMessages;
+import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -37,11 +38,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
-
-import static com.foreach.across.modules.entity.views.ViewElementMode.LIST_LABEL;
-import static com.foreach.across.modules.entity.views.ViewElementMode.LIST_VALUE;
 
 /**
  * Helper that aids in building a sortable {@link com.foreach.across.modules.bootstrapui.elements.TableViewElement}
@@ -49,6 +48,7 @@ import static com.foreach.across.modules.entity.views.ViewElementMode.LIST_VALUE
  *
  * @author Arne Vandamme
  */
+@Component
 @Scope("prototype")
 public class SortableTableBuilder extends GlobalContextSupportingViewElementBuilder<ViewElement>
 {
@@ -99,6 +99,9 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> valueRowProcessors = new ArrayList<>();
 	private String formName;
 
+	private ViewElementMode valueViewElementMode = ViewElementMode.LIST_VALUE;
+	private ViewElementMode labelViewElementMode = ViewElementMode.LIST_LABEL;
+
 	private PagingMessages resolvedPagingMessages;
 	private Collection<EntityPropertyDescriptor> resolvedPropertyDescriptors;
 
@@ -143,6 +146,28 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	 */
 	public SortableTableBuilder noResults( ViewElementBuilder builder ) {
 		this.noResultsElement = ViewElementBuilderSupport.ElementOrBuilder.wrap( builder );
+		return this;
+	}
+
+	/**
+	 * Set the rendering mode for the values of an entity.  Defaults to {@link ViewElementMode#LIST_VALUE}.
+	 *
+	 * @param valueViewElementMode element mode
+	 * @return current builder
+	 */
+	public SortableTableBuilder setValueViewElementMode( ViewElementMode valueViewElementMode ) {
+		this.valueViewElementMode = valueViewElementMode;
+		return this;
+	}
+
+	/**
+	 * Set the rendering mode for the label of an entity (header row).  Defaults to {@link ViewElementMode#LIST_LABEL}.
+	 *
+	 * @param labelViewElementMode element mode
+	 * @return current builder
+	 */
+	public SortableTableBuilder setLabelViewElementMode( ViewElementMode labelViewElementMode ) {
+		this.labelViewElementMode = labelViewElementMode;
 		return this;
 	}
 
@@ -403,7 +428,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		if ( actual == null ) {
 			if ( resolvedPagingMessages == null ) {
 				resolvedPagingMessages
-						= new ListViewEntityMessages( getEntityConfiguration().getEntityMessageCodeResolver() );
+						= new EntityMessages( getEntityConfiguration().getEntityMessageCodeResolver() );
 			}
 			actual = resolvedPagingMessages;
 		}
@@ -596,11 +621,11 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	}
 
 	protected ViewElementBuilder createLabel( EntityPropertyDescriptor descriptor ) {
-		return viewElementBuilderService.getElementBuilder( descriptor, LIST_LABEL );
+		return viewElementBuilderService.getElementBuilder( descriptor, labelViewElementMode );
 	}
 
 	protected ViewElementBuilder createValue( EntityPropertyDescriptor descriptor ) {
-		return viewElementBuilderService.getElementBuilder( descriptor, LIST_VALUE );
+		return viewElementBuilderService.getElementBuilder( descriptor, valueViewElementMode );
 	}
 
 	protected NodeViewElementBuilder createPanelForTable( TableViewElementBuilder tableBody ) {
@@ -612,7 +637,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		                                          .add(
 				                                          bootstrapUi.node( "div" )
 				                                                     .css( "panel-heading" )
-				                                                     .add( bootstrapUi.text( resultsFound ) )
+				                                                     .add( bootstrapUi.html( resultsFound ) )
 		                                          )
 		                                          .add(
 				                                          bootstrapUi.node( "div" )
@@ -637,7 +662,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		                  .add(
 				                  bootstrapUi.node( "div" )
 				                             .css( "panel-body", "text-warning" )
-				                             .add( bootstrapUi.text( getResolvedPagingMessages()
+				                             .add( bootstrapUi.html( getResolvedPagingMessages()
 						                                                     .resultsFound( getPage() ) ) )
 		                  );
 	}
@@ -666,7 +691,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 
 		pager.add(
 				bootstrapUi.label()
-				           .add( bootstrapUi.node( "span" ).add( bootstrapUi.text( messages.page( currentPage ) ) ) )
+				           .add( bootstrapUi.node( "span" ).add( bootstrapUi.html( messages.page( currentPage ) ) ) )
 				           .add(
 						           bootstrapUi.textbox()
 						                      .attribute( "data-tbl-page-selector", "selector" )
@@ -674,14 +699,14 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 						                      .text( String.valueOf( currentPage.getNumber() + 1 ) )
 				           )
 		)
-		     .add( bootstrapUi.node( "span" ).add( bootstrapUi.text( messages.ofPages( currentPage ) ) ) )
+		     .add( bootstrapUi.node( "span" ).add( bootstrapUi.html( messages.ofPages( currentPage ) ) ) )
 		     .add(
 				     bootstrapUi.link()
 				                .url( "#" )
 				                .css( "total-pages-link" )
 				                .attribute( DATA_ATTR_PAGE, currentPage.getTotalPages() - 1 )
 				                .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
-				                .add( bootstrapUi.text( String.valueOf( currentPage.getTotalPages() ) ) )
+				                .add( bootstrapUi.html( String.valueOf( currentPage.getTotalPages() ) ) )
 		     );
 
 		if ( currentPage.hasNext() ) {

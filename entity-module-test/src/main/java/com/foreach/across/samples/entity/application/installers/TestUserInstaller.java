@@ -23,6 +23,7 @@ import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.business.User;
 import com.foreach.across.samples.entity.application.repositories.GroupRepository;
 import com.foreach.across.samples.entity.application.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.PageRequest;
@@ -39,13 +40,11 @@ import static java.util.Calendar.*;
  */
 @Order(2)
 @Installer(description = "Installs a number of test users for filtering", phase = InstallerPhase.AfterModuleBootstrap)
+@RequiredArgsConstructor
 public class TestUserInstaller
 {
-	@Autowired
-	private GroupRepository groupRepository;
-
-	@Autowired
-	private UserRepository userRepository;
+	private final GroupRepository groupRepository;
+	private final UserRepository userRepository;
 
 	private transient Calendar cal;
 

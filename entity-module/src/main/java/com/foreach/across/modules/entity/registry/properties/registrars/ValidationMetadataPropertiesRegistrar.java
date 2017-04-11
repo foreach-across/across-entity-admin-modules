@@ -20,7 +20,7 @@ import com.foreach.across.modules.entity.registry.properties.DefaultEntityProper
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.validation.ValidatorFactory;
@@ -33,10 +33,10 @@ import javax.validation.metadata.PropertyDescriptor;
  */
 @Component
 @OrderInModule(3)
+@RequiredArgsConstructor
 public class ValidationMetadataPropertiesRegistrar implements DefaultEntityPropertyRegistryProvider.PropertiesRegistrar
 {
-	@Autowired
-	private ValidatorFactory validatorFactory;
+	private final ValidatorFactory validatorFactory;
 
 	public void accept( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
 		BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass( entityType );

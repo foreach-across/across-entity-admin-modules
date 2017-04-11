@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.registry.properties;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Registry containing a collection of property information.  Usually for a particular entity type,
@@ -30,6 +31,7 @@ public interface EntityPropertyRegistry
 {
 	/**
 	 * Name of the label property.
+	 *
 	 * @see com.foreach.across.modules.entity.registry.properties.registrars.LabelPropertiesRegistrar
 	 */
 	String LABEL = "#label";
@@ -44,10 +46,7 @@ public interface EntityPropertyRegistry
 
 	List<EntityPropertyDescriptor> getProperties();
 
-	List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter );
-
-	List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter,
-	                                              Comparator<EntityPropertyDescriptor> comparator );
+	List<EntityPropertyDescriptor> getProperties( Predicate<EntityPropertyDescriptor> predicate );
 
 	List<EntityPropertyDescriptor> select( EntityPropertySelector selector );
 
@@ -55,5 +54,5 @@ public interface EntityPropertyRegistry
 
 	Comparator<EntityPropertyDescriptor> getDefaultOrder();
 
-	EntityPropertyFilter getDefaultFilter();
+	Predicate<EntityPropertyDescriptor> getDefaultFilter();
 }

@@ -20,15 +20,13 @@ import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
-import com.foreach.across.modules.entity.views.EntityListView;
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.AuditablePrincipalPropertyViewElementBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.AuditablePropertyViewElementBuilder;
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -42,10 +40,10 @@ import org.springframework.data.domain.Sort;
 @Configuration
 @OrderInModule(2)
 @AcrossDepends(required = SpringSecurityModule.NAME)
+@RequiredArgsConstructor
 public class AuditableEntityUiConfiguration implements EntityConfigurer
 {
-	@Autowired
-	private ConversionService mvcConversionService;
+	private final ConversionService mvcConversionService;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
@@ -93,13 +91,13 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 		       .updateFormView( fvb -> fvb.showProperties( ".", "created", "lastModified" ) );
 
 		// Add default sort to list views if no default sort configured
-		builder.postProcessor( entityConfiguration -> {
-			EntityListViewFactory listViewFactory = entityConfiguration.getViewFactory( EntityListView.VIEW_NAME );
-
-			if ( listViewFactory != null && listViewFactory.getDefaultSort() == null ) {
-				listViewFactory.setDefaultSort( new Sort( Sort.Direction.DESC, "lastModifiedDate" ) );
-			}
-		} );
+//		builder.postProcessor( entityConfiguration -> {
+//			EntityListViewFactory listViewFactory = entityConfiguration.getViewFactory( EntityView.LIST_VIEW_NAME );
+//
+//			if ( listViewFactory != null && listViewFactory.getDefaultSort() == null ) {
+//				listViewFactory.setDefaultSort( new Sort( Sort.Direction.DESC, "lastModifiedDate" ) );
+//			}
+//		} );
 	}
 
 	@Bean

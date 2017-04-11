@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity;
 
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -35,6 +37,15 @@ public interface EntityAttributes
 	 * the members of a {@link FieldsetFormElement}.
 	 */
 	String FIELDSET_PROPERTY_SELECTOR = FieldsetFormElement.class.getName() + ".EntityPropertySelector";
+
+	/**
+	 * If set, contains the EQL statement or {@link com.foreach.across.modules.entity.query.EntityQuery} that should be used
+	 * to fetch the selectable options.  Can be used to for example filter out deleted items.
+	 * <p/>
+	 * Will only be used if there is no {@link com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator}
+	 * or {@link OptionIterableBuilder} attribute set.
+	 */
+	String OPTIONS_ENTITY_QUERY = OptionIterableBuilder.class.getName() + ".EntityQuery";
 
 	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.

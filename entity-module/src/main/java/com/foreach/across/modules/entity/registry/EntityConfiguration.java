@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registry;
 
 import com.foreach.across.core.support.ReadableAttributes;
@@ -62,6 +63,11 @@ public interface EntityConfiguration<T> extends ReadableAttributes, EntityViewRe
 	 * @return basic model for performing entity operations
 	 */
 	EntityModel<T, Serializable> getEntityModel();
+
+	/**
+	 * @return true if this configuration actually has an entity model configured
+	 */
+	boolean hasEntityModel();
 
 	/**
 	 * @return property registry for this entity

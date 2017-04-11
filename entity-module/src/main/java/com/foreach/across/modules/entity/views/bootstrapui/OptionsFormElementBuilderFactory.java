@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -29,6 +31,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EntityQueryOptionIterableBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EnumOptionIterableBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
+import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +39,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.mapping.PersistentProperty;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
@@ -48,15 +52,15 @@ import java.util.Map;
 
 /**
  * Builds a {@link OptionsFormElementBuilder} for a given {@link EntityPropertyDescriptor}.
+ * If the entity descriptor defines an {@link OptionIterableBuilder} or {@link OptionGenerator} attribute, that one will be
+ * used for generating the options.
  *
  * @author Arne Vandamme
  */
+@Component
 public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<OptionsFormElementBuilder>
 {
-	@Autowired
 	private BootstrapUiFactory bootstrapUi;
-
-	@Autowired
 	private EntityRegistry entityRegistry;
 
 	public OptionsFormElementBuilderFactory() {
@@ -89,27 +93,8 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 				             .name( descriptor.getName() )
 				             .controlName( EntityAttributes.controlName( descriptor ) );
 
-		OptionGenerator optionGenerator = new OptionGenerator();
-		optionGenerator.setSorted( true );
-
-		if ( memberType.isEnum() ) {
-			EnumOptionIterableBuilder iterableBuilder = new EnumOptionIterableBuilder();
-			iterableBuilder.setEnumType( (Class<? extends Enum>) memberType );
-			iterableBuilder.setValueFetcher( descriptor.getValueFetcher() );
-
-			optionGenerator.setOptions( iterableBuilder );
-		}
-		else {
-			EntityConfiguration optionType = entityRegistry.getEntityConfiguration( memberType );
-
-			if ( optionType != null && optionType.hasAttribute( EntityQueryExecutor.class ) ) {
-				EntityQueryOptionIterableBuilder iterableBuilder =
-						EntityQueryOptionIterableBuilder.forEntityConfiguration( optionType );
-				iterableBuilder.setValueFetcher( descriptor.getValueFetcher() );
-
-				optionGenerator.setOptions( iterableBuilder );
-			}
-		}
+		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( memberType );
+		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, memberType, optionConfiguration );
 
 		options.add( optionGenerator );
 
@@ -126,6 +111,72 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		return options;
+	}
+
+	private OptionGenerator determineOptionGenerator( EntityPropertyDescriptor descriptor, Class<?> memberType, EntityConfiguration optionConfiguration ) {
+		OptionGenerator optionGenerator = descriptor.getAttribute( OptionGenerator.class );
+
+		if ( optionGenerator == null && optionConfiguration != null ) {
+			optionGenerator = optionConfiguration.getAttribute( OptionGenerator.class );
+		}
+
+		if ( optionGenerator == null ) {
+			optionGenerator = new OptionGenerator();
+			optionGenerator.setSorted( true );
+			optionGenerator.setValueFetcher( descriptor.getValueFetcher() );
+			optionGenerator.setOptions( determineOptionBuilder( descriptor, memberType, optionConfiguration ) );
+		}
+
+		return optionGenerator;
+	}
+
+	@SuppressWarnings("unchecked")
+	private OptionIterableBuilder determineOptionBuilder( EntityPropertyDescriptor descriptor, Class<?> memberType, EntityConfiguration optionConfiguration ) {
+		OptionIterableBuilder builderToUse = descriptor.getAttribute( OptionIterableBuilder.class );
+
+		if ( builderToUse == null && optionConfiguration != null ) {
+			builderToUse = optionConfiguration.getAttribute( OptionIterableBuilder.class );
+		}
+
+		if ( builderToUse == null ) {
+			if ( memberType.isEnum() ) {
+				EnumOptionIterableBuilder iterableBuilder = new EnumOptionIterableBuilder();
+				iterableBuilder.setEnumType( (Class<? extends Enum>) memberType );
+				if ( optionConfiguration != null && optionConfiguration.hasEntityModel() ) {
+					iterableBuilder.setEntityModel( optionConfiguration.getEntityModel() );
+				}
+				builderToUse = iterableBuilder;
+			}
+			else if ( optionConfiguration != null && optionConfiguration.hasAttribute( EntityQueryExecutor.class ) ) {
+				EntityQueryOptionIterableBuilder eqBuilder = EntityQueryOptionIterableBuilder.forEntityConfiguration( optionConfiguration );
+				Object entityQueryToUse = determineEntityQuery( descriptor, optionConfiguration );
+
+				if ( entityQueryToUse instanceof EntityQuery ) {
+					eqBuilder.setEntityQuery( (EntityQuery) entityQueryToUse );
+				}
+				else if ( entityQueryToUse instanceof String ) {
+					eqBuilder.setEntityQuery( (String) entityQueryToUse );
+				}
+				else if ( entityQueryToUse != null ) {
+					throw new IllegalStateException(
+							"Illegal " + EntityAttributes.OPTIONS_ENTITY_QUERY + " attribute - expected to be String or EntityQuery" );
+				}
+
+				builderToUse = eqBuilder;
+			}
+		}
+
+		return builderToUse;
+	}
+
+	private Object determineEntityQuery( EntityPropertyDescriptor descriptor, EntityConfiguration optionConfiguration ) {
+		Object entityQuery = descriptor.getAttribute( EntityAttributes.OPTIONS_ENTITY_QUERY );
+
+		if ( entityQuery == null && optionConfiguration != null ) {
+			entityQuery = optionConfiguration.getAttribute( EntityAttributes.OPTIONS_ENTITY_QUERY );
+		}
+
+		return entityQuery;
 	}
 
 	private boolean isCollection( EntityPropertyDescriptor descriptor ) {
@@ -145,6 +196,16 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		return null;
+	}
+
+	@Autowired
+	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
+	}
+
+	@Autowired
+	public void setEntityRegistry( EntityRegistry entityRegistry ) {
+		this.entityRegistry = entityRegistry;
 	}
 
 	public static class OptionsRequiredBuilderProcessor

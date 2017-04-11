@@ -26,6 +26,7 @@ import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Reponsible for creating either a {@link com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder}
@@ -33,9 +34,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Arne Vandamme
  */
+@Component
 public class LabelFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<ViewElementBuilder>
 {
-	@Autowired
 	private BootstrapUiFactory bootstrapUi;
 
 	@Override
@@ -57,5 +58,10 @@ public class LabelFormElementBuilderFactory extends EntityViewElementBuilderFact
 
 	protected ViewElementPostProcessor<TextViewElement> labelCodeResolver( EntityPropertyDescriptor propertyDescriptor ) {
 		return new TextCodeResolverPostProcessor<>( "properties." + propertyDescriptor.getName() );
+	}
+
+	@Autowired
+	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
 	}
 }

@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui.options;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
+import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -31,9 +33,10 @@ import java.util.List;
  *
  * @author Arne Vandamme
  */
-public class EnumOptionIterableBuilder extends SelectedOptionIterableBuilderSupport
+public class EnumOptionIterableBuilder implements OptionIterableBuilder
 {
 	private Class<? extends Enum> enumType;
+	private EntityModel<Object, Serializable> entityModel;
 
 	public Class<? extends Enum> getEnumType() {
 		return enumType;
@@ -43,24 +46,35 @@ public class EnumOptionIterableBuilder extends SelectedOptionIterableBuilderSupp
 		this.enumType = enumType;
 	}
 
+	/**
+	 * Optionally set an entity model that should be used for generating label and value instead of default enum serializing.
+	 */
+	public void setEntityModel( EntityModel<Object, Serializable> entityModel ) {
+		this.entityModel = entityModel;
+	}
+
 	@Override
 	public Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext ) {
 		EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
-		Collection selected = retrieveSelected( builderContext );
 
 		Enum[] enumValues = enumType.getEnumConstants();
 		List<OptionFormElementBuilder> options = new ArrayList<>( enumValues.length );
 
 		for ( Enum enumValue : enumValues ) {
 			OptionFormElementBuilder option = new OptionFormElementBuilder();
+			option.rawValue( enumValue );
 
-			String messageCode = "enums." + enumType.getSimpleName() + "." + enumValue.name();
-			String defaultLabel = EntityUtils.generateDisplayName( enumValue.name() );
+			if ( entityModel == null ) {
+				String messageCode = "enums." + enumType.getSimpleName() + "." + enumValue.name();
+				String defaultLabel = EntityUtils.generateDisplayName( enumValue.name() );
 
-			option.label( codeResolver.getMessageWithFallback( messageCode, defaultLabel ) );
-			option.value( enumValue.name() );
-
-			option.selected( selected.contains( enumValue ) );
+				option.label( codeResolver.getMessageWithFallback( messageCode, defaultLabel ) );
+				option.value( enumValue.name() );
+			}
+			else {
+				option.label( entityModel.getLabel( enumValue ) );
+				option.value( entityModel.getId( enumValue ) );
+			}
 
 			options.add( option );
 		}

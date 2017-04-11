@@ -22,6 +22,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -34,13 +35,10 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityViewElementBuilderServiceImpl.class );
 
-	@RefreshableCollection(incremental = true, includeModuleInternals = true)
 	private Collection<ViewElementTypeLookupStrategy> elementTypeLookupStrategies;
-
-	@RefreshableCollection(incremental = true, includeModuleInternals = true)
 	private Collection<EntityViewElementBuilderFactory> builderFactories;
 
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings("unchecked")
 	@Override
 	public ViewElementBuilder getElementBuilder( EntityPropertyDescriptor descriptor, ViewElementMode mode ) {
 		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
@@ -67,9 +65,10 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 					}
 				}
 
-				if ( builder != null && lookupRegistry.isCacheable( mode ) ) {
-					lookupRegistry.cacheViewElementBuilder( mode, builder );
-				}
+				// todo: support caching when attribute value cloning is safer
+				//if ( builder != null && lookupRegistry.isCacheable( mode ) ) {
+				//	lookupRegistry.cacheViewElementBuilder( mode, builder );
+				//}
 
 				return builder;
 			}
@@ -121,5 +120,15 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 		}
 
 		return elementType;
+	}
+
+	@Autowired
+	void setElementTypeLookupStrategies( @RefreshableCollection(incremental = true, includeModuleInternals = true) Collection<ViewElementTypeLookupStrategy> elementTypeLookupStrategies ) {
+		this.elementTypeLookupStrategies = elementTypeLookupStrategies;
+	}
+
+	@Autowired
+	void setBuilderFactories( @RefreshableCollection(incremental = true, includeModuleInternals = true) Collection<EntityViewElementBuilderFactory> builderFactories ) {
+		this.builderFactories = builderFactories;
 	}
 }

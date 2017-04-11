@@ -16,11 +16,14 @@
 package com.foreach.across.modules.entity.views.util;
 
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderContext;
+import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.IteratorItemStatsImpl;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.junit.Test;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentEntity;
 import static org.junit.Assert.assertNull;
@@ -51,14 +54,12 @@ public class TestEntityViewElementUtils
 
 	@Test
 	public void currentEntityForEntityView() {
-		EntityView view = new EntityView( new ModelMap() );
+		EntityView view = new EntityView( new ModelMap(), new RedirectAttributesModelMap() );
 
-		EntityViewElementBuilderContext ctx = new EntityViewElementBuilderContext<>( view );
+		ViewElementBuilderContext ctx = new DefaultViewElementBuilderContext( view );
 		assertNull( currentEntity( ctx ) );
 
-		view.setEntity( SOME_ENTITY );
-		ctx = new EntityViewElementBuilderContext<>( view );
-
+		view.addAttribute( EntityViewModel.ENTITY, SOME_ENTITY );
 		assertSame( SOME_ENTITY, currentEntity( ctx ) );
 		assertSame( SOME_ENTITY, currentEntity( ctx, String.class ) );
 		assertNull( currentEntity( ctx, Integer.class ) );

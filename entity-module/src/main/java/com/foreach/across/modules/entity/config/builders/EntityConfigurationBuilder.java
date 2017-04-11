@@ -18,8 +18,7 @@ package com.foreach.across.modules.entity.config.builders;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.util.EntityUtils;
-import com.foreach.across.modules.entity.views.EntityViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewFactoryProvider;
+import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -291,6 +290,26 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 		return (EntityConfigurationBuilder<T>) super.view( viewName, consumer );
 	}
 
+	@Override
+	public EntityConfigurationBuilder<T> listView() {
+		return (EntityConfigurationBuilder<T>) super.listView();
+	}
+
+	@Override
+	public EntityConfigurationBuilder<T> createFormView() {
+		return (EntityConfigurationBuilder<T>) super.createFormView();
+	}
+
+	@Override
+	public EntityConfigurationBuilder<T> updateFormView() {
+		return (EntityConfigurationBuilder<T>) super.updateFormView();
+	}
+
+	@Override
+	public EntityConfigurationBuilder<T> deleteFormView() {
+		return (EntityConfigurationBuilder<T>) super.deleteFormView();
+	}
+
 	/**
 	 * Build a new {@link EntityConfigurationImpl} with the settings specified.
 	 * Allows setting both name and entity type. Will apply the post processors after initial creation.
@@ -382,10 +401,16 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	@Override
 	protected <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType ) {
 		if ( EntityListViewFactoryBuilder.class.isAssignableFrom( builderType ) ) {
-			return (U) new ConfigurationListViewFactoryBuilder( beanFactory );
+			return builderType.cast( new EntityListViewFactoryBuilder( beanFactory ) );
 		}
 
-		return (U) new ConfigurationViewFactoryBuilder( beanFactory );
+		return builderType.cast( new EntityViewFactoryBuilder( beanFactory ) );
+	}
+
+	@Override
+	protected <U extends EntityViewFactoryBuilder> void initializeViewFactoryBuilder( String viewName, String templateName, U builder ) {
+		beanFactory.getBean( EntityViewFactoryBuilderInitializer.class )
+		           .initialize( viewName, templateName, configurationBeingBuilt, builder );
 	}
 
 	private void buildEntityModel( MutableEntityConfiguration<T> configuration ) {
@@ -411,40 +436,6 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 								"EntityModel implementation not extending DefaultEntityModel was configured. " +
 								"The custom implementation takes precedence and the builder will be ignored!" );
 			}
-		}
-	}
-
-	/**
-	 * Inner class that delegates creation of a view factory to the {@link EntityViewFactoryProvider} using
-	 * the current entity being configured.
-	 */
-	private class ConfigurationViewFactoryBuilder extends EntityViewFactoryBuilder
-	{
-		ConfigurationViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
-			super( beanFactory );
-		}
-
-		@Override
-		protected EntityViewFactory createNewViewFactory( Class<? extends EntityViewFactory> viewFactoryType ) {
-			EntityViewFactoryProvider viewFactoryProvider = beanFactory.getBean( EntityViewFactoryProvider.class );
-			return viewFactoryProvider.create( configurationBeingBuilt, viewFactoryType );
-		}
-	}
-
-	/**
-	 * Inner class that delegates creation of a view factory to the {@link EntityViewFactoryProvider} using
-	 * the current entity being configured.
-	 */
-	private class ConfigurationListViewFactoryBuilder extends EntityListViewFactoryBuilder
-	{
-		ConfigurationListViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
-			super( beanFactory );
-		}
-
-		@Override
-		protected EntityViewFactory createNewViewFactory( Class<? extends EntityViewFactory> viewFactoryType ) {
-			EntityViewFactoryProvider viewFactoryProvider = beanFactory.getBean( EntityViewFactoryProvider.class );
-			return viewFactoryProvider.create( configurationBeingBuilt, viewFactoryType );
 		}
 	}
 }

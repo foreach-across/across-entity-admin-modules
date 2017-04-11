@@ -16,17 +16,19 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.controllers.EntityViewCommand;
-import com.foreach.across.modules.entity.controllers.EntityViewRequest;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.views.EntityListView;
-import com.foreach.across.modules.entity.views.EntityListViewPageFetcher;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.processors.WebViewProcessorAdapter;
-import com.foreach.across.modules.entity.web.WebViewCreationContext;
+import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
+import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
@@ -39,9 +41,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpMethod;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 
 import java.util.Optional;
 
@@ -66,7 +70,22 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.withType( User.class )
 		             .listView( lvb -> lvb.showProperties( "id", "name", "group", "registrationDate" )
-		                                  .showResultNumber( false ) );
+		                                  .properties(
+				                                  props -> props.property( "id" ).attribute( Sort.Order.class, new Sort.Order( Sort.Direction.DESC, "name" ) )
+		                                  )
+		                                  .showResultNumber( false )
+		                                  .viewProcessor( new EntityViewProcessorAdapter()
+		                                  {
+			                                  @Override
+			                                  protected void registerWebResources( EntityViewRequest entityViewRequest,
+			                                                                       EntityView entityView,
+			                                                                       WebResourceRegistry webResourceRegistry ) {
+				                                  webResourceRegistry.add( WebResource.JAVASCRIPT_PAGE_END, "/static/entityModuleTest/js/test.js",
+				                                                           WebResource.VIEWS );
+			                                  }
+		                                  } )
+		             )
+		             .view( EntityView.SUMMARY_VIEW_NAME, vb -> vb.showProperties( "name", "group" ) );
 
 		configuration.matching( c -> c.hasAttribute( EntityQueryExecutor.class ) )
 		             .listView( lvb -> lvb.entityQueryFilter( true ) );
@@ -76,7 +95,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		             .listView(
 				             lvb -> lvb.defaultSort( "name" )
 				                       .entityQueryFilter( false )
-				                       .filter( partnerFilterProcessor() )
+				                       .viewProcessor( partnerFilterProcessor() )
 		             );
 
 		// Custom filters on users under Group
@@ -86,9 +105,10 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 				                     .associationType( EntityAssociation.Type.EMBEDDED )
 				                     .listView(
 						                     lvb -> lvb.defaultSort( new Sort( "name" ) )
-						                               .filter( userInGroupFilterProcessor() )
+						                               .viewProcessor( userInGroupFilterProcessor() )
 				                     )
-		             );
+		             )
+		             .attribute( EntityAttributes.OPTIONS_ENTITY_QUERY, "name like 'animals%'" );
 	}
 
 	@Bean
@@ -104,26 +124,42 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	/**
 	 * Custom filter for a main entity (Group) list view.
 	 */
-	private static class PartnerFilterProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
+	private static class PartnerFilterProcessor extends EntityViewProcessorAdapter
 	{
-		@Autowired
 		private PartnerRepository partnerRepository;
 
 		@Override
-		protected void registerCommandExtensions( EntityViewCommand command ) {
-			command.addExtensions( "filter", "" );
+		public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
+			command.addExtension( "filter", "" );
 		}
 
 		@Override
-		protected void modifyViewElements( ContainerViewElement elements ) {
-			// move the original actions
-			Optional<ContainerViewElement> header = find( elements, "entityForm-header",
-			                                              ContainerViewElement.class );
+		protected void doControl( EntityViewRequest entityViewRequest,
+		                          EntityView entityView,
+		                          EntityViewCommand command,
+		                          BindingResult bindingResult,
+		                          HttpMethod httpMethod ) {
+			String filter = command.getExtension( "filter", String.class );
+			Pageable pageable = command.getExtension( PageableExtensionViewProcessor.DEFAULT_EXTENSION_NAME, Pageable.class );
 
+			if ( !StringUtils.isBlank( filter ) ) {
+				entityView.addAttribute( "items", partnerRepository.findByNameContaining( filter, pageable ) );
+			}
+			else {
+				entityView.addAttribute( "items", partnerRepository.findAll( pageable ) );
+			}
+		}
+
+		@Override
+		protected void postRender( EntityViewRequest entityViewRequest,
+		                           EntityView entityView,
+		                           ContainerViewElement container,
+		                           ViewElementBuilderContext builderContext ) {
+			Optional<ContainerViewElement> header = find( container, "entityListForm-header", ContainerViewElement.class );
 			header.ifPresent(
 					h -> {
 						Optional<NodeViewElement> actions
-								= find( h, "entityForm-header-actions", NodeViewElement.class );
+								= find( h, "entityListForm-header-actions", NodeViewElement.class );
 						actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
 
 						h.addChild( new TemplateViewElement( "th/entityModuleTest/filters :: filterForm" ) );
@@ -131,43 +167,55 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 			);
 		}
 
-		@Override
-		public Page fetchPage( WebViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
-			EntityViewRequest request = model.getAttribute( "viewRequest" );
-
-			String filter = (String) request.getExtensions().get( "filter" );
-
-			if ( !StringUtils.isBlank( filter ) ) {
-				return partnerRepository.findByNameContaining( filter, pageable );
-			}
-
-			return partnerRepository.findAll( pageable );
+		@Autowired
+		void setPartnerRepository( PartnerRepository partnerRepository ) {
+			this.partnerRepository = partnerRepository;
 		}
 	}
 
 	/**
 	 * Custom filter for an associated entity (User in Group) list view.
 	 */
-	private static class UserInGroupFilterProcessor extends WebViewProcessorAdapter<EntityListView> implements EntityListViewPageFetcher<WebViewCreationContext>
+	private static class UserInGroupFilterProcessor extends EntityViewProcessorAdapter
 	{
-		@Autowired
 		private UserRepository userRepository;
 
 		@Override
-		protected void registerCommandExtensions( EntityViewCommand command ) {
-			command.addExtensions( "filter", "" );
+		public void initializeCommandObject( EntityViewRequest entityViewRequest,
+		                                     EntityViewCommand command,
+		                                     WebDataBinder dataBinder ) {
+			command.addExtension( "filter", "" );
 		}
 
 		@Override
-		protected void modifyViewElements( ContainerViewElement elements ) {
-			// move the original actions
-			Optional<ContainerViewElement> header = find( elements, "entityForm-header",
-			                                              ContainerViewElement.class );
+		protected void doControl( EntityViewRequest entityViewRequest,
+		                          EntityView entityView,
+		                          EntityViewCommand command,
+		                          BindingResult bindingResult,
+		                          HttpMethod httpMethod ) {
+			String filter = command.getExtension( "filter", String.class );
+			Pageable pageable = command.getExtension( PageableExtensionViewProcessor.DEFAULT_EXTENSION_NAME, Pageable.class );
+			Group group = entityViewRequest.getEntityViewContext().getParentContext().getEntity( Group.class );
+
+			if ( !StringUtils.isBlank( filter ) ) {
+				entityView.addAttribute( "items", userRepository.findByGroupAndNameContaining( group, filter, pageable ) );
+			}
+			else {
+				entityView.addAttribute( "items", userRepository.findByGroup( group, pageable ) );
+			}
+		}
+
+		@Override
+		protected void postRender( EntityViewRequest entityViewRequest,
+		                           EntityView entityView,
+		                           ContainerViewElement container,
+		                           ViewElementBuilderContext builderContext ) {
+			Optional<ContainerViewElement> header = find( container, "entityListForm-header", ContainerViewElement.class );
 
 			header.ifPresent(
 					h -> {
 						Optional<NodeViewElement> actions
-								= find( h, "entityForm-header-actions", NodeViewElement.class );
+								= find( h, "entityListForm-header-actions", NodeViewElement.class );
 						actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
 
 						h.addChild( new TemplateViewElement( "th/entityModuleTest/filters :: filterForm" ) );
@@ -175,17 +223,9 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 			);
 		}
 
-		@Override
-		public Page fetchPage( WebViewCreationContext viewCreationContext, Pageable pageable, EntityView model ) {
-			EntityViewRequest request = model.getAttribute( "viewRequest" );
-			Group group = (Group) model.getParentEntity();
-			String filter = (String) request.getExtensions().get( "filter" );
-
-			if ( !StringUtils.isBlank( filter ) ) {
-				return userRepository.findByGroupAndNameContaining( group, filter, pageable );
-			}
-
-			return userRepository.findByGroup( group, pageable );
+		@Autowired
+		void setUserRepository( UserRepository userRepository ) {
+			this.userRepository = userRepository;
 		}
 	}
 }

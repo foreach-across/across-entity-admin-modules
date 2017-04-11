@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Registry that allows overriding properties from a parent registry.
@@ -88,8 +89,8 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	}
 
 	@Override
-	public EntityPropertyFilter getDefaultFilter() {
-		EntityPropertyFilter configured = super.getDefaultFilter();
+	public Predicate<EntityPropertyDescriptor> getDefaultFilter() {
+		Predicate<EntityPropertyDescriptor> configured = super.getDefaultFilter();
 		return configured != null ? configured : parent.getDefaultFilter();
 	}
 }
