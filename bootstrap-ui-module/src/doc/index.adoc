@@ -191,6 +191,10 @@ The builder implementation is rarely created directly but through the `Bootstrap
 |`InputGroupFormElementBuilder`
 |
 
+|`FileUploadFormElement`
+|`FileUploadFormElementBuilder`
+|Creates a file input element.
+
 |`LabelFormElement`
 |`LabelFormElementBuilder`
 |
