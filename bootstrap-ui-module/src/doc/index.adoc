@@ -171,6 +171,10 @@ The builder implementation is rarely created directly but through the `Bootstrap
 |`FieldsetFormElementBuilder`
 |
 
+|`FileUploadFormElement`
+|`FileUploadFormElementBuilder`
+|Creates a file input element.
+
 |`FormGroupElement`
 |`<<FormGroupElementBuilder>>`
 |
@@ -190,10 +194,6 @@ The builder implementation is rarely created directly but through the `Bootstrap
 |`InputGroupFormElement`
 |`InputGroupFormElementBuilder`
 |
-
-|`FileUploadFormElement`
-|`FileUploadFormElementBuilder`
-|Creates a file input element.
 
 |`LabelFormElement`
 |`LabelFormElementBuilder`
