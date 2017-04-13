@@ -44,6 +44,8 @@ import java.util.Objects;
  */
 public class PageableExtensionViewProcessor extends SimpleEntityViewProcessorAdapter
 {
+	public static final int DEFAULT_MAX_PAGE_SIZE = 2000;
+
 	/**
 	 * Default extension name.
 	 */
@@ -85,22 +87,33 @@ public class PageableExtensionViewProcessor extends SimpleEntityViewProcessorAda
 	private boolean translatePageable = true;
 
 	private String prefix;
+	private int maxPageSize = DEFAULT_MAX_PAGE_SIZE;
+
+	public PageableExtensionViewProcessor() {
+		pageableResolver.setMaxPageSize( maxPageSize );
+	}
 
 	/**
 	 * Set the default {@link Pageable} that should be used if no parameters specified on the request.
+	 * If the assigned page size is larger than the {@link #maxPageSize}, the max size will automatically be updated.
 	 */
 	public void setDefaultPageable( Pageable defaultPageable ) {
 		this.defaultPageable = defaultPageable;
 		pageableResolver.setFallbackPageable( defaultPageable );
+
+		if ( defaultPageable.getPageSize() > maxPageSize ) {
+			setMaxPageSize( defaultPageable.getPageSize() );
+		}
 	}
 
 	/**
 	 * Configures the maximum page size to be accepted. This allows to put an upper boundary of the page size to prevent
-	 * potential attacks trying to issue an {@link OutOfMemoryError}. Defaults to {@link PageableHandlerMethodArgumentResolver#DEFAULT_MAX_PAGE_SIZE}.
+	 * potential attacks trying to issue an {@link OutOfMemoryError}. Defaults to {@link #DEFAULT_MAX_PAGE_SIZE}.
 	 *
 	 * @param maxPageSize the maxPageSize to set
 	 */
 	public void setMaxPageSize( int maxPageSize ) {
+		this.maxPageSize = maxPageSize;
 		pageableResolver.setMaxPageSize( maxPageSize );
 	}
 
