@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views;
 
 import lombok.AccessLevel;
@@ -216,5 +217,15 @@ public class EntityView implements Model
 	@Override
 	public Map<String, Object> asMap() {
 		return model;
+	}
+
+	@Override
+	public String toString() {
+		return "EntityView{" +
+				"template='" + template + '\'' +
+				", redirectUrl='" + redirectUrl + '\'' +
+				", customView=" + customView +
+				", shouldRender=" + shouldRender +
+				'}';
 	}
 }

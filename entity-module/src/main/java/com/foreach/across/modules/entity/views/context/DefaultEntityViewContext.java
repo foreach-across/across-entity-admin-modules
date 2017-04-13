@@ -120,4 +120,12 @@ public class DefaultEntityViewContext implements ConfigurableEntityViewContext
 
 		return cachedAllowableActions;
 	}
+
+	@Override
+	public String toString() {
+		return "DefaultEntityViewContext{" +
+				"entityConfiguration=" + entityConfiguration +
+				", parentContext=" + parentContext +
+				'}';
+	}
 }

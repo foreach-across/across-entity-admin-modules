@@ -112,4 +112,13 @@ public class EntityViewRequest
 	public boolean hasPartialFragment() {
 		return partialFragment != null;
 	}
+
+	@Override
+	public String toString() {
+		return "EntityViewRequest{" +
+				"entityViewContext=" + entityViewContext +
+				", viewName='" + viewName + '\'' +
+				", httpMethod=" + httpMethod +
+				'}';
+	}
 }

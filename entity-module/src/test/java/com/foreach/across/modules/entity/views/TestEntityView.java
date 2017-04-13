@@ -53,7 +53,7 @@ public class TestEntityView
 	}
 
 	@Test
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings("unchecked")
 	public void modelBehaviour() {
 		view.addAttribute( "test", "test" );
 		verify( model ).addAttribute( "test", "test" );

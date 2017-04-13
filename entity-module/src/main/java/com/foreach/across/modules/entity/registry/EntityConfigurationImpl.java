@@ -216,4 +216,12 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	public AllowableActions getAllowableActions( T entity ) {
 		return allowableActionsBuilder.getAllowableActions( this, entity );
 	}
+
+	@Override
+	public String toString() {
+		return "EntityConfigurationImpl{" +
+				"name='" + name + '\'' +
+				", entityType=" + entityType +
+				'}';
+	}
 }
