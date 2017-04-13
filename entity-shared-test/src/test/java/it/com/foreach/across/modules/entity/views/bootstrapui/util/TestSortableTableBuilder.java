@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package it.com.foreach.across.modules.entity.views.bootstrapui.util;
 
 import com.foreach.across.config.AcrossContextConfigurer;
@@ -415,50 +416,51 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	}
 
 	@Test
-	public void elementNamesAreSet() {
-		ContainerViewElement result = tableBuilder.tableName( "mytable" )
-		                                          .build( mock( ViewElementBuilderContext.class ) );
-		assertNotEquals(
-				Optional.empty(),
-				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_PANEL, NodeViewElement.class )
-		);
-		assertNotEquals(
-				Optional.empty(),
-				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_TABLE, TableViewElement.class )
-		);
-		assertEquals(
-				Optional.empty(),
-				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_NORESULTS, TableViewElement.class )
-		);
+	public void defaultTableName() {
+		ContainerViewElement result = tableBuilder.build( mock( ViewElementBuilderContext.class ) );
+		assertEquals( "sortableTable", result.getName() );
+		assertNotEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-table", TableViewElement.class ) );
+		assertNotEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-panel-heading", NodeViewElement.class ) );
+		assertNotEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-panel-body", NodeViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-noresults", TableViewElement.class ) );
 
 		result = tableBuilder.tableOnly().build( mock( ViewElementBuilderContext.class ) );
-		assertEquals(
-				Optional.empty(),
-				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_PANEL, NodeViewElement.class )
-		);
-		assertNotEquals(
-				Optional.empty(),
-				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_TABLE, TableViewElement.class )
-		);
-		assertEquals(
-				Optional.empty(),
-				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_NORESULTS, TableViewElement.class )
-		);
+		assertEquals( "sortableTable", result.getName() );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-table", TableViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-panel-heading", NodeViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-panel-body", NodeViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-noresults", TableViewElement.class ) );
 
 		result = tableBuilder.tableOnly().items( Collections.emptyList() )
 		                     .build( mock( ViewElementBuilderContext.class ) );
-		assertEquals(
-				Optional.empty(),
-				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_PANEL, NodeViewElement.class )
-		);
-		assertEquals(
-				Optional.empty(),
-				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_TABLE, TableViewElement.class )
-		);
-		assertNotEquals(
-				Optional.empty(),
-				ContainerViewElementUtils.find( result, SortableTableBuilder.ELEMENT_NORESULTS, ViewElement.class )
-		);
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-panel-heading", NodeViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-panel-body", NodeViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-table", TableViewElement.class ) );
+		assertNotEquals( Optional.empty(), ContainerViewElementUtils.find( result, "sortableTable-noresults", ViewElement.class ) );
+	}
+
+	@Test
+	public void customTableName() {
+		ContainerViewElement result = tableBuilder.tableName( "myTable" ).build( mock( ViewElementBuilderContext.class ) );
+		assertEquals( "myTable", result.getName() );
+		assertNotEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-table", TableViewElement.class ) );
+		assertNotEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-panel-heading", NodeViewElement.class ) );
+		assertNotEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-panel-body", NodeViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-noresults", TableViewElement.class ) );
+
+		result = tableBuilder.tableOnly().build( mock( ViewElementBuilderContext.class ) );
+		assertEquals( "myTable", result.getName() );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-table", TableViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-panel-heading", NodeViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-panel-body", NodeViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-noresults", TableViewElement.class ) );
+
+		result = tableBuilder.tableOnly().items( Collections.emptyList() )
+		                     .build( mock( ViewElementBuilderContext.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-panel-heading", NodeViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-panel-body", NodeViewElement.class ) );
+		assertEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-table", TableViewElement.class ) );
+		assertNotEquals( Optional.empty(), ContainerViewElementUtils.find( result, "myTable-noresults", ViewElement.class ) );
 	}
 
 	private void expect( String output ) {

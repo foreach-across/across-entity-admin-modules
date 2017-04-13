@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,7 +50,7 @@ import java.util.*;
  */
 @Component
 @Scope("prototype")
-public class SortableTableBuilder extends GlobalContextSupportingViewElementBuilder<ViewElement>
+public class SortableTableBuilder extends GlobalContextSupportingViewElementBuilder<ContainerViewElement>
 {
 	/**
 	 * Sets an 'odd' or 'even' class on a table row depending on the iterator index.
@@ -63,22 +63,25 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		}
 	};
 
-	public static String ELEMENT_TABLE = "table";
-	public static String ELEMENT_PANEL = "panel";
-	public static String ELEMENT_NORESULTS = "noresults";
-	public static String ELEMENT_PAGER = "pager";
+	public static final String ELEMENT_TABLE = "table";
+	public static final String ELEMENT_PANEL = "panel";
+	public static final String ELEMENT_PANEL_HEADING = "panel-heading";
+	public static final String ELEMENT_PANEL_BODY = "panel-body";
+	public static final String ELEMENT_PANEL_FOOTER = "panel-footer";
+	public static final String ELEMENT_NORESULTS = "noresults";
+	public static final String ELEMENT_PAGER = "pager";
 
-	public static String DATA_ATTR_FIELD = "data-tbl-field";
-	public static String DATA_ATTR_TABLE_NAME = "data-tbl";
-	public static String DATA_ATTR_TABLE_TYPE = "data-tbl-type";
-	public static String DATA_ATTR_ENTITY_TYPE = "data-tbl-entity-type";
-	public static String DATA_ATTR_CURRENT_PAGE = "data-tbl-current-page";
-	public static String DATA_ATTR_PAGE = "data-tbl-page";
-	public static String DATA_ATTR_PAGES = "data-tbl-total-pages";
-	public static String DATA_ATTR_PAGE_SIZE = "data-tbl-size";
-	public static String DATA_ATTR_SORT = "data-tbl-sort";
-	public static String DATA_ATTR_SORT_PROPERTY = "data-tbl-sort-property";
-	public static String DATA_ATTR_FORM = "data-tbl-form";
+	public static final String DATA_ATTR_FIELD = "data-tbl-field";
+	public static final String DATA_ATTR_TABLE_NAME = "data-tbl";
+	public static final String DATA_ATTR_TABLE_TYPE = "data-tbl-type";
+	public static final String DATA_ATTR_ENTITY_TYPE = "data-tbl-entity-type";
+	public static final String DATA_ATTR_CURRENT_PAGE = "data-tbl-current-page";
+	public static final String DATA_ATTR_PAGE = "data-tbl-page";
+	public static final String DATA_ATTR_PAGES = "data-tbl-total-pages";
+	public static final String DATA_ATTR_PAGE_SIZE = "data-tbl-size";
+	public static final String DATA_ATTR_SORT = "data-tbl-sort";
+	public static final String DATA_ATTR_SORT_PROPERTY = "data-tbl-sort-property";
+	public static final String DATA_ATTR_FORM = "data-tbl-form";
 
 	protected final EntityViewElementBuilderService viewElementBuilderService;
 	protected final BootstrapUiFactory bootstrapUi;
@@ -186,6 +189,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	}
 
 	/**
+	 * Set the table name that will be added as data-attribute on the table element, and will be the internal name of the main container ViewElement.
 	 * @param tableName to be used both internally and as data attribute on the resulting html table
 	 */
 	public SortableTableBuilder tableName( String tableName ) {
@@ -480,20 +484,20 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 
 		if ( !page.hasContent() ) {
 			if ( noResultsElement != null ) {
-				return bootstrapUi.container().add( noResultsElement.get( builderContext ) ).build( builderContext );
+				return bootstrapUi.container().name( getTableName() ).add( noResultsElement.get( builderContext ) ).build( builderContext );
 			}
 
-			return bootstrapUi.container().add( createDefaultNoResultsPanel() ).build( builderContext );
+			return bootstrapUi.container().name( getTableName() ).add( createDefaultNoResultsPanel() ).build( builderContext );
 		}
 
 		TableViewElementBuilder table = createTable();
 
-		return ( isTableOnly() ? table : createPanelForTable( table ) ).build( builderContext );
+		return ( isTableOnly() ? table.name( getTableName() ) : createPanelForTable( table ).name( getTableName() ) ).build( builderContext );
 	}
 
 	protected TableViewElementBuilder createTable() {
 		TableViewElementBuilder table = bootstrapUi.table()
-		                                           .name( ELEMENT_TABLE )
+		                                           .name( elementName( ELEMENT_TABLE ) )
 		                                           .responsive()
 		                                           .style( getTableStyles() )
 		                                           .attributes( createTableAttributes() );
@@ -632,15 +636,17 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		String resultsFound = getResolvedPagingMessages().resultsFound( getPage() );
 
 		NodeViewElementBuilder panel = bootstrapUi.node( "div" )
-		                                          .name( ELEMENT_PANEL )
+		                                          .name( elementName( ELEMENT_PANEL ) )
 		                                          .css( "panel", "panel-default" )
 		                                          .add(
 				                                          bootstrapUi.node( "div" )
+				                                                     .name( elementName( ELEMENT_PANEL_HEADING ) )
 				                                                     .css( "panel-heading" )
 				                                                     .add( bootstrapUi.html( resultsFound ) )
 		                                          )
 		                                          .add(
 				                                          bootstrapUi.node( "div" )
+				                                                     .name( elementName( ELEMENT_PANEL_BODY ) )
 				                                                     .css( "panel-body" )
 				                                                     .add( tableBody )
 		                                          );
@@ -648,6 +654,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		if ( page.getTotalPages() > 1 ) {
 			panel.add(
 					bootstrapUi.node( "div" )
+					           .name( elementName( ELEMENT_PANEL_FOOTER ) )
 					           .css( "panel-footer" )
 					           .add( createPager() )
 			);
@@ -657,13 +664,12 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 
 	protected ViewElementBuilder createDefaultNoResultsPanel() {
 		return bootstrapUi.node( "div" )
-		                  .name( ELEMENT_NORESULTS )
+		                  .name( elementName( ELEMENT_NORESULTS ) )
 		                  .css( "panel", "panel-warning" )
 		                  .add(
 				                  bootstrapUi.node( "div" )
 				                             .css( "panel-body", "text-warning" )
-				                             .add( bootstrapUi.html( getResolvedPagingMessages()
-						                                                     .resultsFound( getPage() ) ) )
+				                             .add( bootstrapUi.html( getResolvedPagingMessages().resultsFound( getPage() ) ) )
 		                  );
 	}
 
@@ -672,7 +678,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		PagingMessages messages = getResolvedPagingMessages();
 
 		NodeViewElementBuilder pager = bootstrapUi.node( "div" )
-		                                          .name( ELEMENT_PAGER )
+		                                          .name( elementName( ELEMENT_PAGER ) )
 		                                          .css( "pager-form", "form-inline", "text-center" );
 
 		if ( currentPage.hasPrevious() ) {
@@ -724,6 +730,14 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		}
 
 		return pager;
+	}
+
+	/**
+	 * @param name base name
+	 * @return tableName prefixed element name
+	 */
+	private String elementName( String name ) {
+		return getTableName() != null ? getTableName() + "-" + name : name;
 	}
 
 	/**
