@@ -20,6 +20,9 @@ For a full list of all processors available, see the {javadoc-processors}/packag
 | {javadoc-processors}/DefaultEntityFetchingViewProcessor[DefaultEntityFetchingViewProcessor]
 | Uses the default repository or query fetcher to fetch all items for the current entity view context.
 
+| {javadoc-processors}/DefaultValidationViewProcessor[DefaultValidationViewProcessor]
+| Registers the default `EntityViewCommandValidator` and validates the command object if state changing web request (POST, PUT, DELETE, PATCH) is performed.
+
 | {javadoc-processors}/DelegatingEntityFetchingViewProcessor[DelegatingEntityFetchingViewProcessor]
 | Fetches items using a configured `Function` or `BiFunction`.
 

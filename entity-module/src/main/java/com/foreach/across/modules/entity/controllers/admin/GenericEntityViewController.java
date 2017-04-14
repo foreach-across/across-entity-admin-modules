@@ -26,11 +26,10 @@ import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewCon
 import com.foreach.across.modules.entity.views.context.DefaultEntityViewContext;
 import com.foreach.across.modules.entity.views.context.EntityViewContextLoader;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
-import com.foreach.across.modules.entity.views.request.EntityViewCommandValidator;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
-import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
+import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
@@ -38,13 +37,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.Optional;
 
@@ -77,7 +79,6 @@ public class GenericEntityViewController
 	private EntityViewRequest entityViewRequest;
 	private PageContentStructure pageContentStructure;
 	private EntityViewContextLoader entityViewContextLoader;
-	private EntityViewCommandValidator entityViewCommandValidator;
 	private WebAppPathResolver webAppPathResolver;
 
 	/**
@@ -139,13 +140,10 @@ public class GenericEntityViewController
 	}
 
 	@InitBinder(EntityViewModel.VIEW_COMMAND)
-	public void initViewCommandBinder( WebDataBinder dataBinder, HttpMethod httpMethod ) {
-		dataBinder.setMessageCodesResolver( entityViewContext.getMessageCodeResolver() );
+	public void initViewCommandBinder( WebDataBinder dataBinder ) {
+		entityViewRequest.setDataBinder( dataBinder );
 
-		// by default register command validation for post, put and patch requests
-		if ( httpMethod == HttpMethod.POST || httpMethod == HttpMethod.PUT || httpMethod == HttpMethod.PATCH ) {
-			dataBinder.setValidator( entityViewCommandValidator );
-		}
+		dataBinder.setMessageCodesResolver( entityViewContext.getMessageCodeResolver() );
 
 		EntityViewFactory viewFactory = entityViewRequest.getViewFactory();
 		viewFactory.initializeCommandObject( entityViewRequest, entityViewRequest.getCommand(), dataBinder );
@@ -158,24 +156,9 @@ public class GenericEntityViewController
 	                          PATH_ASSOCIATED_ENTITY,
 	                          PATH_ASSOCIATED_ENTITY + "/{action:delete|update}"
 	})
-	public Object executeView( @ModelAttribute(EntityViewModel.VIEW_COMMAND) EntityViewCommand command ) {
-		return executeView( command, null );
-	}
+	public Object executeView( @ModelAttribute(EntityViewModel.VIEW_COMMAND) EntityViewCommand command, BindingResult bindingResult ) {
+		Assert.notNull( command );
 
-	@RequestMapping(
-			value = { "",
-			          PATH_ENTITY,
-			          PATH_ENTITY + "/{action:delete|update}",
-			          PATH_ASSOCIATION,
-			          PATH_ASSOCIATED_ENTITY,
-			          PATH_ASSOCIATED_ENTITY + "/{action:delete|update}"
-			},
-			method = { RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH }
-	)
-	public Object executeView(
-			@ModelAttribute(EntityViewModel.VIEW_COMMAND) @Valid EntityViewCommand command,
-			BindingResult bindingResult
-	) {
 		entityViewRequest.setBindingResult( bindingResult );
 
 		EntityView entityView = entityViewRequest.getViewFactory().createView( entityViewRequest );
@@ -264,11 +247,6 @@ public class GenericEntityViewController
 	@Autowired
 	void setPageContentStructure( PageContentStructure pageContentStructure ) {
 		this.pageContentStructure = pageContentStructure;
-	}
-
-	@Autowired
-	void setEntityViewCommandValidator( EntityViewCommandValidator entityViewCommandValidator ) {
-		this.entityViewCommandValidator = entityViewCommandValidator;
 	}
 
 	@Autowired

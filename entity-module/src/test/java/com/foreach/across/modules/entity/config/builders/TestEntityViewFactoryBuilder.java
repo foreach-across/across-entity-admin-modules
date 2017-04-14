@@ -233,8 +233,16 @@ public class TestEntityViewFactoryBuilder
 	@Test
 	public void processors() {
 		EntityViewProcessor one = mock( EntityViewProcessor.class );
+		EntityViewProcessor two = mock( SimpleEntityViewProcessorAdapter.class );
 
-		assertSame( dispatchingViewFactory, builder.viewProcessor( one ).viewProcessor( "two", one ).build() );
+		assertSame(
+				dispatchingViewFactory,
+				builder.viewProcessor( one )
+				       .viewProcessor( two, 0 )
+				       .viewProcessor( "two", one )
+				       .viewProcessor( "three", one, 10 )
+				       .build()
+		);
 
 		Optional<EntityViewProcessorRegistry.EntityViewProcessorRegistration> actual = processors.getProcessorRegistration( one.getClass().getName() );
 		assertTrue( actual.isPresent() );
@@ -243,6 +251,17 @@ public class TestEntityViewFactoryBuilder
 		actual = processors.getProcessorRegistration( "two" );
 		assertTrue( actual.isPresent() );
 		actual.ifPresent( r -> assertSame( one, r.getProcessor() ) );
+
+		actual = processors.getProcessorRegistration( "three" );
+		assertTrue( actual.isPresent() );
+		actual.ifPresent( r -> {
+			assertSame( one, r.getProcessor() );
+			assertEquals( 10, r.getOrder() );
+		} );
+
+		actual = processors.getProcessorRegistration( SimpleEntityViewProcessorAdapter.class.getName() );
+		assertTrue( actual.isPresent() );
+		actual.ifPresent( r -> assertEquals( 0, r.getOrder() ) );
 
 		before();
 

@@ -23,10 +23,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertySelec
 import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor;
-import com.foreach.across.modules.entity.views.processors.SaveEntityViewProcessor;
-import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
-import com.foreach.across.modules.entity.views.processors.SingleEntityPageStructureViewProcessor;
+import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -62,6 +59,7 @@ final class CreateViewInitializer extends AbstractViewInitializer<EntityViewFact
 			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
 			       .viewElementMode( ViewElementMode.FORM_WRITE )
 			       .showProperties( EntityPropertySelector.WRITABLE )
+			       .viewProcessor( beanFactory.getBean( DefaultValidationViewProcessor.class ), 0 )
 			       .viewProcessor( beanFactory.getBean( GlobalPageFeedbackViewProcessor.class ) );
 
 			SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );

@@ -27,6 +27,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -65,6 +66,11 @@ public class EntityViewRequest
 	 * Command object for the view.
 	 */
 	private EntityViewCommand command;
+
+	/**
+	 * DataBinder being used for the command object.
+	 */
+	private WebDataBinder dataBinder;
 
 	/**
 	 * Binding result for the command object.

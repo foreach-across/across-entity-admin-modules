@@ -21,10 +21,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.processors.DeleteEntityViewProcessor;
-import com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor;
-import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
-import com.foreach.across.modules.entity.views.processors.SingleEntityPageStructureViewProcessor;
+import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -58,6 +55,7 @@ final class DeleteViewInitializer extends AbstractViewInitializer<EntityViewFact
 			       .messagePrefix( "entityViews." + EntityView.DELETE_VIEW_NAME, "entityViews" )
 			       .requiredAllowableAction( AllowableAction.DELETE )
 			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
+			       .viewProcessor( beanFactory.getBean( DefaultValidationViewProcessor.class ), 0 )
 			       .viewProcessor( beanFactory.getBean( GlobalPageFeedbackViewProcessor.class ) );
 
 			SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );

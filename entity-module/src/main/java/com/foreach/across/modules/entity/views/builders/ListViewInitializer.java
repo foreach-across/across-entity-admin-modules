@@ -65,6 +65,7 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 			       .viewElementMode( ViewElementMode.LIST_VALUE )
 			       .pageSize( 50 )
 			       .showProperties( EntityPropertySelector.READABLE )
+			       .viewProcessor( beanFactory.getBean( DefaultValidationViewProcessor.class ), 0 )
 			       .viewProcessor( beanFactory.getBean( GlobalPageFeedbackViewProcessor.class ) );
 
 			String defaultSort = determineDefaultSort( entityConfiguration );

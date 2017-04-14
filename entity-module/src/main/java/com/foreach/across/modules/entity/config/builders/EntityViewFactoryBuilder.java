@@ -27,6 +27,7 @@ import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -180,6 +181,20 @@ public class EntityViewFactoryBuilder
 		return viewProcessor( viewProcessorName( processor.getClass() ), processor );
 	}
 
+	/**
+	 * Add a processor object that should be applied to the view factory.
+	 * Specify an explicit order for the processor.
+	 *
+	 * @param processor instance - should not be null
+	 * @return current builder
+	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
+	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
+	 */
+	public EntityViewFactoryBuilder viewProcessor( EntityViewProcessor processor, int order ) {
+		Assert.notNull( processor );
+		return viewProcessor( viewProcessorName( processor.getClass() ), processor, order );
+	}
+
 	private String viewProcessorName( Class<?> processorType ) {
 		return ClassUtils.getUserClass( processorType ).getName();
 	}
@@ -199,6 +214,27 @@ public class EntityViewFactoryBuilder
 		Assert.notNull( processorName );
 		Assert.notNull( processor );
 		processors.add( new ProcessorEntry( processorName, processor ) );
+		return this;
+	}
+
+	/**
+	 * Add a processor object that should be applied to the view factory.
+	 * Register the processor under the given name and give it a specific order.
+	 *
+	 * @param processorName unique processor name
+	 * @param processor     instance - should not be null
+	 * @param order         of the processor
+	 * @return current builder
+	 * @see #postProcess(BiConsumer)
+	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
+	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
+	 */
+	public EntityViewFactoryBuilder viewProcessor( String processorName, EntityViewProcessor processor, int order ) {
+		Assert.notNull( processorName );
+		Assert.notNull( processor );
+		ProcessorEntry entry = new ProcessorEntry( processorName, processor );
+		entry.setOrder( order );
+		processors.add( entry );
 		return this;
 	}
 
@@ -347,7 +383,7 @@ public class EntityViewFactoryBuilder
 				processorRegistry.remove( entry.name );
 			}
 			else {
-				processorRegistry.addProcessor( entry.name, entry.processor );
+				processorRegistry.addProcessor( entry.name, entry.processor, entry.order );
 			}
 		} );
 
@@ -439,6 +475,9 @@ public class EntityViewFactoryBuilder
 	{
 		private final String name;
 		private final EntityViewProcessor processor;
+
+		@Setter
+		private int order = EntityViewProcessorRegistry.DEFAULT_ORDER;
 
 		public boolean isRemove() {
 			return processor == null;

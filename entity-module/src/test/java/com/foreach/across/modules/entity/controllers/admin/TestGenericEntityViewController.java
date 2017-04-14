@@ -24,7 +24,6 @@ import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.context.EntityViewContextLoader;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
-import com.foreach.across.modules.entity.views.request.EntityViewCommandValidator;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.web.context.AcrossWebArgumentResolver;
@@ -53,7 +52,8 @@ import javax.servlet.http.HttpServletResponse;
 import static com.foreach.across.modules.entity.web.EntityViewModel.*;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -89,9 +89,6 @@ public class TestGenericEntityViewController
 
 	@Mock
 	private EntityView entityView;
-
-	@Mock
-	private EntityViewCommandValidator validator;
 
 	@Mock
 	private WebAppPathResolver webAppPathResolver;
@@ -130,8 +127,6 @@ public class TestGenericEntityViewController
 
 		when( viewFactory.createView( viewRequest ) ).thenReturn( entityView );
 		when( entityView.getTemplate() ).thenReturn( "view-template" );
-
-		when( validator.supports( any() ) ).thenReturn( true );
 	}
 
 	@Test
@@ -182,30 +177,6 @@ public class TestGenericEntityViewController
 		       .andExpect( status().isOk() );
 		verify( viewRequest ).setViewName( "otherView" );
 		verify( viewRequest ).setPartialFragment( "header" );
-	}
-
-	@Test
-	public void validatorNotRegisteredForGet() throws Exception {
-		mockMvc.perform( get( "/entities/type/create" ) )
-		       .andExpect( status().isOk() );
-
-		verify( validator, never() ).validate( same( command ), any() );
-	}
-
-	@Test
-	public void validatorRegisteredForPost() throws Exception {
-		mockMvc.perform( post( "/entities/type/create" ) )
-		       .andExpect( status().isOk() );
-
-		verify( validator ).validate( same( command ), any() );
-	}
-
-	@Test
-	public void validatorRegisteredForPut() throws Exception {
-		mockMvc.perform( put( "/entities/type/create" ) )
-		       .andExpect( status().isOk() );
-
-		verify( validator ).validate( same( command ), any() );
 	}
 
 	@Test
