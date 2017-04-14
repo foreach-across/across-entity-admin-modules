@@ -67,6 +67,37 @@ You can render a `ViewElement` available on the model anywhere in a Thymeleaf te
 WARNING: You usually do not want to cache and reuse `ViewElement` components.
 It is better to cache `ViewElementBuilder`.
 
+=== Partial rendering
+It is possible to render only a single `ViewElement` by passing the element name.
+In that case all code will still be executed and all markup built, but only the markup of those elements will be written to the response.
+
+The `ViewElement` name is specified in the *_partial_* parameter with a *::* prefix.
+
+.Example
+Assume we create a single `ViewElement` with a specific name.
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@GetMapping("/render")
+String get() {
+  model.addAttribute( "myViewElement", new TextViewElement( "myViewElement", "some text" ) );
+}
+----
+And we render it in the following snippet:
+[source,xml,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+<h1>title</h1>
+<div th:fragment="mycontent">
+	<across:view element="${myViewElement}" />
+</div>
+----
+
+* _/render_ would output _<h1>title</h1><div>some text</div>_
+* _/render?_partial=mycontent_ would output _<div>some text</div>_
+* _/render?_partial=::myViewElement_ would output _some text_
+* _/render?_partial=mycontent::myViewElement_ would also output _some text_
+
 === Default properties
 In its most simple form, a `ViewElement` has the following properties:
 
