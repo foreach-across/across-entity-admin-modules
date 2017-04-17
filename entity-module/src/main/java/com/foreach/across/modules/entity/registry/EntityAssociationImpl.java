@@ -19,6 +19,8 @@ import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 
+import java.util.stream.Stream;
+
 /**
  * @author Arne Vandamme
  */
@@ -136,6 +138,15 @@ public class EntityAssociationImpl extends AttributeSupport implements MutableEn
 	@Override
 	public void registerView( String viewName, EntityViewFactory viewFactory ) {
 		sourceEntityConfiguration.registerView( buildAssociatedViewName( viewName ), viewFactory );
+	}
+
+	@Override
+	public String[] getViewNames() {
+		String prefix = getName() + "_";
+		return Stream.of( sourceEntityConfiguration.getViewNames() )
+		             .filter( viewName -> viewName.startsWith( prefix ) )
+		             .map( viewName -> viewName.substring( prefix.length() ) )
+		             .toArray( String[]::new );
 	}
 
 	private String buildAssociatedViewName( String viewName ) {

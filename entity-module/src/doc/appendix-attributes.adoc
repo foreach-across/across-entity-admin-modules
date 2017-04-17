@@ -1,0 +1,49 @@
+[[appendix-entity-configuration-attributes]]
+=== EntityConfiguration attributes
+The following table lists commonly present attributes on an `EntityConfiguration`.
+
+|===
+|Key |Value
+
+|`Repository.class`
+|In case of an entity registered through a Spring data repository.
+
+|`RepositoryFactoryInformation.class`
+|In case of an entity registered through a Spring data repository.
+
+|`PersistentEntity.class`
+|In case of an entity registered through a Spring data repository that exposed `PersistentEntity` information.
+
+|`EntityQueryExecutor.class`
+|Holds the `EntityQueryExecutor` that can be used for <<entity-query,custom `EntityQuery` execution>> and will be used by default for fetching entities.
+Available if the `Repository` was supported by one of the <<entity-query-executor,default `EntityQueryExecutor` implementations>>.
+
+|`EntityQueryParser.class`
+|Holds the `EntityQueryParser` that should be used for <<entity-query-language,parsing EQL statements>> into a valid `EntityQuery`.
+Available if the `EntityQueryExecutor.class` attribute is present.
+
+|===
+
+TODO: OptionGenerator, OptionIterableBuilder, EntityAttribute.OPTIONS_ENTITY_QUERY
+
+[[appendix-entity-property-descriptor-attributes]]
+=== EntityPropertyDescriptor attributes
+The following table lists commonly present attributes on an `EntityPropertyDescriptor`.
+
+|===
+|Key |Value
+
+|`PersistentProperty.class`
+|In case of a property of a `PersistentEntity` registered through a Spring data repository.
+
+|`Sort.Order.class`
+|Contains the default `Sort.Order` if sorting is enabled on this property.
+By default strings have an order that ignores case.
+
+|`EntityAttributes.CONTROL_NAME`
+|Optional: required to be a `String` value.
+When present this value will be used as the form control name instead of the descriptor name.
+
+|===
+
+TODO: OptionGenerator, OptionIterableBuilder, EntityAttribute.OPTIONS_ENTITY_QUERY

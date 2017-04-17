@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 
 import java.util.Locale;
 
@@ -124,6 +124,7 @@ public class TestEntityMessageCodeResolver
 		                                            new Object[] { messages.getNameSingularInline() },
 		                                            "Default for create" );
 		assertEquals( "Default for create", createMessage );
+
 
 		createMessage = messages.getMessageWithFallback( "actions.create",
 		                                                 new Object[] { "", messages.getNameSingularInline() },

@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
+import lombok.Getter;
 
 import java.util.Arrays;
 
@@ -31,6 +32,7 @@ import java.util.Arrays;
  */
 public final class MessagePrefixingViewProcessor extends SimpleEntityViewProcessorAdapter
 {
+	@Getter
 	private final String[] messagePrefixes;
 
 	public MessagePrefixingViewProcessor() {

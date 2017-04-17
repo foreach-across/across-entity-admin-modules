@@ -83,6 +83,9 @@ The public API modified accordingly with a focus on simplification and future ex
 * extension of the <<entity-query,EntityQuery infrastructure>>
 ** addition of the <<entity-query-language,EntityQuery Language (EQL)>> providing SQL-like syntax for building an `EntityQuery`
 ** provide a default <<list-view-filter,EQL-based filter for list views>>
+* addition of the entity browser in the _Developer tools_ section of AdminWebModule
+** allows seeing all registered entities along with their attributes, properties, views and associations
+** the entity browser is only activate if development mode is active
 
 :numbered:
 
@@ -186,62 +189,17 @@ register conversion service
 add json serializer
 
 [[automatic-attributes]]
-==== Registered EntityConfiguration attributes
-
-Some of these may or may not be available depending on how the entity was registered.
-
-|===
-|Key |Value
-
-|`Repository.class`
-|In case of an entity registered through a Spring data repository.
-
-|`RepositoryFactoryInformation.class`
-|In case of an entity registered through a Spring data repository.
-
-|`PersistentEntity.class`
-|In case of an entity registered through a Spring data repository that exposed `PersistentEntity` information.
-
-|`EntityQueryExecutor.class`
-|Holds the `EntityQueryExecutor` that can be used for <<entity-query,custom `EntityQuery` execution>> and will be used by default for fetching entities.
-Available if the `Repository` was supported by one of the <<entity-query-executor,default `EntityQueryExecutor` implementations>>.
-
-|`EntityQueryParser.class`
-|Holds the `EntityQueryParser` that should be used for <<entity-query-language,parsing EQL statements>> into a valid `EntityQuery`.
-Available if the `EntityQueryExecutor.class` attribute is present.
-
-|===
-
-TODO: OptionGenerator, OptionIterableBuilder, EntityAttribute.OPTIONS_ENTITY_QUERY
+===== Automatic attribute registration
+See the appendix for an <<appendix-entity-configuration-attributes,overview of commonly registered attributes>>.
 
 TODO: enums as entities!
-
-==== Registered EntityPropertyDescriptor attributes
-
-|===
-|Key |Value
-
-|`PersistentProperty.class`
-|In case of a property of a `PersistentEntity` registered through a Spring data repository.
-
-|`Sort.Order.class`
-|Contains the default `Sort.Order` if sorting is enabled on this property.  
-By default strings have an order that ignores case.
-
-|`EntityAttributes.CONTROL_NAME`
-|Optional: required to be a `String` value.
-When present this value will be used as the form control name instead of the descriptor name.
-
-|===
-
-TODO: OptionGenerator, OptionIterableBuilder, EntityAttribute.OPTIONS_ENTITY_QUERY
 
 == Integration with other modules
 
 [[integration:adminwebmodule]]
 ==== AdminWebModule
 
-If the `AdminWebModule` is present entity management controllers will be created for all registered entity configurations.
+If the AdminWebModule is present entity management controllers will be created for all registered entity configurations.
 If you want to avoid the automatic registration of entity management controllers for a particular entity type, you should set the `EntityConfiguration` as `hidden`.
 This will effectively disable the default entity controllers for that type, and hide the existence of the entity type from the administration interface.
 
@@ -249,6 +207,10 @@ You can also hide one or more associations.
 By default an association will not be shown if one of the participating entities is hidden.
 If you specify the `hidden` property of an `EntityAssociation` explicitly, that value will take precedence of the entity configurations.
 This way it is possible to generate management pages for associated entities, but not for the main entity type.
+
+==== AdminWebModule: developer tools
+When integrated with AdminWebModule and development mode is active, an entity registry browser will be added to the _Developer tools_ section of the administration ui.
+The browser allows you to inspect the registered entities along with their views, associations and properties.
 
 include::chap-entity-associations.adoc[]
 
@@ -303,4 +265,8 @@ See the `AuditableEntityUiConfiguration` for full customization.
 
 include::chap-entity-query.adoc[]
 
+== Appendices
+include::appendix-attributes.adoc[]
+include::appendix-message-codes.adoc[]
 include::appendix-view-processors.adoc[]
+

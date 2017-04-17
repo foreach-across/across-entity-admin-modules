@@ -18,10 +18,6 @@ spring:
     url: jdbc:h2:../db/entity-module
     username: sa
 
-across:
-  development:
-    active: true
-
 acrossModule:
   EntityModule:
     resources: ../entity-module/src/main/resources

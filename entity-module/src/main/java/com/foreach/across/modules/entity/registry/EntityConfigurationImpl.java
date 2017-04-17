@@ -27,6 +27,7 @@ import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -133,6 +134,13 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	@SuppressWarnings("unchecked")
 	public <Y extends EntityViewFactory> Y getViewFactory( String viewName ) {
 		return (Y) registeredViews.get( viewName );
+	}
+
+	@Override
+	public String[] getViewNames() {
+		String[] viewNames = registeredViews.keySet().toArray( new String[registeredViews.size()] );
+		Arrays.sort( viewNames );
+		return viewNames;
 	}
 
 	@Override

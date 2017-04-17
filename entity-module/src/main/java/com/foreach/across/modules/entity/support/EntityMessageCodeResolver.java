@@ -293,6 +293,14 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 		                                           defaultValue != null ? defaultValue : codes[0] );
 	}
 
+	public String[] buildMessageCodes( String code ) {
+		return generateCodes( prefix, new String[0], code );
+	}
+
+	public String[] buildMessageCodesWithFallback( String code ) {
+		return generateCodes( ArrayUtils.addAll( prefix, fallbackCollections ), new String[0], code );
+	}
+
 	public static String[] generateCodes( String[] rootCollections, String[] subCollections, String itemKey ) {
 		Assert.notNull( rootCollections );
 		Assert.notNull( subCollections );
