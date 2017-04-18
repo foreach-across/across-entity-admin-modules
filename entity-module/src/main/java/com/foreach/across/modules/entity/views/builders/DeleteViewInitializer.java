@@ -52,7 +52,7 @@ final class DeleteViewInitializer extends AbstractViewInitializer<EntityViewFact
 	protected BiConsumer<EntityConfiguration<?>, EntityViewFactoryBuilder> createConfigurationInitializer() {
 		return ( entityConfiguration, builder ) -> {
 			builder.factoryType( DefaultEntityViewFactory.class )
-			       .messagePrefix( "entityViews." + EntityView.DELETE_VIEW_NAME, "entityViews" )
+			       .messagePrefix( "views[" + templateName() + "]" )
 			       .requiredAllowableAction( AllowableAction.DELETE )
 			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
 			       .viewProcessor( beanFactory.getBean( DefaultValidationViewProcessor.class ), 0 )

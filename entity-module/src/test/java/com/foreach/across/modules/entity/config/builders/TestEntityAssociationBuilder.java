@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
@@ -71,6 +72,7 @@ public class TestEntityAssociationBuilder
 		MutableEntityAssociation association = mock( MutableEntityAssociation.class );
 		when( configuration.createAssociation( "users" ) ).thenReturn( association );
 		when( association.getSourceEntityConfiguration() ).thenReturn( configuration );
+		when( configuration.getEntityMessageCodeResolver() ).thenReturn( mock( EntityMessageCodeResolver.class ) );
 
 		MutableEntityPropertyRegistry sourceRegistry = mock( MutableEntityPropertyRegistry.class );
 		when( configuration.getPropertyRegistry() ).thenReturn( sourceRegistry );
@@ -78,6 +80,7 @@ public class TestEntityAssociationBuilder
 		when( sourceRegistry.getProperty( "users" ) ).thenReturn( sourceProperty );
 
 		EntityConfiguration target = mock( EntityConfiguration.class );
+		when( target.getEntityMessageCodeResolver() ).thenReturn( new EntityMessageCodeResolver() );
 		when( entityRegistry.getEntityConfiguration( String.class ) ).thenReturn( target );
 		when( association.getTargetEntityConfiguration() ).thenReturn( target );
 		EntityPropertyRegistry targetRegistry = mock( EntityPropertyRegistry.class );
@@ -109,6 +112,7 @@ public class TestEntityAssociationBuilder
 		verify( association ).setAttributes( Collections.singletonMap( "someAttribute", "someAttributeValue" ) );
 		verify( association ).setParentDeleteMode( EntityAssociation.ParentDeleteMode.SUPPRESS );
 		verify( association ).registerView( EntityView.LIST_VIEW_NAME, listViewFactory );
+		verify( association ).setAttribute( eq( EntityMessageCodeResolver.class ), any( EntityMessageCodeResolver.class ) );
 	}
 
 	@Test

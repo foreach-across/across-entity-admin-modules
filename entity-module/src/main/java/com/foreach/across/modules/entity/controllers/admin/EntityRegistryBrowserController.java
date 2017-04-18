@@ -41,6 +41,7 @@ import com.foreach.across.modules.web.menu.RequestMenuSelector;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
@@ -156,6 +157,8 @@ class EntityRegistryBrowserController
 			if ( detailName != null ) {
 				model.addAttribute( "viewName", detailName );
 
+				final EntityMessageCodeResolver codeResolver = getEntityOrAssociationCodeResolver( detailName, entity );
+
 				EntityViewFactory viewFactory = entity.getViewFactory( detailName );
 				if ( viewFactory instanceof DispatchingEntityViewFactory ) {
 					EntityViewProcessorRegistry processorRegistry = ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry();
@@ -190,12 +193,11 @@ class EntityRegistryBrowserController
 									registration -> {
 										String[] prefixes = registration.getProcessor( MessagePrefixingViewProcessor.class )
 										                                .getMessagePrefixes();
-										EntityMessageCodeResolver codeResolver = entity.getEntityMessageCodeResolver();
 										if ( codeResolver != null ) {
 											model.addAttribute(
 													"messageCodePrefixes",
-													entity.getEntityMessageCodeResolver().prefixedResolver( prefixes ).buildMessageCodesWithFallback(
-															propertyName != null ? "properties." + propertyName : "*"
+													codeResolver.prefixedResolver( prefixes ).buildMessageCodes(
+															propertyName != null ? "properties." + propertyName : "*", true
 													)
 											);
 										}
@@ -230,7 +232,7 @@ class EntityRegistryBrowserController
 
 				EntityMessageCodeResolver codeResolver = entity.getEntityMessageCodeResolver();
 				if ( codeResolver != null ) {
-					model.addAttribute( "messageCodePrefixes", codeResolver.buildMessageCodesWithFallback( "properties." + property.getName() ) );
+					model.addAttribute( "messageCodePrefixes", codeResolver.buildMessageCodes( "properties." + property.getName(), true ) );
 				}
 
 				page.addChild( new TemplateViewElement(
@@ -239,7 +241,7 @@ class EntityRegistryBrowserController
 			else {
 				EntityMessageCodeResolver codeResolver = entity.getEntityMessageCodeResolver();
 				if ( codeResolver != null ) {
-					model.addAttribute( "messageCodePrefixes", codeResolver.buildMessageCodesWithFallback( "*" ) );
+					model.addAttribute( "messageCodePrefixes", codeResolver.buildMessageCodes( "*", true ) );
 				}
 
 				ArrayList<EntityPropertyDescriptor> propertyDescriptors = new ArrayList<>( entity.getPropertyRegistry().getRegisteredDescriptors() );
@@ -251,6 +253,19 @@ class EntityRegistryBrowserController
 		}
 
 		return PageContentStructure.TEMPLATE;
+	}
+
+	private EntityMessageCodeResolver getEntityOrAssociationCodeResolver( @PathVariable(required = false) String detailName, EntityConfiguration<?> entity ) {
+		EntityMessageCodeResolver codeResolver = entity.getEntityMessageCodeResolver();
+
+		if ( StringUtils.contains( detailName, "_" ) ) {
+			String associationName = StringUtils.split( detailName, "_" )[0];
+			EntityAssociation association = entity.association( associationName );
+			if ( association != null && association.hasAttribute( EntityMessageCodeResolver.class ) ) {
+				codeResolver = association.getAttribute( EntityMessageCodeResolver.class );
+			}
+		}
+		return codeResolver;
 	}
 
 	private void registerDocumentationLinks( Model model ) {

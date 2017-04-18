@@ -49,7 +49,7 @@ public class TestMessagePrefixingViewProcessor
 	@Test
 	public void defaultPrefix() {
 		EntityMessageCodeResolver newResolver = mock( EntityMessageCodeResolver.class );
-		when( codeResolver.prefixedResolver( "entityViews" ) ).thenReturn( newResolver );
+		when( codeResolver.prefixedResolver( "views" ) ).thenReturn( newResolver );
 
 		new MessagePrefixingViewProcessor().prepareEntityViewContext( viewContext );
 		verify( viewContext ).setMessageCodeResolver( newResolver );

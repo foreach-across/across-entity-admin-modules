@@ -68,11 +68,39 @@ Example: _UserModule.entities.user.pageTitle.update=Updating {1}: {2}_
 | Feedback message shown for the given feedback type. +
 Example: _UserModule.entities.user.feedback.validationErrors_
 
+| *EntityPrefix*.sortableTable.*
+| Sortable table results and pager text keys. +
+Example: _UserModule.entities.user.sortableTable.resultsFound_
+
 |===
 
-* _Entity_ codes are camel cased, eg. `CarBrand` would become *carBrand*
-* EntityPrefix: ModuleName.entities.entityName, or EntityModule.entities.entityName or simply entityName
-* Hierarchical lookups: entity can be removed, module can be replaced by EntityModule
+NOTE: _Entity_ codes are camel cased, eg. `CarBrand` would become *carBrand*
+
+.EntityPrefix
+Every code requested results in several codes being tried with a number of prefixes:
+The following prefixes are tried in oder:
+
+1. (If association view) _ModuleName_.entities._sourceEntityName_.associations[_associationName_]
+2. _ModuleName_.entities._entityName_
+3. EntityModule.entities._entityName_
+4. EntityModule.entities
+
+When rendering a view, the default prefix will be appended with a view type prefix as well.
+Usually of the form _views[viewType]_.
+
+Example lookup of property "name" on the default list view for entity "user":
+
+1. MyModule.entities.user.views[listView].properties.name
+2. MyModule.entities.user.properties.name
+3. MyModule.entities.views[listView].properties.name
+4. MyModule.entities.properties.name
+3. EntityModule.entities.views[listView].properties.name
+4. EntityModule.entities.properties.name
+
+TIP: To get a better insight in the message codes generated, use the entity browser in the developer tools.
+
+.Default messages
+See the {bitbucket-url}/resources/messages/entity/EntityModule.properties[source code of EntityModule.properties] for all default message codes used by EntityModule.
 
 [[message-code-parameters]]
 .Message code parameters
@@ -81,3 +109,6 @@ Some message codes support parameters, if so, the following could be available:
 * {0}: entity name
 * {1}: entity name inline
 * {2}: label of the entity being modified (if known)
+
+.Debugging message code lookups
+You can trace the message codes being resolved by setting the logger named *com.foreach.across.modules.entity.support.EntityMessageCodeResolver* to _TRACE_ level.

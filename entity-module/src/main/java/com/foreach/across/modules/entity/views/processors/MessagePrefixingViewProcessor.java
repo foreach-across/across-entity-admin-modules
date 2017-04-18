@@ -25,7 +25,9 @@ import java.util.Arrays;
 
 /**
  * Updates the message code resolver on the {@link com.foreach.across.modules.entity.views.context.EntityViewContext}
- * with one or more prefixes. By default adds <strong>entityViews</strong> as the prefix.
+ * with one or more prefixes. By default adds <strong>views</strong> as the prefix.
+ * <p/>
+ * Most views have a different prefix along the lines of <strong>views[VIEW_TEMPLATE_NAME]</strong> specified (eg. <em>views[createView]</em>).
  *
  * @author Arne Vandamme
  * @since 2.0.0
@@ -36,7 +38,7 @@ public final class MessagePrefixingViewProcessor extends SimpleEntityViewProcess
 	private final String[] messagePrefixes;
 
 	public MessagePrefixingViewProcessor() {
-		this( "entityViews" );
+		this( "views" );
 	}
 
 	public MessagePrefixingViewProcessor( String... messagePrefixes ) {

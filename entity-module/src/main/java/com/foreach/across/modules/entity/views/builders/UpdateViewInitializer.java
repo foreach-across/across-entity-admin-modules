@@ -55,7 +55,7 @@ final class UpdateViewInitializer extends AbstractViewInitializer<EntityViewFact
 	protected BiConsumer<EntityConfiguration<?>, EntityViewFactoryBuilder> createConfigurationInitializer() {
 		return ( entityConfiguration, builder ) -> {
 			builder.factoryType( DefaultEntityViewFactory.class )
-			       .messagePrefix( "entityViews." + templateName(), "entityViews" )
+			       .messagePrefix( "views[" + templateName() + "]" )
 			       .requiredAllowableAction( AllowableAction.UPDATE )
 			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
 			       .viewElementMode( ViewElementMode.FORM_WRITE )

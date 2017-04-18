@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
 import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
@@ -26,6 +27,8 @@ import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.ManyToOne;
+
+import static com.foreach.across.modules.entity.config.builders.EntityAssociationBuilder.registerAssociationMessageCodeResolver;
 
 /**
  * Builds the association in the opposite direction.
@@ -61,6 +64,8 @@ class ManyToOneEntityAssociationBuilder implements EntityAssociationBuilder
 					AssociatedEntityQueryExecutor.class,
 					new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), queryExecutor )
 			);
+
+			registerAssociationMessageCodeResolver( association );
 		}
 	}
 

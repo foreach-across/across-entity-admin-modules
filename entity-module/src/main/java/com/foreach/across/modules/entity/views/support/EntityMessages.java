@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.support;
 
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -38,12 +39,12 @@ public class EntityMessages implements PagingMessages
 	public static final String PAGE_TITLE_DELETE = "pageTitle.delete";
 	public static final String PAGE_TITLE_VIEW = "pageTitle.view";
 
-	public static final String RESULTS_FOUND = "views.listView.resultsFound";
-	public static final String PAGER = "views.listView.pager";
-	public static final String PAGE = "views.listView.pager.page";
-	public static final String OF_PAGES = "views.listView.pager.ofPages";
-	public static final String NEXT_PAGE = "views.listView.pager.nextPage";
-	public static final String PREVIOUS_PAGE = "views.listView.pager.previousPage";
+	public static final String RESULTS_FOUND = "sortableTable.resultsFound";
+	public static final String PAGER = "sortableTable.pager";
+	public static final String PAGE = "sortableTable.pager.page";
+	public static final String OF_PAGES = "sortableTable.pager.ofPages";
+	public static final String NEXT_PAGE = "sortableTable.pager.nextPage";
+	public static final String PREVIOUS_PAGE = "sortableTable.pager.previousPage";
 
 	private final EntityMessageCodeResolver messageCodeResolver;
 

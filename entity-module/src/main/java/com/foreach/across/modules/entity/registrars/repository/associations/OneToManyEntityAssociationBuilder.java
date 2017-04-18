@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
 import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
@@ -28,6 +29,8 @@ import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.OneToMany;
+
+import static com.foreach.across.modules.entity.config.builders.EntityAssociationBuilder.registerAssociationMessageCodeResolver;
 
 /**
  * @author Andy Somers
@@ -73,6 +76,8 @@ class OneToManyEntityAssociationBuilder implements EntityAssociationBuilder
 						AssociatedEntityQueryExecutor.class,
 						new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), queryExecutor )
 				);
+
+				registerAssociationMessageCodeResolver( association );
 			}
 		}
 	}

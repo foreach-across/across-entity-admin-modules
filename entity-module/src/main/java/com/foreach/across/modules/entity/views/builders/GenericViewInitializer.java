@@ -52,7 +52,7 @@ final class GenericViewInitializer extends AbstractViewInitializer<EntityViewFac
 	protected BiConsumer<EntityConfiguration<?>, EntityViewFactoryBuilder> createConfigurationInitializer() {
 		return ( entityConfiguration, builder ) -> {
 			builder.factoryType( DefaultEntityViewFactory.class )
-			       .messagePrefix( "entityViews" )
+			       .messagePrefix( "views[" + templateName() + "]" )
 			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) );
 		};
 	}
@@ -60,10 +60,7 @@ final class GenericViewInitializer extends AbstractViewInitializer<EntityViewFac
 	@Override
 	protected BiConsumer<EntityAssociation, EntityViewFactoryBuilder> createAssociationInitializer() {
 		return ( entityAssociation, builder ) -> {
-			builder.messagePrefix(
-					"entityViews.association." + entityAssociation.getName(),
-					"entityViews"
-			);
+			builder.messagePrefix( "views[" + templateName() + "]" );
 
 			EntityPropertyDescriptor targetProperty = entityAssociation.getTargetProperty();
 

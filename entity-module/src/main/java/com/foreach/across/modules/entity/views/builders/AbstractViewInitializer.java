@@ -63,11 +63,7 @@ abstract class AbstractViewInitializer<T extends EntityViewFactoryBuilder>
 
 	protected BiConsumer<EntityAssociation, T> createAssociationInitializer() {
 		return ( entityAssociation, builder ) -> {
-			builder.messagePrefix(
-					"entityViews.association." + entityAssociation.getName() + "." + templateName(),
-					"entityViews." + templateName(),
-					"entityViews"
-			);
+			builder.messagePrefix( "views[" + templateName() + "]" );
 
 			EntityPropertyDescriptor targetProperty = entityAssociation.getTargetProperty();
 

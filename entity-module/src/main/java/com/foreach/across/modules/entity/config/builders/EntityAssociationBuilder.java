@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -305,6 +307,8 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 
 			association = configuration.createAssociation( name );
 			association.setTargetEntityConfiguration( targetConfiguration );
+
+			registerAssociationMessageCodeResolver( association );
 		}
 		else if ( targetEntityType != null ) {
 			association.setTargetEntityConfiguration( retrieveTargetConfiguration() );
@@ -389,5 +393,15 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	protected <U extends EntityViewFactoryBuilder> void initializeViewFactoryBuilder( String viewName, String templateName, U builder ) {
 		beanFactory.getBean( EntityViewFactoryBuilderInitializer.class )
 		           .initialize( viewName, templateName, associationBeingBuilt, builder );
+	}
+
+	public static void registerAssociationMessageCodeResolver( MutableEntityAssociation association ) {
+		String[] associationCodePrefixes = association.getSourceEntityConfiguration()
+		                                              .getEntityMessageCodeResolver()
+		                                              .buildMessageCodes( "associations[" + association.getName() + "]" );
+		EntityMessageCodeResolver codeResolver = new EntityMessageCodeResolver( association.getTargetEntityConfiguration().getEntityMessageCodeResolver() );
+		codeResolver.addPrefixes( associationCodePrefixes );
+
+		association.setAttribute( EntityMessageCodeResolver.class, codeResolver );
 	}
 }

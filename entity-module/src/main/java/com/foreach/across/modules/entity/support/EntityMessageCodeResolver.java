@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.support;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -30,24 +31,19 @@ import org.springframework.util.Assert;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 /**
  * Helper for resolving message codes in the context of an EntityConfiguration.
+ * Takes into account the current {@link Locale} for resolving the messages.
  *
  * @author Arne Vandamme
  */
 public class EntityMessageCodeResolver implements MessageSourceAware, MessageCodesResolver
 {
-	private static class PrefixedEntityMessageCodeResolver extends EntityMessageCodeResolver
-	{
-		private final EntityMessageCodeResolver parent;
-
-		public PrefixedEntityMessageCodeResolver( EntityMessageCodeResolver parent ) {
-			this.parent = parent;
-		}
-	}
-
 	private static final Logger LOG = LoggerFactory.getLogger( EntityMessageCodeResolver.class );
 	private static final Object[] NO_ARGUMENTS = new Object[0];
 
@@ -57,7 +53,22 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 	private MessageCodesResolver errorCodesResolver;
 
 	private String[] prefix = new String[0];
+	private String[] subCollections = new String[0];
 	private String[] fallbackCollections = new String[0];
+
+	private String[] generatedPrefixes = new String[0];
+
+	public EntityMessageCodeResolver( EntityMessageCodeResolver original ) {
+		messageSource = original.messageSource;
+		entityConfiguration = original.entityConfiguration;
+		subCollections = original.subCollections;
+		fallbackCollections = original.fallbackCollections;
+		errorCodesResolver = original.errorCodesResolver;
+
+		if ( original.prefix != null ) {
+			setPrefixes( original.prefix );
+		}
+	}
 
 	public EntityMessageCodeResolver() {
 		DefaultMessageCodesResolver errorCodesResolver = new DefaultMessageCodesResolver();
@@ -66,16 +77,46 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 		this.errorCodesResolver = errorCodesResolver;
 	}
 
+	/**
+	 * Replace all prefixes.
+	 *
+	 * @param prefix list
+	 */
 	public void setPrefixes( String... prefix ) {
 		Assert.notNull( prefix );
 		this.prefix = prefix;
+		generatedPrefixes = buildMessageCodes( "", true );
 	}
 
+	/**
+	 * Add a new (first) prefix to use for building message codes.
+	 *
+	 * @param prefix list
+	 */
+	public void addPrefixes( String... prefix ) {
+		setPrefixes( ArrayUtils.addAll( prefix, this.prefix ) );
+	}
+
+	/**
+	 * Set the prefixes that should be applied only if fallback generation is specified.
+	 * These prefixes will be ordered after the primary prefixes.
+	 *
+	 * @param fallbackCollections to try
+	 */
 	public void setFallbackCollections( String... fallbackCollections ) {
 		Assert.notNull( fallbackCollections );
 		this.fallbackCollections = fallbackCollections;
+		generatedPrefixes = buildMessageCodes( "", true );
 	}
 
+	/**
+	 * Set a specific custom resolver that should be used for error code resolving.
+	 * By default the current resolver is used with a <strong>validation</strong> prefix.
+	 * <p/>
+	 * The error codes resolver will be used it this resolved is used for resolving error messages.
+	 *
+	 * @param errorCodesResolver to use
+	 */
 	public void setErrorCodesResolver( MessageCodesResolver errorCodesResolver ) {
 		Assert.notNull( errorCodesResolver );
 		this.errorCodesResolver = errorCodesResolver;
@@ -172,7 +213,7 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 
 	public String getMessage( String code, Object[] arguments, String defaultValue, Locale locale ) {
 		return messageSource.getMessage(
-				buildMessageSourceResolvable( prefix, code, arguments, defaultValue ),
+				buildMessageSourceResolvable( code, false, arguments, defaultValue ),
 				locale
 		);
 	}
@@ -190,13 +231,7 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 	}
 
 	public String getMessageWithFallback( String code, Object[] arguments, String defaultValue, Locale locale ) {
-		return messageSource.getMessage(
-				buildMessageSourceResolvable(
-						ArrayUtils.addAll( prefix, fallbackCollections ),
-						code, arguments, defaultValue
-				),
-				locale
-		);
+		return messageSource.getMessage( buildMessageSourceResolvable( code, true, arguments, defaultValue ), locale );
 	}
 
 	public String getMessage( MessageSourceResolvable messageSourceResolvable ) {
@@ -214,40 +249,61 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 
 	@Override
 	public String[] resolveMessageCodes( String errorCode, String objectName, String field, Class<?> fieldType ) {
-		return addPrefixesToMessageCodes(
-				errorCodesResolver.resolveMessageCodes( errorCode, objectName, field, fieldType ), true
-		);
+		String[] codes = errorCodesResolver.resolveMessageCodes( errorCode, objectName, field, fieldType );
+
+		return Stream.of( generatedPrefixes )
+		             .flatMap( prefix -> Stream.of( codes ).map( code -> prefix.isEmpty() ? code : prefix + "." + code ) )
+		             .toArray( String[]::new );
 	}
 
+	@Deprecated
 	public String[] addPrefixesToMessageCodes( String[] codes, boolean includeFallback ) {
 		return includeFallback
 				? addPrefix( ArrayUtils.addAll( prefix, fallbackCollections ), codes )
 				: addPrefix( prefix, codes );
 	}
 
-	public EntityMessageCodeResolver prefixedResolver( String... additionalPrefixes ) {
-		return prefixedResolver( true, additionalPrefixes );
+	/**
+	 * Generate the actual codes to lookup based on the registered prefixes.
+	 *
+	 * @param code requested
+	 * @return message codes to lookup
+	 */
+	public String[] buildMessageCodes( String code ) {
+		return buildMessageCodes( code, false );
 	}
 
-	public EntityMessageCodeResolver prefixedResolver( boolean keepCurrentPrefix, String... additionalPrefixes ) {
-		String[] newPrefixes = keepCurrentPrefix
-				? ensureCurrentPrefixesRemain( additionalPrefixes ) : additionalPrefixes;
+	/**
+	 * Generate the actual codes to lookup based on the registered prefixes.
+	 * Will not include fallback collections.
+	 *
+	 * @param code            requested
+	 * @param includeFallback should fallback collections be included
+	 * @return message codes to lookup
+	 */
+	public String[] buildMessageCodes( String code, boolean includeFallback ) {
+		return generateCodes( includeFallback ? ArrayUtils.addAll( prefix, fallbackCollections ) : prefix, subCollections, code );
+	}
 
-		PrefixedEntityMessageCodeResolver resolver = new PrefixedEntityMessageCodeResolver( this );
-		resolver.setMessageSource( messageSource );
-		resolver.setEntityConfiguration( entityConfiguration );
-		resolver.setPrefixes( addPrefix( newPrefixes, prefix ) );
-		resolver.setFallbackCollections( addPrefix( newPrefixes, fallbackCollections ) );
+	/**
+	 * Create a custom prefixed resolver where the additional prefixes will actually be applied as
+	 * suffixes for the already registered prefixes.  This will generate an exponential number of codes depending
+	 * on the number of original prefixes and additional prefixes.
+	 * <p/>
+	 * Used to specify scoped code lookups in for example view rendering, where the primary prefixes always stay the same.
+	 *
+	 * @param additionalPrefixes to add
+	 * @return code resolver instance
+	 */
+	public EntityMessageCodeResolver prefixedResolver( String... additionalPrefixes ) {
+		EntityMessageCodeResolver resolver = new EntityMessageCodeResolver();
+		resolver.messageSource = messageSource;
+		resolver.entityConfiguration = entityConfiguration;
+		resolver.fallbackCollections = fallbackCollections;
+		resolver.subCollections = additionalPrefixes;
+		resolver.setPrefixes( prefix );
 
 		return resolver;
-	}
-
-	private String[] ensureCurrentPrefixesRemain( String[] additionalPrefixes ) {
-		if ( !ArrayUtils.contains( additionalPrefixes, "" ) ) {
-			return ArrayUtils.add( additionalPrefixes, "" );
-		}
-
-		return additionalPrefixes;
 	}
 
 	private String[] addPrefix( String[] prefixes, String[] names ) {
@@ -279,61 +335,59 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 		return prefixed;
 	}
 
-	protected MessageSourceResolvable buildMessageSourceResolvable( String[] collections,
-	                                                                String code,
-	                                                                Object[] arguments,
-	                                                                String defaultValue ) {
-		String[] codes = generateCodes( collections, new String[0], code );
+	private MessageSourceResolvable buildMessageSourceResolvable( String code, boolean includeFallback, Object[] arguments, String defaultValue ) {
+		String[] codes = buildMessageCodes( code, includeFallback );
 
 		if ( LOG.isTraceEnabled() ) {
-			LOG.trace( "Looking up {}", StringUtils.join( codes, ", " ) );
+			LOG.trace( "Looking up message codes: {}", StringUtils.join( codes, ", " ) );
 		}
 
-		return new DefaultMessageSourceResolvable( codes, arguments,
-		                                           defaultValue != null ? defaultValue : codes[0] );
+		return new DefaultMessageSourceResolvable( codes, arguments, defaultValue != null ? defaultValue : codes[0] );
 	}
 
-	public String[] buildMessageCodes( String code ) {
-		return generateCodes( prefix, new String[0], code );
-	}
-
-	public String[] buildMessageCodesWithFallback( String code ) {
-		return generateCodes( ArrayUtils.addAll( prefix, fallbackCollections ), new String[0], code );
-	}
-
-	public static String[] generateCodes( String[] rootCollections, String[] subCollections, String itemKey ) {
+	/**
+	 * If the item key is empty, only the prefixes will be generated.
+	 */
+	static String[] generateCodes( String[] rootCollections, String[] subCollections, String itemKey ) {
 		Assert.notNull( rootCollections );
 		Assert.notNull( subCollections );
 		Assert.notNull( itemKey );
 
 		if ( rootCollections.length == 0 && subCollections.length == 0 ) {
-			return new String[] { itemKey };
+			return itemKey.isEmpty() ? new String[0] : new String[] { itemKey };
 		}
 
 		int index = 0;
 
 		String[] codes;
 
-		if ( rootCollections.length == 0 ) {
-			codes = new String[subCollections.length + 1];
+		String suffix = itemKey.isEmpty() ? "" : "." + itemKey;
 
+		List<String> messageCodes = new ArrayList<>( ( rootCollections.length + 1 ) * ( subCollections.length + 1 ) );
+
+		if ( rootCollections.length == 0 ) {
 			for ( String subCollection : subCollections ) {
-				codes[index++] = subCollection + "." + itemKey;
+				if ( !subCollection.isEmpty() ) {
+					messageCodes.add( subCollection + suffix );
+				}
 			}
-			codes[index] = itemKey;
+			if ( !itemKey.isEmpty() ) {
+				messageCodes.add( itemKey );
+			}
 		}
 		else {
-			codes = new String[( subCollections.length + 1 ) * rootCollections.length];
-
 			for ( String rootCollection : rootCollections ) {
-				String prefix = StringUtils.isEmpty( rootCollection ) ? "" : rootCollection + ".";
+				String prefix = rootCollection.isEmpty() ? "" : rootCollection + ".";
 				for ( String subCollection : subCollections ) {
-					codes[index++] = prefix + subCollection + "." + itemKey;
+					if ( !subCollection.isEmpty() ) {
+						messageCodes.add( prefix + subCollection + suffix );
+					}
 				}
-				codes[index++] = prefix + itemKey;
+				messageCodes.add(
+						itemKey.isEmpty() ? rootCollection : ( rootCollection.isEmpty() ? itemKey : rootCollection + suffix ) );
 			}
 		}
 
-		return codes;
+		return messageCodes.toArray( new String[messageCodes.size()] );
 	}
 }

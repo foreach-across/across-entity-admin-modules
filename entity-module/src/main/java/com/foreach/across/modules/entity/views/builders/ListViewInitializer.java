@@ -59,7 +59,7 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 	protected BiConsumer<EntityConfiguration<?>, EntityListViewFactoryBuilder> createConfigurationInitializer() {
 		return ( entityConfiguration, builder ) -> {
 			builder.factoryType( DefaultEntityViewFactory.class )
-			       .messagePrefix( "entityViews." + templateName(), "entityViews" )
+			       .messagePrefix( "views[" + templateName() + "]" )
 			       .requiredAllowableAction( AllowableAction.READ )
 			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
 			       .viewElementMode( ViewElementMode.LIST_VALUE )
@@ -110,11 +110,7 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 	@Override
 	protected BiConsumer<EntityAssociation, EntityListViewFactoryBuilder> createAssociationInitializer() {
 		return ( entityAssociation, builder ) -> {
-			builder.messagePrefix(
-					"entityViews.association." + entityAssociation.getName() + "." + templateName(),
-					"entityViews." + templateName(),
-					"entityViews"
-			);
+			builder.messagePrefix( "views[" + templateName() + "]" );
 
 			SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
 			pageStructureViewProcessor.setAddEntityMenu( true );

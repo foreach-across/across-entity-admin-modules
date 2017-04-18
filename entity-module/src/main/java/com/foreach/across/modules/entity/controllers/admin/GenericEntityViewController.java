@@ -20,6 +20,7 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
@@ -27,6 +28,7 @@ import com.foreach.across.modules.entity.views.context.DefaultEntityViewContext;
 import com.foreach.across.modules.entity.views.context.EntityViewContextLoader;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.entity.web.EntityViewModel;
@@ -192,6 +194,12 @@ public class GenericEntityViewController
 					association.getAttribute( EntityLinkBuilder.class )
 					           .asAssociationFor( parentViewContext.getLinkBuilder(), parentViewContext.getEntity() )
 			);
+
+			EntityMessageCodeResolver codeResolver = association.getAttribute( EntityMessageCodeResolver.class );
+			if ( codeResolver != null ) {
+				entityViewContext.setMessageCodeResolver( codeResolver );
+				entityViewContext.setEntityMessages( new EntityMessages( codeResolver ) );
+			}
 
 			if ( isPossibleEntityId( associatedEntityId ) ) {
 				entityViewContext.setEntity( entityViewContext.getEntityModel().findOne( associatedEntityId ) );

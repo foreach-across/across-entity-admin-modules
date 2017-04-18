@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +44,7 @@ import static org.junit.Assert.*;
 @DirtiesContext
 @WebAppConfiguration
 @ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
-public class TestEntityMessageCodeResolver
+public class ITEntityMessageCodeResolver
 {
 	private static final Locale NL = Locale.forLanguageTag( "nl-BE" );
 
@@ -62,6 +63,48 @@ public class TestEntityMessageCodeResolver
 		assertNotNull( messages );
 
 		LocaleContextHolder.setLocale( Locale.ENGLISH );
+	}
+
+	@Test
+	public void defaultCodeResolverForEntityConfigurations() {
+		EntityMessageCodeResolver clientResolver = entityRegistry.getEntityConfiguration( Client.class ).getEntityMessageCodeResolver();
+		assertArrayEquals(
+				new String[] { "SpringDataJpaModule.entities.client.*" },
+				clientResolver.buildMessageCodes( "*" )
+		);
+		assertArrayEquals(
+				new String[] { "SpringDataJpaModule.entities.client.*", "SpringDataJpaModule.entities.*", "EntityModule.entities.*" },
+				clientResolver.buildMessageCodes( "*", true )
+		);
+		EntityMessageCodeResolver companyResolver = entityRegistry.getEntityConfiguration( Company.class ).getEntityMessageCodeResolver();
+		assertArrayEquals(
+				new String[] { "SpringDataJpaModule.entities.company.*" },
+				companyResolver.buildMessageCodes( "*" )
+		);
+		assertArrayEquals(
+				new String[] { "SpringDataJpaModule.entities.company.*", "SpringDataJpaModule.entities.*", "EntityModule.entities.*" },
+				companyResolver.buildMessageCodes( "*", true )
+		);
+	}
+
+	@Test
+	public void defaultCodeResolverForEntityAssociation() {
+		EntityMessageCodeResolver codeResolver = entityRegistry.getEntityConfiguration( Company.class )
+		                                                       .association( "client.company" )
+		                                                       .getAttribute( EntityMessageCodeResolver.class );
+		assertArrayEquals(
+				new String[] { "SpringDataJpaModule.entities.company.associations[client.company].*", "SpringDataJpaModule.entities.client.*" },
+				codeResolver.buildMessageCodes( "*" )
+		);
+		assertArrayEquals(
+				new String[] {
+						"SpringDataJpaModule.entities.company.associations[client.company].*",
+						"SpringDataJpaModule.entities.client.*",
+						"SpringDataJpaModule.entities.*",
+						"EntityModule.entities.*"
+				},
+				codeResolver.buildMessageCodes( "*", true )
+		);
 	}
 
 	@Test
@@ -90,7 +133,7 @@ public class TestEntityMessageCodeResolver
 
 	@Test
 	public void entityNamesInPrefixedContext() {
-		EntityMessageCodeResolver prefixed = messages.prefixedResolver( "entityViews.listView", "entityViews" );
+		EntityMessageCodeResolver prefixed = messages.prefixedResolver( "views[listView]", "views" );
 
 		assertEquals( "Client", prefixed.getNameSingular() );
 		assertEquals( "client member", prefixed.getNameSingularInline() );
@@ -112,7 +155,7 @@ public class TestEntityMessageCodeResolver
 		assertEquals( "Naam", messages.getPropertyDisplayName( nameProperty, NL ) );
 		assertEquals( "Identity", messages.getPropertyDisplayName( idProperty, NL ) );
 
-		EntityMessageCodeResolver prefixed = messages.prefixedResolver( "entityViews.listView", "entityViews" );
+		EntityMessageCodeResolver prefixed = messages.prefixedResolver( "views[listView]" );
 		assertEquals( "Name", prefixed.getPropertyDisplayName( nameProperty ) );
 		assertEquals( "Naam", prefixed.getPropertyDisplayName( nameProperty, NL ) );
 		assertEquals( "Identiteit", prefixed.getPropertyDisplayName( idProperty, NL ) );
@@ -124,7 +167,6 @@ public class TestEntityMessageCodeResolver
 		                                            new Object[] { messages.getNameSingularInline() },
 		                                            "Default for create" );
 		assertEquals( "Default for create", createMessage );
-
 
 		createMessage = messages.getMessageWithFallback( "actions.create",
 		                                                 new Object[] { "", messages.getNameSingularInline() },
@@ -144,90 +186,11 @@ public class TestEntityMessageCodeResolver
 		);
 		assertEquals( "Een nieuwe klant aanmaken", createMessage );
 
-		EntityMessageCodeResolver prefixed = messages.prefixedResolver( "entityViews.listView", "entityViews" );
+		EntityMessageCodeResolver prefixed = messages.prefixedResolver( "views[listView]" );
 		createMessage = prefixed.getMessageWithFallback( "actions.create",
 		                                                 new Object[] { messages.getNameSingularInline() },
 		                                                 "Default for create"
 		);
 		assertEquals( "Eentje aanmaken, nen kalant", createMessage );
-	}
-
-	@Test
-	public void staticGenerationMultiple() {
-		String[] rootCollections = new String[] { "UserModule.entities.user", "EntityModule.entities" };
-		String[] subCollections = new String[] { "views.listView", "views" };
-		String itemKey = "properties.displayName";
-
-		String[] generated = EntityMessageCodeResolver.generateCodes( rootCollections, subCollections, itemKey );
-
-		assertArrayEquals(
-				new String[] {
-						"UserModule.entities.user.views.listView.properties.displayName",
-						"UserModule.entities.user.views.properties.displayName",
-						"UserModule.entities.user.properties.displayName",
-						"EntityModule.entities.views.listView.properties.displayName",
-						"EntityModule.entities.views.properties.displayName",
-						"EntityModule.entities.properties.displayName"
-				},
-				generated
-		);
-	}
-
-	@Test
-	public void emptyRootCollection() {
-		String[] rootCollections = new String[] { "UserModule.entities.user", "EntityModule.entities", "" };
-		String[] subCollections = new String[] { "views.listView", "views" };
-		String itemKey = "properties.displayName";
-
-		String[] generated = EntityMessageCodeResolver.generateCodes( rootCollections, subCollections, itemKey );
-
-		assertArrayEquals(
-				new String[] {
-						"UserModule.entities.user.views.listView.properties.displayName",
-						"UserModule.entities.user.views.properties.displayName",
-						"UserModule.entities.user.properties.displayName",
-						"EntityModule.entities.views.listView.properties.displayName",
-						"EntityModule.entities.views.properties.displayName",
-						"EntityModule.entities.properties.displayName",
-						"views.listView.properties.displayName",
-						"views.properties.displayName",
-						"properties.displayName"
-				},
-				generated
-		);
-	}
-
-	@Test
-	public void staticGenerationRootCollectionOnly() {
-		String[] rootCollections = new String[] { "UserModule.entities.user", "EntityModule.entities" };
-		String[] subCollections = new String[0];
-		String itemKey = "properties.displayName";
-
-		String[] generated = EntityMessageCodeResolver.generateCodes( rootCollections, subCollections, itemKey );
-
-		assertArrayEquals(
-				new String[] {
-						"UserModule.entities.user.properties.displayName",
-						"EntityModule.entities.properties.displayName"
-				},
-				generated
-		);
-	}
-
-	@Test
-	public void staticGenerationSingle() {
-		String[] rootCollections = new String[] { "UserModule.entities.user" };
-		String[] subCollections = new String[] { "views.listView" };
-		String itemKey = "properties.displayName";
-
-		String[] generated = EntityMessageCodeResolver.generateCodes( rootCollections, subCollections, itemKey );
-
-		assertArrayEquals(
-				new String[] {
-						"UserModule.entities.user.views.listView.properties.displayName",
-						"UserModule.entities.user.properties.displayName"
-				},
-				generated
-		);
 	}
 }

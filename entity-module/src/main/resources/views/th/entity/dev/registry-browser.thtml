@@ -88,7 +88,9 @@
                 </h4>
                 <table class="table table-bordered">
                     <tr th:each="messageCode : ${messageCodePrefixes}">
-                        <td>[[${messageCode}]]</td>
+                        <td>
+                            <small>[[${messageCode}]]</small>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -399,11 +401,15 @@
             <h4>Message code lookup
                 <small>(<a th:href="${referenceDocumentationMessageCodes}" target="_blank">view documentation</a>)</small>
             </h4>
-            <table class="table table-bordered">
-                <tr th:each="messageCode : ${messageCodePrefixes}">
-                    <td>[[${messageCode}]]</td>
-                </tr>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tr th:each="messageCode : ${messageCodePrefixes}">
+                        <td>
+                            <small>[[${messageCode}]]</small>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
         <div class="col-md-6">
             <div class="form-group" th:if="${properties}">
@@ -468,11 +474,13 @@
                 <h4>Message code lookup
                     <small>(<a th:href="${referenceDocumentationMessageCodes}" target="_blank">view documentation</a>)</small>
                 </h4>
+                <div class="table-responsive">
                 <table class="table table-bordered">
                     <tr th:each="messageCode : ${messageCodePrefixes}">
-                        <td>[[${messageCode}]]</td>
+                        <td><small>[[${messageCode}]]</small></td>
                     </tr>
                 </table>
+                </div>
             </div>
         </div>
         <div class="col-md-6">

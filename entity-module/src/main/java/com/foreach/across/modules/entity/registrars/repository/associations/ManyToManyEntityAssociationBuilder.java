@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
 import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
@@ -27,6 +28,8 @@ import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.ManyToMany;
+
+import static com.foreach.across.modules.entity.config.builders.EntityAssociationBuilder.registerAssociationMessageCodeResolver;
 
 /**
  * @author Andy Somers
@@ -63,6 +66,8 @@ class ManyToManyEntityAssociationBuilder implements EntityAssociationBuilder
 				// By default hide this association as it would be managed as a regular property
 				association.setHidden( true );
 				association.setAttribute( AssociatedEntityQueryExecutor.class, buildAssociatedEntityQueryExecutor( association ) );
+
+				registerAssociationMessageCodeResolver( association );
 			}
 			else {
 				LOG.info( "Skipping automatic registration of association {} on {} as it is already registered.",
@@ -81,6 +86,8 @@ class ManyToManyEntityAssociationBuilder implements EntityAssociationBuilder
 					association.setAttribute( PersistentProperty.class, property );
 
 					association.setAttribute( AssociatedEntityQueryExecutor.class, buildAssociatedEntityQueryExecutor( association ) );
+
+					registerAssociationMessageCodeResolver( association );
 				}
 			}
 			else {
