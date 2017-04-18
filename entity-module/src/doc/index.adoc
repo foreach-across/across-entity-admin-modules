@@ -7,7 +7,7 @@ Arne Vandamme
 :module-name: EntityModule
 :module-artifact: entity-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/EntityModule
-:bitbucket-url: https://bitbucket.org/beforeach/entity-ui-module/src/3b74dc27d6f600995bdc3f94a793dd2d3b6d64d8/entity-module/src/main
+:bitbucket-url: https://bitbucket.org/beforeach/entity-ui-module/src/5bcf5de44d5fb03632dfee13d9915db65bb5d268/entity-module/src/main
 :bootstrap-ui-module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
 :javadoc: http://across.foreach.be/docs/across-standard-modules/EntityModule/2.0.0-SNAPSHOT/javadoc
 :javadoc-processors: {javadoc}/com/foreach/across/modules/entity/views/processors
