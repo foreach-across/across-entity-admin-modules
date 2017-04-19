@@ -103,9 +103,9 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
 		BuildEntityDeleteViewEvent deleteConfiguration = entityView.getAttribute( DELETE_CONFIGURATION, BuildEntityDeleteViewEvent.class );
 
-		String confirmationMessage = messages.withNameSingular( "views.deleteView.confirmation" );
+		String confirmationMessage = messages.withNameSingular( "delete.confirmation" );
 		if ( deleteConfiguration.isDeleteDisabled() ) {
-			confirmationMessage = messages.withNameSingular( "views.deleteView.deleteDisabled" );
+			confirmationMessage = messages.withNameSingular( "delete.deleteDisabled" );
 		}
 
 		builderMap.get( "entityForm-column-0", ContainerViewElementBuilderSupport.class )
@@ -169,7 +169,7 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 										.add(
 												bootstrapUiFactory
 														.paragraph()
-														.add( bootstrapUiFactory.text( entityMessages.withNameSingular( "views.deleteView.associations" ) ) )
+														.add( bootstrapUiFactory.text( entityMessages.withNameSingular( "delete.associations" ) ) )
 										)
 										.add( associations )
 						)
@@ -225,7 +225,7 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 		EntityMessages messages = new EntityMessages( association.getTargetEntityConfiguration().getEntityMessageCodeResolver() );
 		EntityLinkBuilder linkBuilder = association.getAttribute( EntityLinkBuilder.class ).asAssociationFor( parentLinkBuilder, parent );
 
-		String title = messages.withNamePlural( "views.deleteView.associatedResults", itemCount );
+		String title = messages.withNamePlural( "delete.associatedResults", itemCount );
 
 		viewConfiguration.associations().addChild(
 				bootstrapUiFactory

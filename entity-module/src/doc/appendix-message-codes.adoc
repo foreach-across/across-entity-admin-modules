@@ -72,6 +72,10 @@ Example: _UserModule.entities.user.feedback.validationErrors_
 | Sortable table results and pager text keys. +
 Example: _UserModule.entities.user.sortableTable.resultsFound_
 
+| *EntityPrefix*.delete.*
+| Delete view specific messages. +
+Example: _UserModule.entities.user.delete.confirmation_
+
 |===
 
 NOTE: _Entity_ codes are camel cased, eg. `CarBrand` would become *carBrand*
