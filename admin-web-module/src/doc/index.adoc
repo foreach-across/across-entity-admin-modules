@@ -125,6 +125,7 @@ All properties start with the *adminWebModule.* prefix.
 * all settings are now configurable through properties with Spring configuration metadata support
 * login template now uses the `isRememberMeEnabled` attribute to determine if the remember-me checkbox should be shown
 ** this is a *breaking change* for custom templates
+* a <<developer-tools,Developer tools>> menu section gets created if development mode is active
 
 === 1.1.0.RELEASE
 Initial public release available on http://search.maven.org/[Maven central].
@@ -370,3 +371,34 @@ public String pageContent( @ModelAttribute PageContentStructure page ) {
 ----
 
 Instead of using the default template `PageContentStructure.TEMPLATE`, you can always use your own page template and simply render some of the `ViewElement` properties of the `PageContentStructure` where and when you want them.
+
+[[developer-tools]]
+=== Developer tools section
+If development mode is active on the Across context, a menu group titled *Developer tools* will get created.
+This allows other modules to register development only resources in the administration UI.
+
+The path of the menu group is */ax/developer*.
+
+.Example development controller that only gets created if development mode is active
+[source,java,indent=0]
+[subs="verbatim,attributes"]
+----
+@AdminWebController
+@ConditionalOnDevelopmentMode
+@RequiredArgsConstructor
+public class DevToolsController
+{
+	private final PageContentStructure pageContentStructure;
+
+	@Event
+	void registerDeveloperToolsItem( AdminMenuEvent menuEvent ) {
+		menuEvent.builder().item( DeveloperToolsMenuRegistrar.PATH + "/test", "Test controller" );
+	}
+
+	@GetMapping("/ax/developer/test")
+	public String test() {
+		pageContentStructure.setPageTitle( "Test developer tools page..." );
+		return PageContentStructure.TEMPLATE;
+	}
+}
+----
