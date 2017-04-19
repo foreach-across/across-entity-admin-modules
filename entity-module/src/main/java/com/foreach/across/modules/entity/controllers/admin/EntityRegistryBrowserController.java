@@ -42,7 +42,6 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.Ordered;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,9 +82,7 @@ class EntityRegistryBrowserController
 
 	@Event
 	public void registerAdminMenu( AdminMenuEvent menuEvent ) {
-		menuEvent.builder()
-		         .group( "/ax/developer", "Developer tools" ).order( Ordered.LOWEST_PRECEDENCE ).and()
-		         .item( "/ax/developer/entityModule/entities", "Entities" );
+		menuEvent.builder().item( "/ax/developer/entityModule/entities", "Entities" );
 	}
 
 	@GetMapping
