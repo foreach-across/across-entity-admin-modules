@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.handlers;
 
 import com.foreach.across.core.annotations.Event;
@@ -30,11 +31,15 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import com.foreach.across.modules.web.menu.RequestMenuSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Collections;
 
 public class MenuEventsHandler
 {
@@ -132,9 +137,14 @@ public class MenuEventsHandler
 
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
 			if ( allowableActions.contains( AllowableAction.DELETE ) ) {
+				String deleteBaseUrl = linkBuilder.delete( menu.getEntity() );
+
 				builder.item( "/advanced-options/delete",
 				              messageCodeResolver.getMessageWithFallback( "menu.delete", "Delete" ),
-				              linkBuilder.delete( menu.getEntity() ) + "?from=javascript:history.back()" )
+				              UriComponentsBuilder.fromUriString( deleteBaseUrl )
+				                                  .queryParam( "from", linkBuilder.update( menu.getEntity() ) )
+				                                  .toUriString() )
+				       .attribute( RequestMenuSelector.ATTRIBUTE_MATCHERS, Collections.singleton( deleteBaseUrl ) )
 				       .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
 				       .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.BEFORE )
 				       .order( Ordered.LOWEST_PRECEDENCE );

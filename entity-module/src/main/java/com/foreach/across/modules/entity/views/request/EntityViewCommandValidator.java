@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
+import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
 /**
@@ -36,13 +37,15 @@ import org.springframework.validation.Validator;
  * to be of {@link EntityViewContext#getEntityConfiguration()}.  If no custom validator is defined on the
  * {@link com.foreach.across.modules.entity.registry.EntityConfiguration}, the fallback validator will be used.
  * The same fallback validator will be used for validating the extensions.
+ * <p/>
+ * This implementation supports validation hints by extending {@link SmartValidator}.
  *
  * @author Arne Vandamme
  * @since 2.0.0
  */
 @Component
 @Exposed
-public class EntityViewCommandValidator implements Validator
+public class EntityViewCommandValidator implements SmartValidator
 {
 	private final EntityViewContext entityViewContext;
 	private final Validator fallbackValidator;
@@ -64,21 +67,35 @@ public class EntityViewCommandValidator implements Validator
 
 	@Override
 	public void validate( Object target, Errors errors ) {
+		validate( target, errors, new Object[0] );
+	}
+
+	@Override
+	public void validate( Object target, Errors errors, Object... validationHints ) {
 		EntityViewCommand command = (EntityViewCommand) target;
 		Object entity = command.getEntity();
 
 		if ( entity != null ) {
 			errors.pushNestedPath( "entity" );
-			retrieveEntityValidator().validate( entity, errors );
+			validate( retrieveEntityValidator(), entity, errors, validationHints );
 			errors.popNestedPath();
 		}
 
 		command.getExtensions()
 		       .forEach( ( key, value ) -> {
 			       errors.pushNestedPath( "extensions[" + key + "]" );
-			       fallbackValidator.validate( value, errors );
+			       validate( fallbackValidator, value, errors );
 			       errors.popNestedPath();
 		       } );
+	}
+
+	private void validate( Validator validator, Object target, Errors errors, Object... validationHints ) {
+		if ( validator instanceof SmartValidator ) {
+			( (SmartValidator) validator ).validate( target, errors, validationHints );
+		}
+		else {
+			validator.validate( target, errors );
+		}
 	}
 
 	private Validator retrieveEntityValidator() {

@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.WebDataBinder;
 
 import java.util.EnumSet;
@@ -58,9 +59,12 @@ public class DefaultValidationViewProcessor extends SimpleEntityViewProcessorAda
 	/**
 	 * Optionally set validation hints that should be used for the default validation.
 	 */
-	@NonNull
-	@Setter
 	private Object[] validationHints = new Object[0];
+
+	public void setValidationHints( Object... validationHints ) {
+		Assert.notNull( validationHints );
+		this.validationHints = validationHints;
+	}
 
 	@Override
 	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
