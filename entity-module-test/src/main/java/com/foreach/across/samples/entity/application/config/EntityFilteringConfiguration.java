@@ -30,7 +30,6 @@ import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.business.Partner;
@@ -157,13 +156,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                           ViewElementBuilderContext builderContext ) {
 			Optional<ContainerViewElement> header = find( container, "entityListForm-header", ContainerViewElement.class );
 			header.ifPresent(
-					h -> {
-						Optional<NodeViewElement> actions
-								= find( h, "entityListForm-header-actions", NodeViewElement.class );
-						actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
-
-						h.addChild( new TemplateViewElement( "th/entityModuleTest/filters :: filterForm" ) );
-					}
+					h -> h.addFirstChild( new TemplateViewElement( "th/entityModuleTest/filters :: filterForm" ) )
 			);
 		}
 
@@ -213,13 +206,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 			Optional<ContainerViewElement> header = find( container, "entityListForm-header", ContainerViewElement.class );
 
 			header.ifPresent(
-					h -> {
-						Optional<NodeViewElement> actions
-								= find( h, "entityListForm-header-actions", NodeViewElement.class );
-						actions.ifPresent( a -> a.addCssClass( "pull-right" ) );
-
-						h.addChild( new TemplateViewElement( "th/entityModuleTest/filters :: filterForm" ) );
-					}
+					h -> h.addFirstChild( new TemplateViewElement( "th/entityModuleTest/filters :: filterForm" ) )
 			);
 		}
 

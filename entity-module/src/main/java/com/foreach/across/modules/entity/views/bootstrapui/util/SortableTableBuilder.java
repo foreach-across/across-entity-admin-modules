@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui.util;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -554,6 +555,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 
 		for ( EntityPropertyDescriptor descriptor : getResolvedPropertyDescriptors() ) {
 			TableViewElementBuilder.Cell heading = table.heading()
+			                                            .name( descriptor.getName() )
 			                                            .attribute( DATA_ATTR_FIELD, descriptor.getName() )
 			                                            .add( createLabel( descriptor ) );
 
@@ -603,6 +605,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 			ViewElementBuilder valueBuilder = createValue( descriptor );
 
 			TableViewElementBuilder.Cell cell = table.cell()
+			                                         .name( descriptor.getName() )
 			                                         .attribute( DATA_ATTR_FIELD, descriptor.getName() );
 
 			if ( valueBuilder != null ) {

@@ -28,6 +28,7 @@ import com.foreach.across.modules.entity.views.processors.support.EntityViewPage
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -36,6 +37,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Responsible for saving a single entity after a form submit. Will initialize the command object to bind to the current entity (either
@@ -117,7 +119,17 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 				entityViewPageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.SUCCESS,
 				                                                     isNew ? "feedback.entityCreated" : "feedback.entityUpdated" );
 
-				entityView.setRedirectUrl( entityViewContext.getLinkBuilder().update( savedEntity ) );
+				if ( entityViewRequest.hasPartialFragment() ) {
+					entityView.setRedirectUrl(
+							UriComponentsBuilder.fromUriString( entityViewContext.getLinkBuilder().update( savedEntity ) )
+							                    .queryParam( WebTemplateInterceptor.PARTIAL_PARAMETER, entityViewRequest.getPartialFragment() )
+							                    .toUriString()
+					);
+				}
+				else {
+					entityView.setRedirectUrl( entityViewContext.getLinkBuilder().update( savedEntity ) );
+				}
+
 			}
 			catch ( RuntimeException e ) {
 				entityViewPageHelper.throwOrAddExceptionFeedback( entityViewRequest, "feedback.entitySaveFailed", e );

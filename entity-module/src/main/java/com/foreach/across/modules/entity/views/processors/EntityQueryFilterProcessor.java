@@ -18,10 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.ColumnViewElement;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
-import com.foreach.across.modules.bootstrapui.elements.Grid;
-import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -37,7 +34,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.WebDataBinder;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_ELEMENT;
@@ -116,52 +112,34 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 		// move the original actions
 		Optional<ContainerViewElement> header = find( container, ListFormViewProcessor.DEFAULT_FORM_NAME + "-header", ContainerViewElement.class );
+		header.ifPresent( h -> {
+			h.addFirstChild(
+					bootstrapUi
+							.inputGroup(
+									bootstrapUi.textbox()
+									           .controlName( "extensions[" + PARAM + "]" )
+									           .text( filter )
+							)
+							.addonAfter(
+									bootstrapUi.button()
+									           .submit()
+									           .iconOnly( new GlyphIcon( GlyphIcon.SEARCH ) )
+							)
+							.build( builderContext )
+			);
 
-		ColumnViewElementBuilder filterForm
-				= bootstrapUi.column( Grid.Device.MD.width( 10 ) )
-				             .css( "list-header" )
-				             .add(
-						             bootstrapUi
-								             .inputGroup(
-										             bootstrapUi.textbox()
-										                        .controlName( "extensions[" + PARAM + "]" )
-										                        .text( filter )
-								             )
-								             .addonAfter(
-										             bootstrapUi.button()
-										                        .submit()
-										                        .iconOnly( new GlyphIcon( GlyphIcon.SEARCH ) )
-								             )
-				             );
+			String errorMessage = entityView.getAttribute( "filterError", String.class );
 
-		header.ifPresent(
-				h -> {
-
-					find( h, ListFormViewProcessor.DEFAULT_FORM_NAME + "-actions", ColumnViewElement.class )
-							.ifPresent( col -> {
-								col.setLayouts( Collections.singleton( Grid.Device.MD.width( 2 ) ) );
-								col.addCssClass( "text-right" );
-							} );
-
-					h.addFirstChild( filterForm.build( builderContext ) );
-
-					String errorMessage = entityView.getAttribute( "filterError", String.class );
-
-					if ( !StringUtils.isBlank( errorMessage ) ) {
-						h.addChild(
-								bootstrapUi.column( Grid.Device.MD.width( Grid.Width.FULL ) )
-								           .css( "list-header" )
-								           .add(
-										           bootstrapUi
-												           .alert()
-												           .danger()
-												           .add( bootstrapUi.text( errorMessage ) )
-								           )
-								           .build( builderContext )
-						);
-					}
-				}
-		);
+			if ( !StringUtils.isBlank( errorMessage ) ) {
+				container.addChild(
+						bootstrapUi
+								.alert()
+								.danger()
+								.add( bootstrapUi.text( errorMessage ) )
+								.build( builderContext )
+				);
+			}
+		} );
 	}
 
 	@Autowired

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 .sortable {
   cursor: pointer;
 
@@ -31,7 +32,8 @@
 }
 
 .table > thead > tr.odd {
-  background-color: #ffffff; }
+  background-color: #ffffff;
+}
 
 .pager-form {
   color: black;
@@ -42,3 +44,4 @@ table > tbody > tr > td.row-actions {
   padding-left: 20px;
   padding-right: 20px;
 }
+

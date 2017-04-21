@@ -52,13 +52,13 @@
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.mysema.commons:mysema-commons-lang:0.2.4" level="project" />
     <orderEntry type="library" name="Maven: com.infradna.tool:bridge-method-annotation:1.13" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.foreach.across.modules:spring-security-module:2.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.springframework.security:spring-security-core:4.1.4.RELEASE" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: aopalliance:aopalliance:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across.modules:spring-security-module:2.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-core:4.1.4.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.3.5.RELEASE" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.springframework.security:spring-security-web:4.1.4.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:4.1.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-web:4.3.5.RELEASE" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.springframework.security:spring-security-config:4.1.4.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-config:4.1.4.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.foreach.across.modules:admin-web-module:2.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.across:across-web:2.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.thymeleaf:thymeleaf-spring4:3.0.3.RELEASE" level="project" />

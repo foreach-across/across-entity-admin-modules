@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.config;
 
+import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
@@ -23,6 +24,8 @@ import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaMod
 import com.foreach.across.modules.entity.testmodules.springdata.business.*;
 import com.foreach.across.modules.entity.testmodules.springdata.validators.CompanyValidator;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +43,12 @@ public class ClientConfig implements EntityConfigurer
 
 		entities.withType( Company.class )
 		        .listView( lvb -> lvb.showProperties( ".", "~address", "address.country" ) );
+
+		AllowableActionSet allowableActions = new AllowableActionSet();
+		allowableActions.add( AllowableAction.READ );
+
+		entities.withType( Car.class )
+	            .allowableActionsBuilder( new FixedEntityAllowableActionsBuilder( allowableActions ) );
 	}
 
 	private void registerCountryAsEntity( EntityConfigurationBuilder<Country> builder ) {

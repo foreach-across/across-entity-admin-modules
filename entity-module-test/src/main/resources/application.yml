@@ -21,7 +21,7 @@ spring:
 acrossModule:
   EntityModule:
     resources: ../entity-module/src/main/resources
-  springDataJpaModule:
+  SpringDataJpaModule:
       resources: ../entity-shared-test/src/main/resources
 
 adminWebModule:

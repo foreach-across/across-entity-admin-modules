@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
@@ -34,6 +35,8 @@ import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBu
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
@@ -56,6 +59,9 @@ import java.util.Optional;
  * @see SortableTableRenderingViewProcessor
  * @since 2.0.0
  */
+@Component
+@Exposed
+@Scope("prototype")
 public class ListFormViewProcessor extends EntityViewProcessorAdapter
 {
 	public static final String DEFAULT_FORM_NAME = "entityListForm";
@@ -85,12 +91,19 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 				.noValidate()
 				.get();
 
-		String formHeaderName = formName + "-header";
-		NodeViewElementBuilder formHeader = bootstrapUiFactory.row().name( formHeaderName );
+		String formHeaderRowName = formName + "-header-row";
+		NodeViewElementBuilder formHeaderRow = bootstrapUiFactory.row().name( formHeaderRowName );
 
-		listForm.add( formHeader );
+		String formHeaderName = formName + "-header";
+		ColumnViewElementBuilder formHeader = bootstrapUiFactory.column( Grid.Device.MD.width( Grid.Width.FULL ) )
+		                                                        .name( formHeaderName )
+		                                                        .css( "list-header" );
+
+		formHeaderRow.add( formHeader );
+		listForm.add( formHeaderRow );
 
 		builderMap.put( formName, listForm );
+		builderMap.put( formHeaderRowName, formHeaderRow );
 		builderMap.put( formHeaderName, formHeader );
 
 		addDefaultButtons( entityViewRequest, formHeader, builderMap );
@@ -103,7 +116,7 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 		}
 	}
 
-	private void addDefaultButtons( EntityViewRequest entityViewRequest, NodeViewElementBuilder formHeader, ViewElementBuilderMap builderMap ) {
+	private void addDefaultButtons( EntityViewRequest entityViewRequest, ColumnViewElementBuilder formHeader, ViewElementBuilderMap builderMap ) {
 		if ( addDefaultButtons ) {
 			EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 
@@ -114,16 +127,16 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 
 			if ( allowableActions.contains( AllowableAction.CREATE ) ) {
 				String formActionsName = formName + "-actions";
-				ColumnViewElementBuilder actions = bootstrapUiFactory.column( Grid.Device.MD.width( Grid.Width.FULL ) )
-				                                                     .name( formActionsName )
-				                                                     .css( "list-header" )
-				                                                     .add(
-						                                                     bootstrapUiFactory.button()
-						                                                                       .name( "btn-create" )
-						                                                                       .link( linkBuilder.create() )
-						                                                                       .style( Style.Button.PRIMARY )
-						                                                                       .text( entityMessages.createAction() )
-				                                                     );
+				NodeViewElementBuilder actions = bootstrapUiFactory.div()
+				                                                   .name( formActionsName )
+				                                                   .css( "list-header-actions" )
+				                                                   .add(
+						                                                   bootstrapUiFactory.button()
+						                                                                     .name( "btn-create" )
+						                                                                     .link( linkBuilder.create() )
+						                                                                     .style( Style.Button.PRIMARY )
+						                                                                     .text( entityMessages.createAction() )
+				                                                   );
 				builderMap.put( formActionsName, actions );
 				formHeader.add( actions );
 			}
