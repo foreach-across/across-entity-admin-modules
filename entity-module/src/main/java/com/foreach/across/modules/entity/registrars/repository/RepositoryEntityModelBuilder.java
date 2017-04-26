@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registrars.repository;
 
 import com.foreach.across.modules.entity.registry.DefaultEntityModel;
@@ -22,6 +23,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.views.support.ConvertedValuePrinter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.data.repository.support.RepositoryInvoker;
@@ -53,14 +55,19 @@ class RepositoryEntityModelBuilder
 				                           repository, mvcConversionService );
 		entityModel.setFindOneMethod( repositoryInvoker::invokeFindOne );
 		entityModel.setSaveMethod( repositoryInvoker::invokeSave );
-		entityModel.setDeleteMethod( entity -> repositoryInvoker.invokeDelete( entityModel.getId( entity ) ) );
+
+		if ( repository instanceof CrudRepository ) {
+			entityModel.setDeleteMethod( ( (CrudRepository) repository )::delete );
+		}
+		else {
+			entityModel.setDeleteMethod( entity -> repositoryInvoker.invokeDelete( entityModel.getId( entity ) ) );
+		}
 
 		entityModel.setEntityFactory(
 				new PersistentEntityFactory( repositoryFactoryInformation.getPersistentEntity() )
 		);
 		entityModel.setEntityInformation( repositoryFactoryInformation.getEntityInformation() );
 		entityModel.setLabelPrinter( createLabelPrinter( entityConfiguration.getPropertyRegistry() ) );
-
 
 		entityConfiguration.setEntityModel( entityModel );
 	}
