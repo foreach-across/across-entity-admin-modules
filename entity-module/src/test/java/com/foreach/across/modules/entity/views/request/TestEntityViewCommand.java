@@ -71,6 +71,11 @@ public class TestEntityViewCommand
 		assertSame( map, command.getExtension( "my-extension", Map.class ) );
 		command.removeExtension( "my-extension" );
 		assertFalse( command.hasExtension( "my-extension" ) );
+
+		Map<String, Long> typedMap = new HashMap<>();
+		command.addExtension( "myMap", typedMap );
+		Map<String, Long> value = command.getExtension( "myMap" );
+		assertSame( value, typedMap );
 	}
 
 	@Test(expected = ClassCastException.class)

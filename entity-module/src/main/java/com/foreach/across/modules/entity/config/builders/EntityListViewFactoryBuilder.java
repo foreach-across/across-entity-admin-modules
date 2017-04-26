@@ -22,10 +22,7 @@ import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
-import com.foreach.across.modules.entity.views.processors.DelegatingEntityFetchingViewProcessor;
-import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
-import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
-import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
+import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -214,6 +211,28 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	 */
 	public EntityListViewFactoryBuilder entityQueryFilter( boolean enabled ) {
 		entityQueryFilter = enabled;
+		return this;
+	}
+
+	/**
+	 * Configure a fixed default predicate that should be used when fetching the items.
+	 * This requires a valid {@link com.foreach.across.modules.entity.query.EntityQueryParser} to be available for that
+	 * {@link com.foreach.across.modules.entity.registry.EntityConfiguration} as the {@link com.foreach.across.modules.entity.query.EntityQueryExecutor}
+	 * will be favoured over the default repository.
+	 * <p/>
+	 * The default predicate can not be removed and will always be applied.
+	 * Even if {@link #entityQueryFilter(boolean)} is enabled.
+	 *
+	 * @param predicate as EQL statement
+	 * @return current builder
+	 */
+	public EntityListViewFactoryBuilder entityQueryPredicate( String predicate ) {
+		postProcess( ( factory, processorRegistry ) -> {
+			processorRegistry.getProcessor( EntityQueryFilterProcessor.class.getName(), EntityQueryFilterProcessor.class )
+			                 .ifPresent( processor -> processor.setBaseEqlPredicate( predicate ) );
+			processorRegistry.getProcessor( DefaultEntityFetchingViewProcessor.class.getName(), DefaultEntityFetchingViewProcessor.class )
+			                 .ifPresent( processor -> processor.setBaseEqlPredicate( predicate ) );
+		} );
 		return this;
 	}
 

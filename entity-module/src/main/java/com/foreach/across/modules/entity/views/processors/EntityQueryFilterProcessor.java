@@ -21,11 +21,13 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +54,21 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
 @Scope("prototype")
 public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProcessor
 {
+	/**
+	 * Can hold an optional EQL statement that should be applied to the query being executed.
+	 */
+	public static final String EQL_PREDICATE_ATTRIBUTE_NAME = "_entityQueryPredicate";
+
 	private static final String PARAM = "eqFilter";
 
 	private BootstrapUiFactory bootstrapUi;
+
+	/**
+	 * The basic filter that should always be applied.
+	 * These conditions can never be removed and will always be appended.
+	 */
+	@Setter
+	private String baseEqlPredicate;
 
 	@Override
 	public void initializeCommandObject( com.foreach.across.modules.entity.views.request.EntityViewRequest entityViewRequest,
@@ -72,9 +86,20 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		String filter = entityViewRequest.getCommand().getExtension( PARAM, String.class );
 
 		try {
-			EntityQueryParser parser = viewContext.getEntityConfiguration().getAttribute( EntityQueryParser.class );
+			EntityConfiguration entityConfiguration = viewContext.getEntityConfiguration();
+			EntityQueryParser parser = entityConfiguration.getAttribute( EntityQueryParser.class );
 			EntityQuery query = parser.parse( filter );
-			EntityQueryExecutor executor = viewContext.getEntityConfiguration().getAttribute( EntityQueryExecutor.class );
+
+			if ( baseEqlPredicate != null ) {
+				query = EntityQuery.and( query, parser.parse( baseEqlPredicate ) );
+			}
+
+			String additionalPredicate = entityView.getAttribute( EQL_PREDICATE_ATTRIBUTE_NAME, String.class );
+			if ( additionalPredicate != null ) {
+				query = EntityQuery.and( query, parser.parse( additionalPredicate ) );
+			}
+
+			EntityQueryExecutor executor = entityConfiguration.getAttribute( EntityQueryExecutor.class );
 
 			if ( viewContext.isForAssociation() ) {
 				EntityAssociation association = viewContext.getEntityAssociation();

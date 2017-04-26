@@ -75,7 +75,7 @@ public class DelegatingEntityFetchingViewProcessor extends AbstractEntityFetchin
 			throw new IllegalStateException( "No delegate function has been configured" );
 		}
 
-		return (Iterable<Object>) delegate.apply( entityViewRequest.getEntityViewContext(), pageable );
+		return delegate.apply( entityViewRequest.getEntityViewContext(), pageable );
 	}
 
 	@Override

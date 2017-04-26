@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import org.junit.Before;
@@ -133,6 +134,6 @@ public class TestDefaultEntityFetchingViewProcessor
 	}
 
 	private void verifyItems() {
-		assertSame( items, processor.fetchItems( viewRequest, null, pageable ) );
+		assertSame( items, processor.fetchItems( viewRequest, mock( EntityView.class ), pageable ) );
 	}
 }

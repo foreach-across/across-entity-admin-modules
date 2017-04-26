@@ -19,11 +19,13 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.EntityQueryParser;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import lombok.Setter;
 import org.springframework.core.Ordered;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -41,35 +43,67 @@ import org.springframework.data.repository.Repository;
 public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetchingViewProcessor
 {
 	/**
+	 * Can hold an optional EQL statement that should be applied to the query being executed.
+	 */
+	public static final String EQL_PREDICATE_ATTRIBUTE_NAME = EntityQueryFilterProcessor.EQL_PREDICATE_ATTRIBUTE_NAME;
+
+	/**
 	 * Default order that this processor will have if it has been added through the {@link com.foreach.across.modules.entity.views.builders.ListViewInitializer}.
 	 */
 	public static final int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE;
+
+	/**
+	 * The basic filter that should always be applied.
+	 * This can only be an EQL statement and will force the {@link EntityQueryExecutor} to be used.
+	 */
+	@Setter
+	private String baseEqlPredicate;
 
 	@Override
 	protected Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 
+		String additionalPredicate = entityView.getAttribute( EQL_PREDICATE_ATTRIBUTE_NAME, String.class );
+
+		// set to null so we would favour regular repository if no specific query necessary
+		EntityQuery entityQuery = null;
+
+		if ( baseEqlPredicate != null || additionalPredicate != null ) {
+			entityQuery = buildEntityQuery( entityViewContext.getEntityConfiguration(), additionalPredicate );
+		}
+
 		if ( entityViewContext.isForAssociation() ) {
 			return fetchItemsForEntityAssociation(
-					entityViewContext.getEntityAssociation(), entityViewContext.getParentContext().getEntity( Object.class ), pageable
+					entityViewContext.getEntityAssociation(),
+					entityViewContext.getParentContext().getEntity( Object.class ),
+					entityQuery,
+					pageable
 			);
 		}
 
-		return fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), pageable );
+		return fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), entityQuery, pageable );
 	}
 
 	@SuppressWarnings("unchecked")
-	private Iterable<Object> fetchItemsForEntityConfiguration( EntityConfiguration entityConfiguration, Pageable pageable ) {
+	private Iterable<Object> fetchItemsForEntityConfiguration( EntityConfiguration entityConfiguration, EntityQuery entityQuery, Pageable pageable ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );
 
-		if ( repository instanceof PagingAndSortingRepository ) {
-			return ( (PagingAndSortingRepository) repository ).findAll( pageable );
+		if ( entityQuery == null ) {
+			if ( repository instanceof PagingAndSortingRepository ) {
+				return ( (PagingAndSortingRepository) repository ).findAll( pageable );
+			}
 		}
 
 		EntityQueryExecutor entityQueryExecutor = entityConfiguration.getAttribute( EntityQueryExecutor.class );
 
 		if ( entityQueryExecutor != null ) {
-			return entityQueryExecutor.findAll( EntityQuery.all(), pageable );
+			return entityQueryExecutor.findAll( entityQuery != null ? entityQuery : EntityQuery.all(), pageable );
+		}
+
+		if ( entityQuery != null ) {
+			throw new IllegalStateException(
+					"An EntityQuery predicate was specified but the EntityConfiguration does not have a valid EntityQueryParser setup: " + entityConfiguration
+							.getName() );
 		}
 
 		// return all results - ignore paging
@@ -82,15 +116,33 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 	}
 
 	@SuppressWarnings("unchecked")
-	private Iterable<Object> fetchItemsForEntityAssociation( EntityAssociation association, Object parentEntity, Pageable pageable ) {
+	private Iterable<Object> fetchItemsForEntityAssociation( EntityAssociation association,
+	                                                         Object parentEntity,
+	                                                         EntityQuery entityQuery,
+	                                                         Pageable pageable ) {
 		AssociatedEntityQueryExecutor associatedEntityQueryExecutor = association.getAttribute( AssociatedEntityQueryExecutor.class );
 
 		if ( associatedEntityQueryExecutor != null ) {
-			return associatedEntityQueryExecutor.findAll( parentEntity, EntityQuery.all(), pageable );
+			return associatedEntityQueryExecutor.findAll( parentEntity, entityQuery != null ? entityQuery : EntityQuery.all(), pageable );
 		}
 
 		throw new IllegalStateException(
 				"No AssociatedEntityQueryExecutor found for association " + association.getName()
 		);
+	}
+
+	private EntityQuery buildEntityQuery( EntityConfiguration entityConfiguration, String additionalPredicate ) {
+		EntityQuery query = EntityQuery.all();
+		EntityQueryParser parser = entityConfiguration.getAttribute( EntityQueryParser.class );
+
+		if ( baseEqlPredicate != null ) {
+			query = EntityQuery.and( query, parser.parse( baseEqlPredicate ) );
+		}
+
+		if ( additionalPredicate != null ) {
+			query = EntityQuery.and( query, parser.parse( additionalPredicate ) );
+		}
+
+		return query;
 	}
 }

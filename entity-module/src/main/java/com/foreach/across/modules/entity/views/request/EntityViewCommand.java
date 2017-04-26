@@ -78,6 +78,18 @@ public class EntityViewCommand
 	 * Return the extension with the given name and coerce it to the expected type.
 	 *
 	 * @param extensionName name of the extension
+	 * @param <Y>           type of the extension object
+	 * @return extension value
+	 */
+	@SuppressWarnings("unchecked")
+	public <Y> Y getExtension( String extensionName ) {
+		return (Y) extensions.get( extensionName );
+	}
+
+	/**
+	 * Return the extension with the given name and coerce it to the expected type.
+	 *
+	 * @param extensionName name of the extension
 	 * @param extensionType type of the extension object
 	 * @param <Y>           type of the extension object
 	 * @return extension value

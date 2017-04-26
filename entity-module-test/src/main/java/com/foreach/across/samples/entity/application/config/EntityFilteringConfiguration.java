@@ -99,6 +99,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 
 		// Custom filters on users under Group
 		configuration.withType( Group.class )
+		             .listView( lvb -> lvb.entityQueryPredicate( "name not like 'small people%'" ) )
 		             .association(
 				             ab -> ab.name( "user.group" )
 				                     .associationType( EntityAssociation.Type.EMBEDDED )
