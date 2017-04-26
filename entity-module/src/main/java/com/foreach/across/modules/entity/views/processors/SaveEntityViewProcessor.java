@@ -28,12 +28,16 @@ import com.foreach.across.modules.entity.views.processors.support.EntityViewPage
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -52,6 +56,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 {
 	private EntityViewPageHelper entityViewPageHelper;
+	private ConversionService conversionService;
 
 	// todo: listen to specific action only
 
@@ -88,8 +93,13 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 				BeanWrapper beanWrapper = new BeanWrapperImpl( newDto );
 				EntityPropertyDescriptor propertyDescriptor = entityViewContext.getEntityAssociation().getTargetProperty();
 
+				Object parentEntity = entityViewContext.getParentContext().getEntity();
+				Object valueToSet = parentEntity != null
+						? conversionService.convert( parentEntity, TypeDescriptor.forObject( parentEntity ), propertyDescriptor.getPropertyTypeDescriptor() )
+						: null;
+
 				if ( propertyDescriptor != null ) {
-					beanWrapper.setPropertyValue( propertyDescriptor.getName(), entityViewContext.getParentContext().getEntity() );
+					beanWrapper.setPropertyValue( propertyDescriptor.getName(), valueToSet );
 				}
 
 				return newDto;
@@ -140,5 +150,10 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 	@Autowired
 	void setEntityViewPageHelper( EntityViewPageHelper entityViewPageHelper ) {
 		this.entityViewPageHelper = entityViewPageHelper;
+	}
+
+	@Autowired
+	void setConversionService( @Qualifier(AcrossWebModule.CONVERSION_SERVICE_BEAN) ConversionService conversionService ) {
+		this.conversionService = conversionService;
 	}
 }
