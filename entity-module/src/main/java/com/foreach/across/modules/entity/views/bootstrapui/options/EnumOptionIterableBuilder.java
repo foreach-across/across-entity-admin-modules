@@ -21,9 +21,12 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -35,29 +38,29 @@ import java.util.List;
  */
 public class EnumOptionIterableBuilder implements OptionIterableBuilder
 {
+	/**
+	 * Optionally set a restricted list of enum values that should be rendered.
+	 *
+	 * @param enumValues that are returned
+	 */
+	@Setter
+	private EnumSet<? extends Enum> allowedValues;
+
+	@Setter
+	@Getter
 	private Class<? extends Enum> enumType;
-	private EntityModel<Object, Serializable> entityModel;
-
-	public Class<? extends Enum> getEnumType() {
-		return enumType;
-	}
-
-	public void setEnumType( Class<? extends Enum> enumType ) {
-		this.enumType = enumType;
-	}
 
 	/**
 	 * Optionally set an entity model that should be used for generating label and value instead of default enum serializing.
 	 */
-	public void setEntityModel( EntityModel<Object, Serializable> entityModel ) {
-		this.entityModel = entityModel;
-	}
+	@Setter
+	private EntityModel<Object, Serializable> entityModel;
 
 	@Override
 	public Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext ) {
 		EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
 
-		Enum[] enumValues = enumType.getEnumConstants();
+		Enum[] enumValues = allowedValues != null ? allowedValues.toArray( new Enum[allowedValues.size()] ) : enumType.getEnumConstants();
 		List<OptionFormElementBuilder> options = new ArrayList<>( enumValues.length );
 
 		for ( Enum enumValue : enumValues ) {

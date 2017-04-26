@@ -48,6 +48,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Map;
 
 /**
@@ -144,6 +145,16 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 				iterableBuilder.setEnumType( (Class<? extends Enum>) memberType );
 				if ( optionConfiguration != null && optionConfiguration.hasEntityModel() ) {
 					iterableBuilder.setEntityModel( optionConfiguration.getEntityModel() );
+				}
+				Object allowedValues = descriptor.getAttribute( EntityAttributes.OPTIONS_ALLOWED_VALUES );
+				if ( allowedValues != null ) {
+					if ( allowedValues instanceof EnumSet ) {
+						iterableBuilder.setAllowedValues( (EnumSet) allowedValues );
+					}
+					else {
+						throw new IllegalStateException(
+								"Illegal " + EntityAttributes.OPTIONS_ALLOWED_VALUES + " attriute - expected EnumSet for enum propery" );
+					}
 				}
 				builderToUse = iterableBuilder;
 			}

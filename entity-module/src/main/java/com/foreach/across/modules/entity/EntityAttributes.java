@@ -48,6 +48,12 @@ public interface EntityAttributes
 	String OPTIONS_ENTITY_QUERY = OptionIterableBuilder.class.getName() + ".EntityQuery";
 
 	/**
+	 * If set, should contain a collection of the allowed values.  Usually used in combination with an enum option,
+	 * in which case the value is expected to be an {@link java.util.EnumSet}.
+	 */
+	String OPTIONS_ALLOWED_VALUES = OptionIterableBuilder.class.getName() + ".AllowedValues";
+
+	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.
 	 * If an attribute {@link #CONTROL_NAME} is present, it will be used, else the regular name will be used.
 	 *

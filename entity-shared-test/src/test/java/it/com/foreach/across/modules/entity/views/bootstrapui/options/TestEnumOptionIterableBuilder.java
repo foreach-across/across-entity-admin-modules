@@ -26,10 +26,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static it.com.foreach.across.modules.entity.views.bootstrapui.options.TestEnumOptionIterableBuilder.Counter.*;
 import static org.junit.Assert.assertEquals;
@@ -67,7 +64,33 @@ public class TestEnumOptionIterableBuilder
 	@Test
 	public void allEnumOptionsAreGenerated() {
 		build();
-		assertOptions( ONE, Counter.TWO, Counter.THREE );
+		assertOptions( ONE, TWO, THREE );
+	}
+
+	@Test
+	public void restrictAllowedValues() {
+		iterableBuilder.setAllowedValues( EnumSet.of( ONE, THREE ) );
+
+		options.clear();
+
+		Iterable<OptionFormElementBuilder> iterable = iterableBuilder.buildOptions( elementBuilderContext );
+
+		List<OptionFormElementBuilder> optionsInOrder = new ArrayList<>( 3 );
+
+		for ( OptionFormElementBuilder option : iterable ) {
+			optionsInOrder.add( option );
+			options.put( Counter.valueOf( (String) option.getValue() ), option );
+		}
+
+		assertEquals( 2, optionsInOrder.size() );
+
+		assertEquals( EntityUtils.generateDisplayName( ONE.name() ), optionsInOrder.get( 0 ).getLabel() );
+		assertEquals( ONE.name(), optionsInOrder.get( 0 ).getValue() );
+		assertEquals( ONE, optionsInOrder.get( 0 ).getRawValue() );
+
+		assertEquals( EntityUtils.generateDisplayName( Counter.THREE.name() ), optionsInOrder.get( 1 ).getLabel() );
+		assertEquals( Counter.THREE.name(), optionsInOrder.get( 1 ).getValue() );
+		assertEquals( Counter.THREE, optionsInOrder.get( 1 ).getRawValue() );
 	}
 
 	@Test

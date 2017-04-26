@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
@@ -40,6 +41,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
+import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -65,6 +67,9 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		assertFalse( select.isRequired() );
 		assertFalse( select.isMultiple() );
 		assertEquals( 1, select.getChildren().size() );
+
+		ContainerViewElement options = (ContainerViewElement) select.getChildren().get( 0 );
+		assertEquals( 3, options.getChildren().size() );
 	}
 
 	@Test
@@ -92,6 +97,24 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		assertTrue( select.isRequired() );
 		assertFalse( select.isMultiple() );
 		assertEquals( 1, select.getChildren().size() );
+	}
+
+	@Test
+	public void allowedValuesSpecified() {
+		when( properties.get( "enumNoValidator" ).getAttribute( EntityAttributes.OPTIONS_ALLOWED_VALUES ) )
+				.thenReturn( EnumSet.of( TestEnum.TWO ) );
+
+		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+
+		assertFalse( select.isRequired() );
+		assertFalse( select.isMultiple() );
+		assertEquals( 1, select.getChildren().size() );
+
+		ContainerViewElement options = (ContainerViewElement) select.getChildren().get( 0 );
+		assertEquals( 2, options.getChildren().size() );
+
+		SelectFormElement.Option option = (SelectFormElement.Option) options.getChildren().get( 1 );
+		assertEquals( "TWO", option.getValue() );
 	}
 
 	@Test
