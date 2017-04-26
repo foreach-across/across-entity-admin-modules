@@ -61,8 +61,7 @@ var EntityModule = (function( $ ) {
                         if ( i == 0 ) {
                             $( this ).addClass( order.dir == 'ASC' ? 'asc' : 'desc' );
                         }
-                        // We send in the original property name
-                        order.prop = $( this ).data( 'tbl-field' );
+                        order.prop = $( this ).data( 'tbl-sort-property' );
                     } );
         }
 

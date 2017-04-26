@@ -68,7 +68,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.withType( User.class )
-		             .listView( lvb -> lvb.showProperties( "id", "name", "group", "registrationDate" )
+		             .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate" )
 		                                  .properties(
 				                                  props -> props.property( "id" ).attribute( Sort.Order.class, new Sort.Order( Sort.Direction.DESC, "name" ) )
 		                                  )
