@@ -147,7 +147,6 @@ The parser will validate the EQL statement and convert it to a strongly typed `E
 The default `EntityQueryParser` uses the entity related `EntityPropertyRegistry` to validate the query clauses.
 
 === EQL filtering on list view
-
 Any entity configuration having an `EntityQueryParser` and `EntityQueryExecutor` can enable an EQL based filter on its list views.
 This can be done through the `entityQueryFilter()` method on the `EntityListViewFactoryBuilder.
 
@@ -161,6 +160,21 @@ Extend the `EntityQueryFilterProcessor` if you want to customize the default imp
 entities.withType( Group.class )
         .listView( lvb -> lvb.entityQueryFilter( true )	);
 ----
+
+[[eql-predicate-on-list-view]]
+=== EQL predicate on list view
+List views also support a base predicate to be configured as an EQL statement.
+This base predicate will always be applied to the query being executed if it uses the `DefaultEntityFetchingViewProcessor` or the `EntityQueryFilterProcessor`.
+
+.Ensure deleted (flag) items are never shown
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+entities.withType( Group.class )
+        .listView( lvb -> lvb.entityQueryPredicate( "deleted = false" )	);
+----
+
+Like EQL based filtering, this requires the entity configuration to have a valid `EntityQueryExecutor` infrastructure.
 
 === Extending EQL
 The `EntityQuery` infrastructure provides some hooks you can use to extend the EQL support with application specific methods.
