@@ -101,12 +101,15 @@ And we render it in the following snippet:
 === Default properties
 In its most simple form, a `ViewElement` has the following properties:
 
-[cols=2]
+[cols="1,3"]
 |===
 
 |*name*
 |An optional internal name of the element.
 This name can be used to retrieve the element from a `ContainerViewElement`.
+Use `ContainerViewElementUtils` to query and modify containers.
+
+See <<development-mode,development mode rendering>> for more information to retrieve generated view names.
 
 |*elementType*
 |A *required* type identification for the element.
@@ -157,6 +160,23 @@ If there is a global `ViewElementBuilderContext` available, you can also `ViewEl
 ==== Creating application links
 The `ViewElementBuilderContext` provides a `buildLink(String)` method that will resolve a link using the `WebAppLinkBuilder` attribute that is available on the builder context.
 By default the request-bound `WebAppLinkBuilder` is already set.
+
+=== Development mode rendering
+
+If development mode is active, all `ViewElement` names will be rendered in the markup.
+Start and end of the element rendering will be marked by a HTML comment.
+If the `ViewElement` is a node (xml-type element) it will also have a data attribute *data-ax-dev-view-element* containing the name.
+
+.Example markup when rendered in development mode
+[source,html,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+<!--[ax:title]-->
+<input name="entity.title" id="entity.title" data-ax-dev-view-element="title" type="text" class="form-control" value="" required="required" />
+<!--[/ax:title]-->
+----
+
+NOTE: It is not required for a `ViewElement` to have a name, nor is it required for that name to be unique.
 
 == Default elements
 Most default elements can be created through the `BootstrapUiFactory`.
