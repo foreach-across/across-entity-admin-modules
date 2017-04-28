@@ -183,7 +183,8 @@ public class TestPropertyRenderingViewProcessor
 
 		processor.render( viewRequest, entityView );
 
-		verify( containerBuilder ).addAll( Arrays.asList( elementOne, elementTwo ) );
+		verify( containerBuilder ).add( elementOne );
+		verify( containerBuilder ).add( elementTwo );
 	}
 
 	@Test
@@ -214,7 +215,8 @@ public class TestPropertyRenderingViewProcessor
 
 		processor.render( viewRequest, entityView );
 
-		verify( propertiesContainerBuilder ).addAll( Arrays.asList( elementOne, elementTwo ) );
+		verify( propertiesContainerBuilder ).add( elementOne );
+		verify( propertiesContainerBuilder ).add( elementTwo );
 	}
 
 	@Test

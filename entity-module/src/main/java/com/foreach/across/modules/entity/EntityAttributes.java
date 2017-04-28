@@ -29,7 +29,15 @@ public interface EntityAttributes
 	/**
 	 * If set, contains the control name that should be used for form elements.
 	 */
-	String CONTROL_NAME = EntityPropertyDescriptor.class + ".controlName";
+	String CONTROL_NAME = EntityPropertyDescriptor.class.getName() + ".controlName";
+
+	/**
+	 * If set, indicates that the property descriptor represents a native property on a class.
+	 * The class is usually the entity this property belongs to.
+	 * <p/>
+	 * The actual value can differ, for example {@link org.springframework.core.convert.Property} or {@link java.beans.PropertyDescriptor}.
+	 */
+	String NATIVE_PROPERTY_DESCRIPTOR = EntityPropertyDescriptor.class.getName() + ".nativeProperty";
 
 	/**
 	 * If set, this attribute should contain the

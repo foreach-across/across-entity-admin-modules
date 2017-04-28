@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.*;
 import org.junit.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
 
+import java.beans.PropertyDescriptor;
 import java.util.Date;
 
 import static org.junit.Assert.*;
@@ -47,13 +50,15 @@ public class TestEntityPropertyDescriptorFactory
 
 	@Test
 	public void readableAndWritableProperty() {
+		PropertyDescriptor nativeDescriptor = BeanUtils.getPropertyDescriptor( Instance.class, "name" );
 		EntityPropertyDescriptor descriptor = descriptorFactory.create(
-				BeanUtils.getPropertyDescriptor( Instance.class, "name" ), Instance.class
+				nativeDescriptor, Instance.class
 		);
 
 		assertTrue( descriptor.isReadable() );
 		assertTrue( descriptor.isWritable() );
 		assertFalse( descriptor.isHidden() );
+		assertSame( nativeDescriptor, descriptor.getAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) );
 	}
 
 	@Test

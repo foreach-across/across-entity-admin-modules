@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registry.properties;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.support.MethodValueFetcher;
 import org.springframework.core.convert.Property;
@@ -45,6 +47,8 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 		else {
 			descriptor.setDisplayName( prop.getDisplayName() );
 		}
+		descriptor.setAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR, prop );
+
 		return descriptor;
 	}
 
@@ -66,6 +70,8 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 		if ( descriptor.isReadable() ) {
 			descriptor.setValueFetcher( new MethodValueFetcher( property.getReadMethod() ) );
 		}
+
+		descriptor.setAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR, property );
 
 		return descriptor;
 	}

@@ -44,6 +44,10 @@ By default strings have an order that ignores case.
 |Optional: required to be a `String` value.
 When present this value will be used as the form control name instead of the descriptor name.
 
+|`EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR`
+|When present holds the Java beans property descriptor that was used to create the `EntityPropertyDescriptor`.
+The presence of this attribute indicates that the property is not artificial but corresponds to an actual Java class property.
+
 |===
 
 TODO: OptionGenerator, OptionIterableBuilder, EntityAttributes.OPTIONS_ENTITY_QUERY, EntityAttributes.OPTIONS_ALLOWED_VALUES

@@ -18,13 +18,16 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.bootstrapui.elements.processor.ControlNamePrefixingPostProcessor;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.DefaultViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -34,10 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Renders one or more registered properties from the {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry}
@@ -52,6 +53,8 @@ import java.util.stream.Collectors;
  * During {@link #render(EntityViewRequest, EntityView, ContainerViewElementBuilderSupport, ViewElementBuilderMap, ViewElementBuilderContext)}, the
  * actual {@link ViewElement}s will get created and added to the container.  If the global builderMap contains a builder named
  * {@link #ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER} the elements will get added to that builder, else they will get added to the container passed as argument.
+ * <p/>
+ * This processor will prefix all properties having an {@link EntityAttributes#NATIVE_PROPERTY_DESCRIPTOR} attribute to have their control names prefixed.
  *
  * @author Arne Vandamme
  * @since 2.0.0
@@ -106,21 +109,29 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 		ViewElementBuilderMap propertyBuilders = entityView.removeAttribute( ATTRIBUTE_PROPERTY_BUILDERS, ViewElementBuilderMap.class );
 
 		if ( propertyBuilders != null ) {
-			DefaultViewElementPostProcessor.add( builderContext, prefixingPostProcessor );
+			EntityPropertyRegistry propertyRegistry = entityViewRequest.getEntityViewContext().getPropertyRegistry();
 
-			Collection<ViewElement> properties = propertyBuilders.values()
-			                                                     .stream()
-			                                                     .map( builder -> builder.build( builderContext ) )
-			                                                     .collect( Collectors.toList() );
-
-			DefaultViewElementPostProcessor.remove( builderContext, prefixingPostProcessor );
+			DefaultViewElementBuilderContext prefixingBuilderContext = new DefaultViewElementBuilderContext( builderContext );
+			DefaultViewElementPostProcessor.add( prefixingBuilderContext, prefixingPostProcessor );
 
 			ContainerViewElementBuilderSupport<?, ?> propertiesContainerBuilder
 					= builderMap.containsKey( ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER )
 					? builderMap.get( ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER, ContainerViewElementBuilderSupport.class )
 					: containerBuilder;
 
-			propertiesContainerBuilder.addAll( properties );
+			propertyBuilders.forEach( ( propertyName, builder ) -> {
+				EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( propertyName );
+
+				// don't prefix if not a native property or control name has been specified
+				if ( descriptor != null
+						&& descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR )
+						&& !descriptor.hasAttribute( EntityAttributes.CONTROL_NAME ) ) {
+					propertiesContainerBuilder.add( builder.build( prefixingBuilderContext ) );
+				}
+				else {
+					propertiesContainerBuilder.add( builder.build( builderContext ) );
+				}
+			} );
 		}
 	}
 
