@@ -27,6 +27,13 @@ import org.junit.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+
 /**
  * @author Arne Vandamme
  */
@@ -46,6 +53,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		textbox.setName( "control" );
 
 		LabelFormElement label = new LabelFormElement();
+		label.setName( "label" );
 		label.setTarget( textbox );
 		label.setText( "title" );
 
@@ -565,6 +573,26 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"</div>" +
 						"</div>"
 		);
+	}
+
+	@SuppressWarnings("all")
+	@Test
+	public void labelAndControlAreNotChildrenButCanBeFound() {
+		TextViewElement help = new TextViewElement( "help", "help" );
+		group.setHelpBlock( help );
+
+		assertSame( group.getControl(), group.find( "control" ).get() );
+		assertSame( group.getLabel(), group.find( "label" ).get() );
+		assertSame( group.getHelpBlock(), group.find( "help" ).get() );
+
+		assertEquals(
+				Arrays.asList( group.getHelpBlock(), group.getLabel(), group.getControl() ),
+				group.removeAllFromTree( "help", "label", "control" ).collect( Collectors.toList() )
+		);
+
+		assertNull( group.getControl() );
+		assertNull( group.getLabel() );
+		assertNull( group.getHelpBlock() );
 	}
 
 	public static class TestClass

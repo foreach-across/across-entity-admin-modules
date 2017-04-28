@@ -18,6 +18,8 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 
+import java.util.stream.Stream;
+
 /**
  * @author Arne Vandamme
  */
@@ -114,5 +116,45 @@ public class FormGroupElement extends AbstractNodeViewElement
 	 */
 	public void setDetectFieldErrors( boolean detectFieldErrors ) {
 		this.detectFieldErrors = detectFieldErrors;
+	}
+
+	@Override
+	public Stream<ViewElement> elementStream() {
+		Stream.Builder<ViewElement> stream = Stream.builder();
+
+		if ( label != null ) {
+			stream.accept( label );
+		}
+		if ( renderHelpBlockBeforeControl && helpBlock != null ) {
+			stream.accept( helpBlock );
+		}
+		if ( control != null ) {
+			stream.accept( control );
+		}
+		if ( !renderHelpBlockBeforeControl && helpBlock != null ) {
+			stream.accept( helpBlock );
+		}
+		return Stream.concat( stream.build(), super.elementStream() );
+	}
+
+	@Override
+	public boolean removeChild( ViewElement element ) {
+		boolean removed = false;
+
+		if ( element != null ) {
+			if ( element.equals( label ) ) {
+				setLabel( null );
+				removed = true;
+			}
+			if ( element.equals( control ) ) {
+				setControl( null );
+				removed = true;
+			}
+			if ( element.equals( helpBlock ) ) {
+				setHelpBlock( null );
+				removed = true;
+			}
+		}
+		return removed || super.removeChild( element );
 	}
 }
