@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,6 +35,7 @@ public class Company implements Persistable<String>
 	private boolean isNew;
 
 	@Id
+	@NotNull
 	@Length(max = 20)
 	private String id;
 

@@ -19,11 +19,10 @@ package com.foreach.across.samples.entity.application.controllers;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
-import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
-import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -74,10 +73,7 @@ public class SortableTableWithPagingController
 	 */
 	@ModelAttribute
 	public void registerWebResources( WebResourceRegistry registry ) {
-		registry.addWithKey( WebResource.CSS, EntityModule.NAME, "/css/entity/entity-module.css", WebResource.VIEWS );
-		registry.addWithKey(
-				WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME, "/js/entity/entity-module.js", WebResource.VIEWS
-		);
+		registry.addPackage( EntityModuleWebResources.NAME );
 	}
 	/**
 	 * Entry point that adds the different tables to the model.

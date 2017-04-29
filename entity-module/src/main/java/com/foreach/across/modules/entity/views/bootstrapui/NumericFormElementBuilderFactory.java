@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHe
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.AbstractValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
@@ -152,6 +153,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 	{
 		public ControlBuilderFactory() {
 			addProcessor( new FormControlRequiredBuilderProcessor<>() );
+			addProcessor( new FormControlNameBuilderProcessor<>() );
 		}
 
 		@Override

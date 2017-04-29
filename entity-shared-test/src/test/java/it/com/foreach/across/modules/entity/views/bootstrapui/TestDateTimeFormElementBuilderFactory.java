@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHe
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.DateTimeFormElementBuilderFactory;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -86,6 +87,13 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	@Override
 	protected Class getTestClass() {
 		return DateProperties.class;
+	}
+
+	@Test
+	public void controlNam0ePrefixing() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		DateTimeFormElement datetime = assemble( "withoutAnnotations", ViewElementMode.CONTROL );
+		assertEquals( "entity.withoutAnnotations", datetime.getControlName() );
 	}
 
 	@Test

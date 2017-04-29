@@ -27,7 +27,7 @@ import java.util.List;
 public abstract class EntityViewElementBuilderFactorySupport<T extends ViewElementBuilder>
 		implements EntityViewElementBuilderFactory<T>
 {
-	private List<EntityViewElementBuilderProcessor<T>> processors = new ArrayList<>();
+	private final List<EntityViewElementBuilderProcessor<T>> processors = new ArrayList<>();
 
 	public void addProcessor( EntityViewElementBuilderProcessor<T> processor ) {
 		processors.add( processor );
@@ -41,7 +41,7 @@ public abstract class EntityViewElementBuilderFactorySupport<T extends ViewEleme
 		T builder = createInitialBuilder( propertyDescriptor, viewElementMode, viewElementType );
 
 		for ( EntityViewElementBuilderProcessor<T> processor : processors ) {
-			processor.process( propertyDescriptor, viewElementMode, builder );
+			processor.process( propertyDescriptor, viewElementMode, viewElementType, builder );
 		}
 
 		return builder;

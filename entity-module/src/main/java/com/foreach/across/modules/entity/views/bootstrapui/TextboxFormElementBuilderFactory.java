@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
@@ -25,6 +26,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHe
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
@@ -55,7 +57,9 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		addProcessor( new FormControlRequiredBuilderProcessor<>() );
 		addProcessor( new TextboxConstraintsProcessor() );
 		addProcessor( new EmailTypeDetectionProcessor() );
+		addProcessor( new TextboxTypeDetectionProcessor() );
 		addProcessor( new PasswordTypeDetectionProcessor() );
+		addProcessor( new FormControlNameBuilderProcessor<>() );
 	}
 
 	public void setMaximumSingleLineLength( int maximumSingleLineLength ) {
@@ -64,32 +68,23 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 	@Override
 	public boolean supports( String viewElementType ) {
-		return BootstrapUiElements.TEXTAREA.equals( viewElementType )
-				|| BootstrapUiElements.TEXTBOX.equals( viewElementType );
+		return BootstrapUiElements.TEXTAREA.equals( viewElementType ) || BootstrapUiElements.TEXTBOX.equals( viewElementType );
 	}
 
 	@Override
 	protected TextboxFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                          ViewElementMode viewElementMode,
 	                                                          String viewElementType ) {
-		TextboxFormElementBuilder textboxBuilder = bootstrapUi
+		return bootstrapUi
 				.textbox()
 				.name( propertyDescriptor.getName() )
 				.controlName( EntityAttributes.controlName( propertyDescriptor ) )
+				.multiLine(
+						String.class.equals( propertyDescriptor.getPropertyType() )
+								|| BootstrapUiElements.TEXTAREA.equals( viewElementType )
+				)
 				.postProcessor( builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) )
 				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
-
-		if ( propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
-			textboxBuilder.type( propertyDescriptor.getAttribute( TextboxFormElement.Type.class ) );
-		}
-		else {
-			textboxBuilder.multiLine(
-					String.class.equals( propertyDescriptor.getPropertyType() )
-							|| BootstrapUiElements.TEXTAREA.equals( viewElementType )
-			);
-		}
-
-		return textboxBuilder;
 	}
 
 	@Autowired
@@ -103,6 +98,23 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	}
 
 	/**
+	 * Configures the fixed type for a textbox.
+	 */
+	private static class TextboxTypeDetectionProcessor implements EntityViewElementBuilderProcessor<TextboxFormElementBuilder>
+	{
+		@Override
+		public void process( EntityPropertyDescriptor propertyDescriptor,
+		                     ViewElementMode viewElementMode,
+		                     String viewElementType,
+		                     TextboxFormElementBuilder builder ) {
+			if ( propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
+				TextboxFormElement.Type type = propertyDescriptor.getAttribute( TextboxFormElement.Type.class );
+				builder.type( type ).multiLine( TextareaFormElement.Type.TEXTAREA.equals( type ) );
+			}
+		}
+	}
+
+	/**
 	 * Detects email types based on the {@link Email} annotation presence.  Only if there was no specific type
 	 * set as attribute.
 	 */
@@ -111,14 +123,18 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		@Override
 		public void process( EntityPropertyDescriptor propertyDescriptor,
 		                     ViewElementMode viewElementMode,
+		                     String viewElementType,
 		                     TextboxFormElementBuilder builder ) {
 			if ( !propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
-				super.process( propertyDescriptor, viewElementMode, builder );
+				super.process( propertyDescriptor, viewElementMode, viewElementType, builder );
 			}
 		}
 
 		@Override
-		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor, TextboxFormElementBuilder builder,
+		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor,
+		                                 ViewElementMode viewElementMode,
+		                                 String viewElementType,
+		                                 TextboxFormElementBuilder builder,
 		                                 Annotation annotation,
 		                                 Map<String, Object> annotationAttributes,
 		                                 ConstraintDescriptor constraint ) {
@@ -136,7 +152,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		@Override
 		public void process( EntityPropertyDescriptor propertyDescriptor,
 		                     ViewElementMode viewElementMode,
-		                     TextboxFormElementBuilder builder ) {
+		                     String viewElementType, TextboxFormElementBuilder builder ) {
 			if ( TextboxFormElement.Type.PASSWORD.equals(
 					propertyDescriptor.getAttribute( TextboxFormElement.Type.class ) )
 					&& !propertyDescriptor.isReadable() ) {
@@ -152,6 +168,8 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	{
 		@Override
 		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor,
+		                                 ViewElementMode viewElementMode,
+		                                 String viewElementType,
 		                                 TextboxFormElementBuilder textbox,
 		                                 Annotation annotation,
 		                                 Map<String, Object> attributes,
@@ -161,7 +179,10 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 				if ( max != Integer.MAX_VALUE ) {
 					textbox.maxLength( max );
-					if ( !propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
+					if ( max <= maximumSingleLineLength ) {
+						textbox.rows( 1 );
+					}
+					if ( !BootstrapUiElements.TEXTAREA.equals( viewElementType ) && !propertyDescriptor.hasAttribute( TextboxFormElement.Type.class ) ) {
 						textbox.multiLine( max > maximumSingleLineLength );
 					}
 				}

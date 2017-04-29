@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.config;
 
+import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -23,6 +24,7 @@ import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuil
 import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.entity.testmodules.springdata.business.*;
 import com.foreach.across.modules.entity.testmodules.springdata.validators.CompanyValidator;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
@@ -48,7 +50,10 @@ public class ClientConfig implements EntityConfigurer
 		allowableActions.add( AllowableAction.READ );
 
 		entities.withType( Car.class )
-	            .allowableActionsBuilder( new FixedEntityAllowableActionsBuilder( allowableActions ) );
+		        .allowableActionsBuilder( new FixedEntityAllowableActionsBuilder( allowableActions ) );
+
+		entities.withType( Representative.class )
+		        .properties( props -> props.property( "name" ).viewElementType( ViewElementMode.CONTROL, TextareaFormElement.ELEMENT_TYPE ) );
 	}
 
 	private void registerCountryAsEntity( EntityConfigurationBuilder<Country> builder ) {

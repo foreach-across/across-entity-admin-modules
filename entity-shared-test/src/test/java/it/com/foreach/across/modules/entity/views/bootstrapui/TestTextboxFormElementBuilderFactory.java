@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBuilderFactory;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.common.test.MockedLoader;
@@ -67,6 +68,13 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 	@Override
 	protected Class getTestClass() {
 		return Validators.class;
+	}
+
+	@Test
+	public void controlNamePrefixing() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		TextboxFormElement textbox = assemble( "noValidatorNumber", ViewElementMode.CONTROL );
+		assertEquals( "entity.noValidatorNumber", textbox.getControlName() );
 	}
 
 	@Test
@@ -123,6 +131,31 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 
 		TextboxFormElement textbox = assembleAndVerify( "sizeForMultiLineValidator", false );
 		assertFalse( textbox instanceof TextareaFormElement );
+	}
+
+	@Test
+	public void singlelineForcedToTextarea() {
+		when( properties.get( "sizeValidator" ).hasAttribute( TextboxFormElement.Type.class ) )
+				.thenReturn( true );
+		when( properties.get( "sizeValidator" ).getAttribute( TextboxFormElement.Type.class ) )
+				.thenReturn( TextareaFormElement.Type.TEXTAREA );
+
+		TextareaFormElement textarea = assembleAndVerify( "sizeValidator", false );
+		assertEquals( 1, textarea.getRows() );
+		assertNotNull( textarea );
+	}
+
+	@Test
+	public void singlelineForcedToBootstrapTextarea() {
+		TextareaFormElement control = assemble( "sizeValidator", ViewElementMode.CONTROL, TextareaFormElement.ELEMENT_TYPE );
+		assertEquals( "sizeValidator", control.getName() );
+		assertEquals( "sizeValidator", control.getControlName() );
+		assertFalse( control.isReadonly() );
+		assertFalse( control.isDisabled() );
+		assertFalse( control.isRequired() );
+
+		assertNotNull( control );
+		assertEquals( 1, control.getRows() );
 	}
 
 	@Test

@@ -154,6 +154,7 @@ public class DefaultEntityViewFactory implements DispatchingEntityViewFactory
 		}
 		builderContext.setAttribute( EntityMessageCodeResolver.class, entityViewRequest.getEntityViewContext().getMessageCodeResolver() );
 		builderContext.setAttribute( EntityViewRequest.class, entityViewRequest );
+		builderContext.setAttribute( EntityViewCommand.class, entityViewRequest.getCommand() );
 
 		return builderContext;
 	}

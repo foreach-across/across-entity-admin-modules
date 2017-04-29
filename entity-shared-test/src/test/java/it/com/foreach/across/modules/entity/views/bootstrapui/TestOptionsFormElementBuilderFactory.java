@@ -16,16 +16,16 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
-import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.options.FixedOptionIterableBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.common.test.MockedLoader;
@@ -42,6 +42,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import java.util.EnumSet;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -58,6 +59,44 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	@Override
 	protected Class getTestClass() {
 		return Validators.class;
+	}
+
+	@Test
+	public void controlNamePrefixingSelect() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		SelectFormElement select = assemble( "enumNoValidator", ViewElementMode.CONTROL );
+		assertEquals( "entity.enumNoValidator", select.getControlName() );
+	}
+
+	@Test
+	public void controlNamePrefixingRadio() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		ViewElementLookupRegistry lookupRegistry = mock( ViewElementLookupRegistry.class );
+		when( lookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).thenReturn( RadioFormElement.ELEMENT_TYPE );
+		when( properties.get( "enumNoValidator" ).getAttribute( ViewElementLookupRegistry.class ) ).thenReturn( lookupRegistry );
+
+		ContainerViewElement container = assemble( "enumNoValidator", ViewElementMode.CONTROL );
+
+		assertEquals(
+				2,
+				container.findAll( RadioFormElement.class )
+				         .filter( e -> e.getControlName().startsWith( "entity." ) )
+				         .count()
+		);
+	}
+
+	@Test
+	public void controlNamePrefixingCheckbox() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		ContainerViewElement container = assemble( "enumMultiple", ViewElementMode.CONTROL );
+
+		assertEquals(
+				2,
+				container.findAll( CheckboxFormElement.class )
+				         .filter( e -> CheckboxFormElement.class.equals( e.getClass() ) )
+				         .filter( e -> e.getControlName().startsWith( "entity." ) )
+				         .count()
+		);
 	}
 
 	@Test
@@ -165,6 +204,8 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 		@Column(nullable = false)
 		public TestEnum enumManyToOneNonOptional;
+
+		public Set<TestEnum> enumMultiple;
 	}
 
 	@Configuration

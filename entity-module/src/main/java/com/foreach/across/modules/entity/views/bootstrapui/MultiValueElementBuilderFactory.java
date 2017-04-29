@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.MultiValueControlViewElementBuilder;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -40,6 +41,10 @@ import org.springframework.stereotype.Component;
 public class MultiValueElementBuilderFactory extends EntityViewElementBuilderFactorySupport<ViewElementBuilder>
 {
 	public static final String ELEMENT_TYPE = "entityMultiValue";
+
+	public MultiValueElementBuilderFactory() {
+		addProcessor( new FormControlNameBuilderProcessor<>() );
+	}
 
 	@Override
 	public boolean supports( String viewElementType ) {

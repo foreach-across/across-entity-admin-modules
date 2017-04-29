@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.views.bootstrapui.processors.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.FormControlElementBuilderSupport;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -36,7 +37,8 @@ public class FormControlRequiredBuilderProcessor<T extends FormControlElementBui
 		extends ValidationConstraintsBuilderProcessor<T>
 {
 	@Override
-	protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor, T builder,
+	protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor,
+	                                 ViewElementMode viewElementMode, String viewElementType, T builder,
 	                                 Annotation annotation,
 	                                 Map<String, Object> annotationAttributes,
 	                                 ConstraintDescriptor constraint ) {

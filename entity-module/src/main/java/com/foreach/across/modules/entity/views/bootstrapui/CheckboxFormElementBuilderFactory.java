@@ -19,11 +19,11 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyValueCheckboxPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.TextCodeResolverPostProcessor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,10 +32,14 @@ import org.springframework.stereotype.Component;
  * @author Arne Vandamme
  */
 @Component
-@RequiredArgsConstructor
-public class CheckboxFormElementBuilderFactory implements EntityViewElementBuilderFactory<OptionFormElementBuilder>
+public class CheckboxFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<OptionFormElementBuilder>
 {
 	private final BootstrapUiFactory bootstrapUi;
+
+	public CheckboxFormElementBuilderFactory( BootstrapUiFactory bootstrapUi ) {
+		this.bootstrapUi = bootstrapUi;
+		addProcessor( new FormControlNameBuilderProcessor<>() );
+	}
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -43,8 +47,8 @@ public class CheckboxFormElementBuilderFactory implements EntityViewElementBuild
 	}
 
 	@Override
-	public OptionFormElementBuilder createBuilder( EntityPropertyDescriptor descriptor,
-	                                               ViewElementMode viewElementMode, String viewElementType ) {
+	public OptionFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor,
+	                                                      ViewElementMode viewElementMode, String viewElementType ) {
 		return bootstrapUi.checkbox()
 		                  .name( descriptor.getName() )
 		                  .text( descriptor.getDisplayName() )

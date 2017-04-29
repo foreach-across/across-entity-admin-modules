@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.CheckboxFormElementBuilderFactory;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.common.test.MockedLoader;
@@ -48,6 +49,13 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 	@Override
 	protected Class getTestClass() {
 		return Booleans.class;
+	}
+
+	@Test
+	public void controlNamePrefixing() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		CheckboxFormElement checkbox = assemble( "primitive", ViewElementMode.CONTROL );
+		assertEquals( "entity.primitive", checkbox.getControlName() );
 	}
 
 	@Test

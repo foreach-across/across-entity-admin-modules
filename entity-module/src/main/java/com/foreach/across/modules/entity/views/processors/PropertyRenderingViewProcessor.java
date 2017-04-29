@@ -17,18 +17,14 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.bootstrapui.elements.processor.ControlNamePrefixingPostProcessor;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.DefaultViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
@@ -67,8 +63,6 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	public static final String ATTRIBUTE_PROPERTY_BUILDERS = "propertyBuildersMap";
 	// todo: make configurable
 	public static final String ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER = "entityForm-column-0";
-
-	private final ControlNamePrefixingPostProcessor prefixingPostProcessor = new ControlNamePrefixingPostProcessor<>( "entity" );
 
 	private EntityViewElementBuilderService viewElementBuilderService;
 
@@ -109,28 +103,13 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 		ViewElementBuilderMap propertyBuilders = entityView.removeAttribute( ATTRIBUTE_PROPERTY_BUILDERS, ViewElementBuilderMap.class );
 
 		if ( propertyBuilders != null ) {
-			EntityPropertyRegistry propertyRegistry = entityViewRequest.getEntityViewContext().getPropertyRegistry();
-
-			DefaultViewElementBuilderContext prefixingBuilderContext = new DefaultViewElementBuilderContext( builderContext );
-			DefaultViewElementPostProcessor.add( prefixingBuilderContext, prefixingPostProcessor );
-
 			ContainerViewElementBuilderSupport<?, ?> propertiesContainerBuilder
 					= builderMap.containsKey( ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER )
 					? builderMap.get( ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER, ContainerViewElementBuilderSupport.class )
 					: containerBuilder;
 
 			propertyBuilders.forEach( ( propertyName, builder ) -> {
-				EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( propertyName );
-
-				// don't prefix if not a native property or control name has been specified
-				if ( descriptor != null
-						&& descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR )
-						&& !descriptor.hasAttribute( EntityAttributes.CONTROL_NAME ) ) {
-					propertiesContainerBuilder.add( builder.build( prefixingBuilderContext ) );
-				}
-				else {
-					propertiesContainerBuilder.add( builder.build( builderContext ) );
-				}
+				propertiesContainerBuilder.add( builder.build( builderContext ) );
 			} );
 		}
 	}

@@ -22,7 +22,7 @@ acrossModule:
   EntityModule:
     resources: ../entity-module/src/main/resources
   SpringDataJpaModule:
-      resources: ../entity-shared-test/src/main/resources
+    resources: ../entity-shared-test/src/main/resources
 
 adminWebModule:
   title: Entity Test Application

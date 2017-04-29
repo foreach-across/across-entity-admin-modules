@@ -69,15 +69,13 @@ public class EntityModuleConfiguration
 		return localValidatorFactoryBean;
 	}
 
-	/**
-	 * Ensures modules can configure entities through either EntityRegistrar or EntityConfigurer beans.
-	 */
-//	@Bean
-//	public ModuleEntityRegistration moduleEntityRegistration() {
-//		return new ModuleEntityRegistration();
-//	}
 	@Bean
 	public MessageSource messageSource() {
-		return new AcrossModuleMessageSource();
+		AcrossModuleMessageSource messageSource = new AcrossModuleMessageSource();
+		messageSource.setBasenames(
+				"classpath:/org/hibernate/validator/ValidationMessages",
+				"classpath:/messages/entity/EntityModule"
+		);
+		return messageSource;
 	}
 }

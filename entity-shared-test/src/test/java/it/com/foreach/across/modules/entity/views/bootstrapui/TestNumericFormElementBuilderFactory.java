@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHe
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.NumericFormElementBuilderFactory;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -75,6 +76,13 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 	@Override
 	protected Class getTestClass() {
 		return NumericProperties.class;
+	}
+
+	@Test
+	public void controlNamePrefixing() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		NumericFormElement numeric = assemble( "withoutAnnotations", ViewElementMode.CONTROL );
+		assertEquals( "entity.withoutAnnotations", numeric.getControlName() );
 	}
 
 	@Test

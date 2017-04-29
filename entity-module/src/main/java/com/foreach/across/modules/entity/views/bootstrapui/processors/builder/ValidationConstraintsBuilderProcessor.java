@@ -33,7 +33,7 @@ import java.util.Map;
  * Base implementation for handling javax.validation constraints.  This implementation will see if the
  * {@link EntityPropertyDescriptor} has a {@link PropertyDescriptor} registered that can be used
  * for fetching validation {@link ConstraintDescriptor} instances.  Constraint annotations will be passed
- * to the {@link #handleConstraint(EntityPropertyDescriptor, ViewElementBuilder, Annotation, Map, ConstraintDescriptor)} implementation.
+ * to the {@link #handleConstraint(EntityPropertyDescriptor, ViewElementMode, String, ViewElementBuilder, Annotation, Map, ConstraintDescriptor)} implementation.
  *
  * @author Arne Vandamme
  */
@@ -42,6 +42,7 @@ public abstract class ValidationConstraintsBuilderProcessor<T extends ViewElemen
 	@Override
 	public void process( EntityPropertyDescriptor propertyDescriptor,
 	                     ViewElementMode viewElementMode,
+	                     String viewElementType,
 	                     T builder ) {
 		PropertyDescriptor validationDescriptor = propertyDescriptor.getAttribute( PropertyDescriptor.class );
 
@@ -51,9 +52,10 @@ public abstract class ValidationConstraintsBuilderProcessor<T extends ViewElemen
 
 				handleConstraint(
 						propertyDescriptor,
+						viewElementMode,
+						viewElementType,
 						builder,
-						annotation,
-						AnnotationUtils.getAnnotationAttributes( annotation ), constraint );
+						annotation, AnnotationUtils.getAnnotationAttributes( annotation ), constraint );
 			}
 		}
 	}
@@ -91,7 +93,10 @@ public abstract class ValidationConstraintsBuilderProcessor<T extends ViewElemen
 		return ArrayUtils.contains( types, annotation.annotationType() );
 	}
 
-	protected abstract void handleConstraint( EntityPropertyDescriptor propertyDescriptor, T builder,
+	protected abstract void handleConstraint( EntityPropertyDescriptor propertyDescriptor,
+	                                          ViewElementMode viewElementMode,
+	                                          String viewElementType,
+	                                          T builder,
 	                                          Annotation annotation,
 	                                          Map<String, Object> annotationAttributes,
 	                                          ConstraintDescriptor constraint );

@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.query.EntityQuery;
@@ -32,6 +33,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.options.EntityQueryOp
 import com.foreach.across.modules.entity.views.bootstrapui.options.EnumOptionIterableBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +69,8 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	public OptionsFormElementBuilderFactory() {
 		addProcessor( new PersistenceAnnotationsBuilderProcessor() );
 		addProcessor( new OptionsRequiredBuilderProcessor() );
+		// ensure that checkboxes are prefixed
+		addProcessor( new FormControlNameBuilderProcessor<>( CheckboxFormElement.class::isInstance ) );
 	}
 
 	@Override
@@ -153,7 +157,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 					}
 					else {
 						throw new IllegalStateException(
-								"Illegal " + EntityAttributes.OPTIONS_ALLOWED_VALUES + " attriute - expected EnumSet for enum propery" );
+								"Illegal " + EntityAttributes.OPTIONS_ALLOWED_VALUES + " attribute - expected EnumSet for enum propery" );
 					}
 				}
 				builderToUse = iterableBuilder;
@@ -223,7 +227,10 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			extends ValidationConstraintsBuilderProcessor<OptionsFormElementBuilder>
 	{
 		@Override
-		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor, OptionsFormElementBuilder builder,
+		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor,
+		                                 ViewElementMode viewElementMode,
+		                                 String viewElementType,
+		                                 OptionsFormElementBuilder builder,
 		                                 Annotation annotation,
 		                                 Map<String, Object> annotationAttributes,
 		                                 ConstraintDescriptor constraint ) {

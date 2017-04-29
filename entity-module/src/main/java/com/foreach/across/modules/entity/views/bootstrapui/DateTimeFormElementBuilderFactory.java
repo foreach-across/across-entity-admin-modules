@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHe
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
@@ -151,6 +152,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 			addProcessor( new FormControlRequiredBuilderProcessor<>() );
 			addProcessor( new TemporalAnnotationProcessor() );
 			addProcessor( new PastAndFutureValidationProcessor() );
+			addProcessor( new FormControlNameBuilderProcessor<>() );
 		}
 
 		@Override
@@ -241,7 +243,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 	{
 		@Override
 		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor,
-		                                 DateTimeFormElementBuilder builder,
+		                                 ViewElementMode viewElementMode, String viewElementType, DateTimeFormElementBuilder builder,
 		                                 Annotation annotation,
 		                                 Map<String, Object> annotationAttributes,
 		                                 ConstraintDescriptor constraint ) {

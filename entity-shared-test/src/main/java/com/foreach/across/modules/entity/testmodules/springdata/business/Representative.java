@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.business;
 
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Entity;
@@ -32,8 +34,10 @@ public class Representative implements Persistable<String>
 	private boolean isNew;
 
 	@Id
+	@NotBlank
 	private String id;
 
+	@Length(max = 200)
 	private String name;
 
 	public Representative() {

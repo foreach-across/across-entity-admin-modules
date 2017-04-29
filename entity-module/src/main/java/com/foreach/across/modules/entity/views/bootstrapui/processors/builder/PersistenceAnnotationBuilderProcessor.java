@@ -63,7 +63,7 @@ public abstract class PersistenceAnnotationBuilderProcessor<T extends ViewElemen
 	@Override
 	public void process( EntityPropertyDescriptor propertyDescriptor,
 	                     ViewElementMode viewElementMode,
-	                     T builder ) {
+	                     String viewElementType, T builder ) {
 		PersistentProperty property = propertyDescriptor.getAttribute( PersistentProperty.class );
 
 		if ( property != null ) {

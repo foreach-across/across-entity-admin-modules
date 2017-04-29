@@ -16,6 +16,7 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -93,6 +94,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 				when( descriptor.isWritable() ).thenReturn( true );
 				TypeDescriptor typeDescriptor = new TypeDescriptor( field );
 				when( descriptor.getPropertyTypeDescriptor() ).thenReturn( typeDescriptor );
+				when( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR )).thenReturn( true );
 
 				when( codeResolver.getMessageWithFallback(
 						eq( "properties." + field.getName() ), any( String.class )
