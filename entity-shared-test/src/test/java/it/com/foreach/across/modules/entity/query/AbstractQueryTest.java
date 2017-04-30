@@ -16,6 +16,13 @@
 
 package it.com.foreach.across.modules.entity.query;
 
+import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
+import com.foreach.across.modules.entity.testmodules.springdata.business.CompanyStatus;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Group;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
+import com.foreach.across.modules.entity.testmodules.springdata.repositories.CompanyRepository;
+import com.foreach.across.modules.entity.testmodules.springdata.repositories.GroupRepository;
+import com.foreach.across.modules.entity.testmodules.springdata.repositories2.RepresentativeRepository;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.AfterClass;
@@ -26,13 +33,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import com.foreach.across.modules.entity.testmodules.springdata.business.CompanyStatus;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Group;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.CompanyRepository;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.GroupRepository;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.RepresentativeRepository;
 
 import java.text.ParseException;
 import java.util.Arrays;

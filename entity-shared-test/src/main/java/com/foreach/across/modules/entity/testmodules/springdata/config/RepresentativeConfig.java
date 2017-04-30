@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.testmodules.springdata.repositories;
+package com.foreach.across.modules.entity.testmodules.springdata.config;
 
-import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import com.foreach.across.modules.entity.testmodules.springdata.repositories2.RepresentativeRepository;
+import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * @author Andy Somers
+ * @author Arne Vandamme
+ * @since 2.0.0
  */
-public interface RepresentativeRepository extends JpaRepository<Representative, String>, JpaSpecificationExecutor<Representative>
+@Configuration
+@EnableAcrossJpaRepositories(basePackageClasses = RepresentativeRepository.class, transactionManagerRef = "otherTransactionManager")
+public class RepresentativeConfig
 {
 }

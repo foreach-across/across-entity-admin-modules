@@ -17,22 +17,27 @@
 package it.com.foreach.across.modules.entity;
 
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.testmodules.solr.SolrTestModule;
+import com.foreach.across.modules.entity.testmodules.solr.business.Product;
+import com.foreach.across.modules.entity.testmodules.solr.repositories.ProductRepository;
+import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
+import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossWebAppConfiguration;
+import it.com.foreach.across.modules.entity.utils.EntityVerifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.repository.util.TxUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import com.foreach.across.modules.entity.testmodules.solr.SolrTestModule;
-import com.foreach.across.modules.entity.testmodules.solr.repositories.ProductRepository;
-import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -44,6 +49,9 @@ import static org.junit.Assert.assertNotNull;
 @AcrossWebAppConfiguration
 public class TestSolrEntities
 {
+	@Autowired
+	private EntityRegistry entityRegistry;
+
 	@Autowired(required = false)
 	private ClientRepository clientRepository;
 
@@ -54,6 +62,18 @@ public class TestSolrEntities
 	public void contextShouldBootstrap() {
 		assertNotNull( clientRepository );
 		assertNotNull( productRepository );
+	}
+
+	@Test
+	public void solrEntityShouldBeRegistered() {
+		verify( Product.class )
+				.isVisible( true )
+				.hasRepository()
+				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, TxUtils.DEFAULT_TRANSACTION_MANAGER );
+	}
+
+	private EntityVerifier verify( Class<?> entityType ) {
+		return new EntityVerifier( entityRegistry, entityType );
 	}
 
 	@Configuration

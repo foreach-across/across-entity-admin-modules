@@ -16,13 +16,14 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.config;
 
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
-import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.entity.testmodules.springdata.business.*;
+import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.entity.testmodules.springdata.validators.CompanyValidator;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
@@ -34,9 +35,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-@EnableAcrossJpaRepositories(basePackageClasses = SpringDataJpaModule.class)
+@EnableAcrossJpaRepositories(basePackageClasses = ClientRepository.class)
 public class ClientConfig implements EntityConfigurer
 {
 	@Override
@@ -86,6 +88,11 @@ public class ClientConfig implements EntityConfigurer
 			id.setGroup( mvcConversionService.convert( parts[1], Group.class ) );
 			return id;
 		} );
+	}
 
+	@Bean
+	@Exposed
+	public PlatformTransactionManager otherTransactionManager( PlatformTransactionManager jpaTransactionManager ) {
+		return jpaTransactionManager;
 	}
 }

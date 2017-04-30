@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.registrars.repository;
 
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
@@ -69,6 +70,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	private MessageSource messageSource;
 	private MappingContextRegistry mappingContextRegistry;
 	private SmartValidator entityValidator;
+	private PlatformTransactionManagerResolver transactionManagerResolver;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -145,6 +147,11 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 			entityConfiguration.setAttribute( Repository.class, repository );
 			entityConfiguration.setAttribute( PersistentEntity.class,
 			                                  repositoryFactoryInformation.getPersistentEntity() );
+
+			String transactionManagerBeanName = transactionManagerResolver.resolveTransactionManagerBeanName( repositoryFactoryInformation );
+			if ( transactionManagerBeanName != null ) {
+				entityConfiguration.setAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, transactionManagerBeanName );
+			}
 
 			findDefaultValidatorInModuleContext( entityConfiguration, moduleInfo.getApplicationContext() );
 
@@ -293,5 +300,10 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	@EntityValidator
 	public void setEntityValidator( SmartValidator entityValidator ) {
 		this.entityValidator = entityValidator;
+	}
+
+	@Autowired
+	public void setTransactionManagerResolver( PlatformTransactionManagerResolver transactionManagerResolver ) {
+		this.transactionManagerResolver = transactionManagerResolver;
 	}
 }

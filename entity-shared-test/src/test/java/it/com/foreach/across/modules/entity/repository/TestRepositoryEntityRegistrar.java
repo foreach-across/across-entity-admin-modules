@@ -17,6 +17,7 @@
 package it.com.foreach.across.modules.entity.repository;
 
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
@@ -34,9 +35,11 @@ import com.foreach.across.modules.entity.testmodules.springdata.repositories.Cli
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
+import com.foreach.across.modules.hibernate.jpa.config.HibernateJpaConfiguration;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossWebAppConfiguration;
+import it.com.foreach.across.modules.entity.utils.EntityVerifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,32 +87,38 @@ public class TestRepositoryEntityRegistrar
 		verify( Client.class )
 				.isVisible( true )
 				.hasRepository()
+				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, HibernateJpaConfiguration.TRANSACTION_MANAGER )
 				.hasAssociation( "client.groups", false ).from( "groups" ).to( ClientGroup.class, "id.client" ).and()
 				.hasAssociation( "clientGroup.id.client", true ).from( null ).to( ClientGroup.class, "id.client" );
 
 		verify( Company.class )
 				.isVisible( true )
 				.hasRepository()
+				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, HibernateJpaConfiguration.TRANSACTION_MANAGER )
 				.hasAssociation( "client.company", true ).from( null ).to( Client.class, "company" ).and()
 				.hasAssociation( "company.representatives", false ).from( "representatives" ).to( Representative.class );
 
 		// not a JpaSpecificationExecutor so associations can't be built
 		verify( Car.class )
 				.isVisible( true )
+				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, HibernateJpaConfiguration.TRANSACTION_MANAGER )
 				.hasRepository();
 
 		verify( Group.class )
 				.isVisible( true )
 				.hasRepository()
+				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, HibernateJpaConfiguration.TRANSACTION_MANAGER )
 				.hasAssociation( "company.group", true ).from( null ).to( Company.class, "group" ).and()
 				.hasAssociation( "clientGroup.id.group", ClientGroup.class, true );
 
 		verify( ClientGroup.class )
+				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, HibernateJpaConfiguration.TRANSACTION_MANAGER )
 				.isVisible( true )
 				.hasRepository();
 
 		verify( Representative.class )
 				.isVisible( true )
+				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, "otherTransactionManager" )
 				.hasRepository()
 				.hasAssociation( "company.representatives", true ).from( null ).to( Company.class, "representatives" );
 
@@ -119,101 +128,7 @@ public class TestRepositoryEntityRegistrar
 	}
 
 	private EntityVerifier verify( Class<?> entityType ) {
-		return new EntityVerifier( entityType );
-	}
-
-	private class EntityVerifier
-	{
-		private final EntityConfiguration<?> configuration;
-
-		public EntityVerifier( Class<?> entityType ) {
-			configuration = entityRegistry.getEntityConfiguration( entityType );
-			assertNotNull( configuration );
-		}
-
-		public EntityVerifier isVisible( boolean visible ) {
-			assertEquals( visible, !configuration.isHidden() );
-			return this;
-		}
-
-		public EntityVerifier hasRepository() {
-			assertTrue( "EntityModel not present", configuration.hasEntityModel() );
-			assertTrue( "Repository not present", configuration.hasAttribute( Repository.class ) );
-			return this;
-		}
-
-		public EntityAssociationVerifier hasAssociation( String associationName, boolean visible ) {
-			return new EntityAssociationVerifier( this, configuration, associationName ).visible( visible );
-		}
-
-		public EntityVerifier hasAssociation( String associationName, Class<?> targetClass, boolean visible ) {
-			EntityAssociation association = configuration.association( associationName );
-			assertNotNull( "Association " + associationName + " not present", association );
-			assertSame( entityRegistry.getEntityConfiguration( targetClass ), association.getTargetEntityConfiguration() );
-
-			assertNotEquals( visible, association.isHidden() );
-			assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
-			assertTrue( association.hasView( EntityView.CREATE_VIEW_NAME ) );
-			assertTrue( association.hasView( EntityView.UPDATE_VIEW_NAME ) );
-			assertTrue( association.hasView( EntityView.DELETE_VIEW_NAME ) );
-
-			return this;
-		}
-	}
-
-	private class EntityAssociationVerifier
-	{
-		private final EntityAssociation association;
-		private final EntityVerifier parent;
-
-		public EntityAssociationVerifier( EntityVerifier parent, EntityConfiguration<?> configuration, String associationName ) {
-			this.parent = parent;
-			association = configuration.association( associationName );
-			assertNotNull( "Association " + associationName + " not present", association );
-
-			assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
-			assertTrue( association.hasView( EntityView.CREATE_VIEW_NAME ) );
-			assertTrue( association.hasView( EntityView.UPDATE_VIEW_NAME ) );
-			assertTrue( association.hasView( EntityView.DELETE_VIEW_NAME ) );
-		}
-
-		public EntityAssociationVerifier from( String propertyName ) {
-			if ( propertyName == null ) {
-				assertNull( association.getSourceProperty() );
-			}
-			else {
-				assertEquals( propertyName, association.getSourceProperty().getName() );
-			}
-			return this;
-		}
-
-		public EntityAssociationVerifier to( Class<?> targetClass ) {
-			return to( targetClass, null );
-		}
-
-		public EntityAssociationVerifier to( Class<?> targetClass, String targetPropertyName ) {
-			assertSame( entityRegistry.getEntityConfiguration( targetClass ), association.getTargetEntityConfiguration() );
-			if ( targetPropertyName == null ) {
-				assertNull( "No target property was expected", association.getTargetProperty() );
-
-			}
-			else {
-				assertSame(
-						association.getTargetProperty(),
-						association.getTargetEntityConfiguration().getPropertyRegistry().getProperty( targetPropertyName )
-				);
-			}
-			return this;
-		}
-
-		public EntityAssociationVerifier visible( boolean visible ) {
-			assertNotEquals( visible, association.isHidden() );
-			return this;
-		}
-
-		public EntityVerifier and() {
-			return parent;
-		}
+		return new EntityVerifier( entityRegistry, entityType );
 	}
 
 	@Test

@@ -20,12 +20,18 @@ import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Contains common Entity attribute keys.
  */
 public interface EntityAttributes
 {
+	/**
+	 * If set, holds the name of the {@link PlatformTransactionManager} bean that the repositories of this entity use.
+	 */
+	String TRANSACTION_MANAGER_NAME = PlatformTransactionManager.class.getName() + ".name";
+
 	/**
 	 * If set, contains the control name that should be used for form elements.
 	 */

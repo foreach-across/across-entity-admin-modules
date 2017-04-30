@@ -6,13 +6,13 @@ The following table lists commonly present attributes on an `EntityConfiguration
 |Key |Value
 
 |`Repository.class`
-|In case of an entity registered through a Spring data repository.
+|In case of an entity registered through a Spring Data repository.
 
 |`RepositoryFactoryInformation.class`
-|In case of an entity registered through a Spring data repository.
+|In case of an entity registered through a Spring Data repository.
 
 |`PersistentEntity.class`
-|In case of an entity registered through a Spring data repository that exposed `PersistentEntity` information.
+|In case of an entity registered through a Spring Data repository that exposed `PersistentEntity` information.
 
 |`EntityQueryExecutor.class`
 |Holds the `EntityQueryExecutor` that can be used for <<entity-query,custom `EntityQuery` execution>> and will be used by default for fetching entities.
@@ -21,6 +21,11 @@ Available if the `Repository` was supported by one of the <<entity-query-executo
 |`EntityQueryParser.class`
 |Holds the `EntityQueryParser` that should be used for <<entity-query-language,parsing EQL statements>> into a valid `EntityQuery`.
 Available if the `EntityQueryExecutor.class` attribute is present.
+
+|`EntityAttributes.TRANSACTION_MANAGER_NAME`
+|Optionally holds the name of the `PlatformTransactionManager` that the repository for this entity uses.
+EntityModule attempts to detect the transaction manager automatically for every Spring Data repository.
+When set, this will enable transaction management for the default create, update and delete views.
 
 |===
 
@@ -34,7 +39,7 @@ The following table lists commonly present attributes on an `EntityPropertyDescr
 |Key |Value
 
 |`PersistentProperty.class`
-|In case of a property of a `PersistentEntity` registered through a Spring data repository.
+|In case of a property of a `PersistentEntity` registered through a Spring Data repository.
 
 |`Sort.Order.class`
 |Contains the default `Sort.Order` if sorting is enabled on this property.

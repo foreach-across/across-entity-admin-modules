@@ -55,18 +55,6 @@ public class DefaultEntityViewFactory implements DispatchingEntityViewFactory
 
 	private BootstrapUiFactory bootstrapUiFactory;
 
-	/*
-		Advised advised = (Advised) clientRepository;
-		Stream.of( advised.getAdvisors() )
-		      .map( Advisor::getAdvice )
-		      .filter( TransactionInterceptor.class::isInstance )
-		      .map( TransactionInterceptor.class::cast )
-		      .findFirst()
-		      .ifPresent( ti -> System.err.println(ti.getTransactionManager()) );
-		*/
-	// if repository, get the interceptors - if TransactionInterceptor is present, get the transactionManagerBeanName
-	// if set, retrieve the transaction manager from the bean factory, else get the transactionManager from the interceptor,
-	// if set, use that one - else use the default transaction manager
 	@Getter
 	@Setter
 	private TransactionalEntityViewProcessorRegistry processorRegistry = new TransactionalEntityViewProcessorRegistry();
