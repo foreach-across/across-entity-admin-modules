@@ -47,6 +47,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class TestOptionGenerator
 {
+	private final OptionIterableBuilder singleOption
+			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ) );
+
 	private final OptionIterableBuilder noneSelected
 			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ),
 			                                  new OptionFormElementBuilder().label( "aaa" ).rawValue( "2" )
@@ -87,6 +90,18 @@ public class TestOptionGenerator
 	}
 
 	@Test
+	public void emptyOptionNotAddedAndOptionSelectedIfRequiredAndOnlyOneOption() {
+		options.select().required();
+
+		generator.setOptions( singleOption );
+
+		List<SelectFormElement.Option> generated = build();
+		assertEquals( 1, generated.size() );
+		assertEquals( "bbb", generated.get( 0 ).getLabel() );
+		assertTrue( generated.get( 0 ).isSelected() );
+	}
+
+	@Test
 	public void emptyOptionNotAddedIfRequiredAndOneSelected() {
 		options.select().required();
 		generator.setOptions( withSelected );
@@ -116,6 +131,12 @@ public class TestOptionGenerator
 		assertEquals( "", generated.get( 0 ).getLabel() );
 		assertEquals( "bbb", generated.get( 1 ).getLabel() );
 		assertEquals( "aaa", generated.get( 2 ).getLabel() );
+
+		generator.setOptions( singleOption );
+		generated = build();
+		assertEquals( 2, generated.size() );
+		assertEquals( "", generated.get( 0 ).getLabel() );
+		assertEquals( "bbb", generated.get( 1 ).getLabel() );
 	}
 
 	@Test

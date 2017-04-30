@@ -66,6 +66,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
 		SelectFormElement select = assemble( "enumNoValidator", ViewElementMode.CONTROL );
 		assertEquals( "entity.enumNoValidator", select.getControlName() );
+		assertEquals( "entity.enumNoValidator", select.getHtmlId() );
 	}
 
 	@Test
@@ -80,7 +81,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		assertEquals(
 				2,
 				container.findAll( RadioFormElement.class )
-				         .filter( e -> e.getControlName().startsWith( "entity." ) )
+				         .filter( e -> e.getControlName().startsWith( "entity." ) && e.getHtmlId().startsWith( "entity." ) )
 				         .count()
 		);
 	}
@@ -94,7 +95,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 				2,
 				container.findAll( CheckboxFormElement.class )
 				         .filter( e -> CheckboxFormElement.class.equals( e.getClass() ) )
-				         .filter( e -> e.getControlName().startsWith( "entity." ) )
+				         .filter( e -> e.getControlName().startsWith( "entity." ) && e.getHtmlId().startsWith( "entity." ) )
 				         .count()
 		);
 	}

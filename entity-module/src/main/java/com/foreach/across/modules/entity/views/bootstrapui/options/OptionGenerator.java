@@ -93,6 +93,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		this.selfOptionIncluded = selfOptionIncluded;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
 	public ContainerViewElement build( ViewElementBuilderContext builderContext ) {
 		ContainerViewElement container = new ContainerViewElement();
@@ -106,12 +107,24 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		List<OptionFormElementBuilder> actual = new ArrayList<>();
 
 		if ( options != null ) {
+			int optionCount = 0;
+			OptionFormElementBuilder firstOption = null;
 			for ( OptionFormElementBuilder option : options.buildOptions( builderContext ) ) {
+				if ( firstOption == null ) {
+					firstOption = option;
+				}
 				selectOption( option, selectedValues );
 				if ( isAllowed( option, entity ) ) {
 					actual.add( option );
 				}
 				hasSelected |= option.isSelected();
+				optionCount++;
+			}
+
+			// auto-select if only single option
+			if ( optionCount == 1 ) {
+				firstOption.selected();
+				hasSelected = true;
 			}
 
 			if ( sorted ) {
