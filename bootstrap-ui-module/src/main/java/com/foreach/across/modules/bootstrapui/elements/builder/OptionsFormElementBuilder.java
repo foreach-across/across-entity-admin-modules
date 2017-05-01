@@ -166,13 +166,13 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 
 			if ( type == Type.CHECKBOX || type == Type.RADIO ) {
 				control = createBoxDiv();
+
+				if ( controlName != null ) {
+					control.setHtmlId( "options-" + controlName );
+				}
 			}
 			else {
 				control = createSelect();
-			}
-
-			if ( controlName != null ) {
-				control.setHtmlId( controlName );
 			}
 
 			return apply( control, builderContext );

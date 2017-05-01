@@ -82,12 +82,12 @@ public class TestOptionsAsCheckboxBuilder extends AbstractBootstrapViewElementTe
 				);
 
 		expect(
-				"<div id='mybox'>" +
-						"<div class='checkbox'><label for='mybox1'>" +
-						"<input type='checkbox' value='one' id='mybox1' name='mybox' /> Inner text" +
+				"<div id='options-mybox'>" +
+						"<div class='checkbox'><label for='mybox'>" +
+						"<input type='checkbox' value='one' id='mybox' name='mybox' /> Inner text" +
 						"</label><input type='hidden' name='_mybox' value='on' /></div>" +
-						"<div class='checkbox disabled'><label for='mybox2'>" +
-						"<input type='checkbox' value='2' checked='checked' disabled='disabled' name='mybox' id='mybox2' /> Short two" +
+						"<div class='checkbox disabled'><label for='mybox1'>" +
+						"<input type='checkbox' value='2' checked='checked' disabled='disabled' name='mybox' id='mybox1' /> Short two" +
 						"</label><input type='hidden' name='_mybox' value='on' /></div>" +
 						"</div>"
 		);
