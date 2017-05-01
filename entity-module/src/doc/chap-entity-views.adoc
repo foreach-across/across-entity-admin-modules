@@ -125,6 +125,17 @@ NOTE: The `DefaultEntityViewFactory` will not execute any of the rendering relat
 Please refer to the {javadoc}/com/foreach/across/modules/entity/views/EntityViewProcessor.html[EntityViewProcessor], {javadoc}/com/foreach/across/modules/entity/views/processors/EntityViewProcessorAdapter.html[EntityViewProcessorAdapter] and {javadoc}/com/foreach/across/modules/entity/views/processors/SimpleEntityViewProcessorAdapter.html[SimpleEntityViewProcessorAdapter] for more details on the available processor methods.
 The appendix also provides a <<appendix-view-processors,list of all available general purpose processors>>.
 
+[[transaction-support]]
+===== Transaction support
+The `DefaultEntityViewFactory` uses a `TransactionalEntityViewProcessorRegistry` and enables transactions on all state modifying HTTP methods: *POST*, *PUT*, *PATCH* or *DELETE*.
+If a transaction manager bean name is available on the `EntityConfiguration`, transactions will be enabled by default for all form views: create, update, delete and custom form views.
+This means that all calls in state modifying `doControl()` methods of all `EntityViewProcessor` instances will happen in a single transaction.
+
+The transaction manager bean name is registered as an attribute `EntityAttributes.TRANSACTION_MANAGER_NAME` and is detected automatically for every Spring Data repository based entity.
+
+.Manually enabling transactions on a view
+You can enable transactions manually on the `EntityViewFactoryBuilder` by specifying either the `PlatformTransactionManager` to use, the name of the transaction manager bean or a `TransactionTemplate` if you need more fine-grained control.
+
 ==== Model attributes
 The `GenericEntityViewController` exposes the following model attributes to the Spring MVC view:
 

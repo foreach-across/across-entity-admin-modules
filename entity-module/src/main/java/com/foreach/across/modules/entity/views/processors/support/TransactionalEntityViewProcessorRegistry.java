@@ -62,7 +62,7 @@ public class TransactionalEntityViewProcessorRegistry extends EntityViewProcesso
 
 	/**
 	 * Dispatch a consumer to all processors that are of the specific type.
-	 * This will apply to consumer to all processors that match the required type, in registration order.
+	 * This will apply the consumer to all processors that match the required type, in registration order.
 	 *
 	 * @param consumer       to apply
 	 * @param processorType  the processors should have

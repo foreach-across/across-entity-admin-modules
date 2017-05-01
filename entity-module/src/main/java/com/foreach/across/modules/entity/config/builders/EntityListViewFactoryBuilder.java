@@ -33,6 +33,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
@@ -71,6 +73,21 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	@Override
 	public EntityListViewFactoryBuilder template( String template ) {
 		return (EntityListViewFactoryBuilder) super.template( template );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder transactionManager( String transactionManagerName ) {
+		return (EntityListViewFactoryBuilder) super.transactionManager( transactionManagerName );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder transactionManager( PlatformTransactionManager transactionManager ) {
+		return (EntityListViewFactoryBuilder) super.transactionManager( transactionManager );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder transactionTemplate( TransactionTemplate transactionTemplate ) {
+		return (EntityListViewFactoryBuilder) super.transactionTemplate( transactionTemplate );
 	}
 
 	@Override

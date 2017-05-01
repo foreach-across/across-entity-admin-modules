@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.builders;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
@@ -57,6 +58,10 @@ final class DeleteViewInitializer extends AbstractViewInitializer<EntityViewFact
 			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
 			       .viewProcessor( beanFactory.getBean( DefaultValidationViewProcessor.class ), 0 )
 			       .viewProcessor( beanFactory.getBean( GlobalPageFeedbackViewProcessor.class ) );
+
+			if ( entityConfiguration.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME ) ) {
+				builder.transactionManager( entityConfiguration.getAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, String.class ) );
+			}
 
 			SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
 			pageStructureViewProcessor.setAddEntityMenu( true );

@@ -63,33 +63,7 @@ Module website: {module-url}
 |true
 |===
 
-== What's new in this version?
-
-:numbered!:
-=== 2.0.0-SNAPSHOT
-This release has a lot of breaking changes compared with the previous release.
-The code has been heavily rewritten and optimized.
-The public API modified accordingly with a focus on simplification and future extensibility.
-
-* requires Across 2.0.0+
-* massive overhaul of the `EntitiesConfigurationBuilder` system - removed the `and()` concatenating of builder calls
-* massive overhaul of `EntityViewFactory`, `EntityViewProcessor` and the default administration controllers
-** nested builder consumers are used instead - this greatly simplified the class hierarchy involved
-* externalized the entire `ViewElement` infrastructure to {bootstrap-ui-module-url}[BootstrapUiModule]
-** if {bootstrap-ui-module-url}[BootstrapUiModule] is not present, default views will not be created
-* compatibility update with Spring 4.2 which replaces `CrudInvoker` with `RepositoryInvoker` from spring-data-commons.
-* principal names on `Auditable` entities are now pretty printed using the `SecurityPrincipalLabelResolverStrategy` from the _SpringSecurityModule_
-* {module-name} now supports <<delete-view,deleting of entities>>
-* the `EntityModel` of an `EntityConfiguration` can now be customized using the <<builders,`EntityConfigurer` builders>>
-* extension of the <<entity-query,EntityQuery infrastructure>>
-** addition of the <<entity-query-language,EntityQuery Language (EQL)>> providing SQL-like syntax for building an `EntityQuery`
-** provide a default <<list-view-filter,EQL-based filter for list views>>
-* addition of the entity browser in the _Developer tools_ section of AdminWebModule
-** allows seeing all registered entities along with their attributes, properties, views and associations
-** the entity browser is only activate if development mode is active
-* streamlined the message code hierarchy for view rendering, see <<appendix-message-codes,appendix for details>>
-* a list view can now have a <<eql-predicate-on-list-view,default predicate assigned using an EQL statement>>
-** this can be used to ensure a list result always has a default filter applied
+include::whats-new.adoc[]
 
 :numbered:
 

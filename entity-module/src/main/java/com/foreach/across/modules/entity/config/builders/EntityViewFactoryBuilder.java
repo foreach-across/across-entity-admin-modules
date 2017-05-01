@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
+import com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -34,6 +35,8 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -118,6 +121,91 @@ public class EntityViewFactoryBuilder
 	 */
 	public EntityViewFactoryBuilder template( String template ) {
 		this.template = template;
+		return this;
+	}
+
+	/**
+	 * Set the name of the {@link PlatformTransactionManager} bean that should be used by the {@link DispatchingEntityViewFactory}.
+	 * If {@code null}, will remove any previously registered transaction manager.
+	 * <p/>
+	 * This setting will simply be ignored if:
+	 * <ul>
+	 * <li>the {@link EntityViewFactory} is not a {@link DispatchingEntityViewFactory}</li>
+	 * <li>there is no {@link com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry}</li>
+	 * <li>there is no {@link PlatformTransactionManager} with that name in the bean factory</li>
+	 * </ul>
+	 *
+	 * @param transactionManagerName bean name
+	 * @return current builder
+	 * @see com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry
+	 */
+	public EntityViewFactoryBuilder transactionManager( String transactionManagerName ) {
+		postProcess( ( viewFactory, entityViewProcessorRegistry ) -> {
+			if ( entityViewProcessorRegistry instanceof TransactionalEntityViewProcessorRegistry ) {
+				if ( beanFactory.containsBean( transactionManagerName ) ) {
+					PlatformTransactionManager transactionManager = beanFactory.getBean( transactionManagerName, PlatformTransactionManager.class );
+					TransactionTemplate transactionTemplate = transactionManager != null ? new TransactionTemplate( transactionManager ) : null;
+					( (TransactionalEntityViewProcessorRegistry) entityViewProcessorRegistry ).setTransactionTemplate( transactionTemplate );
+				}
+				else {
+					LOG.warn( "Skipping transaction template registration as there is no bean named {} in the bean factory",
+					          transactionManagerName );
+				}
+			}
+			else {
+				LOG.warn( "Skipping transaction template registration as {} does not have a TransactionalEntityViewProcessorRegistry", viewFactory );
+			}
+		} );
+		return this;
+	}
+
+	/**
+	 * Set the {@link PlatformTransactionManager} bean that should be used by the {@link DispatchingEntityViewFactory}.
+	 * If {@code null}, will remove any previously registered transaction manager.
+	 * If the {@link EntityViewFactory} is not a {@link DispatchingEntityViewFactory} or does not have a
+	 * {@link com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry}, this setting will be ignored.
+	 *
+	 * @param transactionManager to use
+	 * @return current builder
+	 * @see com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry
+	 */
+	public EntityViewFactoryBuilder transactionManager( PlatformTransactionManager transactionManager ) {
+		postProcess( ( viewFactory, entityViewProcessorRegistry ) -> {
+			if ( entityViewProcessorRegistry instanceof TransactionalEntityViewProcessorRegistry ) {
+				TransactionTemplate transactionTemplate = transactionManager != null ? new TransactionTemplate( transactionManager ) : null;
+				( (TransactionalEntityViewProcessorRegistry) entityViewProcessorRegistry ).setTransactionTemplate( transactionTemplate );
+			}
+			else {
+				LOG.warn( "Skipping transaction template registration as {} does not have a TransactionalEntityViewProcessorRegistry", viewFactory );
+			}
+		} );
+		return this;
+	}
+
+	/**
+	 * Set the {@link TransactionTemplate} bean that should be used by the {@link DispatchingEntityViewFactory}.
+	 * If {@code null}, will remove any previously registered transaction template.
+	 * If the {@link EntityViewFactory} is not a {@link DispatchingEntityViewFactory} or does not have a
+	 * {@link com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry}, this setting will be ignored.
+	 * <p/>
+	 * Use this method if you want to deviate from the default transaction settings, else it should be sufficient to simply specify the
+	 * {@link PlatformTransactionManager} to use.
+	 *
+	 * @param transactionTemplate to use
+	 * @return current builder
+	 * @see com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry
+	 * @see #transactionManager(String)
+	 * @see #transactionManager(PlatformTransactionManager)
+	 */
+	public EntityViewFactoryBuilder transactionTemplate( TransactionTemplate transactionTemplate ) {
+		postProcess( ( viewFactory, entityViewProcessorRegistry ) -> {
+			if ( entityViewProcessorRegistry instanceof TransactionalEntityViewProcessorRegistry ) {
+				( (TransactionalEntityViewProcessorRegistry) entityViewProcessorRegistry ).setTransactionTemplate( transactionTemplate );
+			}
+			else {
+				LOG.warn( "Skipping transaction template registration as {} does not have a TransactionalEntityViewProcessorRegistry", viewFactory );
+			}
+		} );
 		return this;
 	}
 
