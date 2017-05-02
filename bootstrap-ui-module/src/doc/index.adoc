@@ -1,9 +1,9 @@
 = BootstrapUiModule
 Arne Vandamme
-1.0.0-SNAPSHOT
+1.0.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 1.0.0-SNAPSHOT
+:module-version: 1.0.0.RELEASE
 :module-name: BootstrapUiModule
 :module-artifact: bootstrap-ui-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
@@ -44,7 +44,7 @@ Module website: {module-url}
 
 == What's new in this version?
 :numbered!:
-=== 1.0.0-SNAPSHOT
+=== 1.0.0.RELEASE
 Initial public release available on http://search.maven.org/[Maven central].
 
 :numbered:
