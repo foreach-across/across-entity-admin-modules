@@ -44,7 +44,7 @@
 	<developers>
 		<developer>
 			<name>Arne Vandamme</name>
-			<email>arne@foreach.be</email>
+			<email>arne at foreach.be</email>
 			<organization>Foreach</organization>
 			<organizationUrl>http://www.foreach.be</organizationUrl>
 		</developer>
@@ -114,6 +114,7 @@
 	<scm>
 		<connection>scm:git:https://bitbucket.org/beforeach/bootstrap-ui-module.git</connection>
 		<developerConnection>scm:git:https://bitbucket.org/beforeach/bootstrap-ui-module.git</developerConnection>
+		<url>https://bitbucket.org/beforeach/bootstrap-ui-module</url>
 	</scm>
 
 </project>
