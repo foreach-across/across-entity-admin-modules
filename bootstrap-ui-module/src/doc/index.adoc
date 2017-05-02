@@ -514,3 +514,15 @@ menu.group( "/options", "Options", "#" )
     .item( "/options/dl", "Download", "#" )
     .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) );
 ----
+
+== Creating custom view elements
+
+=== Testing facilities
+Across test contains some base classes for testing `ViewElement` infrastructure.
+
+.AbstractViewElementBuilderTest
+A base unit test for any `ViewElementBuilder` that extends `ViewElementBuilderSupport`.
+
+.AbstractViewElementTemplateTest
+Base integration test class for testing the rendering of a `ViewElement`.
+Provides useful methods for rendering and inspecting the generated output.
