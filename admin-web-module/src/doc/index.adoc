@@ -114,7 +114,7 @@ All properties start with the *adminWebModule.* prefix.
 
 == What's new in this version?
 :numbered!:
-=== 2.0.0-SNAPSHOT
+=== 2.0.0.RELEASE
 
 * AdminWebModule now depends on {bootstrap-ui-module-url}[BootstrapUiModule]
 * the login page now provides an attribute *isLoginPage* that is accessible in the global template
