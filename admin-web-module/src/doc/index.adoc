@@ -1,9 +1,9 @@
 = AdminWebModule
 Arne Vandamme
-1.1.1.RELEASE
+2.0.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 1.1.1.RELEASE
+:module-version: 2.0.0.RELEASE
 :module-name: AdminWebModule
 :module-artifact: admin-web-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/AdminWebModule
