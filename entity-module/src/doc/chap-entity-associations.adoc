@@ -1,5 +1,3 @@
-TODO: custom EntityFactory
-
 == Entity associations
 
 The `EntityModule` attempts to automatically detect related entities and creates associations mainly to facilitate UI generation.
@@ -68,3 +66,16 @@ Example:
 * entity `Group`
 * entity `User` has a one to many with `Group` on property *groups*
 * association *user.groups* will be created on the entity configuration of `Group`
+
+=== Customize associated entity creation
+You can customize the creation of an associated entity in the form views, by setting a custom `EntityFactory`.
+This is especially useful for manually creating associations.
+
+An `EntityAssociation` can have an `EntityFactory.class` attribute set that contains the `EntityFactory` that should be used for creating associated items.
+If no factory is set as attribute on the association, the default `EntityFactory` of the target configuration will be used.
+
+If there is an `EntityFactory` attribute set on the association, that factory will be used when creating a new associated entity instance.
+The `createNew()` factory method will get called with the parent entity (for whom an associated item is being created) as single parameter.
+
+
+

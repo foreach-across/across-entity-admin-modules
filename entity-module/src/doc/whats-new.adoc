@@ -27,3 +27,5 @@ The public API modified accordingly with a focus on simplification and future ex
 ** this can be used to ensure a list result always has a default filter applied
 * default entity views support <<transaction-support,transactions>> allowing multiple processors to modify data in a single transaction
 ** transactions are enabled by default for state modifying HTTP methods of all form views (create, update, delete and custom form views)
+* option controls (select, multi-checkbox) can be easily <<customizing-selectable-options,customized through a number of attributes>>
+** making it easier to specify the option values that can be selected
