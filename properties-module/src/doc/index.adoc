@@ -1,9 +1,9 @@
 = PropertiesModule
 Arne Vandamme
-1.1.1-SNAPSHOT
+1.1.1.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 1.1.1-SNAPSHOT
+:module-version: 1.1.1.RELEASE
 :module-name: PropertiesModule
 :module-artifact: properties-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/PropertiesModule
@@ -71,7 +71,7 @@ All properties start with the *propertiesModule.* prefix.
 
 == What's new in this version?
 :numbered!:
-=== 1.1.1-SNAPSHOT
+=== 1.1.1.RELEASE
 
 * Switched `PropertiesModuleSettings` to `@ConfigurationProperties` instead of the deprecated `AcrossModuleSettings`
 * settings now support Spring configuration metadata
