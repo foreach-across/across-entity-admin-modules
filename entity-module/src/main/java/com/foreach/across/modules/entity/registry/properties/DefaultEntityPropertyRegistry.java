@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,159 +15,84 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
+import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import com.foreach.across.modules.entity.views.support.NestedValueFetcher;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.data.domain.Sort;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+/**
+ * Default implementation of a {@link MutableEntityPropertyRegistry}.
+ * Holds a collection of registered property descriptors.
+ * <p/>
+ * Optionally supports a reference to a {@link EntityPropertyRegistryProvider}.
+ * If one is present, nested properties can be requested as well.  For example, if a property <b>user</b> is
+ * registered of type {@code User}.  When requesting a property <b>user.id</b> the property registry for type
+ * {@code User} will be queried for the <b>id</b> property and a nested property will be built an stored inside
+ * this registry.
+ * <p/>
+ * Usually created through a {@link EntityPropertyRegistryProvider}.
+ *
+ * @author Arne Vandamme
+ * @see EntityPropertyRegistryProvider
+ * @since 1.0.0
+ */
 public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 {
-	private final EntityPropertyRegistries registries;
-	private final Class<?> entityType;
-
-	private EntityPropertyOrder declarationOrder = null;
-
-	public DefaultEntityPropertyRegistry( Class<?> entityType ) {
-		this( entityType, null );
+	/**
+	 * Create a new detached entity property registry.  Only properties registered directly will be available,
+	 * no nested properties will be looked up.
+	 */
+	public DefaultEntityPropertyRegistry() {
+		this( null );
 	}
 
-	public DefaultEntityPropertyRegistry( Class<?> entityType, EntityPropertyRegistries registries ) {
-		this.entityType = entityType;
-		this.registries = registries;
-
-		Map<String, PropertyDescriptor> scannedDescriptors = new HashMap<>();
-
-		for ( PropertyDescriptor descriptor : BeanUtils.getPropertyDescriptors( entityType ) ) {
-			register( SimpleEntityPropertyDescriptor.forPropertyDescriptor( descriptor, entityType ) );
-			scannedDescriptors.put( descriptor.getName(), descriptor );
-		}
-
-		declarationOrder = buildDeclarationOrder( scannedDescriptors );
-		super.setDefaultOrder( declarationOrder );
-	}
-
-	private EntityPropertyOrder buildDeclarationOrder( Map<String, PropertyDescriptor> scannedDescriptors ) {
-		final Map<String, Integer> order = new HashMap<>();
-
-		ReflectionUtils.doWithFields( entityType, new ReflectionUtils.FieldCallback()
-		{
-			private Class declaringClass;
-			private int declaringClassOffset = 0;
-
-			@Override
-			public void doWith( Field field ) throws IllegalArgumentException, IllegalAccessException {
-				if ( !field.getDeclaringClass().equals( declaringClass ) ) {
-					declaringClass = field.getDeclaringClass();
-					declaringClassOffset += 1000;
-				}
-
-				if ( contains( field.getName() ) ) {
-					order.put( field.getName(), declaringClassOffset + order.size() + 1 );
-				}
-			}
-		} );
-
-		// Determine method indices
-		final Map<Method, Integer> methodIndex = new HashMap<>();
-
-		ReflectionUtils.doWithMethods( entityType, new ReflectionUtils.MethodCallback()
-		{
-			private Class declaringClass;
-			private int declaringClassOffset = 0;
-
-			@Override
-			public void doWith( Method method ) throws IllegalArgumentException, IllegalAccessException {
-				if ( !method.getDeclaringClass().equals( declaringClass ) ) {
-					declaringClass = method.getDeclaringClass();
-					declaringClassOffset += 1000;
-				}
-
-				if ( !methodIndex.containsKey( method ) ) {
-					methodIndex.put( method, declaringClassOffset + methodIndex.size() + 1 );
-				}
-			}
-		} );
-
-		// For every property without declared order, use the read method first, write method second to determine order
-		for ( EntityPropertyDescriptor entityPropertyDescriptor : getRegisteredDescriptors() ) {
-			if ( !order.containsKey( entityPropertyDescriptor.getName() ) ) {
-				PropertyDescriptor propertyDescriptor = scannedDescriptors.get( entityPropertyDescriptor.getName() );
-
-				if ( propertyDescriptor != null ) {
-					Method lookupMethod = propertyDescriptor.getReadMethod();
-
-					if ( lookupMethod != null ) {
-						order.put( entityPropertyDescriptor.getName(), methodIndex.get( lookupMethod ) );
-					}
-					else {
-						lookupMethod = propertyDescriptor.getWriteMethod();
-
-						if ( lookupMethod != null ) {
-							order.put( entityPropertyDescriptor.getName(), methodIndex.get( lookupMethod ) );
-						}
-					}
-				}
-			}
-		}
-
-		return new EntityPropertyOrder( order );
+	/**
+	 * Creates a new registry that will use the registry provider to look up nested properties of property types.
+	 * For example, if no property <b>user.id</b> is registered directly, the property <b>id</b> will be fetched
+	 * from the registry attached to the type of the <b>user</b> property.  A custom descriptor will be built
+	 * and the <b>user.id</b> property will be created inside this one.
+	 *
+	 * @param registryProvider for looking up nested properties
+	 */
+	public DefaultEntityPropertyRegistry( EntityPropertyRegistryProvider registryProvider ) {
+		super( registryProvider );
+		setDefaultFilter( entityPropertyDescriptor -> !entityPropertyDescriptor.isHidden() );
 	}
 
 	@Override
-	public void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder ) {
-		super.setDefaultOrder( EntityPropertyOrder.composite( defaultOrder, declarationOrder ) );
-	}
+	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
+		MutableEntityPropertyDescriptor descriptor = super.getProperty( propertyName );
 
-	@Override
-	public List<EntityPropertyDescriptor> getProperties() {
-		return getProperties( EntityPropertyFilters.NoOp );
-	}
-
-	@Override
-	public EntityPropertyDescriptor getProperty( String propertyName ) {
-		EntityPropertyDescriptor descriptor = super.getProperty( propertyName );
-
-		if ( descriptor == null && registries != null ) {
-			// Find a registered shizzle
+		if ( descriptor == null && getRegistryProvider() != null ) {
 			String rootProperty = findRootProperty( propertyName );
 
 			if ( rootProperty != null ) {
 				EntityPropertyDescriptor rootDescriptor = super.getProperty( rootProperty );
 
 				if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
-					EntityPropertyRegistry subRegistry = registries.getRegistry( rootDescriptor.getPropertyType() );
+					EntityPropertyRegistry subRegistry
+							= getRegistryProvider().get( rootDescriptor.getPropertyType() );
 
 					if ( subRegistry != null ) {
-						EntityPropertyDescriptor childDescriptor = subRegistry
-								.getProperty( findChildProperty( propertyName ) );
+						EntityPropertyDescriptor childDescriptor
+								= subRegistry.getProperty( findChildProperty( propertyName ) );
 
 						if ( childDescriptor != null ) {
 							descriptor = buildNestedDescriptor( propertyName, rootDescriptor, childDescriptor );
 						}
 					}
-
 				}
 			}
-
 		}
 
 		return descriptor;
 	}
 
-	private EntityPropertyDescriptor buildNestedDescriptor( String name,
-	                                                        EntityPropertyDescriptor parent,
-	                                                        EntityPropertyDescriptor child ) {
-		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor();
-		descriptor.setName( name );
+	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name,
+	                                                               EntityPropertyDescriptor parent,
+	                                                               EntityPropertyDescriptor child ) {
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name );
 		descriptor.setDisplayName( child.getDisplayName() );
 		descriptor.setPropertyType( child.getPropertyType() );
 		descriptor.setPropertyTypeDescriptor( child.getPropertyTypeDescriptor() );
@@ -179,14 +104,31 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
 		}
 
-		descriptor.addAllAttributes( child.getAttributes() );
-
-		if ( child.hasAttribute( EntityAttributes.SORTABLE_PROPERTY ) ) {
-			descriptor.addAttribute(
-					EntityAttributes.SORTABLE_PROPERTY,
-					parent.getName() + "." + child.getAttribute( EntityAttributes.SORTABLE_PROPERTY )
-			);
+		// todo: fixe me decently
+		ViewElementLookupRegistryImpl existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+		ViewElementLookupRegistry lookupRegistry = new ViewElementLookupRegistryImpl();
+		if ( existingLookupRegistry != null ) {
+			existingLookupRegistry.mergeInto( lookupRegistry );
 		}
+
+		descriptor.setAttributes( child.attributeMap() );
+
+		descriptor.setAttribute( ViewElementLookupRegistry.class, lookupRegistry );
+
+		if ( child.hasAttribute( Sort.Order.class ) ) {
+			Sort.Order order = child.getAttribute( Sort.Order.class );
+
+			Sort.Order nestedOrder = new Sort.Order( parent.getName() + "." + order.getProperty() )
+					.with( order.getNullHandling() );
+
+			if ( order.isIgnoreCase() ) {
+				nestedOrder = nestedOrder.ignoreCase();
+			}
+
+			descriptor.setAttribute( Sort.Order.class, nestedOrder );
+		}
+
+		register( descriptor );
 
 		return descriptor;
 	}

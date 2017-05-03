@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,9 +15,11 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * @author Arne Vandamme
@@ -25,23 +27,36 @@ import java.util.*;
 public abstract class EntityPropertyRegistrySupport implements MutableEntityPropertyRegistry
 {
 	private final Map<String, EntityPropertyDescriptor> descriptorMap = new HashMap<>();
+	private final EntityPropertyComparators.Ordered propertyOrder = new EntityPropertyComparators.Ordered();
 
-	private EntityPropertyFilter defaultFilter;
+	private final EntityPropertyRegistryProvider registryProvider;
+	private final EntityPropertySelectorExecutor selectorExecutor;
+
+	private Predicate<EntityPropertyDescriptor> defaultFilter;
 	private Comparator<EntityPropertyDescriptor> defaultOrder = null;
 
-	@Override
-	public void setDefaultFilter( EntityPropertyFilter filter ) {
-		defaultFilter = filter;
+	protected EntityPropertyRegistrySupport( EntityPropertyRegistryProvider registryProvider ) {
+		this.registryProvider = registryProvider;
+		selectorExecutor = new EntityPropertySelectorExecutor( this, registryProvider );
+	}
+
+	protected EntityPropertyRegistryProvider getRegistryProvider() {
+		return registryProvider;
 	}
 
 	@Override
-	public EntityPropertyFilter getDefaultFilter() {
+	public Predicate<EntityPropertyDescriptor> getDefaultFilter() {
 		return defaultFilter;
 	}
 
 	@Override
+	public void setDefaultFilter( Predicate<EntityPropertyDescriptor> defaultFilter ) {
+		this.defaultFilter = defaultFilter;
+	}
+
+	@Override
 	public void setDefaultOrder( String... propertyNames ) {
-		setDefaultOrder( new EntityPropertyOrder( propertyNames ) );
+		setDefaultOrder( new EntityPropertyComparators.Ordered( propertyNames ) );
 	}
 
 	@Override
@@ -51,68 +66,53 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 
 	@Override
 	public Comparator<EntityPropertyDescriptor> getDefaultOrder() {
-		return defaultOrder;
+		return defaultOrder != null ? defaultOrder.thenComparing( propertyOrder ) : propertyOrder;
 	}
 
 	@Override
 	public List<EntityPropertyDescriptor> getProperties() {
-		return getProperties( EntityPropertyFilters.NoOp );
+		return getProperties( getDefaultFilter() );
 	}
 
 	@Override
-	public List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter ) {
-		Assert.notNull( filter );
-
-		if ( filter instanceof EntityPropertyFilters.OrderedIncludingEntityPropertyFilter ) {
-			return getProperties( filter, (EntityPropertyFilters.OrderedIncludingEntityPropertyFilter) filter );
-		}
-
-		return fetchProperties( filter, getDefaultOrder() );
+	public List<EntityPropertyDescriptor> getProperties( Predicate<EntityPropertyDescriptor> predicate ) {
+		return fetchProperties( predicate, getDefaultOrder() );
 	}
 
-	@Override
-	public List<EntityPropertyDescriptor> getProperties( EntityPropertyFilter filter,
-	                                                     Comparator<EntityPropertyDescriptor> comparator ) {
-		Assert.notNull( filter );
-		Assert.notNull( comparator );
-
-		return fetchProperties( filter, EntityPropertyOrder.composite( comparator, getDefaultOrder() ) );
+	public void setPropertyOrder( String propertyName, int order ) {
+		Assert.notNull( propertyName );
+		propertyOrder.put( propertyName, order );
 	}
 
-	private List<EntityPropertyDescriptor> fetchProperties( EntityPropertyFilter filter,
+	private List<EntityPropertyDescriptor> fetchProperties( Predicate<EntityPropertyDescriptor> predicate,
 	                                                        Comparator<EntityPropertyDescriptor> comparator ) {
-		List<EntityPropertyDescriptor> filtered = new ArrayList<>();
+		Predicate<EntityPropertyDescriptor> filterToUse = predicate != null ? predicate : getDefaultFilter();
 
-		if ( filter instanceof EntityPropertyFilter.Inclusive ) {
-			EntityPropertyFilter.Inclusive inclusiveFilter = (EntityPropertyFilter.Inclusive) filter;
-
-			for ( String propertyName : inclusiveFilter.getPropertyNames() ) {
-				EntityPropertyDescriptor candidate = getProperty( propertyName );
-
-				if ( candidate != null && inclusiveFilter.shouldInclude( candidate ) ) {
-					filtered.add( candidate );
-				}
-			}
+		if ( filterToUse == null ) {
+			filterToUse = entityPropertyDescriptor -> true;
 		}
-		else {
-			EntityPropertyFilter first = getDefaultFilter();
 
-			if ( first == null ) {
-				first = EntityPropertyFilters.NoOp;
-			}
-
-			for ( EntityPropertyDescriptor candidate : getRegisteredDescriptors() ) {
-				if ( first.shouldInclude( candidate ) && filter.shouldInclude( candidate ) ) {
-					filtered.add( candidate );
-				}
+		List<EntityPropertyDescriptor> filtered = new ArrayList<>();
+		for ( EntityPropertyDescriptor candidate : getRegisteredDescriptors() ) {
+			if ( !isNestedProperty( candidate.getName() ) && filterToUse.test( candidate ) ) {
+				filtered.add( candidate );
 			}
 		}
 
 		if ( comparator != null ) {
-			Collections.sort( filtered, comparator );
+			filtered.sort( comparator );
 		}
 
 		return filtered;
+	}
+
+	@Override
+	public List<EntityPropertyDescriptor> select( EntityPropertySelector selector ) {
+		return selectorExecutor.select( selector );
+	}
+
+	private boolean isNestedProperty( String name ) {
+		return StringUtils.contains( name, "." );
 	}
 
 	/**
@@ -124,24 +124,30 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 	}
 
 	@Override
-	public EntityPropertyDescriptor getProperty( String propertyName ) {
-		return descriptorMap.get( propertyName );
-	}
+	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
+		EntityPropertyDescriptor descriptor = descriptorMap.get( propertyName );
 
-	@Override
-	public MutableEntityPropertyDescriptor getMutableProperty( String propertyName ) {
-		EntityPropertyDescriptor descriptor = getProperty( propertyName );
+		if ( descriptor == null && StringUtils.length( propertyName ) > 1 && Character.isUpperCase( propertyName.charAt( 1 ) ) ) {
+			char chars[] = propertyName.toCharArray();
+			chars[0] = Character.toUpperCase( chars[0] );
+			descriptor = descriptorMap.get( new String( chars ) );
+		}
 
 		return descriptor instanceof MutableEntityPropertyDescriptor ? (MutableEntityPropertyDescriptor) descriptor : null;
 	}
 
 	@Override
 	public boolean contains( String propertyName ) {
-		return descriptorMap.containsKey( propertyName ) || getProperty( propertyName ) != null;
+		return getProperty( propertyName ) != null;
 	}
 
 	@Override
 	public void register( MutableEntityPropertyDescriptor descriptor ) {
+		if ( descriptor.getPropertyRegistry() != null && descriptor.getPropertyRegistry() != this ) {
+			throw new IllegalArgumentException( "Descriptor already has a different property registry attached." );
+		}
+
+		descriptor.setPropertyRegistry( this );
 		descriptorMap.put( descriptor.getName(), descriptor );
 	}
 }

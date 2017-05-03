@@ -1,0 +1,81 @@
+== Entity associations
+
+The `EntityModule` attempts to automatically detect related entities and creates associations mainly to facilitate UI generation.
+Currently `@OneToMany`, `@ManyToMany` and `@ManyToOne` annotations from `javax.persistence` API are all scanned and used to build `EntityAssociation` entries.
+
+In the administrative UI the management of related entities can often be done either through the property or the association.
+This is especially the case for `@ManyToMany` and `@OneToMany` associations that are mapped through a property with collection type.
+By default related entity management will be done through the property and the association will be generated but hidden.
+
+NOTE: If you want to enable management through the association interface, you should manipulate the `hidden` property of both the association and the property using an `EntityConfigurer`.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@Override
+public void configure( EntitiesConfigurationBuilder configuration ) {
+    // Groups should be managed through the association instead of the property
+    configuration.withType( MachinePrincipal.class )
+                 .properties( props -> props.property( "groups" ).hidden( true ) )
+                 .association( ab -> ab.name( "machinePrincipal.groups" ).show() );
+}
+----
+
+=== Association type
+Every `EntityAssociation` is of a specific type, configured through the *associationType* property.
+The association type determines how the associated values can be managed through the user interface.
+
+The following association types are possible:
+
+[cols=2,options=header,cols="1,3"]
+|===
+
+|Association type
+|Behaviour
+
+|`LINKED`
+|The related entities are only linked to.
+The tab of the parent entity shows the list of related entities, but any modify action will navigate away from the parent entity.
+
+This is the appropriate type if your related entities can in turn have other related entities.
+Usually this also means the related entity type has a main menu item.
+
+|`EMBEDDED`
+|The related entities will be managed through the tab of their parent entity.
+Modifying a related entity will be displayed as modifying the parent entity, no action will leave the context of the parent entity.
+
+Use this type if the related entities only exist if their parent exists.
+Usually the related entity type does not have any menu item, nor sub tabs (the latter would not be displayed).
+
+|===
+
+By default an association is of type `LINKED`.
+
+=== ParentDeleteMode
+An `EntityAssociation` has a *parentDeleteMode* property that determines how associated items will influence the ability to delete in the user interface.
+The default value is `SUPPRESS` but can be set through the `EntitiesConfigurationBuilder`.
+
+For more information see the <<delete-view,delete view chapter>>.
+
+=== Association naming and location
+Associations are added to the `EntityConfiguration` for which it makes most sense to manage them from a UI perspective.
+The association naming however is done according to the entity class and property names.
+
+Example:
+
+* entity `Group`
+* entity `User` has a one to many with `Group` on property *groups*
+* association *user.groups* will be created on the entity configuration of `Group`
+
+=== Customize associated entity creation
+You can customize the creation of an associated entity in the form views, by setting a custom `EntityFactory`.
+This is especially useful for manually creating associations.
+
+An `EntityAssociation` can have an `EntityFactory.class` attribute set that contains the `EntityFactory` that should be used for creating associated items.
+If no factory is set as attribute on the association, the default `EntityFactory` of the target configuration will be used.
+
+If there is an `EntityFactory` attribute set on the association, that factory will be used when creating a new associated entity instance.
+The `createNew()` factory method will get called with the parent entity (for whom an associated item is being created) as single parameter.
+
+
+

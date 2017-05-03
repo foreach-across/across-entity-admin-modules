@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.foreach.across.modules.entity.registry;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -6,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 import java.util.*;
 
@@ -13,6 +30,9 @@ import java.util.*;
  * Contains the registered entity definitions that are manageable.
  * Every registered {@link com.foreach.across.modules.entity.registry.MutableEntityConfiguration} must have
  * a unique name ({@link EntityConfiguration#getName()}) and entity type ({@link EntityConfiguration#getEntityType()}).
+ * <p/>
+ * WARNING: Although in most cases not an actual issue, EntityRegistry currently does not support registering multiple
+ * classes with the same name from different class loaders.
  */
 @Service
 public class EntityRegistryImpl implements MutableEntityRegistry
@@ -82,7 +102,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	public <T> MutableEntityConfiguration<T> remove( String entityName ) {
-		MutableEntityConfiguration<T> registered = (MutableEntityConfiguration<T>) getEntityConfiguration( entityName );
+		MutableEntityConfiguration<T> registered = getEntityConfiguration( entityName );
 
 		if ( registered != null ) {
 			entityConfigurations.remove( registered );
@@ -93,7 +113,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	public <T> MutableEntityConfiguration<T> remove( Class<T> entityType ) {
-		MutableEntityConfiguration<T> registered = getMutableEntityConfiguration( entityType );
+		MutableEntityConfiguration<T> registered = getEntityConfiguration( entityType );
 
 		if ( registered != null ) {
 			entityConfigurations.remove( registered );
@@ -102,12 +122,19 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 		return registered;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> EntityConfiguration<T> getEntityConfiguration( T entity ) {
+		return entity != null ? getEntityConfiguration( (Class<T>) ClassUtils.getUserClass( entity ) ) : null;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> EntityConfiguration<T> getEntityConfiguration( Class<T> entityType ) {
+	public <T> MutableEntityConfiguration<T> getEntityConfiguration( Class<T> entityType ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
-			if ( configuration.getEntityType().equals( entityType ) ) {
-				return (EntityConfiguration<T>) configuration;
+			// Consider 2 classes the same if they have the same name - workaround some issues with spring boot devtools classloader
+			if ( configuration.getEntityType().getName().equals( entityType.getName() ) ) {
+				return (MutableEntityConfiguration<T>) configuration;
 			}
 		}
 
@@ -116,18 +143,13 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> EntityConfiguration<T> getEntityConfiguration( String entityName ) {
+	public <T> MutableEntityConfiguration<T> getEntityConfiguration( String entityName ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
 			if ( StringUtils.equals( configuration.getName(), entityName ) ) {
-				return (EntityConfiguration<T>) configuration;
+				return (MutableEntityConfiguration<T>) configuration;
 			}
 		}
 
 		return null;
-	}
-
-	@Override
-	public <T> MutableEntityConfiguration<T> getMutableEntityConfiguration( Class<T> entityType ) {
-		return (MutableEntityConfiguration<T>) getEntityConfiguration( entityType );
 	}
 }

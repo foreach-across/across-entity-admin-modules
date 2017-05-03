@@ -7,4 +7,6 @@ public interface EntityViewRegistry
 	boolean hasView( String viewName );
 
 	<Y extends EntityViewFactory> Y getViewFactory( String viewName );
+
+	String[] getViewNames();
 }

@@ -15,9 +15,9 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.support.WritableAttributes;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 
 import java.io.Serializable;
@@ -26,25 +26,84 @@ import java.io.Serializable;
  * Manageable version of a {@link com.foreach.across.modules.entity.registry.EntityConfiguration},
  * implementations must allow the configuration to be modified through this interface, without
  * changing the core properties like {@link #getEntityType()} and {@link #getName()}.
+ *
+ * @author Arne Vandamme
+ * @since 1.0.0
  */
 public interface MutableEntityConfiguration<T> extends EntityConfiguration<T>, WritableAttributes, ConfigurableEntityViewRegistry
 {
+	/**
+	 * Set the default display name for this entity type.
+	 *
+	 * @param displayName value
+	 */
 	void setDisplayName( String displayName );
 
+	/**
+	 * Should this configuration be shown in UI implementations?
+	 *
+	 * @param hidden true if this configuration should <b>not</b> be shown in UI implementations
+	 */
 	void setHidden( boolean hidden );
 
-	void setEntityModel( EntityModel<T, ? extends Serializable> entityModel );
+	/**
+	 * Set the {@link EntityModel} for interacting with the entity repository.
+	 * Required for auto-generated administration UI.
+	 *
+	 * @param entityModel instance
+	 */
+	void setEntityModel( EntityModel<T, Serializable> entityModel );
 
-	void setPropertyRegistry( EntityPropertyRegistry propertyRegistry );
+	/**
+	 * Set the property registry for this configuration.
+	 *
+	 * @param propertyRegistry instancce
+	 */
+	void setPropertyRegistry( MutableEntityPropertyRegistry propertyRegistry );
 
+	/**
+	 * Set the message code resolver.
+	 *
+	 * @param entityMessageCodeResolver instance
+	 */
 	void setEntityMessageCodeResolver( EntityMessageCodeResolver entityMessageCodeResolver );
 
+	/**
+	 * Set the builder for the {@link com.foreach.across.modules.spring.security.actions.AllowableActions}
+	 * of this entity configuration.
+	 *
+	 * @param allowableActionsBuilder instance
+	 */
+	void setAllowableActionsBuilder( EntityConfigurationAllowableActionsBuilder allowableActionsBuilder );
+
+	/**
+	 * Retrieve a named association as a {@link MutableEntityAssociation}.
+	 *
+	 * @param name of the association
+	 * @return mutable instance of the association (or null if non existing)
+	 */
 	@Override
 	MutableEntityAssociation association( String name );
 
+	/**
+	 * Get the property registry as a {@link MutableEntityPropertyRegistry}.
+	 *
+	 * @return mutable instance of the property registry
+	 */
+	@Override
+	MutableEntityPropertyRegistry getPropertyRegistry();
+
+	/**
+	 * Register a new association with a specific name.
+	 * Should return any already existing association with that name.
+	 *
+	 * @param name of the association
+	 * @return mutable instance of the association
+	 */
 	MutableEntityAssociation createAssociation( String name );
 
+	/**
+	 * @return the allowable actions builder instance
+	 */
 	EntityConfigurationAllowableActionsBuilder getAllowableActionsBuilder();
-
-	void setAllowableActionsBuilder( EntityConfigurationAllowableActionsBuilder allowableActionsBuilder );
 }

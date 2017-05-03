@@ -13,104 +13,125 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.modules.adminweb.AdminWeb;
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
-import com.foreach.across.modules.entity.config.PostProcessor;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.controllers.EntityControllerAttributes;
-import com.foreach.across.modules.entity.controllers.association.AssociatedEntityCreateController;
-import com.foreach.across.modules.entity.controllers.association.AssociatedEntityListController;
-import com.foreach.across.modules.entity.controllers.association.AssociatedEntityUpdateController;
-import com.foreach.across.modules.entity.controllers.association.AssociatedEntityViewController;
-import com.foreach.across.modules.entity.controllers.entity.EntityCreateController;
-import com.foreach.across.modules.entity.controllers.entity.EntityListController;
-import com.foreach.across.modules.entity.controllers.entity.EntityUpdateController;
-import com.foreach.across.modules.entity.controllers.entity.EntityViewController;
+import com.foreach.across.modules.entity.controllers.admin.EntityOverviewController;
+import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.handlers.MenuEventsHandler;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
-import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.web.EntityAssociationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.EntityModuleWebResources;
+import com.foreach.across.modules.web.context.WebAppPathResolver;
+import com.foreach.across.modules.web.resource.WebResourcePackageManager;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-@AcrossDepends(required = "AdminWebModule")
+@AcrossDepends(required = AdminWebModule.NAME)
 @Configuration
+@ComponentScan(basePackageClasses = EntityOverviewController.class)
+@RequiredArgsConstructor
+@Slf4j
 public class AdminWebConfiguration implements EntityConfigurer
 {
+	private final ConversionService mvcConversionService;
+	private final AdminWeb adminWeb;
+
 	@Autowired
-	private ConversionService mvcConversionService;
+	public void registerEntityModuleWebResources( WebResourcePackageManager adminWebResourcePackageManager ) {
+		adminWebResourcePackageManager.register( EntityModuleWebResources.NAME, new EntityModuleWebResources() );
+	}
 
 	@Bean
 	public MenuEventsHandler menuEventsHandler() {
 		return new MenuEventsHandler();
 	}
 
-	@Bean
-	public EntityListController entityController() {
-		return new EntityListController();
-	}
-
-	@Bean
-	public EntityCreateController entityCreateController() {
-		return new EntityCreateController();
-	}
-
-	@Bean
-	public EntityUpdateController entitySaveController() {
-		return new EntityUpdateController();
-	}
-
-	@Bean
-	public EntityViewController entityViewController() {
-		return new EntityViewController();
-	}
-
-	@Bean
-	public AssociatedEntityViewController associatedEntityViewController() {
-		return new AssociatedEntityViewController();
-	}
-
-	@Bean
-	public AssociatedEntityListController associatedEntityController() {
-		return new AssociatedEntityListController();
-	}
-
-	@Bean
-	public AssociatedEntityCreateController associatedEntityCreateController() {
-		return new AssociatedEntityCreateController();
-	}
-
-	@Bean
-	public AssociatedEntityUpdateController associatedEntityUpdateController() {
-		return new AssociatedEntityUpdateController();
-	}
-
 	@Override
-	public void configure( EntitiesConfigurationBuilder configuration ) {
-		configuration.addPostProcessor( new PostProcessor<MutableEntityConfiguration<?>>()
+	public void configure( EntitiesConfigurationBuilder entities ) {
+		// TODO: move to across web
+		final WebAppPathResolver servletContextResolver = new WebAppPathResolver()
 		{
 			@Override
-			public void process( MutableEntityConfiguration<?> configuration ) {
-				configuration.addAttribute(
-						EntityLinkBuilder.class,
-						new EntityConfigurationLinkBuilder(
-								EntityControllerAttributes.ROOT_PATH, configuration, mvcConversionService
-						)
-				);
-
-				for ( EntityAssociation association : configuration.getAssociations() ) {
-					MutableEntityAssociation mutable = configuration.association( association.getName() );
-					mutable.addAttribute( EntityLinkBuilder.class,
-					                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
-				}
+			public String path( String path ) {
+				return ServletUriComponentsBuilder.fromCurrentContextPath()
+				                                  .path( adminWeb.path( path ) )
+				                                  .toUriString();
 			}
-		} );
+
+			@Override
+			public String redirect( String path ) {
+				return "redirect:" + path( path );
+			}
+		};
+
+		entities
+				.all()
+				.postProcessor( entityConfiguration -> {
+					entityConfiguration.setAttribute(
+							EntityLinkBuilder.class,
+							new EntityConfigurationLinkBuilder(
+									GenericEntityViewController.ROOT_PATH, entityConfiguration, mvcConversionService,
+									servletContextResolver
+							)
+					);
+
+					for ( EntityAssociation association : entityConfiguration.getAssociations() ) {
+						MutableEntityAssociation mutable = entityConfiguration.association( association.getName() );
+						mutable.setAttribute( EntityLinkBuilder.class,
+						                      new EntityAssociationLinkBuilder( association, mvcConversionService ) );
+					}
+
+					if ( entityConfiguration.hasEntityModel() ) {
+						verifyIdTypeCanBeConverted( entityConfiguration, mvcConversionService );
+					}
+				} );
+	}
+
+	private void verifyIdTypeCanBeConverted( EntityConfiguration<?> entityConfiguration, ConversionService conversionService ) {
+		Class<?> idType = entityConfiguration.getIdType();
+
+		if ( idType != null ) {
+			LOG.trace( "Checking if conversion between {} and String can be performed", idType.getName() );
+
+			if ( !conversionService.canConvert( idType, String.class ) ) {
+				LOG.error(
+						"The mvcConversionService is unable to convert from {} to String: this conversion is required for managing entities '{}' in AdminWebModule.  " +
+								"Possibly you are using a composite id in which case you should manually register a converter.",
+						idType.getName(), entityConfiguration.getName()
+				);
+//				throw new IllegalStateException(
+//						"The mvcConversionService is unable to convert from " + idType.getName()
+//								+ " to String: this conversion is required for managing entity '" + entityConfiguration.getName() + "' in AdminWebModule.  "
+//								+ "Possibly you are using a composite id in which case you should manually register a converter." );
+			}
+			if ( !conversionService.canConvert( String.class, idType ) ) {
+				LOG.error(
+						"The mvcConversionService is unable to convert from String to {}: this conversion is required for managing entity '{}' in AdminWebModule.  " +
+								"Possibly you are using a composite id in which case you should manually register a converter.",
+						idType.getName(), entityConfiguration.getName()
+				);
+//				throw new IllegalStateException(
+//						"The mvcConversionService is unable to convert from String to " + idType.getName()
+//								+ ": this conversion is required for managing entities '" + entityConfiguration.getName() + "' in AdminWebModule.  "
+//								+ "Possibly you are using a composite id in which case you should manually register a converter." );
+			}
+		}
+
 	}
 }

@@ -15,18 +15,32 @@
  */
 package com.foreach.across.modules.entity.util;
 
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.*;
 
-import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EntityUtils
 {
+	/**
+	 * Generate a default entity name for an entity type.
+	 *
+	 * @param entityType for which to generate the name
+	 * @return default name
+	 */
+	public static String generateEntityName( Class<?> entityType ) {
+		return Stream.of( StringUtils.split( StringUtils.substringAfterLast( entityType.getName(), "." ), "$" ) )
+		             .map( StringUtils::uncapitalize )
+		             .collect( Collectors.joining( "." ) );
+	}
+
 	public static String generateDisplayName( String propertyName ) {
 		String cleaned = propertyName.replace( '.', ' ' ).replace( '_', ' ' ).replaceAll( "[^\\p{L}\\p{Nd} ]+", " " );
 
@@ -51,15 +65,6 @@ public class EntityUtils
 		return StringUtils.join( finished, " " );
 	}
 
-	public static Object getPropertyValue( PropertyDescriptor descriptor, Object instance ) {
-		try {
-			return descriptor.getReadMethod().invoke( instance );
-		}
-		catch ( Exception e ) {
-			return null;
-		}
-	}
-
 	public static String combineDisplayNames( String first, String... propertyNames ) {
 		List<String> finished = new LinkedList<>();
 		finished.add( generateDisplayName( first ) );
@@ -70,25 +75,102 @@ public class EntityUtils
 	}
 
 	/**
+	 * Translates the {@link Sort} property attached to this pageable.  Will create a new {@link Pageable}
+	 * if sorting is modified. See {@link #translateSort(Sort, EntityPropertyRegistry)} for more details.
+	 *
+	 * @param pageable         instance to be translated
+	 * @param propertyRegistry to be used for looking up matching properties
+	 * @return modified instance or same if unmodified
+	 */
+	public static Pageable translateSort( Pageable pageable, EntityPropertyRegistry propertyRegistry ) {
+		Sort sort = pageable.getSort();
+
+		if ( sort != null ) {
+			Sort modifiedSort = translateSort( sort, propertyRegistry );
+			if ( !sort.equals( modifiedSort ) ) {
+				return new PageRequest( pageable.getPageNumber(), pageable.getPageSize(), modifiedSort );
+			}
+		}
+
+		return pageable;
+	}
+
+	/**
+	 * <p>Translates the {@link Sort} instance based on the specified {@link EntityPropertyRegistry}.  For every
+	 * {@link org.springframework.data.domain.Sort.Order} entry a property will be looked up in the registry.
+	 * If a property is found, the {@link org.springframework.data.domain.Sort.Order} attribute of the property
+	 * will be fetched and if one is specified, it will be used as the basis for the new entry.  Especially
+	 * the {@link Sort.Order#getNullHandling()} and {@link Sort.Order#isIgnoreCase()} settings will be copied.
+	 * In case null handling is native, a fixed null handling will be applied depending on the direction.</p>
+	 * <p>Order entries for which no property or property attribute can be found, will be left unchanged.</p>
+	 *
+	 * @param sort             instance to be translated
+	 * @param propertyRegistry to be used for looking up matching properties
+	 * @return modified or possibly same instance if unmodified
+	 */
+	public static Sort translateSort( Sort sort, EntityPropertyRegistry propertyRegistry ) {
+		List<Sort.Order> translated = new ArrayList<>();
+
+		for ( Sort.Order order : sort ) {
+			EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( order.getProperty() );
+			Sort.Order template = descriptor != null ? descriptor.getAttribute( Sort.Order.class ) : null;
+
+			if ( template != null ) {
+				Sort.Order clone = new Sort.Order( order.getDirection(), template.getProperty() );
+
+				if ( template.isIgnoreCase() ) {
+					clone = clone.ignoreCase();
+				}
+				if ( template.getNullHandling() == Sort.NullHandling.NATIVE ) {
+					clone = clone.getDirection() == Sort.Direction.ASC ? clone.nullsFirst() : clone.nullsLast();
+				}
+				else {
+					clone = clone.with( template.getNullHandling() );
+				}
+
+				translated.add( clone );
+			}
+			else {
+				translated.add( order );
+			}
+		}
+
+		return translated.isEmpty() ? null : new Sort( translated );
+	}
+
+	/**
 	 * Create a {@link org.springframework.data.domain.Page} from any {@link java.lang.Iterable}.
 	 *
 	 * @param collection contains the items in the page
 	 * @return Page instance
 	 */
-	public static Page<?> createPage( Iterable<?> collection ) {
-		if ( collection instanceof List ) {
-			return new PageImpl<>( (List<?>) collection );
+	public static <Y> Page<Y> asPage( Iterable<Y> collection ) {
+		return new PageImpl<Y>( asList( collection ) );
+	}
+
+	/**
+	 * Create a {@link List} from any {@link Iterable}.  If the iterable is a list the same instance
+	 * will be returned.  In all other cases a new instance will be created from the elements of
+	 * the iterable.
+	 *
+	 * @param iterable containing the elements
+	 * @param <Y>      element type
+	 * @return List instance
+	 */
+	public static <Y> List<Y> asList( Iterable<Y> iterable ) {
+		if ( iterable instanceof List ) {
+			return (List<Y>) iterable;
 		}
 
-		if ( collection instanceof Collection ) {
-			return new PageImpl<>( new ArrayList<>( (Collection) collection ) );
+		if ( iterable instanceof Collection ) {
+			return new ArrayList<>( (Collection<Y>) iterable );
 		}
 
-		List<Object> list = new ArrayList<>();
-		for ( Object item : collection ) {
+		List<Y> list = new ArrayList<>();
+		for ( Y item : iterable ) {
 			list.add( item );
 		}
 
-		return new PageImpl<>( list );
+		return list;
 	}
 }

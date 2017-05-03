@@ -15,58 +15,48 @@
  */
 package com.foreach.across.modules.entity.views.thymeleaf;
 
-import com.foreach.across.modules.entity.views.elements.ViewElementsHelper;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.dialect.AbstractDialect;
-import org.thymeleaf.dialect.IExpressionEnhancingDialect;
-import org.thymeleaf.processor.IProcessor;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * @author niels
  * @since 6/02/2015
  */
-public class EntityModuleDialect extends AbstractDialect implements IExpressionEnhancingDialect
+@Deprecated
+public class EntityModuleDialect // extends AbstractDialect implements IExpressionEnhancingDialect
 {
-	public static final String UTILITY_ELEMENTS = "elements";
-
-    public enum AttributeNames {
-        ATTRIBUTES("attributes"),
-        DEPENDENCIES("dependencies");
-
-		private String name;
-
-		private AttributeNames( String name ) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-	}
-
-	@Override
-	public String getPrefix() {
-		return "em";
-	}
-
-	@Override
-	public Map<String, Object> getAdditionalExpressionObjects( IProcessingContext processingContext ) {
-		Map<String, Object> objects = new HashMap<>();
-		objects.put( UTILITY_ELEMENTS, new ViewElementsHelper() );
-
-		return objects;
-	}
-
-	@Override
-	public Set<IProcessor> getProcessors() {
-		Set<IProcessor> processors = new HashSet<>();
-		processors.add( new MultipleAttributeProcessor() );
-        processors.add(new DependencyProcessor());
-		return processors;
-	}
+//	public static final String UTILITY_ELEMENTS = "elements";
+//
+//    public enum AttributeNames {
+//        ATTRIBUTES("attributes"),
+//        DEPENDENCIES("dependencies");
+//
+//		private String name;
+//
+//		private AttributeNames( String name ) {
+//			this.name = name;
+//		}
+//
+//		public String getName() {
+//			return name;
+//		}
+//	}
+//
+//	@Override
+//	public String getPrefix() {
+//		return "em";
+//	}
+//
+//	@Override
+//	public Map<String, Object> getAdditionalExpressionObjects( IProcessingContext processingContext ) {
+//		Map<String, Object> objects = new HashMap<>();
+//		//objects.put( UTILITY_ELEMENTS, new ViewElementsHelper() );
+//
+//		return objects;
+//	}
+//
+//	@Override
+//	public Set<IProcessor> getProcessors() {
+//		Set<IProcessor> processors = new HashSet<>();
+//		processors.add( new MultipleAttributeProcessor() );
+//        processors.add(new DependencyProcessor());
+//		return processors;
+//	}
 }

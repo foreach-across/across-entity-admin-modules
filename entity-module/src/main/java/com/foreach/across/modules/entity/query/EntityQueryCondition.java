@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.query;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
@@ -28,7 +29,11 @@ public class EntityQueryCondition implements EntityQueryExpression
 	private EntityQueryOps operand;
 	private Object[] arguments = new Object[0];
 
+	protected EntityQueryCondition() {
+	}
+
 	public EntityQueryCondition( String property, EntityQueryOps operand, Object... arguments ) {
+		Assert.notNull( arguments );
 		this.property = property;
 		this.operand = operand;
 		this.arguments = arguments;
@@ -58,6 +63,15 @@ public class EntityQueryCondition implements EntityQueryExpression
 	public void setArguments( Object[] arguments ) {
 		Assert.notNull( arguments );
 		this.arguments = arguments;
+	}
+
+	public boolean hasArguments() {
+		return arguments.length > 0;
+	}
+
+	@JsonIgnore
+	public Object getFirstArgument() {
+		return arguments.length > 0 ? arguments[0] : null;
 	}
 
 	@Override
@@ -96,9 +110,5 @@ public class EntityQueryCondition implements EntityQueryExpression
 	@Override
 	public String toString() {
 		return operand.toString( property, arguments );
-	}
-
-	public Object getFirstArgument() {
-		return arguments.length > 0 ? arguments[0] : null;
 	}
 }

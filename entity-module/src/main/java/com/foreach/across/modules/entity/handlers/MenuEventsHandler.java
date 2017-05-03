@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.handlers;
 
-import com.foreach.across.core.annotations.AcrossEventHandler;
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenuEvent;
+import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -29,13 +31,20 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import com.foreach.across.modules.web.menu.RequestMenuSelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
+import org.springframework.web.util.UriComponentsBuilder;
 
-@AcrossEventHandler
+import java.util.Collections;
+
 public class MenuEventsHandler
 {
-	@Autowired
+	private static final Logger LOG = LoggerFactory.getLogger( MenuEventsHandler.class );
+
 	private EntityRegistry entityRegistry;
 
 	@Event
@@ -48,26 +57,39 @@ public class MenuEventsHandler
 
 			if ( !entityConfiguration.isHidden() && allowableActions.contains( AllowableAction.READ ) ) {
 				EntityMessageCodeResolver messageCodeResolver = entityConfiguration.getEntityMessageCodeResolver();
+
+				Assert.notNull(
+						messageCodeResolver,
+						"A visible EntityConfiguration (" + entityConfiguration
+								.getName() + ") requires an EntityMessageCodeResolver"
+				);
+
 				EntityMessages messages = new EntityMessages( messageCodeResolver );
 				EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
 				AcrossModuleInfo moduleInfo = entityConfiguration.getAttribute( AcrossModuleInfo.class );
 
-				String group = "/entities";
+				if ( linkBuilder != null ) {
+					String group = "/entities";
 
-				if ( moduleInfo != null ) {
-					group = "/entities/" + moduleInfo.getName();
-					builder.group( group, moduleInfo.getName() ).disable();
+					if ( moduleInfo != null ) {
+						group = "/entities/" + moduleInfo.getName();
+						builder.group( group, moduleInfo.getName() ).disable();
+					}
+
+					builder.item( group + "/" + entityConfiguration.getName(),
+					              messageCodeResolver.getNameSingular(),
+					              linkBuilder.overview() );
+
+					if ( allowableActions.contains( AllowableAction.CREATE ) ) {
+						builder.item( group + "/" + entityConfiguration.getName() + "/create",
+						              messages.createAction(),
+						              linkBuilder.create()
+						);
+					}
 				}
-
-				builder.item( group + "/" + entityConfiguration.getName(),
-				              messageCodeResolver.getNameSingular(),
-				              linkBuilder.overview() );
-
-				if ( allowableActions.contains( AllowableAction.CREATE ) ) {
-					builder.item( group + "/" + entityConfiguration.getName() + "/create",
-					              messages.createAction(),
-					              linkBuilder.create()
-					);
+				else {
+					LOG.trace( "Not showing entity {} - not hidden but no EntityLinkBuilder",
+					           entityConfiguration.getName() );
 				}
 			}
 		}
@@ -92,9 +114,10 @@ public class MenuEventsHandler
 			for ( EntityAssociation association : entityConfiguration.getAssociations() ) {
 				if ( !association.isHidden() ) {
 					EntityConfiguration associated = association.getTargetEntityConfiguration();
-					EntityLinkBuilder associatedLinkBuilder = association.getAttribute( EntityLinkBuilder.class )
-					                                                     .asAssociationFor( linkBuilder,
-					                                                                        menu.getEntity() );
+					EntityLinkBuilder associatedLinkBuilder
+							= association.getAttribute( EntityLinkBuilder.class )
+							             .asAssociationFor( linkBuilder, menu.getEntity() );
+
 					String itemTitle = messageCodeResolver.getMessageWithFallback(
 							"adminMenu." + association.getName(),
 							associated.getEntityMessageCodeResolver().getNamePlural()
@@ -103,11 +126,39 @@ public class MenuEventsHandler
 					builder.item( association.getName(), itemTitle, associatedLinkBuilder.overview() );
 				}
 			}
+
+			// Generate advanced options
+			builder.group( "/advanced-options",
+			               messageCodeResolver.getMessageWithFallback( "menu.advanced", "Advanced" ) )
+			       .attribute( "html:class", "pull-right" )
+			       .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.COG ) )
+			       .attribute( NavComponentBuilder.ATTR_KEEP_GROUP_ITEM, true )
+			       .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );
+
+			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
+			if ( allowableActions.contains( AllowableAction.DELETE ) ) {
+				String deleteBaseUrl = linkBuilder.delete( menu.getEntity() );
+
+				builder.item( "/advanced-options/delete",
+				              messageCodeResolver.getMessageWithFallback( "menu.delete", "Delete" ),
+				              UriComponentsBuilder.fromUriString( deleteBaseUrl )
+				                                  .queryParam( "from", linkBuilder.update( menu.getEntity() ) )
+				                                  .toUriString() )
+				       .attribute( RequestMenuSelector.ATTRIBUTE_MATCHERS, Collections.singleton( deleteBaseUrl ) )
+				       .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+				       .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.BEFORE )
+				       .order( Ordered.LOWEST_PRECEDENCE );
+			}
 		}
 		else {
 			builder.item( linkBuilder.create(),
 			              messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
 		}
+	}
+
+	@Autowired
+	void setEntityRegistry( EntityRegistry entityRegistry ) {
+		this.entityRegistry = entityRegistry;
 	}
 }

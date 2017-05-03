@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.config;
 
-import com.foreach.across.core.annotations.AcrossCondition;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.context.support.AcrossModuleMessageSource;
 import com.foreach.across.modules.entity.EntityModule;
@@ -24,48 +23,31 @@ import com.foreach.across.modules.entity.converters.EntityToStringConverter;
 import com.foreach.across.modules.entity.converters.StringToEntityConfigurationConverter;
 import com.foreach.across.modules.entity.formatters.DateFormatter;
 import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
+import com.foreach.across.modules.entity.query.support.EQStringToDateConverter;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistries;
-import com.foreach.across.modules.entity.services.EntityFormService;
-import com.foreach.across.modules.entity.views.EntityFormViewFactory;
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
-import com.foreach.across.modules.entity.views.SimpleEntityViewFactory;
-import com.foreach.across.modules.entity.views.elements.CommonViewElementTypeLookupStrategy;
-import com.foreach.across.modules.entity.views.elements.fieldset.FieldsetViewElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.form.checkbox.CheckboxFormElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.form.date.DateFormElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.form.hidden.HiddenFormElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.form.select.SelectFormElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.form.textbox.TextboxFormElementBuilderFactoryAssembler;
-import com.foreach.across.modules.entity.views.elements.readonly.ConversionServiceViewElementBuilderFactoryAssembler;
+import com.foreach.across.modules.entity.views.EntityView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import javax.annotation.PostConstruct;
-
 @Configuration
+@ComponentScan(basePackageClasses = { EntityRegistry.class, ModuleEntityRegistration.class, EntityView.class })
 public class EntityModuleConfiguration
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityModuleConfiguration.class );
 
 	@Autowired
-	private FormattingConversionService mvcConversionService;
-
-	@PostConstruct
-	public void init() {
-		EntityRegistry entityRegistry = entityRegistry();
-
+	public void registerConverters( FormattingConversionService mvcConversionService, EntityRegistry entityRegistry ) {
 		mvcConversionService.addConverter( new StringToEntityConfigurationConverter( entityRegistry ) );
 		mvcConversionService.addConverter( new EntityConverter<>( mvcConversionService, entityRegistry ) );
 		mvcConversionService.addConverter( new EntityToStringConverter( entityRegistry ) );
@@ -74,104 +56,26 @@ public class EntityModuleConfiguration
 		dateFormatterRegistrar.setFormatter( new DateFormatter() );
 		dateFormatterRegistrar.registerFormatters( mvcConversionService );
 		mvcConversionService.addFormatterForFieldAnnotation( new TemporalFormatterFactory() );
-	}
 
-	@Bean
-	public EntityRegistryImpl entityRegistry() {
-		return new EntityRegistryImpl();
+		mvcConversionService.addConverter( new EQStringToDateConverter( mvcConversionService ) );
 	}
 
 	@Bean(name = EntityModule.VALIDATOR)
 	@Exposed
-	@AcrossCondition("not hasBean('" + EntityModule.VALIDATOR + "')")
+	@ConditionalOnMissingBean(name = EntityModule.VALIDATOR)
 	public SmartValidator entityValidator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
 		localValidatorFactoryBean.setValidationMessageSource( messageSource() );
 		return localValidatorFactoryBean;
 	}
 
-	/**
-	 * Ensures modules can configure entities through either EntityRegistrar or EntityConfigurer beans.
-	 */
-	@Bean
-	public ModuleEntityRegistration moduleEntityRegistration() {
-		return new ModuleEntityRegistration();
-	}
-
-	@Bean
-	@Exposed
-	public EntityPropertyRegistries entityPropertyRegistries() {
-		return new EntityPropertyRegistries();
-	}
-
-	@Bean
-	public EntityFormService entityFormService() {
-		return new EntityFormService();
-	}
-
-	@Bean
-	public TextboxFormElementBuilderFactoryAssembler textboxFormElementBuilderFactoryAssembler() {
-		return new TextboxFormElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public ConversionServiceViewElementBuilderFactoryAssembler conversionServiceViewElementBuilderFactoryAssembler() {
-		return new ConversionServiceViewElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public HiddenFormElementBuilderFactoryAssembler hiddenFormElementBuilderFactoryAsssembler() {
-		return new HiddenFormElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public DateFormElementBuilderFactoryAssembler dateFormElementBuilderFactoryAsssembler() {
-		return new DateFormElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public SelectFormElementBuilderFactoryAssembler selectFormElementBuilderFactoryAssembler() {
-		return new SelectFormElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public CheckboxFormElementBuilderFactoryAssembler checkboxFormElementBuilderFactoryAssembler() {
-		return new CheckboxFormElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public FieldsetViewElementBuilderFactoryAssembler fieldsetElementBuilderFactoryAssembler() {
-		return new FieldsetViewElementBuilderFactoryAssembler();
-	}
-
-	@Bean
-	public CommonViewElementTypeLookupStrategy commonFormElementTypeLookupStrategy() {
-		return new CommonViewElementTypeLookupStrategy();
-	}
-
 	@Bean
 	public MessageSource messageSource() {
-		return new AcrossModuleMessageSource();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public SimpleEntityViewFactory simpleEntityViewFactory() {
-		return new SimpleEntityViewFactory();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public EntityListViewFactory entityListViewFactory() {
-		return new EntityListViewFactory();
-	}
-
-	@Bean
-	@Exposed
-	@Scope("prototype")
-	public EntityFormViewFactory entityCreateViewFactory() {
-		return new EntityFormViewFactory();
+		AcrossModuleMessageSource messageSource = new AcrossModuleMessageSource();
+		messageSource.setBasenames(
+				"classpath:/org/hibernate/validator/ValidationMessages",
+				"classpath:/messages/entity/EntityModule"
+		);
+		return messageSource;
 	}
 }

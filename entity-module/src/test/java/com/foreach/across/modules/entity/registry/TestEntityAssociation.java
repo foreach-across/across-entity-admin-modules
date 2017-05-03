@@ -17,8 +17,8 @@ package com.foreach.across.modules.entity.registry;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static com.foreach.across.modules.entity.registry.EntityAssociation.Type.LINKED;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,5 +59,12 @@ public class TestEntityAssociation
 
 		association.setHidden( false );
 		assertFalse( association.isHidden() );
+	}
+
+	@Test
+	public void defaultAssociationTypeIsLinked() {
+		MutableEntityConfiguration source = mock( MutableEntityConfiguration.class );
+		EntityAssociationImpl association = new EntityAssociationImpl( "assoc", source );
+		assertEquals( LINKED, association.getAssociationType() );
 	}
 }

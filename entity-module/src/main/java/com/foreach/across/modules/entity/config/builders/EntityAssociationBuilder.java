@@ -13,36 +13,74 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.config.PostProcessor;
-import com.foreach.across.modules.entity.config.builders.association.FormViewBuilder;
-import com.foreach.across.modules.entity.config.builders.association.ListViewBuilder;
-import com.foreach.across.modules.entity.config.builders.association.ViewBuilder;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
-import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
-import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityListView;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<EntityAssociationBuilder, MutableEntityAssociation>
-{
-	private final String name;
+import java.util.function.Consumer;
 
+/**
+ * Builder for managing a specific {@link EntityAssociation} on a {@link EntityConfiguration}.
+ *
+ * @author Arne Vandamme
+ * @since 1.1.1
+ */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class EntityAssociationBuilder extends AbstractWritableAttributesAndViewsBuilder
+{
+	private String name;
 	private boolean hiddenSpecified;
 	private Boolean hidden;
+	private EntityAssociation.ParentDeleteMode parentDeleteMode;
 
 	private Class<?> targetEntityType;
-	private String sourceProperty, targetProperty;
+	private String targetEntityName, sourceProperty, targetProperty;
+	private EntityAssociation.Type associationType;
 
 	private boolean sourcePropertyRemoved, targetPropertyRemoved;
 
-	public EntityAssociationBuilder( String name ) {
+	private final AutowireCapableBeanFactory beanFactory;
+
+	private MutableEntityAssociation associationBeingBuilt;
+
+	@Autowired
+	public EntityAssociationBuilder( AutowireCapableBeanFactory beanFactory ) {
+		this.beanFactory = beanFactory;
+	}
+
+	/**
+	 * Specify the name of the association that this builder is responsible for.
+	 *
+	 * @param name of the association
+	 * @return current builder
+	 */
+	public EntityAssociationBuilder name( String name ) {
+		Assert.notNull( name );
 		this.name = name;
+		return this;
+	}
+
+	/**
+	 * Specify the type of association.  This will determine how the associated entities can be managed.
+	 *
+	 * @param associationType of the association
+	 * @return current builder
+	 */
+	public EntityAssociationBuilder associationType( EntityAssociation.Type associationType ) {
+		Assert.notNull( associationType );
+		this.associationType = associationType;
+		return this;
 	}
 
 	/**
@@ -55,6 +93,20 @@ public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<
 	public EntityAssociationBuilder targetEntityType( Class<?> targetEntityType ) {
 		Assert.notNull( targetEntityType );
 		this.targetEntityType = targetEntityType;
+		return this;
+	}
+
+	/**
+	 * Set the name of the target entity for this association.  The entity must be registered in the
+	 * {@link EntityRegistry} present in the {@link org.springframework.beans.factory.BeanFactory} provided.
+	 * This property takes precedence over {@link #targetEntityType(Class)}.
+	 *
+	 * @param entityName name of the target entity
+	 * @return current builder
+	 */
+	public EntityAssociationBuilder targetEntity( String entityName ) {
+		Assert.notNull( entityName );
+		this.targetEntityName = entityName;
 		return this;
 	}
 
@@ -156,105 +208,200 @@ public class EntityAssociationBuilder extends AbstractAttributesAndViewsBuilder<
 		return this;
 	}
 
-	@Override
-	public ViewBuilder view( String name ) {
-		return view( name, ViewBuilder.class );
+	/**
+	 * Set the UI behaviour in case the parent entity is being deleted but there are associations.
+	 *
+	 * @param parentDeleteMode to use
+	 * @return current builder
+	 * @see com.foreach.across.modules.entity.registry.EntityAssociation.ParentDeleteMode
+	 */
+	public EntityAssociationBuilder parentDeleteMode( EntityAssociation.ParentDeleteMode parentDeleteMode ) {
+		this.parentDeleteMode = parentDeleteMode;
+		return this;
 	}
 
 	@Override
-	public ListViewBuilder listView() {
-		return listView( EntityListView.VIEW_NAME );
+	public EntityAssociationBuilder listView( Consumer<EntityListViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.listView( consumer );
 	}
 
 	@Override
-	public ListViewBuilder listView( String name ) {
-		return view( name, ListViewBuilder.class );
+	public EntityAssociationBuilder listView( String viewName,
+	                                          Consumer<EntityListViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.listView( viewName, consumer );
 	}
 
 	@Override
-	public FormViewBuilder createFormView() {
-		return formView( EntityFormView.CREATE_VIEW_NAME );
+	public EntityAssociationBuilder createOrUpdateFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.createOrUpdateFormView( consumer );
 	}
 
 	@Override
-	public FormViewBuilder updateFormView() {
-		return formView( EntityFormView.UPDATE_VIEW_NAME );
+	public EntityAssociationBuilder createFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.createFormView( consumer );
 	}
 
 	@Override
-	public FormViewBuilder formView( String name ) {
-		return view( name, FormViewBuilder.class );
+	public EntityAssociationBuilder updateFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.updateFormView( consumer );
 	}
 
-	void apply( MutableEntityConfiguration configuration,
-	            MutableEntityRegistry entityRegistry,
-	            AutowireCapableBeanFactory beanFactory ) {
+	@Override
+	public EntityAssociationBuilder deleteFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.deleteFormView( consumer );
+	}
+
+	@Override
+	public EntityAssociationBuilder formView( String viewName,
+	                                          Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.formView( viewName, consumer );
+	}
+
+	@Override
+	public EntityAssociationBuilder view( String viewName,
+	                                      Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.view( viewName, consumer );
+	}
+
+	@Override
+	public EntityAssociationBuilder listView() {
+		return (EntityAssociationBuilder) super.listView();
+	}
+
+	@Override
+	public EntityAssociationBuilder createFormView() {
+		return (EntityAssociationBuilder) super.createFormView();
+	}
+
+	@Override
+	public EntityAssociationBuilder updateFormView() {
+		return (EntityAssociationBuilder) super.updateFormView();
+	}
+
+	@Override
+	public EntityAssociationBuilder deleteFormView() {
+		return (EntityAssociationBuilder) super.deleteFormView();
+	}
+
+	@Override
+	public EntityAssociationBuilder attribute( String name, Object value ) {
+		return (EntityAssociationBuilder) super.attribute( name, value );
+	}
+
+	@Override
+	public <S> EntityAssociationBuilder attribute( Class<S> type, S value ) {
+		return (EntityAssociationBuilder) super.attribute( type, value );
+	}
+
+	/**
+	 * Apply the association builder to the configuration specified.  This will add or modify the association
+	 * represented by this builder.
+	 *
+	 * @param configuration to register the association in
+	 */
+	void apply( MutableEntityConfiguration configuration ) {
 		MutableEntityAssociation association = configuration.association( name );
 
 		if ( association == null ) {
-			if ( targetEntityType != null ) {
-				association = configuration.createAssociation( name );
+			EntityConfiguration targetConfiguration = retrieveTargetConfiguration();
+
+			association = configuration.createAssociation( name );
+			association.setTargetEntityConfiguration( targetConfiguration );
+
+			registerAssociationMessageCodeResolver( association );
+		}
+		else if ( targetEntityType != null ) {
+			association.setTargetEntityConfiguration( retrieveTargetConfiguration() );
+		}
+
+		associationBeingBuilt = association;
+
+		if ( associationType != null ) {
+			associationBeingBuilt.setAssociationType( associationType );
+		}
+
+		try {
+			if ( sourcePropertyRemoved ) {
+				association.setSourceProperty( null );
 			}
-			else {
-				// If no target specified, do not create this association, just ignore this builder
-				return;
-			}
-		}
+			else if ( sourceProperty != null ) {
+				EntityPropertyDescriptor sourcePropertyDescriptor =
+						association.getSourceEntityConfiguration().getPropertyRegistry().getProperty( sourceProperty );
 
-		if ( targetEntityType != null ) {
-			EntityConfiguration targetEntityConfiguration = entityRegistry.getEntityConfiguration( targetEntityType );
+				if ( sourcePropertyDescriptor == null ) {
+					throw new IllegalArgumentException(
+							"Property " + sourceProperty + " was not found as source property for association " + name );
+				}
 
-			if ( targetEntityConfiguration == null ) {
-				throw new IllegalArgumentException(
-						"Entity type " + targetEntityType.getName() + " is not registered" );
-			}
-
-			association.setTargetEntityConfiguration( targetEntityConfiguration );
-		}
-
-		if ( sourcePropertyRemoved ) {
-			association.setSourceProperty( null );
-		}
-		else if ( sourceProperty != null ) {
-			EntityPropertyDescriptor sourcePropertyDescriptor =
-					association.getSourceEntityConfiguration().getPropertyRegistry().getProperty( sourceProperty );
-
-			if ( sourcePropertyDescriptor == null ) {
-				throw new IllegalArgumentException(
-						"Property " + sourceProperty + " was not found as source property for association " + name );
-			}
-
-			association.setSourceProperty( sourcePropertyDescriptor );
-		}
-
-		if ( targetPropertyRemoved ) {
-			association.setTargetProperty( null );
-		}
-		else if ( targetProperty != null ) {
-			EntityPropertyDescriptor targetPropertyDescriptor =
-					association.getSourceEntityConfiguration().getPropertyRegistry().getProperty( targetProperty );
-
-			if ( targetPropertyDescriptor == null ) {
-				throw new IllegalArgumentException(
-						"Property " + targetProperty + " was not found as target property for association " + name );
+				association.setSourceProperty( sourcePropertyDescriptor );
 			}
 
-			association.setTargetProperty( targetPropertyDescriptor );
-		}
+			if ( targetPropertyRemoved ) {
+				association.setTargetProperty( null );
+			}
+			else if ( targetProperty != null ) {
+				EntityPropertyDescriptor targetPropertyDescriptor =
+						association.getTargetEntityConfiguration().getPropertyRegistry().getProperty( targetProperty );
 
-		if ( hiddenSpecified ) {
-			association.setHidden( hidden );
-		}
+				if ( targetPropertyDescriptor == null ) {
+					throw new IllegalArgumentException(
+							"Property " + targetProperty + " was not found as target property for association " + name );
+				}
 
-		applyAttributes( association );
-		applyViewBuilders( association, beanFactory );
+				association.setTargetProperty( targetPropertyDescriptor );
+			}
+
+			if ( hiddenSpecified ) {
+				association.setHidden( hidden );
+			}
+
+			if ( parentDeleteMode != null ) {
+				association.setParentDeleteMode( parentDeleteMode );
+			}
+
+			applyAttributes( association );
+			applyViews( association );
+		}
+		finally {
+			associationBeingBuilt = null;
+		}
 	}
 
-	void postProcess( MutableEntityConfiguration configuration ) {
-		MutableEntityAssociation association = configuration.association( name );
+	private EntityConfiguration retrieveTargetConfiguration() {
+		EntityRegistry entityRegistry = beanFactory.getBean( EntityRegistry.class );
+		EntityConfiguration targetConfiguration = targetEntityName != null
+				? entityRegistry.getEntityConfiguration( targetEntityName )
+				: entityRegistry.getEntityConfiguration( targetEntityType );
 
-		for ( PostProcessor<MutableEntityAssociation> postProcessor : postProcessors() ) {
-			postProcessor.process( association );
+		if ( targetConfiguration == null ) {
+			throw new IllegalArgumentException( "Unable to retrieve target entity configured: " + targetEntityType );
 		}
+
+		return targetConfiguration;
+	}
+
+	@Override
+	protected <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType ) {
+		if ( EntityListViewFactoryBuilder.class.isAssignableFrom( builderType ) ) {
+			return builderType.cast( new EntityListViewFactoryBuilder( beanFactory ) );
+		}
+
+		return builderType.cast( new EntityViewFactoryBuilder( beanFactory ) );
+	}
+
+	@Override
+	protected <U extends EntityViewFactoryBuilder> void initializeViewFactoryBuilder( String viewName, String templateName, U builder ) {
+		beanFactory.getBean( EntityViewFactoryBuilderInitializer.class )
+		           .initialize( viewName, templateName, associationBeingBuilt, builder );
+	}
+
+	public static void registerAssociationMessageCodeResolver( MutableEntityAssociation association ) {
+		String[] associationCodePrefixes = association.getSourceEntityConfiguration()
+		                                              .getEntityMessageCodeResolver()
+		                                              .buildMessageCodes( "associations[" + association.getName() + "]" );
+		EntityMessageCodeResolver codeResolver = new EntityMessageCodeResolver( association.getTargetEntityConfiguration().getEntityMessageCodeResolver() );
+		codeResolver.addPrefixes( associationCodePrefixes );
+
+		association.setAttribute( EntityMessageCodeResolver.class, codeResolver );
 	}
 }

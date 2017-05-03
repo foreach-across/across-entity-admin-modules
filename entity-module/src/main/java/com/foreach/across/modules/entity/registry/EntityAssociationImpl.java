@@ -15,30 +15,40 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.support.AttributeSupport;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
+
+import java.util.stream.Stream;
 
 /**
  * @author Arne Vandamme
  */
-public class EntityAssociationImpl
-		extends AttributeSupport
-		implements MutableEntityAssociation
+public class EntityAssociationImpl extends AttributeSupport implements MutableEntityAssociation
 {
 	private final String name;
 	private final MutableEntityConfiguration sourceEntityConfiguration;
 
 	private Boolean hidden;
-
 	private EntityConfiguration targetEntityConfiguration;
-
 	private EntityPropertyDescriptor sourceProperty, targetProperty;
+	private ParentDeleteMode parentDeleteMode = ParentDeleteMode.SUPPRESS;
+	private Type associationType = Type.LINKED;
 
 	public EntityAssociationImpl( String name,
 	                              MutableEntityConfiguration sourceEntityConfiguration ) {
 		this.name = name;
 		this.sourceEntityConfiguration = sourceEntityConfiguration;
+	}
+
+	@Override
+	public Type getAssociationType() {
+		return associationType;
+	}
+
+	@Override
+	public void setAssociationType( Type associationType ) {
+		this.associationType = associationType;
 	}
 
 	@Override
@@ -105,6 +115,16 @@ public class EntityAssociationImpl
 	}
 
 	@Override
+	public ParentDeleteMode getParentDeleteMode() {
+		return parentDeleteMode;
+	}
+
+	@Override
+	public void setParentDeleteMode( ParentDeleteMode parentDeleteMode ) {
+		this.parentDeleteMode = parentDeleteMode;
+	}
+
+	@Override
 	public boolean hasView( String name ) {
 		return sourceEntityConfiguration.hasView( buildAssociatedViewName( name ) );
 	}
@@ -118,6 +138,15 @@ public class EntityAssociationImpl
 	@Override
 	public void registerView( String viewName, EntityViewFactory viewFactory ) {
 		sourceEntityConfiguration.registerView( buildAssociatedViewName( viewName ), viewFactory );
+	}
+
+	@Override
+	public String[] getViewNames() {
+		String prefix = getName() + "_";
+		return Stream.of( sourceEntityConfiguration.getViewNames() )
+		             .filter( viewName -> viewName.startsWith( prefix ) )
+		             .map( viewName -> viewName.substring( prefix.length() ) )
+		             .toArray( String[]::new );
 	}
 
 	private String buildAssociatedViewName( String viewName ) {

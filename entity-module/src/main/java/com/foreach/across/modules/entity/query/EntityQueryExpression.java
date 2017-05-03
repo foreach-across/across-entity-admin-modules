@@ -15,9 +15,17 @@
  */
 package com.foreach.across.modules.entity.query;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * @author Arne Vandamme
  */
+@JsonTypeInfo( use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="@type" )
+@JsonSubTypes({
+		@JsonSubTypes.Type(value=EntityQuery.class, name="EntityQuery"),
+		@JsonSubTypes.Type(value=EntityQueryCondition.class, name="EntityQueryCondition")
+})
 public interface EntityQueryExpression
 {
 	EntityQueryOps getOperand();

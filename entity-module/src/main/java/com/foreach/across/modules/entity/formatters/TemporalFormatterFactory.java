@@ -64,8 +64,6 @@ public class TemporalFormatterFactory implements AnnotationFormatterFactory<Temp
 			dateTimeFormats.add( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) );
 			dateTimeFormats.add( new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" ) );
 			timeFormats.add( new SimpleDateFormat( "HH:mm" ) );
-			timeFormats.add( new SimpleDateFormat( "HH:mm" ) );
-			timeFormats.add( new SimpleDateFormat( "HH:mm:ss" ) );
 			timeFormats.add( new SimpleDateFormat( "HH:mm:ss" ) );
 		}
 
@@ -86,7 +84,7 @@ public class TemporalFormatterFactory implements AnnotationFormatterFactory<Temp
 						defaultDateFormats = timeFormats;
 						break;
 					case DATE:
-						instance = DateFormat.getDateInstance( DateFormat.SHORT, locale );
+						instance = DateFormat.getDateInstance( DateFormat.MEDIUM, locale );
 						defaultDateFormats = dateFormats;
 						break;
 					case TIMESTAMP:
@@ -116,7 +114,7 @@ public class TemporalFormatterFactory implements AnnotationFormatterFactory<Temp
 						break;
 					case DATE:
 					default:
-						instance = DateFormat.getDateInstance( DateFormat.SHORT, locale );
+						instance = DateFormat.getDateInstance( DateFormat.MEDIUM, locale );
 						break;
 				}
 				return instance.format( object );

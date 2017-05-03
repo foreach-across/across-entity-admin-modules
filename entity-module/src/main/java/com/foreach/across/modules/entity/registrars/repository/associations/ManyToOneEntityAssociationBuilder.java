@@ -13,27 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.MutableEntityAssociation;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
-import com.foreach.across.modules.entity.views.EntityFormView;
-import com.foreach.across.modules.entity.views.EntityFormViewFactory;
-import com.foreach.across.modules.entity.views.EntityListView;
-import com.foreach.across.modules.entity.views.EntityListViewFactory;
-import com.foreach.across.modules.entity.views.fetchers.AssociationListViewPageFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.ManyToOne;
+
+import static com.foreach.across.modules.entity.config.builders.EntityAssociationBuilder.registerAssociationMessageCodeResolver;
 
 /**
  * Builds the association in the opposite direction.
@@ -41,12 +36,9 @@ import javax.persistence.ManyToOne;
  * @author Andy Somers, Arne Vandamme
  */
 @Component
-public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuilder
+class ManyToOneEntityAssociationBuilder implements EntityAssociationBuilder
 {
 	private static final Logger LOG = LoggerFactory.getLogger( ManyToOneEntityAssociationBuilder.class );
-
-	@Autowired
-	private BeanFactory beanFactory;
 
 	@Override
 	public boolean supports( PersistentProperty<?> sourceProperty ) {
@@ -56,66 +48,35 @@ public class ManyToOneEntityAssociationBuilder implements EntityAssociationBuild
 	@Override
 	public void buildAssociation( MutableEntityRegistry entityRegistry,
 	                              MutableEntityConfiguration to,
-	                              PersistentProperty property ) {
-		MutableEntityConfiguration from = entityRegistry.getMutableEntityConfiguration( property.getActualType() );
+	                              PersistentProperty property,
+	                              String propertyPrefix ) {
+		String fqPropertyName = propertyPrefix + property.getName();
+		MutableEntityConfiguration from = entityRegistry.getEntityConfiguration( property.getActualType() );
 		if ( from != null && canAssociationBeBuilt( from, to ) ) {
-			String associationName = to.getName() + "." + property.getName();
+			String associationName = to.getName() + "." + fqPropertyName;
 
 			MutableEntityAssociation association = from.createAssociation( associationName );
 			association.setTargetEntityConfiguration( to );
-			association.setTargetProperty( to.getPropertyRegistry().getProperty( property.getName() ) );
+			association.setTargetProperty( to.getPropertyRegistry().getProperty( fqPropertyName ) );
 
-			buildCreateView( association );
-			buildListView( association, property );
+			EntityQueryExecutor<?> queryExecutor = to.getAttribute( EntityQueryExecutor.class );
+			association.setAttribute(
+					AssociatedEntityQueryExecutor.class,
+					new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), queryExecutor )
+			);
+
+			registerAssociationMessageCodeResolver( association );
 		}
 	}
 
 	private boolean canAssociationBeBuilt( MutableEntityConfiguration from, MutableEntityConfiguration to ) {
-		if ( !to.hasAttribute( EntityQueryPageFetcher.class ) ) {
+		if ( !to.hasAttribute( EntityQueryExecutor.class ) ) {
 			LOG.warn(
-					"Unable to build association between {} and {} because {} does not provide an EntityQueryPageFetcher.",
+					"Unable to build association between {} and {} because {} does not provide an EntityQueryExecutor.",
 					from.getName(), to.getName(), to.getName() );
 			return false;
 		}
 
 		return true;
-	}
-
-	public void buildListView( MutableEntityAssociation association, final PersistentProperty property ) {
-		EntityConfiguration to = association.getTargetEntityConfiguration();
-
-		EntityListViewFactory viewFactory = beanFactory.getBean( EntityListViewFactory.class );
-		BeanUtils.copyProperties( to.getViewFactory( EntityListView.VIEW_NAME ), viewFactory );
-
-		viewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".listView",
-		                                "entityViews.listView",
-		                                "entityViews" );
-
-		EntityQueryPageFetcher queryPageFetcher = to.getAttribute( EntityQueryPageFetcher.class );
-
-		if ( queryPageFetcher != null ) {
-			viewFactory.setPageFetcher(
-					new AssociationListViewPageFetcher( association.getTargetProperty(), queryPageFetcher )
-			);
-		}
-		else {
-			LOG.warn( "Unable to create ManyToOne association {} as there is no EntityQueryPageFetcher available",
-			          association.getName() );
-		}
-
-		association.registerView( EntityListView.VIEW_NAME, viewFactory );
-	}
-
-	public void buildCreateView( MutableEntityAssociation association ) {
-		EntityConfiguration to = association.getTargetEntityConfiguration();
-
-		EntityFormViewFactory viewFactory = beanFactory.getBean( EntityFormViewFactory.class );
-		BeanUtils.copyProperties( to.getViewFactory( EntityFormView.CREATE_VIEW_NAME ), viewFactory );
-		viewFactory.setMessagePrefixes( "entityViews.association." + association.getName() + ".createView",
-		                                "entityViews.createView",
-		                                "entityViews" );
-
-		association.registerView( EntityFormView.CREATE_VIEW_NAME, viewFactory );
-
 	}
 }

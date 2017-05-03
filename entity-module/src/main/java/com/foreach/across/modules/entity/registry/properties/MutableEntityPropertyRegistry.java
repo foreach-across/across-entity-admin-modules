@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,10 +15,29 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import java.util.Comparator;
+import java.util.function.Predicate;
+
 /**
  * @author Arne Vandamme
  */
 public interface MutableEntityPropertyRegistry extends EntityPropertyRegistry
 {
-	MutableEntityPropertyDescriptor getMutableProperty( String propertyName );
+	/**
+	 * Attach a descriptor to this registry.  A descriptor can only be attached to a
+	 * single registry, so the {@link EntityPropertyDescriptor#getPropertyRegistry()} should return {@code null}
+	 * on the descriptor you try to register.
+	 *
+	 * @param descriptor instance
+	 */
+	void register( MutableEntityPropertyDescriptor descriptor );
+
+	@Override
+	MutableEntityPropertyDescriptor getProperty( String propertyName );
+
+	void setDefaultOrder( String... propertyNames );
+
+	void setDefaultOrder( Comparator<EntityPropertyDescriptor> defaultOrder );
+
+	void setDefaultFilter( Predicate<EntityPropertyDescriptor> filter );
 }

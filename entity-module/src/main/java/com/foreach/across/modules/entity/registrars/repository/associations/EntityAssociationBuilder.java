@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registrars.repository.associations;
 
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
@@ -28,5 +29,6 @@ public interface EntityAssociationBuilder
 
 	void buildAssociation( MutableEntityRegistry entityRegistry,
 	                       MutableEntityConfiguration entityConfiguration,
-	                       PersistentProperty property );
+	                       PersistentProperty property,
+	                       String propertyPrefix );
 }

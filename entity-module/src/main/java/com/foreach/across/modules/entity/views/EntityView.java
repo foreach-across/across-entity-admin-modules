@@ -13,63 +13,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views;
 
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.views.elements.ViewElements;
-import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
-import com.foreach.across.modules.web.menu.Menu;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Uses a backing {@link org.springframework.ui.ModelMap} for storing and fetching the different attributes.
- * Has a {@link com.foreach.across.modules.entity.views.EntityView#getTemplate()} method that refers to the rendering
- * template; as such it can be seen as an alternative to {@link org.springframework.web.servlet.ModelAndView} without
- * putting dependencies on Spring mvc.
+ * Represents both the view and the backing model for a generated entity output page.
+ * The {@link Model} implementation is extended with some type-safe methods for passing data
+ * between {@link EntityViewProcessor} instances if so used.
  * <p/>
- * The backing model can be (partially) prefilled and passed in externally.  Default
- * {@link com.foreach.across.modules.entity.views.SimpleEntityViewFactorySupport} implementations use the model as
- * communication channel for data attributes between preparation and creation steps of a
- * {@link com.foreach.across.modules.entity.views.EntityView}.
+ * Supports different types of resulting view:
+ * <ul>
+ * <li>{@link #getRedirectUrl()} for a redirect</li>
+ * <li>{@link #getTemplate()} for a view name</li>
+ * <li>{@link #getResponseEntity()} for a response entity</li>
+ * <li>{@link #getCustomView()} for a custom {@link org.springframework.web.servlet.View}</li>
+ * </ul>
  *
  * @author Arne Vandamme
- * @see com.foreach.across.modules.entity.views.SimpleEntityViewFactorySupport
+ * @see EntityViewFactory
+ * @see DefaultEntityViewFactory
  */
+@Data
 public class EntityView implements Model
 {
-	public static final String ATTRIBUTE_VIEW_NAME = "entityViewName";
-	public static final String ATTRIBUTE_ENTITY = "entity";
-	public static final String ATTRIBUTE_ENTITY_CONFIGURATION = "entityConfiguration";
-	public static final String ATTRIBUTE_ENTITY_LINKS = "entityLinks";
-	public static final String ATTRIBUTE_MESSAGES = "messages";
-	public static final String ATTRIBUTE_PROPERTIES = "properties";
-	public static final String ATTRIBUTE_ENTITY_MENU = "entityMenu";
-	public static final String ATTRIBUTE_PAGE_TITLE = "pageTitle";
-
-	// Will contain the entity that is the parent of the association, if applicable
-	public static final String ATTRIBUTE_PARENT_ENTITY = "parentEntity";
+	// default view names
+	public static final String CREATE_VIEW_NAME = "createView";
+	public static final String UPDATE_VIEW_NAME = "updateView";
+	public static final String DELETE_VIEW_NAME = "deleteView";
+	public static final String LIST_VIEW_NAME = "listView";
+	public static final String GENERIC_VIEW_NAME = "genericView";
+	public static final String SUMMARY_VIEW_NAME = "listSummaryView";
 
 	private final ModelMap model;
+	private final RedirectAttributes redirectAttributes;
 
 	private String template;
+	private String redirectUrl;
+	private Object customView;
 
-	public EntityView( ModelMap model ) {
+	@Getter(AccessLevel.NONE)
+	private boolean shouldRender = true;
+
+	public EntityView( ModelMap model, RedirectAttributes redirectAttributes ) {
 		Assert.notNull( model );
+		Assert.notNull( redirectAttributes );
 		this.model = model;
-	}
-
-	public String getName() {
-		return getAttribute( ATTRIBUTE_VIEW_NAME );
-	}
-
-	public void setName( String name ) {
-		model.put( ATTRIBUTE_VIEW_NAME, name );
+		this.redirectAttributes = redirectAttributes;
 	}
 
 	public String getTemplate() {
@@ -80,79 +81,102 @@ public class EntityView implements Model
 		this.template = template;
 	}
 
-	public EntityConfiguration getEntityConfiguration() {
-		return getAttribute( ATTRIBUTE_ENTITY_CONFIGURATION );
-	}
-
-	public void setEntityConfiguration( EntityConfiguration entityConfiguration ) {
-		model.addAttribute( ATTRIBUTE_ENTITY_CONFIGURATION, entityConfiguration );
-	}
-
-	public EntityLinkBuilder getEntityLinkBuilder() {
-		return getAttribute( ATTRIBUTE_ENTITY_LINKS );
-	}
-
-	public void setEntityLinkBuilder( EntityLinkBuilder entityLinks ) {
-		model.addAttribute( ATTRIBUTE_ENTITY_LINKS, entityLinks );
-	}
-
-	public EntityMessages getEntityMessages() {
-		return getAttribute( ATTRIBUTE_MESSAGES );
-	}
-
-	public void setEntityMessages( EntityMessages messages ) {
-		model.addAttribute( ATTRIBUTE_MESSAGES, messages );
-	}
-
+	/**
+	 * Get an attribute from the model and coerce it to the expected type.
+	 *
+	 * @param attributeName name of the attribute
+	 * @param expectedType  type the attribute value should have
+	 * @param <V>           type the attribute value should have
+	 * @param <Y>           return type specification for generics
+	 * @return value or {@code null}
+	 */
 	@SuppressWarnings("unchecked")
-	public ViewElements getEntityProperties() {
-		return getAttribute( ATTRIBUTE_PROPERTIES );
+	public <V, Y extends V> Y getAttribute( String attributeName, Class<V> expectedType ) {
+		return (Y) expectedType.cast( getAttribute( attributeName ) );
 	}
 
-	public void setEntityProperties( ViewElements entityProperties ) {
-		model.put( ATTRIBUTE_PROPERTIES, entityProperties );
-	}
-
-	@SuppressWarnings("unchecked")
-	public <V> V getEntity() {
-		return (V) getAttribute( ATTRIBUTE_ENTITY );
-	}
-
-	public void setEntity( Object entity ) {
-		model.put( ATTRIBUTE_ENTITY, entity );
+	public Object getAttribute( String attributeName ) {
+		return model.get( attributeName );
 	}
 
 	/**
-	 * @return The parent entity in case of an associated entity view.  The parent is usually the context for which
-	 * the current entity is being viewed.
+	 * Remove the attribute with the given name from the model and coerce
+	 * the attribute value returned to the expected type.
+	 * <p/>
+	 * Note that the type coercing will only occur <u>after</u> the attribute has been removed!
+	 *
+	 * @param attributeName name of the attribute
+	 * @param expectedType  type the attribute value should have
+	 * @param <V>           type the attribute value should have
+	 * @param <Y>           return type specification for generics
+	 * @return value or {@code null}
 	 */
-	public Object getParentEntity() {
-		return getAttribute( ATTRIBUTE_PARENT_ENTITY );
-	}
-
-	public void setParentEntity( Object entity ) {
-		addAttribute( ATTRIBUTE_PARENT_ENTITY, entity );
-	}
-
-	public void setPageTitle( String pageTitle ) {
-		model.put( ATTRIBUTE_PAGE_TITLE, pageTitle );
-	}
-
-	public String getPageTitle() {
-		return getAttribute( ATTRIBUTE_PAGE_TITLE );
-	}
-
-	public void setEntityMenu( Menu menu ) {
-		model.put( ATTRIBUTE_ENTITY_MENU, menu );
-	}
-
-	public Menu getEntityMenu() {
-		return getAttribute( ATTRIBUTE_ENTITY_MENU );
-	}
-
 	@SuppressWarnings("unchecked")
-	public <V> V getAttribute( String attributeName ) {
-		return (V) model.get( attributeName );
+	public <V, Y extends V> Y removeAttribute( String attributeName, Class<V> expectedType ) {
+		return (Y) expectedType.cast( removeAttribute( attributeName ) );
+	}
+
+	public Object removeAttribute( String attributeName ) {
+		return model.remove( attributeName );
+	}
+
+	/**
+	 * Set the redirect url, if the redirect url is not {@code null}, this will also disable rendering.
+	 *
+	 * @param redirectUrl to use
+	 */
+	public void setRedirectUrl( String redirectUrl ) {
+		this.redirectUrl = redirectUrl;
+		shouldRender = redirectUrl == null;
+	}
+
+	/**
+	 * Set a {@link ResponseEntity} that should be used for the view..
+	 * Short-hand for {@link #setCustomView(Object)}.
+	 *
+	 * @param responseEntity to return
+	 */
+	public void setResponseEntity( ResponseEntity<?> responseEntity ) {
+		customView = responseEntity;
+	}
+
+	/**
+	 * Get the response entity that will be used as view.
+	 *
+	 * @return {@code null} if not a response entity
+	 */
+	@SuppressWarnings("unchecked")
+	public <V> ResponseEntity<V> getResponseEntity() {
+		return (ResponseEntity<V>) ResponseEntity.class.cast( customView );
+	}
+
+	/**
+	 * @return {@code true} if {@link #redirectUrl} is set
+	 */
+	public boolean isRedirect() {
+		return redirectUrl != null;
+	}
+
+	/**
+	 * @return {@code true} if the view returns a {@link ResponseEntity}
+	 */
+	public boolean isResponseEntity() {
+		return customView instanceof ResponseEntity;
+	}
+
+	/**
+	 * @return {@code true} if the view is neither a redirect, nor a view name;
+	 * this method will also return {@code true} if the view is a response entity
+	 */
+	public boolean isCustomView() {
+		return customView != null;
+	}
+
+	/**
+	 * @return {@code true} if the view renders visual output
+	 */
+	public boolean shouldRender() {
+		return shouldRender;
 	}
 
 	@Override
@@ -193,5 +217,15 @@ public class EntityView implements Model
 	@Override
 	public Map<String, Object> asMap() {
 		return model;
+	}
+
+	@Override
+	public String toString() {
+		return "EntityView{" +
+				"template='" + template + '\'' +
+				", redirectUrl='" + redirectUrl + '\'' +
+				", customView=" + customView +
+				", shouldRender=" + shouldRender +
+				'}';
 	}
 }

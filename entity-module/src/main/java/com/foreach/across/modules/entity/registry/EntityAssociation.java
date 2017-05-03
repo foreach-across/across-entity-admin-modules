@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.core.support.ReadableAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.support.ReadableAttributes;
 
 /**
  * Filtered view on an association between two {@link com.foreach.across.modules.entity.registry.EntityConfiguration}s.
@@ -25,9 +25,33 @@ import com.foreach.across.modules.entity.registry.support.ReadableAttributes;
  */
 public interface EntityAssociation extends ReadableAttributes, EntityViewRegistry
 {
+	/**
+	 * When the parent entity is requesting to be deleted, how should this association influence the delete process?
+	 */
+	enum ParentDeleteMode
+	{
+		IGNORE,         /* ignore this association */
+		WARN,           /* check for associated entities but do not suppress deletion */
+		SUPPRESS        /* check for associated entities and suppress deletion if there are any */
+	}
+
+	/**
+	 * Determines if this entity is managed as a sub-entity of the parent (embedded), or simply a linked entity.
+	 */
+	enum Type
+	{
+		EMBEDDED,       /* manage this entity entirely through the parent */
+		LINKED          /* manage through the entity itself - refer to it from the parent */
+	}
+
 	String getName();
 
 	Class<?> getEntityType();
+
+	/**
+	 * @return type of association
+	 */
+	Type getAssociationType();
 
 	/**
 	 * @return True if the association should be hidden from administrative UI implementations.
@@ -41,4 +65,9 @@ public interface EntityAssociation extends ReadableAttributes, EntityViewRegistr
 	EntityConfiguration getTargetEntityConfiguration();
 
 	EntityPropertyDescriptor getTargetProperty();
+
+	/**
+	 * @return behaviour in case the parent entity will be deleted but associated entities still exist
+	 */
+	ParentDeleteMode getParentDeleteMode();
 }

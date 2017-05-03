@@ -15,60 +15,146 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.EntityRegistryImpl;
-import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import com.foreach.across.modules.entity.registry.*;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import java.util.Collections;
+
+import static com.foreach.across.modules.entity.registry.EntityAssociation.Type.EMBEDDED;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  */
+@PrepareForTest(EntityViewFactoryBuilderInitializer.class)
+@RunWith(PowerMockRunner.class)
+@SuppressWarnings("unchecked")
 public class TestEntityAssociationBuilder
 {
-	private EntitiesConfigurationBuilder entities;
-	private MutableEntityRegistry entityRegistry;
+	@Mock
+	private EntityRegistry entityRegistry;
+
+	@Mock
 	private AutowireCapableBeanFactory beanFactory;
 
+	@Mock
+	private MutableEntityConfiguration configuration;
+
+	private EntityAssociationBuilder builder;
+
 	@Before
-	public void before() {
-		entities = new EntitiesConfigurationBuilder();
-		entityRegistry = new EntityRegistryImpl();
-		beanFactory = mock( AutowireCapableBeanFactory.class );
+	public void reset() {
+		EntityViewFactoryBuilderInitializer builderInitializer = PowerMockito.mock( EntityViewFactoryBuilderInitializer.class );
+
+		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistry );
+		builder = new EntityAssociationBuilder( beanFactory );
+
+		when( beanFactory.getBean( EntityViewFactoryBuilderInitializer.class ) ).thenReturn( builderInitializer );
 	}
 
 	@Test
-	public void manuallyCreateEntityConfiguration() {
-		entities.entity( OtherEntity.class );
+	public void newAssociation() {
+		MutableEntityAssociation association = mock( MutableEntityAssociation.class );
+		when( configuration.createAssociation( "users" ) ).thenReturn( association );
+		when( association.getSourceEntityConfiguration() ).thenReturn( configuration );
+		when( configuration.getEntityMessageCodeResolver() ).thenReturn( mock( EntityMessageCodeResolver.class ) );
 
-		entities.entity( SomeEntity.class )
-		        .association( "other" )
-		        .targetEntityType( OtherEntity.class )
-		        .hide();
+		MutableEntityPropertyRegistry sourceRegistry = mock( MutableEntityPropertyRegistry.class );
+		when( configuration.getPropertyRegistry() ).thenReturn( sourceRegistry );
+		MutableEntityPropertyDescriptor sourceProperty = mock( MutableEntityPropertyDescriptor.class );
+		when( sourceRegistry.getProperty( "users" ) ).thenReturn( sourceProperty );
 
-		entities.apply( entityRegistry, beanFactory );
+		EntityConfiguration target = mock( EntityConfiguration.class );
+		when( target.getEntityMessageCodeResolver() ).thenReturn( new EntityMessageCodeResolver() );
+		when( entityRegistry.getEntityConfiguration( String.class ) ).thenReturn( target );
+		when( association.getTargetEntityConfiguration() ).thenReturn( target );
+		EntityPropertyRegistry targetRegistry = mock( EntityPropertyRegistry.class );
+		when( target.getPropertyRegistry() ).thenReturn( targetRegistry );
+		EntityPropertyDescriptor targetProperty = mock( EntityPropertyDescriptor.class );
+		when( targetRegistry.getProperty( "id" ) ).thenReturn( targetProperty );
 
-		EntityConfiguration config = entityRegistry.getEntityConfiguration( SomeEntity.class );
-		assertNotNull( config );
+		when( association.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( false );
+		DefaultEntityViewFactory listViewFactory = new DefaultEntityViewFactory();
+		when( beanFactory.createBean( DefaultEntityViewFactory.class ) ).thenReturn( listViewFactory );
 
-		EntityAssociation association = config.association( "other" );
-		assertNotNull( association );
-		assertTrue( association.isHidden() );
+		builder.name( "users" )
+		       .hidden( false )
+		       .associationType( EMBEDDED )
+		       .targetEntityType( String.class )
+		       .targetProperty( "id" )
+		       .sourceProperty( "users" )
+		       .attribute( "someAttribute", "someAttributeValue" )
+		       .listView( lvb -> lvb.template( "hello" ) )
+		       .parentDeleteMode( EntityAssociation.ParentDeleteMode.SUPPRESS )
+		       .apply( configuration );
+
+		verify( configuration ).createAssociation( "users" );
+		verify( association ).setAssociationType( EMBEDDED );
+		verify( association ).setSourceProperty( sourceProperty );
+		verify( association ).setTargetEntityConfiguration( target );
+		verify( association ).setTargetProperty( targetProperty );
+		verify( association ).setHidden( false );
+		verify( association ).setAttributes( Collections.singletonMap( "someAttribute", "someAttributeValue" ) );
+		verify( association ).setParentDeleteMode( EntityAssociation.ParentDeleteMode.SUPPRESS );
+		verify( association ).registerView( EntityView.LIST_VIEW_NAME, listViewFactory );
+		verify( association ).setAttribute( eq( EntityMessageCodeResolver.class ), any( EntityMessageCodeResolver.class ) );
 	}
 
-	static class SomeEntity
-	{
+	@Test
+	public void updateExisting() {
+		MutableEntityAssociation association = mock( MutableEntityAssociation.class );
+		when( configuration.association( "users" ) ).thenReturn( association );
+		when( association.getSourceEntityConfiguration() ).thenReturn( configuration );
 
-	}
+		MutableEntityPropertyRegistry sourceRegistry = mock( MutableEntityPropertyRegistry.class );
+		when( configuration.getPropertyRegistry() ).thenReturn( sourceRegistry );
+		MutableEntityPropertyDescriptor sourceProperty = mock( MutableEntityPropertyDescriptor.class );
+		when( sourceRegistry.getProperty( "users" ) ).thenReturn( sourceProperty );
 
-	static class OtherEntity
-	{
+		EntityConfiguration target = mock( EntityConfiguration.class );
+		when( entityRegistry.getEntityConfiguration( "string" ) ).thenReturn( target );
+		when( association.getTargetEntityConfiguration() ).thenReturn( target );
+		EntityPropertyRegistry targetRegistry = mock( EntityPropertyRegistry.class );
+		when( target.getPropertyRegistry() ).thenReturn( targetRegistry );
+		EntityPropertyDescriptor targetProperty = mock( EntityPropertyDescriptor.class );
+		when( targetRegistry.getProperty( "id" ) ).thenReturn( targetProperty );
 
+		when( association.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
+		DefaultEntityViewFactory listViewFactory = mock( DefaultEntityViewFactory.class );
+		when( beanFactory.createBean( DefaultEntityViewFactory.class ) ).thenReturn( listViewFactory );
+		builder.name( "users" )
+		       .hidden( false )
+		       .associationType( EMBEDDED )
+		       .targetEntityType( String.class )
+		       .targetEntity( "string" )
+		       .targetProperty( "id" )
+		       .sourceProperty( "users" )
+		       .attribute( "someAttribute", "someAttributeValue" )
+		       .parentDeleteMode( EntityAssociation.ParentDeleteMode.WARN )
+		       .listView( lvb -> lvb.template( "hello" ) )
+		       .apply( configuration );
+
+		verify( association ).setAssociationType( EMBEDDED );
+		verify( association ).setSourceProperty( sourceProperty );
+		verify( association ).setTargetEntityConfiguration( target );
+		verify( association ).setTargetProperty( targetProperty );
+		verify( association ).setHidden( false );
+		verify( association ).setAttributes( Collections.singletonMap( "someAttribute", "someAttributeValue" ) );
+		verify( association ).setParentDeleteMode( EntityAssociation.ParentDeleteMode.WARN );
 	}
 }

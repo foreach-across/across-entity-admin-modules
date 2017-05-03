@@ -1,0 +1,2 @@
+[[generic-view]]
+=== custom views

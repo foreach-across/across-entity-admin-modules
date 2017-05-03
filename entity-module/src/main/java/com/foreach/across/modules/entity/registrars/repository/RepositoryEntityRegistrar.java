@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.registrars.repository;
 
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
-import com.foreach.across.modules.entity.query.EntityQueryPageFetcher;
-import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaPageFetcher;
-import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslPageFetcher;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
+import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registrars.EntityRegistrar;
 import com.foreach.across.modules.entity.registry.*;
-import com.foreach.across.modules.entity.registry.builders.EntityPropertyRegistryMappingMetaDataBuilder;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -56,30 +59,18 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
-public class RepositoryEntityRegistrar implements EntityRegistrar
+@Component
+class RepositoryEntityRegistrar implements EntityRegistrar
 {
 	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityRegistrar.class );
 
-	@Autowired
 	private RepositoryEntityModelBuilder entityModelBuilder;
-
-	@Autowired
 	private RepositoryEntityPropertyRegistryBuilder propertyRegistryBuilder;
-
-	@Autowired
-	private RepositoryEntityViewsBuilder viewsBuilder;
-
-	@Autowired
 	private RepositoryEntityAssociationsBuilder associationsBuilder;
-
-	@Autowired
 	private MessageSource messageSource;
-
-	@Autowired
-	private EntityPropertyRegistryMappingMetaDataBuilder mappingMetaDataBuilder;
-
-	@EntityValidator
+	private MappingContextRegistry mappingContextRegistry;
 	private SmartValidator entityValidator;
+	private PlatformTransactionManagerResolver transactionManagerResolver;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -88,7 +79,8 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 	                              AcrossContextBeanRegistry beanRegistry ) {
 		ApplicationContext applicationContext = moduleInfo.getApplicationContext();
 
-		mappingMetaDataBuilder.addMappingContexts( applicationContext.getBeansOfType( MappingContext.class ).values() );
+		applicationContext.getBeansOfType( MappingContext.class )
+		                  .forEach( ( name, bean ) -> mappingContextRegistry.addMappingContext( bean ) );
 
 		Map<String, RepositoryFactoryInformation> repositoryFactoryInformationMap
 				= applicationContext.getBeansOfType( RepositoryFactoryInformation.class );
@@ -136,7 +128,7 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 			associationsBuilder.buildAssociations( entityRegistry, entityConfiguration );
 		}
 
-		LOG.info( "Registered {} entities from module {}", registered.size(), moduleInfo.getName() );
+		LOG.debug( "Registered {} entities from module {}", registered.size(), moduleInfo.getName() );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -150,11 +142,16 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 
 		if ( entityTypeName != null ) {
 			EntityConfigurationImpl entityConfiguration = new EntityConfigurationImpl<>( entityTypeName, entityType );
-			entityConfiguration.addAttribute( AcrossModuleInfo.class, moduleInfo );
-			entityConfiguration.addAttribute( RepositoryFactoryInformation.class, repositoryFactoryInformation );
-			entityConfiguration.addAttribute( Repository.class, repository );
-			entityConfiguration.addAttribute( PersistentEntity.class,
+			entityConfiguration.setAttribute( AcrossModuleInfo.class, moduleInfo );
+			entityConfiguration.setAttribute( RepositoryFactoryInformation.class, repositoryFactoryInformation );
+			entityConfiguration.setAttribute( Repository.class, repository );
+			entityConfiguration.setAttribute( PersistentEntity.class,
 			                                  repositoryFactoryInformation.getPersistentEntity() );
+
+			String transactionManagerBeanName = transactionManagerResolver.resolveTransactionManagerBeanName( repositoryFactoryInformation );
+			if ( transactionManagerBeanName != null ) {
+				entityConfiguration.setAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, transactionManagerBeanName );
+			}
 
 			findDefaultValidatorInModuleContext( entityConfiguration, moduleInfo.getApplicationContext() );
 
@@ -164,11 +161,10 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 
 			entityConfiguration.setHidden( Modifier.isAbstract( entityType.getModifiers() ) );
 
-			registerEntityQueryPageFetcher( entityConfiguration );
-
 			propertyRegistryBuilder.buildEntityPropertyRegistry( entityConfiguration );
 			entityModelBuilder.buildEntityModel( entityConfiguration );
-			viewsBuilder.buildViews( entityConfiguration );
+
+			registerEntityQueryExecutor( entityConfiguration );
 
 			entityRegistry.register( entityConfiguration );
 
@@ -190,8 +186,15 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 		List<Validator> candidates = new ArrayList<>();
 
 		for ( Validator validator : validatorMap.values() ) {
-			if ( validator != entityValidator && validator.supports( entityConfiguration.getEntityType() ) ) {
-				candidates.add( validator );
+			if ( validator != entityValidator ) {
+				// Add base implementation to EntityValidatorSupport instance
+				if ( validator instanceof EntityValidatorSupport ) {
+					( (EntityValidatorSupport) validator ).setEntityValidator( entityValidator );
+				}
+
+				if ( validator.supports( entityConfiguration.getEntityType() ) ) {
+					candidates.add( validator );
+				}
 			}
 		}
 
@@ -204,9 +207,10 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 			validatorToUse = candidates.get( 0 );
 			LOG.debug( "Auto-registering validator bean of type {} as default validator for entity {}",
 			           ClassUtils.getUserClass( validatorToUse ).getName(), entityConfiguration.getEntityType() );
+
 		}
 
-		entityConfiguration.addAttribute( Validator.class, validatorToUse );
+		entityConfiguration.setAttribute( Validator.class, validatorToUse );
 	}
 
 	private EntityMessageCodeResolver buildMessageCodeResolver( EntityConfiguration entityConfiguration,
@@ -217,32 +221,39 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 		resolver.setMessageSource( messageSource );
 		resolver.setEntityConfiguration( entityConfiguration );
 		resolver.setPrefixes( moduleInfo.getName() + ".entities." + name );
-		resolver.setFallbackCollections( EntityModule.NAME + ".entities", "" );
+		resolver.setFallbackCollections( moduleInfo.getName() + ".entities", EntityModule.NAME + ".entities" );
 
 		return resolver;
 	}
 
 	/**
-	 * Determine the best {@link com.foreach.across.modules.entity.query.EntityQueryPageFetcher} implementation
-	 * for this entity.
+	 * Determine the best {@link EntityQueryExecutor} implementation for this entity.
 	 */
-	private void registerEntityQueryPageFetcher( MutableEntityConfiguration entityConfiguration ) {
+	private void registerEntityQueryExecutor( MutableEntityConfiguration entityConfiguration ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );
 
-		EntityQueryPageFetcher entityQueryPageFetcher = null;
+		EntityQueryExecutor entityQueryExecutor = null;
 
 		// Because of some bugs related to JPA - Hibernate integration, favour the use of QueryDsl if possible,
 		// see particular issue: https://hibernate.atlassian.net/browse/HHH-5948
 		if ( repository instanceof QueryDslPredicateExecutor ) {
-			entityQueryPageFetcher = new EntityQueryQueryDslPageFetcher( (QueryDslPredicateExecutor) repository,
-			                                                             entityConfiguration );
+			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QueryDslPredicateExecutor) repository,
+			                                                       entityConfiguration );
 		}
 		else if ( repository instanceof JpaSpecificationExecutor ) {
-			entityQueryPageFetcher = new EntityQueryJpaPageFetcher( (JpaSpecificationExecutor) repository );
+			entityQueryExecutor = new EntityQueryJpaExecutor( (JpaSpecificationExecutor) repository );
 		}
 
-		if ( entityQueryPageFetcher != null ) {
-			entityConfiguration.addAttribute( EntityQueryPageFetcher.class, entityQueryPageFetcher );
+		if ( entityQueryExecutor != null ) {
+			entityConfiguration.setAttribute( EntityQueryExecutor.class, entityQueryExecutor );
+
+			// todo factor out
+			/*EntityQueryParser parser = new EntityQueryParser();
+			EntityQueryMetadataProvider metadataProvider = new DefaultEntityQueryMetadataProvider( entityConfiguration.getPropertyRegistry() );
+			EntityQueryTranslator queryTranslator = new EntityQueryTranslator
+			parser.setEntityConfiguration( entityConfiguration );
+			parser.setConversionService( mvcConversionService );
+			entityConfiguration.setAttribute( EntityQueryParser.class, parser );*/
 		}
 	}
 
@@ -259,5 +270,40 @@ public class RepositoryEntityRegistrar implements EntityRegistrar
 		}
 
 		return name;
+	}
+
+	@Autowired
+	public void setEntityModelBuilder( RepositoryEntityModelBuilder entityModelBuilder ) {
+		this.entityModelBuilder = entityModelBuilder;
+	}
+
+	@Autowired
+	public void setPropertyRegistryBuilder( RepositoryEntityPropertyRegistryBuilder propertyRegistryBuilder ) {
+		this.propertyRegistryBuilder = propertyRegistryBuilder;
+	}
+
+	@Autowired
+	public void setAssociationsBuilder( RepositoryEntityAssociationsBuilder associationsBuilder ) {
+		this.associationsBuilder = associationsBuilder;
+	}
+
+	@Autowired
+	public void setMessageSource( MessageSource messageSource ) {
+		this.messageSource = messageSource;
+	}
+
+	@Autowired
+	public void setMappingContextRegistry( MappingContextRegistry mappingContextRegistry ) {
+		this.mappingContextRegistry = mappingContextRegistry;
+	}
+
+	@EntityValidator
+	public void setEntityValidator( SmartValidator entityValidator ) {
+		this.entityValidator = entityValidator;
+	}
+
+	@Autowired
+	public void setTransactionManagerResolver( PlatformTransactionManagerResolver transactionManagerResolver ) {
+		this.transactionManagerResolver = transactionManagerResolver;
 	}
 }

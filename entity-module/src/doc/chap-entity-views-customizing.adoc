@@ -1,0 +1,240 @@
+== Customizing generated Entity views
+The following section gives an overview of common customizations for generated entity views.
+
+[[view-builder-initializer]]
+DOCUMENTATION TODO: customize view builder initializer
+
+=== Changing entity names, property names or other labels
+All entity names, property names and labels can be customized using message sources.
+For an explanation of the different message codes used, see <<appendix-message-codes,the relevant appendix>>.
+
+=== Specifying a custom template
+
+Every default view uses a specific (Thymeleaf) template that renders the `ViewElement` list created by the view.
+If you want control over the rendering through a separate template you can specify a different template using the `template()` method on the `EntityViewFactoryBuilder`.
+
+=== EntityViewProcessor
+
+Modifying a default view can be done by registering an `EntityViewProcessor` for that view.
+This API allows you to modify the `ViewElement` collection that should be generated.
+This is a useful hook to add for example custom form elements that you wish to add and process.
+If can also be used to reorganize the layout of the form from backend code using the `ContainerViewElementUtils`.
+
+=== Using a custom EntityViewFactory
+
+Full control can be done by registering a custom `EntityViewFactory` implementation.
+
+=== Selecting properties
+`EntityPropertySelector`, incremental builders, keep current, select all, select all without default filter, exclude
+
+=== Configuring property view types
+You can configure a property using the `EntityPropertyDescriptorBuilder`.
+This builder also contains some methods to influence the `ViewElement` that should be built for that property for a given mode.
+
+By default a `ViewElement` will be built based on the property and some of its annotations.
+There are 3 ways you can influence the default behaviour:
+
+* specify a custom `viewElementType()` for a given mode
+** a default builder of that type will be created for that mode
+* specify one or more `viewElementPostProcessor()` for a given mode
+** these `ViewElementPostProcessor` instances will be added to the default builder, in the order they were registered
+* specify a custom  `viewElementBuilder()` for a given mode
+** the default building will be ignored and only your custom builder will be used
+
+=== Fieldset properties
+A fieldset is a visual grouping of other properties, inside a block that has a title (legend) and optional description.
+Fieldsets are rendered as a `FieldsetFormElement`.
+You can postprocess a group of `ViewElement` instances and move them manually to a `FieldsetFormElement`, or you can set a fieldset as the `ViewElementMode` for a property.
+
+In the latter, because a fieldset is a collection of other properties, you will need to specify which properties make up the fieldset.
+Specifying the properties of fieldset is done by setting the `EntityAttributes.FIELDSET_PROPERTY_SELECTOR` to a valid `EntityPropertySelector`.
+
+The following is an example of manually adding a fieldset property to a form, and moving some properties to it:
+[source,java,indent=0]
+[subs="verbatim,attributes"]
+----
+entities.withType( WebPage.class )
+        .createOrUpdateFormView( fvb -> fvb
+                /**
+                 * First create a new property that is a fieldset
+                 * of the existing url and urlGenerated properties.
+                 * We add this property only to the scope of the
+                 * create or update form view.
+                 */
+                .properties( props -> props
+                        .property( "url-settings" )
+                        .displayName( "URL settings" )
+                        .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
+                        .attribute(
+                                EntityAttributes.FIELDSET_PROPERTY_SELECTOR,
+                                EntityPropertySelector.of( "url", "urlGenerated" )
+                        )
+                )
+                /**
+                 * Because url and urlGenerated are direct members
+                 * of WebPage, we need to ensure they are not rendered
+                 * directly anymore, so we remove them from the form view.
+                 * The new url-settings property will be selected by default
+                 * and in turn will render the url and urlGenerated properties.
+                 *
+                 * If we were to configure the url-settings property as hidden,
+                 * we would have to explicitly include it in the form view as well.
+                 * That would probably be a preferred approach if we have defined
+                 * url-settings in the global property registry for WebPage.
+                 */
+                .showProperties( "*", "~url", "~urlGenerated" )
+        )
+----
+
+NOTE: Properties mapped to an `@Embedded` type will automatically be mapped as a fieldset type.
+
+=== Customizing entity validation
+
+By default annotation validation is performed on all entities.
+Customizing validation can be done by simply specifying a `Validator` bean that supports the specific entity type.
+You can use the `EntityValidatorSupport` as a base class to extend the default annotation based entity validation.
+
+If more than one `Validator` could be applied, you will manually have to set the `Validator.class` attribute on the `EntityConfiguration` to the correct one.
+
+=== Customizing *VALUE* mode elements
+
+The `ViewElementMode.VALUE` and `ViewElementMode.LIST_VALUE` are the defaults to provide the output of a property for readonly views.
+Unless a specific `ViewElement` is configured, this will always be a `String` output of the property.
+By default the *mvcConversionService* will be used to convert the property value if no type specific builder is provided.
+
+Apart from providing a custom `ViewElement` you can also modify the rendered output by providing attributes on the `EntityPropertyDescriptor`.
+If you provide a `org.springframework.format.Printer.class` attribute, that implementation will be used for printing the text value.
+Alternatively you can provide a `java.text.Format.class` attribute to be used.
+Note that most default `Format` implementations are not thread-safe, in that case you should wrap them in a `SynchronizedFormat` instance.
+
+All standard view elements will use the `Printer` or `Format` attribute if one of them is present, instead of the default.
+A `Printer` attribute takes precedence over a `Format`.
+
+=== Customizing textbox elements
+
+`TextboxFormElement.Type` can be set as an attribute on the `EntityPropertyDescriptor`.
+If set and the property is generated as a `TextboxFormElement`, that type will be used.
+
+You can add default post processors to the `TextboxFormElementBuilderFactory` to customize the autodetection.
+
+=== Customizing numeric elements
+
+By default all `Number` type properties will result in a `NumericFormElement` being used which is rendered as a textbox.
+The behavior can be customized by providing a `NumericFormElementConfiguration`.
+A default configuration will only be created for properties annotated with a Spring `@NumberFormat` for type `CURRENCY` or `PERCENT`, if no `NumericFormElementConfiguration.class` or `NumericFormElementConfiguration.Format.class` attribute is present.
+
+If a `NumericFormElementConfiguration` is present a more advanced javascript control will be used in the front-end for value input.
+The same configuration will also be used for rendering the *VALUE* mode elements, formatting the output according to the properties configured.
+
+.Manually configuring percent
+Put a format attribute with value `PERCENT` on the `EntityPropertyDescriptor`.
+This will create a locale specific percentage format with 2 decimals (unless the property type is integer).
+Alternatively use the static `NumericFormElementConfiguration.percent()` factory method to quickly create a localizable format suitable for percentages.
+
+NOTE: If you use Spring number format for `PERCENT` then 1 is expected to match 100%.
+If you manually create a `NumericFormElementConfiguration` it expects 100 to match with 100%.
+You can modify this behavior by setting the `multiplier` property on the configuration.
+
+.Manually configuring currency
+The easiest way to configure a currency is to set a `Currency.class` attribute for the property.
+In that case a locale specific format for that currency will be created.
+Alternatively the same options as for percentages can be used and there is a `NumericFormElementConfiguration.currency()` factory method available.
+
+=== Customizing datetime picker elements
+
+By default all `Date` properties will result in a `DateTimeFormElement` which is rendered as a date time picker.
+The form element can be customized through the `DateTimeFormElementConfiguration` class.
+The default configuration is determined based on the presence of `@Temporal` annotations on the property.
+The date picker supports 3 major modes: *date*, *time* and *timestamp* (date + time) with minutes being the maximum resolution.
+The presence of `@Past` and `@Future` validation annotations will additionally restrict the dates that are selectable.
+
+A specific date picker format can easily be specified by putting a `DateTimeFormElementConfiguration.Format` attribute.
+Advanced customization can be done by setting a complete `DateTimeFormElementConfiguration` as attribute.
+Dynamic configuration (for example setting the first selectable date relative to the current date) can only be done by specifying a `DateTimeFormElementBuilder` manually and adding a custom post processor that modifies the `DateTimeFormElementConfiguration`.
+A `DateTimeFormElementConfiguration` is always duplicated when creating an element so it is safe for post processors to modify the instance.
+
+.Using dates with `TemporalType.TIME` and JPA
+A property of type `java.util.Date` but annotated with `@Temporal(TemporalType.TIME)` will result in only time selection being available (hours and minutes).
+However the `@Temporal` annotation also influences how JPA will persist the data type.
+If your type was created as a timestamp in the database schema, this might result in conversion errors.
+With Hibernate you can resolve this by additionally specifying a `@Type` annotation forcing the type to be persisted as timestamp.
+
+.Example of a required time property that is written as a date relative to start of epoch time in the database
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@NotNull
+@Column(name = "arrival_time")
+@Temporal(TemporalType.TIME)
+@Type( type = "timestamp")
+private Date arrivalTime;
+----
+
+[[customizing-selectable-options]]
+=== Customizing selectable options
+
+Any entity or enum property will by default be rendered via an `OptionsFormElementBuilder` resulting in either a select box or list of checkboxes being rendered.
+
+.Set the type of options control
+You can customize the type of options control to be generated by setting the _viewElementType_ for a property.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+entities.withType( WebPage.class )
+    .createOrUpdateFormView( fvb -> fvb
+        /**
+         * Render the state as radio buttons instead of a select box.
+         */
+        .properties( props -> props
+            .property( "state" )
+            .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.RADIO )
+        )
+    );
+----
+
+.Configuring options that can be selected
+You can manipulate the options that can be selected in several ways by setting either `EntityConfiguration` or `EntityPropertyDescriptor` attributes.
+
+If your property is another entity type, by default the selectable options will be all entities of that type.
+If you want to change this for all properties of that type, you can set either an `OptionGenerator.class`, `OptionIterableBuilder.class` or `EntityAttributes.OPTIONS_ENTITY_QUERY` attribute on the target `EntityConfiguration`.
+If you want to change it only for a single property, you can configure the same attributes on the `EntityPropertyDescriptor` of that property.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+entities.withType( WebCmsArticle.class )
+    .createOrUpdateFormView( fvb -> fvb
+        /**
+         * Only allow published sections to be selectable,
+         * by specifying an EQL statement to fetch them.
+         */
+        .properties( props -> props
+            .property( "section" )
+            .attribute( EntityAttributes.OPTIONS_ENTITY_QUERY, "published = TRUE" )
+        )
+    );
+----
+
+When dealing with an enum type, you can also configure the `EntityAttributes.OPTIONS_ALLOWED_VALUES` with the `EnumSet`of selectable options.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+/**
+ * Limit the selectable enum HTTP status.
+ */
+entities.withType( WebCmsUrl.class )
+    .properties(
+        props -> props
+            .property( "httpStatus" )
+            .attribute(
+                EntityAttributes.OPTIONS_ALLOWED_VALUES,
+                EnumSet.of( HttpStatus.OK, HttpStatus.NOT_FOUND )
+            )
+    );
+----
+
+NOTE: Depending on the attribute you will change more of the default behaviour and will have to provide custom implementations.
+Use the most appropriate attribute for your use case.
+See the <<appendix-entity-configuration-attributes,appendix for more information on the different attributes>>.

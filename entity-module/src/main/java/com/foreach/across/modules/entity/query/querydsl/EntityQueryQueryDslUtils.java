@@ -20,12 +20,14 @@ import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryExpression;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.mysema.query.BooleanBuilder;
-import com.mysema.query.support.Expressions;
-import com.mysema.query.types.*;
-import com.mysema.query.types.path.PathBuilder;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.*;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.PathBuilder;
 import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
+
+import java.util.Arrays;
 
 /**
  * @author Arne Vandamme
@@ -72,6 +74,10 @@ public abstract class EntityQueryQueryDslUtils
 
 	private static Predicate buildConditionPredicate( EntityQueryCondition condition, PathBuilder pathBuilder ) {
 		switch ( condition.getOperand() ) {
+			case IS_NULL:
+				return pathBuilder.get( condition.getProperty() ).isNull();
+			case IS_NOT_NULL:
+				return pathBuilder.get( condition.getProperty() ).isNotNull();
 			case EQ: {
 				Path property = pathBuilder.get( condition.getProperty() );
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
@@ -82,14 +88,67 @@ public abstract class EntityQueryQueryDslUtils
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
 				return Expressions.predicate( Ops.NE, property, constant );
 			}
-			case CONTAINS: {
+			case GT: {
 				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.GT, property, constant );
+			}
+			case GE: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.GOE, property, constant );
+			}
+			case LT: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.LT, property, constant );
+			}
+			case LE: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.LOE, property, constant );
+			}
+			case CONTAINS: {
+				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
 				return Expressions.predicate( Ops.CONTAINS_VALUE, property, constant );
 			}
+			case NOT_CONTAINS: {
+				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.CONTAINS_VALUE, property, constant ).not();
+			}
+			case IS_EMPTY: {
+				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
+				return Expressions.predicate( Ops.COL_IS_EMPTY, property );
+			}
+			case IS_NOT_EMPTY: {
+				Path property = pathBuilder.getCollection( condition.getProperty(), Object.class );
+				return Expressions.predicate( Ops.COL_IS_EMPTY, property ).not();
+			}
+			case IN: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( Arrays.asList( condition.getArguments() ) );
+				return Expressions.predicate( Ops.IN, property, constant );
+			}
+			case NOT_IN: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( Arrays.asList( condition.getArguments() ) );
+				return Expressions.predicate( Ops.NOT_IN, property, constant );
+			}
+			case LIKE: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.LIKE, property, constant );
+			}
+			case NOT_LIKE: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.LIKE, property, constant ).not();
+			}
 		}
 
-		throw new IllegalArgumentException( "Unsupported operand for JPA query: " + condition.getOperand() );
+		throw new IllegalArgumentException( "Unsupported operand for QueryDsl query: " + condition.getOperand() );
 	}
 
 	private static Predicate buildQueryPredicate( EntityQuery query, PathBuilder pathBuilder ) {

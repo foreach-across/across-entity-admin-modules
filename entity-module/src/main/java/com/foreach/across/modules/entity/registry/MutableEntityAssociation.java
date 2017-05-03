@@ -15,14 +15,16 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.support.WritableAttributes;
 
 /**
  * @author Arne Vandamme
  */
 public interface MutableEntityAssociation extends EntityAssociation, WritableAttributes, ConfigurableEntityViewRegistry
 {
+	void setAssociationType( Type associationType );
+
 	/**
 	 * Should the association be hidden or explicitly shown in the administrative UI.  If the property is not set
 	 * explicitly on the association (or set to null), an association should be hidden if any of its participating
@@ -37,4 +39,6 @@ public interface MutableEntityAssociation extends EntityAssociation, WritableAtt
 	void setSourceProperty( EntityPropertyDescriptor descriptor );
 
 	void setTargetProperty( EntityPropertyDescriptor descriptor );
+
+	void setParentDeleteMode( ParentDeleteMode parentDeleteMode );
 }
