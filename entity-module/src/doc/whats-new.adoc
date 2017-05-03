@@ -1,7 +1,7 @@
 == What's new in this version?
 
 :numbered!:
-=== 2.0.0-SNAPSHOT
+=== 2.0.0.RELEASE
 This release has a lot of breaking changes compared with the previous release.
 The code has been heavily rewritten and optimized.
 The public API modified accordingly with a focus on simplification and future extensibility.
