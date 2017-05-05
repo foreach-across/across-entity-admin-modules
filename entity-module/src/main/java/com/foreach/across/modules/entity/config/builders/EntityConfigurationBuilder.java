@@ -15,10 +15,15 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.util.EntityUtils;
+import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
+import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +49,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	private static final Logger LOG = LoggerFactory.getLogger( EntityConfigurationBuilder.class );
 
 	private final AutowireCapableBeanFactory beanFactory;
+	private final ViewElementLookupRegistryImpl viewElementLookupRegistry = new ViewElementLookupRegistryImpl();
 
 	private String name;
 	private String displayName;
@@ -235,6 +241,19 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 		return this;
 	}
 
+	/**
+	 * Set the default {@link ViewElementBuilder} properties with this entity as type should use for a particular {@link ViewElementMode}.
+	 *
+	 * @param mode               to set the builder for
+	 * @param viewElementBuilder to use
+	 * @return current builder
+	 */
+	public EntityConfigurationBuilder<T> viewElementBuilder( ViewElementMode mode,
+	                                                         ViewElementBuilder viewElementBuilder ) {
+		viewElementLookupRegistry.setViewElementBuilder( mode, viewElementBuilder );
+		return this;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public EntityConfigurationBuilder<T> attribute( String name, Object value ) {
@@ -383,6 +402,20 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 		}
 		finally {
 			configurationBeingBuilt = null;
+		}
+	}
+
+	@Override
+	protected void applyAttributes( WritableAttributes attributes ) {
+		super.applyAttributes( attributes );
+
+		ViewElementLookupRegistry existingLookupRegistry = attributes.getAttribute( ViewElementLookupRegistry.class );
+
+		if ( existingLookupRegistry != null ) {
+			viewElementLookupRegistry.mergeInto( existingLookupRegistry );
+		}
+		else {
+			attributes.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry );
 		}
 	}
 

@@ -22,7 +22,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
@@ -37,11 +36,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Arne Vandamme
  */
 @Component
-@RequiredArgsConstructor
 public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLookupStrategy
 {
 	private EntityRegistry entityRegistry;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public String findElementType( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
 		boolean isForWriting
@@ -95,6 +94,10 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 			if ( ClassUtils.isAssignable( propertyType, Date.class ) ) {
 				return BootstrapUiElements.DATETIME;
+			}
+
+			if ( ViewElementMode.isValue( viewElementMode ) && entityRegistry.getEntityConfiguration( propertyType ) != null ) {
+				return ValueViewElementBuilderFactory.READONLY;
 			}
 		}
 

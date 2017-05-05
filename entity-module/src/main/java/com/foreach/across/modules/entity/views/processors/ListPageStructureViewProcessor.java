@@ -44,7 +44,7 @@ import java.util.Optional;
  * will be published containing the context of the entity that was the base for the page structure.
  *
  * @author Arne Vandamme
- * @since 2.0.0
+ * @since 2.1.0
  */
 @Component
 @Exposed

@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.views.util;
 
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 
 /**
  * Contains utility methods related to view elements and view building in an entity context.
@@ -65,5 +66,12 @@ public class EntityViewElementUtils
 		}
 
 		return expectedType.isInstance( value ) ? expectedType.cast( value ) : null;
+	}
+
+	/**
+	 * Set the current entity to the value specified.
+	 */
+	public static void setCurrentEntity( ViewElementBuilderContext builderContext, Object value ) {
+		builderContext.setAttribute( EntityViewModel.ENTITY, value );
 	}
 }

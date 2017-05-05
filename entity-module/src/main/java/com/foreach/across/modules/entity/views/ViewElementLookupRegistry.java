@@ -28,7 +28,6 @@ import java.util.Collection;
  *
  * @author Arne Vandamme
  */
-// todo: once jdk 8 - use Optional here
 public interface ViewElementLookupRegistry
 {
 	/**

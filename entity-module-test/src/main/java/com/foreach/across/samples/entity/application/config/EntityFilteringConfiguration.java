@@ -23,11 +23,13 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EntityPageStructureRenderedEvent;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -115,6 +117,14 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 
 		// Custom filters on users under Group
 		configuration.withType( Group.class )
+		             .viewElementBuilder(
+				             ViewElementMode.LIST_VALUE,
+				             viewElementBuilderContext -> {
+					             Group group = EntityViewElementUtils.currentEntity( viewElementBuilderContext, Group.class );
+
+					             return TextViewElement.text( group.getName() + " (" + group.getUsers().size() + " users)" );
+				             }
+		             )
 		             .listView( lvb -> lvb.entityQueryPredicate( "name not like 'small people%'" ) )
 		             .association(
 				             ab -> ab.name( "user.group" )
