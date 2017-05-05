@@ -34,6 +34,7 @@ public class EntityMessages implements PagingMessages
 	public static final String ACTION_DELETE = "actions.delete";
 	public static final String ACTION_VIEW = "actions.view";
 
+	public static final String PAGE_TITLE_LIST = "pageTitle.list";
 	public static final String PAGE_TITLE_CREATE = "pageTitle.create";
 	public static final String PAGE_TITLE_UPDATE = "pageTitle.update";
 	public static final String PAGE_TITLE_DELETE = "pageTitle.delete";
@@ -118,6 +119,13 @@ public class EntityMessages implements PagingMessages
 		                            args );
 	}
 
+	/**
+	 * Will r
+	 *
+	 * @param code
+	 * @param arguments
+	 * @return
+	 */
 	public String withNameSingular( String code, Object... arguments ) {
 		return messageWithFallback( code,
 		                            messageCodeResolver.getNameSingular(),
@@ -132,12 +140,18 @@ public class EntityMessages implements PagingMessages
 		                            arguments );
 	}
 
+	/**
+	 * Will return empty if message code could not be resolved.
+	 */
 	public String message( String code, Object... arguments ) {
-		return messageCodeResolver.getMessage( code, arguments( arguments ), null );
+		return messageCodeResolver.getMessage( code, arguments( arguments ), "" );
 	}
 
+	/**
+	 * Will return empty if message code could not be resolved.
+	 */
 	public String messageWithFallback( String code, Object... arguments ) {
-		return messageCodeResolver.getMessageWithFallback( code, arguments( arguments ), null );
+		return messageCodeResolver.getMessageWithFallback( code, arguments( arguments ), "" );
 	}
 
 	protected Object[] arguments( Object... candidates ) {

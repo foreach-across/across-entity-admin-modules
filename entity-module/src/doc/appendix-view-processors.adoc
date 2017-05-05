@@ -42,6 +42,10 @@ Adds both the form with textbox and fetches the items based on the form values.
 | Adds a default form at the top of a list view.
 Optionally add a create button.
 
+| {javadoc-processors}/ListPageStructureViewProcessor.html[ListPageStructureViewProcessor]
+| Generates the page structure for an entity list view.
+Add a page title and publishes the `EntityPageStructureRenderedEvent`.
+
 | {javadoc-processors}/MessagePrefixingViewProcessor.html[MessagePrefixingViewProcessor]
 | Configures custom prefixes that should be used for message code resolving.
 
@@ -57,7 +61,7 @@ Supports configuring the form grid (defaults to 2 columns), adding default actio
 
 | {javadoc-processors}/SingleEntityPageStructureViewProcessor.html[SingleEntityPageStructureViewProcessor]
 | Generates the page structure for a single entity.
-Add a page title, publish the entity specific menu and render it as tabs.
+Adds a page title, builds the entity specific menu (renders it as tabs) and publishes the `EntityPageStructureRenderedEvent`.
 
 | {javadoc-processors}/SortableTableRenderingViewProcessor.html[SortableTableRenderingViewProcessor]
 | Generates a sortable table for a list of entities.

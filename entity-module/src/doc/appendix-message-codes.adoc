@@ -64,6 +64,10 @@ Example: _EntityModule.entities.actions.save_, _UserModule.entities.group.action
 Supports <<message-code-parameters,message code parameters>>. +
 Example: _UserModule.entities.user.pageTitle.update=Updating {1}: {2}_
 
+| *EntityPrefix*.pageTitle.*pageName*.subText
+| Additional text that should be added as sub text (small) to the page header.
+Supports <<message-code-parameters,message code parameters>>.
+
 | *EntityPrefix*.feedback.*feedbackType*
 | Feedback message shown for the given feedback type. +
 Example: _UserModule.entities.user.feedback.validationErrors_
