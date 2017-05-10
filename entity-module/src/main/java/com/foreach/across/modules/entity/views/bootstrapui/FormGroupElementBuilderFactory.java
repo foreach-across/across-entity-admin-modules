@@ -155,7 +155,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 				);
 
 				if ( !StringUtils.isBlank( description ) ) {
-					element.setHelpBlock( bootstrapUi.helpBlock( description ).build( builderContext ) );
+					element.setHelpBlock( bootstrapUi.helpBlock().add( bootstrapUi.html( description ) ).build( builderContext ) );
 				}
 			}
 		}
