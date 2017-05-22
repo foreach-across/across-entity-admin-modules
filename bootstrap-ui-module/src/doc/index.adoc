@@ -1,9 +1,9 @@
 = BootstrapUiModule
 Arne Vandamme
-1.0.0.RELEASE
+1.1.0-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 1.0.0.RELEASE
+:module-version: 1.1.0-SNAPSHOT
 :module-name: BootstrapUiModule
 :module-artifact: bootstrap-ui-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
@@ -44,6 +44,9 @@ Module website: {module-url}
 
 == What's new in this version?
 :numbered!:
+=== 1.1.0-SNAPSHOT
+* added several <<NavComponentBuilder,builders for rendering menu structures>>: `DefaultNavComponentBuilder`, `BreadcrumbNavComponentBuilder` and `PanelsNavComponentBuilder`
+
 === 1.0.0.RELEASE
 Initial public release available on http://search.maven.org/[Maven central].
 
@@ -317,24 +320,34 @@ Uses the {datetime-url}[Eonasdan datetimepicker] JQuery plugin.
 == Custom component builders
 Accessible through the `BootstrapUiComponentFactory`.
 
-=== Overview
-[cols="1,2,4",options=header]
+[[NavComponentBuilder]]
+=== Rendering menus
+The `BootstrapUiComponentFactory` provides several builders for generating markup based on an Across `Menu`.
+All builders extend `NavComponentBuilder` and support some of the same options.
+
+[cols="1,1,4", options=header]
 |===
 
-|Builder
-|Creates
+|Builder class
+|Factory method
 |Description
 
-|`<<NavComponentBuilder,NavComponentBuilder>>`
-|`NodeViewElement`
-|Renders a `Menu` component to a Boostrap nav structure.
+|`DefaultNavComponentBuilder`
+|`bootstrapUiComponentFactory.nav()`
+|Converts a `Menu` component to a http://getbootstrap.com/components/#nav[Bootstrap nav].
+
+|`PanelsNavComponentBuilder`
+|`bootstrapUiComponentFactory.panels()`
+|Converts a `Menu` component to a HTML5 `nav` where every group of `Menu` items is rendered as a panel with a heading.
+
+|`BreadcrumbNavComponentBuilder`
+|`bootstrapUiComponentFactory.breadcrumb()`
+|Generates a http://getbootstrap.com/components/#breadcrumbs[breadcrumb] for the selected items of a `Menu`.
 
 |===
 
-[[NavComponentBuilder]]
-=== Rendering menus: NavComponentBuilder
-The `NavComponentBuilder` converts a `Menu` component to a http://getbootstrap.com/components/#nav[Bootstrap nav]. +
-An example:
+==== Example
+An example of generating a nav structure from a `Menu`.
 
 .Custom menu definition and rendering
 [source,java,indent=0]
@@ -382,7 +395,7 @@ model.addAttribute(
 ----
 
 ==== Supported nav styles
-The `NavComponentBuilder` supports the following styles:
+You can generate specific nav structures using the `DefaultNavComponentBuilder` by specifying a nav style.
 
 [cols="1,2,4",options=header]
 |===
@@ -413,7 +426,7 @@ The `NavComponentBuilder` supports the following styles:
 
 |===
 
-The `NavComponentBuilder` supports custom HTML attributes to be configured directly on the root *ul* element.
+All `NavComponentBuilder` implementations also support custom HTML attributes to be configured directly on the root element.
 
 ==== Default menu conversion behaviour
 When mapping a `Menu` onto a nav, the following rules are followed:
@@ -470,6 +483,21 @@ If set to `true` the group will always be rendered as a group, even though there
 |_nav:keepGroupItem_
 |Only applicable on a group and if `replaceGroupBySelectedItem` is set to `true`.
 If so and _nav:keepGroupItem_ is set to true, the replace action will be suppressed and the group label will always be rendered.
+
+*NOTE*: Attribute is only relevant for a `DefaultNavComponentBuilder`.
+
+|_nav:panelStyle_
+|Holds the CSS class that determines the panel styling.
+If set, the default _panel-default_ class will be omitted.
+Only applicable on group menu items that would result in a panel being rendered.
+
+*NOTE*: Attribute is only relevant for a `PanelsNavComponentBuilder`.
+
+|_nav:renderAsPanel_
+|If set to _false_ on an group menu item that would be rendered as a panel (a group on the top level), no panel will be rendered but a sidebar nav list will directly be rendered.
+Optionally a title will still be included if the group has one.  Non-panel lists do not support groups as items, these will be ignored.
+
+*NOTE*: Attribute is only relevant for a `PanelsNavComponentBuilder`.
 
 |_html:*_
 |Any attribute with a name starting with _html:_ will be added as html attribute to the list item.

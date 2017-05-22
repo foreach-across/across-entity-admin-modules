@@ -28,21 +28,25 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
- * Builds a Bootstrap nav list structure for a {@link Menu} instance.
- * Supports several attributes for influencing how a menu gets translated, see
- * {@link #ATTR_ICON}, {@link #ATTR_ITEM_VIEW_ELEMENT}, {@link #ATTR_LINK_VIEW_ELEMENT}
+ * Abstract base class for rendering {@link Menu} items to nav-like structures.
  *
  * @author Arne Vandamme
+ * @see DefaultNavComponentBuilder
+ * @see PanelsNavComponentBuilder
+ * @see BreadcrumbNavComponentBuilder
  * @since 1.0.0
  */
+@SuppressWarnings("unchecked")
 @RequiredArgsConstructor
-public class NavComponentBuilder extends AbstractLinkSupportingNodeViewElementBuilder<NodeViewElement, NavComponentBuilder>
+public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>> extends AbstractLinkSupportingNodeViewElementBuilder<NodeViewElement, SELF>
 {
 	private static final String PREFIX_HTML_ATTRIBUTE = "html:";
 
@@ -87,6 +91,9 @@ public class NavComponentBuilder extends AbstractLinkSupportingNodeViewElementBu
 	/**
 	 * If set to {@code true} and the item has an {@link #ATTR_ICON} attribute set, only the icon element
 	 * will be rendered if the menu item is at the top level.  This attribute will be inherited from the group.
+	 * <p/>
+	 * Note that the actual title will still be added wrapped in a span with class <strong>nav-item-title</strong>.
+	 * This supports for example collapsing navbars where the title should be visible anyway.
 	 */
 	public static final String ATTR_ICON_ONLY = "nav:iconOnly";
 
@@ -111,7 +118,8 @@ public class NavComponentBuilder extends AbstractLinkSupportingNodeViewElementBu
 
 	/**
 	 * If set to {@code true} the label for the group will never be replaced by the label of the selected item.
-	 * This attribute is only relevant if the builder is configured with {@link #replaceGroupBySelectedItem()}.
+	 * This attribute is only relevant if the builder is @ {@link DefaultNavComponentBuilder} configured with
+	 * {@link DefaultNavComponentBuilder#replaceGroupBySelectedItem()}.
 	 */
 	public static final String ATTR_KEEP_GROUP_ITEM = "nav:keepGroupItem";
 
@@ -130,8 +138,9 @@ public class NavComponentBuilder extends AbstractLinkSupportingNodeViewElementBu
 	private Menu menu;
 	private String menuName;
 
-	private String navStyle = "";
-	private boolean replaceGroupBySelectedItem = false;
+	private boolean keepGroupsAsGroup = false;
+
+	private Predicate<Menu> predicate = menu -> true;
 
 	/**
 	 * Set the name of the menu to render.  The {@link Menu} should be available as an
@@ -142,9 +151,9 @@ public class NavComponentBuilder extends AbstractLinkSupportingNodeViewElementBu
 	 * @param menuName name of the menu attribute
 	 * @return current builder
 	 */
-	public NavComponentBuilder menu( String menuName ) {
+	public SELF menu( String menuName ) {
 		this.menuName = menuName;
-		return this;
+		return (SELF) this;
 	}
 
 	/**
@@ -153,142 +162,60 @@ public class NavComponentBuilder extends AbstractLinkSupportingNodeViewElementBu
 	 * @param menu to render
 	 * @return current builder
 	 */
-	public NavComponentBuilder menu( Menu menu ) {
+	public SELF menu( Menu menu ) {
 		this.menu = menu;
-		return this;
+		return (SELF) this;
 	}
 
 	/**
-	 * Render menu with no specific nav style.
+	 * Set a predicate that menu items should match before they will be rendered.
+	 * By default all menu items will match.
 	 *
+	 * @param predicate to match
 	 * @return current builder
 	 */
-	public NavComponentBuilder simple() {
-		navStyle = "";
-		return this;
+	public SELF filter( Predicate<Menu> predicate ) {
+		Assert.notNull( predicate );
+		this.predicate = predicate;
+		return (SELF) this;
 	}
 
 	/**
-	 * Render menu as tabs.
+	 * Set to true if the behaviour for groups should be to keep them as group unless they have a {@link #ATTR_KEEP_AS_GROUP} set.
+	 * Default is <strong>not</strong> to keep them as group but to replace them by the item if there is only one.
 	 *
 	 * @return current builder
 	 */
-	public NavComponentBuilder tabs() {
-		navStyle = "nav-tabs";
-		return this;
-	}
-
-	/**
-	 * Render menu as pills.
-	 *
-	 * @return current builder
-	 */
-	public NavComponentBuilder pills() {
-		navStyle = "nav-pills";
-		return this;
-	}
-
-	/**
-	 * Render menu as stacked pills.
-	 *
-	 * @return current builder
-	 */
-	public NavComponentBuilder stacked() {
-		navStyle = "nav-pills nav-stacked";
-		return this;
-	}
-
-	/**
-	 * Render menu as navbar links.
-	 *
-	 * @return current builder
-	 */
-	public NavComponentBuilder navbar() {
-		navStyle = "navbar-nav";
-		return this;
-	}
-
-	/**
-	 * Shorthand for <code>replaceGroupBySelectedItem(true)</code>.
-	 *
-	 * @return current builder
-	 */
-	public NavComponentBuilder replaceGroupBySelectedItem() {
-		return replaceGroupBySelectedItem( true );
-	}
-
-	/**
-	 * If {@code true}, whenever a group has one of its items selected,
-	 * the link text for the group will be replaced by the text of the selected item.
-	 * Only the url and optional {@link #ATTR_ICON} attribute of the selected item will be returned.
-	 * Default behaviour is not to do this but it can be user friendly in a tab navigation.
-	 *
-	 * @param replaceGroup true to replace the group label
-	 * @return current builder
-	 */
-	public NavComponentBuilder replaceGroupBySelectedItem( boolean replaceGroup ) {
-		this.replaceGroupBySelectedItem = replaceGroup;
-		return this;
+	public SELF keepGroupsAsGroup( boolean keepGroupsAsGroup ) {
+		this.keepGroupsAsGroup = keepGroupsAsGroup;
+		return (SELF) this;
 	}
 
 	@Override
 	protected NodeViewElement createElement( ViewElementBuilderContext builderContext ) {
-		NodeViewElement list = apply( new NodeViewElement( "ul" ), builderContext );
-		list.addCssClass( "nav", navStyle );
-
-		Menu menuToRender = retrieveMenu( builderContext );
-
-		if ( menuToRender != null ) {
-			menuToRender.getItems()
-			            .stream()
-			            .filter( i -> !i.isDisabled() )
-			            .forEach( item -> addMenuItemToList( list, item, builderContext ) );
-		}
-
-		return list;
+		return buildMenu( retrieveMenu( builderContext ), builderContext );
 	}
 
-	private void addMenuItemToList( NodeViewElement list, Menu item, ViewElementBuilderContext builderContext ) {
-		Menu itemToRender = findItemToRender( item );
+	protected abstract NodeViewElement buildMenu( Menu menu, ViewElementBuilderContext builderContext );
 
-		if ( itemToRender != null ) {
-			boolean iconOnly = item.isGroup()
-					? Boolean.TRUE.equals( item.getAttribute( ATTR_ICON_ONLY ) )
-					: Boolean.TRUE.equals( itemToRender.getAttribute( ATTR_ICON_ONLY ) );
-
-			if ( iconOnly
-					|| !addViewElementIfAttributeExists( item, ATTR_ITEM_VIEW_ELEMENT, list,
-					                                     builderContext ) ) {
-				NodeViewElement li = new NodeViewElement( "li" );
-				addHtmlAttributes( li, item.getAttributes() );
-				if ( itemToRender.isSelected() ) {
-					li.addCssClass( "active" );
-				}
-
-				if ( itemToRender.isGroup() ) {
-					buildDropDownItem( li, itemToRender, iconOnly, builderContext );
-				}
-				else {
-					addItemLink( li, itemToRender, iconOnly, builderContext );
-				}
-
-				list.addChild( li );
-			}
-		}
+	protected Stream<Menu> includedItems( Menu menu ) {
+		return menu.getItems().stream().filter( this::shouldIncludeItem );
 	}
 
-	private Menu findItemToRender( Menu item ) {
+	protected boolean shouldIncludeItem( Menu item ) {
+		return !item.isDisabled() && predicate.test( item );
+	}
+
+	protected Menu findItemToRender( Menu item ) {
 		if ( item.isDisabled() ) {
 			return null;
 		}
 
 		if ( item.isGroup() ) {
-			int numberOfChildren = numberOfNonDisabledChildren( item );
+			int numberOfChildren = numberOfChildrenToInclude( item );
 
-			if ( numberOfChildren == 1
-					&& !item.hasAttribute( ATTR_ITEM_VIEW_ELEMENT )
-					&& !Boolean.TRUE.equals( item.getAttribute( ATTR_KEEP_AS_GROUP ) ) ) {
-				Menu candidate = findFirstActiveChild( item );
+			if ( numberOfChildren == 1 && !item.hasAttribute( ATTR_ITEM_VIEW_ELEMENT ) && !shouldKeepAsGroup( item ) ) {
+				Menu candidate = findFirstIncludedChild( item );
 				if ( candidate != null ) {
 					return candidate;
 				}
@@ -300,11 +227,11 @@ public class NavComponentBuilder extends AbstractLinkSupportingNodeViewElementBu
 		return item;
 	}
 
-	private Menu findFirstActiveChild( Menu menu ) {
+	protected Menu findFirstIncludedChild( Menu menu ) {
 		for ( Menu item : menu.getItems() ) {
-			if ( !item.isDisabled() ) {
+			if ( shouldIncludeItem( item ) ) {
 				if ( item.isGroup() ) {
-					return findFirstActiveChild( item );
+					return findFirstIncludedChild( item );
 				}
 				else {
 					return item;
@@ -315,7 +242,7 @@ public class NavComponentBuilder extends AbstractLinkSupportingNodeViewElementBu
 		return null;
 	}
 
-	private void addHtmlAttributes( NodeViewElement node, Map<String, Object> attributes ) {
+	protected void addHtmlAttributes( NodeViewElement node, Map<String, Object> attributes ) {
 		attributes.forEach( ( name, value ) -> {
 			if ( StringUtils.startsWith( name, PREFIX_HTML_ATTRIBUTE ) ) {
 				node.setAttribute( StringUtils.removeStart( name, PREFIX_HTML_ATTRIBUTE ), value );
@@ -323,136 +250,62 @@ public class NavComponentBuilder extends AbstractLinkSupportingNodeViewElementBu
 		} );
 	}
 
-	private void buildDropDownItem( NodeViewElement li,
-	                                Menu item,
-	                                boolean iconOnly,
-	                                ViewElementBuilderContext builderContext ) {
-		li.addCssClass( "dropdown" );
-
-		if ( !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, li, builderContext ) ) {
-			LinkViewElement link = new LinkViewElement();
-			link.setUrl( "#" );
-			link.addCssClass( "dropdown-toggle" );
-			link.setAttribute( "data-toggle", "dropdown" );
-
-			if ( item.isSelected() && replaceGroupBySelectedItem
-					&& !Boolean.TRUE.equals( item.getAttribute( ATTR_KEEP_GROUP_ITEM ) ) ) {
-				Menu selected = getFirstNonGroupSelectedItem( item );
-				link.setTitle( selected.getTitle() );
-				addIconAndText( link, selected, iconOnly, builderContext );
-			}
-			else {
-				link.setTitle( item.getTitle() );
-				addIconAndText( link, item, iconOnly, builderContext );
-			}
-
-			link.addChild( new TextViewElement( " " ) );
-
-			NodeViewElement caret = new NodeViewElement( "span" );
-			caret.addCssClass( "caret" );
-			link.addChild( caret );
-
-			li.addChild( link );
-		}
-
-		NodeViewElement children = new NodeViewElement( "ul" );
-		AtomicBoolean nextChildShouldBeSeparator = new AtomicBoolean( false );
-		children.addCssClass( "dropdown-menu" );
-		item.getItems()
-		    .stream()
-		    .filter( i -> !i.isDisabled() )
-		    .forEach( child -> addDropDownChildItem( children, child, nextChildShouldBeSeparator, builderContext ) );
-
-		li.addChild( children );
+	protected boolean shouldKeepAsGroup( Menu item ) {
+		return ( keepGroupsAsGroup && !Boolean.FALSE.equals( item.getAttribute( ATTR_KEEP_AS_GROUP ) )
+				|| Boolean.TRUE.equals( item.getAttribute( ATTR_KEEP_AS_GROUP ) ) );
 	}
 
-	private void addDropDownChildItem(
-			NodeViewElement list,
-			Menu item,
-			AtomicBoolean nextChildShouldBeSeparator,
-			ViewElementBuilderContext builderContext
-	) {
-		Menu itemToRender = findItemToRender( item );
-
-		if ( itemToRender != null ) {
-			boolean shouldInsertSeparator =
-					nextChildShouldBeSeparator.get()
-							|| ( list.hasChildren()
-							&& ( itemToRender.isGroup() || Separator.insertBefore( itemToRender ) ) );
-
-			if ( shouldInsertSeparator ) {
-				NodeViewElement divider = new NodeViewElement( "li" );
-				divider.addCssClass( "divider" );
-				divider.setAttribute( "role", "separator" );
-				list.addChild( divider );
-
-				nextChildShouldBeSeparator.set( false );
-			}
-
-			if ( itemToRender.isGroup() ) {
-				NodeViewElement header = new NodeViewElement( "li" );
-				header.addCssClass( "dropdown-header" );
-				addIconAndText( header, itemToRender, false, builderContext );
-				list.addChild( header );
-
-				itemToRender.getItems()
-				            .stream()
-				            .filter( i -> !i.isGroup() && !i.isDisabled() )
-				            .forEach( child -> addDropDownChildItem( list, child, nextChildShouldBeSeparator,
-				                                                     builderContext ) );
-
-				nextChildShouldBeSeparator.set( true );
-			}
-			else {
-				NodeViewElement li = new NodeViewElement( "li" );
-				addHtmlAttributes( li, itemToRender.getAttributes() );
-				if ( itemToRender.isSelected() ) {
-					li.addCssClass( "active" );
-				}
-				addItemLink( li, itemToRender, false, builderContext );
-				list.addChild( li );
-
-				nextChildShouldBeSeparator.set( Separator.insertAfter( itemToRender ) );
-			}
-		}
-	}
-
-	private Menu getFirstNonGroupSelectedItem( Menu menu ) {
+	protected Menu getFirstNonGroupSelectedItem( Menu menu ) {
 		Menu selected = menu.getSelectedItem();
 		return selected.isGroup() ? getFirstNonGroupSelectedItem( selected ) : selected;
 	}
 
-	private void addItemLink( NodeViewElement li,
-	                          Menu item,
-	                          boolean iconOnly,
-	                          ViewElementBuilderContext builderContext ) {
-		if ( iconOnly || !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, li, builderContext ) ) {
+	protected LinkViewElement addItemLink( NodeViewElement container,
+	                            Menu item,
+	                            boolean iconAllowed,
+	                            boolean iconOnly,
+	                            ViewElementBuilderContext builderContext ) {
+		if ( iconOnly || !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, container, builderContext ) ) {
 			LinkViewElement link = new LinkViewElement();
 			link.setUrl( buildLink( item.getUrl(), builderContext ) );
 			link.setTitle( item.getTitle() );
-			addIconAndText( link, item, iconOnly, builderContext );
+			addIconAndText( link, item, iconAllowed, iconOnly, builderContext );
 
-			li.addChild( link );
+			container.addChild( link );
+
+			return link;
 		}
+
+		return null;
 	}
 
-	private void addIconAndText( AbstractNodeViewElement node,
-	                             Menu item,
-	                             boolean iconOnly,
-	                             ViewElementBuilderContext builderContext ) {
-		boolean iconAdded = addViewElementIfAttributeExists( item, ATTR_ICON, node, builderContext );
+	protected void addIconAndText( AbstractNodeViewElement node,
+	                               Menu item,
+	                               boolean iconAllowed,
+	                               boolean iconOnly,
+	                               ViewElementBuilderContext builderContext ) {
+		boolean iconAdded = iconAllowed && addViewElementIfAttributeExists( item, ATTR_ICON, node, builderContext );
 		if ( !iconAdded || !iconOnly ) {
 			node.addChild( new TextViewElement( ( iconAdded ? " " : "" ) + item.getTitle() ) );
+		}
+
+		if ( iconAdded && iconOnly ) {
+			node.addChild( TextViewElement.text( " " ) );
+
+			NodeViewElement span = new NodeViewElement( "span" );
+			span.addCssClass( "nav-item-title" );
+			span.addChild( TextViewElement.text( item.getTitle() ) );
+			node.addChild( span );
 		}
 	}
 
 	/**
-	 * @return true if an elemnet was added
+	 * @return true if an element was added
 	 */
-	private boolean addViewElementIfAttributeExists( Menu item,
-	                                                 String attributeName,
-	                                                 ContainerViewElement container,
-	                                                 ViewElementBuilderContext builderContext ) {
+	protected boolean addViewElementIfAttributeExists( Menu item,
+	                                                   String attributeName,
+	                                                   ContainerViewElement container,
+	                                                   ViewElementBuilderContext builderContext ) {
 		Object attributeValue = item.getAttribute( attributeName );
 		if ( attributeValue instanceof ViewElement ) {
 			container.addChild( (ViewElement) attributeValue );
@@ -472,11 +325,11 @@ public class NavComponentBuilder extends AbstractLinkSupportingNodeViewElementBu
 		return false;
 	}
 
-	private int numberOfNonDisabledChildren( Menu menu ) {
+	protected int numberOfChildrenToInclude( Menu menu ) {
 		return menu.getItems()
 		           .stream()
-		           .filter( i -> !i.isDisabled() )
-		           .mapToInt( i -> i.isGroup() ? numberOfNonDisabledChildren( i ) : 1 )
+		           .filter( this::shouldIncludeItem )
+		           .mapToInt( i -> i.isGroup() ? numberOfChildrenToInclude( i ) : 1 )
 		           .sum();
 	}
 
