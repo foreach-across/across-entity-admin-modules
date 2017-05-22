@@ -18,6 +18,7 @@ package admin.application.controllers;
 
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
+import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
@@ -47,7 +48,18 @@ public class PageContentStructureController
 	public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
 		adminMenuEvent.builder()
 		              .group( "/demo", "Demo pages" ).and()
-		              .item( "/demo/page", "Page content structure", "/page" );
+		              .item( "/demo/page", "Page content structure", "/page" ).and()
+		              .group( "/demo/sub-group", "Sub group" )
+		              .attribute( AdminMenu.ATTR_BREADCRUMB, false )
+		              .and()
+		              .item( "/demo/sub-group/one", "One", "/page?pos=one" )
+		              .attribute( AdminMenu.ATTR_NAV_POSITION, "sidebar" )
+		              .and()
+		              .item( "/demo/sub-group/two", "Two", "/page?pos=two" )
+		              .attribute( AdminMenu.ATTR_NAV_POSITION, "navbar" )
+		              .and()
+		              .group( "/demo/sub-group/three", "Three" ).and()
+		              .item( "/demo/sub-group/three/four", "Four", "/page?pos=four" );
 	}
 
 	@RequestMapping("/page")

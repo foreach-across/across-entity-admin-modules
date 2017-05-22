@@ -17,10 +17,8 @@
 package com.foreach.across.modules.adminweb.resource;
 
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
-import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
 import com.foreach.across.modules.web.resource.SimpleWebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResource;
-import com.foreach.across.modules.web.resource.WebResourceRegistry;
 
 /**
  * Boostrap css, requires jquery as well.
@@ -51,7 +49,7 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 		}
 		else {
 			setWebResources(
-					new WebResource( WebResource.CSS, NAME,
+					new WebResource( WebResource.CSS, BootstrapUiWebResources.NAME,
 					                 "/static/adminweb/css/admin-web-bootstrap.css",
 					                 WebResource.VIEWS ),/*
 					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
@@ -63,12 +61,5 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 			);
 		}
 
-	}
-
-	@Override
-	public void install( WebResourceRegistry registry ) {
-		registry.addPackage( JQueryWebResources.NAME );
-
-		super.install( registry );
 	}
 }

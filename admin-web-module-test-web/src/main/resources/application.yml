@@ -1,0 +1,14 @@
+across:
+  development:
+    active: true
+
+adminWebModule:
+  root-path: /
+  login:
+    rememberMe:
+      key: remember-me
+  title: Hello application...
+
+acrossModule:
+  AdminWebModule:
+    resources: admin-web-module/src/main/resources

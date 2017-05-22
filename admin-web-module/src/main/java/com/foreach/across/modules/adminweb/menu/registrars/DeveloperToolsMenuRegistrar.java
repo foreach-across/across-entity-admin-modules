@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.adminweb.config;
+package com.foreach.across.modules.adminweb.menu.registrars;
 
 import com.foreach.across.core.annotations.ConditionalOnDevelopmentMode;
 import com.foreach.across.core.annotations.Event;
+import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
+import com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate;
+import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +41,15 @@ public final class DeveloperToolsMenuRegistrar
 
 	@Event
 	void registerDeveloperToolsItem( AdminMenuEvent menuEvent ) {
-		menuEvent.builder().group( PATH, "Developer tools" ).order( Ordered.LOWEST_PRECEDENCE );
+		menuEvent.builder()
+		         .group( PATH, "Developer tools" )
+		         .attribute(
+				         AdminMenu.ATTR_NAV_POSITION,
+				         new String[] { AdminWebLayoutTemplate.NAVBAR_RIGHT, AdminWebLayoutTemplate.SIDEBAR }
+		         )
+		         .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.WRENCH ) )
+		         .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
+		         .attribute( PanelsNavComponentBuilder.ATTR_PANEL_STYLE, "panel-warning" )
+		         .order( Ordered.LOWEST_PRECEDENCE - 1 );
 	}
 }

@@ -1,15 +1,16 @@
 = AdminWebModule
 Arne Vandamme
-2.0.0.RELEASE
+2.1.0-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 2.0.0.RELEASE
+:module-version: 2.1.0-SNAPSHOT
 :module-name: AdminWebModule
 :module-artifact: admin-web-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/AdminWebModule
 :spring-security-module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityModule
 :bootstrap-ui-module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
 
+:numbered:
 == General information
 
 === Artifact
@@ -114,6 +115,13 @@ All properties start with the *adminWebModule.* prefix.
 
 == What's new in this version?
 :numbered!:
+=== 2.1.0-SNAPSHOT
+
+* Improved styling of the default layout
+* The `AdminWebLayoutTemplate` now allows full <<customizing-nav-sections,customization of the navigational components>>
+* Bugfixes:
+** styling issues with top and left menu on mobile
+
 === 2.0.0.RELEASE
 
 * AdminWebModule now depends on {bootstrap-ui-module-url}[BootstrapUiModule]
@@ -130,6 +138,7 @@ All properties start with the *adminWebModule.* prefix.
 === 1.1.0.RELEASE
 Initial public release available on http://search.maven.org/[Maven central].
 
+:numbered:
 == About the AdminWebModule
 {module-name} provides infrastructure for building an secured administration section in your site.
 All `@AdminWebController` beans will be mapped behind the admin web root path and will have the security rules applied.
@@ -278,9 +287,45 @@ There are 3 ways to do this:
 
 NOTE: {module-name} registers the *adminWeb* link prefix that represents the admin web root path.
 
-=== Adding a page to the main nav section
+[[customizing-nav-sections]]
+=== Customizing the nav sections
+The default `AdminWebLayoutTemplate` builds a single `AdminMenu` that is supposed to hold all items that make up the UI nav structures.
+The same `AdminMenu` is used to render the different nav components on the layout:
+
+* top navigation
+** the top navigation actually consists of a left-hand (_navbar_) and right-hand (_navbar-right_) side
+* left-hand navigation
+* breadcrumb
+
+All nav structures are built using a `NavComponentBuilder` from the {bootstrap-ui-module-url}[BootstrapUiModule] and support all options like HTML attributes, icons and custom `ViewElements`.
+
+==== Default AdminMenu structure
+By default the `AdminMenu` contains 3 items:
+
+* the root item (*/*)
+* the user context item group (*/user-context*)
+** this group is rendered only on the right-hand side of the top navigation
+* the logout link as member of the user-context (*/user-context/logout*)
+
+These default items can be customized using the `AdminMenuEvent`.
+
+.Example replacing the default user-context icon by a user profile picture
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+private ViewElementBuilder myProfilePictureViewElementBuilder;
+
+@Event
+public void addUserProfilePicture( AdminMenuEvent adminMenuEvent ) {
+	adminMenuEvent.builder()
+	              .group( DefaultAdminMenuRegistrar.PATH )
+	              .attribute( NavComponentBuilder.ATTR_ICON, myProfilePictureViewElementBuilder );
+}
+----
+
+==== Adding a page to the main nav section
 If you want to add a page to the main navigation section of admin web, you can do so by simply registering it in the `AdminMenu`.
-The easiest way to do so is by intercepting the `AdminMenuEvent`.
+The easiest way to do that is by intercepting the `AdminMenuEvent`.
 
 .Example creating a custom admin web controller
 [source,java,indent=0]
@@ -296,6 +341,49 @@ public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
 
 NOTE: Relative urls added to the `AdminMenuEvent` will be considered admin web relative, and will get prefixed with the admin web root path.
 If you want to avoid this, either use absolute urls, add a specific prefix or begin them with an exclamation mark (!).
+
+==== Specifying a nav section
+By default any item will be added both to the top navigation and the left-hand navigation.
+You can limit the sections an item should be added to by adding a value for *adminMenu:position* attribute on a `Menu`.
+
+The value can be either a `String` or a `String[]`.
+
+Possible positions are:
+
+* _navbar_: render the item in the top (left) navbar
+* _navbar-right_: render the item in the top right navbar
+* _sidebar_: render the item in the left sidebar
+
+.Example adding a menu item to the top right and sidebar navigation
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@Event
+public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
+    adminMenuEvent.builder()
+                .group( "/tools", "Tools" )
+                .attribute(
+                    AdminMenu.ATTR_NAV_POSITION,
+                    new String[] { AdminWebLayoutTemplate.NAVBAR_RIGHT, AdminWebLayoutTemplate.SIDEBAR }
+                );
+}
+----
+
+==== Excluding an item from the breadcrumb
+By default all `Menu` items will be included in the breadcrumb.
+Explicitly excluding an item can be done by setting the *adminMenu:breadcrumb* attribute to `false`.
+
+.Example excluding a menu item from the breadcrumb
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@Event
+public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
+    adminMenuEvent.builder()
+                .group( "/tools", "Tools" )
+                .attribute( AdminMenu.ATTR_BREADCRUMB, false );
+}
+----
 
 [[page-content-structure]]
 === Default page structures
