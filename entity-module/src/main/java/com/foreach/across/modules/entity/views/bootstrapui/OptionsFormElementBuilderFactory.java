@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
+import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.query.EntityQuery;
@@ -100,6 +101,13 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( memberType );
 		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, memberType, optionConfiguration );
+
+		if ( optionConfiguration != null && !optionConfiguration.getEntityType().isEnum() ) {
+			options.select( SelectFormElementConfiguration.liveSearch() );
+		}
+		else {
+			options.select( SelectFormElementConfiguration.simple() );
+		}
 
 		options.add( optionGenerator );
 
