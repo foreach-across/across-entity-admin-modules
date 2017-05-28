@@ -26,40 +26,26 @@ import com.foreach.across.modules.web.resource.WebResource;
 public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 {
 	public static final String NAME = "bootstrap-adminweb";
+	public static final String TOASTR = "toastr";
 
-	public AdminBootstrapWebResourcePackage( boolean minified ) {
-		this( minified, /*"3.1.1"*/ "3.3.5" );
-	}
-
-	public AdminBootstrapWebResourcePackage( boolean minified, String version ) {
+	public AdminBootstrapWebResourcePackage() {
 		setDependencies( BootstrapUiWebResources.NAME );
-		if ( minified ) {
-			setWebResources(
-					// Admin web overrides default bootstrap
-					new WebResource( WebResource.CSS, BootstrapUiWebResources.NAME,
-					                 "/static/adminweb/css/admin-web-bootstrap.css",
-					                 WebResource.VIEWS ),/*
-					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
-					                 "/static/adminweb/js/main.js",
-					                 WebResource.VIEWS ),*/
-					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
-					                 "/static/adminweb/js/ie10-viewport-bug-workaround.js",
-					                 WebResource.VIEWS )
-			);
-		}
-		else {
-			setWebResources(
-					new WebResource( WebResource.CSS, BootstrapUiWebResources.NAME,
-					                 "/static/adminweb/css/admin-web-bootstrap.css",
-					                 WebResource.VIEWS ),/*
-					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
-					                 "/static/adminweb/js/main.js",
-					                 WebResource.VIEWS ),*/
-					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport",
-					                 "/static/adminweb/js/ie10-viewport-bug-workaround.js",
-					                 WebResource.VIEWS )
-			);
-		}
 
+		setWebResources(
+				// Admin web overrides default bootstrap
+				new WebResource( WebResource.CSS, BootstrapUiWebResources.NAME, "/static/adminweb/css/admin-web-bootstrap.css", WebResource.VIEWS ),/*
+					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
+					                 "/static/adminweb/js/main.js",
+					                 WebResource.VIEWS ),*/
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport", "/static/adminweb/js/ie10-viewport-bug-workaround.js",
+				                 WebResource.VIEWS ),
+
+				// Use toastr for notifications
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, TOASTR, "https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js",
+				                 WebResource.EXTERNAL ),
+				new WebResource( WebResource.CSS, TOASTR, "https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css",
+				                 WebResource.EXTERNAL ),
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME, "/static/adminweb/js/admin-web-module.js", WebResource.VIEWS )
+		);
 	}
 }

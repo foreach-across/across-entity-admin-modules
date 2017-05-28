@@ -104,7 +104,7 @@ public class PageContentStructureController
 
 		page.addToNav( bootstrapUiComponentFactory.nav( menu ).tabs().build( builderContext ) );
 		page.addToFeedback(
-				bootstrapUiFactory.alert().danger().dismissible().text( "Global feedback section." )
+				bootstrapUiFactory.alert().danger().dismissible().text( "Global feedback section with a lot of content that will be rendered as a toastr notification." )
 				                  .build( builderContext )
 		);
 

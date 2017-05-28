@@ -119,9 +119,7 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	@Exposed
 	public WebResourcePackageManager adminWebResourcePackageManager() {
 		WebResourcePackageManager webResourcePackageManager = new WebResourcePackageManager();
-		webResourcePackageManager.register( AdminBootstrapWebResourcePackage.NAME,
-		                                    new AdminBootstrapWebResourcePackage( !developmentMode.isActive() ) );
-
+		webResourcePackageManager.register( AdminBootstrapWebResourcePackage.NAME, new AdminBootstrapWebResourcePackage() );
 		return webResourcePackageManager;
 	}
 

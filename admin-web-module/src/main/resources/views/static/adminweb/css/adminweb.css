@@ -102,3 +102,11 @@ td[data-tbl-field='day'] {
     width: 110px;
     text-align: right;
 }
+
+.toast {
+    top: 70px;
+}
+
+.toast-message button.close {
+    display: none;
+}
