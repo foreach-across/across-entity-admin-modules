@@ -55,6 +55,16 @@ public class BootstrapUiFormElementsWebResources extends SimpleWebResourcePackag
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-autosize",
 				                 "/static/" + BootstrapUiModule.NAME + "/js/autosize.min.js",
 				                 WebResource.VIEWS ),
+
+				// Bootstrap select
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME + "-select",
+				                 "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js",
+				                 WebResource.EXTERNAL ),
+				new WebResource( WebResource.CSS, BootstrapUiModule.NAME + "-select",
+				                 "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css",
+				                 WebResource.EXTERNAL ),
+
+				// Custom javascript
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME,
 				                 "/static/" + BootstrapUiModule.NAME + "/js/bootstrapui.js",
 				                 WebResource.VIEWS )
