@@ -66,7 +66,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 
 	@Test
 	public void namedMenuRendering() {
-		builderContext.setAttribute( "zeMenu", new PathBasedMenuBuilder().item( "two", "two" ).and().build() );
+		builderContext.setAttribute( "zeMenu", new PathBasedMenuBuilder().item( "two", "#{my.code=two}" ).and().build() );
 		renderAndExpect( builder.menu( "zeMenu" ), "<ul class='nav'><li><a href='two' title='two'>two</a></li></ul>" );
 	}
 

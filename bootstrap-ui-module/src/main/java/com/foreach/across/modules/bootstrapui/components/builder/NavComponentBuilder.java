@@ -261,15 +261,16 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	}
 
 	protected LinkViewElement addItemLink( NodeViewElement container,
-	                            Menu item,
-	                            boolean iconAllowed,
-	                            boolean iconOnly,
-	                            ViewElementBuilderContext builderContext ) {
+	                                       Menu item,
+	                                       boolean iconAllowed,
+	                                       boolean iconOnly,
+	                                       ViewElementBuilderContext builderContext ) {
 		if ( iconOnly || !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, container, builderContext ) ) {
 			LinkViewElement link = new LinkViewElement();
 			link.setUrl( buildLink( item.getUrl(), builderContext ) );
-			link.setTitle( item.getTitle() );
-			addIconAndText( link, item, iconAllowed, iconOnly, builderContext );
+			String resolvedTitle = builderContext.resolveText( item.getTitle() );
+			link.setTitle( builderContext.resolveText( resolvedTitle ) );
+			addIconAndText( link, item, resolvedTitle, iconAllowed, iconOnly, builderContext );
 
 			container.addChild( link );
 
@@ -281,12 +282,13 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 
 	protected void addIconAndText( AbstractNodeViewElement node,
 	                               Menu item,
+	                               String resolvedTitle,
 	                               boolean iconAllowed,
 	                               boolean iconOnly,
 	                               ViewElementBuilderContext builderContext ) {
 		boolean iconAdded = iconAllowed && addViewElementIfAttributeExists( item, ATTR_ICON, node, builderContext );
 		if ( !iconAdded || !iconOnly ) {
-			node.addChild( new TextViewElement( ( iconAdded ? " " : "" ) + item.getTitle() ) );
+			node.addChild( new TextViewElement( ( iconAdded ? " " : "" ) + resolvedTitle ) );
 		}
 
 		if ( iconAdded && iconOnly ) {
@@ -294,7 +296,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 
 			NodeViewElement span = new NodeViewElement( "span" );
 			span.addCssClass( "nav-item-title" );
-			span.addChild( TextViewElement.text( item.getTitle() ) );
+			span.addChild( TextViewElement.text( resolvedTitle ) );
 			node.addChild( span );
 		}
 	}

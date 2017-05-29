@@ -58,7 +58,7 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 
 	@Test
 	public void simpleBreadcrumb() {
-		menu.item( "one", "one" ).and()
+		menu.item( "one", "#{code.one=one}" ).and()
 		    .item( "one/two", "two" );
 
 		Menu built = menu.build();

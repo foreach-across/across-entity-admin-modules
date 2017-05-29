@@ -164,12 +164,14 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 			if ( item.isSelected() && replaceGroupBySelectedItem
 					&& !Boolean.TRUE.equals( item.getAttribute( ATTR_KEEP_GROUP_ITEM ) ) ) {
 				Menu selected = getFirstNonGroupSelectedItem( item );
-				link.setTitle( selected.getTitle() );
-				addIconAndText( link, selected, true, iconOnly, builderContext );
+				String resolvedTitle = builderContext.resolveText( selected.getTitle() );
+				link.setTitle( resolvedTitle );
+				addIconAndText( link, selected, resolvedTitle, true, iconOnly, builderContext );
 			}
 			else {
-				link.setTitle( item.getTitle() );
-				addIconAndText( link, item, true, iconOnly, builderContext );
+				String resolvedTitle = builderContext.resolveText( item.getTitle() );
+				link.setTitle( resolvedTitle );
+				addIconAndText( link, item, resolvedTitle, true, iconOnly, builderContext );
 			}
 
 			link.addChild( new TextViewElement( " " ) );
@@ -216,7 +218,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 			if ( itemToRender.isGroup() ) {
 				NodeViewElement header = new NodeViewElement( "li" );
 				header.addCssClass( "dropdown-header" );
-				addIconAndText( header, itemToRender, true, false, builderContext );
+				addIconAndText( header, itemToRender, builderContext.resolveText( itemToRender.getTitle() ), true, false, builderContext );
 				list.addChild( header );
 
 				includedItems( itemToRender )

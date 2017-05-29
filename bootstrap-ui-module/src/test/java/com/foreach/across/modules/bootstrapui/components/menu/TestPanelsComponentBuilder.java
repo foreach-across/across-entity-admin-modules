@@ -105,7 +105,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void simpleNavWithDisabledItem() {
-		menu.item( "one", "one" ).and()
+		menu.item( "one", "#{my.code=one}" ).and()
 		    .item( "two", "two" ).disable();
 
 		renderAndExpect(

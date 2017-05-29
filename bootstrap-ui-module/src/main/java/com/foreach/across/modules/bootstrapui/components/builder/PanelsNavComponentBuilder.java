@@ -104,7 +104,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		if ( item.hasTitle() ) {
 			NodeViewElement title = new NodeViewElement( "li" );
 			title.addCssClass( "nav-title" );
-			title.addChild( TextViewElement.text( item.getTitle() ) );
+			title.addChild( TextViewElement.text( builderContext.resolveText( item.getTitle() ) ) );
 			list.addChild( title );
 		}
 
@@ -120,7 +120,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 			heading.addCssClass( "panel-heading" );
 			NodeViewElement title = new NodeViewElement( "h3" );
 			title.addCssClass( "panel-title" );
-			addIconAndText( title, item, true, false, builderContext );
+			addIconAndText( title, item, builderContext.resolveText( item.getTitle() ), true, false, builderContext );
 			heading.addChild( title );
 			panel.addChild( heading );
 		}
@@ -159,7 +159,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 					addHtmlAttributes( li, item.getAttributes() );
 
 					if ( itemToRender.isGroup() ) {
-						addSubMenu( li, itemToRender, iconOnly, builderContext, subMenuCount );
+						addSubMenu( li, itemToRender, builderContext, subMenuCount );
 					}
 					else {
 						if ( itemToRender.isSelected() ) {
@@ -175,14 +175,15 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		}
 	}
 
-	private void addSubMenu( NodeViewElement li, Menu item, boolean iconOnly, ViewElementBuilderContext builderContext, AtomicInteger subMenuCount ) {
+	private void addSubMenu( NodeViewElement li, Menu item, ViewElementBuilderContext builderContext, AtomicInteger subMenuCount ) {
 		String subMenuId = subMenuBaseId + "-" + subMenuCount.incrementAndGet();
 
 		LinkViewElement link = new LinkViewElement();
 		link.setUrl( "#" + subMenuId );
 		link.setAttribute( "data-toggle", "collapse" );
-		link.setText( item.getTitle() );
-		link.setTitle( item.getTitle() );
+		String resolvedTitle = builderContext.resolveText( item.getTitle() );
+		link.setText( resolvedTitle );
+		link.setTitle( resolvedTitle );
 		li.addChild( link );
 
 		NodeViewElement list = createList( li );

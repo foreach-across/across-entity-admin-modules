@@ -93,7 +93,7 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 
 		if ( isLastItem ) {
 			li.addCssClass( "active" );
-			addIconAndText( li, item, iconAllowed, iconOnly, builderContext );
+			addIconAndText( li, item, builderContext.resolveText( item.getTitle() ), iconAllowed, iconOnly, builderContext );
 		}
 		else {
 			if ( item.hasUrl() || !item.isGroup() ) {
@@ -109,7 +109,7 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 					}
 				}
 				else {
-					addIconAndText( li, item, iconAllowed, iconOnly, builderContext );
+					addIconAndText( li, item, builderContext.resolveText( item.getTitle() ), iconAllowed, iconOnly, builderContext );
 				}
 			}
 		}
