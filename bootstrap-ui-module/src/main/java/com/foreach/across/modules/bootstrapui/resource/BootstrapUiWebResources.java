@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.resource;
 
+import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.web.resource.SimpleWebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResource;
 
@@ -36,7 +37,12 @@ public class BootstrapUiWebResources extends SimpleWebResourcePackage
 				                 WebResource.EXTERNAL ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
 				                 "//maxcdn.bootstrapcdn.com/bootstrap/" + VERSION + "/js/bootstrap.min.js",
-				                 WebResource.EXTERNAL )
+				                 WebResource.EXTERNAL ),
+
+				// Custom javascript
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME,
+				                 "/static/" + BootstrapUiModule.NAME + "/js/bootstrapui.js",
+				                 WebResource.VIEWS )
 		);
 	}
 }

@@ -65,9 +65,9 @@ BootstrapUiFormElementsWebResources extends SimpleWebResourcePackage
 				                 "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css",
 				                 WebResource.EXTERNAL ),
 
-				// Custom javascript
+				// Form elements initializer javascript
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME,
-				                 "/static/" + BootstrapUiModule.NAME + "/js/bootstrapui.js",
+				                 "/static/" + BootstrapUiModule.NAME + "/js/bootstrapui-formelements.js",
 				                 WebResource.VIEWS )
 		);
 	}

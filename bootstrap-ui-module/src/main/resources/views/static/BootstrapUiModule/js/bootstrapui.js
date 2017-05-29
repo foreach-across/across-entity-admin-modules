@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// expose global var
+// Exposes infrastructure for form initialization logic
 var BootstrapUiModule = (function( $ ) {
     var bootstrapUiModule = {
         documentInitialized: false,
@@ -38,7 +38,7 @@ var BootstrapUiModule = (function( $ ) {
         },
 
         /**
-         * Scan for and initialize all known form element types.
+         * Run form element initializers.
          *
          * @param node optional parent to limit the scan
          */
@@ -47,73 +47,7 @@ var BootstrapUiModule = (function( $ ) {
                 this.documentInitialized = true;
             }
 
-            /**
-             * Find and activate all date time pickers.
-             */
-            $( '[data-bootstrapui-datetimepicker]', node ).each( function() {
-                var configuration = $( this ).data( 'bootstrapui-datetimepicker' );
-                var exportFormat = configuration.exportFormat;
-
-                delete configuration.exportFormat;
-
-                $( this ).datetimepicker( configuration )
-                        .on( 'dp.change', function( e ) {
-                            var exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
-                            $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
-                        } );
-            } );
-
-            /**
-             * Find an activate all autoNumeric form elements.
-             */
-            $( '[data-bootstrapui-numeric]', node ).each( function() {
-                var configuration = $( this ).data( 'bootstrapui-numeric' );
-                var name = $( this ).attr( 'name' );
-
-                var multiplier = configuration.multiplier ? configuration.multiplier : 1;
-
-                var multiplied;
-
-                if ( multiplier != 1 ) {
-                    var currentValue = $( this ).val();
-                    if ( currentValue && !isNaN( currentValue ) ) {
-                        multiplied = parseFloat( currentValue ) * multiplier;
-                    }
-                }
-
-                $( this )
-                        .autoNumeric( 'init', configuration )
-                        .bind( 'blur focusout keypress keyup', function() {
-                            if ( name.length > 1 && name[0] == '_' ) {
-                                var val = $( this ).autoNumeric( 'get' );
-
-                                if ( multiplier != 1 ) {
-                                    val = val / multiplier;
-                                }
-
-                                $( 'input[type=hidden][name="' + name.substring( 1 ) + '"]' ).val( val );
-                            }
-                        } );
-
-                if ( multiplied ) {
-                    $( this ).autoNumeric( 'set', multiplied );
-                }
-            } );
-
-            /**
-             * Find and activate all autogrow textarea elements.
-             */
-            autosize( $( '.js-autosize', node ) );
-
-            /**
-             * Find and activate all bootstrap-select elements.
-             */
-            $( '[data-bootstrapui-select]', node ).each( function() {
-                var configuration = $( this ).data( 'bootstrapui-select' );
-                $( this ).selectpicker( configuration );
-            } );
-
-            // Dispatch to additional initializers
+            // Dispatch to initializers
             for ( var i = 0; i < this.initializers.length; i++ ) {
                 this.initializers[i]( node );
             }
