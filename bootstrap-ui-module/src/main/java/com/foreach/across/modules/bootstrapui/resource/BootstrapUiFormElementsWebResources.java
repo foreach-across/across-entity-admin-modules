@@ -66,7 +66,7 @@ BootstrapUiFormElementsWebResources extends SimpleWebResourcePackage
 				                 WebResource.EXTERNAL ),
 
 				// Form elements initializer javascript
-				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME,
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
 				                 "/static/" + BootstrapUiModule.NAME + "/js/bootstrapui-formelements.js",
 				                 WebResource.VIEWS )
 		);
