@@ -10,6 +10,12 @@ Arne Vandamme
 :spring-security-module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityModule
 :bootstrap-ui-module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
 
+[copyright,verbatim]
+--
+Copyright (C) 2014-2017 +
+[small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
+--
+
 :numbered:
 == General information
 
@@ -119,6 +125,7 @@ All properties start with the *adminWebModule.* prefix.
 
 * Improved styling of the default layout
 * The `AdminWebLayoutTemplate` now allows full <<customizing-nav-sections,customization of the navigational components>>
+* Dismissible alerts are now converted to <<toastr-notifications,temporary Toastr notifications>> instead in order to take up less visual space
 * Bugfixes:
 ** styling issues with top and left menu on mobile
 
@@ -489,4 +496,27 @@ public class DevToolsController
 		return PageContentStructure.TEMPLATE;
 	}
 }
+----
+
+=== AdminWebModule javascript
+AdminWebModule registers some Javascript and exposes a single `AdminWebModule` global variable.
+This can be used to configure some of the default client-side behaviour settings.
+
+The necessary web resources are registered automatically by the `AdminWebLayoutTemplate`.
+If you have a custom template implementation, you probably have to register the `AdminWebWebResources` manually.
+
+[[toastr-notifications]]
+==== Toastr notifications
+By default AdminWebModule will convert all Bootstrap dismissible alerts into http://codeseven.github.io/toastr/[Toastr notifications].
+If you do not want to use Toastr at all, simply removing the javascript should be sufficient.
+If you only want to disable dismissible alert conversion, you can do so by updating the `AdminWebModule` javascript property:
+
+.Disabling Toastr notifications
+[source,html,indent=0]
+[subs="verbatim,attributes"]
+----
+<script type="text/javascript">
+// Disable Toastr notifications - ensure this block is executed after initial admin-web-module.js
+AdminWebModule.useToastrNotifications = false;
+</script>
 ----

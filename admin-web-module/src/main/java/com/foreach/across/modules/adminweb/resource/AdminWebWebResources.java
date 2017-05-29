@@ -23,12 +23,12 @@ import com.foreach.across.modules.web.resource.WebResource;
 /**
  * Boostrap css, requires jquery as well.
  */
-public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
+public class AdminWebWebResources extends SimpleWebResourcePackage
 {
 	public static final String NAME = "bootstrap-adminweb";
 	public static final String TOASTR = "toastr";
 
-	public AdminBootstrapWebResourcePackage() {
+	public AdminWebWebResources() {
 		setDependencies( BootstrapUiWebResources.NAME );
 
 		setWebResources(
@@ -41,9 +41,9 @@ public class AdminBootstrapWebResourcePackage extends SimpleWebResourcePackage
 				                 WebResource.VIEWS ),
 
 				// Use toastr for notifications
-				new WebResource( WebResource.JAVASCRIPT_PAGE_END, TOASTR, "https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js",
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, TOASTR, "//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js",
 				                 WebResource.EXTERNAL ),
-				new WebResource( WebResource.CSS, TOASTR, "https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css",
+				new WebResource( WebResource.CSS, TOASTR, "//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css",
 				                 WebResource.EXTERNAL ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME, "/static/adminweb/js/admin-web-module.js", WebResource.VIEWS )
 		);

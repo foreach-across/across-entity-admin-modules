@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-(function( $ ) {
-    $( document ).ready( function() {
-        if ( toastr ) {
+var AdminWebModule = (function( $ ) {
+    var adminWebModule = {
+        useToastrNotifications: true
+    };
+
+    BootstrapUiModule.registerInitializer( function( node ) {
+        if ( toastr && adminWebModule.useToastrNotifications ) {
             toastr.options = {
                 closeButton: true, positionClass: 'toast-top-center'
             };
 
             // render dismissible feedback section alerts as toastr notifications
-            $( '.alert-dismissible' ).each( function() {
+            $( '.alert-dismissible', node ).each( function() {
                 var alert = $( this );
                 alert.addClass( 'hidden' );
 
@@ -41,4 +45,6 @@
             } );
         }
     } );
+
+    return adminWebModule;
 })( jQuery );

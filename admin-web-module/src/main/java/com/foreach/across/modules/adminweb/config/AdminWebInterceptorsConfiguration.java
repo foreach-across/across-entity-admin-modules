@@ -23,7 +23,7 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.config.support.AdminWebConfigurerAdapter;
 import com.foreach.across.modules.adminweb.menu.registrars.DefaultAdminMenuRegistrar;
-import com.foreach.across.modules.adminweb.resource.AdminBootstrapWebResourcePackage;
+import com.foreach.across.modules.adminweb.resource.AdminWebWebResources;
 import com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.web.context.PrefixingPathRegistry;
@@ -119,7 +119,7 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	@Exposed
 	public WebResourcePackageManager adminWebResourcePackageManager() {
 		WebResourcePackageManager webResourcePackageManager = new WebResourcePackageManager();
-		webResourcePackageManager.register( AdminBootstrapWebResourcePackage.NAME, new AdminBootstrapWebResourcePackage() );
+		webResourcePackageManager.register( AdminWebWebResources.NAME, new AdminWebWebResources() );
 		return webResourcePackageManager;
 	}
 

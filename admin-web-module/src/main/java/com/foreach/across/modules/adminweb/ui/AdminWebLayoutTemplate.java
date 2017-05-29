@@ -18,7 +18,7 @@ package com.foreach.across.modules.adminweb.ui;
 
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
-import com.foreach.across.modules.adminweb.resource.AdminBootstrapWebResourcePackage;
+import com.foreach.across.modules.adminweb.resource.AdminWebWebResources;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
@@ -79,7 +79,7 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 
 	@Override
 	protected void registerWebResources( WebResourceRegistry registry ) {
-		registry.addPackage( AdminBootstrapWebResourcePackage.NAME );
+		registry.addPackage( AdminWebWebResources.NAME );
 		registry.addWithKey( WebResource.CSS, AdminWeb.MODULE, AdminWeb.LAYOUT_TEMPLATE_CSS, WebResource.VIEWS );
 	}
 
