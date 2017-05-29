@@ -28,7 +28,6 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
-import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EntityQueryOptionIterableBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.options.EnumOptionIterableBuilder;
@@ -64,6 +63,9 @@ import java.util.Map;
 @Component
 public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<OptionsFormElementBuilder>
 {
+	// collection of options - defaults to multi checkbox
+	public static final String OPTIONS = "entityModuleOptions";
+
 	private BootstrapUiFactory bootstrapUi;
 	private EntityRegistry entityRegistry;
 
@@ -76,7 +78,8 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 	@Override
 	public boolean supports( String viewElementType ) {
-		return StringUtils.equals( BootstrapUiElements.SELECT, viewElementType )
+		return StringUtils.equals( OPTIONS, viewElementType )
+				|| StringUtils.equals( BootstrapUiElements.SELECT, viewElementType )
 				|| StringUtils.equals( BootstrapUiElements.RADIO, viewElementType )
 				|| StringUtils.equals( BootstrapUiElements.MULTI_CHECKBOX, viewElementType );
 	}
@@ -84,8 +87,8 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Override
 	@SuppressWarnings("unchecked")
 	protected OptionsFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor,
-	                                                          ViewElementMode viewElementMode, String viewElementType ) {
-
+	                                                          ViewElementMode viewElementMode,
+	                                                          String viewElementType ) {
 		boolean isCollection = isCollection( descriptor );
 		Class<?> memberType = isCollection ? determineCollectionMemberType( descriptor ) : descriptor.getPropertyType();
 
@@ -93,6 +96,9 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			throw new RuntimeException( "Unable to determine property type specific enough for form element assembly "
 					                            + descriptor.getName() );
 		}
+
+		SelectFormElementConfiguration selectFormElementConfiguration = descriptor.getAttribute( SelectFormElementConfiguration.class );
+		String actualType = determineActualType( viewElementType, selectFormElementConfiguration, isCollection );
 
 		OptionsFormElementBuilder options
 				= bootstrapUi.options()
@@ -102,28 +108,47 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( memberType );
 		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, memberType, optionConfiguration );
 
-		if ( optionConfiguration != null && !optionConfiguration.getEntityType().isEnum() ) {
-			options.select( SelectFormElementConfiguration.liveSearch() );
+		if ( BootstrapUiElements.SELECT.equals( actualType ) ) {
+			if ( selectFormElementConfiguration == null ) {
+				selectFormElementConfiguration = createDefaultSelectFormElementConfiguration( optionConfiguration );
+			}
+			options.select( selectFormElementConfiguration );
+		}
+		else if ( BootstrapUiElements.MULTI_CHECKBOX.equals( actualType ) ) {
+			options.checkbox();
 		}
 		else {
-			options.select( SelectFormElementConfiguration.simple() );
-		}
-
-		options.add( optionGenerator );
-
-		if ( isCollection ) {
-			options.checkbox().multiple( true );
-		}
-
-		// todo, don't fetch again but pass in the type
-		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
-
-		if ( lookupRegistry != null
-				&& BootstrapUiElements.RADIO.equals( lookupRegistry.getViewElementType( viewElementMode ) ) ) {
 			options.radio();
 		}
 
+		options.multiple( isCollection )
+		       .add( optionGenerator );
+
 		return options;
+	}
+
+	private SelectFormElementConfiguration createDefaultSelectFormElementConfiguration( EntityConfiguration optionConfiguration ) {
+		if ( optionConfiguration != null && !optionConfiguration.getEntityType().isEnum() ) {
+			return SelectFormElementConfiguration.liveSearch();
+		}
+
+		return SelectFormElementConfiguration.simple();
+	}
+
+	private String determineActualType( String requestedType, SelectFormElementConfiguration selectFormElementConfiguration, boolean isCollection ) {
+		if ( OPTIONS.equals( requestedType ) || requestedType == null ) {
+			if ( selectFormElementConfiguration != null ) {
+				return BootstrapUiElements.SELECT;
+			}
+
+			if ( isCollection ) {
+				return BootstrapUiElements.MULTI_CHECKBOX;
+			}
+
+			return BootstrapUiElements.SELECT;
+		}
+
+		return requestedType;
 	}
 
 	private OptionGenerator determineOptionGenerator( EntityPropertyDescriptor descriptor, Class<?> memberType, EntityConfiguration optionConfiguration ) {

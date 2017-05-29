@@ -16,11 +16,14 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.business;
 
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 
 /**
  * Represents a link between client and group, with an extra role property.  This is the role
@@ -34,6 +37,7 @@ public class ClientGroup implements Persistable<ClientGroupId>
 	@EmbeddedId
 	private ClientGroupId id = new ClientGroupId();
 
+	@NotEmpty
 	@Column
 	private String role;
 

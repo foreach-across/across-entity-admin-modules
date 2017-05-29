@@ -122,7 +122,9 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 				             viewElementBuilderContext -> {
 					             Group group = EntityViewElementUtils.currentEntity( viewElementBuilderContext, Group.class );
 
-					             return TextViewElement.text( group.getName() + " (" + group.getUsers().size() + " users)" );
+					             return group != null
+							             ? TextViewElement.text( group.getName() + " (" + group.getUsers().size() + " users)" )
+							             : TextViewElement.text( "" );
 				             }
 		             )
 		             .listView( lvb -> lvb.entityQueryPredicate( "name not like 'small people%'" ) )

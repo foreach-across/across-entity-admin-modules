@@ -212,6 +212,16 @@ entities.withType( WebPage.class )
     );
 ----
 
+If no _viewElementType_ has been specified, a default type will be determined: a select box will be used in case of a single value, a checkbox list in case of multiple values.
+
+.Advanced select box configuration
+A select control being generated will be a https://silviomoreto.github.io/bootstrap-select/[bootstrap-select] with default configuration.
+You can customize the select box configuration by manually setting a `SelectFormElementConfiguration` attributes.
+
+See the {bootstrap-ui-module-url}[BootstrapUiModule documentation] for all configurable properties.
+
+If no _viewElementType_ has been specified, but a `SelectFormElementConfiguration` attribute is present, the resulting control will be a select box.
+
 .Configuring options that can be selected
 You can manipulate the options that can be selected in several ways by setting either `EntityConfiguration` or `EntityPropertyDescriptor` attributes.
 

@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.testmodules.springdata.config;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
@@ -46,6 +47,7 @@ public class ClientConfig implements EntityConfigurer
 		registerCountryAsEntity( entities.create().as( Country.class ) );
 
 		entities.withType( Company.class )
+		        .label( "id" )
 		        .listView( lvb -> lvb.showProperties( ".", "~address", "address.country" ) );
 
 		AllowableActionSet allowableActions = new AllowableActionSet();
@@ -56,6 +58,13 @@ public class ClientConfig implements EntityConfigurer
 
 		entities.withType( Representative.class )
 		        .properties( props -> props.property( "name" ).viewElementType( ViewElementMode.CONTROL, TextareaFormElement.ELEMENT_TYPE ) );
+
+		entities.withType( ClientGroup.class )
+		        .label( "role" );
+
+		entities.withType( Client.class )
+		        .properties( props -> props.property( "company" ).viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.RADIO ).and()
+		                                   .property( "groups" ).viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.SELECT ) );
 	}
 
 	private void registerCountryAsEntity( EntityConfigurationBuilder<Country> builder ) {

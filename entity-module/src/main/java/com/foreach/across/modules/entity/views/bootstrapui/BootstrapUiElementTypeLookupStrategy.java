@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -117,7 +118,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 				}
 
 				if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) ) {
-					return BootstrapUiElements.MULTI_CHECKBOX;
+					return OptionsFormElementBuilderFactory.OPTIONS;
 				}
 
 				if ( propertyType.isEnum() ) {
