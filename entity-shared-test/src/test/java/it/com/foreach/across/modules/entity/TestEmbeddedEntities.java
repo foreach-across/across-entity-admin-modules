@@ -20,6 +20,9 @@ import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
+import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
+import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
+import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -91,26 +94,10 @@ public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 
 		assertNotNull( fieldset );
 
-		renderAndExpect(
-				fieldset,
-				"<fieldset name='address'>" +
-						"<legend>Address</legend>" +
-						"<div class='form-group'>" +
-						"<label for='address.street' class='control-label'>Street</label>" +
-						"<input type='text' class='form-control' name='address.street' id='address.street' maxlength='100' />" +
-						"</div>" +
-						"<div class='form-group'>" +
-						"<label for='address.zipCode' class='control-label'>Zip code</label>" +
-						"<input type='text' class='numeric form-control' name='address.zipCode' id='address.zipCode' />" +
-						"</div>" +
-						"<div class=\"form-group\"><label for=\"address.country\" class=\"control-label\">Country</label><select name=\"address.country\" id=\"address.country\" class=\"form-control\"><option id=\"address.country1\" value=\"\"></option><option id=\"address.country2\" value=\"BE\">Belgium</option><option id=\"address.country3\" value=\"NL\">Netherlands</option><option id=\"address.country4\" value=\"UK\">United Kingdom</option></select></div>" +
-						"</fieldset>"
-		);
+		assertTrue( fieldset.find( "address.street", TextboxFormElement.class ).isPresent() );
+		assertTrue( fieldset.find( "address.zipCode", NumericFormElement.class ).isPresent() );
+		assertTrue( fieldset.find( "address.country", SelectFormElement.class ).isPresent() );
 	}
-
-
-	// view for: Element collection of primitive
-	// view for: Element collection of custom type
 
 	@Configuration
 	protected static class Config implements AcrossContextConfigurer
