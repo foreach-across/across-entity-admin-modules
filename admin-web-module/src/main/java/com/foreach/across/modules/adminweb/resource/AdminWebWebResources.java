@@ -27,18 +27,19 @@ public class AdminWebWebResources extends SimpleWebResourcePackage
 {
 	public static final String NAME = "bootstrap-adminweb";
 	public static final String TOASTR = "toastr";
+	public static final String FONT_AWESOME = "FontAwesome";
 
 	public AdminWebWebResources() {
 		setDependencies( BootstrapUiWebResources.NAME );
 
 		setWebResources(
 				// Admin web overrides default bootstrap
-				new WebResource( WebResource.CSS, BootstrapUiWebResources.NAME, "/static/adminweb/css/admin-web-bootstrap.css", WebResource.VIEWS ),/*
-					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-main",
-					                 "/static/adminweb/js/main.js",
-					                 WebResource.VIEWS ),*/
+				new WebResource( WebResource.CSS, NAME, "/static/adminweb/css/admin-web-bootstrap.css", WebResource.VIEWS ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-ie10-viewport", "/static/adminweb/js/ie10-viewport-bug-workaround.js",
 				                 WebResource.VIEWS ),
+
+				// Add FontAwesome icons
+				new WebResource( WebResource.CSS, FONT_AWESOME, "/static/adminweb/css/font-awesome.min.css", WebResource.VIEWS ),
 
 				// Use toastr for notifications
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, TOASTR, "//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js",

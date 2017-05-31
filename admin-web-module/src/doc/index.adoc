@@ -124,6 +124,8 @@ All properties start with the *adminWebModule.* prefix.
 === 2.1.0-SNAPSHOT
 
 * Improved styling of the default layout
+** Use of icons for Home breadcrumb, Developer tools and User context section
+** http://fontawesome.io/[FontAwesome icon set] is added to the default resources
 * The `AdminWebLayoutTemplate` now allows full <<customizing-nav-sections,customization of the navigational components>>
 * Dismissible alerts are now converted to <<toastr-notifications,temporary Toastr notifications>> instead in order to take up less visual space
 * Bugfixes:
