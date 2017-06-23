@@ -75,7 +75,7 @@ var EntityModule = (function( $ ) {
             pager.sortOnProperty( propertyToSortOn );
         } );
 
-        $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( function(e) {
+        $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( function( e ) {
             e.preventDefault();
             table.trigger( EVENT_MOVE_TO_PAGE, parseInt( $( this ).attr( 'data-tbl-page' ) ) );
         } );
@@ -107,7 +107,7 @@ var EntityModule = (function( $ ) {
                     }
                 } );
 
-        this.sortables.click( function(e) {
+        this.sortables.click( function( e ) {
             e.preventDefault();
             table.trigger( EVENT_SORT, $( this ).data( 'tbl-sort-property' ) );
         } );
@@ -145,7 +145,7 @@ var EntityModule = (function( $ ) {
 
                 var requireHiddenElement = function( name, value ) {
                     if ( value ) {
-                        $('input[name=' + name + '][type=hidden]').remove();
+                        $( 'input[name=' + name + '][type=hidden]' ).remove();
 
                         var control = $( 'input[name=' + name + ']', form );
                         if ( control.length ) {
@@ -266,7 +266,10 @@ var EntityModule = (function( $ ) {
              */
             $( '[data-dependson]', node ).each( function() {
                 var dependsonConfig = $( this ).data( 'dependson' );
-                $( this ).dependsOn( dependsonConfig, {hide: false} );
+                var options = dependsonConfig['options'] != null ? dependsonConfig['options'] : {hide: false};
+                delete dependsonConfig['options'];
+
+                $( this ).dependsOn( dependsonConfig, options );
             } );
 
             /**
