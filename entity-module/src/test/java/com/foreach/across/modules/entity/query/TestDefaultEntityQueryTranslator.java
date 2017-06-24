@@ -162,4 +162,48 @@ public class TestDefaultEntityQueryTranslator
 		translated = EntityQuery.and( new EntityQueryCondition( "translatedCities", IS_NOT_EMPTY ) );
 		assertEquals( translated, translator.translate( query ) );
 	}
+
+	@Test
+	public void conditionTranslatorIsUsedIfRegisteredOnProperty() {
+		EntityQuery raw = EntityQuery.and(
+				new EntityQueryCondition( "name", IN, "one", "two" ),
+				EntityQuery.or(
+						new EntityQueryCondition( "id", EQ, "1" ),
+						new EntityQueryCondition( "id", EQ, "2" )
+				)
+		);
+
+		EntityQueryConditionTranslator conditionTranslator = mock( EntityQueryConditionTranslator.class );
+
+		EntityPropertyDescriptor name = mock( EntityPropertyDescriptor.class );
+		when( name.getName() ).thenReturn( "translatedName" );
+		when( name.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
+
+		EntityPropertyDescriptor id = mock( EntityPropertyDescriptor.class );
+		when( id.getName() ).thenReturn( "translatedId" );
+		when( id.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( Integer.class ) );
+		when( id.getAttribute( EntityQueryConditionTranslator.class ) ).thenReturn( conditionTranslator );
+
+		when( propertyRegistry.getProperty( "name" ) ).thenReturn( name );
+		when( propertyRegistry.getProperty( "id" ) ).thenReturn( id );
+
+		when( typeConverter.convertAll( TypeDescriptor.valueOf( String.class ), true, "one", "two" ) )
+				.thenReturn( new Object[] { "three", "four" } );
+		when( typeConverter.convertAll( TypeDescriptor.valueOf( Integer.class ), true, "1" ) )
+				.thenReturn( new Object[] { 1 } );
+		when( typeConverter.convertAll( TypeDescriptor.valueOf( Integer.class ), true, "2" ) )
+				.thenReturn( new Object[] { 2 } );
+
+		when( conditionTranslator.translate( new EntityQueryCondition( "translatedId", EQ, 1 ) ) )
+				.thenReturn( new EntityQueryCondition( "translatedAgain", NEQ, 1 ) );
+		when( conditionTranslator.translate( new EntityQueryCondition( "translatedId", EQ, 2 ) ) )
+				.thenReturn( null );
+
+		EntityQuery translated = EntityQuery.and(
+				new EntityQueryCondition( "translatedName", IN, "three", "four" ),
+				EntityQuery.or( new EntityQueryCondition( "translatedAgain", NEQ, 1 ) )
+		);
+
+		assertEquals( translated, translator.translate( raw ) );
+	}
 }

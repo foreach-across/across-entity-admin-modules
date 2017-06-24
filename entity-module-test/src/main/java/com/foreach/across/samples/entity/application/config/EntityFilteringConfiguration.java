@@ -20,6 +20,7 @@ import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.query.EntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -117,6 +118,10 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 
 		// Custom filters on users under Group
 		configuration.withType( Group.class )
+		             .properties(
+				             props -> props.property( "name" )
+				                           .attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.ignoreCase() )
+		             )
 		             .viewElementBuilder(
 				             ViewElementMode.LIST_VALUE,
 				             viewElementBuilderContext -> {

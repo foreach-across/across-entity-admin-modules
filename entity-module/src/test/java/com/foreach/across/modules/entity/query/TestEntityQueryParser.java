@@ -82,7 +82,7 @@ public class TestEntityQueryParser
 		when( metadataProvider
 				      .isValidValueForPropertyAndOperator( new EQString( "boe" ), "name", EntityQueryOps.CONTAINS ) )
 				.thenReturn( true );
-		when( metadataProvider.isValidValueForPropertyAndOperator( new EQString( "meh" ), "name", EntityQueryOps.NEQ ) )
+		when( metadataProvider.isValidValueForPropertyAndOperator( new EQString( "m'eh" ), "name", EntityQueryOps.NEQ ) )
 				.thenReturn( true );
 
 		EntityQuery translated = mock( EntityQuery.class );
@@ -91,12 +91,12 @@ public class TestEntityQueryParser
 				new EntityQueryCondition( "id", EntityQueryOps.EQ, new EQValue( "123" ) ),
 				new EntityQueryCondition( "name", EntityQueryOps.CONTAINS, new EQString( "boe" ) ),
 				new EntityQueryCondition( "name", EntityQueryOps.EQ, new EQString( "bla" ) ),
-				new EntityQueryCondition( "name", EntityQueryOps.NEQ, new EQString( "meh" ) )
+				new EntityQueryCondition( "name", EntityQueryOps.NEQ, new EQString( "m'eh" ) )
 		);
 
 		when( queryTranslator.translate( rawQuery ) ).thenReturn( translated );
 
-		EntityQuery query = parser.parse( "id = 123 or name contains 'boe' or name = 'bla' or name != 'meh'" );
+		EntityQuery query = parser.parse( "id = 123 or name contains 'boe' or name = 'bla' or name != 'm\\'eh'" );
 		assertSame( translated, query );
 	}
 }

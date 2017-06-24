@@ -28,6 +28,9 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 /**
  * Default implementation of {@link EntityQueryTranslator} that uses the metadata from a {@link EntityPropertyRegistry}
  * to retrieve the property type information and an {@link EQTypeConverter} to convert raw arguments into typed values.
+ * <p/>
+ * If a {@link EntityPropertyDescriptor} has an {@link EntityQueryConditionTranslator} attribute, the processed
+ * {@link EntityQueryCondition} will be run through that translator as well.
  *
  * @author Arne Vandamme
  * @since 2.0.0
@@ -64,7 +67,10 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 
 		for ( EntityQueryExpression expression : rawQuery.getExpressions() ) {
 			if ( expression instanceof EntityQueryCondition ) {
-				translated.add( translateSingleCondition( (EntityQueryCondition) expression ) );
+				EntityQueryExpression translatedCondition = translateSingleCondition( (EntityQueryCondition) expression );
+				if ( translatedCondition != null ) {
+					translated.add( translatedCondition );
+				}
 			}
 			else if ( expression instanceof EntityQuery ) {
 				translated.add( translate( (EntityQuery) expression ) );
@@ -90,6 +96,13 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 		if ( condition.hasArguments() ) {
 			translated.setArguments( typeConverter.convertAll( expectedType, true, condition.getArguments() ) );
 		}
+
+		EntityQueryConditionTranslator conditionTranslator = descriptor.getAttribute( EntityQueryConditionTranslator.class );
+
+		if ( conditionTranslator != null ) {
+			return conditionTranslator.translate( translated );
+		}
+
 		return translated;
 	}
 

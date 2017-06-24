@@ -47,7 +47,9 @@ public enum EntityQueryOps
 	IN( ( field, args ) -> field + " in (" + joinAsStrings( args ) + ")", "in" ),
 	NOT_IN( ( field, args ) -> field + " not in (" + joinAsStrings( args ) + ")", "not in" ),
 	LIKE( ( field, args ) -> field + " like " + objectAsString( args[0] ), "like" ),
+	LIKE_IC( ( field, args ) -> field + " ilike " + objectAsString( args[0] ), "ilike" ),
 	NOT_LIKE( ( field, args ) -> field + " not like " + objectAsString( args[0] ), "not like" ),
+	NOT_LIKE_IC( ( field, args ) -> field + " not ilike " + objectAsString( args[0] ), "not ilike" ),
 	GT( ( field, args ) -> field + " > " + objectAsString( args[0] ), ">" ),
 	GE( ( field, args ) -> field + " >= " + objectAsString( args[0] ), ">=" ),
 	LT( ( field, args ) -> field + " < " + objectAsString( args[0] ), "<" ),
@@ -68,10 +70,14 @@ public enum EntityQueryOps
 		}
 
 		if ( object instanceof String ) {
-			return "'" + object + "'";
+			return "'" + escapeChars( (String) object ) + "'";
 		}
 
 		return object.toString();
+	}
+
+	private static String escapeChars( String value ) {
+		return value.replace( "\\", "\\\\" ).replace( "'", "\\'" );
 	}
 
 	private static String joinAsStrings( Object... arguments ) {

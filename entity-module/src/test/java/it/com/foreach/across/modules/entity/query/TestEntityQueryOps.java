@@ -32,4 +32,10 @@ public class TestEntityQueryOps
 		assertEquals( EntityQueryOps.IS_NULL, EntityQueryOps.forToken( "is" ) );
 		assertEquals( EntityQueryOps.IS_NOT_NULL, EntityQueryOps.forToken( "is not" ) );
 	}
+
+	@Test
+	public void characterEscaping() {
+		assertEquals( "name = 'my \\' name'", EntityQueryOps.EQ.toString( "name", "my ' name" ) );
+		assertEquals( "name != 'my \\\\ name'", EntityQueryOps.NEQ.toString( "name", "my \\ name" ) );
+	}
 }

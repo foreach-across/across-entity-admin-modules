@@ -18,8 +18,9 @@ package it.com.foreach.across.modules.entity.query.querydsl;
 
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslUtils;
-import it.com.foreach.across.modules.entity.query.jpa.TestEntityQueryJpaUtils;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
+import it.com.foreach.across.modules.entity.query.jpa.TestEntityQueryJpaUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,10 +34,20 @@ import static org.junit.Assert.assertTrue;
 public class TestEntityQueryQueryDslUtils extends TestEntityQueryJpaUtils
 {
 	@Override
-	protected void assertQueryResults( EntityQuery query, Company... companies ) {
+	protected void assertCompanyResults( EntityQuery query, Company... companies ) {
 		List<Company> found = (List<Company>) companyRepository.findAll(
-				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" ) );
+				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" )
+		);
 		assertEquals( companies.length, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( companies ) ) );
+	}
+
+	@Override
+	protected void assertRepresentativeResults( EntityQuery query, Representative... representatives ) {
+		List<Representative> found = (List<Representative>) representativeRepository.findAll(
+				EntityQueryQueryDslUtils.toPredicate( query, Representative.class, "representative" )
+		);
+		assertEquals( representatives.length, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( representatives ) ) );
 	}
 }

@@ -20,9 +20,10 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaUtils;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
 import it.com.foreach.across.modules.entity.query.AbstractQueryTest;
 import org.junit.Test;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,45 +39,45 @@ public class TestEntityQueryJpaUtils extends AbstractQueryTest
 	@Test
 	public void companyByGroup() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "group.name", EntityQueryOps.EQ, "groupOne" ) );
-		assertQueryResults( query, one, two );
+		assertCompanyResults( query, one, two );
 	}
 
 	@Test
 	public void findAll() {
 		EntityQuery query = new EntityQuery();
-		assertQueryResults( query, one, two, three );
+		assertCompanyResults( query, one, two, three );
 	}
 
 	@Test
 	public void eq() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.EQ, "two" ) );
-		assertQueryResults( query, two );
+		assertCompanyResults( query, two );
 	}
 
 	@Test
 	public void neq() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NEQ, "two" ) );
-		assertQueryResults( query, one, three );
+		assertCompanyResults( query, one, three );
 	}
 
 	@Test
 	public void numericOperands() {
-		assertQueryResults(
+		assertCompanyResults(
 				EntityQuery.and( new EntityQueryCondition( "number", EntityQueryOps.GT, 1 ) ),
 				two, three
 		);
 
-		assertQueryResults(
+		assertCompanyResults(
 				EntityQuery.and( new EntityQueryCondition( "number", EntityQueryOps.GE, 1 ) ),
 				one, two, three
 		);
 
-		assertQueryResults(
+		assertCompanyResults(
 				EntityQuery.and( new EntityQueryCondition( "number", EntityQueryOps.LT, 3 ) ),
 				one, two
 		);
 
-		assertQueryResults(
+		assertCompanyResults(
 				EntityQuery.and( new EntityQueryCondition( "number", EntityQueryOps.LE, 3 ) ),
 				one, two, three
 		);
@@ -86,39 +87,39 @@ public class TestEntityQueryJpaUtils extends AbstractQueryTest
 	public void dateOperands() {
 		EntityQuery query = EntityQuery.and(
 				new EntityQueryCondition( "created", EntityQueryOps.EQ, asDate( "2015-01-17 13:30" ) ) );
-		assertQueryResults( query, one );
+		assertCompanyResults( query, one );
 
 		query = EntityQuery.and(
 				new EntityQueryCondition( "created", EntityQueryOps.NEQ, asDate( "2015-01-17 13:30" ) ) );
-		assertQueryResults( query, two, three );
+		assertCompanyResults( query, two, three );
 
 		query = EntityQuery.and(
 				new EntityQueryCondition( "created", EntityQueryOps.GT, asDate( "2015-01-17 13:30" ) ) );
-		assertQueryResults( query, two, three );
+		assertCompanyResults( query, two, three );
 
 		query = EntityQuery.and(
 				new EntityQueryCondition( "created", EntityQueryOps.GE, asDate( "2015-01-17 13:30" ) ) );
-		assertQueryResults( query, one, two, three );
+		assertCompanyResults( query, one, two, three );
 
 		query = EntityQuery.and(
 				new EntityQueryCondition( "created", EntityQueryOps.LT, asDate( "2035-04-04 14:00" ) ) );
-		assertQueryResults( query, one, two );
+		assertCompanyResults( query, one, two );
 
 		query = EntityQuery.and(
 				new EntityQueryCondition( "created", EntityQueryOps.LE, asDate( "2035-04-04 14:00" ) ) );
-		assertQueryResults( query, one, two, three );
+		assertCompanyResults( query, one, two, three );
 	}
 
 	@Test
 	public void in() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.IN, "one", "two" ) );
-		assertQueryResults( query, one, two );
+		assertCompanyResults( query, one, two );
 	}
 
 	@Test
 	public void notIn() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_IN, "one", "two" ) );
-		assertQueryResults( query, three );
+		assertCompanyResults( query, three );
 	}
 
 	@Test
@@ -126,7 +127,7 @@ public class TestEntityQueryJpaUtils extends AbstractQueryTest
 		EntityQuery query = EntityQuery.and(
 				new EntityQueryCondition( "representatives", EntityQueryOps.CONTAINS, john )
 		);
-		assertQueryResults( query, one, two );
+		assertCompanyResults( query, one, two );
 	}
 
 	@Test
@@ -134,51 +135,83 @@ public class TestEntityQueryJpaUtils extends AbstractQueryTest
 		EntityQuery query = EntityQuery.and(
 				new EntityQueryCondition( "representatives", EntityQueryOps.NOT_CONTAINS, john )
 		);
-		assertQueryResults( query, three );
+		assertCompanyResults( query, three );
 	}
 
 	@Test
 	@SuppressWarnings("all")
 	public void like() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "on%" ) );
-		assertQueryResults( query, one );
+		assertCompanyResults( query, one );
 
 		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "%wo" ) );
-		assertQueryResults( query, two );
+		assertCompanyResults( query, two );
 
 		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "%o%" ) );
-		assertQueryResults( query, one, two );
+		assertCompanyResults( query, one, two );
+	}
+
+	@Test
+	@SuppressWarnings("all")
+	public void likeIgnoreCase() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "On%" ) );
+		assertCompanyResults( query );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE_IC, "On%" ) );
+		assertCompanyResults( query, one );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE_IC, "%WO" ) );
+		assertCompanyResults( query, two );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE_IC, "%O%" ) );
+		assertCompanyResults( query, one, two );
 	}
 
 	@Test
 	@SuppressWarnings("all")
 	public void notLike() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "on%" ) );
-		assertQueryResults( query, two, three );
+		assertCompanyResults( query, two, three );
 
 		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "%wo" ) );
-		assertQueryResults( query, one, three );
+		assertCompanyResults( query, one, three );
 
 		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "%o%" ) );
-		assertQueryResults( query, three );
+		assertCompanyResults( query, three );
+	}
+
+	@Test
+	@SuppressWarnings("all")
+	public void notLikeIgnoreCase() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "On%" ) );
+		assertCompanyResults( query, one, two, three );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE_IC, "On%" ) );
+		assertCompanyResults( query, two, three );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE_IC, "%WO" ) );
+		assertCompanyResults( query, one, three );
+
+		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE_IC, "%O%" ) );
+		assertCompanyResults( query, three );
 	}
 
 	@Test
 	public void nullValues() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "status", EntityQueryOps.IS_NULL ) );
-		assertQueryResults( query, three );
+		assertCompanyResults( query, three );
 
 		query = EntityQuery.and( new EntityQueryCondition( "status", EntityQueryOps.IS_NOT_NULL ) );
-		assertQueryResults( query, one, two );
+		assertCompanyResults( query, one, two );
 	}
 
 	@Test
 	public void emptyCollections() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "representatives", EntityQueryOps.IS_EMPTY ) );
-		assertQueryResults( query, three );
+		assertCompanyResults( query, three );
 
 		query = EntityQuery.and( new EntityQueryCondition( "representatives", EntityQueryOps.IS_NOT_EMPTY ) );
-		assertQueryResults( query, one, two );
+		assertCompanyResults( query, one, two );
 	}
 
 	@Test
@@ -187,12 +220,36 @@ public class TestEntityQueryJpaUtils extends AbstractQueryTest
 				new EntityQueryCondition( "id", EntityQueryOps.NEQ, "two" ),
 				new EntityQueryCondition( "representatives", EntityQueryOps.CONTAINS, john )
 		);
-		assertQueryResults( query, one );
+		assertCompanyResults( query, one );
 	}
 
-	protected void assertQueryResults( EntityQuery query, Company... companies ) {
+	@Test
+	public void specialCharactersLookup() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.IN, "John % Surname", "Joe ' Surname", "Peter \\ Surname" ) );
+		assertRepresentativeResults( query, john, joe, peter );
+
+		query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE_IC, "% surname" ) );
+		assertRepresentativeResults( query, john, joe, peter );
+
+		query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE, "%\\% Surname" ) );
+		assertRepresentativeResults( query, john );
+
+		query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE_IC, "%' SURNAME" ) );
+		assertRepresentativeResults( query, joe );
+
+		query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE_IC, "%\\\\ surname" ) );
+		assertRepresentativeResults( query, peter );
+	}
+
+	protected void assertCompanyResults( EntityQuery query, Company... companies ) {
 		List<Company> found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
 		assertEquals( companies.length, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( companies ) ) );
+	}
+
+	protected void assertRepresentativeResults( EntityQuery query, Representative... representatives ) {
+		List<Representative> found = representativeRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
+		assertEquals( representatives.length, found.size() );
+		assertTrue( found.containsAll( Arrays.asList( representatives ) ) );
 	}
 }
