@@ -128,10 +128,10 @@ All properties start with the *adminWebModule.* prefix.
 ** http://fontawesome.io/[FontAwesome icon set] is added to the default resources
 * The `AdminWebLayoutTemplate` now allows full <<customizing-nav-sections,customization of the navigational components>>
 * Dismissible alerts are now converted to <<toastr-notifications,temporary Toastr notifications>> instead in order to take up less visual space
-* Bugfixes:
-** styling issues with top and left menu on mobile
 * CSRF protection now uses the `CookieCsrfTokenRepository` by default and no longer forces session creation
 * the default AdminWebModule javascript has been <<adminweb-javascript,extended to expose the root path of admin section as well as static resources>>
+* Bugfixes:
+** styling issues with top and left menu on mobile
 
 === 2.0.0.RELEASE
 
