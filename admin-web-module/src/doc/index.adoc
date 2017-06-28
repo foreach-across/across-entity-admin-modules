@@ -130,6 +130,8 @@ All properties start with the *adminWebModule.* prefix.
 * Dismissible alerts are now converted to <<toastr-notifications,temporary Toastr notifications>> instead in order to take up less visual space
 * Bugfixes:
 ** styling issues with top and left menu on mobile
+* CSRF protection now uses the `CookieCsrfTokenRepository` by default and no longer forces session creation
+* the default AdminWebModule javascript has been <<adminweb-javascript,extended to expose the root path of admin section as well as static resources>>
 
 === 2.0.0.RELEASE
 
@@ -230,6 +232,10 @@ You can either change the default template or simply replace the instance regist
 
 WARNING: The login page uses the same default template as all other admin web controllers.
 This means the template should take both authorized and non-authorized authentications into account.
+
+The default template is an implementation of `AdminWebLayoutTemplate`.
+If you only want a custom view template file (eg. Thymeleaf) you can reuse the `AdminWebLayoutTemplate` class and create a new bean with custom name and template file.
+The default web resources and page structure (menus) will still be created.
 
 === Login page
 The default login page can be customized by setting the property *adminWebModule.login.template* to the Thymeleaf template you wish to render.
@@ -500,12 +506,38 @@ public class DevToolsController
 }
 ----
 
+[[adminweb-javascript]]
 === AdminWebModule javascript
-AdminWebModule registers some Javascript and exposes a single `AdminWebModule` global variable.
-This can be used to configure some of the default client-side behaviour settings.
+AdminWebModule registers some Javascript and exposes an `AdminWebModule` and `AcrossWebModule` global variable.
+These can be used to configure some of the default client-side behaviour settings.
 
 The necessary web resources are registered automatically by the `AdminWebLayoutTemplate`.
-If you have a custom template implementation, you probably have to register the `AdminWebWebResources` manually.
+If you have a custom template implementation, you probably want to register the `AdminWebWebResources` manually.
+
+==== Client-side paths
+A couple of web application paths are exposed as global javascript variables:
+
+[cols="1,4",options="header"]
+|===
+|Variable
+|Content
+
+|`AcrossWebModule.resourcePath`
+|Holds the base path for exposed web resources.
+Equivalent of `@resource:/` in a server-side link.
+
+|`AcrossWebModule.staticPath`
+|Holds the base path for the default static resources.
+Equivalent of `@static:/` in a server-side link.
+
+|`AdminWebModule.rootPath`
+|Holds the base path onto which AdminWeb UI has been mapped.
+Equivalent of `@adminWeb:/` in a server-side link.
+
+|===
+
+NOTE: The last slash (/) token will always be stripped from the exposed paths.
+Example creating a custom path: `AdminWebModule.rootPath + '/my-controller'`.
 
 [[toastr-notifications]]
 ==== Toastr notifications

@@ -41,6 +41,7 @@ import java.util.function.Predicate;
 
 /**
  * Represents the admin web layout with top and left navigation.
+ * Will also register static paths and admin web root path as javascript data values.
  *
  * @author Arne Vandamme
  * @since 2.1.0
@@ -64,12 +65,23 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 	public static final String MODEL_ATTR_SIDEBAR = "adminWebSidebarNavigation";
 	public static final String MODEL_ATTR_BREADCRUMB = "adminWebBreadcrumb";
 
-	private final BootstrapUiComponentFactory bootstrapUiComponentFactory;
+	private BootstrapUiComponentFactory bootstrapUiComponentFactory;
 
-	public AdminWebLayoutTemplate( BootstrapUiComponentFactory bootstrapUiComponentFactory ) {
-		super( AdminWeb.NAME, AdminWeb.LAYOUT_TEMPLATE );
+	/**
+	 * Create a default template.
+	 */
+	public AdminWebLayoutTemplate() {
+		this( AdminWeb.NAME, AdminWeb.LAYOUT_TEMPLATE );
+	}
 
-		this.bootstrapUiComponentFactory = bootstrapUiComponentFactory;
+	/**
+	 * Create a new {@link AdminWebLayoutTemplate} implementation with a specific name and layout template.
+	 *
+	 * @param name           of this layout
+	 * @param layoutTemplate view template to use
+	 */
+	public AdminWebLayoutTemplate( String name, String layoutTemplate ) {
+		super( name, layoutTemplate );
 	}
 
 	@Autowired
@@ -145,6 +157,11 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 								        : position.equals( value )
 				        )
 				        .orElse( defaultInclude || menu.getLevel() > 1 );
+	}
+
+	@Autowired
+	void setBootstrapUiComponentFactory( BootstrapUiComponentFactory bootstrapUiComponentFactory ) {
+		this.bootstrapUiComponentFactory = bootstrapUiComponentFactory;
 	}
 }
 

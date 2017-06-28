@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <!--
   ~ Copyright 2014 the original author or authors
   ~
@@ -20,10 +21,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title th:text="${@adminWeb.title}">Administration</title>
-
+    <script th:each="javascript :${webResourceRegistry.getResources('javascript')}" type="text/javascript"
+            th:if="${javascript.location == 'data'}" th:inline="javascript">
+        (function( Across ) {
+            Across[ [[${javascript.key}]] ] = [[${javascript.data}]];
+        })( window.Across = window.Across || {} );
+    </script>
     <script th:each="javascript : ${webResourceRegistry.getResources('javascript')}" th:src="@{${javascript.data}}"
-            th:if="${javascript.location != 'inline'}"></script>
-
+            th:if="${javascript.location != 'inline' and javascript.location != 'data'}"></script>
     <link rel="stylesheet" type="text/css" th:each="css : ${webResourceRegistry.getResources('css')}"
           th:href="@{${css.data}}"/>
 </head>

@@ -17,7 +17,6 @@
 package com.foreach.across.modules.adminweb.config;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
@@ -46,16 +45,13 @@ import javax.servlet.http.HttpServletRequest;
  * @author Arne Vandamme
  */
 @Configuration
-@ComponentScan(basePackageClasses = { AdminWebLayoutTemplate.class, DefaultAdminMenuRegistrar.class })
+@ComponentScan(basePackageClasses = { AdminWebLayoutTemplate.class, AdminWebWebResources.class, DefaultAdminMenuRegistrar.class })
 public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 {
 	private static final Logger LOG = LoggerFactory.getLogger( AdminWebModule.class );
 
 	@Autowired(required = false)
 	private WebResourceTranslator viewsWebResourceTranslator;
-
-	@Autowired
-	private AcrossDevelopmentMode developmentMode;
 
 	@Autowired
 	private AdminWebModuleSettings settings;
@@ -118,9 +114,7 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	@Bean
 	@Exposed
 	public WebResourcePackageManager adminWebResourcePackageManager() {
-		WebResourcePackageManager webResourcePackageManager = new WebResourcePackageManager();
-		webResourcePackageManager.register( AdminWebWebResources.NAME, new AdminWebWebResources() );
-		return webResourcePackageManager;
+		return new WebResourcePackageManager();
 	}
 
 	@Bean

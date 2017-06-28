@@ -16,20 +16,39 @@
 
 package com.foreach.across.modules.adminweb.resource;
 
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
+import com.foreach.across.modules.web.AcrossWebModule;
+import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.SimpleWebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourcePackageManager;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Boostrap css, requires jquery as well.
+ * Also registers some application paths as javascript data.
  */
+@Component
 public class AdminWebWebResources extends SimpleWebResourcePackage
 {
 	public static final String NAME = "bootstrap-adminweb";
 	public static final String TOASTR = "toastr";
 	public static final String FONT_AWESOME = "FontAwesome";
 
-	public AdminWebWebResources() {
+	private final WebAppPathResolver pathResolver;
+
+	public AdminWebWebResources( WebAppPathResolver pathResolver ) {
+		this.pathResolver = pathResolver;
+
 		setDependencies( BootstrapUiWebResources.NAME );
 
 		setWebResources(
@@ -48,5 +67,23 @@ public class AdminWebWebResources extends SimpleWebResourcePackage
 				                 WebResource.EXTERNAL ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME, "/static/adminweb/js/admin-web-module.js", WebResource.VIEWS )
 		);
+	}
+
+	@Autowired
+	void autoRegisterPackage( @Qualifier("adminWebResourcePackageManager") WebResourcePackageManager adminWebResourcePackageManager ) {
+		adminWebResourcePackageManager.register( AdminWebWebResources.NAME, this );
+	}
+
+	@Override
+	public void install( WebResourceRegistry registry ) {
+		super.install( registry );
+
+		Map<String, String> acrossWebPathVariables = new HashMap<>();
+		acrossWebPathVariables.put( "resourcePath", StringUtils.removeEnd( pathResolver.path( "@resource:/" ), "/" ) );
+		acrossWebPathVariables.put( "staticPath", StringUtils.removeEnd( pathResolver.path( "@static:/" ), "/" ) );
+		registry.addWithKey( WebResource.JAVASCRIPT, AcrossWebModule.NAME, acrossWebPathVariables, WebResource.DATA );
+
+		Map<String, String> adminWebPathVariables = Collections.singletonMap( "rootPath", StringUtils.removeEnd( pathResolver.path( "@adminWeb:/" ), "/" ) );
+		registry.addWithKey( WebResource.JAVASCRIPT, AdminWebModule.NAME, adminWebPathVariables, WebResource.DATA );
 	}
 }

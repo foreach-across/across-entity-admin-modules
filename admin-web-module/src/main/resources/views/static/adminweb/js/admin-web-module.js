@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+var AcrossWebModule = Across.AcrossWebModule;
+
 var AdminWebModule = (function( $ ) {
-    var adminWebModule = {
-        useToastrNotifications: true
-    };
+    var adminWebModule = Across.AdminWebModule;
+    adminWebModule.useToastrNotifications = true;
 
     BootstrapUiModule.registerInitializer( function( node ) {
         if ( toastr && adminWebModule.useToastrNotifications ) {
