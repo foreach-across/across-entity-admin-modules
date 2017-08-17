@@ -81,10 +81,10 @@
 
   - a breakpoint or a HTML class (IE, modernizr class)
 */
-@import url(http://fonts.googleapis.com/css?family=Oxygen:400,300,700);
+@import url(https://fonts.googleapis.com/css?family=Oxygen:400,300,700);
 /*------------------------------------*    FONTS.SCSS
 \*------------------------------------*/
-@import url(http://fonts.googleapis.com/css?family=Oswald);
+@import url(https://fonts.googleapis.com/css?family=Oswald);
 @font-face {
   font-family: 'Glyphicons Halflings';
   src: url("../fonts/glyphicons-halflings-regular.eot");
