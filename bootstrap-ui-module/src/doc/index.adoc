@@ -1,9 +1,9 @@
 = BootstrapUiModule
 Arne Vandamme
-1.1.0-SNAPSHOT
+1.1.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 1.1.0-SNAPSHOT
+:module-version: 1.1.0.RELEASE
 :module-name: BootstrapUiModule
 :module-artifact: bootstrap-ui-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
@@ -46,7 +46,7 @@ Module website: {module-url}
 
 == What's new in this version?
 :numbered!:
-=== 1.1.0-SNAPSHOT
+=== 1.1.0.RELEASE
 * added several <<NavComponentBuilder,builders for rendering menu structures>>: `DefaultNavComponentBuilder`, `BreadcrumbNavComponentBuilder` and `PanelsNavComponentBuilder`
 ** all nav related builders now also support message code snippets in `Menu` titles: putting for example _#{my.code=Item title}_ as value will be replaced by the Locale specific message for _my.code_ or by _Item title_ if the message code can't be resolved
 * added support for <<bootstrap-select,bootstrap-select dropdown lists>> on `OptionsFormElementBuilder` and `SelectFormElement`
