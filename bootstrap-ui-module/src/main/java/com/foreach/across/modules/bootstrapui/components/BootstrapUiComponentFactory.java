@@ -16,7 +16,9 @@
 
 package com.foreach.across.modules.bootstrapui.components;
 
-import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.components.builder.BreadcrumbNavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 
 /**
@@ -33,5 +35,21 @@ public interface BootstrapUiComponentFactory
 	 * @param menu to render
 	 * @return builder
 	 */
-	NavComponentBuilder nav( Menu menu );
+	DefaultNavComponentBuilder nav( Menu menu );
+
+	/**
+	 * Returns a builder for rendering a {@link Menu} to a (sidebar) list of panels.
+	 *
+	 * @param menu to render
+	 * @return builder
+	 */
+	PanelsNavComponentBuilder panels( Menu menu );
+
+	/**
+	 * Returns a builder for rendering the selected path to a Bootstrap breadcrumb list.
+	 *
+	 * @param menu to render
+	 * @return builder
+	 */
+	BreadcrumbNavComponentBuilder breadcrumb( Menu menu );
 }

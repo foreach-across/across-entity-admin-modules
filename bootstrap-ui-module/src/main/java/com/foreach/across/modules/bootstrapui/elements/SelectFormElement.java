@@ -19,18 +19,41 @@ import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 
 /**
- * Represents a HTML select element.
+ * Represents a HTML select element.  Supports both a default HTML select, and the more advanced bootstrap-select.
+ * The latter is activated by setting a {@link SelectFormElementConfiguration} using {@link #setConfiguration(SelectFormElementConfiguration)}.
  *
  * @author Arne Vandamme
+ * @see SelectFormElementConfiguration
  */
 public class SelectFormElement extends FormControlElementSupport
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.SELECT;
+	public static final String ATTRIBUTE_DATA_SELECT = "data-bootstrapui-select";
+
 	private boolean multiple;
 
 	public SelectFormElement() {
 		super( ELEMENT_TYPE );
 		setTagName( "select" );
+	}
+
+	/**
+	 * Get the attached bootstrap-select configuration if there is any.
+	 *
+	 * @return configuration or {@code null} in case of a simple HTML select
+	 */
+	public SelectFormElementConfiguration getConfiguration() {
+		return getAttribute( ATTRIBUTE_DATA_SELECT, SelectFormElementConfiguration.class );
+	}
+
+	/**
+	 * Set a bootstrap-select configuration.  If a non-null value is provided, the select
+	 * will be converted into a bootstrap-select if the client-side resources have been registered.
+	 *
+	 * @param configuration to use
+	 */
+	public void setConfiguration( SelectFormElementConfiguration configuration ) {
+		setAttribute( ATTRIBUTE_DATA_SELECT, configuration );
 	}
 
 	public boolean isMultiple() {

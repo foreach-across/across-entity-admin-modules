@@ -19,6 +19,7 @@ package com.foreach.across.samples.bootstrapui.application.controllers;
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.annotations.EventName;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
+import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
@@ -197,7 +198,7 @@ public class BootstrapMenuController
 	}
 
 	private NavComponentBuilder menuComponentBuilder( String type, Menu menu ) {
-		NavComponentBuilder menuBuilder = bootstrapUiComponentFactory.nav( menu );
+		DefaultNavComponentBuilder menuBuilder = bootstrapUiComponentFactory.nav( menu );
 
 		switch ( type ) {
 			case "navbar":

@@ -14,73 +14,49 @@
  * limitations under the License.
  */
 
-var BootstrapUiModule = {
-    /**
-     * Scan for and initialize all known form element types.
-     *
-     * @param node optional parent to limit the scan
-     */
-    initializeFormElements: function ( node ) {
-        /**
-         * Find and activate all date time pickers.
-         */
-        $( '[data-bootstrapui-datetimepicker]', node ).each( function () {
-            var configuration = $( this ).data( 'bootstrapui-datetimepicker' );
-            var exportFormat = configuration.exportFormat;
-
-            delete configuration.exportFormat;
-
-            $( this ).datetimepicker( configuration )
-                    .on( 'dp.change', function ( e ) {
-                             var exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
-                             $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
-                         } );
-        } );
+// Exposes infrastructure for form initialization logic
+var BootstrapUiModule = (function( $ ) {
+    var bootstrapUiModule = {
+        documentInitialized: false,
+        initializers: [],
 
         /**
-         * Find an activate all autoNumeric form elements.
+         * Register an additional initializer that should execute when running initializeFormElements.
+         * An initializer is a callback function that will optionally receive the container node as argument.
+         *
+         * @param callback function to execute
+         * @param callIfAlreadyInitialized should the initializer execute immediately if document has been initialized already - defaults to true
          */
-        $( '[data-bootstrapui-numeric]', node ).each( function () {
-            var configuration = $( this ).data( 'bootstrapui-numeric' );
-            var name = $( this ).attr( 'name' );
+        registerInitializer: function( callback, callIfAlreadyInitialized ) {
+            this.initializers.push( callback );
 
-            var multiplier = configuration.multiplier ? configuration.multiplier : 1;
+            var shouldExecute = (callIfAlreadyInitialized === undefined || true == callIfAlreadyInitialized) && this.documentInitialized;
 
-            var multiplied;
+            if ( shouldExecute ) {
+                callback();
+            }
+        },
 
-            if ( multiplier != 1 ) {
-                var currentValue = $( this ).val();
-                if ( currentValue && !isNaN( currentValue ) ) {
-                    multiplied = parseFloat( currentValue ) * multiplier;
-                }
+        /**
+         * Run form element initializers.
+         *
+         * @param node optional parent to limit the scan
+         */
+        initializeFormElements: function( node ) {
+            if ( node === undefined && !this.documentInitialized ) {
+                this.documentInitialized = true;
             }
 
-            $( this )
-                    .autoNumeric( 'init', configuration )
-                    .bind( 'blur focusout keypress keyup', function () {
-                               if ( name.length > 1 && name[0] == '_' ) {
-                                   var val = $( this ).autoNumeric( 'get' );
-
-                                   if ( multiplier != 1 ) {
-                                       val = val / multiplier;
-                                   }
-
-                                   $( 'input[type=hidden][name="' + name.substring( 1 ) + '"]' ).val( val );
-                               }
-                           } );
-
-            if ( multiplied ) {
-                $( this ).autoNumeric( 'set', multiplied );
+            // Dispatch to initializers
+            for ( var i = 0; i < this.initializers.length; i++ ) {
+                this.initializers[i]( node );
             }
-        } );
+        }
+    };
 
-        /**
-         * Find and activate all autogrow textarea elements.
-         */
-        autosize( $('.js-autosize', node ) );
-    }
-};
+    $( document ).ready( function() {
+        bootstrapUiModule.initializeFormElements();
+    } );
 
-$( document ).ready( function () {
-    BootstrapUiModule.initializeFormElements();
-} );
+    return bootstrapUiModule;
+}( jQuery ));
