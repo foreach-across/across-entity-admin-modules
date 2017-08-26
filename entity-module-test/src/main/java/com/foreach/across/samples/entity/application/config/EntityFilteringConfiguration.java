@@ -16,21 +16,27 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.query.EntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
+import com.foreach.across.modules.entity.views.processors.support.EntityPageStructureRenderedEvent;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.business.Partner;
 import com.foreach.across.samples.entity.application.business.User;
@@ -65,6 +71,19 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
 @Configuration
 public class EntityFilteringConfiguration implements EntityConfigurer
 {
+	@Event
+	void modifyGroupPageTitle( EntityPageStructureRenderedEvent<Group> page ) {
+		if ( page.isListView() ) {
+			page.getPageContentStructure().setPageTitle( "List view" );
+		}
+		else if ( page.holdsEntity() ) {
+			page.getPageContentStructure().addToPageTitleSubText( TextViewElement.text( "[update]" ) );
+		}
+		else {
+			page.getPageContentStructure().addToPageTitleSubText( TextViewElement.text( "[create]" ) );
+		}
+	}
+
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.withType( User.class )
@@ -99,6 +118,20 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 
 		// Custom filters on users under Group
 		configuration.withType( Group.class )
+		             .properties(
+				             props -> props.property( "name" )
+				                           .attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.ignoreCase() )
+		             )
+		             .viewElementBuilder(
+				             ViewElementMode.LIST_VALUE,
+				             viewElementBuilderContext -> {
+					             Group group = EntityViewElementUtils.currentEntity( viewElementBuilderContext, Group.class );
+
+					             return group != null
+							             ? TextViewElement.text( group.getName() + " (" + group.getUsers().size() + " users)" )
+							             : TextViewElement.text( "" );
+				             }
+		             )
 		             .listView( lvb -> lvb.entityQueryPredicate( "name not like 'small people%'" ) )
 		             .association(
 				             ab -> ab.name( "user.group" )

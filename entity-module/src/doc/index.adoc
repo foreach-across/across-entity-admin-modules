@@ -1,15 +1,16 @@
 = EntityModule
 Arne Vandamme
-2.0.0.RELEASE
+2.1.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 2.0.0.RELEASE
+:module-version: 2.1.0.RELEASE
 :module-name: EntityModule
 :module-artifact: entity-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/EntityModule
 :bitbucket-url: https://bitbucket.org/beforeach/entity-ui-module/src/5bcf5de44d5fb03632dfee13d9915db65bb5d268/entity-module/src/main
 :bootstrap-ui-module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
-:javadoc: http://across.foreach.be/docs/across-standard-modules/EntityModule/2.0.0.RELEASE/javadoc
+:admin-web-module-docs: http://across.foreach.be/docs/across-standard-modules/AdminWebModule/2.0.0.RELEASE/reference/
+:javadoc: http://across.foreach.be/docs/across-standard-modules/EntityModule/2.1.0.RELEASE/javadoc
 :javadoc-processors: {javadoc}/com/foreach/across/modules/entity/views/processors
 
 [copyright,verbatim]

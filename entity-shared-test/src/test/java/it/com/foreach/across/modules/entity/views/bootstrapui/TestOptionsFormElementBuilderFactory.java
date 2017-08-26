@@ -20,7 +20,6 @@ import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
-import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.options.FixedOptionIterableBuilder;
@@ -72,11 +71,8 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	@Test
 	public void controlNamePrefixingRadio() {
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
-		ViewElementLookupRegistry lookupRegistry = mock( ViewElementLookupRegistry.class );
-		when( lookupRegistry.getViewElementType( ViewElementMode.CONTROL ) ).thenReturn( RadioFormElement.ELEMENT_TYPE );
-		when( properties.get( "enumNoValidator" ).getAttribute( ViewElementLookupRegistry.class ) ).thenReturn( lookupRegistry );
 
-		ContainerViewElement container = assemble( "enumNoValidator", ViewElementMode.CONTROL );
+		ContainerViewElement container = assemble( "enumNoValidator", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
 
 		assertEquals(
 				2,
@@ -98,6 +94,41 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 				         .filter( e -> e.getControlName().startsWith( "entity." ) && e.getHtmlId().startsWith( "entity." ) )
 				         .count()
 		);
+	}
+
+	@Test
+	public void selectInsteadOfCheckboxDueToSelectFormElementConfiguration() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+
+		SelectFormElementConfiguration configuration = SelectFormElementConfiguration.liveSearch().setActionsBox( true );
+		when( properties.get( "enumMultiple" ).getAttribute( SelectFormElementConfiguration.class ) )
+				.thenReturn( configuration );
+
+		SelectFormElement select = assemble( "enumMultiple", ViewElementMode.CONTROL );
+		assertTrue( select.isMultiple() );
+		assertNotNull( select.getConfiguration() );
+		assertEquals( true, select.getConfiguration().get( "actionsBox" ) );
+	}
+
+	@Test
+	public void selectSpecifiedAsType() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+
+		SelectFormElement select = assemble( "enumMultiple", ViewElementMode.CONTROL, BootstrapUiElements.SELECT );
+		assertTrue( select.isMultiple() );
+		assertNotNull( select.getConfiguration() );
+	}
+
+	@Test
+	public void fixedTypeTakesPrecedenceOverSelectFormElementConfiguration() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+
+		SelectFormElementConfiguration configuration = SelectFormElementConfiguration.liveSearch().setActionsBox( true );
+		when( properties.get( "enumMultiple" ).getAttribute( SelectFormElementConfiguration.class ) )
+				.thenReturn( configuration );
+
+		ContainerViewElement container = assemble( "enumMultiple", ViewElementMode.CONTROL, BootstrapUiElements.MULTI_CHECKBOX );
+		assertFalse( container instanceof SelectFormElement );
 	}
 
 	@Test

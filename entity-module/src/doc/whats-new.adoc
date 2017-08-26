@@ -1,6 +1,15 @@
 == What's new in this version?
 
 :numbered!:
+=== 2.1.0.RELEASE
+* improve the ability to <<customize-page-layout,customize page titles and layouts>>
+** all entity views now set a page (sub) title if a matching message code returns a non-empty string
+*** there is a default title for all views except the list view
+** list views now also publish an `EntityPageStructureRenderedEvent`
+* select option controls now support `SelectFormElementConfiguration` to render more <<customizing-selectable-options,advanced bootstrap-select controls>>
+* added _ILIKE_ operator to the <<entity-query-language,EntityQuery Language>> for case insensitive matching on String columns
+** an `EntityQueryConditionTranslator` attribute can be registered on entity properties to ensure regular equal and like lookups are always converted to the case insensitive equivalent
+
 === 2.0.0.RELEASE
 This release has a lot of breaking changes compared with the previous release.
 The code has been heavily rewritten and optimized.

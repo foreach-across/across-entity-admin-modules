@@ -21,7 +21,7 @@
 	<parent>
 		<artifactId>entity-module-project</artifactId>
 		<groupId>com.foreach.across.modules</groupId>
-		<version>2.0.0.RELEASE</version>
+		<version>2.1.0.RELEASE</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>entity-module</artifactId>
-			<version>2.0.0.RELEASE</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>

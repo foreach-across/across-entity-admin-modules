@@ -103,6 +103,7 @@ public class TestOneToManyAssociations
 
 			clientGroup = new ClientGroup();
 			clientGroup.setId( clientGroupId );
+			clientGroup.setRole( "client-group-role" );
 
 			clientGroupRepository.save( clientGroup );
 

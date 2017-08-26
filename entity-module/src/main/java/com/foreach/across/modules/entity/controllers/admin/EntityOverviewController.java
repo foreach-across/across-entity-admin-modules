@@ -23,6 +23,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -64,10 +65,13 @@ public class EntityOverviewController
 
 			entities.forEach( entityConfiguration -> {
 				EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
+				EntityMessageCodeResolver codeResolver = entityConfiguration.getEntityMessageCodeResolver();
 
 				body.add(
 						bootstrapUiFactory.paragraph().add(
-								bootstrapUiFactory.link().text( entityConfiguration.getDisplayName() ).url( linkBuilder.overview() )
+								bootstrapUiFactory.link()
+								                  .text( codeResolver.getNameSingular() )
+								                  .url( linkBuilder.overview() )
 						)
 				);
 			} );

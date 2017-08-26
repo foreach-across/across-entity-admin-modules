@@ -21,6 +21,7 @@ import org.springframework.data.domain.Persistable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 /**
  * @author Arne Vandamme
@@ -33,6 +34,9 @@ public class Car implements Persistable<String>
 
 	@ManyToOne
 	private Company company;
+
+	@Transient
+	private boolean isNew;
 
 	@Override
 	public String getId() {
@@ -53,6 +57,10 @@ public class Car implements Persistable<String>
 
 	@Override
 	public boolean isNew() {
-		return false;
+		return isNew;
+	}
+
+	public void setNew( boolean isNew ) {
+		this.isNew = isNew;
 	}
 }

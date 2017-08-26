@@ -65,6 +65,7 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 			       .viewElementMode( ViewElementMode.LIST_VALUE )
 			       .pageSize( 50 )
 			       .showProperties( EntityPropertySelector.READABLE )
+			       .viewProcessor( beanFactory.getBean( ListPageStructureViewProcessor.class ) )
 			       .viewProcessor( beanFactory.getBean( DefaultValidationViewProcessor.class ), 0 )
 			       .viewProcessor( beanFactory.getBean( GlobalPageFeedbackViewProcessor.class ) );
 
@@ -111,6 +112,9 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 	protected BiConsumer<EntityAssociation, EntityListViewFactoryBuilder> createAssociationInitializer() {
 		return ( entityAssociation, builder ) -> {
 			builder.messagePrefix( "views[" + templateName() + "]" );
+
+			// associations are rendered as single entity
+			builder.removeViewProcessor( ListPageStructureViewProcessor.class.getName() );
 
 			SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
 			pageStructureViewProcessor.setAddEntityMenu( true );

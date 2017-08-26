@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.handlers;
 
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
+import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
@@ -50,7 +51,7 @@ public class MenuEventsHandler
 	@Event
 	public void adminMenu( AdminMenuEvent adminMenuEvent ) {
 		PathBasedMenuBuilder builder = adminMenuEvent.builder();
-		builder.item( "/entities", "Entity management" );
+		builder.item( "/entities", "Entity management", "@adminWeb:/entities" ).group( true );
 
 		for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions();
@@ -73,7 +74,7 @@ public class MenuEventsHandler
 
 					if ( moduleInfo != null ) {
 						group = "/entities/" + moduleInfo.getName();
-						builder.group( group, moduleInfo.getName() ).disable();
+						builder.group( group, moduleInfo.getName() ).attribute( AdminMenu.ATTR_BREADCRUMB, false );
 					}
 
 					builder.item( group + "/" + entityConfiguration.getName(),

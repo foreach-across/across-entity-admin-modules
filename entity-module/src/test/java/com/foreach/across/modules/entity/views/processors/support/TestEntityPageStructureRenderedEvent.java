@@ -61,7 +61,7 @@ public class TestEntityPageStructureRenderedEvent
 	public void setUp() throws Exception {
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 
-		event = new EntityPageStructureRenderedEvent<>( viewRequest, view, viewContext, builderContext );
+		event = new EntityPageStructureRenderedEvent<>( false, viewRequest, view, viewContext, builderContext );
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class TestEntityPageStructureRenderedEvent
 	@Test
 	public void typedEntityValue() {
 		when( viewContext.getEntity( Object.class ) ).thenReturn( "stringValue" );
-		EntityPageStructureRenderedEvent<String> newEvent = new EntityPageStructureRenderedEvent<>( viewRequest, view, viewContext, builderContext );
+		EntityPageStructureRenderedEvent<String> newEvent = new EntityPageStructureRenderedEvent<>( false, viewRequest, view, viewContext, builderContext );
 		String actual = newEvent.getEntity();
 		assertEquals( "stringValue", actual );
 	}

@@ -19,12 +19,13 @@ package com.foreach.across.modules.entity.testmodules.springdata.repositories2;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 /**
  * Uses a separate transaction manager.
  *
  * @author Andy Somers
  */
-public interface RepresentativeRepository extends JpaRepository<Representative, String>, JpaSpecificationExecutor<Representative>
+public interface RepresentativeRepository extends JpaRepository<Representative, String>, JpaSpecificationExecutor<Representative>, QueryDslPredicateExecutor<Representative>
 {
 }

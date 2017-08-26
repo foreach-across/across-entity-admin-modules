@@ -135,7 +135,7 @@ public interface EntityConfiguration<T> extends ReadableAttributes, EntityViewRe
 
 	/**
 	 * @param entity for which to fetch the allowed actions
-	 * @return the set of actions allowes on the specific entity
+	 * @return the set of actions allowed on the specific entity
 	 */
 	AllowableActions getAllowableActions( T entity );
 }

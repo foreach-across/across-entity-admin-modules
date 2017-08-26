@@ -79,7 +79,7 @@ public class AssociatedEntityQueryExecutor<T>
 		return items;
 	}
 
-	private EntityQueryCondition buildEqualsOrContainsCondition( Object value ) {
+	protected EntityQueryCondition buildEqualsOrContainsCondition( Object value ) {
 		return new EntityQueryCondition(
 				property.getName(),
 				property.getPropertyTypeDescriptor().isCollection() ? EntityQueryOps.CONTAINS : EntityQueryOps.EQ,

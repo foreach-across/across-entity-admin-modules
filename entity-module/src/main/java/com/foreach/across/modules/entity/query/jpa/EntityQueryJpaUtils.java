@@ -110,11 +110,19 @@ public abstract class EntityQueryJpaUtils
 				return cb.not( resolveProperty( root, condition.getProperty() ).in( condition.getArguments() ) );
 			case LIKE: {
 				Expression<String> p = (Expression<String>) resolveProperty( root, condition.getProperty() );
-				return cb.like( p, Objects.toString( condition.getFirstArgument() ) );
+				return cb.like( p, Objects.toString( condition.getFirstArgument() ), '\\' );
+			}
+			case LIKE_IC: {
+				Expression<String> p = (Expression<String>) resolveProperty( root, condition.getProperty() );
+				return cb.like( cb.lower( p ), StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ), '\\' );
 			}
 			case NOT_LIKE: {
 				Expression<String> p = (Expression<String>) resolveProperty( root, condition.getProperty() );
-				return cb.notLike( p, Objects.toString( condition.getFirstArgument() ) );
+				return cb.notLike( p, Objects.toString( condition.getFirstArgument() ), '\\' );
+			}
+			case NOT_LIKE_IC: {
+				Expression<String> p = (Expression<String>) resolveProperty( root, condition.getProperty() );
+				return cb.notLike( cb.lower( p ), StringUtils.lowerCase( Objects.toString( condition.getFirstArgument() ) ), '\\' );
 			}
 		}
 

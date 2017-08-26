@@ -79,4 +79,8 @@ When set, the attribute holds the `EnumSet` of selectable values.
 If you want to customize selection of a non-enum type, see the other option related attributes.
 Will only be used if there is no `OptionGenerator.class` or `OptionIterableBuilder.class` attribute set.
 
+|`SelectFormElementConfiguration.class`
+|Can hold the configuration instance that should be used when generating a select control for this propery.
+Unless a specific `ViewElement` type has been specified, this will force the control type generated to be a select as well.
+
 |===

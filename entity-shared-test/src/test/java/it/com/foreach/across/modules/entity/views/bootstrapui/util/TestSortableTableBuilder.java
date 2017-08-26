@@ -181,7 +181,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
 
 		when( entityConfiguration.getEntityMessageCodeResolver() ).thenReturn( codeResolver );
-		when( codeResolver.getMessageWithFallback( eq( RESULTS_FOUND ), any( Object[].class ), eq( null ) ) )
+		when( codeResolver.getMessageWithFallback( eq( RESULTS_FOUND ), any( Object[].class ), eq( "" ) ) )
 				.thenReturn( "custom results" );
 
 		tableBuilder.pagingMessages( null );

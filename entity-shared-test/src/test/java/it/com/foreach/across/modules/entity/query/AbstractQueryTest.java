@@ -74,9 +74,9 @@ public abstract class AbstractQueryTest
 			groupTwo = new Group( "groupTwo" );
 			groupRepository.save( Arrays.asList( groupOne, groupTwo ) );
 
-			john = new Representative( "john", "John" );
-			joe = new Representative( "joe", "Joe" );
-			peter = new Representative( "peter", "Peter" );
+			john = new Representative( "john", "John % Surname" );
+			joe = new Representative( "joe", "Joe ' Surname" );
+			peter = new Representative( "peter", "Peter \\ Surname" );
 
 			representativeRepository.save( Arrays.asList( john, joe, peter ) );
 

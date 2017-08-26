@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright 2014 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +31,7 @@
 table > tbody > tr > td.row-actions {
   text-align: right;
   padding-left: 20px;
-  padding-right: 20px; }
+  padding-right: 20px;
+  white-space: nowrap; }
 
 /*# sourceMappingURL=entity-module.css.map */

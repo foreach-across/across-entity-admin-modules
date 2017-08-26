@@ -408,6 +408,7 @@ class EntityQueryTokenConverter
 			case "not":
 			case "in":
 			case "like":
+			case "ilike":
 			case "is":
 				return true;
 		}

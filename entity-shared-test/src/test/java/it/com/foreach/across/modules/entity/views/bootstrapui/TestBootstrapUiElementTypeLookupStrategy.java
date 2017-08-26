@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.views.bootstrapui.MultiValueElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
 import com.foreach.common.test.MockedLoader;
 import org.junit.Before;
 import org.junit.Test;
@@ -233,7 +234,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void collectionEntityTypeShouldReturnMultiCheckbox() {
+	public void collectionEntityTypeShouldReturnOptions() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
 
 		when( entityConfiguration.getEntityType() ).thenReturn( (Class) Client.class );
@@ -245,7 +246,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		);
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
 
-		assertEquals( BootstrapUiElements.MULTI_CHECKBOX,
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS,
 		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
 	}
 
@@ -268,7 +269,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void collectionEnumShouldReturnMultiCheckbox() {
+	public void collectionEnumShouldReturnOptions() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
 
 		when( entityConfiguration.getEntityType() ).thenReturn( (Class) Client.class );
@@ -280,7 +281,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		);
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
 
-		assertEquals( BootstrapUiElements.MULTI_CHECKBOX,
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS,
 		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
 	}
 

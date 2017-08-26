@@ -78,6 +78,52 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 	}
 
 	/**
+	 * If the item key is empty, only the prefixes will be generated.
+	 */
+	static String[] generateCodes( String[] rootCollections, String[] subCollections, String itemKey ) {
+		Assert.notNull( rootCollections );
+		Assert.notNull( subCollections );
+		Assert.notNull( itemKey );
+
+		if ( rootCollections.length == 0 && subCollections.length == 0 ) {
+			return itemKey.isEmpty() ? new String[0] : new String[] { itemKey };
+		}
+
+		int index = 0;
+
+		String[] codes;
+
+		String suffix = itemKey.isEmpty() ? "" : "." + itemKey;
+
+		List<String> messageCodes = new ArrayList<>( ( rootCollections.length + 1 ) * ( subCollections.length + 1 ) );
+
+		if ( rootCollections.length == 0 ) {
+			for ( String subCollection : subCollections ) {
+				if ( !subCollection.isEmpty() ) {
+					messageCodes.add( subCollection + suffix );
+				}
+			}
+			if ( !itemKey.isEmpty() ) {
+				messageCodes.add( itemKey );
+			}
+		}
+		else {
+			for ( String rootCollection : rootCollections ) {
+				String prefix = rootCollection.isEmpty() ? "" : rootCollection + ".";
+				for ( String subCollection : subCollections ) {
+					if ( !subCollection.isEmpty() ) {
+						messageCodes.add( prefix + subCollection + suffix );
+					}
+				}
+				messageCodes.add(
+						itemKey.isEmpty() ? rootCollection : ( rootCollection.isEmpty() ? itemKey : rootCollection + suffix ) );
+			}
+		}
+
+		return messageCodes.toArray( new String[messageCodes.size()] );
+	}
+
+	/**
 	 * Replace all prefixes.
 	 *
 	 * @param prefix list
@@ -343,51 +389,5 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 		}
 
 		return new DefaultMessageSourceResolvable( codes, arguments, defaultValue != null ? defaultValue : codes[0] );
-	}
-
-	/**
-	 * If the item key is empty, only the prefixes will be generated.
-	 */
-	static String[] generateCodes( String[] rootCollections, String[] subCollections, String itemKey ) {
-		Assert.notNull( rootCollections );
-		Assert.notNull( subCollections );
-		Assert.notNull( itemKey );
-
-		if ( rootCollections.length == 0 && subCollections.length == 0 ) {
-			return itemKey.isEmpty() ? new String[0] : new String[] { itemKey };
-		}
-
-		int index = 0;
-
-		String[] codes;
-
-		String suffix = itemKey.isEmpty() ? "" : "." + itemKey;
-
-		List<String> messageCodes = new ArrayList<>( ( rootCollections.length + 1 ) * ( subCollections.length + 1 ) );
-
-		if ( rootCollections.length == 0 ) {
-			for ( String subCollection : subCollections ) {
-				if ( !subCollection.isEmpty() ) {
-					messageCodes.add( subCollection + suffix );
-				}
-			}
-			if ( !itemKey.isEmpty() ) {
-				messageCodes.add( itemKey );
-			}
-		}
-		else {
-			for ( String rootCollection : rootCollections ) {
-				String prefix = rootCollection.isEmpty() ? "" : rootCollection + ".";
-				for ( String subCollection : subCollections ) {
-					if ( !subCollection.isEmpty() ) {
-						messageCodes.add( prefix + subCollection + suffix );
-					}
-				}
-				messageCodes.add(
-						itemKey.isEmpty() ? rootCollection : ( rootCollection.isEmpty() ? itemKey : rootCollection + suffix ) );
-			}
-		}
-
-		return messageCodes.toArray( new String[messageCodes.size()] );
 	}
 }

@@ -18,12 +18,16 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.support.EntityViewMessageSource;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.web.support.LocalizedTextResolver;
+import com.foreach.across.modules.web.support.MessageCodeSupportingLocalizedTextResolver;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
@@ -32,6 +36,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.WebDataBinder;
 
@@ -78,7 +83,7 @@ public class DefaultEntityViewFactory implements DispatchingEntityViewFactory
 
 	@Override
 	public EntityView createView( EntityViewRequest entityViewRequest ) {
-		Optional<com.foreach.across.modules.web.ui.ViewElementBuilderContext> existingBuilderContext
+		Optional<ViewElementBuilderContext> existingBuilderContext
 				= ViewElementBuilderContextHolder.setViewElementBuilderContext( createViewElementBuilderContext( entityViewRequest ) );
 
 		final EntityView entityView = new EntityView( entityViewRequest.getModel(), entityViewRequest.getRedirectAttributes() );
@@ -132,15 +137,19 @@ public class DefaultEntityViewFactory implements DispatchingEntityViewFactory
 	}
 
 	/**
-	 * Create a custom {@link com.foreach.across.modules.web.ui.ViewElementBuilderContext} for the view request.
+	 * Create a custom {@link ViewElementBuilderContext} for the view request.
 	 */
-	protected com.foreach.across.modules.web.ui.ViewElementBuilderContext createViewElementBuilderContext( EntityViewRequest entityViewRequest ) {
-		com.foreach.across.modules.web.ui.ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( entityViewRequest.getModel() );
+	protected ViewElementBuilderContext createViewElementBuilderContext( EntityViewRequest entityViewRequest ) {
+		ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( entityViewRequest.getModel() );
 		if ( entityViewRequest.getEntityViewContext().holdsEntity() ) {
 			Object entity = entityViewRequest.getEntityViewContext().getEntity();
 			entityViewRequest.getModel().addAttribute( EntityViewModel.ENTITY, entity );
 		}
-		builderContext.setAttribute( EntityMessageCodeResolver.class, entityViewRequest.getEntityViewContext().getMessageCodeResolver() );
+		EntityMessageCodeResolver messageCodeResolver = entityViewRequest.getEntityViewContext().getMessageCodeResolver();
+		builderContext.setAttribute( EntityMessageCodeResolver.class, messageCodeResolver );
+		EntityViewMessageSource viewMessageSource = new EntityViewMessageSource( messageCodeResolver );
+		builderContext.setAttribute( MessageSource.class, viewMessageSource );
+		builderContext.setAttribute( LocalizedTextResolver.class, new MessageCodeSupportingLocalizedTextResolver( viewMessageSource ) );
 		builderContext.setAttribute( EntityViewRequest.class, entityViewRequest );
 		builderContext.setAttribute( EntityViewCommand.class, entityViewRequest.getCommand() );
 

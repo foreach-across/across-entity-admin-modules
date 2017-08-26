@@ -20,14 +20,13 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>standard-module-bom</artifactId>
-		<version>2.0.0.RELEASE</version>
+		<version>2.1.0.RELEASE</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
 	<artifactId>entity-module-project</artifactId>
-	<version>2.0.0.RELEASE</version>
+	<version>2.1.0.RELEASE</version>
 	<packaging>pom</packaging>
-
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>
@@ -44,7 +43,7 @@
 	<developers>
 		<developer>
 			<name>Arne Vandamme</name>
-			<email>arne@foreach.be</email>
+			<email>arne at foreach.be</email>
 			<organization>Foreach</organization>
 			<organizationUrl>http://www.foreach.be</organizationUrl>
 		</developer>
@@ -79,12 +78,12 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>bootstrap-ui-module</artifactId>
-				<version>1.0.0.RELEASE</version>
+				<version>1.1.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>admin-web-module</artifactId>
-				<version>2.0.0.RELEASE</version>
+				<version>2.1.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
@@ -111,11 +110,6 @@
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-junit4</artifactId>
 				<version>1.6.4</version>
-			</dependency>
-			<dependency>
-				<groupId>com.foreach.across.modules</groupId>
-				<artifactId>entity-shared-test</artifactId>
-				<version>2.0.0.RELEASE</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

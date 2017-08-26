@@ -139,12 +139,22 @@ public abstract class EntityQueryQueryDslUtils
 			case LIKE: {
 				Path property = pathBuilder.get( condition.getProperty() );
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
-				return Expressions.predicate( Ops.LIKE, property, constant );
+				return Expressions.predicate( Ops.LIKE_ESCAPE, property, constant, Expressions.constant( '\\' ) );
+			}
+			case LIKE_IC: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.LIKE_ESCAPE_IC, property, constant, Expressions.constant( '\\' ) );
 			}
 			case NOT_LIKE: {
 				Path property = pathBuilder.get( condition.getProperty() );
 				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
-				return Expressions.predicate( Ops.LIKE, property, constant ).not();
+				return Expressions.predicate( Ops.LIKE_ESCAPE, property, constant, Expressions.constant( '\\' ) ).not();
+			}
+			case NOT_LIKE_IC: {
+				Path property = pathBuilder.get( condition.getProperty() );
+				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
+				return Expressions.predicate( Ops.LIKE_ESCAPE_IC, property, constant, Expressions.constant( '\\' ) ).not();
 			}
 		}
 

@@ -28,16 +28,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ResolvableType;
 
 /**
- * Published by the {@link com.foreach.across.modules.entity.views.processors.SingleEntityPageStructureViewProcessor} during
- * post render after the page structure for a single entity has been rendered.
+ * Published by the {@link com.foreach.across.modules.entity.views.processors.SingleEntityPageStructureViewProcessor} or the
+ * {@link com.foreach.across.modules.entity.views.processors.ListPageStructureViewProcessor} during post render after the page structure
+ * for a single entity or a list view has been rendered.
  *
+ * @param <T> entity type this event handles
  * @author Arne Vandamme
  * @see com.foreach.across.modules.entity.views.processors.SingleEntityPageStructureViewProcessor
+ * @see com.foreach.across.modules.entity.views.processors.ListPageStructureViewProcessor
  * @since 2.0.0
  */
 @RequiredArgsConstructor
 public final class EntityPageStructureRenderedEvent<T> implements NamedAcrossEvent, ParameterizedAcrossEvent
 {
+	/**
+	 * Does the page structure represent a list view ({@code true}) or a single entity ({@code false}).
+	 * If {@code true}, {@link #holdsEntity()} will usually return {@code false}.
+	 */
+	@Getter
+	private final boolean listView;
+
 	/**
 	 * The original entity view request.
 	 */

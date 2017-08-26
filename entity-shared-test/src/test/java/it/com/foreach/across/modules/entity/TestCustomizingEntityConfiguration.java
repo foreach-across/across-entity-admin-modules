@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Car;
 import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.processors.TemplateViewProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
@@ -142,8 +143,8 @@ public class TestCustomizingEntityConfiguration
 
 	@Test
 	public void customizedPersistableLabel() {
-		EntityConfiguration<Company> config = entityRegistry.getEntityConfiguration( Company.class );
-		Company c = new Company();
+		EntityConfiguration<Car> config = entityRegistry.getEntityConfiguration( Car.class );
+		Car c = new Car();
 		assertEquals( "false", config.getLabel( c ) );
 
 		c.setNew( true );

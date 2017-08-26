@@ -36,7 +36,7 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataProvider
 {
 	public static final EntityQueryOps[] STRING_OPS =
-			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
+			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
 	public static final EntityQueryOps[] NUMBER_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
 	public static final EntityQueryOps[] COLLECTION_OPS =

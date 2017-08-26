@@ -43,6 +43,9 @@ Operator precedence can be enforced by using parentheses around a clause.
 
 A _field_ of a query clause usually corresponds with a single property you want to query.
 
+NOTE: Special characters in string literals should be escaped using the \ (backslash) character.
+In case of like conditions, they should be double-escaped.
+
 ==== Supported operators
 
 ===== Equality operators
@@ -94,7 +97,33 @@ The pattern can contain simple wildcard specified using *%*.
 
 |*NOT LIKE* | should not match the pattern specified as argument +
 
+|*ILIKE*  | case insensitive match of the pattern specified as argument +
+
+|*NOT ILIKE* | should not match the pattern specified as argument (case insensitive) +
+
 |===
+
+NOTE: Special characters in LIKE statements should be double-escaped using the \ (backslash) character.
+This includes the literal % (percentage) character.
+
+.Case insensitive property matching
+When using *ILIKE* conditions, a case insensitive lookup will be performed in the datastore.
+If you want to force a property to always have a case insensitive lookup, you can do so by configuring a `EntityQueryConditionTranslator` attribute on that property.
+
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+configuration
+ .withType( Group.class )
+ .properties(
+    props -> props.property( "name" ).attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.ignoreCase() )
+ )
+----
+
+This will convert any equality or like operator to the equivalent case insensitive lookup.
+
+WARNING: Whenever possible, it is probably best to use collaction settings of your datastore to ensure case insentive querying of properties.
+Configuring it on a datastore level will almost certainly give you much better performance.
 
 ===== CONTAINS/NOT CONTAINS
 Usable on collection property types.
@@ -277,4 +306,19 @@ public class HelloFunction implements EntityQueryFunctionHandler
 		return "hello";
 	}
 }
+----
+
+==== Custom EQL translation
+You can register an `EntityQueryConditionTranslator` attribute on any entity property.
+If a translator instance is present, it will be called during the parsing phase of an EQL into an `EntityQuery`.
+
+.Example registering a translator
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+configuration
+ .withType( Group.class )
+ .properties(
+    props -> props.property( "name" ).attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.ignoreCase() )
+ )
 ----

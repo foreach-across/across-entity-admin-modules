@@ -84,7 +84,7 @@ public class EntityViewCommandValidator implements SmartValidator
 		command.getExtensions()
 		       .forEach( ( key, value ) -> {
 			       errors.pushNestedPath( "extensions[" + key + "]" );
-			       validate( fallbackValidator, value, errors );
+			       validate( fallbackValidator, value, errors, validationHints );
 			       errors.popNestedPath();
 		       } );
 	}

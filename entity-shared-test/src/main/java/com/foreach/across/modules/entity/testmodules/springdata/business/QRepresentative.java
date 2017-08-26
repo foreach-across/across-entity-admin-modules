@@ -25,22 +25,23 @@ import com.querydsl.core.types.dsl.EntityPathBase;
  * Manually created dummy QueryDSL Q class.
  *
  * @author Arne Vandamme
+ * @since 2.1.0
  */
-public class QCompany extends EntityPathBase<Company>
+public class QRepresentative extends EntityPathBase<Representative>
 {
-	private static final long serialVersionUID = 475764283L;
+	private static final long serialVersionUID = 475764284L;
 
-	public static final QCompany company = new QCompany( "company" );
+	public static final QRepresentative company = new QRepresentative( "representative" );
 
-	public QCompany( String variable ) {
-		super( Company.class, PathMetadataFactory.forVariable( variable ) );
+	public QRepresentative( String variable ) {
+		super( Representative.class, PathMetadataFactory.forVariable( variable ) );
 	}
 
-	public QCompany( Path<? extends Company> path ) {
+	public QRepresentative( Path<? extends Representative> path ) {
 		super( path.getType(), path.getMetadata() );
 	}
 
-	public QCompany( PathMetadata metadata ) {
-		super( Company.class, metadata );
+	public QRepresentative( PathMetadata metadata ) {
+		super( Representative.class, metadata );
 	}
 }

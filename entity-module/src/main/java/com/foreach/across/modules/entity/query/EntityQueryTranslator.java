@@ -24,9 +24,11 @@ package com.foreach.across.modules.entity.query;
  * instances) and the entire query might be optimized (eg. a single condition might be expanded into multiple).
  *
  * @author Arne Vandamme
- * @since 2.0.0
  * @see DefaultEntityQueryTranslator
+ * @see EntityQueryConditionTranslator
+ * @since 2.0.0
  */
+@FunctionalInterface
 public interface EntityQueryTranslator
 {
 	EntityQuery translate( EntityQuery rawQuery );
