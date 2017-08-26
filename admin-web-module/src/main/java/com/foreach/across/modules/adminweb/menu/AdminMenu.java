@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.adminweb.menu;
 
 import com.foreach.across.modules.web.menu.Menu;
@@ -20,6 +21,20 @@ import com.foreach.across.modules.web.menu.Menu;
 public class AdminMenu extends Menu
 {
 	public static final String NAME = "adminMenu";
+
+	/**
+	 * Attribute that will be used to determine the position for the menu item.
+	 * Actual interpretation depends on the layout template being used, but the default
+	 * {@link com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate} supports either
+	 * a string or an array of strings as value.
+	 */
+	public static final String ATTR_NAV_POSITION = "adminMenu:position";
+
+	/**
+	 * Attribute that will be used to determine if a menu item should be included in breadcrumb generation.
+	 * Items with an explicit value of {@code false} will not be rendered.
+	 */
+	public static final String ATTR_BREADCRUMB = "adminMenu:breadcrumb";
 
 	public AdminMenu() {
 		super( NAME );

@@ -16,35 +16,28 @@
 
 package com.foreach.across.modules.adminweb.config;
 
-import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.core.annotations.Module;
-import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.config.support.AdminWebConfigurerAdapter;
-import com.foreach.across.modules.adminweb.menu.AdminMenu;
-import com.foreach.across.modules.adminweb.resource.AdminBootstrapWebResourcePackage;
+import com.foreach.across.modules.adminweb.menu.registrars.DefaultAdminMenuRegistrar;
+import com.foreach.across.modules.adminweb.resource.AdminWebWebResources;
+import com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.web.context.PrefixingPathRegistry;
-import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.mvc.InterceptorRegistry;
 import com.foreach.across.modules.web.mvc.WebAppPathResolverExposingInterceptor;
-import com.foreach.across.modules.web.resource.*;
-import com.foreach.across.modules.web.template.LayoutTemplateProcessorAdapterBean;
+import com.foreach.across.modules.web.resource.WebResourcePackageManager;
+import com.foreach.across.modules.web.resource.WebResourceRegistryInterceptor;
+import com.foreach.across.modules.web.resource.WebResourceTranslator;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import com.foreach.across.modules.web.template.WebTemplateRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.springframework.context.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,19 +45,13 @@ import javax.servlet.http.HttpServletRequest;
  * @author Arne Vandamme
  */
 @Configuration
+@ComponentScan(basePackageClasses = { AdminWebLayoutTemplate.class, AdminWebWebResources.class, DefaultAdminMenuRegistrar.class })
 public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 {
 	private static final Logger LOG = LoggerFactory.getLogger( AdminWebModule.class );
 
 	@Autowired(required = false)
 	private WebResourceTranslator viewsWebResourceTranslator;
-
-	@Autowired
-	private AcrossDevelopmentMode developmentMode;
-
-	@Autowired
-	@Module(AcrossModule.CURRENT_MODULE)
-	private AdminWebModule adminWebModule;
 
 	@Autowired
 	private AdminWebModuleSettings settings;
@@ -119,8 +106,6 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	@Exposed
 	public WebTemplateRegistry adminWebTemplateRegistry() {
 		WebTemplateRegistry webTemplateRegistry = new WebTemplateRegistry();
-
-		webTemplateRegistry.register( adminLayoutTemplateProcessor() );
 		webTemplateRegistry.setDefaultTemplateName( AdminWeb.NAME );
 
 		return webTemplateRegistry;
@@ -129,30 +114,7 @@ public class AdminWebInterceptorsConfiguration extends AdminWebConfigurerAdapter
 	@Bean
 	@Exposed
 	public WebResourcePackageManager adminWebResourcePackageManager() {
-		WebResourcePackageManager webResourcePackageManager = new WebResourcePackageManager();
-		webResourcePackageManager.register( AdminBootstrapWebResourcePackage.NAME,
-		                                    new AdminBootstrapWebResourcePackage( !developmentMode.isActive() ) );
-
-		return webResourcePackageManager;
-	}
-
-	@ConditionalOnBean(SpringTemplateEngine.class)
-	@Bean
-	public LayoutTemplateProcessorAdapterBean adminLayoutTemplateProcessor() {
-		return new LayoutTemplateProcessorAdapterBean( AdminWeb.NAME, AdminWeb.LAYOUT_TEMPLATE )
-		{
-			@Override
-			protected void registerWebResources( WebResourceRegistry registry ) {
-				registry.addPackage( AdminBootstrapWebResourcePackage.NAME );
-				registry.addWithKey( WebResource.CSS, AdminWeb.MODULE, AdminWeb.LAYOUT_TEMPLATE_CSS,
-				                     WebResource.VIEWS );
-			}
-
-			@Override
-			protected void buildMenus( MenuFactory menuFactory ) {
-				menuFactory.buildMenu( AdminMenu.NAME, AdminMenu.class );
-			}
-		};
+		return new WebResourcePackageManager();
 	}
 
 	@Bean

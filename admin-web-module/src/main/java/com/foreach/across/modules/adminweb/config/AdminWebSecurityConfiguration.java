@@ -39,6 +39,7 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
@@ -68,6 +69,9 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	@SuppressWarnings("SignatureDeclareThrowsException")
 	public void configure( HttpSecurity root ) throws Exception {
 		HttpSecurity http = root.antMatcher( adminWeb.path( "/**" ) )
+		                        .csrf()
+		                        .csrfTokenRepository( CookieCsrfTokenRepository.withHttpOnlyFalse() )
+		                        .and()
 		                        .formLogin().defaultSuccessUrl( adminWeb.path( "/" ) )
 		                        .loginPage( adminWeb.path( "/login" ) )
 		                        .permitAll()

@@ -1,15 +1,22 @@
 = AdminWebModule
 Arne Vandamme
-1.1.1.RELEASE
+2.1.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 1.1.1.RELEASE
+:module-version: 2.1.0.RELEASE
 :module-name: AdminWebModule
 :module-artifact: admin-web-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/AdminWebModule
 :spring-security-module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityModule
 :bootstrap-ui-module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
 
+[copyright,verbatim]
+--
+Copyright (C) 2014-2017 +
+[small]#Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.#
+--
+
+:numbered:
 == General information
 
 === Artifact
@@ -114,6 +121,18 @@ All properties start with the *adminWebModule.* prefix.
 
 == What's new in this version?
 :numbered!:
+=== 2.1.0.RELEASE
+
+* Improved styling of the default layout
+** Use of icons for Home breadcrumb, Developer tools and User context section
+** http://fontawesome.io/[FontAwesome icon set] is added to the default resources
+* The `AdminWebLayoutTemplate` now allows full <<customizing-nav-sections,customization of the navigational components>>
+* Dismissible alerts are now converted to <<toastr-notifications,temporary Toastr notifications>> instead in order to take up less visual space
+* CSRF protection now uses the `CookieCsrfTokenRepository` by default and no longer forces session creation
+* the default AdminWebModule javascript has been <<adminweb-javascript,extended to expose the root path of admin section as well as static resources>>
+* Bugfixes:
+** styling issues with top and left menu on mobile
+
 === 2.0.0.RELEASE
 
 * AdminWebModule now depends on {bootstrap-ui-module-url}[BootstrapUiModule]
@@ -130,6 +149,7 @@ All properties start with the *adminWebModule.* prefix.
 === 1.1.0.RELEASE
 Initial public release available on http://search.maven.org/[Maven central].
 
+:numbered:
 == About the AdminWebModule
 {module-name} provides infrastructure for building an secured administration section in your site.
 All `@AdminWebController` beans will be mapped behind the admin web root path and will have the security rules applied.
@@ -213,6 +233,10 @@ You can either change the default template or simply replace the instance regist
 WARNING: The login page uses the same default template as all other admin web controllers.
 This means the template should take both authorized and non-authorized authentications into account.
 
+The default template is an implementation of `AdminWebLayoutTemplate`.
+If you only want a custom view template file (eg. Thymeleaf) you can reuse the `AdminWebLayoutTemplate` class and create a new bean with custom name and template file.
+The default web resources and page structure (menus) will still be created.
+
 === Login page
 The default login page can be customized by setting the property *adminWebModule.login.template* to the Thymeleaf template you wish to render.
 The login controller provides the following model attributes that can be used to customize the template:
@@ -278,9 +302,45 @@ There are 3 ways to do this:
 
 NOTE: {module-name} registers the *adminWeb* link prefix that represents the admin web root path.
 
-=== Adding a page to the main nav section
+[[customizing-nav-sections]]
+=== Customizing the nav sections
+The default `AdminWebLayoutTemplate` builds a single `AdminMenu` that is supposed to hold all items that make up the UI nav structures.
+The same `AdminMenu` is used to render the different nav components on the layout:
+
+* top navigation
+** the top navigation actually consists of a left-hand (_navbar_) and right-hand (_navbar-right_) side
+* left-hand navigation
+* breadcrumb
+
+All nav structures are built using a `NavComponentBuilder` from the {bootstrap-ui-module-url}[BootstrapUiModule] and support all options like HTML attributes, icons and custom `ViewElements`.
+
+==== Default AdminMenu structure
+By default the `AdminMenu` contains 3 items:
+
+* the root item (*/*)
+* the user context item group (*/user-context*)
+** this group is rendered only on the right-hand side of the top navigation
+* the logout link as member of the user-context (*/user-context/logout*)
+
+These default items can be customized using the `AdminMenuEvent`.
+
+.Example replacing the default user-context icon by a user profile picture
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+private ViewElementBuilder myProfilePictureViewElementBuilder;
+
+@Event
+public void addUserProfilePicture( AdminMenuEvent adminMenuEvent ) {
+	adminMenuEvent.builder()
+	              .group( DefaultAdminMenuRegistrar.PATH )
+	              .attribute( NavComponentBuilder.ATTR_ICON, myProfilePictureViewElementBuilder );
+}
+----
+
+==== Adding a page to the main nav section
 If you want to add a page to the main navigation section of admin web, you can do so by simply registering it in the `AdminMenu`.
-The easiest way to do so is by intercepting the `AdminMenuEvent`.
+The easiest way to do that is by intercepting the `AdminMenuEvent`.
 
 .Example creating a custom admin web controller
 [source,java,indent=0]
@@ -296,6 +356,49 @@ public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
 
 NOTE: Relative urls added to the `AdminMenuEvent` will be considered admin web relative, and will get prefixed with the admin web root path.
 If you want to avoid this, either use absolute urls, add a specific prefix or begin them with an exclamation mark (!).
+
+==== Specifying a nav section
+By default any item will be added both to the top navigation and the left-hand navigation.
+You can limit the sections an item should be added to by adding a value for *adminMenu:position* attribute on a `Menu`.
+
+The value can be either a `String` or a `String[]`.
+
+Possible positions are:
+
+* _navbar_: render the item in the top (left) navbar
+* _navbar-right_: render the item in the top right navbar
+* _sidebar_: render the item in the left sidebar
+
+.Example adding a menu item to the top right and sidebar navigation
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@Event
+public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
+    adminMenuEvent.builder()
+                .group( "/tools", "Tools" )
+                .attribute(
+                    AdminMenu.ATTR_NAV_POSITION,
+                    new String[] { AdminWebLayoutTemplate.NAVBAR_RIGHT, AdminWebLayoutTemplate.SIDEBAR }
+                );
+}
+----
+
+==== Excluding an item from the breadcrumb
+By default all `Menu` items will be included in the breadcrumb.
+Explicitly excluding an item can be done by setting the *adminMenu:breadcrumb* attribute to `false`.
+
+.Example excluding a menu item from the breadcrumb
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@Event
+public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
+    adminMenuEvent.builder()
+                .group( "/tools", "Tools" )
+                .attribute( AdminMenu.ATTR_BREADCRUMB, false );
+}
+----
 
 [[page-content-structure]]
 === Default page structures
@@ -401,4 +504,53 @@ public class DevToolsController
 		return PageContentStructure.TEMPLATE;
 	}
 }
+----
+
+[[adminweb-javascript]]
+=== AdminWebModule javascript
+AdminWebModule registers some Javascript and exposes an `AdminWebModule` and `AcrossWebModule` global variable.
+These can be used to configure some of the default client-side behaviour settings.
+
+The necessary web resources are registered automatically by the `AdminWebLayoutTemplate`.
+If you have a custom template implementation, you probably want to register the `AdminWebWebResources` manually.
+
+==== Client-side paths
+A couple of web application paths are exposed as global javascript variables:
+
+[cols="1,4",options="header"]
+|===
+|Variable
+|Content
+
+|`AcrossWebModule.resourcePath`
+|Holds the base path for exposed web resources.
+Equivalent of `@resource:/` in a server-side link.
+
+|`AcrossWebModule.staticPath`
+|Holds the base path for the default static resources.
+Equivalent of `@static:/` in a server-side link.
+
+|`AdminWebModule.rootPath`
+|Holds the base path onto which AdminWeb UI has been mapped.
+Equivalent of `@adminWeb:/` in a server-side link.
+
+|===
+
+NOTE: The last slash (/) token will always be stripped from the exposed paths.
+Example creating a custom path: `AdminWebModule.rootPath + '/my-controller'`.
+
+[[toastr-notifications]]
+==== Toastr notifications
+By default AdminWebModule will convert all Bootstrap dismissible alerts into http://codeseven.github.io/toastr/[Toastr notifications].
+If you do not want to use Toastr at all, simply removing the javascript should be sufficient.
+If you only want to disable dismissible alert conversion, you can do so by updating the `AdminWebModule` javascript property:
+
+.Disabling Toastr notifications
+[source,html,indent=0]
+[subs="verbatim,attributes"]
+----
+<script type="text/javascript">
+// Disable Toastr notifications - ensure this block is executed after initial admin-web-module.js
+AdminWebModule.useToastrNotifications = false;
+</script>
 ----

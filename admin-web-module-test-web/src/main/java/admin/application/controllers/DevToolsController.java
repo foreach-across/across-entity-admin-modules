@@ -19,7 +19,7 @@ package admin.application.controllers;
 import com.foreach.across.core.annotations.ConditionalOnDevelopmentMode;
 import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.adminweb.config.DeveloperToolsMenuRegistrar;
+import com.foreach.across.modules.adminweb.menu.registrars.DeveloperToolsMenuRegistrar;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,8 @@ public class DevToolsController
 
 	@Event
 	void registerDeveloperToolsItem( AdminMenuEvent menuEvent ) {
-		menuEvent.builder().item( DeveloperToolsMenuRegistrar.PATH + "/test", "Test controller" );
+		menuEvent.builder()
+		         .item( DeveloperToolsMenuRegistrar.PATH + "/test", "Test controller" );
 	}
 
 	@GetMapping("/ax/developer/test")

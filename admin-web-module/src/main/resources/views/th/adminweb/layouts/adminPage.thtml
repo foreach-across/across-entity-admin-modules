@@ -1,18 +1,19 @@
 <!DOCTYPE html>
+
 <!--
-  Copyright 2014 the original author or authors
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  ~ Copyright 2014 the original author or authors
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
   -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -20,10 +21,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title th:text="${@adminWeb.title}">Administration</title>
-
+    <script th:each="javascript :${webResourceRegistry.getResources('javascript')}" type="text/javascript"
+            th:if="${javascript.location == 'data'}" th:inline="javascript">
+        (function( Across ) {
+            Across[ [[${javascript.key}]] ] = [[${javascript.data}]];
+        })( window.Across = window.Across || {} );
+    </script>
     <script th:each="javascript : ${webResourceRegistry.getResources('javascript')}" th:src="@{${javascript.data}}"
-            th:if="${javascript.location != 'inline'}"></script>
-
+            th:if="${javascript.location != 'inline' and javascript.location != 'data'}"></script>
     <link rel="stylesheet" type="text/css" th:each="css : ${webResourceRegistry.getResources('css')}"
           th:href="@{${css.data}}"/>
 </head>
@@ -33,7 +38,7 @@
     <nav class="navbar navbar-fixed-top" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header admin-navbar-title">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#admin-top-navbar" aria-expanded="true" aria-controls="navbar">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#admin-top-navbar" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -43,12 +48,9 @@
                     application name
                 </a>
             </div>
-            <div id="admin-top-navbar" class="navbar-collapse collapse in" aria-expanded="true">
-                <ul th:replace="th/bootstrap/menu :: navbar(${adminMenu})"></ul>
-
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a th:href="@{${#webapp.path('/logout')}}">Logout</a></li>
-                </ul>
+            <div id="admin-top-navbar" class="navbar-collapse collapse">
+                <across:view element="${adminWebNavbarNavigation}"/>
+                <across:view element="${adminWebNavbarRightNavigation}"/>
             </div>
         </div>
     </nav>
@@ -57,12 +59,11 @@
     <div th:if="${childPage}" class="content for-navbar-fixed-top">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-2 sidebar no-padding">
-                    <div th:replace="th/bootstrap/menu :: panels (${adminMenu})" th:if="${adminMenu}"></div>
+                <div class="col-md-2 hidden-sm hidden-xs sidebar no-padding">
+                    <across:view element="${adminWebSidebarNavigation}"/>
                 </div>
-                <div class="col-sm-10 main">
-                    <ol th:replace="th/bootstrap/menu :: breadcrumb (${adminMenu})" th:if="${adminMenu}"></ol>
-
+                <div class="col-md-10 main">
+                    <across:view element="${adminWebBreadcrumb}"/>
                     <div th:replace="${childPage} :: content"></div>
                 </div>
             </div>
@@ -79,7 +80,7 @@
         th:if="${javascript.location != 'inline'}"></script>
 
 <th:block th:fragment="bottom-scripts(scripts)" th:if="${scripts}">
-    <th:block th:insert="${scripts}" />
+    <th:block th:insert="${scripts}"/>
 </th:block>
 
 <th:block th:insert="::bottom-scripts(~{${childPage} :: javascript-page-end})"/>
