@@ -1,7 +1,7 @@
 == What's new in this version?
 
 :numbered!:
-=== 2.1.0-SNAPSHOT
+=== 2.1.0.RELEASE
 * improve the ability to <<customize-page-layout,customize page titles and layouts>>
 ** all entity views now set a page (sub) title if a matching message code returns a non-empty string
 *** there is a default title for all views except the list view
