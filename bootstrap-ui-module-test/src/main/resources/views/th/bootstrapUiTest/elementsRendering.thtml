@@ -16,14 +16,14 @@
 
 <html xmlns:th="http://www.thymeleaf.org" xmlns:across="http://across.foreach.be">
 <head>
-	<title>Bootstrap menu rendering demo page</title>
+	<title>Bootstrap rendering demo page</title>
 </head>
 <body th:fragment="content">
 
-<div class="row" th:each="generatedSelect : ${generatedSelects}">
+<div class="row" th:each="generatedElement : ${generatedElements}">
 	<div class="col-md-4">
-		<h2 th:text="${generatedSelect.key}">Title</h2>
-		<across:view element="${generatedSelect.value}"/>
+		<h2 th:text="${generatedElement.key}">Title</h2>
+		<across:view element="${generatedElement.value}"/>
 	</div>
 </div>
 

@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<TextboxFormElement, TextboxFormElementBuilder>
 {
-	private Boolean autoSize;
+	private Boolean autoSize, disableLineBreaks;
 
 	private boolean multiLine = false;
 
@@ -70,7 +70,8 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 	}
 
 	/**
-	 * Set the textbox to resize automatically.  Only supported by multi line textboxes.
+	 * Set the textbox to resize automatically.  This will cause a {@link TextareaFormElement}
+	 * to be rendered if the type remains text.
 	 *
 	 * @return current builder
 	 */
@@ -86,6 +87,30 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 	 */
 	public TextboxFormElementBuilder autoSize( boolean autoSize ) {
 		this.autoSize = autoSize;
+		return this;
+	}
+
+	/**
+	 * Indicate the textbox should not accept line-breaks (ENTER keys).
+	 * This will set the {@link TextboxFormElement#CSS_DISABLE_LINE_BREAKS} css class.
+	 * The actual support relies on the right javascript being registered.
+	 *
+	 * @return current builder
+	 */
+	public TextboxFormElementBuilder disableLineBreaks() {
+		return disableLineBreaks( true );
+	}
+
+	/**
+	 * Indicate the textbox should not accept line-breaks (ENTER keys).
+	 * This will set the {@link TextboxFormElement#CSS_DISABLE_LINE_BREAKS} css class.
+	 * The actual support relies on the right javascript being registered.
+	 *
+	 * @param disableLineBreaks true if line breaks should be disabled
+	 * @return current builder
+	 */
+	public TextboxFormElementBuilder disableLineBreaks( boolean disableLineBreaks ) {
+		this.disableLineBreaks = disableLineBreaks;
 		return this;
 	}
 
@@ -247,8 +272,19 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 
 			textbox = textarea;
 		}
+		else if ( ( TextboxFormElement.Type.TEXT.equals( type ) || type == null ) && Boolean.TRUE.equals( autoSize ) ) {
+			TextareaFormElement textarea = new TextareaFormElement();
+			textarea.setRows( 1 );
+			textarea.setAutoSize( true );
+			textarea.setDisableLineBreaks( disableLineBreaks == null );
+			textbox = textarea;
+		}
 		else {
 			textbox = new TextboxFormElement();
+		}
+
+		if ( disableLineBreaks != null ) {
+			textbox.setDisableLineBreaks( disableLineBreaks );
 		}
 
 		if ( text != null ) {
