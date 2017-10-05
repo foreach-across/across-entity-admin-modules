@@ -78,22 +78,6 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 	}
 
 	@Test
-	public void defaultOrderIsAccordingToDeclarationIfNotSpecified() {
-		List<String> propertyNames = propertyRegistry.getProperties( entityPropertyDescriptor -> true )
-		                                             .stream()
-		                                             .map( EntityPropertyDescriptor::getName )
-		                                             .collect( Collectors.toList() );
-
-		assertEquals( 6, propertyNames.size() );
-		assertEquals( "name", propertyNames.get( 0 ) );
-		assertEquals( "address", propertyNames.get( 1 ) );
-		assertEquals( "displayName", propertyNames.get( 2 ) );
-		assertEquals( "someValue", propertyNames.get( 3 ) );
-		assertEquals( "id", propertyNames.get( 4 ) );
-		assertEquals( "class", propertyNames.get( 5 ) );
-	}
-
-	@Test
 	public void valueFetchersAreCreated() {
 		Customer customer = new Customer();
 		customer.setName( "some name" );
