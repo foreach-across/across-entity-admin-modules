@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
-class BootstrapUiComponentFactoryImpl implements BootstrapUiComponentFactory
+public class BootstrapUiComponentFactoryImpl implements BootstrapUiComponentFactory
 {
 	@Override
 	public DefaultNavComponentBuilder nav( Menu menu ) {
