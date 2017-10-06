@@ -20,7 +20,7 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslUtils;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Representative;
-import it.com.foreach.across.modules.entity.query.jpa.TestEntityQueryJpaUtils;
+import it.com.foreach.across.modules.entity.query.jpa.ITEntityQueryJpaUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Arne Vandamme
  */
-public class TestEntityQueryQueryDslUtils extends TestEntityQueryJpaUtils
+public class ITEntityQueryQueryDslUtils extends ITEntityQueryJpaUtils
 {
 	@Override
 	protected void assertCompanyResults( EntityQuery query, Company... companies ) {

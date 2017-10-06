@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Arne Vandamme
  */
-public class TestEntityQueryJpaUtils extends AbstractQueryTest
+public class ITEntityQueryJpaUtils extends AbstractQueryTest
 {
 	@Test
 	public void companyByGroup() {

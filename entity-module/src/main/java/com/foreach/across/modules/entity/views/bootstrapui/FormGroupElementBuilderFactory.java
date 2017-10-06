@@ -48,6 +48,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		//addProcessor( new FormGroupRequiredBuilderProcessor() );
 	}
 
+	@Deprecated
 	public void setRenderHelpBlockBeforeControl( boolean renderHelpBlockBeforeControl ) {
 		this.renderHelpBlockBeforeControl = renderHelpBlockBeforeControl;
 	}

@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class TestEntityQueryExecution extends AbstractQueryTest
+public class ITEntityQueryExecution extends AbstractQueryTest
 {
 	@Autowired
 	private EntityRegistry entityRegistry;
