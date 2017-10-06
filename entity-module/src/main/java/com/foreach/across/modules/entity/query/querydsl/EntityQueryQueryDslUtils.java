@@ -29,6 +29,8 @@ import org.springframework.data.querydsl.SimpleEntityPathResolver;
 
 import java.util.Arrays;
 
+import static com.foreach.across.modules.entity.query.jpa.EntityQueryJpaUtils.toEscapedString;
+
 /**
  * @author Arne Vandamme
  */
@@ -138,23 +140,23 @@ public abstract class EntityQueryQueryDslUtils
 			}
 			case LIKE: {
 				Path property = pathBuilder.get( condition.getProperty() );
-				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
-				return Expressions.predicate( Ops.LIKE_ESCAPE, property, constant, Expressions.constant( '\\' ) );
+				Expression<Object> constant = Expressions.constant( toEscapedString( condition.getFirstArgument() ) );
+				return Expressions.predicate( Ops.LIKE_ESCAPE, property, constant, Expressions.constant( ';' ) );
 			}
 			case LIKE_IC: {
 				Path property = pathBuilder.get( condition.getProperty() );
-				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
-				return Expressions.predicate( Ops.LIKE_ESCAPE_IC, property, constant, Expressions.constant( '\\' ) );
+				Expression<Object> constant = Expressions.constant( toEscapedString( condition.getFirstArgument() ) );
+				return Expressions.predicate( Ops.LIKE_ESCAPE_IC, property, constant, Expressions.constant( ';' ) );
 			}
 			case NOT_LIKE: {
 				Path property = pathBuilder.get( condition.getProperty() );
-				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
-				return Expressions.predicate( Ops.LIKE_ESCAPE, property, constant, Expressions.constant( '\\' ) ).not();
+				Expression<Object> constant = Expressions.constant( toEscapedString( condition.getFirstArgument() ) );
+				return Expressions.predicate( Ops.LIKE_ESCAPE, property, constant, Expressions.constant( ';' ) ).not();
 			}
 			case NOT_LIKE_IC: {
 				Path property = pathBuilder.get( condition.getProperty() );
-				Expression<Object> constant = Expressions.constant( condition.getFirstArgument() );
-				return Expressions.predicate( Ops.LIKE_ESCAPE_IC, property, constant, Expressions.constant( '\\' ) ).not();
+				Expression<Object> constant = Expressions.constant( toEscapedString( condition.getFirstArgument() ) );
+				return Expressions.predicate( Ops.LIKE_ESCAPE_IC, property, constant, Expressions.constant( ';' ) ).not();
 			}
 		}
 

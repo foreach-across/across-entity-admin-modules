@@ -239,6 +239,15 @@ public class TestEntityQueryJpaUtils extends AbstractQueryTest
 
 		query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE_IC, "%\\\\ surname" ) );
 		assertRepresentativeResults( query, peter );
+
+		query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE, "!\"#\\%-_&/()=;?´`|/\\\\'" ) );
+		assertRepresentativeResults( query, weirdo );
+
+		query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE, "%_%" ) );
+		assertRepresentativeResults( query, weirdo );
+
+		query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE, "%\\\\%" ) );
+		assertRepresentativeResults( query, weirdo, peter );
 	}
 
 	protected void assertCompanyResults( EntityQuery query, Company... companies ) {

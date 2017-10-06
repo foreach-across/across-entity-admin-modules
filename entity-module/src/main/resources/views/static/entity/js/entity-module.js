@@ -77,6 +77,8 @@ var EntityModule = (function( $ ) {
 
         $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( function( e ) {
             e.preventDefault();
+            e.stopPropagation();
+
             table.trigger( EVENT_MOVE_TO_PAGE, parseInt( $( this ).attr( 'data-tbl-page' ) ) );
         } );
 
@@ -109,6 +111,7 @@ var EntityModule = (function( $ ) {
 
         this.sortables.click( function( e ) {
             e.preventDefault();
+            e.stopPropagation();
             table.trigger( EVENT_SORT, $( this ).data( 'tbl-sort-property' ) );
         } );
 

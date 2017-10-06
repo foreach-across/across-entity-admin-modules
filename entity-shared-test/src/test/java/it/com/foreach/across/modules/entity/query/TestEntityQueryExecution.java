@@ -197,6 +197,9 @@ public class TestEntityQueryExecution extends AbstractQueryTest
 		findRepresentatives( "name like 'Peter \\\\\\\\ Surname'", peter );
 		findRepresentatives( "name like '% Surname'", john, joe, peter );
 		findRepresentatives( "name like '%\\\\% Surname'", john );
+		findRepresentatives( "name like '!\"#\\%-_&/()=;?´`|/\\\\\\\\\\''", weirdo );
+		findRepresentatives( "name like '%_%'", weirdo );
+		findRepresentatives( "name like '%\\\\\\\\%'", weirdo, peter );
 	}
 
 	@Test
