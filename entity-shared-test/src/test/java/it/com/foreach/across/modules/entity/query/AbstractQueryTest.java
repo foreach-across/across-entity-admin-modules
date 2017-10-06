@@ -23,7 +23,9 @@ import com.foreach.across.modules.entity.testmodules.springdata.business.Represe
 import com.foreach.across.modules.entity.testmodules.springdata.repositories.CompanyRepository;
 import com.foreach.across.modules.entity.testmodules.springdata.repositories.GroupRepository;
 import com.foreach.across.modules.entity.testmodules.springdata.repositories2.RepresentativeRepository;
+import it.com.foreach.across.modules.entity.query.jpa.ITEntityQueryJpaUtils;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -39,11 +41,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.function.Supplier;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Slf4j
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @WebAppConfiguration
@@ -114,4 +118,13 @@ public abstract class AbstractQueryTest
 		}
 	}
 
+	protected void fallback( Supplier original, Supplier fallback ) {
+		try {
+			original.get();
+		}
+		catch ( AssertionError ae ) {
+			LOG.error( "Initial test failed - probably case insensitive database - using fallback" );
+			fallback.get();
+		}
+	}
 }

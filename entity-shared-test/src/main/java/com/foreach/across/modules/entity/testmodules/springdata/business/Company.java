@@ -37,12 +37,13 @@ public class Company implements Persistable<String>
 	@Id
 	@NotNull
 	@Length(max = 20)
+	@Column(name = "company_id")
 	private String id;
 
 	@Column
 	private CompanyStatus status;
 
-	@Column
+	@Column(name = "company_number")
 	private int number;
 
 	@Column

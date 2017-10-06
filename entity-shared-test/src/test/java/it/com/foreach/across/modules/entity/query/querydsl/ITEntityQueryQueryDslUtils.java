@@ -34,12 +34,13 @@ import static org.junit.Assert.assertTrue;
 public class ITEntityQueryQueryDslUtils extends ITEntityQueryJpaUtils
 {
 	@Override
-	protected void assertCompanyResults( EntityQuery query, Company... companies ) {
+	protected boolean assertCompanyResults( EntityQuery query, Company... companies ) {
 		List<Company> found = (List<Company>) companyRepository.findAll(
 				EntityQueryQueryDslUtils.toPredicate( query, Company.class, "company" )
 		);
 		assertEquals( companies.length, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( companies ) ) );
+		return true;
 	}
 
 	@Override

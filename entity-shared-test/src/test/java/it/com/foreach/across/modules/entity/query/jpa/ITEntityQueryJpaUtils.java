@@ -154,10 +154,10 @@ public class ITEntityQueryJpaUtils extends AbstractQueryTest
 	@Test
 	@SuppressWarnings("all")
 	public void likeIgnoreCase() {
-		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "On%" ) );
-		assertCompanyResults( query );
+		final EntityQuery q = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE, "On%" ) );
+		fallback( () -> assertCompanyResults( q ), () -> assertCompanyResults( q, one ) );
 
-		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE_IC, "On%" ) );
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE_IC, "On%" ) );
 		assertCompanyResults( query, one );
 
 		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.LIKE_IC, "%WO" ) );
@@ -183,10 +183,10 @@ public class ITEntityQueryJpaUtils extends AbstractQueryTest
 	@Test
 	@SuppressWarnings("all")
 	public void notLikeIgnoreCase() {
-		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "On%" ) );
-		assertCompanyResults( query, one, two, three );
+		final EntityQuery q = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE, "On%" ) );
+		fallback( () -> assertCompanyResults( q, one, two, three ), () -> assertCompanyResults( q, two, three ) );
 
-		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE_IC, "On%" ) );
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE_IC, "On%" ) );
 		assertCompanyResults( query, two, three );
 
 		query = EntityQuery.and( new EntityQueryCondition( "id", EntityQueryOps.NOT_LIKE_IC, "%WO" ) );
@@ -250,10 +250,11 @@ public class ITEntityQueryJpaUtils extends AbstractQueryTest
 		assertRepresentativeResults( query, weirdo, peter );
 	}
 
-	protected void assertCompanyResults( EntityQuery query, Company... companies ) {
+	protected boolean assertCompanyResults( EntityQuery query, Company... companies ) {
 		List<Company> found = companyRepository.findAll( EntityQueryJpaUtils.toSpecification( query ) );
 		assertEquals( companies.length, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( companies ) ) );
+		return true;
 	}
 
 	protected void assertRepresentativeResults( EntityQuery query, Representative... representatives ) {

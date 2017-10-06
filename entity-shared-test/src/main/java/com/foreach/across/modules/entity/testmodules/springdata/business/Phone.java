@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.testmodules.springdata.business;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
@@ -25,6 +26,8 @@ import javax.persistence.Embeddable;
 public class Phone
 {
 	private String area;
+
+	@Column(name = "phone_number")
 	private String number;
 
 	public String getArea() {
