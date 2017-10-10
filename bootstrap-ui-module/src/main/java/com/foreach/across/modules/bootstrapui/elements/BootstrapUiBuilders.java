@@ -142,6 +142,34 @@ public class BootstrapUiBuilders
 		return FACTORY.table();
 	}
 
+	public static TableViewElementBuilder.Header tableHeader() {
+		return FACTORY.tableHeader();
+	}
+
+	public static TableViewElementBuilder.Body tableBody() {
+		return FACTORY.tableBody();
+	}
+
+	public static TableViewElementBuilder.Footer tableFooter() {
+		return FACTORY.tableFooter();
+	}
+
+	public static TableViewElementBuilder.Caption tableCaption() {
+		return FACTORY.tableCaption();
+	}
+
+	public static TableViewElementBuilder.Cell tableCell() {
+		return FACTORY.tableCell();
+	}
+
+	public static TableViewElementBuilder.Cell tableHeaderCell() {
+		return FACTORY.tableHeaderCell();
+	}
+
+	public static TableViewElementBuilder.Row tableRow() {
+		return FACTORY.tableRow();
+	}
+
 	public static NodeViewElementBuilder row() {
 		return FACTORY.row();
 	}
@@ -192,6 +220,14 @@ public class BootstrapUiBuilders
 
 	public static AlertViewElementBuilder alert() {
 		return FACTORY.alert();
+	}
+
+	public static GlyphIcon glyphIcon( String icon ) {
+		return FACTORY.glyphIcon( icon );
+	}
+
+	public static FaIcon faIcon( String icon ) {
+		return FACTORY.faIcon( icon );
 	}
 
 	public static DefaultNavComponentBuilder nav( Menu menu ) {

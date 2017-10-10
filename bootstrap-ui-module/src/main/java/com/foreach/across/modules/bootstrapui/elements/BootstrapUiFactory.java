@@ -58,6 +58,20 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 
 	TableViewElementBuilder table();
 
+	TableViewElementBuilder.Header tableHeader();
+
+	TableViewElementBuilder.Body tableBody();
+
+	TableViewElementBuilder.Footer tableFooter();
+
+	TableViewElementBuilder.Caption tableCaption();
+
+	TableViewElementBuilder.Cell tableCell();
+
+	TableViewElementBuilder.Cell tableHeaderCell();
+
+	TableViewElementBuilder.Row tableRow();
+
 	NodeViewElementBuilder row();
 
 	NodeViewElementBuilder helpBlock();
@@ -83,4 +97,8 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 	NumericFormElementBuilder numeric();
 
 	AlertViewElementBuilder alert();
+
+	GlyphIcon glyphIcon( String icon );
+
+	FaIcon faIcon( String icon );
 }
