@@ -120,7 +120,10 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		configuration.withType( Group.class )
 		             .properties(
 				             props -> props.property( "name" )
-				                           .attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.ignoreCase() )
+				                           .attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.ignoreCase() ).and()
+				                           .property( "userCount" )
+				                           .displayName( "# Users" )
+				                           .valueFetcher( Group::calculateUserCount )
 		             )
 		             .viewElementBuilder(
 				             ViewElementMode.LIST_VALUE,
@@ -132,7 +135,10 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 							             : TextViewElement.text( "" );
 				             }
 		             )
-		             .listView( lvb -> lvb.entityQueryPredicate( "name not like 'small people%'" ) )
+		             .listView(
+				             lvb -> lvb.entityQueryPredicate( "name not like 'small people%'" )
+				                       .showProperties( "name", "userCount" )
+		             )
 		             .association(
 				             ab -> ab.name( "user.group" )
 				                     .associationType( EntityAssociation.Type.EMBEDDED )

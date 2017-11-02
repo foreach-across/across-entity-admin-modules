@@ -195,7 +195,7 @@ public class EntityPropertyRegistryBuilder
 		}
 
 		@Override
-		public PropertyDescriptorBuilder valueFetcher( ValueFetcher valueFetcher ) {
+		public <U> PropertyDescriptorBuilder valueFetcher( ValueFetcher<U> valueFetcher ) {
 			return (PropertyDescriptorBuilder) super.valueFetcher( valueFetcher );
 		}
 

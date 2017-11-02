@@ -79,4 +79,8 @@ public class Group extends SettableIdBasedEntity<Group>
 	public Collection<User> getUsers() {
 		return users;
 	}
+
+	public int calculateUserCount() {
+		return getUsers().size();
+	}
 }
