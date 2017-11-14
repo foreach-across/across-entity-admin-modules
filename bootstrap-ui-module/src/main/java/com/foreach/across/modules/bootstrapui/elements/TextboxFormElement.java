@@ -16,6 +16,8 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
@@ -25,6 +27,7 @@ import java.util.Objects;
 public class TextboxFormElement extends FormControlElementSupport implements ConfigurableTextViewElement, ConfigurablePlaceholderText
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.TEXTBOX;
+	public static final String CSS_DISABLE_LINE_BREAKS = "js-disable-line-breaks";
 
 	public static class Type
 	{
@@ -83,6 +86,10 @@ public class TextboxFormElement extends FormControlElementSupport implements Con
 	private Type type = Type.TEXT;
 	private String placeholder, text;
 	private Integer maxLength;
+
+	@Getter
+	@Setter
+	private boolean disableLineBreaks;
 
 	public TextboxFormElement() {
 		super( ELEMENT_TYPE );

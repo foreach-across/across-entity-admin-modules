@@ -69,9 +69,9 @@ public class BootstrapSelectController
 		generatedSelects.put( "Simple select - bootstrap-select", simpleBootstrapSelect() );
 		generatedSelects.put( "Multi select - bootstrap-select", multiBootstrapSelect() );
 
-		model.addAttribute( "generatedSelects", generatedSelects );
+		model.addAttribute( "generatedElements", generatedSelects );
 
-		return "th/bootstrapUiTest/select";
+		return "th/bootstrapUiTest/elementsRendering";
 	}
 
 	private SelectFormElement simpleBootstrapSelect() {

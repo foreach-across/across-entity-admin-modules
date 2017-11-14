@@ -1,9 +1,9 @@
 = BootstrapUiModule
 Arne Vandamme
-1.1.0.RELEASE
+1.2.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 1.1.0.RELEASE
+:module-version: 1.2.0.RELEASE
 :module-name: BootstrapUiModule
 :module-artifact: bootstrap-ui-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
@@ -46,6 +46,13 @@ Module website: {module-url}
 
 == What's new in this version?
 :numbered!:
+=== 1.2.0.RELEASE
+* added `BootstrapUiBuilders` class that is a static facade for all builders
+** `BootstrapUiFactory` and `BootstrapUiComponentFactory` beans are still available, but because both of them operate stateless the facade was added to reduce wiring verbosity
+* textbox improvements:
+** `TextboxFormElement` has a property *disableLineBreaks* that will disable the ENTER key
+** the `TextboxFormElementBuilder` will generate a valid single-line auto-sizing textarea if auto-size is requested on a normal textbox
+
 === 1.1.0.RELEASE
 * added several <<NavComponentBuilder,builders for rendering menu structures>>: `DefaultNavComponentBuilder`, `BreadcrumbNavComponentBuilder` and `PanelsNavComponentBuilder`
 ** all nav related builders now also support message code snippets in `Menu` titles: putting for example _#{my.code=Item title}_ as value will be replaced by the Locale specific message for _my.code_ or by _Item title_ if the message code can't be resolved
@@ -188,7 +195,7 @@ If the `ViewElement` is a node (xml-type element) it will also have a data attri
 NOTE: It is not required for a `ViewElement` to have a name, nor is it required for that name to be unique.
 
 == Default elements
-Most default elements can be created through the `BootstrapUiFactory`.
+Most default elements can be created through the `BootstrapUiFactory` (instance) of `BootstrapUiBuilders` (static facade to the factories).
 
 === Overview
 Although elements can be created directly, most have an equivalent `ViewElementBuilder`.

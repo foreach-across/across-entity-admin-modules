@@ -16,6 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
+import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 
 /**
@@ -29,7 +30,8 @@ public class TextareaFormElementModelWriter extends FormControlElementModelWrite
 		super.writeOpenElement( control, model );
 
 		model.addAttributeValue( "class", "form-control",
-		                         control.isAutoSize() ? TextareaFormElement.CSS_AUTOSIZE : null );
+		                         control.isAutoSize() ? TextareaFormElement.CSS_AUTOSIZE : null,
+		                         control.isDisableLineBreaks() ? TextboxFormElement.CSS_DISABLE_LINE_BREAKS : null );
 
 		model.addAttribute( "rows", control.getRows() );
 		model.addAttribute( "placeholder", control.getPlaceholder() );

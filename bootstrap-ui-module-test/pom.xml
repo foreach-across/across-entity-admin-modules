@@ -21,7 +21,7 @@
 	<parent>
 		<artifactId>bootstrap-ui-module-project</artifactId>
 		<groupId>com.foreach.across.modules</groupId>
-		<version>1.1.0.RELEASE</version>
+		<version>1.2.0.RELEASE</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>bootstrap-ui-module</artifactId>
-			<version>1.1.0.RELEASE</version>
+			<version>1.2.0.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

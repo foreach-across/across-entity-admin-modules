@@ -76,6 +76,21 @@
                 autosize( $( '.js-autosize', node ) );
 
                 /**
+                 * Disable enter on all controls that specify it.
+                 */
+                $( '.js-disable-line-breaks', node ).on( 'keyup keypress', function( e ) {
+                    if ( e.which == 13 || e.which == 10 ) {
+                        e.preventDefault();
+                        return false;
+                    }
+                } );
+
+                /**
+                 * Disable resizing on textareas that do not allow line breaks.
+                 */
+                $( '.js-disable-line-breaks.js-autosize' ).css( 'resize', 'none' );
+
+                /**
                  * Find and activate all bootstrap-select elements.
                  */
                 $( '[data-bootstrapui-select]', node ).each( function() {
