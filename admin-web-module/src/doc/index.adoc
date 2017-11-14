@@ -1,9 +1,9 @@
 = AdminWebModule
 Arne Vandamme
-2.1.0.RELEASE
+2.1.1.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 2.1.0.RELEASE
+:module-version: 2.1.1.RELEASE
 :module-name: AdminWebModule
 :module-artifact: admin-web-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/AdminWebModule
@@ -121,6 +121,10 @@ All properties start with the *adminWebModule.* prefix.
 
 == What's new in this version?
 :numbered!:
+=== 2.1.1.RELEASE
+
+* Removed deprecated icon set from package and switched to new Across logo
+
 === 2.1.0.RELEASE
 
 * Improved styling of the default layout

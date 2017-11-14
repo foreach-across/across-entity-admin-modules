@@ -27,7 +27,7 @@
 
 	<groupId>com.foreach.across.modules</groupId>
 	<artifactId>admin-web-module-project</artifactId>
-	<version>2.1.0.RELEASE</version>
+	<version>2.1.1.RELEASE</version>
 	<packaging>pom</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -45,7 +45,7 @@
 	<developers>
 		<developer>
 			<name>Arne Vandamme</name>
-			<email>arne@foreach.be</email>
+			<email>arne at foreach.be</email>
 			<organization>Foreach</organization>
 			<organizationUrl>http://www.foreach.be</organizationUrl>
 		</developer>
