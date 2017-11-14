@@ -1,9 +1,9 @@
 = BootstrapUiModule
 Arne Vandamme
-1.2.0-SNAPSHOT
+1.2.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 1.2.0-SNAPSHOT
+:module-version: 1.2.0.RELEASE
 :module-name: BootstrapUiModule
 :module-artifact: bootstrap-ui-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
@@ -46,7 +46,7 @@ Module website: {module-url}
 
 == What's new in this version?
 :numbered!:
-=== 1.2.0-SNAPSHOT
+=== 1.2.0.RELEASE
 * added `BootstrapUiBuilders` class that is a static facade for all builders
 ** `BootstrapUiFactory` and `BootstrapUiComponentFactory` beans are still available, but because both of them operate stateless the facade was added to reduce wiring verbosity
 * textbox improvements:
