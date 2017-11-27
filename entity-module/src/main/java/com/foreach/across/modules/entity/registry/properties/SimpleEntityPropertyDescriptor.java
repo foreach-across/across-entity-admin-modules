@@ -37,7 +37,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	}
 
 	public SimpleEntityPropertyDescriptor( String name, EntityPropertyDescriptor parent ) {
-		Assert.notNull( name );
+		Assert.notNull( name, "name is required" );
 		this.name = name;
 		this.parent = parent;
 
@@ -100,6 +100,9 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	@Override
 	public void setPropertyType( Class<?> propertyType ) {
 		this.propertyType = propertyType;
+		if ( propertyType != null ) {
+			propertyTypeDescriptor = TypeDescriptor.valueOf( propertyType );
+		}
 	}
 
 	public TypeDescriptor getPropertyTypeDescriptor() {
@@ -109,12 +112,27 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 
 	public void setPropertyTypeDescriptor( TypeDescriptor propertyTypeDescriptor ) {
 		this.propertyTypeDescriptor = propertyTypeDescriptor;
+		if ( propertyTypeDescriptor != null ) {
+			propertyType = propertyTypeDescriptor.getType();
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object getPropertyValue( Object entity ) {
+		if ( entity != null ) {
+			ValueFetcher valueFetcher = getValueFetcher();
+
+			if ( valueFetcher != null ) {
+				return valueFetcher.getValue( entity );
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public ValueFetcher getValueFetcher() {
-		return valueFetcher != null
-				? valueFetcher : ( parent != null ? parent.getValueFetcher() : null );
+		return valueFetcher != null ? valueFetcher : ( parent != null ? parent.getValueFetcher() : null );
 	}
 
 	@Override

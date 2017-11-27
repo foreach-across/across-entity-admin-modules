@@ -16,6 +16,7 @@
 
 package it.com.foreach.across.modules.entity.query;
 
+import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryParser;
@@ -51,6 +52,37 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 	@Test
 	public void findAll() {
 		findCompanies( "", one, two, three );
+	}
+
+	@Test
+	public void findAllCompaniesOrdered() {
+		List<Company> ordered = findCompanies( "order by id desc", one, two, three );
+		assertEquals( two, ordered.get( 0 ) );
+		assertEquals( three, ordered.get( 1 ) );
+		assertEquals( one, ordered.get( 2 ) );
+	}
+
+	@Test
+	public void findCompaniesOrdered() {
+		List<Company> ordered = findCompanies( "number > 1 order by created asc", two, three );
+		assertEquals( two, ordered.get( 0 ) );
+		assertEquals( three, ordered.get( 1 ) );
+	}
+
+	@Test
+	public void findAllRepresentativesOrdered() {
+		List<Representative> ordered = findRepresentatives( "order by name desc", john, joe, peter, weirdo );
+		assertEquals( peter, ordered.get( 0 ) );
+		assertEquals( john, ordered.get( 1 ) );
+		assertEquals( joe, ordered.get( 2 ) );
+		assertEquals( weirdo, ordered.get( 3 ) );
+	}
+
+	@Test
+	public void findRepresentativesOrdered() {
+		List<Representative> ordered = findRepresentatives( "id like 'j%' order by name asc", john, joe );
+		assertEquals( joe, ordered.get( 0 ) );
+		assertEquals( john, ordered.get( 1 ) );
 	}
 
 	@Test
@@ -104,6 +136,12 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		findCompanies( "id like 'on%'", one );
 		findCompanies( "id like '%wo'", two );
 		findCompanies( "id like '%o%'", one, two );
+	}
+
+	@Test
+	public void containsOnText() {
+		findCompanies( "id contains 'o'", one, two );
+		findCompanies( "id not contains 'o'", three );
 	}
 
 	@Test
@@ -180,6 +218,14 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 	}
 
 	@Test
+	public void nullValuesInInOperand() {
+		findCompanies( "status in (BROKE,IN_BUSINESS)", one, two );
+		findCompanies( "status in (NULL)", three );
+		findCompanies( "status in (null, BROKE, IN_BUSINESS)", one, two, three );
+		findCompanies( "status not in (null)", one, two );
+	}
+
+	@Test
 	public void isEmpty() {
 		findCompanies( "representatives is empty", three );
 		findCompanies( "representatives is EMPTY", three );
@@ -200,6 +246,14 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		findRepresentatives( "name like '!\"#\\%-_&/()=;?´`|/\\\\\\\\\\''", weirdo );
 		findRepresentatives( "name like '%_%'", weirdo );
 		findRepresentatives( "name like '%\\\\\\\\%'", weirdo, peter );
+	}
+
+	@Test
+	public void containsWithCharacterEscaping() {
+		findRepresentatives( "name contains 'John % Surname'", john );
+		findRepresentatives( "name contains 'Joe \\' Surname'", joe );
+		findRepresentatives( "name contains 'Peter \\\\\\\\ Surname'", peter );
+		findRepresentatives( "name contains '%'", john, weirdo );
 	}
 
 	@Test
@@ -225,7 +279,7 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		}
 	}
 
-	private void findCompanies( String query, Company... expected ) {
+	private List<Company> findCompanies( String query, Company... expected ) {
 		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( Company.class );
 		EntityQueryExecutor<Company> queryExecutor = entityConfiguration.getAttribute( EntityQueryExecutor.class );
 		EntityQueryParser queryParser = entityConfiguration.getAttribute( EntityQueryParser.class );
@@ -233,9 +287,16 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		List<Company> found = queryExecutor.findAll( queryParser.parse( query ) );
 		assertEquals( expected.length, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( expected ) ) );
+
+		EntityQuery rawQuery = EntityQuery.parse( query );
+		EntityQuery executableQuery = queryParser.prepare( rawQuery );
+		assertEquals( executableQuery, queryParser.prepare( executableQuery ) );
+		assertEquals( found, queryExecutor.findAll( executableQuery ) );
+
+		return found;
 	}
 
-	private void findRepresentatives( String query, Representative... expected ) {
+	private List<Representative> findRepresentatives( String query, Representative... expected ) {
 		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( Representative.class );
 		EntityQueryExecutor<Representative> queryExecutor = entityConfiguration.getAttribute( EntityQueryExecutor.class );
 		EntityQueryParser queryParser = entityConfiguration.getAttribute( EntityQueryParser.class );
@@ -243,5 +304,12 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 		List<Representative> found = queryExecutor.findAll( queryParser.parse( query ) );
 		assertEquals( expected.length, found.size() );
 		assertTrue( found.containsAll( Arrays.asList( expected ) ) );
+
+		EntityQuery rawQuery = EntityQuery.parse( query );
+		EntityQuery executableQuery = queryParser.prepare( rawQuery );
+		assertEquals( executableQuery, queryParser.prepare( executableQuery ) );
+		assertEquals( found, queryExecutor.findAll( executableQuery ) );
+
+		return found;
 	}
 }

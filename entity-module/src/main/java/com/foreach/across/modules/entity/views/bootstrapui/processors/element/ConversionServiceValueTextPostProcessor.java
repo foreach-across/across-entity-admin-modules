@@ -49,7 +49,7 @@ public class ConversionServiceValueTextPostProcessor<T extends ConfigurableTextV
 	protected String print( Object value, Locale locale ) {
 		TypeDescriptor sourceType = getPropertyDescriptor().getPropertyTypeDescriptor();
 
-		if ( sourceType == null ) {
+		if ( sourceType == null || !sourceType.getType().isInstance( value ) ) {
 			sourceType = TypeDescriptor.forObject( value );
 		}
 

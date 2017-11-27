@@ -23,7 +23,9 @@ import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -242,6 +244,18 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	/**
+	 * Set the {@link com.foreach.across.modules.web.ui.ViewElement} type of a particular {@link ViewElementMode}.
+	 *
+	 * @param mode            to set the type for
+	 * @param viewElementType to use
+	 * @return current builder
+	 */
+	public EntityConfigurationBuilder<T> viewElementType( ViewElementMode mode, String viewElementType ) {
+		viewElementLookupRegistry.setViewElementType( mode, viewElementType );
+		return this;
+	}
+
+	/**
 	 * Set the default {@link ViewElementBuilder} properties with this entity as type should use for a particular {@link ViewElementMode}.
 	 *
 	 * @param mode               to set the builder for
@@ -251,6 +265,21 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	public EntityConfigurationBuilder<T> viewElementBuilder( ViewElementMode mode,
 	                                                         ViewElementBuilder viewElementBuilder ) {
 		viewElementLookupRegistry.setViewElementBuilder( mode, viewElementBuilder );
+		return this;
+	}
+
+	/**
+	 * Add a {@link ViewElementPostProcessor} to apply to the default {@link ViewElementBuilder}.
+	 * Note that postprocessor will be ignored if a custom {@link ViewElementBuilder}
+	 * was set using {@link #viewElementBuilder(ViewElementMode, ViewElementBuilder)}.
+	 *
+	 * @param mode                     to add the postprocessor for
+	 * @param viewElementPostProcessor to add
+	 * @return current builder
+	 */
+	public <U extends ViewElement> EntityConfigurationBuilder<T> viewElementPostProcessor( ViewElementMode mode,
+	                                                                                       ViewElementPostProcessor<U> viewElementPostProcessor ) {
+		viewElementLookupRegistry.addViewElementPostProcessor( mode, viewElementPostProcessor );
 		return this;
 	}
 

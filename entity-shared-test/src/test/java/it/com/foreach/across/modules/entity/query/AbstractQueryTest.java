@@ -105,7 +105,7 @@ public abstract class AbstractQueryTest
 	}
 
 	@AfterClass
-	public static void resetTestDate() {
+	public static void resetTestData() {
 		inserted = false;
 	}
 

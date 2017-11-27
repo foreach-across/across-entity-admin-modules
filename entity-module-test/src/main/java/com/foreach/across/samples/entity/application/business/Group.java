@@ -18,6 +18,8 @@ package com.foreach.across.samples.entity.application.business;
 
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
@@ -30,6 +32,8 @@ import java.util.Collection;
  * @since 2.0.0
  */
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "test_group")
 public class Group extends SettableIdBasedEntity<Group>
 {

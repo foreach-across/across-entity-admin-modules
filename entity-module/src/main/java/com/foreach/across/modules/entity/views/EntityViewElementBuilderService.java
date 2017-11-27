@@ -28,16 +28,6 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 public interface EntityViewElementBuilderService
 {
 	/**
-	 * Find the best matching element type for a given {@link EntityPropertyDescriptor}.  Either a matching type
-	 * will be found on the descriptor for the mode requested, or a resolving strategy will be used.
-	 *
-	 * @param descriptor of the specific property
-	 * @param mode       for which we are requesting the type
-	 * @return element type
-	 */
-	String getElementType( EntityPropertyDescriptor descriptor, ViewElementMode mode );
-
-	/**
 	 * Creates a new {@link ViewElementBuilder} instance for the given property descriptor.  The type of the
 	 * builder will be determined automatically based on the descriptor and requested mode.
 	 *

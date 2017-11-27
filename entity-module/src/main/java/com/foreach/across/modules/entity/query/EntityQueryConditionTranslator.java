@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.query;
 
+import com.foreach.across.modules.entity.query.support.ExpandingOrEntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.query.support.IgnoringCaseEntityQueryConditionTranslator;
 
 /**
@@ -42,5 +43,16 @@ public interface EntityQueryConditionTranslator
 	 */
 	static EntityQueryConditionTranslator ignoreCase() {
 		return IgnoringCaseEntityQueryConditionTranslator.INSTANCE;
+	}
+
+	/**
+	 * Creates a translator that replaces a single condition by an OR combination of multiple other conditions,
+	 * having the same operand and argument values.
+	 *
+	 * @param propertyNames to combine
+	 * @return translator for the property names
+	 */
+	static EntityQueryConditionTranslator expandingOr( String... propertyNames ) {
+		return new ExpandingOrEntityQueryConditionTranslator( propertyNames );
 	}
 }

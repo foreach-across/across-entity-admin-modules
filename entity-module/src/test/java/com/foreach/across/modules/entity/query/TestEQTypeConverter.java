@@ -103,6 +103,8 @@ public class TestEQTypeConverter
 		              typeConverter.convert( valueOf( Integer.class ), new EQString( "text" ) ) );
 		verify( conversionService ).canConvert( valueOf( EQString.class ),
 		                                        valueOf( Integer.class ) );
+		verify( conversionService ).canConvert( valueOf( String.class ),
+		                                        valueOf( Integer.class ) );
 		verifyNoMoreInteractions( conversionService );
 	}
 
@@ -120,8 +122,10 @@ public class TestEQTypeConverter
 		when( conversionService.canConvert( valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( true );
 		when( conversionService.convert( "1", valueOf( String.class ), valueOf( Integer.class ) ) )
 				.thenReturn( 1 );
+		when( conversionService.convert( "2", valueOf( String.class ), valueOf( Integer.class ) ) )
+				.thenReturn( 2 );
 
-		assertArrayEquals( new Object[] { 1, "2" },
+		assertArrayEquals( new Object[] { 1, 2 },
 		                   (Object[]) typeConverter.convert( valueOf( Integer.class ),
 		                                                     new EQGroup( new EQValue( "1" ), new EQString( "2" ) ) ) );
 	}
@@ -129,6 +133,27 @@ public class TestEQTypeConverter
 	@Test(expected = EntityQueryParsingException.IllegalFunction.class)
 	public void eqFunctionThrowsExceptionIfFunctionDoesNotExist() {
 		typeConverter.convert( valueOf( Integer.class ), new EQFunction( "hello" ) );
+	}
+
+	@Test
+	public void convertUsingConversionServiceWinsOverEQString() {
+		when( conversionService.canConvert( valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( true );
+		when( conversionService.convert( "1234", valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( 1234 );
+		assertEquals( 1234, typeConverter.convert( valueOf( Integer.class ), new EQString( "1234" ) ) );
+	}
+
+	@Test
+	public void convertUsingConversionServiceEQStringWinsOverString() {
+		EQString eqString = new EQString( "1234" );
+		when( conversionService.canConvert( valueOf( EQString.class ), valueOf( Integer.class ) ) ).thenReturn( true );
+		when( conversionService.convert( eq( eqString ), eq( valueOf( EQString.class ) ), eq( valueOf( Integer.class ) ) ) ).thenReturn( 1234 );
+
+		when( conversionService.canConvert( valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( true );
+		when( conversionService.convert( "1234", valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( 1234 );
+
+		assertEquals( 1234, typeConverter.convert( valueOf( Integer.class ), eqString ) );
+		verify( conversionService, times( 0 ) ).convert( "1234", valueOf( String.class ), valueOf( Integer.class ) );
+
 	}
 
 	@Test

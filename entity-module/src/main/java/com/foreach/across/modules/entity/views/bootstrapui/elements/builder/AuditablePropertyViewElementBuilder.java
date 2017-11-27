@@ -87,19 +87,25 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 				date = auditable.getLastModifiedDate();
 			}
 
-			String principalString = securityPrincipalLabelResolverStrategy.resolvePrincipalLabel( principal );
+			String principalString = getPrincipalString( principal );
 
-			return new TextViewElement(
-					convertToString( date )
-							+ ( !StringUtils.isBlank( principalString ) ? " by " + principalString : "" )
-			);
+			return new TextViewElement( convertToString( date ) + ( !StringUtils.isBlank( principalString ) ? " by " + principalString : "" ) );
 		}
 
 		return null;
 	}
 
+	private String getPrincipalString( Object principal ) {
+		try {
+			return securityPrincipalLabelResolverStrategy.resolvePrincipalLabel( principal );
+		}
+		catch ( Exception e ) {
+			return principal != null ? principal.toString() : null;
+		}
+	}
+
 	private String convertToString( Date date ) {
-		if ( conversionService != null ) {
+		if ( conversionService != null && date != null ) {
 			return conversionService.convert( date, String.class );
 		}
 

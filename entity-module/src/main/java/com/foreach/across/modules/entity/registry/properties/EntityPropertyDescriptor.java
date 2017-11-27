@@ -48,6 +48,15 @@ public interface EntityPropertyDescriptor extends ReadableAttributes
 	ValueFetcher getValueFetcher();
 
 	/**
+	 * Retrieve the property value for the entity parameter.
+	 * This is basically the same as calling {@link #getValueFetcher()#getValue}, except null will be returned if no {@link ValueFetcher} is available.
+	 *
+	 * @param entity from which to get the property value
+	 * @return property value or null if unable to get
+	 */
+	Object getPropertyValue( Object entity );
+
+	/**
 	 * @return the property registry that owns this property
 	 */
 	EntityPropertyRegistry getPropertyRegistry();

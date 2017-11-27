@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.views.processors.DelegatingEntityFetchi
 import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
+import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterConfiguration;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import org.junit.Before;
 import org.junit.Test;
@@ -125,6 +126,7 @@ public class TestEntityListViewFactoryBuilder
 	@Test
 	public void entityQueryFilterEnabled() {
 		EntityQueryFilterProcessor queryFilterProcessor = mock( EntityQueryFilterProcessor.class );
+		when( queryFilterProcessor.getFilterConfiguration() ).thenReturn( EntityQueryFilterConfiguration.builder().build() );
 		when( beanFactory.createBean( EntityQueryFilterProcessor.class ) ).thenReturn( queryFilterProcessor );
 
 		builder.entityQueryFilter( true ).build();

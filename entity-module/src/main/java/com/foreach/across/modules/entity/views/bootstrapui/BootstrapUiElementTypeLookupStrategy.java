@@ -16,13 +16,15 @@
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
+import com.foreach.across.modules.entity.util.EntityTypeDescriptor;
+import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
@@ -34,6 +36,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * Default {@link ViewElementTypeLookupStrategy} that maps the default {@link ViewElementMode} to a known view element type.
+ *
  * @author Arne Vandamme
  */
 @Component
@@ -44,11 +48,16 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	@SuppressWarnings("unchecked")
 	@Override
 	public String findElementType( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
-		boolean isForWriting
-				= ViewElementMode.FORM_WRITE.equals( viewElementMode ) || ViewElementMode.isControl( viewElementMode );
+		ViewElementMode singleMode = viewElementMode.forSingle();
+
+		if ( ViewElementMode.FILTER_CONTROL.equals( singleMode ) ) {
+			return findFilterControlElementType( descriptor, viewElementMode.isForMultiple() );
+		}
+
+		boolean isForWriting = ViewElementMode.FORM_WRITE.equals( singleMode ) || ViewElementMode.isControl( singleMode );
 
 		if ( isForWriting && !descriptor.isWritable() && descriptor.isReadable() ) {
-			if ( ViewElementMode.FORM_WRITE.equals( viewElementMode ) ) {
+			if ( ViewElementMode.FORM_WRITE.equals( singleMode ) ) {
 				viewElementMode = ViewElementMode.FORM_READ;
 			}
 			else {
@@ -56,8 +65,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			}
 		}
 
-		boolean isForReading
-				= ViewElementMode.FORM_READ.equals( viewElementMode ) || ViewElementMode.isValue( viewElementMode );
+		boolean isForReading = ViewElementMode.FORM_READ.equals( singleMode ) || ViewElementMode.isValue( viewElementMode );
 
 		if ( ( !descriptor.isWritable() && !descriptor.isReadable() ) && isForWriting ) {
 			return null;
@@ -69,8 +77,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 		boolean isEmbedded = PropertyPersistenceMetadata.isEmbeddedProperty( descriptor );
 
-		if ( ViewElementMode.FORM_WRITE.equals( viewElementMode )
-				|| ViewElementMode.FORM_READ.equals( viewElementMode ) ) {
+		if ( ViewElementMode.FORM_WRITE.equals( singleMode ) || ViewElementMode.FORM_READ.equals( singleMode ) ) {
 			if ( isEmbedded ) {
 				return BootstrapUiElements.FIELDSET;
 			}
@@ -82,7 +89,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			return null;
 		}
 
-		if ( ViewElementMode.isLabel( viewElementMode ) ) {
+		if ( ViewElementMode.isLabel( singleMode ) ) {
 			return BootstrapUiElements.LABEL;
 		}
 
@@ -95,10 +102,6 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 			if ( ClassUtils.isAssignable( propertyType, Date.class ) ) {
 				return BootstrapUiElements.DATETIME;
-			}
-
-			if ( ViewElementMode.isValue( viewElementMode ) && entityRegistry.getEntityConfiguration( propertyType ) != null ) {
-				return ValueViewElementBuilderFactory.READONLY;
 			}
 		}
 
@@ -133,8 +136,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 					}
 				}
 
-				if ( ClassUtils.isAssignable( propertyType, Boolean.class )
-						|| ClassUtils.isAssignable( propertyType, AtomicBoolean.class ) ) {
+				if ( ClassUtils.isAssignable( propertyType, Boolean.class ) || ClassUtils.isAssignable( propertyType, AtomicBoolean.class ) ) {
 					return BootstrapUiElements.CHECKBOX;
 				}
 
@@ -143,6 +145,25 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		}
 
 		return null;
+	}
+
+	/**
+	 * Filter controls use a different lookup strategy.  Only the member property descriptor type is used in case of a collection,
+	 * it is the multiple boolean that determines if a control for multiple values should be built or not.  For example:
+	 * if a property is a set of users, the fact that it is a set will determine the filter operand that should be used, but the actual
+	 * filtering would still be done on a single user.
+	 */
+	@SuppressWarnings("all")
+	private String findFilterControlElementType( EntityPropertyDescriptor descriptor, boolean multiple ) {
+		EntityTypeDescriptor typeDescriptor = EntityUtils.resolveEntityTypeDescriptor( descriptor.getPropertyTypeDescriptor(), entityRegistry );
+
+		if ( typeDescriptor.isTargetTypeResolved()
+				&& ( entityRegistry.contains( typeDescriptor.getSimpleTargetType() ) || typeDescriptor.getSimpleTargetType().isEnum()
+				|| ArrayUtils.contains( new Object[] { Boolean.class, boolean.class }, typeDescriptor.getSimpleTargetType() ) ) ) {
+			return BootstrapUiElements.SELECT;
+		}
+
+		return BootstrapUiElements.TEXTBOX;
 	}
 
 	@Autowired

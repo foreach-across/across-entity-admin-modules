@@ -27,4 +27,6 @@ import org.springframework.data.domain.Pageable;
 public interface GroupRepository extends IdBasedEntityJpaRepository<Group>
 {
 	Page<Group> findByNameContaining( String name, Pageable pageable );
+
+	Group findByName( String name );
 }

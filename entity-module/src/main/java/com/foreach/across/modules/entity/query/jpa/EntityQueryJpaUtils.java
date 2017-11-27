@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
+import javax.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,13 +38,7 @@ public abstract class EntityQueryJpaUtils
 	}
 
 	public static <V> Specification<V> toSpecification( final EntityQuery query ) {
-		return new Specification<V>()
-		{
-			@Override
-			public Predicate toPredicate( Root<V> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb ) {
-				return EntityQueryJpaUtils.buildPredicate( query, root, cb );
-			}
-		};
+		return ( root, criteriaQuery, cb ) -> EntityQueryJpaUtils.buildPredicate( query, root, cb );
 	}
 
 	private static <V> Predicate buildPredicate( EntityQueryExpression expression, Root<V> root, CriteriaBuilder cb ) {
@@ -95,13 +90,23 @@ public abstract class EntityQueryJpaUtils
 				return cb.isNotMember( condition.getFirstArgument(), collection );
 			}
 			case IS_EMPTY: {
-				Expression<Collection> collection
-						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
+				Path<V> path = resolveProperty( root, condition.getProperty() );
+
+				if ( path.getModel() instanceof SingularAttribute ) {
+					throw new IllegalArgumentException( "Unable to perform 'IS EMPTY' on single value property - use 'IS NULL' instead" );
+				}
+
+				Expression<Collection> collection = (Expression<Collection>) path;
 				return cb.isEmpty( collection );
 			}
 			case IS_NOT_EMPTY: {
-				Expression<Collection> collection
-						= (Expression<Collection>) resolveProperty( root, condition.getProperty() );
+				Path<V> path = resolveProperty( root, condition.getProperty() );
+
+				if ( path.getModel() instanceof SingularAttribute ) {
+					throw new IllegalArgumentException( "Unable to perform 'IS NOT EMPTY' on single value property - use 'IS NOT NULL' instead" );
+				}
+
+				Expression<Collection> collection = (Expression<Collection>) path;
 				return cb.isNotEmpty( collection );
 			}
 			case IN:

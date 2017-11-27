@@ -28,8 +28,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
@@ -60,6 +59,7 @@ public class TestEntityQueryOptionIterableBuilder
 		iterableBuilder = new EntityQueryOptionIterableBuilder();
 		iterableBuilder.setEntityModel( entityModel );
 		iterableBuilder.setEntityQueryExecutor( entityQueryExecutor );
+		iterableBuilder.setEntityQueryParser( entityQueryParser );
 
 		elementBuilderContext = new DefaultViewElementBuilderContext();
 
@@ -81,9 +81,25 @@ public class TestEntityQueryOptionIterableBuilder
 	}
 
 	@Test
+	public void sortedIfSortPredicateOnEQL() {
+		assertFalse( iterableBuilder.isSorted() );
+
+		iterableBuilder.setEntityQuery( "order by name desc" );
+		assertTrue( iterableBuilder.isSorted() );
+
+		iterableBuilder.setEntityQuery( "id > 10 order by id asc, name desc" );
+		assertTrue( iterableBuilder.isSorted() );
+
+		iterableBuilder.setEntityQuery( "id > 10" );
+		assertFalse( iterableBuilder.isSorted() );
+	}
+
+	@Test
 	public void customEntityQuery() {
 		EntityQuery query = EntityQuery.or( new EntityQueryCondition( "name", EntityQueryOps.EQ, "test" ) );
 		iterableBuilder.setEntityQuery( query );
+
+		when( entityQueryParser.prepare( query ) ).thenReturn( query );
 
 		build();
 
@@ -92,11 +108,10 @@ public class TestEntityQueryOptionIterableBuilder
 
 	@Test
 	public void customEntityQueryAsEQL() {
-		iterableBuilder.setEntityQueryParser( entityQueryParser );
 		iterableBuilder.setEntityQuery( "deleted = 1" );
 
 		EntityQuery query = mock( EntityQuery.class );
-		when( entityQueryParser.parse( "deleted = 1" ) ).thenReturn( query );
+		when( entityQueryParser.prepare( EntityQuery.parse( "deleted = 1" ) ) ).thenReturn( query );
 
 		build();
 

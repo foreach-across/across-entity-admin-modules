@@ -113,7 +113,7 @@ public class TestEntityPropertyDescriptorBuilder
 
 		assertEquals( "myprop", descriptor.getName() );
 		assertEquals( "My Property", descriptor.getDisplayName() );
-		assertEquals( String.class, descriptor.getPropertyType() );
+		assertEquals( Long.class, descriptor.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( Long.class ), descriptor.getPropertyTypeDescriptor() );
 		assertNull( descriptor.getPropertyRegistry() );
 		assertSame( vf, descriptor.getValueFetcher() );
@@ -153,7 +153,7 @@ public class TestEntityPropertyDescriptorBuilder
 		assertEquals( "otherprop", existing.getName() );
 
 		assertEquals( "My Property", existing.getDisplayName() );
-		assertEquals( String.class, existing.getPropertyType() );
+		assertEquals( Long.class, existing.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( Long.class ), existing.getPropertyTypeDescriptor() );
 		assertNull( existing.getPropertyRegistry() );
 		assertSame( vf, existing.getValueFetcher() );

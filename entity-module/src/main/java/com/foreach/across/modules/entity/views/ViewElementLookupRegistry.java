@@ -25,6 +25,8 @@ import java.util.Collection;
  * element type names fo {@link ViewElementMode}.  Has a concept of cacheable communicating to the
  * {@link EntityViewElementBuilderService} if a generated {@link com.foreach.across.modules.web.ui.ViewElementBuilder}
  * can be cached.
+ * <p/>
+ * NOTE: This class is mainly for internal use by EntityModule, and subject to breaking changes in future releases.
  *
  * @author Arne Vandamme
  */
@@ -47,7 +49,7 @@ public interface ViewElementLookupRegistry
 	void addViewElementPostProcessor( ViewElementMode mode, ViewElementPostProcessor<?> postProcessor );
 
 	/**
-	 * If {@link #isCacheable(ViewElementMode)} returns{@code false} this call will have no effect
+	 * If {@link #isCacheable(ViewElementMode)} returns {@code false} this call will have no effect
 	 * and return value should also be {@code false}.
 	 *
 	 * @param mode    to register the builder for
@@ -55,6 +57,15 @@ public interface ViewElementLookupRegistry
 	 * @return true if the builder was actually stored
 	 */
 	boolean cacheViewElementBuilder( ViewElementMode mode, ViewElementBuilder builder );
+
+	/**
+	 * Retrieve the (optionally) cached builder.
+	 * Will return null if either not cached or not cacheable.
+	 *
+	 * @param mode to get the builder for
+	 * @return the registered builder - null if none available
+	 */
+	ViewElementBuilder getCachedViewElementBuilder( ViewElementMode mode );
 
 	/**
 	 * Set the view element type for subsequent lookup.
@@ -78,6 +89,11 @@ public interface ViewElementLookupRegistry
 	 * @param mode to remove the cached builder for
 	 */
 	void reset( ViewElementMode mode );
+
+	/**
+	 * Removes all cached builders.
+	 */
+	void clearCache();
 
 	/**
 	 * @param mode to create the builder for

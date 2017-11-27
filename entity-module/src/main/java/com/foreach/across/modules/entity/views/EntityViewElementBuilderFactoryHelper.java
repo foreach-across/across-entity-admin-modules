@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.*;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class EntityViewElementBuilderFactoryHelper
 	 * @param descriptor for which to create default post processor
 	 * @return default postprocessor
 	 */
-	public <V extends ConfigurableTextViewElement> AbstractValueTextPostProcessor<V> createDefaultValueTextPostProcessor(
+	public <V extends ConfigurableTextViewElement> ViewElementPostProcessor<V> createDefaultValueTextPostProcessor(
 			EntityPropertyDescriptor descriptor ) {
 		if ( descriptor.hasAttribute( Printer.class ) ) {
 			return new PrinterValueTextPostProcessor<>( descriptor, descriptor.getAttribute( Printer.class ) );
@@ -68,6 +69,10 @@ public class EntityViewElementBuilderFactoryHelper
 
 			if ( propertyType.isEnum() ) {
 				return new EnumValueTextPostProcessor<>( descriptor, propertyType.asSubclass( Enum.class ) );
+			}
+
+			if ( propertyType.isAssignableFrom( Boolean.class ) || propertyType.isAssignableFrom( boolean.class ) ) {
+				return new BooleanValueTextProcessor<>( descriptor );
 			}
 		}
 

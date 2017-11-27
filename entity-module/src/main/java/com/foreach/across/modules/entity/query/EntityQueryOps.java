@@ -17,7 +17,6 @@ package com.foreach.across.modules.entity.query;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,14 +28,20 @@ import java.util.stream.Stream;
  */
 public enum EntityQueryOps
 {
-	AND( ( field, args ) -> {
-		Assert.notNull( args );
-		return "(" + StringUtils.join( args, " and " ) + ")";
-	}, "and" ),
-	OR( ( field, args ) -> {
-		Assert.notNull( args );
-		return "(" + StringUtils.join( args, " or " ) + ")";
-	}, "or" ),
+	AND(
+			( field, args ) ->
+					Stream.of( args )
+					      .map( a -> a instanceof EntityQuery ? "(" + a.toString() + ")" : a.toString() )
+					      .collect( Collectors.joining( " and " ) ),
+			"and"
+	),
+	OR(
+			( field, args ) ->
+					Stream.of( args )
+					      .map( a -> a instanceof EntityQuery ? "(" + a.toString() + ")" : a.toString() )
+					      .collect( Collectors.joining( " or " ) ),
+			"or"
+	),
 	EQ( ( field, args ) -> field + " = " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), "=" ),
 	NEQ( ( field, args ) -> field + " != " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), "!=", "<>" ),
 	CONTAINS( ( field, args ) -> field + " contains " + objectAsString( args[0] ), "contains" ),
@@ -44,8 +49,8 @@ public enum EntityQueryOps
 			( ( field, args ) -> field + " not contains " + objectAsString( args[0] ) ),
 			"not contains"
 	),
-	IN( ( field, args ) -> field + " in (" + joinAsStrings( args ) + ")", "in" ),
-	NOT_IN( ( field, args ) -> field + " not in (" + joinAsStrings( args ) + ")", "not in" ),
+	IN( ( field, args ) -> field + " in " + joinAsGroup( args ), "in" ),
+	NOT_IN( ( field, args ) -> field + " not in " + joinAsGroup( args ), "not in" ),
 	LIKE( ( field, args ) -> field + " like " + objectAsString( args[0] ), "like" ),
 	LIKE_IC( ( field, args ) -> field + " ilike " + objectAsString( args[0] ), "ilike" ),
 	NOT_LIKE( ( field, args ) -> field + " not like " + objectAsString( args[0] ), "not like" ),
@@ -80,10 +85,14 @@ public enum EntityQueryOps
 		return value.replace( "\\", "\\\\" ).replace( "'", "\\'" );
 	}
 
-	private static String joinAsStrings( Object... arguments ) {
-		return Stream.of( arguments )
-		             .map( EntityQueryOps::objectAsString )
-		             .collect( Collectors.joining( "," ) );
+	private static String joinAsGroup( Object... arguments ) {
+		if ( arguments.length == 1 && arguments[0] instanceof EQGroup ) {
+			return arguments[0].toString();
+		}
+
+		return "(" + Stream.of( arguments )
+		                   .map( EntityQueryOps::objectAsString )
+		                   .collect( Collectors.joining( "," ) ) + ")";
 	}
 
 	private String[] tokens;

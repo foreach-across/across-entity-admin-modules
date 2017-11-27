@@ -72,13 +72,7 @@ public class PersistenceMetadataPropertiesRegistrar implements DefaultEntityProp
 	private void registerSortableMetadata( PersistentProperty persistentProperty,
 	                                       MutableEntityPropertyDescriptor mutable ) {
 		if ( !persistentProperty.isTransient() && !persistentProperty.isCollectionLike() ) {
-			Sort.Order order = new Sort.Order( persistentProperty.getName() );
-
-			if ( String.class.equals( persistentProperty.getActualType() ) ) {
-				order = order.ignoreCase();
-			}
-
-			mutable.setAttribute( Sort.Order.class, order );
+			mutable.setAttribute( Sort.Order.class, new Sort.Order( persistentProperty.getName() ) );
 		}
 	}
 

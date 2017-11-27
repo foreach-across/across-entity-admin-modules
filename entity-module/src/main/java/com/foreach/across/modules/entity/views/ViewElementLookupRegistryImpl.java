@@ -91,8 +91,17 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 
 	@Override
 	public ViewElementBuilder getViewElementBuilder( ViewElementMode mode ) {
-		ViewElementBuilder fixed = fixedViewElementBuilders.get( mode );
-		return fixed != null ? fixed : viewElementBuilderCache.get( mode );
+		return fixedViewElementBuilders.get( mode );
+	}
+
+	@Override
+	public ViewElementBuilder getCachedViewElementBuilder( ViewElementMode mode ) {
+		return isCacheable( mode ) ? viewElementBuilderCache.get( mode ) : null;
+	}
+
+	@Override
+	public void clearCache() {
+		viewElementBuilderCache.clear();
 	}
 
 	@Override
@@ -102,13 +111,12 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 
 	@Override
 	public boolean isCacheable( ViewElementMode mode ) {
-		return cacheableStatus.containsKey( mode )
-				? Boolean.TRUE.equals( cacheableStatus.get( mode ) ) : defaultCacheable;
+		return cacheableStatus.containsKey( mode ) ? Boolean.TRUE.equals( cacheableStatus.get( mode ) ) : defaultCacheable;
 	}
 
 	/**
 	 * Merge the current values into an already existing registry.
-	 * This will ignore the cached builders as additional postprocessors can be registered.
+	 * This will clear the entire cache of the target registry.
 	 *
 	 * @param existing to merge the values in
 	 */
@@ -119,5 +127,7 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 		postProcessors.forEach(
 				( mode, list ) -> list.forEach( pp -> existing.addViewElementPostProcessor( mode, pp ) )
 		);
+
+		existing.clearCache();
 	}
 }

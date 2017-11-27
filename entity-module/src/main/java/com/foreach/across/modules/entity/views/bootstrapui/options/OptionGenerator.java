@@ -16,43 +16,62 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.options;
 
+import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
+import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.web.ui.MutableViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import lombok.*;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * <p>Wrapper that generates the children of an {@link OptionsFormElementBuilder}.
  * Requires an {@link OptionIterableBuilder} that is responsible for creating
  * the initial collection of {@link OptionFormElementBuilder}s.</p>
- * <p>When the {@link #setSorted(boolean)}</p> property is true, the options will be sorted by label and text
- * in the resulting set.</p>
- * <p>In case of a resulting {@link com.foreach.across.modules.bootstrapui.elements.SelectFormElement} an
- * empty option will be added if none is selected or if the element is not required.  The empty
- * option can be overridden (and set to null) using {@link #setEmptyOption(OptionFormElementBuilder)}.</p>
+ * <p>When the {@link #setSorted(Boolean)}</p> property is true, the options will always be sorted by label and text
+ * in the resulting set. If unset, sorting will only happen if {@link OptionIterableBuilder#isSorted()} returns {@code false}.
+ * <p>In case of single option selector, an empty option will be added if none is selected
+ * or if the element is not required.  The empty option can be overridden (and set to null)
+ * using {@link #setEmptyOption(OptionFormElementBuilder)}.</p>
+ * <p>A single option will be automatically selected in case a selection is required.</p>
  *
  * @author Arne Vandamme
  * @see OptionsFormElementBuilder
  * @see OptionIterableBuilder
+ * @see com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 {
-	private OptionIterableBuilder options;
-	private boolean sorted = false;
-	private OptionFormElementBuilder emptyOption;
-	private ValueFetcher<Object> valueFetcher;
-	private boolean selfOptionIncluded = false;
+	@Getter(AccessLevel.PROTECTED)
+	private OptionFormElementBuilder emptyOption = new OptionFormElementBuilder().label( "" ).value( "" );
 
-	public OptionGenerator() {
-		emptyOption = new OptionFormElementBuilder().label( "" ).value( "" );
-	}
+	@Getter(AccessLevel.PROTECTED)
+	private OptionIterableBuilder options;
+
+	@Getter(AccessLevel.PROTECTED)
+	private Boolean sorted;
+
+	@Getter(AccessLevel.PROTECTED)
+	private ValueFetcher<Object> valueFetcher;
+
+	@Getter(AccessLevel.PROTECTED)
+	private boolean selfOptionIncluded;
+
+	@Getter
+	@Setter
+	private Consumer<OptionFormElementBuilder> enhancer;
 
 	/**
 	 * @param options iterable builder generating the list of options
@@ -62,9 +81,9 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 	}
 
 	/**
-	 * @param sorted true if the options should be sorted by name
+	 * @param sorted true if the options should always be sorted by name - false if options should never be re-sorted
 	 */
-	public void setSorted( boolean sorted ) {
+	public void setSorted( Boolean sorted ) {
 		this.sorted = sorted;
 	}
 
@@ -93,7 +112,28 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		this.selfOptionIncluded = selfOptionIncluded;
 	}
 
-	@SuppressWarnings( "unchecked" )
+	/**
+	 * @return true if an {@link OptionIterableBuilder} has been set
+	 */
+	public boolean hasOptions() {
+		return options != null;
+	}
+
+	/**
+	 * @return true if a {@link ValueFetcher} has been set
+	 */
+	public boolean hasValueFetcher() {
+		return valueFetcher != null;
+	}
+
+	/**
+	 * @return true if an OptionsEnhancer has been set
+	 */
+	public boolean hasEnhancer() {
+		return enhancer != null;
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public ContainerViewElement build( ViewElementBuilderContext builderContext ) {
 		ContainerViewElement container = new ContainerViewElement();
@@ -101,7 +141,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		Collection selectedValues = valueFetcher != null ? retrieveSelected( entity ) : null;
 
 		OptionsFormElementBuilder optionsBuilder = builderContext.getAttribute( OptionsFormElementBuilder.class );
-		Assert.notNull( optionsBuilder );
+		Assert.notNull( optionsBuilder, "no optionsBuilder was found" );
 
 		boolean hasSelected = false;
 		List<OptionFormElementBuilder> actual = new ArrayList<>();
@@ -121,30 +161,59 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 				optionCount++;
 			}
 
-			// auto-select if only single option
-			if ( optionCount == 1 ) {
+			// auto-select if only single option and required
+			if ( optionCount == 1 && optionsBuilder.isRequired() ) {
 				firstOption.selected();
 				hasSelected = true;
 			}
 
-			if ( sorted ) {
+			if ( shouldSort( options ) ) {
 				Collections.sort( actual );
 			}
 		}
 
-		boolean shouldAddEmptyOption = emptyOption != null
-				&& optionsBuilder.getType() == OptionsFormElementBuilder.Type.SELECT
-				&& ( !hasSelected || !optionsBuilder.isRequired() );
-
-		if ( shouldAddEmptyOption ) {
-			container.addChild( emptyOption.build( builderContext ) );
+		if ( hasEnhancer() ) {
+			actual.forEach( enhancer );
 		}
+
+		createInitialFixedOptions( builderContext, container, optionsBuilder, selectedValues, hasSelected );
 
 		for ( OptionFormElementBuilder option : actual ) {
 			container.addChild( option.build( builderContext ) );
 		}
 
 		return container;
+	}
+
+	protected void createInitialFixedOptions( ViewElementBuilderContext builderContext,
+	                                          ContainerViewElement container,
+	                                          OptionsFormElementBuilder optionsBuilder,
+	                                          Collection selectedValues,
+	                                          boolean hasSelected ) {
+		boolean shouldAddEmptyOption = emptyOption != null
+				&& !optionsBuilder.isMultiple()
+				&& ( !hasSelected || !optionsBuilder.isRequired() );
+
+		if ( shouldAddEmptyOption ) {
+			MutableViewElement generatedOption = emptyOption.build( builderContext );
+			if ( !hasSelected ) {
+				select( generatedOption, true );
+			}
+			container.addChild( generatedOption );
+		}
+	}
+
+	protected void select( MutableViewElement option, boolean selected ) {
+		if ( option instanceof CheckboxFormElement ) {
+			( (CheckboxFormElement) option ).setChecked( selected );
+		}
+		else if ( option instanceof SelectFormElement.Option ) {
+			( (SelectFormElement.Option) option ).setSelected( selected );
+		}
+	}
+
+	private boolean shouldSort( OptionIterableBuilder optionsBuilder ) {
+		return Boolean.TRUE.equals( sorted ) || ( !Boolean.FALSE.equals( sorted ) && !optionsBuilder.isSorted() );
 	}
 
 	private boolean isAllowed( OptionFormElementBuilder option, Object self ) {
@@ -175,5 +244,10 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		}
 
 		return Collections.emptyList();
+	}
+
+	public static class OptionGeneratorBuilder
+	{
+		private OptionFormElementBuilder emptyOption = new OptionFormElementBuilder().label( "" ).value( "" );
 	}
 }

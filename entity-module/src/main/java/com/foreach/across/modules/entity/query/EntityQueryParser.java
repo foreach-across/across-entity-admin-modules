@@ -18,8 +18,6 @@ package com.foreach.across.modules.entity.query;
 
 import org.springframework.util.Assert;
 
-import java.util.List;
-
 /**
  * Reverse parsing of a {@link String} into an {@link EntityQuery}.
  * Uses a {@link DefaultEntityQueryMetadataProvider} if none is set.
@@ -76,8 +74,20 @@ public class EntityQueryParser
 	public EntityQuery parse( String queryString ) {
 		validateProperties();
 
-		List<EntityQueryTokenizer.TokenMetadata> tokens = tokenizer.tokenize( queryString );
-		EntityQuery rawQuery = converter.convertTokens( tokens );
+		EntityQuery rawQuery = parseRawQuery( queryString );
+		return prepare( rawQuery );
+	}
+
+	/**
+	 * Convert a raw {@link EntityQuery} instance into a validated and executable
+	 * query instance that can be passed to the {@link EntityQueryExecutor} of the corresponding entity.
+	 * <p/>
+	 * Query translation will be done by the configured {@link EntityQueryTranslator}?
+	 *
+	 * @param rawQuery to convert
+	 * @return executable query instance
+	 */
+	public EntityQuery prepare( EntityQuery rawQuery ) {
 		validatePropertiesAndOperators( rawQuery );
 
 		return queryTranslator.translate( rawQuery );
@@ -109,5 +119,16 @@ public class EntityQueryParser
 				validatePropertiesAndOperators( (EntityQuery) expression );
 			}
 		}
+	}
+
+	/**
+	 * Parse an EQL statement into a raw {@link EntityQuery}.
+	 * Exceptions will be thrown in case parsing fails.
+	 *
+	 * @param eql query
+	 * @return query
+	 */
+	public static EntityQuery parseRawQuery( String eql ) {
+		return converter.convertTokens( tokenizer.tokenize( eql ) );
 	}
 }

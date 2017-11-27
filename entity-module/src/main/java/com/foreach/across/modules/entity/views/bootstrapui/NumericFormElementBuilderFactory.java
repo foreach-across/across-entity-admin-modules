@@ -28,13 +28,13 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.AbstractValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.NumericValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -117,7 +117,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 		@Override
 		protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 		                                                       ViewElementMode viewElementMode, String viewElementType ) {
-			AbstractValueTextPostProcessor valueTextPostProcessor
+			ViewElementPostProcessor valueTextPostProcessor
 					= builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor );
 
 			if ( valueTextPostProcessor instanceof ConversionServiceValueTextPostProcessor ) {

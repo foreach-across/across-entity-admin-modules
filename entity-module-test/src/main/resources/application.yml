@@ -33,4 +33,6 @@ adminWebModule:
 debugWebModule:
   security:
     enabled: false
-
+across:
+  development:
+    active: true

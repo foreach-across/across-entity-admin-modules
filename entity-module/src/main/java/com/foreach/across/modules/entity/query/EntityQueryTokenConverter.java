@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.query.EntityQueryParsingException.*;
 import com.foreach.across.modules.entity.query.EntityQueryTokenizer.TokenMetadata;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 
 import java.util.*;
 
@@ -58,6 +59,10 @@ class EntityQueryTokenConverter
 			return unprocessedTokens.peekFirst();
 		}
 
+		void pushBack( TokenMetadata tokenMetadata ) {
+			unprocessedTokens.addFirst( tokenMetadata );
+		}
+
 		TokenMetadata pop() {
 			lastPopped = unprocessedTokens.removeFirst();
 			return lastPopped;
@@ -93,52 +98,87 @@ class EntityQueryTokenConverter
 
 		boolean expectingAndOr = false;
 		boolean expectingNextValue = inGroup;
+		boolean inOrderByClause = false;
+
+		List<Sort.Order> orders = new LinkedList<>();
 
 		while ( queue.hasTokens() ) {
 			TokenMetadata nextToken = queue.peek();
 
-			if ( !expectingAndOr && "(".equals( nextToken.getToken() ) ) {
-				queue.pop();
-				query.add( buildQuery( queue, true ) );
-				expectingAndOr = true;
-				expectingNextValue = false;
-			}
-			else if ( ")".equals( nextToken.getToken() ) ) {
-				if ( inGroup ) {
+			if ( !inOrderByClause ) {
+				if ( !expectingAndOr && "(".equals( nextToken.getToken() ) ) {
 					queue.pop();
-					return query;
+					query.add( buildQuery( queue, true ) );
+					expectingAndOr = true;
+					expectingNextValue = false;
+				}
+				else if ( ")".equals( nextToken.getToken() ) ) {
+					if ( inGroup ) {
+						queue.pop();
+						return query;
+					}
+					else {
+						throw new IllegalToken( nextToken.getToken(), nextToken.getPosition() );
+					}
+				}
+				else if ( expectingAndOr && "and".equalsIgnoreCase( nextToken.getToken() ) ) {
+					if ( queryOp != null && queryOp != EntityQueryOps.AND ) {
+						throw new IllegalKeyword( nextToken.getToken(), nextToken.getPosition() );
+					}
+					queue.pop();
+					query.setOperand( EntityQueryOps.AND );
+					expectingAndOr = false;
+					queryOp = EntityQueryOps.AND;
+					expectingNextValue = true;
+				}
+				else if ( expectingAndOr && "or".equalsIgnoreCase( nextToken.getToken() ) ) {
+					if ( queryOp != null && queryOp != EntityQueryOps.OR ) {
+						throw new IllegalKeyword( nextToken.getToken(), nextToken.getPosition() );
+					}
+					queue.pop();
+					query.setOperand( EntityQueryOps.OR );
+					expectingAndOr = false;
+					queryOp = EntityQueryOps.OR;
+					expectingNextValue = true;
+				}
+				else {
+					if ( "order".equalsIgnoreCase( nextToken.getToken() ) ) {
+						TokenMetadata orderKeyword = queue.pop();
+
+						if ( queue.hasTokens() && "by".equalsIgnoreCase( queue.peek().getToken() ) ) {
+							inOrderByClause = true;
+							expectingNextValue = true;
+							queue.pop();
+						}
+						else {
+							queue.pushBack( orderKeyword );
+						}
+					}
+
+					if ( !inOrderByClause ) {
+						if ( expectingAndOr ) {
+							throw new MissingKeyword( "and/or", nextToken.getToken(), nextToken.getPosition() );
+						}
+
+						query.add( buildCondition( queue ) );
+						expectingAndOr = true;
+						expectingNextValue = false;
+					}
+				}
+			}
+			else {
+
+				if ( expectingNextValue ) {
+					orders.add( buildOrderSpecifier( queue ) );
+					expectingNextValue = false;
+				}
+				else if ( ",".equalsIgnoreCase( nextToken.getToken() ) ) {
+					queue.pop();
+					expectingNextValue = true;
 				}
 				else {
 					throw new IllegalToken( nextToken.getToken(), nextToken.getPosition() );
 				}
-			}
-			else if ( expectingAndOr && "and".equalsIgnoreCase( nextToken.getToken() ) ) {
-				if ( queryOp != null && queryOp != EntityQueryOps.AND ) {
-					throw new IllegalKeyword( nextToken.getToken(), nextToken.getPosition() );
-				}
-				queue.pop();
-				query.setOperand( EntityQueryOps.AND );
-				expectingAndOr = false;
-				queryOp = EntityQueryOps.AND;
-				expectingNextValue = true;
-			}
-			else if ( expectingAndOr && "or".equalsIgnoreCase( nextToken.getToken() ) ) {
-				if ( queryOp != null && queryOp != EntityQueryOps.OR ) {
-					throw new IllegalKeyword( nextToken.getToken(), nextToken.getPosition() );
-				}
-				queue.pop();
-				query.setOperand( EntityQueryOps.OR );
-				expectingAndOr = false;
-				queryOp = EntityQueryOps.OR;
-				expectingNextValue = true;
-			}
-			else {
-				if ( expectingAndOr ) {
-					throw new MissingKeyword( "and/or", nextToken.getToken(), nextToken.getPosition() );
-				}
-				query.add( buildCondition( queue ) );
-				expectingAndOr = true;
-				expectingNextValue = false;
 			}
 		}
 
@@ -154,7 +194,33 @@ class EntityQueryTokenConverter
 			throw missingField;
 		}
 
+		if ( !orders.isEmpty() ) {
+			query.setSort( new Sort( orders ) );
+		}
+
 		return query;
+	}
+
+	private Sort.Order buildOrderSpecifier( TokenQueue queue ) {
+		if ( !queue.hasTokens() ) {
+			throw new MissingField( queue.getLastPopped().getNextTokenPosition() );
+		}
+
+		String fieldName = queue.pop().getToken();
+
+		if ( !queue.hasTokens() ) {
+			throw new MissingOrderDirection( fieldName, queue.getLastPopped().getNextTokenPosition() );
+		}
+
+		TokenMetadata directionToken = queue.pop();
+
+		try {
+			Sort.Direction direction = Sort.Direction.fromString( directionToken.getToken() );
+			return new Sort.Order( direction, fieldName );
+		}
+		catch ( IllegalArgumentException iae ) {
+			throw new IllegalOrderDirection( fieldName, directionToken.getToken(), directionToken.getPosition() );
+		}
 	}
 
 	private EntityQueryCondition buildCondition( TokenQueue queue ) {
@@ -185,7 +251,7 @@ class EntityQueryTokenConverter
 			EQType value = retrieveValue( queue, true );
 
 			if ( value == null ) {
-				throw new MissingValue( operator.toString( field.getToken() ), expectedPosition );
+				throw new MissingValue( operator.toString( field.getToken(), EQValue.MISSING ), expectedPosition );
 			}
 
 			if ( isNullOrEmptyOperator( operator ) ) {
@@ -294,7 +360,7 @@ class EntityQueryTokenConverter
 				return buildFunction( token, queue );
 			}
 			else {
-				return new EQValue( token.getToken() );
+				return "null".equalsIgnoreCase( token.getToken() ) ? EQValue.NULL : new EQValue( token.getToken() );
 			}
 		}
 

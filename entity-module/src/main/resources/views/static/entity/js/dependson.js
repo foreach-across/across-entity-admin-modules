@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-(function ($) {
+(function( $ ) {
 
     /**
      * Creates a new Dependency
@@ -23,12 +23,11 @@
      * @param {String} selector The jQuery selector.
      * @param {Object} qualifiers An object representing the qualifiers for the Dependency.
      */
-    var Dependency = function ( selector, qualifiers ) {
+    var Dependency = function( selector, qualifiers ) {
         this.selector = selector;
-        this.$dependencyObj = $(selector);
+        this.$dependencyObj = $( selector );
         this.qualifiers = qualifiers;
     };
-
 
     /**
      * Qualifier method which checks for the `disabled` attribute.
@@ -37,14 +36,15 @@
      * @param checkAgainst The value we are checking.
      * @returns {Boolean}
      */
-    Dependency.prototype.enabled = function ( checkAgainst ) {
-        if ( $(this.selector + '[disabled]').length > 0 ) {
+    Dependency.prototype.enabled = function( checkAgainst ) {
+        if ( $( this.selector + '[disabled]' ).length > 0 ) {
 
             // Dependency is disabled and `enabled` qualifier is set to true
             if ( checkAgainst ) {
                 return false;
             }
-        } else {
+        }
+        else {
 
             // Dependency is not disabled and `enabled` qualifier is set to false
             if ( !checkAgainst ) {
@@ -55,7 +55,6 @@
         return true;
     };
 
-
     /**
      * Qualifier method which checks for the `checked` attribute on checkboxes and radio buttons.
      *
@@ -63,15 +62,15 @@
      * @param checkAgainst The value we are checking.
      * @returns {Boolean}
      */
-    Dependency.prototype.checked = function ( checkAgainst ) {
+    Dependency.prototype.checked = function( checkAgainst ) {
 
         // Dependency must be a checkbox for this qualifier
-        if ( this.$dependencyObj.attr('type') === 'checkbox') {
+        if ( this.$dependencyObj.attr( 'type' ) === 'checkbox' ) {
 
             // Checkbox is not checked and the `checked` qualifier is set to true
             // or the checkbox is checked and the `checked` qualifier is set to false
-            if ( (!this.$dependencyObj.is(':checked') && checkAgainst) ||
-                (this.$dependencyObj.is(':checked') && !checkAgainst ) ) {
+            if ( (!this.$dependencyObj.is( ':checked' ) && checkAgainst) ||
+                    (this.$dependencyObj.is( ':checked' ) && !checkAgainst ) ) {
 
                 return false;
             }
@@ -79,7 +78,6 @@
 
         return true;
     };
-
 
     /**
      * Qualifier method which checks the dependency input value against an array of
@@ -89,15 +87,15 @@
      * @param checkAgainst The value we are checking.
      * @returns {Boolean}
      */
-    Dependency.prototype.values = function ( checkAgainst ) {
+    Dependency.prototype.values = function( checkAgainst ) {
         var dependencyValue = this.$dependencyObj.val()
-            , length = checkAgainst.length
-            , i = 0
-            , match = false;
+                , length = checkAgainst.length
+                , i = 0
+                , match = false;
 
         // If dependency is a radio group, then filter by `:checked`
-        if ( this.$dependencyObj.attr('type') === 'radio' ) {
-            dependencyValue = this.$dependencyObj.filter(':checked').val();
+        if ( this.$dependencyObj.attr( 'type' ) === 'radio' ) {
+            dependencyValue = this.$dependencyObj.filter( ':checked' ).val();
         }
 
         // Loop through list of accepted values. Break when we find a match.
@@ -105,12 +103,13 @@
             if ( typeof(dependencyValue) === 'array' || typeof(dependencyValue) === 'object' ) {
 
                 // If `dependencyValue` is an array then check to see if arrays match
-                if ( $(this.$dependencyObj.val()).not($(checkAgainst[i])).length === 0 &&
-                    $(checkAgainst[i]).not($(this.$dependencyObj.val())).length === 0 ) {
+                if ( $( this.$dependencyObj.val() ).not( $( checkAgainst[i] ) ).length === 0 &&
+                        $( checkAgainst[i] ).not( $( this.$dependencyObj.val() ) ).length === 0 ) {
                     match = true;
                     break;
                 }
-            } else {
+            }
+            else {
                 if ( checkAgainst[i] === dependencyValue ) {
                     match = true;
                     break;
@@ -121,7 +120,6 @@
         return match;
     };
 
-
     /**
      * Qualifier method which the dependency input value against an array of
      * blacklisted values.
@@ -130,10 +128,10 @@
      * @param checkAgainst The value we are checking.
      * @returns {Boolean}
      */
-    Dependency.prototype.not = function ( checkAgainst ) {
+    Dependency.prototype.not = function( checkAgainst ) {
         var dependencyValue = this.$dependencyObj.val()
-            , length = checkAgainst.length
-            , i = 0;
+                , length = checkAgainst.length
+                , i = 0;
 
         // Loop through list of blacklisted values. Break when we find a match.
         for ( i; i < length; i += 1 ) {
@@ -145,7 +143,6 @@
         return true;
     };
 
-
     /**
      * Qualifier method which runs a RegEx pattern match on the dependency input value.
      *
@@ -153,13 +150,12 @@
      * @param checkAgainst The value we are checking.
      * @returns {Boolean}
      */
-    Dependency.prototype.match = function ( checkAgainst ) {
+    Dependency.prototype.match = function( checkAgainst ) {
         var dependencyValue = this.$dependencyObj.val()
-            , pattern = checkAgainst;
+                , pattern = checkAgainst;
 
         return pattern.test( dependencyValue );
     };
-
 
     /**
      * Qualifier method which checks if a whitelisted value exists in an array of dependencyValues.
@@ -171,25 +167,25 @@
      * @param checkAgainst The value we are checking.
      * @returns {Boolean}
      */
-    Dependency.prototype.contains = function ( checkAgainst ) {
+    Dependency.prototype.contains = function( checkAgainst ) {
         var dependencyValue = this.$dependencyObj.val()
-            , i = 0;
+                , i = 0;
 
         // Dependency value must be an array or object
         if ( typeof(dependencyValue) === 'array' || typeof(dependencyValue) === 'object' ) {
             for ( i in checkAgainst ) {
-                if ( $.inArray(checkAgainst[i], dependencyValue) !== -1 ) {
+                if ( $.inArray( checkAgainst[i], dependencyValue ) !== -1 ) {
                     return true;
                 }
 
             }
-        } else {
+        }
+        else {
             return this.values( checkAgainst );
         }
 
         return false;
     };
-
 
     /**
      * Qualifier method which is a shortcut qualifier uses `match` method to check if value is an
@@ -199,12 +195,11 @@
      * @param checkAgainst The value we are checking.
      * @returns {Boolean}
      */
-    Dependency.prototype.email = function ( checkAgainst ) {
+    Dependency.prototype.email = function( checkAgainst ) {
         var emailPattern = /^[_a-zA-Z0-9\-]+(\.[_a-zA-Z0-9\-]+)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$/;
 
-        return ( this.match(emailPattern) === checkAgainst );
+        return ( this.match( emailPattern ) === checkAgainst );
     };
-
 
     /**
      * Qualifier method which is a shortcut qualifier uses `match` method to check if value is a
@@ -214,10 +209,10 @@
      * @param checkAgainst The value we are checking.
      * @returns {Boolean}
      */
-    Dependency.prototype.url = function ( checkAgainst ) {
+    Dependency.prototype.url = function( checkAgainst ) {
         var urlPattern = /(((http|ftp|https):\/\/)|www\.)[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?\^=%&:\/~\+#!]*[\w\-\@?\^=%&\/~\+#])?/g;
 
-        return ( this.match(urlPattern) === checkAgainst );
+        return ( this.match( urlPattern ) === checkAgainst );
     };
 
     /**
@@ -226,7 +221,7 @@
      * @function doesQualify
      * @returns {Boolean}
      */
-    Dependency.prototype.doesQualify = function () {
+    Dependency.prototype.doesQualify = function() {
         var q = 0;
 
         // Loop through qualifiers
@@ -235,12 +230,13 @@
             // Check if qualifier is a method of the Dependency object; if so,
             // execute it.
             if ( Dependency.prototype.hasOwnProperty( q ) &&
-                typeof(Dependency.prototype[q]) === 'function' ) {
+                    typeof(Dependency.prototype[q]) === 'function' ) {
 
-                if ( !this[q](this.qualifiers[q]) ) {
+                if ( !this[q]( this.qualifiers[q] ) ) {
                     return false;
                 }
-            }  else {
+            }
+            else {
 
                 // Custom qualifier method
                 if ( typeof(this.qualifiers[q] === 'function') ) {
@@ -252,23 +248,21 @@
         return true;
     };
 
-
     /**
      * Creates a new DependencySet
      *
      * @class DependencySet
      * @param {Object} dependencies An object containing key-value pairs of selectors and qualifiers.
      */
-    var DependencySet = function ( dependencies ) {
+    var DependencySet = function( dependencies ) {
         var d = 0;
 
         this.dependencies = [];
 
         for ( d in dependencies ) {
-            this.dependencies.push( new Dependency(d, dependencies[d]) );
+            this.dependencies.push( new Dependency( d, dependencies[d] ) );
         }
     };
-
 
     /**
      * Checks if each Dependency in the set qualifies.
@@ -276,10 +270,10 @@
      * @function doesQualify
      * @returns {Boolean}
      */
-    DependencySet.prototype.doesQualify = function () {
+    DependencySet.prototype.doesQualify = function() {
         var length = this.dependencies.length
-            , d = 0
-            , qualifies = true;
+                , d = 0
+                , qualifies = true;
 
         // Execute `doesQualify` method on each dependency
         for ( d; d < length; d += 1 ) {
@@ -292,7 +286,6 @@
         return qualifies;
     };
 
-
     /**
      * Creates a new DependencyCollection
      *
@@ -302,18 +295,20 @@
      * representing the inital DependencySet.
      * @param {Object} options An object for key-value pairs of options.
      */
-    var DependencyCollection = function ( $subject, initalSet, options ) {
+    var DependencyCollection = function( $subject, initalSet, options ) {
         this.dependencySets = [];
         this.$subject = $subject;
 
         // Extend default settings with the provided options
-        this.settings = $.extend({
-            disable: true,
-            hide: true,
-            duration: 200,
-            onEnable: function() {},
-            onDisable: function() {}
-        }, options);
+        this.settings = $.extend( {
+                                      disable: true,
+                                      hide: true,
+                                      duration: 200,
+                                      onEnable: function() {
+                                      },
+                                      onDisable: function() {
+                                      }
+                                  }, options );
 
         /**
          * Misc. settings not enabled by default
@@ -326,12 +321,13 @@
          * toggleClass: string
          */
 
-        this.enableCallback = function() {};
-        this.disableCallback = function() {};
+        this.enableCallback = function() {
+        };
+        this.disableCallback = function() {
+        };
 
         this.init( initalSet );
     };
-
 
     /**
      * Initaialize the collection by adding the intial dependencySet
@@ -340,11 +336,10 @@
      * @function init
      * @param {Object} dependencies An object of key-value pairs of selectors and qualifiers.
      */
-    DependencyCollection.prototype.init = function ( dependencies ) {
+    DependencyCollection.prototype.init = function( dependencies ) {
         this.addSet( dependencies );
         this.check( true );
     };
-
 
     /**
      * Add a new DependencySet and register the `change` event for each
@@ -353,15 +348,15 @@
      * @function addSet
      * @param {Object} set An object of key-value pairs of selectors and qualifiers.
      */
-    DependencyCollection.prototype.addSet = function ( set ) {
+    DependencyCollection.prototype.addSet = function( set ) {
         var self = this
-            , thisSet = 0
-            , numDependencies = 0
-            , d = 0
-            , dependency;
+                , thisSet = 0
+                , numDependencies = 0
+                , d = 0
+                , dependency;
 
         // Create a new DependencySet and add it to the stack
-        this.dependencySets.push( new DependencySet(set) );
+        this.dependencySets.push( new DependencySet( set ) );
 
         thisSet = this.dependencySets.length - 1;
         numDependencies = this.dependencySets[thisSet].dependencies.length;
@@ -371,28 +366,27 @@
             dependency = this.dependencySets[thisSet].dependencies[d];
 
             // Register change event
-            dependency.$dependencyObj.on('change', function(e) {
+            dependency.$dependencyObj.on( 'change', function( e ) {
                 self.triggeredEvent = e;
                 self.triggeredDependency = this;
                 self.check();
-            });
+            } );
 
             // Handle on enter key event (fix for IE which doesn't register a change event when user
             // hits the enter key for text fields)
-            if ( dependency.$dependencyObj.attr('type') === 'text' ) {
-                dependency.$dependencyObj.on('keypress', function(e) {
-                    if ( e.which && dependency.$dependencyObj.is(':focus') ) {
+            if ( dependency.$dependencyObj.attr( 'type' ) === 'text' ) {
+                dependency.$dependencyObj.on( 'keypress', function( e ) {
+                    if ( e.which && dependency.$dependencyObj.is( ':focus' ) ) {
                         if ( self.check() ) {
                             self.triggeredEvent = e;
                             self.triggeredDependency = this;
                             self.check();
                         }
                     }
-                });
+                } );
             }
         }
     };
-
 
     /**
      * Public method to add a new DependencySet to the stack.
@@ -402,7 +396,7 @@
      * @returns {DependencyCollection} Returns this DependencyCollection in order to maintain
      * chainability.
      */
-    DependencyCollection.prototype.or = function ( dependencies ) {
+    DependencyCollection.prototype.or = function( dependencies ) {
         this.addSet( dependencies );
         this.check( false );
 
@@ -415,19 +409,20 @@
      * @function enable
      * @param {Boolean} noFade Whether or not to fade the subject or immediately show it.
      */
-    DependencyCollection.prototype.enable = function ( noFade ) {
+    DependencyCollection.prototype.enable = function( noFade ) {
         var valueSubject = this.$subject
-            , subjectId = this.$subject.attr( 'id' )
-            , $hideObject;
+                , subjectId = this.$subject.attr( 'id' )
+                , $hideObject;
 
         // If the value target has been specified by the user
-        if ( this.settings.hasOwnProperty('valueTarget') && this.settings.valueTarget !== undefined) {
+        if ( this.settings.hasOwnProperty( 'valueTarget' ) && this.settings.valueTarget !== undefined ) {
             valueSubject = $( this.settings.valueTarget );
 
             // If the subject is not a form field, then look for one within the subject
-        } else if ( this.$subject[0].nodeName.toLowerCase() !== 'input' &&
-            this.$subject[0].nodeName.toLowerCase() !== 'textarea' &&
-            this.$subject[0].nodeName.toLowerCase() !== 'select') {
+        }
+        else if ( this.$subject[0].nodeName.toLowerCase() !== 'input' &&
+                this.$subject[0].nodeName.toLowerCase() !== 'textarea' &&
+                this.$subject[0].nodeName.toLowerCase() !== 'select' ) {
 
             valueSubject = this.$subject.find( 'input, textarea, select' );
         }
@@ -443,16 +438,18 @@
             // If the subject's parent is a label
             if ( this.$subject.parent()[0].nodeName.toLowerCase() === 'label' ) {
                 $hideObject = this.$subject.parent();
-            } else {
+            }
+            else {
                 $hideObject = this.$subject.add( 'label[for="' + subjectId + '"]' )
             }
 
-            if ( $hideObject.css('display') === 'none' ) {
+            if ( $hideObject.css( 'display' ) === 'none' ) {
                 if ( noFade ) {
 
                     // Show the input and it's label (if exists)
                     $hideObject.show();
-                } else {
+                }
+                else {
 
                     // Fade in the input and it's label (if exists)
                     $hideObject.fadeIn( this.settings.duration );
@@ -461,26 +458,27 @@
         }
 
         // Set the value of the subject if allowed by the settings
-        if ( this.settings.hasOwnProperty('valueOnEnable') && this.settings.valueOnEnable !== undefined ) {
+        if ( this.settings.hasOwnProperty( 'valueOnEnable' ) && this.settings.valueOnEnable !== undefined ) {
             valueSubject.val( this.settings.valueOnEnable );
         }
 
         // Add/remove the checked attribute of the subject if allowed by the settings
-        if ( this.settings.hasOwnProperty('checkOnEnable') ) {
+        if ( this.settings.hasOwnProperty( 'checkOnEnable' ) ) {
             if ( this.settings.checkOnEnable ) {
                 valueSubject.attr( 'checked', 'checked' );
-            } else {
+            }
+            else {
                 valueSubject.removeAttr( 'checked' );
             }
         }
 
         // Add a class to the subject if allowed by the settings
-        if ( this.settings.hasOwnProperty('toggleClass') && this.settings.toggleClass !== undefined ) {
+        if ( this.settings.hasOwnProperty( 'toggleClass' ) && this.settings.toggleClass !== undefined ) {
             this.$subject.addClass( this.settings.toggleClass );
         }
 
         // User callback
-        this.settings.onEnable.call(this.triggeredDependency, this.triggeredEvent);
+        this.settings.onEnable.call( this.triggeredDependency, this.triggeredEvent );
     };
 
     /**
@@ -489,19 +487,20 @@
      * @function disable
      * @param {Boolean} noFade Whether or not to fade the subject or immediately hide it.
      */
-    DependencyCollection.prototype.disable = function ( noFade ) {
+    DependencyCollection.prototype.disable = function( noFade ) {
         var valueSubject = this.$subject
-            , subjectId = this.$subject.attr( 'id' )
-            , $hideObject;
+                , subjectId = this.$subject.attr( 'id' )
+                , $hideObject;
 
         // If the value target has been specified by the user
-        if ( this.settings.hasOwnProperty('valueTarget') && this.settings.valueTarget !== undefined) {
+        if ( this.settings.hasOwnProperty( 'valueTarget' ) && this.settings.valueTarget !== undefined ) {
             valueSubject = $( this.settings.valueTarget );
 
             // If the subject is not a form field, then look for one within the subject
-        } else if ( this.$subject[0].nodeName.toLowerCase() !== 'input' &&
-            this.$subject[0].nodeName.toLowerCase() !== 'textarea' &&
-            this.$subject[0].nodeName.toLowerCase() !== 'select') {
+        }
+        else if ( this.$subject[0].nodeName.toLowerCase() !== 'input' &&
+                this.$subject[0].nodeName.toLowerCase() !== 'textarea' &&
+                this.$subject[0].nodeName.toLowerCase() !== 'select' ) {
 
             valueSubject = this.$subject.find( 'input, textarea, select' );
         }
@@ -517,15 +516,17 @@
             // If the subject's parent is a label
             if ( this.$subject.parent()[0].nodeName.toLowerCase() === 'label' ) {
                 $hideObject = this.$subject.parent();
-            } else {
+            }
+            else {
                 $hideObject = this.$subject.add( 'label[for="' + subjectId + '"]' )
             }
 
             if ( noFade ) {
 
                 // Hide the input and it's label (if exists)
-                $hideObject.css({ 'display': 'none' });
-            } else {
+                $hideObject.css( {'display': 'none'} );
+            }
+            else {
 
                 // Fade out the input and it's label (if exists)
                 $hideObject.fadeOut( this.settings.duration );
@@ -533,28 +534,28 @@
         }
 
         // Set the value of the subject if allowed by the settings
-        if ( this.settings.hasOwnProperty('valueOnDisable') && this.settings.valueOnDisable !== undefined ) {
+        if ( this.settings.hasOwnProperty( 'valueOnDisable' ) && this.settings.valueOnDisable !== undefined ) {
             valueSubject.val( this.settings.valueOnDisable );
         }
 
         // Add/remove the checked attribute of the subject if allowed by the settings
-        if ( this.settings.hasOwnProperty('checkOnDisable') ) {
+        if ( this.settings.hasOwnProperty( 'checkOnDisable' ) ) {
             if ( this.settings.checkOnDisable ) {
                 valueSubject.attr( 'checked', 'checked' );
-            } else {
+            }
+            else {
                 valueSubject.removeAttr( 'checked' );
             }
         }
 
         // Remove a class of the subject if allowed by the settings
-        if ( this.settings.hasOwnProperty('toggleClass') && this.settings.toggleClass !== undefined ) {
+        if ( this.settings.hasOwnProperty( 'toggleClass' ) && this.settings.toggleClass !== undefined ) {
             this.$subject.removeClass( this.settings.toggleClass );
         }
 
         // User callback
-        this.settings.onDisable.call(this.triggeredDependency, this.triggeredEvent);
+        this.settings.onDisable.call( this.triggeredDependency, this.triggeredEvent );
     };
-
 
     /**
      * Check each DependencySet's `doesQualify` method. If any of the sets qualify then enable
@@ -564,10 +565,10 @@
      * @param {Boolean} firstRun Whether or not this is the initial check.
      * @returns {Boolean} Whether or not the event qualifies.
      */
-    DependencyCollection.prototype.check = function ( firstRun ) {
+    DependencyCollection.prototype.check = function( firstRun ) {
         var length = this.dependencySets.length
-            , i = 0
-            , qualifies = false;
+                , i = 0
+                , qualifies = false;
 
         // Loop through each DependencySet
         for ( i; i < length; i += 1 ) {
@@ -577,15 +578,15 @@
             }
         }
 
-        if (qualifies) {
+        if ( qualifies ) {
             this.enable( firstRun );
             return true;
-        } else {
+        }
+        else {
             this.disable( firstRun );
             return false;
         }
     };
-
 
     /**
      * Plugin access point.
@@ -596,7 +597,7 @@
      * @param {Object} options An object for key-value pairs of options.
      * @returns {DependencyCollection} The DependencyCollection object.
      */
-    $.fn.dependsOn = function ( dependencies, options ) {
+    $.fn.dependsOn = function( dependencies, options ) {
         var dependencyCollection = new DependencyCollection( this, dependencies, options );
 
         return dependencyCollection;

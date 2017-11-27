@@ -1,0 +1,10 @@
+#ignore all static frontend content but keep the already existing files
+src/main/resources/views/static/entity/css/*
+!src/main/frontend/scss/entity-module.scss
+!src/main/frontend/scss/entity-module.css
+!src/main/frontend/scss/entity-module.css.map
+
+src/main/resources/views/static/entity/js/*
+!src/main/resources/views/static/entity/js/dependson.js
+!src/main/resources/views/static/entity/js/entity-module.js
+!src/main/resources/views/static/entity/js/expandable.js

@@ -15,22 +15,179 @@
  */
 package com.foreach.across.modules.entity.util;
 
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.ReflectionUtils;
 
-import java.util.Arrays;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.core.convert.TypeDescriptor.collection;
+import static org.springframework.core.convert.TypeDescriptor.valueOf;
 
 /**
  * @author Arne Vandamme
  */
+@RunWith(MockitoJUnitRunner.class)
 public class TestEntityUtils
 {
+	@Mock
+	private EntityRegistry entityRegistry;
+
+	@Test
+	public void nullTypeDescriptorResultsInGenericObjectType() {
+		EntityTypeDescriptor descriptor = EntityUtils.resolveEntityTypeDescriptor( null, entityRegistry );
+		assertNotNull( descriptor );
+		assertEquals( TypeDescriptor.valueOf( Object.class ), descriptor.getSourceTypeDescriptor() );
+		assertFalse( descriptor.isTargetTypeResolved() );
+	}
+
+	@Test
+	public void nonCollectionTypesAreResolvedAsTheirOwnTarget() {
+		EntityTypeDescriptor descriptor = EntityUtils.resolveEntityTypeDescriptor( valueOf( String.class ), entityRegistry );
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor( valueOf( String.class ) )
+				                    .targetTypeDescriptor( valueOf( String.class ) )
+				                    .collection( false )
+				                    .build(),
+				descriptor
+		);
+
+		descriptor = EntityUtils.resolveEntityTypeDescriptor( valueOf( Long.class ), entityRegistry );
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor( valueOf( Long.class ) )
+				                    .targetTypeDescriptor( valueOf( Long.class ) )
+				                    .collection( false )
+				                    .build(),
+				descriptor
+		);
+
+		descriptor = EntityUtils.resolveEntityTypeDescriptor( valueOf( MyClassWithGenericLong.class ), entityRegistry );
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor( valueOf( MyClassWithGenericLong.class ) )
+				                    .targetTypeDescriptor( valueOf( MyClassWithGenericLong.class ) )
+				                    .collection( false )
+				                    .build(),
+				descriptor
+		);
+	}
+
+	@Test
+	public void optionalTypesHaveADifferentTargetButAreNotACollection() {
+		TypeDescriptor optionalField = new TypeDescriptor( ReflectionUtils.findField( MyClassWithGenericLong.class, "myOptional" ) );
+
+		EntityTypeDescriptor descriptor = EntityUtils.resolveEntityTypeDescriptor( optionalField, entityRegistry );
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor( optionalField )
+				                    .targetTypeDescriptor( valueOf( String.class ) )
+				                    .collection( false )
+				                    .build(),
+				descriptor
+		);
+	}
+
+	@Test
+	public void collectionTypesHaveTheirMemberAsTarget() {
+		EntityTypeDescriptor descriptor = EntityUtils.resolveEntityTypeDescriptor(
+				TypeDescriptor.array( valueOf( MyClassWithGenericLong.class ) ), entityRegistry
+		);
+
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor( TypeDescriptor.array( valueOf( MyClassWithGenericLong.class ) ) )
+				                    .targetTypeDescriptor( valueOf( MyClassWithGenericLong.class ) )
+				                    .collection( true )
+				                    .build(),
+				descriptor
+		);
+
+		descriptor = EntityUtils.resolveEntityTypeDescriptor(
+				collection( LinkedHashSet.class, valueOf( MyClassWithGenericLong.class ) ), entityRegistry
+		);
+
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor( collection( LinkedHashSet.class, valueOf( MyClassWithGenericLong.class ) ) )
+				                    .targetTypeDescriptor( valueOf( MyClassWithGenericLong.class ) )
+				                    .collection( true )
+				                    .build(),
+				descriptor
+		);
+	}
+
+	@Test
+	public void mapTypesCannotBeResolved() {
+		EntityTypeDescriptor descriptor = EntityUtils.resolveEntityTypeDescriptor(
+				TypeDescriptor.map( HashMap.class, valueOf( String.class ), valueOf( MyClassWithGenericLong.class ) ), entityRegistry
+		);
+
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor(
+						                    TypeDescriptor.map( HashMap.class, valueOf( String.class ), valueOf( MyClassWithGenericLong.class ) ) )
+				                    .build(),
+				descriptor
+		);
+	}
+
+	@Test
+	public void customCollectionTypesHaveTheirMemberAsTargetIfNotAvailableInTheEntityRegistry() {
+		EntityTypeDescriptor descriptor = EntityUtils.resolveEntityTypeDescriptor( valueOf( CustomList.class ), entityRegistry );
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor( valueOf( CustomList.class ) )
+				                    .targetTypeDescriptor( valueOf( MyClassWithGenericLong.class ) )
+				                    .collection( true )
+				                    .build(),
+				descriptor
+		);
+
+		descriptor = EntityUtils.resolveEntityTypeDescriptor( valueOf( CustomMap.class ), entityRegistry );
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor( valueOf( CustomMap.class ) )
+				                    .build(),
+				descriptor
+		);
+	}
+
+	@Test
+	public void customCollectionTypesAreUsedAsTargetIfAvailableInTheEntityRegistry() {
+		when( entityRegistry.contains( CustomList.class ) ).thenReturn( true );
+		when( entityRegistry.contains( CustomMap.class ) ).thenReturn( true );
+
+		EntityTypeDescriptor descriptor = EntityUtils.resolveEntityTypeDescriptor( valueOf( CustomList.class ), entityRegistry );
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor( valueOf( CustomList.class ) )
+				                    .targetTypeDescriptor( valueOf( CustomList.class ) )
+				                    .build(),
+				descriptor
+		);
+
+		descriptor = EntityUtils.resolveEntityTypeDescriptor( valueOf( CustomMap.class ), entityRegistry );
+		assertEquals(
+				EntityTypeDescriptor.builder()
+				                    .sourceTypeDescriptor( valueOf( CustomMap.class ) )
+				                    .targetTypeDescriptor( valueOf( CustomMap.class ) )
+				                    .build(),
+				descriptor
+		);
+	}
+
 	@Test
 	public void unmodifiedSortIsReturned() {
 		Sort sort = new Sort( Arrays.asList(
@@ -83,6 +240,30 @@ public class TestEntityUtils
 	}
 
 	@Test
+	public void combineSort() {
+		Sort one = new Sort( new Sort.Order( Sort.Direction.ASC, "two" ), new Sort.Order( Sort.Direction.DESC, "three" ) );
+		Sort two = new Sort( new Sort.Order( Sort.Direction.ASC, "one" ), new Sort.Order( Sort.Direction.DESC, "two" ) );
+		Sort three = new Sort( Sort.Direction.ASC, "two", "three", "one", "four" );
+
+		Sort merged = EntityUtils.combineSortSpecifiers( one, two, three );
+
+		assertEquals(
+				new Sort(
+						new Sort.Order( Sort.Direction.ASC, "two" ),
+						new Sort.Order( Sort.Direction.DESC, "three" ),
+						new Sort.Order( Sort.Direction.ASC, "one" ),
+						new Sort.Order( Sort.Direction.ASC, "four" )
+
+				),
+				merged
+		);
+
+		assertNull( EntityUtils.combineSortSpecifiers( null, null ) );
+		assertEquals( one, EntityUtils.combineSortSpecifiers( one, null ) );
+		assertEquals( two, EntityUtils.combineSortSpecifiers( null, two ) );
+	}
+
+	@Test
 	public void createDisplayName() {
 		assertEquals( "Name", EntityUtils.generateDisplayName( "name" ) );
 		assertEquals( "Principal name", EntityUtils.generateDisplayName( "principalName" ) );
@@ -120,6 +301,23 @@ public class TestEntityUtils
 		assertEquals( "testEntityUtils.subEntity.secondLevel",
 		              EntityUtils.generateEntityName( SubEntity.SecondLevel.class )
 		);
+	}
+
+	static class MyClassWithGeneric<T>
+	{
+	}
+
+	static class MyClassWithGenericLong extends MyClassWithGeneric<Long>
+	{
+		public Optional<String> myOptional;
+	}
+
+	static class CustomList extends ArrayList<MyClassWithGenericLong>
+	{
+	}
+
+	static class CustomMap extends HashMap<String, MyClassWithGenericLong>
+	{
 	}
 
 	static class SubEntity

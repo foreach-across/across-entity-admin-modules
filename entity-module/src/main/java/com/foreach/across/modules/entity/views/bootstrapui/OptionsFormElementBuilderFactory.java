@@ -16,10 +16,11 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.query.EntityQuery;
@@ -27,31 +28,37 @@ import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.util.EntityTypeDescriptor;
+import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.options.EntityQueryOptionIterableBuilder;
-import com.foreach.across.modules.entity.views.bootstrapui.options.EnumOptionIterableBuilder;
-import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
-import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
+import com.foreach.across.modules.entity.views.bootstrapui.options.*;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ResolvableType;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
 
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.metadata.ConstraintDescriptor;
+import javax.validation.metadata.PropertyDescriptor;
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.function.Consumer;
+
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.option;
+import static com.foreach.across.modules.entity.EntityAttributes.OPTIONS_ENHANCER;
 
 /**
  * Builds a {@link OptionsFormElementBuilder} for a given {@link EntityPropertyDescriptor}.
@@ -66,7 +73,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	// collection of options - defaults to multi checkbox
 	public static final String OPTIONS = "entityModuleOptions";
 
-	private BootstrapUiFactory bootstrapUi;
 	private EntityRegistry entityRegistry;
 
 	public OptionsFormElementBuilderFactory() {
@@ -74,6 +80,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		addProcessor( new OptionsRequiredBuilderProcessor() );
 		// ensure that checkboxes are prefixed
 		addProcessor( new FormControlNameBuilderProcessor<>( CheckboxFormElement.class::isInstance ) );
+		addProcessor( new NullOptionBuilderProcessor() );
 	}
 
 	@Override
@@ -89,26 +96,27 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	protected OptionsFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor,
 	                                                          ViewElementMode viewElementMode,
 	                                                          String viewElementType ) {
-		boolean isCollection = isCollection( descriptor );
-		Class<?> memberType = isCollection ? determineCollectionMemberType( descriptor ) : descriptor.getPropertyType();
+		EntityTypeDescriptor typeDescriptor = EntityUtils.resolveEntityTypeDescriptor( descriptor.getPropertyTypeDescriptor(), entityRegistry );
 
-		if ( memberType == null ) {
-			throw new RuntimeException( "Unable to determine property type specific enough for form element assembly "
-					                            + descriptor.getName() );
+		if ( !typeDescriptor.isTargetTypeResolved() ) {
+			throw new RuntimeException( "Unable to determine property type specific enough for form element assembly " + descriptor.getName() );
 		}
 
 		SelectFormElementConfiguration selectFormElementConfiguration = descriptor.getAttribute( SelectFormElementConfiguration.class );
-		String actualType = determineActualType( viewElementType, selectFormElementConfiguration, isCollection );
+		String actualType = determineActualType( viewElementType, selectFormElementConfiguration, typeDescriptor.isCollection() );
 
 		OptionsFormElementBuilder options
-				= bootstrapUi.options()
-				             .name( descriptor.getName() )
-				             .controlName( EntityAttributes.controlName( descriptor ) );
+				= BootstrapUiBuilders.options()
+				                     .name( descriptor.getName() )
+				                     .controlName( EntityAttributes.controlName( descriptor ) );
 
-		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( memberType );
-		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, memberType, optionConfiguration );
+		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( typeDescriptor.getSimpleTargetType() );
+		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, typeDescriptor.getSimpleTargetType(), optionConfiguration, viewElementMode );
 
 		if ( BootstrapUiElements.SELECT.equals( actualType ) ) {
+			if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+				selectFormElementConfiguration = createFilterSelectFormElementConfiguration();
+			}
 			if ( selectFormElementConfiguration == null ) {
 				selectFormElementConfiguration = createDefaultSelectFormElementConfiguration( optionConfiguration );
 			}
@@ -121,10 +129,45 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			options.radio();
 		}
 
-		options.multiple( isCollection )
+		boolean isFilterControl = ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() );
+		boolean nullValuePossible = !typeDescriptor.getSimpleTargetType().isPrimitive();
+
+		if ( isFilterControl ) {
+			optionGenerator.setEmptyOption(
+					new OptionFormElementBuilder().text( "#{properties." + descriptor.getName() + "[filterNotSelected]=}" )
+					                              .value( "" )
+					                              .postProcessor( LocalizedTextPostProcessor.INSTANCE )
+			);
+
+			if ( nullValuePossible && optionGenerator instanceof FilterOptionGenerator ) {
+				( (FilterOptionGenerator) optionGenerator ).setValueNotSetOption(
+						new OptionFormElementBuilder().text( "#{properties." + descriptor.getName() + ".value[notSet]=Unknown}" )
+						                              .value( "NULL" )
+						                              .postProcessor( LocalizedTextPostProcessor.INSTANCE )
+				);
+			}
+		}
+		else {
+			if ( nullValuePossible ) {
+				optionGenerator.setEmptyOption(
+						new OptionFormElementBuilder().text( "#{properties." + descriptor.getName() + ".value[empty]=}" )
+						                              .value( "" )
+						                              .postProcessor( LocalizedTextPostProcessor.INSTANCE )
+				);
+			}
+			else {
+				optionGenerator.setEmptyOption( null );
+			}
+		}
+
+		options.multiple( typeDescriptor.isCollection() || viewElementMode.isForMultiple() )
 		       .add( optionGenerator );
 
 		return options;
+	}
+
+	private SelectFormElementConfiguration createFilterSelectFormElementConfiguration() {
+		return SelectFormElementConfiguration.liveSearch().setSelectedTextFormat( "count > 1" );
 	}
 
 	private SelectFormElementConfiguration createDefaultSelectFormElementConfiguration( EntityConfiguration optionConfiguration ) {
@@ -151,7 +194,10 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		return requestedType;
 	}
 
-	private OptionGenerator determineOptionGenerator( EntityPropertyDescriptor descriptor, Class<?> memberType, EntityConfiguration optionConfiguration ) {
+	private OptionGenerator determineOptionGenerator( EntityPropertyDescriptor descriptor,
+	                                                  Class<?> memberType,
+	                                                  EntityConfiguration optionConfiguration,
+	                                                  ViewElementMode viewElementMode ) {
 		OptionGenerator optionGenerator = descriptor.getAttribute( OptionGenerator.class );
 
 		if ( optionGenerator == null && optionConfiguration != null ) {
@@ -159,13 +205,48 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		if ( optionGenerator == null ) {
-			optionGenerator = new OptionGenerator();
-			optionGenerator.setSorted( true );
+			optionGenerator = ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ? new FilterOptionGenerator() : new OptionGenerator();
+		}
+		else {
+			optionGenerator = optionGenerator.toBuilder().build();
+		}
+
+		Consumer<OptionFormElementBuilder> consumer = buildOptionEnhancer( optionConfiguration, descriptor, optionGenerator );
+
+		if ( consumer != null ) {
+			optionGenerator.setEnhancer( consumer );
+		}
+
+		if ( !optionGenerator.hasValueFetcher() ) {
 			optionGenerator.setValueFetcher( descriptor.getValueFetcher() );
+		}
+
+		if ( !optionGenerator.hasOptions() ) {
 			optionGenerator.setOptions( determineOptionBuilder( descriptor, memberType, optionConfiguration ) );
 		}
 
 		return optionGenerator;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Consumer<OptionFormElementBuilder> buildOptionEnhancer( EntityConfiguration configuration,
+	                                                                EntityPropertyDescriptor descriptor,
+	                                                                OptionGenerator optionGenerator ) {
+		Consumer<OptionFormElementBuilder> consumer = configuration != null
+				? getOptionEnhancer( null, (Consumer<OptionFormElementBuilder>) configuration.getAttribute( OPTIONS_ENHANCER ) )
+				: null;
+		consumer = getOptionEnhancer( consumer, (Consumer<OptionFormElementBuilder>) descriptor.getAttribute( OPTIONS_ENHANCER ) );
+		return getOptionEnhancer( consumer, optionGenerator.getEnhancer() );
+	}
+
+	private Consumer<OptionFormElementBuilder> getOptionEnhancer( Consumer<OptionFormElementBuilder> current, Consumer<OptionFormElementBuilder> next ) {
+		if ( current == null ) {
+			return next;
+		}
+		else if ( next != null ) {
+			return current.andThen( next );
+		}
+		return current;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -176,45 +257,73 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			builderToUse = optionConfiguration.getAttribute( OptionIterableBuilder.class );
 		}
 
+		if ( builderToUse == null && ClassUtils.isAssignable( boolean.class, descriptor.getPropertyType() ) ) {
+			return createBooleanOptionIterableBuilder( descriptor );
+		}
+
 		if ( builderToUse == null ) {
 			if ( memberType.isEnum() ) {
-				EnumOptionIterableBuilder iterableBuilder = new EnumOptionIterableBuilder();
-				iterableBuilder.setEnumType( (Class<? extends Enum>) memberType );
-				if ( optionConfiguration != null && optionConfiguration.hasEntityModel() ) {
-					iterableBuilder.setEntityModel( optionConfiguration.getEntityModel() );
-				}
-				Object allowedValues = descriptor.getAttribute( EntityAttributes.OPTIONS_ALLOWED_VALUES );
-				if ( allowedValues != null ) {
-					if ( allowedValues instanceof EnumSet ) {
-						iterableBuilder.setAllowedValues( (EnumSet) allowedValues );
-					}
-					else {
-						throw new IllegalStateException(
-								"Illegal " + EntityAttributes.OPTIONS_ALLOWED_VALUES + " attribute - expected EnumSet for enum propery" );
-					}
-				}
-				builderToUse = iterableBuilder;
+				builderToUse = createEnumOptionIterableBuilder( descriptor, (Class<? extends Enum>) memberType, optionConfiguration );
 			}
 			else if ( optionConfiguration != null && optionConfiguration.hasAttribute( EntityQueryExecutor.class ) ) {
-				EntityQueryOptionIterableBuilder eqBuilder = EntityQueryOptionIterableBuilder.forEntityConfiguration( optionConfiguration );
-				Object entityQueryToUse = determineEntityQuery( descriptor, optionConfiguration );
-
-				if ( entityQueryToUse instanceof EntityQuery ) {
-					eqBuilder.setEntityQuery( (EntityQuery) entityQueryToUse );
-				}
-				else if ( entityQueryToUse instanceof String ) {
-					eqBuilder.setEntityQuery( (String) entityQueryToUse );
-				}
-				else if ( entityQueryToUse != null ) {
-					throw new IllegalStateException(
-							"Illegal " + EntityAttributes.OPTIONS_ENTITY_QUERY + " attribute - expected to be String or EntityQuery" );
-				}
-
-				builderToUse = eqBuilder;
+				builderToUse = createEntityQueryOptionIterableBuilder( descriptor, optionConfiguration );
 			}
 		}
 
 		return builderToUse;
+	}
+
+	private EntityQueryOptionIterableBuilder createEntityQueryOptionIterableBuilder( EntityPropertyDescriptor descriptor,
+	                                                                                 EntityConfiguration optionConfiguration ) {
+		EntityQueryOptionIterableBuilder eqBuilder = EntityQueryOptionIterableBuilder.forEntityConfiguration( optionConfiguration );
+		Object entityQueryToUse = determineEntityQuery( descriptor, optionConfiguration );
+
+		if ( entityQueryToUse instanceof EntityQuery ) {
+			eqBuilder.setEntityQuery( (EntityQuery) entityQueryToUse );
+		}
+		else if ( entityQueryToUse instanceof String ) {
+			eqBuilder.setEntityQuery( (String) entityQueryToUse );
+		}
+		else if ( entityQueryToUse != null ) {
+			throw new IllegalStateException(
+					"Illegal " + EntityAttributes.OPTIONS_ENTITY_QUERY + " attribute - expected to be String or EntityQuery" );
+		}
+		return eqBuilder;
+	}
+
+	@SuppressWarnings("unchecked")
+	private OptionIterableBuilder createBooleanOptionIterableBuilder( EntityPropertyDescriptor descriptor ) {
+		return FixedOptionIterableBuilder.sorted(
+				option().rawValue( Boolean.TRUE )
+				        .text( "#{properties." + descriptor.getName() + ".value[true]=Yes}" )
+				        .value( Boolean.TRUE )
+				        .postProcessor( LocalizedTextPostProcessor.INSTANCE ),
+				option().rawValue( Boolean.FALSE )
+				        .text( "#{properties." + descriptor.getName() + ".value[false]=No}" )
+				        .value( Boolean.FALSE )
+				        .postProcessor( LocalizedTextPostProcessor.INSTANCE )
+		);
+	}
+
+	private EnumOptionIterableBuilder createEnumOptionIterableBuilder( EntityPropertyDescriptor descriptor,
+	                                                                   Class<? extends Enum> memberType,
+	                                                                   EntityConfiguration optionConfiguration ) {
+		EnumOptionIterableBuilder iterableBuilder = new EnumOptionIterableBuilder();
+		iterableBuilder.setEnumType( memberType );
+		if ( optionConfiguration != null && optionConfiguration.hasEntityModel() ) {
+			iterableBuilder.setEntityModel( optionConfiguration.getEntityModel() );
+		}
+		Object allowedValues = descriptor.getAttribute( EntityAttributes.OPTIONS_ALLOWED_VALUES );
+		if ( allowedValues != null ) {
+			if ( allowedValues instanceof EnumSet ) {
+				iterableBuilder.setAllowedValues( (EnumSet) allowedValues );
+			}
+			else {
+				throw new IllegalStateException(
+						"Illegal " + EntityAttributes.OPTIONS_ALLOWED_VALUES + " attribute - expected EnumSet for enum property" );
+			}
+		}
+		return iterableBuilder;
 	}
 
 	private Object determineEntityQuery( EntityPropertyDescriptor descriptor, EntityConfiguration optionConfiguration ) {
@@ -225,30 +334,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		return entityQuery;
-	}
-
-	private boolean isCollection( EntityPropertyDescriptor descriptor ) {
-		return descriptor.getPropertyType().isArray()
-				|| Collection.class.isAssignableFrom( descriptor.getPropertyType() );
-	}
-
-	private Class determineCollectionMemberType( EntityPropertyDescriptor descriptor ) {
-		if ( descriptor.getPropertyType().isArray() ) {
-			return descriptor.getPropertyType().getComponentType();
-		}
-
-		ResolvableType resolvableType = descriptor.getPropertyTypeDescriptor().getResolvableType();
-
-		if ( resolvableType != null && resolvableType.hasGenerics() ) {
-			return resolvableType.resolveGeneric( 0 );
-		}
-
-		return null;
-	}
-
-	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
 	}
 
 	@Autowired
@@ -263,12 +348,12 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor,
 		                                 ViewElementMode viewElementMode,
 		                                 String viewElementType,
-		                                 OptionsFormElementBuilder builder,
+		                                 OptionsFormElementBuilder options,
 		                                 Annotation annotation,
 		                                 Map<String, Object> annotationAttributes,
 		                                 ConstraintDescriptor constraint ) {
 			if ( isOfType( annotation, NotNull.class, NotEmpty.class ) ) {
-				builder.required();
+				options.required();
 			}
 		}
 	}
@@ -294,6 +379,44 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 				if ( nullable != null && !nullable ) {
 					builder.required();
 				}
+			}
+		}
+	}
+
+	/**
+	 * Adds a {@code null} option in the case of a {@link ViewElementMode#FILTER_CONTROL} if there is no {@link NotNull} or {@link NotEmpty} present on the property.
+	 */
+	private class NullOptionBuilderProcessor implements EntityViewElementBuilderProcessor<OptionsFormElementBuilder>
+	{
+
+		@Override
+		public void process( EntityPropertyDescriptor propertyDescriptor,
+		                     ViewElementMode viewElementMode,
+		                     String viewElementType,
+		                     OptionsFormElementBuilder options ) {
+			if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+
+//				if ( options.isRequired() ) {
+//					options.postProcessor( ( ctx, container ) -> container.removeAllFromTree( "null-option" ) );
+//					options.required( false );
+//				}
+
+//
+//				PropertyDescriptor validationDescriptor = propertyDescriptor.getAttribute( PropertyDescriptor.class );
+//				boolean addEmptyOption = true;
+//				if ( validationDescriptor != null && validationDescriptor.hasConstraints() ) {
+//					addEmptyOption = validationDescriptor.getConstraintDescriptors().stream()
+//					                                     .noneMatch( constraintDescriptor -> ArrayUtils
+//							                                     .contains( new Object[] { NotNull.class, NotEmpty.class },
+//							                                                constraintDescriptor.getAnnotation().annotationType() ) );
+//				}
+//				if ( addEmptyOption && !propertyDescriptor.getPropertyType().isPrimitive() ) {
+//					options.add( option().value( "'NULL'" )
+//					                     .rawValue( null )
+//					                     .text( "NULL"/*builderContext
+//						                                       .resolveText( "#{properties." + property.getName() + ".entityQueryFilter.nullOption}" ) */ ) );
+//				}
+
 			}
 		}
 	}

@@ -23,14 +23,31 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
  * Interface for delegating building of {@link OptionFormElementBuilder} items until
  * a {@link ViewElementBuilderContext} is available.  Responsible for creating an {@link Iterable}.
  * <p/>
- * Implementations should set the the {@link OptionFormElementBuilder#rawValue(Object)} if they want auto-selection of options to work.
+ * Implementations should set the {@link OptionFormElementBuilder#rawValue(Object)} if they want auto-selection of options to work.
  *
  * @author Arne Vandamme
  * @see OptionGenerator
+ * @see FixedOptionIterableBuilder
  * @see EnumOptionIterableBuilder
  * @see EntityQueryOptionIterableBuilder
  */
 public interface OptionIterableBuilder
 {
+	/**
+	 * Generates a list of option items.
+	 *
+	 * @param builderContext context information
+	 * @return iterable with the options
+	 */
 	Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext );
+
+	/**
+	 * Return sorting information, this will determine if the {@link OptionGenerator}
+	 * will sort them by name (if default sorting configuration applies).
+	 *
+	 * @return true if the options built should be considered as "sorted"
+	 */
+	default boolean isSorted() {
+		return false;
+	}
 }

@@ -81,9 +81,9 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 	 * If the item key is empty, only the prefixes will be generated.
 	 */
 	static String[] generateCodes( String[] rootCollections, String[] subCollections, String itemKey ) {
-		Assert.notNull( rootCollections );
-		Assert.notNull( subCollections );
-		Assert.notNull( itemKey );
+		Assert.notNull( rootCollections, "rootCollections must be specified" );
+		Assert.notNull( subCollections, "subCollections must be specified" );
+		Assert.notNull( itemKey, "itemKey must be specified" );
 
 		if ( rootCollections.length == 0 && subCollections.length == 0 ) {
 			return itemKey.isEmpty() ? new String[0] : new String[] { itemKey };

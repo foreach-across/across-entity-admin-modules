@@ -30,13 +30,13 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.Fo
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.AbstractValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.DateTimeValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PersistentProperty;
@@ -110,7 +110,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 		protected TextViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 		                                                       ViewElementMode viewElementMode,
 		                                                       String viewElementType ) {
-			AbstractValueTextPostProcessor valueTextPostProcessor
+			ViewElementPostProcessor valueTextPostProcessor
 					= builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor );
 
 			if ( valueTextPostProcessor instanceof ConversionServiceValueTextPostProcessor ) {
