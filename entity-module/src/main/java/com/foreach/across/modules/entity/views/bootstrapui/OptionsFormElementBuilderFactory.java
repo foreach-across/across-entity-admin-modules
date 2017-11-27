@@ -38,7 +38,6 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.Fo
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +50,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.metadata.ConstraintDescriptor;
-import javax.validation.metadata.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.EnumSet;
 import java.util.Map;
@@ -80,7 +78,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		addProcessor( new OptionsRequiredBuilderProcessor() );
 		// ensure that checkboxes are prefixed
 		addProcessor( new FormControlNameBuilderProcessor<>( CheckboxFormElement.class::isInstance ) );
-		addProcessor( new NullOptionBuilderProcessor() );
+		addProcessor( new FilterOptionBuilderProcessor() );
 	}
 
 	@Override
@@ -384,9 +382,9 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	}
 
 	/**
-	 * Adds a {@code null} option in the case of a {@link ViewElementMode#FILTER_CONTROL} if there is no {@link NotNull} or {@link NotEmpty} present on the property.
+	 * Ensures a filter options builder is not required.
 	 */
-	private class NullOptionBuilderProcessor implements EntityViewElementBuilderProcessor<OptionsFormElementBuilder>
+	private class FilterOptionBuilderProcessor implements EntityViewElementBuilderProcessor<OptionsFormElementBuilder>
 	{
 
 		@Override
@@ -394,29 +392,8 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		                     ViewElementMode viewElementMode,
 		                     String viewElementType,
 		                     OptionsFormElementBuilder options ) {
-			if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
-
-//				if ( options.isRequired() ) {
-//					options.postProcessor( ( ctx, container ) -> container.removeAllFromTree( "null-option" ) );
-//					options.required( false );
-//				}
-
-//
-//				PropertyDescriptor validationDescriptor = propertyDescriptor.getAttribute( PropertyDescriptor.class );
-//				boolean addEmptyOption = true;
-//				if ( validationDescriptor != null && validationDescriptor.hasConstraints() ) {
-//					addEmptyOption = validationDescriptor.getConstraintDescriptors().stream()
-//					                                     .noneMatch( constraintDescriptor -> ArrayUtils
-//							                                     .contains( new Object[] { NotNull.class, NotEmpty.class },
-//							                                                constraintDescriptor.getAnnotation().annotationType() ) );
-//				}
-//				if ( addEmptyOption && !propertyDescriptor.getPropertyType().isPrimitive() ) {
-//					options.add( option().value( "'NULL'" )
-//					                     .rawValue( null )
-//					                     .text( "NULL"/*builderContext
-//						                                       .resolveText( "#{properties." + property.getName() + ".entityQueryFilter.nullOption}" ) */ ) );
-//				}
-
+			if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) && options.isRequired() ) {
+				options.required( false );
 			}
 		}
 	}
