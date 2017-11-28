@@ -31,7 +31,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.util.EntityTypeDescriptor;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
-import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.*;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
@@ -78,7 +77,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		addProcessor( new OptionsRequiredBuilderProcessor() );
 		// ensure that checkboxes are prefixed
 		addProcessor( new FormControlNameBuilderProcessor<>( CheckboxFormElement.class::isInstance ) );
-		addProcessor( new FilterOptionBuilderProcessor() );
 	}
 
 	@Override
@@ -139,7 +137,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 			if ( nullValuePossible && optionGenerator instanceof FilterOptionGenerator ) {
 				( (FilterOptionGenerator) optionGenerator ).setValueNotSetOption(
-						new OptionFormElementBuilder().text( "#{properties." + descriptor.getName() + ".value[notSet]=Unknown}" )
+						new OptionFormElementBuilder().text( "#{properties." + descriptor.getName() + ".value[notSet]=No value set}" )
 						                              .value( "NULL" )
 						                              .postProcessor( LocalizedTextPostProcessor.INSTANCE )
 				);
@@ -377,23 +375,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 				if ( nullable != null && !nullable ) {
 					builder.required();
 				}
-			}
-		}
-	}
-
-	/**
-	 * Ensures a filter options builder is not required.
-	 */
-	private class FilterOptionBuilderProcessor implements EntityViewElementBuilderProcessor<OptionsFormElementBuilder>
-	{
-
-		@Override
-		public void process( EntityPropertyDescriptor propertyDescriptor,
-		                     ViewElementMode viewElementMode,
-		                     String viewElementType,
-		                     OptionsFormElementBuilder options ) {
-			if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) && options.isRequired() ) {
-				options.required( false );
 			}
 		}
 	}

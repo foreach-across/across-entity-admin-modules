@@ -101,28 +101,20 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.TEXTAREA )
 		                                        .attribute( EntityQueryConditionTranslator.class,
 		                                                    EntityQueryConditionTranslator.expandingOr( "name", "content" ) )
+		                                        .hidden( true )
 
 		             )
 		             .listView( lvb -> lvb.showProperties( "*" )
-		                                  .entityQueryFilter( eqf -> eqf.showProperties( "*" )
-		                                                                /*.properties( props ->
-				                                                                             props.property( "name" ).attribute( ENTITY_QUERY_OPERAND,
-				                                                                                                                 EntityQueryOps.CONTAINS
-						                                                                                                                 .name() ).and()
-				                                                                                  .property( "content" ).attribute( ENTITY_QUERY_OPERAND,
-				                                                                                                                    EntityQueryOps.CONTAINS
-						                                                                                                                    .name() )
-				                                                                                  .and()
-				                                                                                  .property( "text" )
-				                                                                                  .attribute( ENTITY_QUERY_OPERAND,
-				                                                                                              EntityQueryOps.CONTAINS.name() ) )*/
+		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text" )
 		                                                                .basicMode( true )
 		                                                                .advancedMode( true ) ) )
 		;
 		configuration.withType( User.class )
 		             .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate", "active" )
 		                                  .properties(
-				                                  props -> props.property( "id" ).attribute( Sort.Order.class, new Sort.Order( Sort.Direction.DESC, "name" ) )
+				                                  props -> props.property( "id" )
+				                                                .attribute( Sort.Order.class, new Sort.Order( Sort.Direction.DESC, "name" ) )
+						                                  .<User>valueFetcher( user -> user.getId() + " - " + user.getName() )
 		                                  )
 		                                  .showResultNumber( false )
 		                                  .viewProcessor( new EntityViewProcessorAdapter()
@@ -161,16 +153,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		configuration.withType( Partner.class )
 		             .listView(
 				             lvb -> lvb.defaultSort( "name" )
-				                       .entityQueryFilter(
-						                       eqf -> eqf.showProperties( "*" )
-						                                 /*.properties( props -> props.property( "name" )
-						                                                            .attribute( ENTITY_QUERY_OPERAND, EntityQueryOps.EQ.name() )
-						                                                            .and().property( "url" )
-						                                                            .attribute( ENTITY_QUERY_OPERAND, EntityQueryOps.LIKE.name() )
-						                                 )*/
-						                                 .basicMode( true )
-						                                 .advancedMode( false )
-				                       )
+				                       .entityQueryFilter( false )
 				                       .viewProcessor( partnerFilterProcessor() )
 		             );
 

@@ -227,7 +227,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 					if ( !convertibleToBasicMode ) {
 						button.disable();
 						actions.add( div().add( button )
-						                  .attribute( "title", builderContext.resolveText( "#{entityQueryFilter.convertibleToBasicMode[helpText]}" ) )
+						                  .attribute( "title", builderContext.resolveText( "#{entityQueryFilter.linkToBasicMode[impossibleTooltip]}" ) )
 						                  .css( "disabled-button-wrapper" )
 						);
 					}

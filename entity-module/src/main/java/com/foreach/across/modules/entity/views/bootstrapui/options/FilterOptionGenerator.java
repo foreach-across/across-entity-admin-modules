@@ -23,10 +23,7 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.MutableViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -68,9 +65,17 @@ public class FilterOptionGenerator extends OptionGenerator
 	                                          OptionsFormElementBuilder optionsBuilder,
 	                                          Collection selectedValues,
 	                                          boolean hasSelected ) {
-		super.createInitialFixedOptions( builderContext, container, optionsBuilder, selectedValues, hasSelected );
+		val emptyOption = getEmptyOption();
 
-		if ( valueNotSetOption != null ) {
+		if ( emptyOption != null && !optionsBuilder.isMultiple() ) {
+			MutableViewElement generatedOption = emptyOption.build( builderContext );
+			if ( !hasSelected ) {
+				select( generatedOption, true );
+			}
+			container.addChild( generatedOption );
+		}
+
+		if ( valueNotSetOption != null && !optionsBuilder.isRequired() ) {
 			MutableViewElement option = valueNotSetOption.build( builderContext );
 			select( option, selectedValues.contains( null ) );
 
