@@ -1,0 +1,14 @@
+// Build script for creating the zip package used by the Across Initializr project
+// Execute it using 'gradle -q zip' - (of course you do need gradle installed)
+task zip(type: Zip) {
+    from '.'
+    baseName 'frontend-resources'
+
+    exclude 'build.gradle'
+    exclude '.gradle/**'
+    exclude 'frontend-resources.zip'
+	exclude '.idea/**'
+	exclude 'php-test.iml'
+
+    println 'frontend-resources.zip has been created'
+}

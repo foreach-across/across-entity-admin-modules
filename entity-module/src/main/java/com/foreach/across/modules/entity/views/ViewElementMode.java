@@ -15,12 +15,18 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
+
 import java.util.Objects;
 
 /**
  * Represents the mode for which a {@link com.foreach.across.modules.web.ui.ViewElementBuilder}
- * is being requested.  Two default modes exist: {@link #FORM_READ} and {@link #FORM_WRITE}.
- * A mode is essentially represented by a string, so it is easy to add custom modes.
+ * is being requested.  A mode is essentially represented by a string, so it is easy to add custom modes.
+ * <p/>
+ * A mode has a single and multiple variant, in the latter the suffix <strong>_MULTIPLE</strong> is present in the mode string.
+ * Multiple modes are mainly used on entity level to configure default element types for either a single or collection
+ * representation of that entity.
  *
  * @author Arne Vandamme
  */
@@ -66,9 +72,17 @@ public class ViewElementMode
 	 */
 	public static final ViewElementMode FORM_WRITE = new ViewElementMode( "FORM_WRITE" );
 
+	/**
+	 * Control for filtering on the property or entity.
+	 */
+	public static final ViewElementMode FILTER_CONTROL = new ViewElementMode( "FILTER_CONTROL" );
+
+	private static final String MULTIPLE_SUFFIX = "_MULTIPLE";
+
 	private final String type;
 
 	public ViewElementMode( String type ) {
+		Assert.notNull( type, "type is required" );
 		this.type = type;
 	}
 
@@ -89,19 +103,51 @@ public class ViewElementMode
 		return Objects.hash( type );
 	}
 
+	/**
+	 * Converts the current mode to the multiple variant.
+	 * If the current mode is already a multiple (ends with <strong>_MULTIPLE</strong>),
+	 * the current reference will be returned.
+	 *
+	 * @return new instance or same if already a multiple
+	 */
+	public ViewElementMode forMultiple() {
+		return isForMultiple() ? this : new ViewElementMode( type + MULTIPLE_SUFFIX );
+	}
+
+	/**
+	 * Converts the current mode to the single variant.
+	 * If the current mode is not a multiple variant, the current reference will be returned.
+	 *
+	 * @return new instance or same if not a multiple
+	 */
+	public ViewElementMode forSingle() {
+		return isForMultiple() ? new ViewElementMode( StringUtils.removeEnd( type, MULTIPLE_SUFFIX ) ) : this;
+	}
+
+	/**
+	 * @return true if this mode corresponds to multiple
+	 */
+	public boolean isForMultiple() {
+		return type.endsWith( MULTIPLE_SUFFIX );
+	}
+
 	public static boolean isList( ViewElementMode mode ) {
-		return LIST_LABEL.equals( mode ) || LIST_VALUE.equals( mode );
+		ViewElementMode single = mode.forSingle();
+		return LIST_LABEL.equals( single ) || LIST_VALUE.equals( single ) || LIST_CONTROL.equals( single );
 	}
 
 	public static boolean isLabel( ViewElementMode mode ) {
-		return LABEL.equals( mode ) || LIST_LABEL.equals( mode );
+		ViewElementMode single = mode.forSingle();
+		return LABEL.equals( single ) || LIST_LABEL.equals( single );
 	}
 
 	public static boolean isValue( ViewElementMode mode ) {
-		return VALUE.equals( mode ) || LIST_VALUE.equals( mode );
+		ViewElementMode single = mode.forSingle();
+		return VALUE.equals( single ) || LIST_VALUE.equals( single );
 	}
 
 	public static boolean isControl( ViewElementMode mode ) {
-		return CONTROL.equals( mode ) || LIST_CONTROL.equals( mode );
+		ViewElementMode single = mode.forSingle();
+		return CONTROL.equals( single ) || LIST_CONTROL.equals( single ) || FILTER_CONTROL.equals( single );
 	}
 }

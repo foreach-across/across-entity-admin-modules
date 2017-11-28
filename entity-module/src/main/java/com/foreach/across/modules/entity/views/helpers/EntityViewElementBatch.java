@@ -128,19 +128,17 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 		return builder != null ? builder.build( this ) : null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private ViewElementBuilder getViewElementBuilder( EntityPropertyDescriptor descriptor, Object builderHint ) {
 		if ( builderHint instanceof ViewElementBuilder ) {
-			return (ViewElementBuilder) builderHint;
+			return new PropertyViewElementBuilderWrapper<>( (ViewElementBuilder<ViewElement>) builderHint, descriptor, Collections.emptyList() );
 		}
 
 		if ( builderHint instanceof String ) {
-			return viewElementBuilderService.createElementBuilder(
-					descriptor, viewElementMode, (String) builderHint
-			);
+			return viewElementBuilderService.createElementBuilder( descriptor, viewElementMode, (String) builderHint );
 		}
 
-		ViewElementMode elementMode
-				= builderHint instanceof ViewElementMode ? (ViewElementMode) builderHint : viewElementMode;
+		ViewElementMode elementMode = builderHint instanceof ViewElementMode ? (ViewElementMode) builderHint : viewElementMode;
 
 		return viewElementBuilderService.getElementBuilder( descriptor, elementMode );
 	}

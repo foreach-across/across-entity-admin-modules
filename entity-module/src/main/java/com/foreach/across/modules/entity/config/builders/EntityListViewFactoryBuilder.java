@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.*;
+import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterConfiguration;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiConsumer;
@@ -54,6 +56,8 @@ import java.util.function.Function;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 {
+	private final Collection<Consumer<EntityQueryFilterConfiguration.EntityQueryFilterConfigurationBuilder>> filterConfigurationConsumers = new ArrayDeque<>();
+
 	private Boolean showResultNumber, entityQueryFilter;
 	private Integer pageSize;
 	private Sort defaultSort;
@@ -218,6 +222,18 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	}
 
 	/**
+	 * Configure {@link com.foreach.across.modules.entity.query.EntityQuery} based filtering on this list view.
+	 * This registers the {@link EntityQueryFilterProcessor} and allows you to customize the {@link EntityQueryFilterConfiguration}.
+	 *
+	 * @param consumer to modify the configuration
+	 * @return current builder
+	 */
+	public EntityListViewFactoryBuilder entityQueryFilter( Consumer<EntityQueryFilterConfiguration.EntityQueryFilterConfigurationBuilder> consumer ) {
+		filterConfigurationConsumers.add( consumer );
+		return entityQueryFilter( true );
+	}
+
+	/**
 	 * Enable default {@link com.foreach.across.modules.entity.query.EntityQuery} based filtering for this list.
 	 * Amounts to the same as manually registering a {@link EntityQueryFilterProcessor} using {@link #viewProcessor(EntityViewProcessor)}.
 	 * <p/>
@@ -239,17 +255,20 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	 * <p/>
 	 * The default predicate can not be removed and will always be applied.
 	 * Even if {@link #entityQueryFilter(boolean)} is enabled.
+	 * <p/>
+	 * Note: using {@link #entityQueryFilter(Consumer)} allows for more advanced configuration options like appending base queries.
 	 *
 	 * @param predicate as EQL statement
 	 * @return current builder
 	 */
 	public EntityListViewFactoryBuilder entityQueryPredicate( String predicate ) {
+		filterConfigurationConsumers.add( eqb -> eqb.basePredicate( predicate ) );
+
 		postProcess( ( factory, processorRegistry ) -> {
-			processorRegistry.getProcessor( EntityQueryFilterProcessor.class.getName(), EntityQueryFilterProcessor.class )
-			                 .ifPresent( processor -> processor.setBaseEqlPredicate( predicate ) );
 			processorRegistry.getProcessor( DefaultEntityFetchingViewProcessor.class.getName(), DefaultEntityFetchingViewProcessor.class )
 			                 .ifPresent( processor -> processor.setBaseEqlPredicate( predicate ) );
 		} );
+
 		return this;
 	}
 
@@ -280,6 +299,13 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 				if ( !processorRegistry.contains( EntityQueryFilterProcessor.class.getName() ) ) {
 					processorRegistry.addProcessor( createBean( EntityQueryFilterProcessor.class ) );
 				}
+				processorRegistry.getProcessor( EntityQueryFilterProcessor.class.getName(), EntityQueryFilterProcessor.class )
+				                 .ifPresent( p -> {
+					                 EntityQueryFilterConfiguration.EntityQueryFilterConfigurationBuilder configurationBuilder =
+							                 p.getFilterConfiguration().toBuilder();
+					                 filterConfigurationConsumers.forEach( c -> c.accept( configurationBuilder ) );
+					                 p.setFilterConfiguration( configurationBuilder.build() );
+				                 } );
 			}
 			else {
 				processorRegistry.remove( EntityQueryFilterProcessor.class.getName() );

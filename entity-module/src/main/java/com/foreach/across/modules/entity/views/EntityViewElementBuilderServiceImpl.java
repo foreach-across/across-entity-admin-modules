@@ -16,79 +16,145 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.core.annotations.RefreshableCollection;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.util.EntityTypeDescriptor;
+import com.foreach.across.modules.entity.util.EntityUtils;
+import com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Arne Vandamme
  */
 @Service
+@RequiredArgsConstructor
 public class EntityViewElementBuilderServiceImpl implements EntityViewElementBuilderService
 {
-	private static final Logger LOG = LoggerFactory.getLogger( EntityViewElementBuilderServiceImpl.class );
-
 	private Collection<ViewElementTypeLookupStrategy> elementTypeLookupStrategies;
 	private Collection<EntityViewElementBuilderFactory> builderFactories;
+
+	private final EntityRegistry entityRegistry;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public ViewElementBuilder getElementBuilder( EntityPropertyDescriptor descriptor, ViewElementMode mode ) {
-		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
-
-		if ( lookupRegistry != null ) {
-			ViewElementBuilder builder = lookupRegistry.getViewElementBuilder( mode );
-
-			if ( builder != null ) {
-				return builder;
-			}
-			else {
-				builder = createElementBuilder( descriptor, mode );
-				Collection<ViewElementPostProcessor<?>> postProcessors
-						= lookupRegistry.getViewElementPostProcessors( mode );
-
-				if ( !postProcessors.isEmpty() ) {
-					if ( builder instanceof ViewElementBuilderSupport ) {
-						postProcessors.forEach( ( (ViewElementBuilderSupport) builder )::postProcessor );
-					}
-					else {
-						LOG.warn(
-								"ViewElementPostProcessors registered for {} but the builder is not of type ViewElementBuilderSupport",
-								descriptor.getName() );
-					}
-				}
-
-				// todo: support caching when attribute value cloning is safer
-				//if ( builder != null && lookupRegistry.isCacheable( mode ) ) {
-				//	lookupRegistry.cacheViewElementBuilder( mode, builder );
-				//}
-
-				return builder;
-			}
-		}
-
+		// todo implement caching once a valid inheritance strategy for ViewElementLookupStrategy has been defined
 		return createElementBuilder( descriptor, mode );
 	}
 
 	@Override
-	public ViewElementBuilder createElementBuilder( EntityPropertyDescriptor descriptor,
-	                                                ViewElementMode mode ) {
-		String elementType = getElementType( descriptor, mode );
+	@SuppressWarnings("unchecked")
+	public ViewElementBuilder createElementBuilder( EntityPropertyDescriptor descriptor, ViewElementMode mode ) {
+		LookupHelper lookupHelper = createLookupHelper( descriptor );
 
-		return createElementBuilder( descriptor, mode, elementType );
+		String viewElementType = null;
+		ViewElementBuilder<?> builder = null;
+
+		if ( lookupHelper.hasPropertyLookupRegistry() ) {
+			builder = lookupHelper.propertyLookupRegistry.getViewElementBuilder( mode );
+
+			if ( builder == null ) {
+				viewElementType = lookupHelper.propertyLookupRegistry.getViewElementType( mode );
+			}
+		}
+
+		if ( ( builder == null && viewElementType == null ) && lookupHelper.hasEntityLookupRegistry() ) {
+			ViewElementMode translatedMode = lookupHelper.isMultipleProperty() ? mode.forMultiple() : mode;
+			builder = lookupHelper.entityLookupRegistry.getViewElementBuilder( translatedMode );
+
+			if ( builder == null ) {
+				viewElementType = lookupHelper.entityLookupRegistry.getViewElementType( translatedMode );
+			}
+		}
+
+		if ( builder == null && viewElementType == null ) {
+			viewElementType = lookupElementType( descriptor, mode );
+		}
+
+		if ( builder == null && viewElementType != null ) {
+			builder = createElementBuilder( descriptor, mode, viewElementType );
+		}
+
+		return builder != null ? new PropertyViewElementBuilderWrapper( builder, descriptor, buildPostProcessors( mode, lookupHelper ) ) : null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ViewElementPostProcessor> buildPostProcessors( ViewElementMode mode, LookupHelper lookupHelper ) {
+		List<ViewElementPostProcessor> postProcessors = new ArrayList<>();
+
+		if ( lookupHelper.hasEntityLookupRegistry() ) {
+			postProcessors.addAll( lookupHelper.entityLookupRegistry.getViewElementPostProcessors( mode ) );
+		}
+
+		if ( lookupHelper.hasPropertyLookupRegistry() ) {
+			postProcessors.addAll( lookupHelper.propertyLookupRegistry.getViewElementPostProcessors( mode ) );
+		}
+
+		return postProcessors;
+	}
+
+	private String lookupElementType( EntityPropertyDescriptor descriptor, ViewElementMode mode ) {
+		return elementTypeLookupStrategies.stream()
+		                                  .map( strategy -> strategy.findElementType( descriptor, mode ) )
+		                                  .filter( Objects::nonNull )
+		                                  .findFirst()
+		                                  .orElse( null );
+	}
+
+	private LookupHelper createLookupHelper( EntityPropertyDescriptor descriptor ) {
+		EntityTypeDescriptor typeDescriptor = EntityUtils.resolveEntityTypeDescriptor( descriptor.getPropertyTypeDescriptor(), entityRegistry );
+		ViewElementLookupRegistry propertyLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
+
+		if ( typeDescriptor.isTargetTypeResolved() ) {
+			EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( typeDescriptor.getSimpleTargetType() );
+
+			if ( entityConfiguration != null ) {
+				return new LookupHelper( typeDescriptor, propertyLookupRegistry, entityConfiguration.getAttribute( ViewElementLookupRegistry.class ) );
+			}
+		}
+
+		return new LookupHelper( typeDescriptor, propertyLookupRegistry, null );
+	}
+
+	@Value
+	private static class LookupHelper
+	{
+		private final EntityTypeDescriptor typeDescriptor;
+		private final ViewElementLookupRegistry propertyLookupRegistry;
+
+		private final ViewElementLookupRegistry entityLookupRegistry;
+
+		public boolean isResolved() {
+			return typeDescriptor.isTargetTypeResolved();
+		}
+
+		boolean isMultipleProperty() {
+			return typeDescriptor.isCollection();
+		}
+
+		boolean hasPropertyLookupRegistry() {
+			return propertyLookupRegistry != null;
+		}
+
+		boolean hasEntityLookupRegistry() {
+			return entityLookupRegistry != null;
+		}
+
 	}
 
 	@Override
-	public ViewElementBuilder createElementBuilder( EntityPropertyDescriptor descriptor,
-	                                                ViewElementMode mode,
-	                                                String elementType ) {
+	public ViewElementBuilder createElementBuilder( EntityPropertyDescriptor descriptor, ViewElementMode mode, String elementType ) {
 		for ( EntityViewElementBuilderFactory builderFactory : builderFactories ) {
 			if ( builderFactory.supports( elementType ) ) {
 				return builderFactory.createBuilder( descriptor, mode, elementType );
@@ -96,30 +162,6 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 		}
 
 		return null;
-	}
-
-	@Override
-	public String getElementType( EntityPropertyDescriptor descriptor, ViewElementMode mode ) {
-		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
-
-		String elementType = lookupRegistry != null ? lookupRegistry.getViewElementType( mode ) : null;
-
-		if ( elementType == null ) {
-			// if not, fetch one
-			for ( ViewElementTypeLookupStrategy lookupStrategy : elementTypeLookupStrategies ) {
-				elementType = lookupStrategy.findElementType( descriptor, mode );
-
-				if ( elementType != null ) {
-					break;
-				}
-			}
-		}
-
-		if ( elementType != null && lookupRegistry != null ) {
-			lookupRegistry.setViewElementType( mode, elementType );
-		}
-
-		return elementType;
 	}
 
 	@Autowired

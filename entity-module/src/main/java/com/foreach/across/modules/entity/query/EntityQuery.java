@@ -15,10 +15,20 @@
  */
 package com.foreach.across.modules.entity.query;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.foreach.across.modules.entity.query.support.SortDeserializer;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Abstraction layer for *simple* query construction.  An EntityQuery is a simple structure that has the support classes
@@ -33,6 +43,14 @@ import java.util.List;
  */
 public class EntityQuery implements EntityQueryExpression
 {
+	/**
+	 * Ordering of the results.
+	 */
+	@JsonDeserialize(using = SortDeserializer.class)
+	@Getter
+	@Setter
+	private Sort sort;
+
 	private EntityQueryOps operand = EntityQueryOps.AND;
 	private List<EntityQueryExpression> expressions = new ArrayList<>();
 
@@ -43,8 +61,32 @@ public class EntityQuery implements EntityQueryExpression
 		setOperand( operand );
 	}
 
-	public void add( EntityQueryExpression expression ) {
-		expressions.add( expression );
+	public EntityQuery( EntityQuery entityQuery ) {
+		this.operand = entityQuery.operand;
+		this.expressions = new ArrayList<>( entityQuery.expressions );
+		this.sort = entityQuery.sort;
+	}
+
+	public final void add( EntityQueryExpression expression ) {
+		if ( expression instanceof EntityQuery ) {
+			EntityQuery subQuery = new EntityQuery( (EntityQuery) expression );
+			if ( subQuery.hasSort() && !hasSort() ) {
+				setSort( subQuery.getSort() );
+			}
+			subQuery.sort = null;
+
+			if ( !subQuery.expressions.isEmpty() ) {
+				if ( subQuery.expressions.size() == 1 ) {
+					expressions.add( subQuery.expressions.get( 0 ) );
+				}
+				else {
+					expressions.add( subQuery );
+				}
+			}
+		}
+		else if ( expression != null ) {
+			expressions.add( expression );
+		}
 	}
 
 	public EntityQueryOps getOperand() {
@@ -52,7 +94,7 @@ public class EntityQuery implements EntityQueryExpression
 	}
 
 	public void setOperand( EntityQueryOps operand ) {
-		Assert.notNull( operand );
+		Assert.notNull( operand, "A valid operand is required" );
 		if ( operand != EntityQueryOps.AND && operand != EntityQueryOps.OR ) {
 			throw new IllegalArgumentException( "EntityQuery operand type must be either AND or OR" );
 		}
@@ -64,7 +106,7 @@ public class EntityQuery implements EntityQueryExpression
 	}
 
 	public void setExpressions( List<EntityQueryExpression> expressions ) {
-		Assert.notNull( expressions );
+		Assert.notNull( expressions, "expression collection may not be null" );
 		this.expressions = expressions;
 	}
 
@@ -85,6 +127,9 @@ public class EntityQuery implements EntityQueryExpression
 		if ( operand != that.operand ) {
 			return false;
 		}
+		if ( sort != null ? !sort.equals( that.sort ) : that.sort != null ) {
+			return false;
+		}
 
 		return true;
 	}
@@ -98,29 +143,88 @@ public class EntityQuery implements EntityQueryExpression
 
 	@Override
 	public String toString() {
-		return operand.toString( null, expressions.toArray() );
+		return StringUtils.trim( operand.toString( null, expressions.toArray() ) + ( sort != null ? " " + toString( sort ) : "" ) );
+	}
+
+	private String toString( Sort sort ) {
+		return "order by " + StreamSupport.stream( sort.spliterator(), false )
+		                                  .map( o -> o.getProperty() + " " + o.getDirection() )
+		                                  .collect( Collectors.joining( ", " ) );
 	}
 
 	/**
-	 * @return EntityQuery that will return all entities.
+	 * @return true if a sort has been set on this query
+	 */
+	public boolean hasSort() {
+		return sort != null;
+	}
+
+	/**
+	 * @return new EntityQuery instance that will return all entities.
 	 */
 	public static EntityQuery all() {
 		return new EntityQuery();
 	}
 
+	/**
+	 * @return new EntityQuery instance that will return all entities, sorted accordingly
+	 */
+	public static EntityQuery all( Sort sort ) {
+		final EntityQuery entityQuery = new EntityQuery();
+		entityQuery.setSort( sort );
+		return entityQuery;
+	}
+
+	/**
+	 * Converts an EQL statement into a (raw) {@link EntityQuery}.  Not validation or translation of any
+	 * kind will be done on the elements, this will simply convert the {@link String} tokens into an {@link EntityQuery} object.
+	 * <p/>
+	 * You should use {@link EntityQueryParser#parse(String)} of the relevant entity if you want to parse an EQL into a fully
+	 * executable {@link EntityQuery}.  You can use {@link EntityQueryParser#prepare(EntityQuery)} to convert the raw query
+	 * object into an executable one.
+	 * <p/>
+	 * Exceptions will be thrown if parsing fails.
+	 *
+	 * @param eql to convert
+	 * @return EntityQuery
+	 */
+	public static EntityQuery parse( String eql ) {
+		return EntityQueryParser.parseRawQuery( eql );
+	}
+
+	/**
+	 * Merges one or more entity queries expressions together using {@link EntityQueryOps#AND}.
+	 * If expressions are sub-queries that define sort values, only the first non-null sort value will be kept.
+	 * <p/>
+	 * This method is null safe: {@code null} values will simply be ignored and a query will always be returned.
+	 *
+	 * @param expressions to merge
+	 * @return merged query
+	 */
 	public static EntityQuery and( EntityQueryExpression... expressions ) {
 		return create( EntityQueryOps.AND, expressions );
 	}
 
+	/**
+	 * Merges one or more entity queries expressions together using {@link EntityQueryOps#OR}.
+	 * If expressions are sub-queries that define sort values, only the first non-null sort value will be kept.
+	 * <p/>
+	 * This method is null safe: {@code null} values will simply be ignored and a query will always be returned.
+	 *
+	 * @param expressions to merge
+	 * @return merged query
+	 */
 	public static EntityQuery or( EntityQueryExpression... expressions ) {
 		return create( EntityQueryOps.OR, expressions );
 	}
 
 	public static EntityQuery create( EntityQueryOps operand, EntityQueryExpression... expressions ) {
 		EntityQuery query = new EntityQuery( operand );
-		for ( EntityQueryExpression expression : expressions ) {
-			query.add( expression );
-		}
+
+		Stream.of( expressions )
+		      .filter( Objects::nonNull )
+		      .forEach( query::add );
+
 		return query;
 	}
 }

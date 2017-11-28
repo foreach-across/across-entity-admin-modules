@@ -170,6 +170,24 @@ public class TestEntityQueryTokenizer
 		);
 	}
 
+	@Test
+	public void orderBy() {
+		assertEquals(
+				Arrays.asList( "order", "by", "name", "desc", ",", "city", "asc" ),
+				tokens( "order by name desc, city asc" )
+		);
+	}
+
+	@Test
+	public void orderByAppend() {
+		assertEquals(
+				Arrays.asList( "(", "name", "=", "'someName'", "and", "city", "!=", "217", "and", "(", "email",
+				               "contains", "'emailOne'", "and", "email", "not", "contains", "'emailTwo'", ")", ")",
+				               "order", "by", "name", "desc", ",", "city", "asc" ),
+				tokens( "(name = 'someName' and city != 217 and (email contains 'emailOne' and email not contains 'emailTwo')) order by name desc, city asc" )
+		);
+	}
+
 	private List<String> tokens( String query ) {
 		List<TokenMetadata> metadata = tokenizer.tokenize( query );
 		return metadata.stream().map( TokenMetadata::getToken ).collect( Collectors.toList() );

@@ -51,7 +51,7 @@ public class MenuEventsHandler
 	@Event
 	public void adminMenu( AdminMenuEvent adminMenuEvent ) {
 		PathBasedMenuBuilder builder = adminMenuEvent.builder();
-		builder.item( "/entities", "Entity management", "@adminWeb:/entities" ).group( true );
+		builder.item( "/entities", "#{EntityModule.adminMenu=Entity management}", "@adminWeb:/entities" ).group( true );
 
 		for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions();
@@ -74,11 +74,12 @@ public class MenuEventsHandler
 
 					if ( moduleInfo != null ) {
 						group = "/entities/" + moduleInfo.getName();
-						builder.group( group, moduleInfo.getName() ).attribute( AdminMenu.ATTR_BREADCRUMB, false );
+						builder.group( group, "#{" + moduleInfo.getName() + ".adminMenu=" + moduleInfo.getName() + "}" ).attribute( AdminMenu.ATTR_BREADCRUMB,
+						                                                                                                            false );
 					}
 
 					builder.item( group + "/" + entityConfiguration.getName(),
-					              messageCodeResolver.getNameSingular(),
+					              messageCodeResolver.getMessageWithFallback( "adminMenu", messageCodeResolver.getNameSingular() ),
 					              linkBuilder.overview() );
 
 					if ( allowableActions.contains( AllowableAction.CREATE ) ) {

@@ -80,7 +80,7 @@ public class TestViewElementLookupRegistryImpl
 		assertFalse( registry.isCacheable( LABEL ) );
 		assertTrue( registry.cacheViewElementBuilder( CONTROL, builder ) );
 		assertFalse( registry.cacheViewElementBuilder( LABEL, builder ) );
-		assertSame( builder, registry.getViewElementBuilder( CONTROL ) );
+		assertSame( builder, registry.getCachedViewElementBuilder( CONTROL ) );
 		assertNull( registry.getViewElementBuilder( LABEL ) );
 	}
 
@@ -96,21 +96,23 @@ public class TestViewElementLookupRegistryImpl
 
 		assertTrue( registry.cacheViewElementBuilder( CONTROL, builder ) );
 		assertTrue( registry.cacheViewElementBuilder( LABEL, builder ) );
-		assertSame( builder, registry.getViewElementBuilder( CONTROL ) );
-		assertSame( builder, registry.getViewElementBuilder( LABEL ) );
+		assertNull( registry.getViewElementBuilder( CONTROL ) );
+		assertNull( registry.getViewElementBuilder( LABEL ) );
+		assertSame( builder, registry.getCachedViewElementBuilder( CONTROL ) );
+		assertSame( builder, registry.getCachedViewElementBuilder( LABEL ) );
 
 		registry.setCacheable( CONTROL, false );
 		assertFalse( registry.isCacheable( CONTROL ) );
 		assertTrue( registry.isCacheable( LABEL ) );
 
-		assertNull( registry.getViewElementBuilder( CONTROL ) );
-		assertSame( builder, registry.getViewElementBuilder( LABEL ) );
+		assertNull( registry.getCachedViewElementBuilder( CONTROL ) );
+		assertSame( builder, registry.getCachedViewElementBuilder( LABEL ) );
 
 		assertFalse( registry.cacheViewElementBuilder( CONTROL, builder ) );
 		assertTrue( registry.cacheViewElementBuilder( LABEL, builder ) );
 
-		assertNull( registry.getViewElementBuilder( CONTROL ) );
-		assertSame( builder, registry.getViewElementBuilder( LABEL ) );
+		assertNull( registry.getCachedViewElementBuilder( CONTROL ) );
+		assertSame( builder, registry.getCachedViewElementBuilder( LABEL ) );
 	}
 
 	@Test
@@ -121,20 +123,20 @@ public class TestViewElementLookupRegistryImpl
 		registry.cacheViewElementBuilder( CONTROL, builder );
 
 		assertEquals( BootstrapUiElements.BUTTON, registry.getViewElementType( CONTROL ) );
-		assertSame( builder, registry.getViewElementBuilder( CONTROL ) );
+		assertSame( builder, registry.getCachedViewElementBuilder( CONTROL ) );
 
 		registry.reset( CONTROL );
 
 		assertEquals( BootstrapUiElements.BUTTON, registry.getViewElementType( CONTROL ) );
-		assertNull( registry.getViewElementBuilder( CONTROL ) );
+		assertNull( registry.getCachedViewElementBuilder( CONTROL ) );
 
 		registry.cacheViewElementBuilder( CONTROL, builder );
 		assertEquals( BootstrapUiElements.BUTTON, registry.getViewElementType( CONTROL ) );
-		assertSame( builder, registry.getViewElementBuilder( CONTROL ) );
+		assertSame( builder, registry.getCachedViewElementBuilder( CONTROL ) );
 
 		registry.setCacheable( CONTROL, false );
 		assertEquals( BootstrapUiElements.BUTTON, registry.getViewElementType( CONTROL ) );
-		assertNull( registry.getViewElementBuilder( CONTROL ) );
+		assertNull( registry.getCachedViewElementBuilder( CONTROL ) );
 
 		assertFalse( registry.cacheViewElementBuilder( CONTROL, builder ) );
 	}
@@ -165,6 +167,9 @@ public class TestViewElementLookupRegistryImpl
 		other.cacheViewElementBuilder( ViewElementMode.VALUE, mock( ViewElementBuilder.class ) );
 		other.addViewElementPostProcessor( CONTROL, ppOne );
 
+		assertNull( other.getViewElementBuilder( ViewElementMode.VALUE ) );
+		assertNotNull( other.getCachedViewElementBuilder( ViewElementMode.VALUE ) );
+
 		registry.setCacheable( LABEL, true );
 		registry.setCacheable( FORM_WRITE, false );
 		registry.setViewElementType( LIST_CONTROL, "boem" );
@@ -184,7 +189,7 @@ public class TestViewElementLookupRegistryImpl
 		assertEquals( "boem", other.getViewElementType( LIST_CONTROL ) );
 
 		assertNull( other.getViewElementBuilder( FORM_READ ) );
-		assertNotNull( other.getViewElementBuilder( VALUE ) );
+		assertNull( other.getCachedViewElementBuilder( VALUE ) );
 		assertNull( other.getViewElementBuilder( LABEL ) );
 
 		assertTrue( other.getViewElementPostProcessors( LIST_LABEL ).isEmpty() );

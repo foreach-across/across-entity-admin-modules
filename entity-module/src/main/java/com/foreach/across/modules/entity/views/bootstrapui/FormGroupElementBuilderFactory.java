@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
@@ -48,6 +49,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		//addProcessor( new FormGroupRequiredBuilderProcessor() );
 	}
 
+	@Deprecated
 	public void setRenderHelpBlockBeforeControl( boolean renderHelpBlockBeforeControl ) {
 		this.renderHelpBlockBeforeControl = renderHelpBlockBeforeControl;
 	}
@@ -95,7 +97,8 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 			} );
 		}
 
-		if ( controlBuilder instanceof OptionFormElementBuilder ) {
+		// todo: clean this up
+		if ( isRadioOrCheckboxControl( controlBuilder ) ) {
 			// Form groups for checkbox and radio buttons are different
 			formGroup.helpBlockRenderedBeforeControl( false );
 		}
@@ -110,6 +113,10 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		}
 
 		return formGroup;
+	}
+
+	private boolean isRadioOrCheckboxControl( ViewElementBuilder builder ) {
+		return PropertyViewElementBuilderWrapper.retrieveTargetBuilder( builder ) instanceof OptionFormElementBuilder;
 	}
 
 	@Autowired

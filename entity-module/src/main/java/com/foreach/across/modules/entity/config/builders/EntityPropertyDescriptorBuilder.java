@@ -122,14 +122,14 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	 */
 	public EntityPropertyDescriptorBuilder spelValueFetcher( String expression ) {
 		Assert.notNull( expression );
-		return valueFetcher( new SpelValueFetcher( expression ) );
+		return valueFetcher( new SpelValueFetcher<>( expression ) );
 	}
 
 	/**
 	 * @param valueFetcher fetcher to configure on the property
 	 * @return current builder
 	 */
-	public EntityPropertyDescriptorBuilder valueFetcher( ValueFetcher valueFetcher ) {
+	public <U> EntityPropertyDescriptorBuilder valueFetcher( ValueFetcher<U> valueFetcher ) {
 		this.valueFetcher = valueFetcher;
 		return this;
 	}
@@ -270,14 +270,9 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 
 		if ( propertyTypeDescriptor != null ) {
 			descriptor.setPropertyTypeDescriptor( propertyTypeDescriptor );
-			descriptor.setPropertyType( propertyTypeDescriptor.getType() );
 		}
-
-		if ( propertyType != null ) {
+		else if ( propertyType != null ) {
 			descriptor.setPropertyType( propertyType );
-			if ( propertyTypeDescriptor == null ) {
-				descriptor.setPropertyTypeDescriptor( TypeDescriptor.valueOf( propertyType ) );
-			}
 		}
 
 		applyAttributes( descriptor );

@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.support;
 /**
  * @author Arne Vandamme
  */
+@FunctionalInterface
 public interface ValueFetcher<T>
 {
 	Object getValue( T entity );

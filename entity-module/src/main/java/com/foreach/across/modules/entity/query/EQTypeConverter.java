@@ -24,7 +24,6 @@ import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Responsible for converting raw {@link EQType} instances into strong-typed arguments.
@@ -66,13 +65,14 @@ public class EQTypeConverter
 	 * @return converted values
 	 */
 	public Object[] convertAll( TypeDescriptor expectedType, boolean expandGroups, Object... values ) {
+		TypeDescriptor elementType = expectedType.isCollection() ? expectedType.getElementTypeDescriptor() : expectedType;
 		List<Object> converted = new ArrayList<>();
 
 		for ( Object argument : values ) {
-			Object convertedValue = convert( expectedType, argument );
+			Object convertedValue = convert( elementType, argument );
 
 			if ( expandGroups && convertedValue instanceof Object[] ) {
-				Stream.of( (Object[]) convertedValue ).forEach( converted::add );
+				converted.addAll( Arrays.asList( (Object[]) convertedValue ) );
 			}
 			else {
 				converted.add( convertedValue );
@@ -92,18 +92,29 @@ public class EQTypeConverter
 	public Object convert( TypeDescriptor expectedType, Object value ) {
 		TypeDescriptor sourceType = TypeDescriptor.forObject( value );
 
+		if ( sourceType.isAssignableTo( expectedType ) ) {
+			return value;
+		}
+
 		if ( !String.class.equals( expectedType.getObjectType() )
 				&& conversionService.canConvert( sourceType, expectedType ) ) {
 			// Use directly registered converter
 			return conversionService.convert( value, sourceType, expectedType );
 		}
-		else if ( value instanceof EQValue ) {
+
+		if ( value instanceof EQValue ) {
 			return convert( expectedType, ( (EQValue) value ).getValue() );
 		}
-		else if ( value instanceof EQString ) {
+
+		if ( value instanceof EQString ) {
+			TypeDescriptor stringType = TypeDescriptor.valueOf( String.class );
+			if ( !String.class.equals( expectedType.getObjectType() ) && conversionService.canConvert( stringType, expectedType ) ) {
+				return conversionService.convert( ( (EQString) value ).getValue(), stringType, expectedType );
+			}
 			return ( (EQString) value ).getValue();
 		}
-		else if ( value instanceof EQGroup ) {
+
+		if ( value instanceof EQGroup ) {
 			EQGroup group = (EQGroup) value;
 			Object[] converted = new Object[group.getValues().length];
 			for ( int i = 0; i < converted.length; i++ ) {
@@ -111,10 +122,10 @@ public class EQTypeConverter
 			}
 			return converted;
 		}
-		else if ( value instanceof EQFunction ) {
+
+		if ( value instanceof EQFunction ) {
 			EQFunction function = (EQFunction) value;
-			Optional<EntityQueryFunctionHandler> functionHandler = retrieveFunctionHandler( function.getName(),
-			                                                                                expectedType );
+			Optional<EntityQueryFunctionHandler> functionHandler = retrieveFunctionHandler( function.getName(), expectedType );
 
 			if ( functionHandler.isPresent() ) {
 				return functionHandler.get().apply( function.getName(), function.getArguments(), expectedType, this );

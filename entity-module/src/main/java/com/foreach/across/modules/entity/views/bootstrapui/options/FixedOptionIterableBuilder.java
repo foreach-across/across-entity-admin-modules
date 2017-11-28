@@ -25,20 +25,63 @@ import java.util.Arrays;
  *
  * @author Arne Vandamme
  */
-public class FixedOptionIterableBuilder implements OptionIterableBuilder
+public final class FixedOptionIterableBuilder implements OptionIterableBuilder
 {
+	private final boolean sorted;
 	private final Iterable<OptionFormElementBuilder> options;
 
-	public FixedOptionIterableBuilder( OptionFormElementBuilder... options ) {
-		this( Arrays.asList( options ) );
-	}
-
-	public FixedOptionIterableBuilder( Iterable<OptionFormElementBuilder> options ) {
+	private FixedOptionIterableBuilder( Iterable<OptionFormElementBuilder> options, boolean sorted ) {
+		this.sorted = sorted;
 		this.options = options;
 	}
 
 	@Override
 	public Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext ) {
 		return options;
+	}
+
+	@Override
+	public boolean isSorted() {
+		return sorted;
+	}
+
+	/**
+	 * Create a new iterable builder for the given options and consider them not sorted.
+	 *
+	 * @param options to return
+	 * @return option iterable builder
+	 */
+	public static FixedOptionIterableBuilder of( OptionFormElementBuilder... options ) {
+		return of( Arrays.asList( options ) );
+	}
+
+	/**
+	 * Create a new iterable builder for the given options and consider them not sorted.
+	 *
+	 * @param options to return
+	 * @return option iterable builder
+	 */
+	public static FixedOptionIterableBuilder of( Iterable<OptionFormElementBuilder> options ) {
+		return new FixedOptionIterableBuilder( options, false );
+	}
+
+	/**
+	 * Create a new iterable builder for the given options and consider them as sorted.
+	 *
+	 * @param options to return
+	 * @return option iterable builder
+	 */
+	public static FixedOptionIterableBuilder sorted( OptionFormElementBuilder... options ) {
+		return sorted( Arrays.asList( options ) );
+	}
+
+	/**
+	 * Create a new iterable builder for the given options and consider them as sorted.
+	 *
+	 * @param options to return
+	 * @return option iterable builder
+	 */
+	public static FixedOptionIterableBuilder sorted( Iterable<OptionFormElementBuilder> options ) {
+		return new FixedOptionIterableBuilder( options, true );
 	}
 }

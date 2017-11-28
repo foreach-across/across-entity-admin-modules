@@ -36,7 +36,7 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataProvider
 {
 	public static final EntityQueryOps[] STRING_OPS =
-			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
+			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY, CONTAINS, NOT_CONTAINS };
 	public static final EntityQueryOps[] NUMBER_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
 	public static final EntityQueryOps[] COLLECTION_OPS =
@@ -75,11 +75,15 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 	}
 
 	private boolean isValidGroupOrNonGroupOperation( TypeDescriptor valueType, EntityQueryOps operator ) {
-		if ( operator == IN || operator == NOT_IN ) {
-			return EQ_GROUP_TYPE.equals( valueType ) || EQ_FUNCTION_TYPE.equals( valueType );
+		if ( EQType.class.isAssignableFrom( valueType.getType() ) ) {
+			if ( operator == IN || operator == NOT_IN ) {
+				return EQ_GROUP_TYPE.equals( valueType ) || EQ_FUNCTION_TYPE.equals( valueType );
+			}
+
+			return !EQ_GROUP_TYPE.equals( valueType );
 		}
 
-		return !EQ_GROUP_TYPE.equals( valueType );
+		return true;
 	}
 
 	private EntityQueryOps[] retrieveOperandsForType( TypeDescriptor type ) {

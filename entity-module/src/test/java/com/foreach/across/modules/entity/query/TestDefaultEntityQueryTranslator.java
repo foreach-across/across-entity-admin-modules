@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -136,6 +137,43 @@ public class TestDefaultEntityQueryTranslator
 	}
 
 	@Test
+	public void nullInCollectionArgumentResultsInExpandedQuery() {
+		EntityPropertyDescriptor cities = mock( EntityPropertyDescriptor.class );
+		when( cities.getName() ).thenReturn( "translatedCities" );
+		when( cities.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
+		when( propertyRegistry.getProperty( "cities" ) ).thenReturn( cities );
+
+		when( typeConverter.convertAll( TypeDescriptor.valueOf( String.class ), true, "brussel", "amsterdam" ) )
+				.thenReturn( new Object[] { "brussel", "amsterdam" } );
+		when( typeConverter.convertAll( TypeDescriptor.valueOf( String.class ), true,
+		                                new EQGroup( new EQString( "brussel" ), new EQString( "amsterdam" ) ) ) )
+				.thenReturn( new Object[] { "brussel", "amsterdam" } );
+
+		EntityQuery query = EntityQuery.and(
+				new EntityQueryCondition( "cities", EntityQueryOps.IN,
+				                          new EQGroup( new EQString( "brussel" ), EQValue.NULL, new EQString( "amsterdam" ) ) )
+		);
+		EntityQuery translated = EntityQuery.and(
+				EntityQuery.or(
+						new EntityQueryCondition( "translatedCities", EntityQueryOps.IN, "brussel", "amsterdam" ),
+						new EntityQueryCondition( "translatedCities", EntityQueryOps.IS_NULL )
+				)
+		);
+		assertEquals( translated, translator.translate( query ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "cities", EntityQueryOps.NOT_IN, "brussel", null, "amsterdam" )
+		);
+		translated = EntityQuery.and(
+				EntityQuery.and(
+						new EntityQueryCondition( "translatedCities", EntityQueryOps.NOT_IN, "brussel", "amsterdam" ),
+						new EntityQueryCondition( "translatedCities", EntityQueryOps.IS_NOT_NULL )
+				)
+		);
+		assertEquals( translated, translator.translate( query ) );
+	}
+
+	@Test
 	public void isEmptyOnCollectionOrArrayIsKept() {
 		EntityPropertyDescriptor cities = mock( EntityPropertyDescriptor.class );
 		when( cities.getName() ).thenReturn( "translatedCities" );
@@ -205,5 +243,28 @@ public class TestDefaultEntityQueryTranslator
 		);
 
 		assertEquals( translated, translator.translate( raw ) );
+	}
+
+	@Test
+	public void sortTranslationUsesPropertyOrderAttribute() {
+		EntityPropertyDescriptor name = mock( EntityPropertyDescriptor.class );
+		when( name.getAttribute( Sort.Order.class ) ).thenReturn(
+				( new Sort.Order( Sort.Direction.DESC, "translatedName", Sort.NullHandling.NULLS_LAST ) ).ignoreCase()
+		);
+
+		when( propertyRegistry.getProperty( "name" ) ).thenReturn( name );
+
+		EntityQuery rawQuery = EntityQuery.all(
+				new Sort( new Sort.Order( Sort.Direction.ASC, "name" ), new Sort.Order( Sort.Direction.DESC, "city" ) )
+		);
+
+		EntityQuery translated = EntityQuery.all(
+				new Sort(
+						new Sort.Order( Sort.Direction.ASC, "translatedName", Sort.NullHandling.NULLS_LAST ).ignoreCase(),
+						new Sort.Order( Sort.Direction.DESC, "city" )
+				)
+		);
+
+		assertEquals( translated, translator.translate( rawQuery ) );
 	}
 }

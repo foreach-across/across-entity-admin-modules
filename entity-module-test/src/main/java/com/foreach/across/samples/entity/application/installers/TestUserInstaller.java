@@ -24,7 +24,6 @@ import com.foreach.across.samples.entity.application.business.User;
 import com.foreach.across.samples.entity.application.repositories.GroupRepository;
 import com.foreach.across.samples.entity.application.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.util.Assert;
@@ -76,6 +75,7 @@ public class TestUserInstaller
 		user.setName( name );
 		user.setGroup( group );
 		user.setRegistrationDate( cal.getTime() );
+		user.setActive( Math.random() > 0.5 );
 
 		cal.add( DAY_OF_MONTH, 5 );
 		cal.add( HOUR_OF_DAY, 1 );

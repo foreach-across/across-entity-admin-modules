@@ -16,10 +16,7 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
-import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
-import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
@@ -218,6 +215,27 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 		assertEquals( "converted-value", textarea.getText() );
 	}
 
+	@Test
+	public void filterControlSingleShouldBeSingleLine() {
+		when( properties.get( "filterControl" ).hasAttribute( TextboxFormElement.Type.class ) )
+				.thenReturn( true );
+		when( properties.get( "filterControl" ).getAttribute( TextboxFormElement.Type.class ) )
+				.thenReturn( TextboxFormElement.Type.TEXT );
+		TextboxFormElement filterControl = assemble( "filterControl", ViewElementMode.FILTER_CONTROL );
+		assertEquals( filterControl.getElementType(), BootstrapUiElements.TEXTBOX );
+
+	}
+
+	@Test
+	public void filterControlMultipleShouldBeSingleLine() {
+		when( properties.get( "filterControl" ).hasAttribute( TextboxFormElement.Type.class ) )
+				.thenReturn( true );
+		when( properties.get( "filterControl" ).getAttribute( TextboxFormElement.Type.class ) )
+				.thenReturn( TextboxFormElement.Type.TEXT );
+		TextboxFormElement filterControl = assemble( "filterControl", ViewElementMode.FILTER_CONTROL.forMultiple() );
+		assertEquals( filterControl.getElementType(), BootstrapUiElements.TEXTBOX );
+	}
+
 	@SuppressWarnings("unchecked")
 	private <V> V assembleAndVerify( String propertyName, boolean required ) {
 		TextboxFormElement control = assemble( propertyName, ViewElementMode.CONTROL );
@@ -262,6 +280,8 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 		public String email;
 
 		public String password;
+
+		public String filterControl;
 	}
 
 	@Configuration

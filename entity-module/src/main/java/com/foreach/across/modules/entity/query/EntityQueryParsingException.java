@@ -209,6 +209,24 @@ public abstract class EntityQueryParsingException extends RuntimeException
 		}
 	}
 
+	public static class MissingOrderDirection extends ExpressionUnbalanced
+	{
+		public MissingOrderDirection( String field, int expectedPosition ) {
+			super( "Missing order direction after: {2}" );
+			setErrorExpression( field );
+			setErrorExpressionPosition( expectedPosition );
+		}
+	}
+
+	public static class IllegalOrderDirection extends ExpressionUnbalanced
+	{
+		public IllegalOrderDirection( String field, String direction, int expectedPosition ) {
+			super( "Illegal order direction for " + field + ": {2} (only ASC and DESC are allowed)" );
+			setErrorExpression( direction );
+			setErrorExpressionPosition( expectedPosition );
+		}
+	}
+
 	public static class MissingKeyword extends ExpressionUnbalanced
 	{
 		public MissingKeyword( String keyword, String expression, int expectedPosition ) {

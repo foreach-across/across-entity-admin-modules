@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
@@ -49,7 +49,7 @@ public class TestSimpleEntityPropertyDescriptor
 		assertTrue( descriptor.isHidden() );
 		assertTrue( descriptor.isReadable() );
 		assertTrue( descriptor.isWritable() );
-		assertEquals( String.class, descriptor.getPropertyType() );
+		assertEquals( Long.class, descriptor.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( Long.class ), descriptor.getPropertyTypeDescriptor() );
 		assertSame( parentValueFetcher, descriptor.getValueFetcher() );
 		assertEquals( 123L, descriptor.getAttribute( "test" ) );
@@ -58,7 +58,6 @@ public class TestSimpleEntityPropertyDescriptor
 		descriptor.setHidden( false );
 		descriptor.setReadable( true );
 		descriptor.setWritable( false );
-		descriptor.setPropertyType( Long.class );
 		descriptor.setPropertyTypeDescriptor( TypeDescriptor.valueOf( String.class ) );
 		descriptor.setValueFetcher( childValueFetcher );
 		descriptor.setAttribute( "test", 999L );
@@ -68,7 +67,7 @@ public class TestSimpleEntityPropertyDescriptor
 		assertTrue( parent.isHidden() );
 		assertTrue( parent.isReadable() );
 		assertTrue( parent.isWritable() );
-		assertEquals( String.class, parent.getPropertyType() );
+		assertEquals( Long.class, parent.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( Long.class ), parent.getPropertyTypeDescriptor() );
 		assertSame( parentValueFetcher, parent.getValueFetcher() );
 		assertEquals( 123L, parent.getAttribute( "test" ) );
@@ -78,9 +77,37 @@ public class TestSimpleEntityPropertyDescriptor
 		assertFalse( descriptor.isHidden() );
 		assertTrue( descriptor.isReadable() );
 		assertFalse( descriptor.isWritable() );
-		assertEquals( Long.class, descriptor.getPropertyType() );
+		assertEquals( String.class, descriptor.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( String.class ), descriptor.getPropertyTypeDescriptor() );
 		assertSame( childValueFetcher, descriptor.getValueFetcher() );
 		assertEquals( 999L, descriptor.getAttribute( "test" ) );
+	}
+
+	@Test
+	public void getPropertyValueIsNullIfEntityIsNull() {
+		ValueFetcher fetcher = mock( ValueFetcher.class );
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( "name" );
+		descriptor.setValueFetcher( fetcher );
+
+		assertNull( descriptor.getPropertyValue( null ) );
+		verifyNoMoreInteractions( fetcher );
+	}
+
+	@Test
+	public void getPropertyValueIsNullIfNoValueFetcher() {
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( "name" );
+		assertNull( descriptor.getPropertyValue( "some entity" ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void getPropertyValueDispatchesToValueFetcher() {
+		ValueFetcher<String> fetcher = mock( ValueFetcher.class );
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( "name" );
+		descriptor.setValueFetcher( fetcher );
+
+		when( fetcher.getValue( "some entity" ) ).thenReturn( 123 );
+
+		assertEquals( 123, descriptor.getPropertyValue( "some entity" ) );
 	}
 }

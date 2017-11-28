@@ -34,8 +34,7 @@ import java.util.List;
  * is fetched through an {@link EntityQueryExecutor} and custom {@link EntityQuery}.
  * By default an {@link EntityQuery} without parameters will be used, resulting in all entities being returned.
  * <p/>
- * A query can be specified using either an {@link EntityQuery} instance or a EQL statement.  The latter requires
- * an {@link EntityQueryParser} to be set.
+ * A query can be specified using either an {@link EntityQuery} instance or a EQL statement.
  * <p/>
  * Use {@link #forEntityConfiguration(EntityConfiguration)} to easily create an  {@link EntityQueryOptionIterableBuilder}
  * configured with the entity query support for a particular {@link EntityConfiguration}.
@@ -48,7 +47,6 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 	private EntityQueryExecutor<Object> entityQueryExecutor;
 	private EntityQueryParser entityQueryParser;
 	private EntityQuery entityQuery = EntityQuery.all();
-	private String eql = null;
 
 	public EntityModel getEntityModel() {
 		return entityModel;
@@ -56,19 +54,8 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 
 	@SuppressWarnings("unchecked")
 	public void setEntityModel( EntityModel entityModel ) {
-		Assert.notNull( entityModel );
+		Assert.notNull( entityModel, "entityModel is required" );
 		this.entityModel = entityModel;
-	}
-
-	/**
-	 * Set a typed entity query object.
-	 *
-	 * @param entityQuery to use
-	 */
-	public void setEntityQuery( EntityQuery entityQuery ) {
-		Assert.notNull( entityQuery );
-		this.entityQuery = entityQuery;
-		this.eql = null;
 	}
 
 	/**
@@ -77,14 +64,23 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 	 * @param eql statement that represents the query to execute
 	 */
 	public void setEntityQuery( String eql ) {
-		Assert.notNull( eql );
-		this.entityQuery = null;
-		this.eql = eql;
+		Assert.notNull( eql, "EQL statement is required" );
+		this.entityQuery = EntityQuery.parse( eql );
+	}
+
+	/**
+	 * Set a typed entity query object.
+	 *
+	 * @param entityQuery to use
+	 */
+	public void setEntityQuery( EntityQuery entityQuery ) {
+		Assert.notNull( entityQuery, "entityQuery is required" );
+		this.entityQuery = entityQuery;
 	}
 
 	@SuppressWarnings("unchecked")
 	public void setEntityQueryExecutor( EntityQueryExecutor entityQueryExecutor ) {
-		Assert.notNull( entityQueryExecutor );
+		Assert.notNull( entityQueryExecutor, "entityQueryExecutor is required" );
 		this.entityQueryExecutor = entityQueryExecutor;
 	}
 
@@ -93,12 +89,17 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 	}
 
 	@Override
-	public Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext ) {
-		EntityQuery query = retrieveEntityQuery();
+	public boolean isSorted() {
+		return entityQuery.hasSort();
+	}
 
-		Assert.notNull( entityModel );
-		Assert.notNull( entityQuery );
-		Assert.notNull( entityQueryExecutor );
+	@Override
+	public Iterable<OptionFormElementBuilder> buildOptions( ViewElementBuilderContext builderContext ) {
+		EntityQuery query = prepareEntityQuery();
+
+		Assert.notNull( entityModel, "no EntityModel set" );
+		Assert.notNull( entityQuery, "no EntityQuery set" );
+		Assert.notNull( entityQueryExecutor, "no EntityQueryExecutor set" );
 
 		List<OptionFormElementBuilder> options = new ArrayList<>();
 
@@ -115,14 +116,9 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 		return options;
 	}
 
-	private EntityQuery retrieveEntityQuery() {
-		if ( entityQuery == null ) {
-			Assert.notNull( eql, "Neither EntityQuery not EQL statement has been configured" );
-			Assert.notNull( entityQueryParser, "No EntityQueryParser is available to convert the EQL statement" );
-			entityQuery = entityQueryParser.parse( eql );
-		}
-
-		return entityQuery;
+	private EntityQuery prepareEntityQuery() {
+		Assert.notNull( entityQueryParser, "No EntityQueryParser is available to prepare the EntityQuery" );
+		return entityQueryParser.prepare( entityQuery );
 	}
 
 	/**

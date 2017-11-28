@@ -83,6 +83,8 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( String.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Integer.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( int.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( String.class, ViewElementMode.FORM_WRITE.forMultiple() ) );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( String.class, ViewElementMode.FORM_READ.forMultiple() ) );
 	}
 
 	@Test
@@ -151,12 +153,15 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertEquals( BootstrapUiElements.LABEL, lookup( Long.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( BigDecimal.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( Date.class, ViewElementMode.LIST_LABEL ) );
+		assertEquals( BootstrapUiElements.LABEL, lookup( String.class, ViewElementMode.LABEL.forMultiple() ) );
+		assertEquals( BootstrapUiElements.LABEL, lookup( String.class, ViewElementMode.LIST_LABEL.forMultiple() ) );
 	}
 
 	@Test
 	public void textboxTypeForPrimitives() {
 		assertEquals( BootstrapUiElements.TEXTBOX, lookup( String.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.TEXTBOX, lookup( String.class, ViewElementMode.LIST_CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXTBOX, lookup( String.class, ViewElementMode.FILTER_CONTROL ) );
 	}
 
 	@Test
@@ -219,6 +224,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@Test
 	public void enumValueShouldReturnSelectType() {
 		assertEquals( BootstrapUiElements.SELECT, lookup( CompanyStatus.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.SELECT, lookup( CompanyStatus.class, ViewElementMode.FILTER_CONTROL ) );
 	}
 
 	@Test
@@ -226,35 +232,36 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	public void singleEntityTypeShouldReturnSelectType() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
 
-		when( entityConfiguration.getEntityType() ).thenReturn( (Class) Client.class );
+		when( entityConfiguration.getEntityType() ).thenReturn( Client.class );
 		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
+		when( entityRegistry.contains( Client.class ) ).thenReturn( true );
 
 		assertEquals( BootstrapUiElements.SELECT, lookup( Client.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.SELECT, lookup( Client.class, ViewElementMode.FILTER_CONTROL ) );
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void collectionEntityTypeShouldReturnOptions() {
+	public void collectionEntityTypeShouldReturnOptionsOrSelectTypeForFilterControl() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
 
-		when( entityConfiguration.getEntityType() ).thenReturn( (Class) Client.class );
+		when( entityConfiguration.getEntityType() ).thenReturn( Client.class );
 		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
+		when( entityRegistry.contains( Client.class ) ).thenReturn( true );
 
 		when( descriptor.getPropertyType() ).thenReturn( (Class) List.class );
-		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
-				List.class, TypeDescriptor.valueOf( Client.class )
-		);
+		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( Client.class ) );
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
 
-		assertEquals( OptionsFormElementBuilderFactory.OPTIONS,
-		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.SELECT, strategy.findElementType( descriptor, ViewElementMode.FILTER_CONTROL ) );
 	}
 
 	@Test
 	public void stringSetsAreSupportedAsMultiValue() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
 
-		when( entityConfiguration.getEntityType() ).thenReturn( (Class) Client.class );
+		when( entityConfiguration.getEntityType() ).thenReturn( Client.class );
 		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
 
 		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
@@ -272,7 +279,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	public void collectionEnumShouldReturnOptions() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
 
-		when( entityConfiguration.getEntityType() ).thenReturn( (Class) Client.class );
+		when( entityConfiguration.getEntityType() ).thenReturn( Client.class );
 		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
 
 		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
@@ -281,8 +288,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		);
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
 
-		assertEquals( OptionsFormElementBuilderFactory.OPTIONS,
-		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
 	}
 
 	@Test
@@ -294,6 +300,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@SuppressWarnings("unchecked")
 	private String lookup( Class propertyType, ViewElementMode mode ) {
 		when( descriptor.getPropertyType() ).thenReturn( propertyType );
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( propertyType ) );
 		return strategy.findElementType( descriptor, mode );
 	}
 

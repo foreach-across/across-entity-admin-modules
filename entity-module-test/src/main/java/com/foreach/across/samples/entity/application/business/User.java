@@ -58,6 +58,8 @@ public class User extends SettableIdBasedEntity<User>
 	@Column
 	private Date registrationDate;
 
+	private boolean active;
+
 	public User() {
 	}
 
@@ -95,5 +97,13 @@ public class User extends SettableIdBasedEntity<User>
 
 	public void setRegistrationDate( Date registrationDate ) {
 		this.registrationDate = registrationDate;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive( boolean active ) {
+		this.active = active;
 	}
 }

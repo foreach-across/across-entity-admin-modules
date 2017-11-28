@@ -15,21 +15,22 @@
  */
 package com.foreach.across.modules.entity.query.jpa;
 
+import com.foreach.across.modules.entity.query.AbstractEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import java.util.List;
+import static com.foreach.across.modules.entity.query.jpa.EntityQueryJpaUtils.toSpecification;
 
 /**
  * Implementation of {@link EntityQueryExecutor} that runs against a {@link JpaSpecificationExecutor} instance.
  *
  * @author Arne Vandamme
  */
-public class EntityQueryJpaExecutor<T> implements EntityQueryExecutor<T>
+public class EntityQueryJpaExecutor<T> extends AbstractEntityQueryExecutor<T>
 {
 	private final JpaSpecificationExecutor<T> jpaSpecificationExecutor;
 
@@ -38,16 +39,17 @@ public class EntityQueryJpaExecutor<T> implements EntityQueryExecutor<T>
 	}
 
 	@Override
-	public Page<T> findAll( EntityQuery query, Pageable pageable ) {
-		if ( pageable == null ) {
-			return new PageImpl<>( findAll( query ) );
-		}
-
-		return jpaSpecificationExecutor.findAll( EntityQueryJpaUtils.<T>toSpecification( query ), pageable );
+	protected Iterable<T> executeQuery( EntityQuery query ) {
+		return jpaSpecificationExecutor.findAll( toSpecification( query ) );
 	}
 
 	@Override
-	public List<T> findAll( EntityQuery query ) {
-		return jpaSpecificationExecutor.findAll( EntityQueryJpaUtils.<T>toSpecification( query ) );
+	protected Iterable<T> executeQuery( EntityQuery query, Sort sort ) {
+		return jpaSpecificationExecutor.findAll( toSpecification( query ), sort );
+	}
+
+	@Override
+	protected Page<T> executeQuery( EntityQuery query, Pageable pageable ) {
+		return jpaSpecificationExecutor.findAll( toSpecification( query ), pageable );
 	}
 }

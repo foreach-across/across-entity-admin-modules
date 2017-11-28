@@ -15,23 +15,22 @@
  */
 package com.foreach.across.modules.entity.query.querydsl;
 
+import com.foreach.across.modules.entity.query.AbstractEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.util.EntityUtils;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
-
-import java.util.List;
 
 /**
  * Implementation of {@link EntityQueryExecutor} that runs against a {@link QueryDslPredicateExecutor} instance.
  *
  * @author Arne Vandamme
  */
-public class EntityQueryQueryDslExecutor<T> implements EntityQueryExecutor<T>
+public class EntityQueryQueryDslExecutor<T> extends AbstractEntityQueryExecutor<T>
 {
 	private final QueryDslPredicateExecutor<T> queryDslPredicateExecutor;
 	private final EntityConfiguration entityConfiguration;
@@ -43,19 +42,18 @@ public class EntityQueryQueryDslExecutor<T> implements EntityQueryExecutor<T>
 	}
 
 	@Override
-	public List<T> findAll( EntityQuery query ) {
-		return EntityUtils.asList( queryDslPredicateExecutor.findAll( predicate( query ) ) );
+	protected Iterable<T> executeQuery( EntityQuery query ) {
+		return queryDslPredicateExecutor.findAll( predicate( query ) );
 	}
 
 	@Override
-	public Page<T> findAll( EntityQuery query, Pageable pageable ) {
-		Predicate predicate = predicate( query );
+	protected Iterable<T> executeQuery( EntityQuery query, Sort sort ) {
+		return queryDslPredicateExecutor.findAll( predicate( query ), sort );
+	}
 
-		if ( pageable == null ) {
-			return EntityUtils.asPage( queryDslPredicateExecutor.findAll( predicate ) );
-		}
-
-		return queryDslPredicateExecutor.findAll( predicate, pageable );
+	@Override
+	protected Page<T> executeQuery( EntityQuery query, Pageable pageable ) {
+		return queryDslPredicateExecutor.findAll( predicate( query ), pageable );
 	}
 
 	private Predicate predicate( EntityQuery query ) {

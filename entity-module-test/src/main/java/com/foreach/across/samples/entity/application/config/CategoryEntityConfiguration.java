@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -87,14 +88,14 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .attribute( EntityAttributes.CONTROL_NAME, "entity[name]" )
 						        .attribute( TextboxFormElement.Type.class, TextboxFormElement.Type.TEXT )
 						        .writable( true )
-						        .spelValueFetcher( "get('name')" )
+						        .<Map>valueFetcher( map -> map.get( "name" ) )
 						        .order( 2 )
 		        )
 		        .entityModel(
 				        model -> model
 						        .entityFactory( new CategoryEntityFactory() )
 						        .entityInformation( new CategoryEntityInformation() )
-						        .labelPrinter( ( o, locale ) -> (String) ( (Map) o ).get( "name" ) )
+						        .labelPrinter( ( o, locale ) -> (String) o.get( "name" ) )
 						        .findOneMethod( id -> categoryRepository.stream()
 						                                                .filter( m -> id.equals(
 								                                                m.get( "id" ) ) )

@@ -60,6 +60,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		addProcessor( new TextboxTypeDetectionProcessor() );
 		addProcessor( new PasswordTypeDetectionProcessor() );
 		addProcessor( new FormControlNameBuilderProcessor<>() );
+		addProcessor( new FilterControlProcessor() );
 	}
 
 	public void setMaximumSingleLineLength( int maximumSingleLineLength ) {
@@ -80,8 +81,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 				.name( propertyDescriptor.getName() )
 				.controlName( EntityAttributes.controlName( propertyDescriptor ) )
 				.multiLine(
-						String.class.equals( propertyDescriptor.getPropertyType() )
-								|| BootstrapUiElements.TEXTAREA.equals( viewElementType )
+						String.class.equals( propertyDescriptor.getPropertyType() ) || BootstrapUiElements.TEXTAREA.equals( viewElementType )
 				)
 				.postProcessor( builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) )
 				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
@@ -186,6 +186,22 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 						textbox.multiLine( max > maximumSingleLineLength );
 					}
 				}
+			}
+		}
+	}
+
+	/**
+	 * In case of a {@link ViewElementMode#FILTER_CONTROL}, the {@link TextboxFormElementBuilder} must always be rendered as a single line {@link TextboxFormElement}.
+	 */
+	private class FilterControlProcessor implements EntityViewElementBuilderProcessor<TextboxFormElementBuilder>
+	{
+		@Override
+		public void process( EntityPropertyDescriptor propertyDescriptor,
+		                     ViewElementMode viewElementMode,
+		                     String viewElementType,
+		                     TextboxFormElementBuilder textbox ) {
+			if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+				textbox.multiLine( false );
 			}
 		}
 	}

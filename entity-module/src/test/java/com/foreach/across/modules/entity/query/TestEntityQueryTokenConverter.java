@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.query;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -184,12 +185,11 @@ public class TestEntityQueryTokenConverter
 		);
 	}
 
-
 	@Test
 	public void illegalNullOrEmptyValue() {
 		expectError(
 				"Illegal value for a: IS and IS NOT can only be combined with NULL or EMPTY", 12,
-		        "a", "is", "bla"
+				"a", "is", "bla"
 		);
 		expectError(
 				"Illegal value for a: IS and IS NOT can only be combined with NULL or EMPTY", 23,
@@ -230,6 +230,80 @@ public class TestEntityQueryTokenConverter
 	}
 
 	@Test
+	public void missingOrderField() {
+		expectError(
+				"Missing expected field at position 12", 12,
+				"order", "by"
+		);
+
+		expectError(
+				"Missing expected field at position 42", 42,
+				"a", "=", "b", "order", "by"
+		);
+
+		expectError(
+				"Missing expected field at position 41", 41,
+				"order", "by", "city", "asc", ","
+		);
+
+		expectError(
+				"Missing expected field at position 71", 71,
+				"a", "=", "b", "order", "by", "city", "desc", ","
+		);
+	}
+
+	@Test
+	public void orderDirectionMissing() {
+		expectError(
+				"Missing order direction after: city", 24,
+				"order", "by", "city"
+		);
+
+		expectError(
+				"Missing order direction after: city", 54,
+				"a", "=", "b", "order", "by", "city"
+		);
+
+		expectError(
+				"Missing order direction after: name", 54,
+				"order", "by", "city", "asc", ",", "name"
+		);
+
+		expectError(
+				"Missing order direction after: name", 84,
+				"a", "=", "b", "order", "by", "city", "desc", ",", "name"
+		);
+	}
+
+	@Test
+	public void illegalOrderDirection() {
+		expectError(
+				"Illegal order direction for city: ascc (only ASC and DESC are allowed)", 30,
+				"order", "by", "city", "ascc"
+		);
+
+		expectError(
+				"Illegal order direction for city: test (only ASC and DESC are allowed)", 60,
+				"a", "=", "b", "order", "by", "city", "test"
+		);
+	}
+
+	@Test
+	public void illegalTokenInOrderByClause() {
+		expectError(
+				"Illegal token: name",
+				40,
+				"order", "by", "city", "asc", "name"
+		);
+
+		expectError(
+				"Illegal token: name",
+				70,
+				"a", "=", "b", "order", "by", "city", "asc", "name"
+		);
+	}
+
+	@Test
 	public void simpleQueryWithStringLiteralValue() {
 		assertEquals(
 				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.EQ, new EQString( "123 456" ) ) ),
@@ -244,6 +318,25 @@ public class TestEntityQueryTokenConverter
 		assertEquals(
 				EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.EQ, new EQString( "" ) ) ),
 				convert( "value", "=", "''" )
+		);
+	}
+
+	@Test
+	public void orderingOnly() {
+		assertEquals(
+				EntityQuery.all( new Sort( Sort.Direction.ASC, "name", "city" ) ),
+				convert( "order", "by", "name", "asc", ",", "city", "asc" )
+		);
+	}
+
+	@Test
+	public void simpleQueryWithOrdering() {
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "value", EntityQueryOps.EQ, new EQString( "123 456" ) ) );
+		query.setSort( new Sort( new Sort.Order( Sort.Direction.DESC, "name" ), new Sort.Order( Sort.Direction.ASC, "city" ) ) );
+
+		assertEquals(
+				query,
+				convert( "value", "=", "'123 456'", "order", "by", "name", "desc", ",", "city", "asc" )
 		);
 	}
 
@@ -445,6 +538,20 @@ public class TestEntityQueryTokenConverter
 				convert( "value", "=", "123", "or", "(", "name", "=", "currentUser", "(", "'test'", ")", "and",
 				         "time", "contains", "(", "2", ",", "3", ")", ")" )
 
+		);
+	}
+
+	@Test
+	public void groupInContainingNullValue() {
+		assertEquals(
+				EntityQuery.and(
+						new EntityQueryCondition(
+								"value",
+								EntityQueryOps.IN,
+								new EQGroup( Arrays.asList( EQValue.NULL, new EQValue( "123" ), new EQString( "test" ) ) )
+						)
+				),
+				convert( "value", "in", "(", "null", ",", "123", ",", "'test'", ")" )
 		);
 	}
 

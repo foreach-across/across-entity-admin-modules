@@ -17,16 +17,19 @@
 package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.core.annotations.Event;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.query.EntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
+import com.foreach.across.modules.entity.views.processors.query.EntityQueryValueEnhancer;
 import com.foreach.across.modules.entity.views.processors.support.EntityPageStructureRenderedEvent;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -38,14 +41,17 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.samples.entity.application.business.Group;
+import com.foreach.across.samples.entity.application.business.Note;
 import com.foreach.across.samples.entity.application.business.Partner;
 import com.foreach.across.samples.entity.application.business.User;
 import com.foreach.across.samples.entity.application.repositories.PartnerRepository;
 import com.foreach.across.samples.entity.application.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
@@ -54,6 +60,7 @@ import org.springframework.web.bind.WebDataBinder;
 
 import java.util.Optional;
 
+import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.ENTITY_QUERY_OPERAND;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
 /**
@@ -69,6 +76,7 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
  * @since 2.0.0
  */
 @Configuration
+@RequiredArgsConstructor
 public class EntityFilteringConfiguration implements EntityConfigurer
 {
 	@Event
@@ -86,10 +94,27 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
+		configuration.withType( Note.class )
+		             .properties( props -> props.property( "text" )
+		                                        .valueFetcher( entity -> "" )
+		                                        .propertyType( TypeDescriptor.valueOf( String.class ) )
+		                                        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.TEXTAREA )
+		                                        .attribute( EntityQueryConditionTranslator.class,
+		                                                    EntityQueryConditionTranslator.expandingOr( "name", "content" ) )
+		                                        .hidden( true )
+
+		             )
+		             .listView( lvb -> lvb.showProperties( "*" )
+		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text" )
+		                                                                .basicMode( true )
+		                                                                .advancedMode( true ) ) )
+		;
 		configuration.withType( User.class )
-		             .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate" )
+		             .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate", "active" )
 		                                  .properties(
-				                                  props -> props.property( "id" ).attribute( Sort.Order.class, new Sort.Order( Sort.Direction.DESC, "name" ) )
+				                                  props -> props.property( "id" )
+				                                                .attribute( Sort.Order.class, new Sort.Order( Sort.Direction.DESC, "name" ) )
+						                                  .<User>valueFetcher( user -> user.getId() + " - " + user.getName() )
 		                                  )
 		                                  .showResultNumber( false )
 		                                  .viewProcessor( new EntityViewProcessorAdapter()
@@ -102,6 +127,22 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 				                                                           WebResource.VIEWS );
 			                                  }
 		                                  } )
+		                                  .entityQueryFilter( eqf -> eqf.showProperties( "name", "group", "active" )
+		                                                                .basicMode( true )
+		                                                                .advancedMode( true )
+		                                                                .multiValue( "group" )
+		                                                                .properties( props -> props
+				                                                                .property( "group" )
+				                                                                .attribute( EntityAttributes.OPTIONS_ENHANCER,
+				                                                                            new EntityQueryValueEnhancer<Group>()
+				                                                                            {
+					                                                                            @Override
+					                                                                            public Object retrieveValue( String label, Group rawValue ) {
+						                                                                            return "'" + rawValue.getName() + "'";
+					                                                                            }
+				                                                                            } )
+		                                                                )
+		                                  )
 		             )
 		             .view( EntityView.SUMMARY_VIEW_NAME, vb -> vb.showProperties( "name", "group" ) );
 
@@ -120,19 +161,25 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		configuration.withType( Group.class )
 		             .properties(
 				             props -> props.property( "name" )
-				                           .attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.ignoreCase() )
+				                           .attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.ignoreCase() ).and()
+				                           .property( "userCount" )
+				                           .displayName( "# Users" )
+				                           .valueFetcher( Group::calculateUserCount )
 		             )
 		             .viewElementBuilder(
 				             ViewElementMode.LIST_VALUE,
 				             viewElementBuilderContext -> {
-					             Group group = EntityViewElementUtils.currentEntity( viewElementBuilderContext, Group.class );
+					             Group group = EntityViewElementUtils.currentPropertyValue( viewElementBuilderContext, Group.class );
 
 					             return group != null
 							             ? TextViewElement.text( group.getName() + " (" + group.getUsers().size() + " users)" )
 							             : TextViewElement.text( "" );
 				             }
 		             )
-		             .listView( lvb -> lvb.entityQueryPredicate( "name not like 'small people%'" ) )
+		             .listView( lvb -> lvb.entityQueryPredicate( "name not like 'small people%'" )
+		                                  .showProperties( "name", "userCount" )
+		                                  .entityQueryFilter( eql -> eql.basicMode( true ).advancedMode( true ).properties(
+				                                  props -> props.property( "name" ).attribute( ENTITY_QUERY_OPERAND, EntityQueryOps.LIKE_IC ) ) ) )
 		             .association(
 				             ab -> ab.name( "user.group" )
 				                     .associationType( EntityAssociation.Type.EMBEDDED )
@@ -141,7 +188,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 						                               .viewProcessor( userInGroupFilterProcessor() )
 				                     )
 		             )
-		             .attribute( EntityAttributes.OPTIONS_ENTITY_QUERY, "name like 'animals%'" );
+		             .attribute( EntityAttributes.OPTIONS_ENTITY_QUERY, "name like 'animals%' order by id desc" );
 	}
 
 	@Bean

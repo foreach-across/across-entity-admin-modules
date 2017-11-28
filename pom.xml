@@ -20,12 +20,12 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>standard-module-bom</artifactId>
-		<version>2.1.0.RELEASE</version>
+		<version>2.1.1.RELEASE</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
 	<artifactId>entity-module-project</artifactId>
-	<version>2.1.0.RELEASE</version>
+	<version>2.2.0.RELEASE</version>
 	<packaging>pom</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -78,7 +78,7 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>bootstrap-ui-module</artifactId>
-				<version>1.1.0.RELEASE</version>
+				<version>1.2.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
@@ -118,7 +118,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.16.8</version>
+			<version>1.16.18</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

@@ -90,7 +90,7 @@ public class TestEntityPropertyRegistryBuilder
 
 			assertEquals( "myprop", descriptor.getName() );
 			assertEquals( "My Property", descriptor.getDisplayName() );
-			assertEquals( String.class, descriptor.getPropertyType() );
+			assertEquals( Long.class, descriptor.getPropertyType() );
 			assertEquals( TypeDescriptor.valueOf( Long.class ), descriptor.getPropertyTypeDescriptor() );
 			assertNull( descriptor.getPropertyRegistry() );
 			assertSame( vf, descriptor.getValueFetcher() );

@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.views.util;
 
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
@@ -25,9 +26,10 @@ import org.junit.Test;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentEntity;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -63,5 +65,38 @@ public class TestEntityViewElementUtils
 		assertSame( SOME_ENTITY, currentEntity( ctx ) );
 		assertSame( SOME_ENTITY, currentEntity( ctx, String.class ) );
 		assertNull( currentEntity( ctx, Integer.class ) );
+	}
+
+	@Test
+	public void currentPropertyValueIsNullIfNoPropertyDescriptor() {
+		ViewElementBuilderContext ctx = new DefaultViewElementBuilderContext();
+		setCurrentEntity( ctx, "my entity" );
+
+		assertNull( currentPropertyValue( ctx ) );
+	}
+
+	@Test
+	public void currentPropertyValueIsReturnValueOfValueFetcher() {
+		ViewElementBuilderContext ctx = new DefaultViewElementBuilderContext();
+		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
+		ctx.setAttribute( EntityPropertyDescriptor.class, descriptor );
+		setCurrentEntity( ctx, "my entity" );
+
+		when( descriptor.getPropertyValue( "my entity" ) ).thenReturn( 123L );
+
+		assertEquals( 123L, currentPropertyValue( ctx ) );
+	}
+
+	@Test
+	public void currentPropertyValueIsNullIfNotOfCorrectType() {
+		ViewElementBuilderContext ctx = new DefaultViewElementBuilderContext();
+		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
+		ctx.setAttribute( EntityPropertyDescriptor.class, descriptor );
+		setCurrentEntity( ctx, "my entity" );
+
+		when( descriptor.getPropertyValue( "my entity" ) ).thenReturn( 123L );
+
+		assertEquals( Long.valueOf( 123L ), currentPropertyValue( ctx, Long.class ) );
+		assertNull( currentPropertyValue( ctx, String.class ) );
 	}
 }

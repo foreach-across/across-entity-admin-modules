@@ -72,6 +72,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 							// Create aggregated properties that sort on the dates
 							props.property( "created" )
 							     .displayName( "Created" )
+							     .propertyType( String.class )
 							     .writable( false ).readable( true ).hidden( true ).order( 1005 )
 							     .attribute( Sort.Order.class, new Sort.Order( "createdDate" ) )
 							     .viewElementBuilder( ViewElementMode.VALUE, createdValueBuilder() )
@@ -79,6 +80,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 
 							props.property( "lastModified" )
 							     .displayName( "Last modified" )
+							     .propertyType( String.class )
 							     .writable( false ).readable( true ).hidden( true ).order( 1006 )
 							     .attribute( Sort.Order.class, new Sort.Order( "lastModifiedDate" ) )
 							     .viewElementBuilder( ViewElementMode.VALUE, lastModifiedValueBuilder() )

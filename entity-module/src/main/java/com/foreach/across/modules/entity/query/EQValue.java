@@ -30,6 +30,9 @@ import java.util.Objects;
  */
 public final class EQValue implements EQType
 {
+	public static final EQValue MISSING = new EQValue( "" );
+	public static final EQValue NULL = new EQValue( "NULL" );
+
 	private final String value;
 
 	public EQValue( String value ) {

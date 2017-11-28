@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.query;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -28,12 +29,15 @@ import java.util.List;
  * Only accepts a translated and executable {@link EntityQuery}.
  *
  * @author Arne Vandamme
+ * @see AbstractEntityQueryExecutor
  * @see com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor
  * @see com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor
  */
 public interface EntityQueryExecutor<T>
 {
 	List<T> findAll( EntityQuery query );
+
+	List<T> findAll( EntityQuery query, Sort sort );
 
 	Page<T> findAll( EntityQuery query, Pageable pageable );
 }

@@ -33,6 +33,8 @@ import java.util.List;
  * Generates {@link OptionFormElementBuilder}s for an enum.
  * Requires an {@link com.foreach.across.modules.entity.support.EntityMessageCodeResolver} attribute to be
  * present when building.  A message code of the form <em>enums.ENUM_NAME.ENUM_VALUE</em> will be looked up.
+ * <p/>
+ * An {@link EnumOptionIterableBuilder} is never sorted.
  *
  * @author Arne Vandamme
  */
@@ -84,5 +86,4 @@ public class EnumOptionIterableBuilder implements OptionIterableBuilder
 
 		return options;
 	}
-
 }

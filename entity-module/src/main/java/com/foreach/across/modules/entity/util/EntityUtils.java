@@ -15,15 +15,15 @@
  */
 package com.foreach.across.modules.entity.util;
 
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,6 +39,50 @@ public class EntityUtils
 		return Stream.of( StringUtils.split( StringUtils.substringAfterLast( entityType.getName(), "." ), "$" ) )
 		             .map( StringUtils::uncapitalize )
 		             .collect( Collectors.joining( "." ) );
+	}
+
+	/**
+	 * Inspects a {@link TypeDescriptor} to retrieve the target {@link TypeDescriptor} if possible.
+	 * This method is meant to determine the target entity type of for example a collection of array descriptor.
+	 * In the latter case the target type would usually be the member type of the descriptor.
+	 * <p/>
+	 * If the type descriptor is neither array nor collection, the original type descriptor is considered to be the target.
+	 * If the type descriptor is representing a class that extends any of the collection types,
+	 * <p/>
+	 * In case of a generic {@link Map}, no target type can be resolved.
+	 * <p/>
+	 * If the type extends a collection type but the {@link EntityRegistry} contains an entry for that specific type, that target type will be returned.
+	 * Else the member will still be resolved.  If the type is {@link Optional}, the member will be returned.
+	 * <p/>
+	 * If {@code null} is passed as the argument for a type descriptor, a generic descriptor for a {@link Object} will be returned.
+	 *
+	 * @param typeDescriptor to inspect for the target type
+	 * @return resolved descriptor
+	 */
+	public static EntityTypeDescriptor resolveEntityTypeDescriptor( TypeDescriptor typeDescriptor, EntityRegistry entityRegistry ) {
+		if ( typeDescriptor == null ) {
+			return EntityTypeDescriptor.builder().sourceTypeDescriptor( TypeDescriptor.valueOf( Object.class ) ).build();
+		}
+
+		EntityTypeDescriptor.EntityTypeDescriptorBuilder builder = EntityTypeDescriptor.builder().sourceTypeDescriptor( typeDescriptor );
+
+		if ( entityRegistry.contains( typeDescriptor.getType() ) ) {
+			builder.targetTypeDescriptor( typeDescriptor );
+		}
+		else if ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) {
+			builder.collection( true ).targetTypeDescriptor( typeDescriptor.getElementTypeDescriptor() );
+		}
+		else if ( !typeDescriptor.isMap() ) {
+			ResolvableType resolvableType = typeDescriptor.getResolvableType();
+			if ( typeDescriptor.isAssignableTo( TypeDescriptor.valueOf( Optional.class ) ) ) {
+				builder.targetTypeDescriptor( TypeDescriptor.valueOf( resolvableType.getGeneric( 0 ).resolve() ) );
+			}
+			else {
+				builder.targetTypeDescriptor( typeDescriptor );
+			}
+		}
+
+		return builder.build();
 	}
 
 	public static String generateDisplayName( String propertyName ) {
@@ -136,6 +180,30 @@ public class EntityUtils
 		}
 
 		return translated.isEmpty() ? null : new Sort( translated );
+	}
+
+	/**
+	 * Merge any number of {@link Sort} instances into a single instance.
+	 * Properties will only be applied once, the first time they are encountered.
+	 *
+	 * @param sorts to combine
+	 * @return combined sort or {@code null} if no sort orders were specified
+	 */
+	public static Sort combineSortSpecifiers( Sort... sorts ) {
+		Set<String> props = new HashSet<>();
+		List<Sort.Order> orders = new ArrayList<>();
+
+		Stream.of( sorts )
+		      .filter( Objects::nonNull )
+		      .forEach( s -> s.forEach( order -> {
+			                if ( !props.contains( order.getProperty() ) ) {
+				                props.add( order.getProperty() );
+				                orders.add( order );
+			                }
+		                } )
+		      );
+
+		return orders.isEmpty() ? null : new Sort( orders );
 	}
 
 	/**

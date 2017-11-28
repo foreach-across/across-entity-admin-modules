@@ -23,7 +23,9 @@ import com.foreach.across.modules.entity.testmodules.springdata.business.Represe
 import com.foreach.across.modules.entity.testmodules.springdata.repositories.CompanyRepository;
 import com.foreach.across.modules.entity.testmodules.springdata.repositories.GroupRepository;
 import com.foreach.across.modules.entity.testmodules.springdata.repositories2.RepresentativeRepository;
+import it.com.foreach.across.modules.entity.query.jpa.ITEntityQueryJpaUtils;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -39,11 +41,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.function.Supplier;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Slf4j
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @WebAppConfiguration
@@ -53,7 +57,7 @@ public abstract class AbstractQueryTest
 	private static boolean inserted = false;
 
 	protected static Company one, two, three;
-	protected static Representative john, joe, peter;
+	protected static Representative john, joe, peter, weirdo;
 	protected static Group groupOne, groupTwo;
 
 	@Autowired
@@ -77,8 +81,9 @@ public abstract class AbstractQueryTest
 			john = new Representative( "john", "John % Surname" );
 			joe = new Representative( "joe", "Joe ' Surname" );
 			peter = new Representative( "peter", "Peter \\ Surname" );
+			weirdo = new Representative( "weirdo", "!\"#%-_&/()=;?´`|/\\'" );
 
-			representativeRepository.save( Arrays.asList( john, joe, peter ) );
+			representativeRepository.save( Arrays.asList( john, joe, peter, weirdo ) );
 
 			one = new Company( "one", 1, asDate( "2015-01-17 13:30" ) );
 			one.setStatus( CompanyStatus.IN_BUSINESS );
@@ -100,7 +105,7 @@ public abstract class AbstractQueryTest
 	}
 
 	@AfterClass
-	public static void resetTestDate() {
+	public static void resetTestData() {
 		inserted = false;
 	}
 
@@ -113,4 +118,13 @@ public abstract class AbstractQueryTest
 		}
 	}
 
+	protected void fallback( Supplier original, Supplier fallback ) {
+		try {
+			original.get();
+		}
+		catch ( AssertionError ae ) {
+			LOG.error( "Initial test failed - probably case insensitive database - using fallback" );
+			fallback.get();
+		}
+	}
 }

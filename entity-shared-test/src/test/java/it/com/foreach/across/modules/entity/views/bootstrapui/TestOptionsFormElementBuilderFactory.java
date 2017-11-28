@@ -19,10 +19,12 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.options.FixedOptionIterableBuilder;
+import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
@@ -42,8 +44,10 @@ import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -75,7 +79,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		ContainerViewElement container = assemble( "enumNoValidator", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
 
 		assertEquals(
-				2,
+				3,
 				container.findAll( RadioFormElement.class )
 				         .filter( e -> e.getControlName().startsWith( "entity." ) && e.getHtmlId().startsWith( "entity." ) )
 				         .count()
@@ -190,7 +194,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void fixedIterableOnPropertyIsUsed() {
-		OptionIterableBuilder optionBuilder = new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
+		OptionIterableBuilder optionBuilder = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
 		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
 				.thenReturn( optionBuilder );
 
@@ -204,6 +208,90 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		assertTrue( option.isSelected() );
 		assertEquals( "test", option.getLabel() );
 		assertEquals( "fixed", option.getValue() );
+	}
+
+	@Test
+	public void descriptorEnhancerIsApplied() {
+		Consumer<OptionFormElementBuilder> propertyEnhancer = option -> option.attribute( "data-test-property", "test property" );
+		when( properties.get( "enumNoValidator" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyEnhancer );
+
+		OptionIterableBuilder optionBuilder = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
+		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
+				.thenReturn( optionBuilder );
+
+		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+
+		assertEquals( 1, select.getChildren().size() );
+		SelectFormElement.Option option = (SelectFormElement.Option) ( (ContainerViewElement) select.getChildren().get( 0 ) ).getChildren().get( 1 );
+		assertEquals( "test property", option.getAttribute( "data-test-property" ) );
+	}
+
+	@Test
+	public void multipleEnhancersAreExecuted() {
+		Consumer<OptionFormElementBuilder> propertyEnhancer = option -> option.attribute( "data-test-property", "test property" );
+		when( properties.get( "enumNoValidator" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyEnhancer );
+
+		OptionIterableBuilder optionBuilder = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
+		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
+				.thenReturn( optionBuilder );
+
+		EntityConfiguration configuration = mock( EntityConfiguration.class );
+		Consumer<OptionFormElementBuilder> configurationEnhancer = option -> option.attribute( "data-test-configuration", "configuration property" );
+		when( configuration.getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( configurationEnhancer );
+		when( configuration.getEntityType() ).thenReturn( getTestClass() );
+		when( entityRegistry.getEntityConfiguration( any( Class.class ) ) ).thenReturn( configuration );
+
+		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+
+		assertEquals( 1, select.getChildren().size() );
+		SelectFormElement.Option option = (SelectFormElement.Option) ( (ContainerViewElement) select.getChildren().get( 0 ) ).getChildren().get( 1 );
+		assertEquals( "test property", option.getAttribute( "data-test-property" ) );
+		assertEquals( "configuration property", option.getAttribute( "data-test-configuration" ) );
+	}
+
+	@Test
+	public void propertyDescriptorEnhancerIsExecutedAfterConfigurationEnhancer() {
+		Consumer<OptionFormElementBuilder> configurationEnhancer = option -> option.attribute( "data-test", "configuration property" );
+		Consumer<OptionFormElementBuilder> propertyEnhancer = option -> option.removeAttribute( "data-test" );
+		when( properties.get( "enumNoValidator" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyEnhancer );
+
+		OptionIterableBuilder optionBuilder = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
+		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
+				.thenReturn( optionBuilder );
+
+		EntityConfiguration configuration = mock( EntityConfiguration.class );
+		when( configuration.getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( configurationEnhancer );
+		when( configuration.getEntityType() ).thenReturn( getTestClass() );
+		when( entityRegistry.getEntityConfiguration( any( Class.class ) ) ).thenReturn( configuration );
+
+		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+		assertEquals( 1, select.getChildren().size() );
+		SelectFormElement.Option option = (SelectFormElement.Option) ( (ContainerViewElement) select.getChildren().get( 0 ) ).getChildren().get( 1 );
+		assertNull( option.getAttribute( "data-test" ) );
+	}
+
+	@Test
+	public void optionGeneratorEnhancerIsExecutedAfterPropertyDescriptorEnhancer() {
+		Consumer<OptionFormElementBuilder> propertyDescriptorEnhancer = option -> option.attribute( "data-test", "configuration property" );
+		Consumer<OptionFormElementBuilder> optionGeneratorEnhancer = option -> option.removeAttribute( "data-test" );
+		when( properties.get( "enumNoValidator" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyDescriptorEnhancer );
+
+		OptionIterableBuilder optionBuilder = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
+		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
+				.thenReturn( optionBuilder );
+
+		EntityConfiguration configuration = mock( EntityConfiguration.class );
+		OptionGenerator optionGenerator = new OptionGenerator();
+		optionGenerator.setEnhancer( optionGeneratorEnhancer );
+
+		when( configuration.getAttribute( OptionGenerator.class ) ).thenReturn( optionGenerator );
+		when( configuration.getEntityType() ).thenReturn( getTestClass() );
+		when( entityRegistry.getEntityConfiguration( any( Class.class ) ) ).thenReturn( configuration );
+
+		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+		assertEquals( 1, select.getChildren().size() );
+		SelectFormElement.Option option = (SelectFormElement.Option) ( (ContainerViewElement) select.getChildren().get( 0 ) ).getChildren().get( 1 );
+		assertNull( option.getAttribute( "data-test" ) );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -247,11 +335,6 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		@Primary
 		public OptionsFormElementBuilderFactory optionsFormElementBuilderFactory() {
 			return new OptionsFormElementBuilderFactory();
-		}
-
-		@Bean
-		public BootstrapUiFactory bootstrapUiFactory() {
-			return new BootstrapUiFactoryImpl();
 		}
 
 		@Bean

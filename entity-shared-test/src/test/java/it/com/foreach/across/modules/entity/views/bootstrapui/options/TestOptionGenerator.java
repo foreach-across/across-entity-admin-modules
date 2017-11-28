@@ -37,6 +37,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
@@ -47,17 +48,16 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class TestOptionGenerator
 {
-	private final OptionIterableBuilder singleOption
-			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ) );
+	private final OptionIterableBuilder singleOption = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ) );
 
-	private final OptionIterableBuilder noneSelected
-			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ),
-			                                  new OptionFormElementBuilder().label( "aaa" ).rawValue( "2" )
+	private final OptionIterableBuilder noneSelected = FixedOptionIterableBuilder.of(
+			new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ),
+			new OptionFormElementBuilder().label( "aaa" ).rawValue( "2" )
 	);
 
-	private final OptionIterableBuilder withSelected
-			= new FixedOptionIterableBuilder( new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ),
-			                                  new OptionFormElementBuilder().label( "aaa" ).rawValue( "2" ).selected()
+	private final OptionIterableBuilder withSelectedAndSorted = FixedOptionIterableBuilder.sorted(
+			new OptionFormElementBuilder().label( "bbb" ).rawValue( 1L ),
+			new OptionFormElementBuilder().label( "aaa" ).rawValue( "2" ).selected()
 	);
 
 	private OptionGenerator generator;
@@ -77,10 +77,61 @@ public class TestOptionGenerator
 	}
 
 	@Test
+	public void sortedByDefaultIfIterableNotSorted() {
+		options.select();
+		generator.setOptions( noneSelected );
+		generator.setEmptyOption( null );
+
+		List<SelectFormElement.Option> generated = build();
+		assertEquals( 2, generated.size() );
+		assertEquals( "aaa", generated.get( 0 ).getLabel() );
+		assertEquals( "bbb", generated.get( 1 ).getLabel() );
+	}
+
+	@Test
+	public void notSortedIfDisabledAndIterableNotSorted() {
+		options.select();
+		generator.setOptions( noneSelected );
+		generator.setEmptyOption( null );
+		generator.setSorted( false );
+
+		List<SelectFormElement.Option> generated = build();
+		assertEquals( 2, generated.size() );
+		assertEquals( "bbb", generated.get( 0 ).getLabel() );
+		assertEquals( "aaa", generated.get( 1 ).getLabel() );
+	}
+
+	@Test
+	public void notSortedByDefaultIfIterableSorted() {
+		options.select();
+		generator.setOptions( withSelectedAndSorted );
+		generator.setEmptyOption( null );
+
+		List<SelectFormElement.Option> generated = build();
+		assertEquals( 2, generated.size() );
+		assertEquals( "bbb", generated.get( 0 ).getLabel() );
+		assertEquals( "aaa", generated.get( 1 ).getLabel() );
+	}
+
+	@Test
+	public void alwaysSortedIfEnabled() {
+		options.select();
+		generator.setOptions( withSelectedAndSorted );
+		generator.setEmptyOption( null );
+		generator.setSorted( true );
+
+		List<SelectFormElement.Option> generated = build();
+		assertEquals( 2, generated.size() );
+		assertEquals( "aaa", generated.get( 0 ).getLabel() );
+		assertEquals( "bbb", generated.get( 1 ).getLabel() );
+	}
+
+	@Test
 	public void emptyOptionAddedIfRequiredAndNoneSelected() {
 		options.select().required();
 
 		generator.setOptions( noneSelected );
+		generator.setSorted( false );
 
 		List<SelectFormElement.Option> generated = build();
 		assertEquals( 3, generated.size() );
@@ -102,9 +153,22 @@ public class TestOptionGenerator
 	}
 
 	@Test
+	public void emptyOptionAddedAndNoneSelectedIfOnlyOneOptionButNotRequired() {
+		options.select().required( false );
+
+		generator.setOptions( singleOption );
+
+		List<SelectFormElement.Option> generated = build();
+		assertEquals( 2, generated.size() );
+		assertEquals( "", generated.get( 0 ).getLabel() );
+		assertEquals( "bbb", generated.get( 1 ).getLabel() );
+		assertFalse( generated.get( 1 ).isSelected() );
+	}
+
+	@Test
 	public void emptyOptionNotAddedIfRequiredAndOneSelected() {
 		options.select().required();
-		generator.setOptions( withSelected );
+		generator.setOptions( withSelectedAndSorted );
 
 		List<SelectFormElement.Option> generated = build();
 		assertEquals( 2, generated.size() );
@@ -117,6 +181,7 @@ public class TestOptionGenerator
 		options.select();
 
 		generator.setOptions( noneSelected );
+		generator.setSorted( false );
 
 		List<SelectFormElement.Option> generated = build();
 		assertEquals( 3, generated.size() );
@@ -124,7 +189,7 @@ public class TestOptionGenerator
 		assertEquals( "bbb", generated.get( 1 ).getLabel() );
 		assertEquals( "aaa", generated.get( 2 ).getLabel() );
 
-		generator.setOptions( withSelected );
+		generator.setOptions( withSelectedAndSorted );
 		generated = build();
 
 		assertEquals( 3, generated.size() );
@@ -145,6 +210,7 @@ public class TestOptionGenerator
 
 		generator.setEmptyOption( new OptionFormElementBuilder().label( "myemptyoption" ) );
 		generator.setOptions( noneSelected );
+		generator.setSorted( false );
 
 		List<SelectFormElement.Option> generated = build();
 		assertEquals( 3, generated.size() );
@@ -159,13 +225,14 @@ public class TestOptionGenerator
 
 		generator.setEmptyOption( null );
 		generator.setOptions( noneSelected );
+		generator.setSorted( false );
 
 		List<SelectFormElement.Option> generated = build();
 		assertEquals( 2, generated.size() );
 		assertEquals( "bbb", generated.get( 0 ).getLabel() );
 		assertEquals( "aaa", generated.get( 1 ).getLabel() );
 
-		generator.setOptions( withSelected );
+		generator.setOptions( withSelectedAndSorted );
 		generated = build();
 
 		assertEquals( 2, generated.size() );
@@ -174,28 +241,42 @@ public class TestOptionGenerator
 	}
 
 	@Test
-	public void emptyOptionIsNeverAddedInCaseOfCheckbox() {
+	public void emptyOptionIsAddedInCaseOfCheckbox() {
 		options.checkbox();
 		generator.setOptions( noneSelected );
 
 		List<SelectFormElement.Option> generated = build();
-		assertEquals( 2, generated.size() );
+		assertEquals( 3, generated.size() );
 
-		generator.setOptions( withSelected );
+		generator.setOptions( withSelectedAndSorted );
 		generated = build();
 
-		assertEquals( 2, generated.size() );
+		assertEquals( 3, generated.size() );
 	}
 
 	@Test
-	public void emptyOptionsIsNeverAddedInCaseOfRadio() {
+	public void emptyOptionsIsAddedInCaseOfRadio() {
 		options.radio();
+		generator.setOptions( noneSelected );
+
+		List<SelectFormElement.Option> generated = build();
+		assertEquals( 3, generated.size() );
+
+		generator.setOptions( withSelectedAndSorted );
+		generated = build();
+
+		assertEquals( 3, generated.size() );
+	}
+
+	@Test
+	public void emptyOptionsIsNeverAddedInCaseOfMultiple() {
+		options.multiple();
 		generator.setOptions( noneSelected );
 
 		List<SelectFormElement.Option> generated = build();
 		assertEquals( 2, generated.size() );
 
-		generator.setOptions( withSelected );
+		generator.setOptions( withSelectedAndSorted );
 		generated = build();
 
 		assertEquals( 2, generated.size() );
@@ -229,7 +310,7 @@ public class TestOptionGenerator
 		generator.setValueFetcher( valueFetcher );
 		generator.setSorted( true );
 		generator.setEmptyOption( null );
-		generator.setOptions( withSelected );
+		generator.setOptions( withSelectedAndSorted );
 		List<SelectFormElement.Option> generated = build();
 
 		assertEquals( 2, generated.size() );
@@ -238,14 +319,14 @@ public class TestOptionGenerator
 	}
 
 	@Test
-	public void singleOptionSelected() {
+	public void singleOptionsAutomaticallySelected() {
 		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
 		when( valueFetcher.getValue( "entity" ) ).thenReturn( 1L );
 
 		generator.setValueFetcher( valueFetcher );
 		generator.setSorted( true );
 		generator.setEmptyOption( null );
-		generator.setOptions( withSelected );
+		generator.setOptions( withSelectedAndSorted );
 		List<SelectFormElement.Option> generated = build();
 
 		assertEquals( 2, generated.size() );
@@ -311,6 +392,59 @@ public class TestOptionGenerator
 		assertEquals( 2, generated.size() );
 		assertEquals( "aaa", generated.get( 0 ).getLabel() );
 		assertEquals( "bbb", generated.get( 1 ).getLabel() );
+	}
+
+	@Test
+	public void hasEnhancer() {
+		generator.setEnhancer( option -> option.attribute( "data-test", "test" ) );
+
+		generator.setSorted( true );
+		generator.setEmptyOption( null );
+		generator.setOptions( noneSelected );
+		generator.setSelfOptionIncluded( true );
+		List<SelectFormElement.Option> generated = build();
+
+		assertEquals( 2, generated.size() );
+		assertEquals( "aaa", generated.get( 0 ).getLabel() );
+		assertEquals( "test", generated.get( 0 ).getAttribute( "data-test" ) );
+		assertEquals( "bbb", generated.get( 1 ).getLabel() );
+		assertEquals( "test", generated.get( 1 ).getAttribute( "data-test" ) );
+	}
+
+	@Test
+	public void chainedEnhancerIsApplied() {
+		Consumer<OptionFormElementBuilder> firstEnhancer = option -> option.attribute( "data-test", "test" );
+		Consumer<OptionFormElementBuilder> secondEnhancer = option -> option.attribute( "data-test-label", option.getLabel() );
+		generator.setEnhancer( firstEnhancer.andThen( secondEnhancer ) );
+
+		generator.setSorted( true );
+		generator.setEmptyOption( null );
+		generator.setOptions( noneSelected );
+		generator.setSelfOptionIncluded( true );
+		List<SelectFormElement.Option> generated = build();
+
+		assertEquals( 2, generated.size() );
+		assertEquals( "test", generated.get( 0 ).getAttribute( "data-test" ) );
+		assertEquals( "aaa", generated.get( 0 ).getAttribute( "data-test-label" ) );
+		assertEquals( "test", generated.get( 1 ).getAttribute( "data-test" ) );
+		assertEquals( "bbb", generated.get( 1 ).getAttribute( "data-test-label" ) );
+	}
+
+	@Test
+	public void chainedEnhancerNegatesFirst() {
+		Consumer<OptionFormElementBuilder> firstEnhancer = option -> option.attribute( "data-test", option.getLabel() );
+		Consumer<OptionFormElementBuilder> secondEnhancer = option -> option.removeAttribute( "data-test" );
+		generator.setEnhancer( firstEnhancer.andThen( secondEnhancer ) );
+
+		generator.setSorted( true );
+		generator.setEmptyOption( null );
+		generator.setOptions( noneSelected );
+		generator.setSelfOptionIncluded( true );
+		List<SelectFormElement.Option> generated = build();
+
+		assertEquals( 2, generated.size() );
+		assertNull( generated.get( 0 ).getAttribute( "data-test" ) );
+		assertNull( "test", generated.get( 1 ).getAttribute( "data-test" ) );
 	}
 
 	@SuppressWarnings("unchecked")
