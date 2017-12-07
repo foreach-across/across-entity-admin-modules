@@ -18,8 +18,6 @@ package com.foreach.across.modules.entity.testmodules.springdata.validators;
 
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
