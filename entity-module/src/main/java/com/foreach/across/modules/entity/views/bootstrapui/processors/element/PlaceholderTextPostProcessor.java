@@ -21,8 +21,8 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 /**
  * Resolves a message code and sets it as the value of the placeholder property.
@@ -38,8 +38,7 @@ public class PlaceholderTextPostProcessor<T extends ConfigurablePlaceholderText 
 		this( "properties." + descriptor.getName() + "[placeholder]" );
 	}
 
-	public PlaceholderTextPostProcessor( String messageCode ) {
-		Assert.notNull( messageCode );
+	public PlaceholderTextPostProcessor( @NonNull String messageCode ) {
 		this.messageCode = messageCode;
 	}
 

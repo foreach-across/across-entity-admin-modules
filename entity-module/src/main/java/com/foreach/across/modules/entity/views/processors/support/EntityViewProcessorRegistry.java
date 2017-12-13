@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import lombok.*;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 import java.util.*;
@@ -50,8 +49,7 @@ public class EntityViewProcessorRegistry
 	 *
 	 * @param entityViewProcessor processor to add
 	 */
-	public void addProcessor( EntityViewProcessor entityViewProcessor ) {
-		Assert.notNull( entityViewProcessor );
+	public void addProcessor( @NonNull EntityViewProcessor entityViewProcessor ) {
 		addProcessor( ClassUtils.getUserClass( entityViewProcessor ).getName(), entityViewProcessor );
 	}
 
@@ -62,8 +60,7 @@ public class EntityViewProcessorRegistry
 	 * @param entityViewProcessor processor to add
 	 * @param order               for the processor
 	 */
-	public void addProcessor( EntityViewProcessor entityViewProcessor, int order ) {
-		Assert.notNull( entityViewProcessor );
+	public void addProcessor( @NonNull EntityViewProcessor entityViewProcessor, int order ) {
 		addProcessor( ClassUtils.getUserClass( entityViewProcessor ).getName(), entityViewProcessor, order );
 	}
 

@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.web;
 
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 /**
  * Prefxes paths generated from another {@link com.foreach.across.modules.entity.web.EntityLinkBuilder} instance.
@@ -27,8 +27,7 @@ public class PrefixingLinkBuilder implements EntityLinkBuilder
 	private final String prefixPath;
 	private final EntityLinkBuilder linkBuilder;
 
-	public PrefixingLinkBuilder( String prefixPath, EntityLinkBuilder linkBuilder ) {
-		Assert.notNull( prefixPath );
+	public PrefixingLinkBuilder( @NonNull String prefixPath, EntityLinkBuilder linkBuilder ) {
 		this.prefixPath = prefixPath;
 		this.linkBuilder = linkBuilder;
 	}

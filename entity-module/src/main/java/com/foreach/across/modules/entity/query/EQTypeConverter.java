@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.query;
 
 import com.foreach.across.core.annotations.RefreshableCollection;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -43,14 +44,13 @@ public class EQTypeConverter
 	}
 
 	@Autowired
-	public void setFunctionHandlers( @RefreshableCollection(includeModuleInternals = true) Collection<EntityQueryFunctionHandler> functionHandlers ) {
-		Assert.notNull( functionHandlers );
+	public void setFunctionHandlers( @NonNull @RefreshableCollection(includeModuleInternals = true) Collection<EntityQueryFunctionHandler> functionHandlers ) {
 		this.functionHandlers = functionHandlers;
 	}
 
 	@PostConstruct
 	public void validateProperties() {
-		Assert.notNull( conversionService );
+		Assert.notNull( conversionService, "conversionService cannot be null" );
 	}
 
 	/**

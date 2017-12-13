@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterConfiguration;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -36,7 +37,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -156,8 +156,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	 * @param pageFetcher function - may not be null
 	 * @return current builder
 	 */
-	public EntityListViewFactoryBuilder pageFetcher( Function<Pageable, Iterable<?>> pageFetcher ) {
-		Assert.notNull( pageFetcher );
+	public EntityListViewFactoryBuilder pageFetcher( @NonNull Function<Pageable, Iterable<?>> pageFetcher ) {
 		return pageFetcher( ( ctx, pageable ) -> pageFetcher.apply( pageable ) );
 	}
 
@@ -168,8 +167,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	 * @param pageFetcher function - may not be null
 	 * @return current builder
 	 */
-	public EntityListViewFactoryBuilder pageFetcher( BiFunction<EntityViewContext, Pageable, Iterable<?>> pageFetcher ) {
-		Assert.notNull( pageFetcher );
+	public EntityListViewFactoryBuilder pageFetcher( @NonNull BiFunction<EntityViewContext, Pageable, Iterable<?>> pageFetcher ) {
 		this.pageFetcher = pageFetcher;
 		return this;
 	}

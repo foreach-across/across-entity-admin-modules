@@ -16,8 +16,8 @@
 
 package com.foreach.across.modules.entity.query;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,13 +33,11 @@ public final class EQGroup implements EQType
 {
 	private final EQType[] values;
 
-	public EQGroup( Collection<EQType> values ) {
-		Assert.notNull( values );
+	public EQGroup( @NonNull Collection<EQType> values ) {
 		this.values = values.toArray( new EQType[values.size()] );
 	}
 
-	public EQGroup( EQType... values ) {
-		Assert.notNull( values );
+	public EQGroup( @NonNull EQType... values ) {
 		this.values = values;
 	}
 

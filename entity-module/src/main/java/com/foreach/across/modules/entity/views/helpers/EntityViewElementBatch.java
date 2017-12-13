@@ -25,8 +25,8 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -94,8 +94,7 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 	 *
 	 * @param builderHints map instance, should not be null
 	 */
-	public void setBuilderHints( Map<String, Object> builderHints ) {
-		Assert.notNull( builderHints );
+	public void setBuilderHints( @NonNull Map<String, Object> builderHints ) {
 		this.builderHints = builderHints;
 	}
 

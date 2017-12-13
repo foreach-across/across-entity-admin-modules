@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.entity.query;
 
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.util.Objects;
 
@@ -35,8 +35,7 @@ public final class EQValue implements EQType
 
 	private final String value;
 
-	public EQValue( String value ) {
-		Assert.notNull( value );
+	public EQValue( @NonNull String value ) {
 		this.value = value;
 	}
 

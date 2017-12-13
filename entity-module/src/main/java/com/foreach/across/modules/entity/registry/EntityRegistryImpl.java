@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.registry;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -55,10 +56,9 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 	}
 
 	@Override
-	public void register( MutableEntityConfiguration<?> entityConfiguration ) {
-		Assert.notNull( entityConfiguration );
-		Assert.notNull( entityConfiguration.getEntityType() );
-		Assert.notNull( entityConfiguration.getName() );
+	public void register( @NonNull MutableEntityConfiguration<?> entityConfiguration ) {
+		Assert.notNull( entityConfiguration.getEntityType(), "entityType of entityConfiguration cannot be null" );
+		Assert.notNull( entityConfiguration.getName(), "name of entityConfiguration cannot be null" );
 
 		EntityConfiguration existingByName = getEntityConfiguration( entityConfiguration.getName() );
 

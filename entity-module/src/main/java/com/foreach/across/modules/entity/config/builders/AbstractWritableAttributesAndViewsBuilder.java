@@ -20,7 +20,7 @@ import com.foreach.across.modules.entity.registry.ConfigurableEntityViewRegistry
 import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -74,10 +74,8 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 	 * @param consumer for configuring the view builder
 	 * @return builder instance
 	 */
-	public AbstractWritableAttributesAndViewsBuilder listView( String viewName,
-	                                                           Consumer<EntityListViewFactoryBuilder> consumer ) {
-		Assert.notNull( viewName );
-		Assert.notNull( consumer );
+	public AbstractWritableAttributesAndViewsBuilder listView( @NonNull String viewName,
+	                                                           @NonNull Consumer<EntityListViewFactoryBuilder> consumer ) {
 		listViewConsumers.computeIfAbsent( viewName, k -> new ArrayDeque<>() ).add( consumer );
 		return this;
 	}

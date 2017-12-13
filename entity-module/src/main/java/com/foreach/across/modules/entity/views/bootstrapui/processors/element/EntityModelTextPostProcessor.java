@@ -19,7 +19,7 @@ package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.util.Locale;
 
@@ -35,9 +35,8 @@ public final class EntityModelTextPostProcessor<T extends ConfigurableTextViewEl
 {
 	private final EntityModel entityModel;
 
-	public EntityModelTextPostProcessor( EntityPropertyDescriptor propertyDescriptor, EntityModel entityModel ) {
+	public EntityModelTextPostProcessor( EntityPropertyDescriptor propertyDescriptor, @NonNull EntityModel entityModel ) {
 		super( propertyDescriptor );
-		Assert.notNull( entityModel );
 		this.entityModel = entityModel;
 	}
 

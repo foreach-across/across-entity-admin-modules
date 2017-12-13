@@ -19,7 +19,7 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 /**
  * Implementation of {@link ViewElementPostProcessor} for a {@link ConfigurableTextViewElement}
@@ -33,8 +33,7 @@ public class TextCodeResolverPostProcessor<T extends ConfigurableTextViewElement
 {
 	private final String messageCode;
 
-	public TextCodeResolverPostProcessor( String messageCode ) {
-		Assert.notNull( messageCode );
+	public TextCodeResolverPostProcessor( @NonNull String messageCode ) {
 		this.messageCode = messageCode;
 	}
 

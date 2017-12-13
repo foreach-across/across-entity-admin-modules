@@ -31,12 +31,12 @@ import static org.junit.Assert.*;
  */
 public class TestEQFunction
 {
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullNameNotAllowed() {
 		new EQFunction( null );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullArgumentsNotAllowed() {
 		new EQFunction( "myFunction", (EQType[]) null );
 	}

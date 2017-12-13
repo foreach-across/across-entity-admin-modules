@@ -27,10 +27,10 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.util.Assert;
 
 /**
  * Builder for a configuring a single {@link SimpleEntityPropertyDescriptor}.  The builder can also be
@@ -58,8 +58,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	 *
 	 * @param name of the property
 	 */
-	public EntityPropertyDescriptorBuilder( String name ) {
-		Assert.notNull( name );
+	public EntityPropertyDescriptorBuilder( @NonNull String name ) {
 		this.name = name;
 	}
 
@@ -120,8 +119,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	 * @param expression SpEL expression that should be used as value.
 	 * @return current builder
 	 */
-	public EntityPropertyDescriptorBuilder spelValueFetcher( String expression ) {
-		Assert.notNull( expression );
+	public EntityPropertyDescriptorBuilder spelValueFetcher( @NonNull String expression ) {
 		return valueFetcher( new SpelValueFetcher<>( expression ) );
 	}
 
@@ -238,9 +236,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	 *
 	 * @param descriptor whose settings to update
 	 */
-	public void apply( MutableEntityPropertyDescriptor descriptor ) {
-		Assert.notNull( descriptor );
-
+	public void apply( @NonNull MutableEntityPropertyDescriptor descriptor ) {
 		if ( name != null && !name.equals( descriptor.getName() ) ) {
 			LOG.error( "Unable to change the name of an existing EntityPropertyDescriptor: {} to {}",
 			           descriptor.getName(), name );

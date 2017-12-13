@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.views.util;
 
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.lang.reflect.Array;
 import java.text.FieldPosition;
@@ -32,8 +32,7 @@ public final class SynchronizedFormat extends Format
 {
 	private final Format format;
 
-	public SynchronizedFormat( Format format ) {
-		Assert.notNull( format );
+	public SynchronizedFormat( @NonNull Format format ) {
 		this.format = format;
 	}
 

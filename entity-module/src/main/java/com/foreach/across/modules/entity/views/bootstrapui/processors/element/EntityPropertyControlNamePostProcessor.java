@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.util.function.Predicate;
 
@@ -91,12 +91,9 @@ public final class EntityPropertyControlNamePostProcessor<T extends ViewElement>
 	 * @param childElementPredicate optional predicate for all child elements that should also be prefixed
 	 */
 	@SuppressWarnings("unchecked")
-	public static void registerForProperty( EntityPropertyDescriptor propertyDescriptor,
-	                                        ViewElementBuilder<? extends ViewElement> builder,
+	public static void registerForProperty( @NonNull EntityPropertyDescriptor propertyDescriptor,
+	                                        @NonNull ViewElementBuilder<? extends ViewElement> builder,
 	                                        Predicate<ViewElement> childElementPredicate ) {
-		Assert.notNull( propertyDescriptor );
-		Assert.notNull( builder );
-
 		if ( builder instanceof ViewElementBuilderSupport
 				&& propertyDescriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR )
 				&& !propertyDescriptor.hasAttribute( EntityAttributes.CONTROL_NAME ) ) {

@@ -35,11 +35,11 @@ import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -158,9 +158,7 @@ public class GenericEntityViewController
 	                          PATH_ASSOCIATED_ENTITY,
 	                          PATH_ASSOCIATED_ENTITY + "/{action:delete|update}"
 	})
-	public Object executeView( @ModelAttribute(EntityViewModel.VIEW_COMMAND) EntityViewCommand command, BindingResult bindingResult ) {
-		Assert.notNull( command );
-
+	public Object executeView( @NonNull @ModelAttribute(EntityViewModel.VIEW_COMMAND) EntityViewCommand command, BindingResult bindingResult ) {
 		entityViewRequest.setBindingResult( bindingResult );
 
 		EntityView entityView = entityViewRequest.getViewFactory().createView( entityViewRequest );

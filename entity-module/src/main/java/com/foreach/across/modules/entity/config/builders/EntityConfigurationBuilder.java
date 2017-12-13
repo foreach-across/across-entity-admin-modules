@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilder
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,8 +85,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * @param <U>     subType of the original generic type
 	 * @return downcast version of the current builder
 	 */
-	public <U extends T> EntityConfigurationBuilder<U> as( Class<U> subType ) {
-		Assert.notNull( subType );
+	public <U extends T> EntityConfigurationBuilder<U> as( @NonNull Class<U> subType ) {
 		return (EntityConfigurationBuilder<U>) this;
 	}
 
@@ -138,8 +138,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * @param registryConsumer to customize the registry builder
 	 * @return current builder
 	 */
-	public EntityConfigurationBuilder<T> properties( Consumer<EntityPropertyRegistryBuilder> registryConsumer ) {
-		Assert.notNull( registryConsumer );
+	public EntityConfigurationBuilder<T> properties( @NonNull Consumer<EntityPropertyRegistryBuilder> registryConsumer ) {
 		registryConsumers.add( registryConsumer );
 		return this;
 	}
@@ -180,8 +179,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * @param allowableActionsBuilder instance
 	 * @return current builder
 	 */
-	public EntityConfigurationBuilder<T> allowableActionsBuilder( EntityConfigurationAllowableActionsBuilder allowableActionsBuilder ) {
-		Assert.notNull( allowableActionsBuilder );
+	public EntityConfigurationBuilder<T> allowableActionsBuilder( @NonNull EntityConfigurationAllowableActionsBuilder allowableActionsBuilder ) {
 		this.allowableActionsBuilder = allowableActionsBuilder;
 		return this;
 	}
@@ -226,8 +224,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * @param postProcessor instance
 	 * @return current builder
 	 */
-	public EntityConfigurationBuilder<T> postProcessor( Consumer<MutableEntityConfiguration<T>> postProcessor ) {
-		Assert.notNull( postProcessor );
+	public EntityConfigurationBuilder<T> postProcessor( @NonNull Consumer<MutableEntityConfiguration<T>> postProcessor ) {
 		postProcessors.add( postProcessor );
 		return this;
 	}
@@ -370,7 +367,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	MutableEntityConfiguration<T> build( boolean applyPostProcessors ) {
-		Assert.notNull( entityType );
+		Assert.notNull( entityType, "EntityType should not be null" );
 
 		EntityConfigurationProvider configurationProvider = beanFactory.getBean( EntityConfigurationProvider.class );
 		String defaultName = name != null ? name : EntityUtils.generateEntityName( entityType );
@@ -392,9 +389,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 		apply( configuration, true );
 	}
 
-	synchronized void apply( MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
-		Assert.notNull( configuration );
-
+	synchronized void apply( @NonNull MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
 		configurationBeingBuilt = configuration;
 
 		try {

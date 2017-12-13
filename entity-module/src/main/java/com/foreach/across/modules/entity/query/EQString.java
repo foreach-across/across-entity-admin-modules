@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.entity.query;
 
-import org.springframework.util.Assert;
+import lombok.NonNull;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.Objects;
@@ -31,8 +31,7 @@ public final class EQString implements EQType
 {
 	private final String value;
 
-	public EQString( String value ) {
-		Assert.notNull( value );
+	public EQString( @NonNull String value ) {
 		this.value = value;
 	}
 

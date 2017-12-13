@@ -25,11 +25,11 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.helpers.EntityViewElementBatch;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityViewModel;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -61,9 +61,7 @@ public class EntityViewElementBuilderHelper
 	 * @param entity instance, should not be null
 	 * @return batch instance
 	 */
-	public <V> EntityViewElementBatch<V> createBatchForEntity( V entity ) {
-		Assert.notNull( entity );
-
+	public <V> EntityViewElementBatch<V> createBatchForEntity( @NonNull V entity ) {
 		EntityViewElementBatch<V> batch = createBatchForEntityType( (Class<V>) ClassUtils.getUserClass( entity ) );
 		batch.setEntity( entity );
 
@@ -78,9 +76,7 @@ public class EntityViewElementBuilderHelper
 	 * @param entityType should not be null
 	 * @return batch instance
 	 */
-	public <V> EntityViewElementBatch<V> createBatchForEntityType( Class<V> entityType ) {
-		Assert.notNull( entityType );
-
+	public <V> EntityViewElementBatch<V> createBatchForEntityType( @NonNull Class<V> entityType ) {
 		EntityViewElementBatch<V> batch = new EntityViewElementBatch<>( builderService );
 		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( entityType );
 		batch.setPropertyRegistry( entityConfiguration.getPropertyRegistry() );
@@ -95,9 +91,7 @@ public class EntityViewElementBuilderHelper
 	 * Create a new {@link SortableTableBuilder} instance for the entity type specified.
 	 * Requires an {@link EntityConfiguration} to exist for that entity type.
 	 */
-	public <V> SortableTableBuilder createSortableTableBuilder( Class<V> entityType ) {
-		Assert.notNull( entityType );
-
+	public <V> SortableTableBuilder createSortableTableBuilder( @NonNull Class<V> entityType ) {
 		SortableTableBuilder tableBuilder = createSortableTableBuilder();
 		EntityConfiguration<V> entityConfiguration = entityRegistry.getEntityConfiguration( entityType );
 
@@ -112,9 +106,7 @@ public class EntityViewElementBuilderHelper
 	 * @param entityViewContext to use for initializing the table builder
 	 * @return table builders
 	 */
-	public SortableTableBuilder createSortableTableBuilder( EntityViewContext entityViewContext ) {
-		Assert.notNull( entityViewContext );
-
+	public SortableTableBuilder createSortableTableBuilder( @NonNull EntityViewContext entityViewContext ) {
 		SortableTableBuilder tableBuilder = createSortableTableBuilder();
 		tableBuilder.entityConfiguration( entityViewContext.getEntityConfiguration() );
 		tableBuilder.propertyRegistry( entityViewContext.getPropertyRegistry() );

@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.query;
 
+import lombok.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -39,8 +40,7 @@ public class EntityQueryParser
 	 *
 	 * @param metadataProvider instance
 	 */
-	public void setMetadataProvider( EntityQueryMetadataProvider metadataProvider ) {
-		Assert.notNull( metadataProvider );
+	public void setMetadataProvider( @NonNull EntityQueryMetadataProvider metadataProvider ) {
 		this.metadataProvider = metadataProvider;
 	}
 
@@ -49,14 +49,13 @@ public class EntityQueryParser
 	 *
 	 * @param queryTranslator instance
 	 */
-	public void setQueryTranslator( EntityQueryTranslator queryTranslator ) {
-		Assert.notNull( queryTranslator );
+	public void setQueryTranslator( @NonNull EntityQueryTranslator queryTranslator ) {
 		this.queryTranslator = queryTranslator;
 	}
 
 	public void validateProperties() {
-		Assert.notNull( metadataProvider );
-		Assert.notNull( queryTranslator );
+		Assert.notNull( metadataProvider, "metadataProvider cannot be null" );
+		Assert.notNull( queryTranslator, "queryTranslator cannot be null" );
 	}
 
 	/**

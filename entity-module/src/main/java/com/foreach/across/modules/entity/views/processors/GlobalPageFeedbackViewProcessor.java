@@ -27,10 +27,10 @@ import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -129,10 +129,7 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 	 * @param messageCode   message
 	 * @return new value string
 	 */
-	public static String addFeedbackMessage( String currentValue, Style feedbackStyle, String messageCode ) {
-		Assert.notNull( feedbackStyle );
-		Assert.notNull( messageCode );
-
+	public static String addFeedbackMessage( String currentValue, @NonNull Style feedbackStyle, @NonNull String messageCode ) {
 		String feedbackToken = ( feedbackStyle.isDefaultStyle() ? feedbackStyle.forPrefix( "alert" ) : feedbackStyle.getName() )
 				+ ":" + messageCode;
 		return StringUtils.defaultString( currentValue ).isEmpty() ? feedbackToken : currentValue + "," + feedbackToken;

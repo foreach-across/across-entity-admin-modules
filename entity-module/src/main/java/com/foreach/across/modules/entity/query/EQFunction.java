@@ -16,8 +16,8 @@
 
 package com.foreach.across.modules.entity.query;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,9 +44,7 @@ public final class EQFunction implements EQType
 		this( name, arguments.toArray( new EQType[arguments.size()] ) );
 	}
 
-	public EQFunction( String name, EQType[] arguments ) {
-		Assert.notNull( name );
-		Assert.notNull( arguments );
+	public EQFunction( @NonNull String name, @NonNull EQType[] arguments ) {
 		this.name = name;
 		this.arguments = arguments.clone();
 	}

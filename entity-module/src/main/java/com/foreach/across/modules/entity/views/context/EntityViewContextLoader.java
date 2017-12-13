@@ -20,9 +20,9 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 /**
  * Responsible for loading the required properties for a valid {@link ConfigurableEntityViewContext},
@@ -43,8 +43,7 @@ public class EntityViewContextLoader
 	 * @param context to set the properties on
 	 * @param entity  to use for loading
 	 */
-	public void loadForEntity( ConfigurableEntityViewContext context, Object entity ) {
-		Assert.notNull( entity );
+	public void loadForEntity( ConfigurableEntityViewContext context, @NonNull Object entity ) {
 		loadForEntityConfiguration( context, entityRegistry.getEntityConfiguration( entity ) );
 	}
 
@@ -55,8 +54,7 @@ public class EntityViewContextLoader
 	 * @param context    to set the properties on
 	 * @param entityName name of the {@link EntityConfiguration} to get the values from
 	 */
-	public void loadForEntityConfiguration( ConfigurableEntityViewContext context, String entityName ) {
-		Assert.notNull( entityName );
+	public void loadForEntityConfiguration( ConfigurableEntityViewContext context, @NonNull String entityName ) {
 		loadForEntityConfiguration( context, entityRegistry.getEntityConfiguration( entityName ) );
 	}
 
@@ -68,8 +66,7 @@ public class EntityViewContextLoader
 	 * @param entityConfiguration to get the values from
 	 */
 	public void loadForEntityConfiguration( ConfigurableEntityViewContext context,
-	                                        EntityConfiguration<?> entityConfiguration ) {
-		Assert.notNull( entityConfiguration );
+	                                        @NonNull EntityConfiguration<?> entityConfiguration ) {
 		context.setEntityConfiguration( entityConfiguration );
 		context.setEntityModel( entityConfiguration.getEntityModel() );
 		context.setMessageCodeResolver( entityConfiguration.getEntityMessageCodeResolver() );

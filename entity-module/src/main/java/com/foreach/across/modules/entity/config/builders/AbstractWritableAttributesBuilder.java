@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.core.support.WritableAttributes;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,8 +40,7 @@ public abstract class AbstractWritableAttributesBuilder
 	 * @param value Value of the attribute.
 	 * @return current builder
 	 */
-	public AbstractWritableAttributesBuilder attribute( String name, Object value ) {
-		Assert.notNull( name );
+	public AbstractWritableAttributesBuilder attribute( @NonNull String name, Object value ) {
 		attributes.put( name, value );
 		return this;
 	}
@@ -54,8 +53,7 @@ public abstract class AbstractWritableAttributesBuilder
 	 * @param <S>   Class that is both key and value type of the attribute
 	 * @return current builder
 	 */
-	public <S> AbstractWritableAttributesBuilder attribute( Class<S> type, S value ) {
-		Assert.notNull( type );
+	public <S> AbstractWritableAttributesBuilder attribute( @NonNull Class<S> type, S value ) {
 		attributes.put( type.getName(), value );
 		return this;
 	}

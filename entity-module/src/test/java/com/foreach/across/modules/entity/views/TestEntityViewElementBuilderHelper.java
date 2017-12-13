@@ -47,7 +47,7 @@ public class TestEntityViewElementBuilderHelper
 	@InjectMocks
 	private EntityViewElementBuilderHelper builderHelper;
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullEntityViewContext() {
 		builderHelper.createSortableTableBuilder( (EntityViewContext) null );
 	}

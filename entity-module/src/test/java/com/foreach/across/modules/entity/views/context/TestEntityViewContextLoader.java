@@ -53,17 +53,17 @@ public class TestEntityViewContextLoader
 	@InjectMocks
 	private EntityViewContextLoader loader;
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullEntityIsNotAllowed() {
 		loader.loadForEntity( context, null );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullEntityNameIsNotAllowed() {
 		loader.loadForEntityConfiguration( context, (String) null );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullEntityConfigurationIsNotAllowed() {
 		loader.loadForEntityConfiguration( context, (EntityConfiguration<?>) null );
 	}

@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.support;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -128,8 +129,7 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 	 *
 	 * @param prefix list
 	 */
-	public void setPrefixes( String... prefix ) {
-		Assert.notNull( prefix );
+	public void setPrefixes( @NonNull String... prefix ) {
 		this.prefix = prefix;
 		generatedPrefixes = buildMessageCodes( "", true );
 	}
@@ -149,8 +149,7 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 	 *
 	 * @param fallbackCollections to try
 	 */
-	public void setFallbackCollections( String... fallbackCollections ) {
-		Assert.notNull( fallbackCollections );
+	public void setFallbackCollections( @NonNull String... fallbackCollections ) {
 		this.fallbackCollections = fallbackCollections;
 		generatedPrefixes = buildMessageCodes( "", true );
 	}
@@ -163,8 +162,7 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 	 *
 	 * @param errorCodesResolver to use
 	 */
-	public void setErrorCodesResolver( MessageCodesResolver errorCodesResolver ) {
-		Assert.notNull( errorCodesResolver );
+	public void setErrorCodesResolver( @NonNull MessageCodesResolver errorCodesResolver ) {
 		this.errorCodesResolver = errorCodesResolver;
 	}
 

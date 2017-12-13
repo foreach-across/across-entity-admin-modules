@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -79,8 +79,7 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 		return fetchProperties( predicate, getDefaultOrder() );
 	}
 
-	public void setPropertyOrder( String propertyName, int order ) {
-		Assert.notNull( propertyName );
+	public void setPropertyOrder( @NonNull String propertyName, int order ) {
 		propertyOrder.put( propertyName, order );
 	}
 
