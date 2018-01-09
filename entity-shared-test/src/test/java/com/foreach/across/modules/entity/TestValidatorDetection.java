@@ -15,10 +15,10 @@
  */
 package com.foreach.across.modules.entity;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
+import org.junit.Test;
+import org.springframework.boot.validation.MessageInterpolatorFactory;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
@@ -30,11 +30,13 @@ import static org.junit.Assert.*;
 
 public class TestValidatorDetection
 {
-	private LocalValidatorFactoryBean validatorFactory = new LocalValidatorFactoryBean();
+	private LocalValidatorFactoryBean validatorFactory = createValidator();
 
-	@Before
-	public void setup() {
+	private LocalValidatorFactoryBean createValidator() {
+		LocalValidatorFactoryBean validatorFactory = new LocalValidatorFactoryBean();
+		validatorFactory.setMessageInterpolator( new MessageInterpolatorFactory().getObject() );
 		validatorFactory.afterPropertiesSet();
+		return validatorFactory;
 	}
 
 	@Test

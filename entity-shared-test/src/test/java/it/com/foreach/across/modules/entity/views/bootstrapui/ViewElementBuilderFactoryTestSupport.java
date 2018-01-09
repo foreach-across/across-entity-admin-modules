@@ -31,6 +31,7 @@ import com.querydsl.core.util.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -61,14 +62,20 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	@Autowired
 	protected EntityViewElementBuilderFactory builderFactory;
 
-	protected LocalValidatorFactoryBean validatorFactory = new LocalValidatorFactoryBean();
+	protected LocalValidatorFactoryBean validatorFactory = createValidator();
 	protected ViewElementBuilderContext builderContext;
 	protected Map<String, EntityPropertyDescriptor> properties = new HashMap<>();
+
+	private LocalValidatorFactoryBean createValidator() {
+		LocalValidatorFactoryBean validatorFactory = new LocalValidatorFactoryBean();
+		validatorFactory.setMessageInterpolator( new MessageInterpolatorFactory().getObject() );
+		validatorFactory.afterPropertiesSet();
+		return validatorFactory;
+	}
 
 	@Before
 	@SuppressWarnings("unchecked")
 	public void before() {
-		validatorFactory.afterPropertiesSet();
 		reset( entityConfiguration, registry );
 
 		builderContext = spy( new DefaultViewElementBuilderContext() );
@@ -94,7 +101,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 				when( descriptor.isWritable() ).thenReturn( true );
 				TypeDescriptor typeDescriptor = new TypeDescriptor( field );
 				when( descriptor.getPropertyTypeDescriptor() ).thenReturn( typeDescriptor );
-				when( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR )).thenReturn( true );
+				when( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ).thenReturn( true );
 
 				when( codeResolver.getMessageWithFallback(
 						eq( "properties." + field.getName() ), any( String.class )
