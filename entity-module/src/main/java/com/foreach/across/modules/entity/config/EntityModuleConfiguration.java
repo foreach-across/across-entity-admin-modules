@@ -16,7 +16,6 @@
 package com.foreach.across.modules.entity.config;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.core.context.support.AcrossModuleMessageSource;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.converters.EntityConverter;
 import com.foreach.across.modules.entity.converters.EntityToStringConverter;
@@ -31,14 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.SmartValidator;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
 @ComponentScan(basePackageClasses = { EntityRegistry.class, ModuleEntityRegistration.class, EntityView.class })
@@ -63,12 +60,14 @@ public class EntityModuleConfiguration
 	@Bean(name = EntityModule.VALIDATOR)
 	@Exposed
 	@ConditionalOnMissingBean(name = EntityModule.VALIDATOR)
-	public SmartValidator entityValidator() {
+	public SmartValidator entityValidator( SmartValidator defaultValidator ) {/*
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
 		localValidatorFactoryBean.setValidationMessageSource( messageSource() );
 		return localValidatorFactoryBean;
+		*/
+		return defaultValidator;
 	}
-
+/*
 	@Bean
 	public MessageSource messageSource() {
 		AcrossModuleMessageSource messageSource = new AcrossModuleMessageSource();
@@ -77,5 +76,5 @@ public class EntityModuleConfiguration
 				"classpath:/messages/entity/EntityModule"
 		);
 		return messageSource;
-	}
+	}*/
 }

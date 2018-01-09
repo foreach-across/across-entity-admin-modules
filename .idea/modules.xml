@@ -5,8 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/entity-module/entity-module.iml" filepath="$PROJECT_DIR$/entity-module/entity-module.iml" />
       <module fileurl="file://$PROJECT_DIR$/entity-module-project.iml" filepath="$PROJECT_DIR$/entity-module-project.iml" />
       <module fileurl="file://$PROJECT_DIR$/entity-module-test/entity-module-test.iml" filepath="$PROJECT_DIR$/entity-module-test/entity-module-test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/entity-module-test/entity-module-test.iml" filepath="$PROJECT_DIR$/entity-module-test/entity-module-test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/entity-shared-test/entity-shared-test.iml" filepath="$PROJECT_DIR$/entity-shared-test/entity-shared-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/entity-shared-test/entity-shared-test.iml" filepath="$PROJECT_DIR$/entity-shared-test/entity-shared-test.iml" />
     </modules>
   </component>
