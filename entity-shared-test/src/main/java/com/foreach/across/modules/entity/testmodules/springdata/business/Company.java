@@ -20,6 +20,8 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
@@ -43,6 +45,8 @@ public class Company implements Persistable<String>
 	@Column
 	private CompanyStatus status;
 
+	@Min( 0 )
+	@Max( 1000 )
 	@Column(name = "company_number")
 	private int number;
 

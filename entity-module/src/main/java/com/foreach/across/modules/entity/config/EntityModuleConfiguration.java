@@ -57,24 +57,14 @@ public class EntityModuleConfiguration
 		mvcConversionService.addConverter( new EQStringToDateConverter( mvcConversionService ) );
 	}
 
+	/**
+	 * Expose the default validator as the validator to be used for entity validation.
+	 * Use of {@link com.foreach.across.modules.entity.annotations.EntityValidator} in external modules is discouraged.
+	 */
 	@Bean(name = EntityModule.VALIDATOR)
 	@Exposed
 	@ConditionalOnMissingBean(name = EntityModule.VALIDATOR)
-	public SmartValidator entityValidator( SmartValidator defaultValidator ) {/*
-		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-		localValidatorFactoryBean.setValidationMessageSource( messageSource() );
-		return localValidatorFactoryBean;
-		*/
+	public SmartValidator entityValidator( SmartValidator defaultValidator ) {
 		return defaultValidator;
 	}
-/*
-	@Bean
-	public MessageSource messageSource() {
-		AcrossModuleMessageSource messageSource = new AcrossModuleMessageSource();
-		messageSource.setBasenames(
-				"classpath:/org/hibernate/validator/ValidationMessages",
-				"classpath:/messages/entity/EntityModule"
-		);
-		return messageSource;
-	}*/
 }

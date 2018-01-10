@@ -36,3 +36,8 @@ debugWebModule:
 across:
   development:
     active: true
+server:
+  error:
+    whitelabel:
+      enabled: false
+

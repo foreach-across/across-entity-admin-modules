@@ -40,5 +40,6 @@ public class CompanyValidator implements Validator
 	@Override
 	public void validate( Object target, Errors errors ) {
 		assertNotNull( entityValidator );
+		entityValidator.validate( target, errors );
 	}
 }

@@ -54,6 +54,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
@@ -61,6 +62,7 @@ import javax.validation.metadata.PropertyDescriptor;
 import java.io.Serializable;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Arne Vandamme
@@ -208,7 +210,8 @@ public class TestRepositoryEntityRegistrar
 		assertNotNull( validator );
 		assertNotSame( entityValidator, validator );
 
-		validator.validate( new Company(), null );
+		Errors errors = mock( Errors.class );
+		validator.validate( new Company(), errors );
 	}
 
 	private void assertProperty( EntityPropertyRegistry registry,
