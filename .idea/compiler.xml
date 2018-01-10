@@ -13,7 +13,7 @@
     <bytecodeTargetLevel>
       <module name="admin-web-module" target="1.8" />
       <module name="admin-web-module-project" target="1.8" />
-      <module name="admin-web-module-test-web" target="1.5" />
+      <module name="admin-web-module-test-web" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
