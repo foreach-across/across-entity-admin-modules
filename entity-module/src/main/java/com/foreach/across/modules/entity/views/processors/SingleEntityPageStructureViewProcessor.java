@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
@@ -36,6 +35,7 @@ import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBu
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -61,7 +61,7 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 {
 	private BootstrapUiComponentFactory bootstrapUiComponentFactory;
 	private MenuFactory menuFactory;
-	private AcrossEventPublisher eventPublisher;
+	private ApplicationEventPublisher eventPublisher;
 
 	/**
 	 * Should the entity menu be generated and added to the page nav.
@@ -119,8 +119,9 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 	                           ViewElementBuilderContext builderContext ) {
 		EntityViewContext entityViewContext = resolveEntityViewContext( entityViewRequest );
 
-		EntityPageStructureRenderedEvent event = new EntityPageStructureRenderedEvent( false, entityViewRequest, entityView, entityViewContext, builderContext );
-		eventPublisher.publish( event );
+		EntityPageStructureRenderedEvent event = new EntityPageStructureRenderedEvent( false, entityViewRequest, entityView, entityViewContext,
+		                                                                               builderContext );
+		eventPublisher.publishEvent( event );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -158,7 +159,7 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 	}
 
 	@Autowired
-	void setEventPublisher( AcrossEventPublisher eventPublisher ) {
+	void setEventPublisher( ApplicationEventPublisher eventPublisher ) {
 		this.eventPublisher = eventPublisher;
 	}
 }

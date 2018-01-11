@@ -16,7 +16,6 @@
 
 package com.foreach.across.samples.entity.application.controllers;
 
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
@@ -32,6 +31,7 @@ import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.samples.entity.application.business.Partner;
 import com.foreach.across.samples.entity.application.repositories.PartnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -76,7 +76,7 @@ public class SortableTableSimpleController
 	/**
 	 * Register the section in the administration menu.
 	 */
-	@Event
+	@EventListener
 	@SuppressWarnings("unused")
 	protected void registerMenuItems( AdminMenuEvent adminMenu ) {
 		adminMenu.builder()

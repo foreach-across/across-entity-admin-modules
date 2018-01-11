@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.entity.handlers;
 
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
@@ -36,6 +35,7 @@ import com.foreach.across.modules.web.menu.RequestMenuSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -48,7 +48,7 @@ public class MenuEventsHandler
 
 	private EntityRegistry entityRegistry;
 
-	@Event
+	@EventListener
 	public void adminMenu( AdminMenuEvent adminMenuEvent ) {
 		PathBasedMenuBuilder builder = adminMenuEvent.builder();
 		builder.item( "/entities", "#{EntityModule.adminMenu=Entity management}", "@adminWeb:/entities" ).group( true );
@@ -97,7 +97,7 @@ public class MenuEventsHandler
 		}
 	}
 
-	@Event
+	@EventListener
 	@SuppressWarnings("unchecked")
 	public void entityMenu( EntityAdminMenuEvent menu ) {
 		PathBasedMenuBuilder builder = menu.builder();

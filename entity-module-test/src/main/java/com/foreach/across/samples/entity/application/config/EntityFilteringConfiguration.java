@@ -16,7 +16,6 @@
 
 package com.foreach.across.samples.entity.application.config;
 
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
@@ -51,6 +50,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -79,7 +79,7 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
 @RequiredArgsConstructor
 public class EntityFilteringConfiguration implements EntityConfigurer
 {
-	@Event
+	@EventListener
 	void modifyGroupPageTitle( EntityPageStructureRenderedEvent<Group> page ) {
 		if ( page.isListView() ) {
 			page.getPageContentStructure().setPageTitle( "List view" );

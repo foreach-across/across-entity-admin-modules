@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.registrars;
 
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.core.context.AcrossContextUtils;
 import com.foreach.across.core.context.info.AcrossContextInfo;
@@ -28,6 +27,7 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -73,12 +73,12 @@ public class ModuleEntityRegistration
 		}
 	}
 
-	@Event
+	@EventListener
 	protected void moduleBootstrapped( AcrossModuleBootstrappedEvent moduleBootstrappedEvent ) {
 		applyModule( moduleBootstrappedEvent.getModule() );
 	}
 
-	@Event
+	@EventListener
 	protected void contextBootstrapped( AcrossContextBootstrappedEvent contextBootstrappedEvent ) {
 		AcrossContextBeanRegistry beanRegistry
 				= AcrossContextUtils.getBeanRegistry( contextBootstrappedEvent.getContext() );

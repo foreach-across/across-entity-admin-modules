@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.controllers.admin;
 
 import com.foreach.across.core.annotations.ConditionalOnDevelopmentMode;
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
@@ -42,6 +41,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.event.EventListener;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -80,7 +80,7 @@ class EntityRegistryBrowserController
 	private final BootstrapUiComponentFactory bootstrapUiComponentFactory;
 	private final AcrossModuleInfo entityModuleInfo;
 
-	@Event
+	@EventListener
 	public void registerAdminMenu( AdminMenuEvent menuEvent ) {
 		menuEvent.builder().item( "/ax/developer/entityModule/entities", "Entities" );
 	}

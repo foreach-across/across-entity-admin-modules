@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.testmodules.springdata;
 
 import com.foreach.across.core.AcrossModule;
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
@@ -26,10 +26,9 @@ import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
 
 import java.util.Set;
 
-@AcrossDepends(required = AcrossHibernateJpaModule.NAME)
+@ConditionalOnAcrossModule(AcrossHibernateJpaModule.NAME)
 public class SpringDataJpaModule extends AcrossModule implements HibernatePackageConfigurer
 {
-
 	public static final String NAME = "SpringDataJpaModule";
 
 	public SpringDataJpaModule() {

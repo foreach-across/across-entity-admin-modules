@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.config.entities;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -39,7 +39,7 @@ import org.springframework.data.domain.Sort;
  */
 @Configuration
 @OrderInModule(2)
-@AcrossDepends(required = SpringSecurityModule.NAME)
+@ConditionalOnAcrossModule(SpringSecurityModule.NAME)
 @RequiredArgsConstructor
 public class AuditableEntityUiConfiguration implements EntityConfigurer
 {

@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.entity.config.modules;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-@AcrossDepends(required = AdminWebModule.NAME)
+@ConditionalOnAcrossModule(AdminWebModule.NAME)
 @Configuration
 @ComponentScan(basePackageClasses = EntityOverviewController.class)
 @RequiredArgsConstructor

@@ -86,7 +86,7 @@ Investigate the javadoc of the `EntitiesConfigurationBuilder` and child builders
 [source,java,indent=0]
 [subs="verbatim,quotes,attributes"]
 ----
-@AcrossDepends(required = "EntityModule")
+@ConditionalOnAcrossModule(allOf = EntityModule.NAME)
 @Configuration
 public class UserEntitiesConfiguration implements EntityConfigurer
 {

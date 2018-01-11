@@ -16,13 +16,11 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
-import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.events.BuildEntityDeleteViewEvent;
-import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -34,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ResolvableType;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
@@ -57,7 +56,7 @@ public class TestDeleteEntityViewProcessor
 	private final String entity = "my entity";
 
 	@Mock
-	private AcrossEventPublisher eventPublisher;
+	private ApplicationEventPublisher eventPublisher;
 
 	@Mock
 	private EntityViewRequest viewRequest;
@@ -102,9 +101,9 @@ public class TestDeleteEntityViewProcessor
 				invocation -> {
 					BuildEntityDeleteViewEvent event = (BuildEntityDeleteViewEvent) invocation.getArguments()[0];
 					eventPublished.set( event );
-					assertArrayEquals(
-							new ResolvableType[] { ResolvableType.forClass( String.class ) },
-							event.getEventGenericTypes()
+					assertEquals(
+							ResolvableType.forClassWithGenerics( BuildEntityDeleteViewEvent.class, String.class ),
+							event.getResolvableType()
 					);
 					assertSame( entity, event.getEntity() );
 					assertFalse( event.isDeleteDisabled() );
@@ -120,16 +119,16 @@ public class TestDeleteEntityViewProcessor
 					event.setDeleteDisabled( true );
 					return null;
 				}
-		).when( eventPublisher ).publish( any( BuildEntityDeleteViewEvent.class ) );
+		).when( eventPublisher ).publishEvent( any( BuildEntityDeleteViewEvent.class ) );
 
 		processor.doControl( viewRequest, entityView, null, null, null );
 
 		BuildEntityDeleteViewEvent actual = entityView.getAttribute( DELETE_CONFIGURATION, BuildEntityDeleteViewEvent.class );
 		assertSame( eventPublished.get(), actual );
 
-		assertArrayEquals(
-				new ResolvableType[] { ResolvableType.forClass( String.class ) },
-				actual.getEventGenericTypes()
+		assertEquals(
+				ResolvableType.forClassWithGenerics( BuildEntityDeleteViewEvent.class, String.class ),
+				actual.getResolvableType()
 		);
 		assertSame( entity, actual.getEntity() );
 		assertTrue( actual.isDeleteDisabled() );

@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
@@ -40,6 +39,7 @@ import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBu
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -59,7 +59,7 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 {
 	static final String DELETE_CONFIGURATION = "deleteEntityConfiguration";
 
-	private AcrossEventPublisher eventPublisher;
+	private ApplicationEventPublisher eventPublisher;
 	private BootstrapUiFactory bootstrapUiFactory;
 	private EntityViewPageHelper entityViewPageHelper;
 
@@ -178,7 +178,7 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 
 		buildAssociations( entityViewContext, event );
 
-		eventPublisher.publish( event );
+		eventPublisher.publishEvent( event );
 
 		// Remove the associations block if no associations were added
 		if ( !event.associations().hasChildren() ) {
@@ -252,7 +252,7 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 	}
 
 	@Autowired
-	void setEventPublisher( AcrossEventPublisher eventPublisher ) {
+	void setEventPublisher( ApplicationEventPublisher eventPublisher ) {
 		this.eventPublisher = eventPublisher;
 	}
 

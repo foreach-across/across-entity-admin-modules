@@ -73,7 +73,10 @@ public class TestEntityPageStructureRenderedEvent
 	@Test
 	public void eventTypeIsEntityConfigurationType() {
 		when( entityConfiguration.getEntityType() ).thenReturn( String.class );
-		assertArrayEquals( new ResolvableType[] { ResolvableType.forClass( String.class ) }, event.getEventGenericTypes() );
+		assertEquals(
+				ResolvableType.forClassWithGenerics( EntityPageStructureRenderedEvent.class, String.class ),
+				event.getResolvableType()
+		);
 	}
 
 	@Test
