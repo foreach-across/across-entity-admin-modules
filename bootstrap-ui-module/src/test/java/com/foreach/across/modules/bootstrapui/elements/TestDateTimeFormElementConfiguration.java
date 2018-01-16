@@ -19,6 +19,9 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -166,5 +169,18 @@ public class TestDateTimeFormElementConfiguration
 		assertEquals( "2015-08-07 10:31", configuration.get( "minDate" ) );
 		assertEquals( "2015-08-08 10:31", configuration.get( "maxDate" ) );
 		assertEquals( true, configuration.get( "showClear" ) );
+	}
+
+	@Test
+	public void dateToLocalDateConversion() throws Exception {
+		Date date = DateUtils.parseDate( "2015-08-07 10:31", "yyyy-MM-dd HH:mm" );
+		LocalDateTime localDateTime = LocalDateTime.ofInstant( date.toInstant(), ZoneId.systemDefault() );
+
+		assertEquals(
+				"2015-08-07 10:31",
+				DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm" ).format( localDateTime )
+		);
+
+		assertEquals( date, Date.from( localDateTime.atZone( ZoneId.systemDefault() ).toInstant() ) );
 	}
 }
