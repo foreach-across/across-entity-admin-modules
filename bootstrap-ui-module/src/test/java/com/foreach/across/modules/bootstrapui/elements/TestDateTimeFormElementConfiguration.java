@@ -19,11 +19,12 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 
 import static com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.*;
 import static org.junit.Assert.assertArrayEquals;
@@ -182,5 +183,116 @@ public class TestDateTimeFormElementConfiguration
 		);
 
 		assertEquals( date, Date.from( localDateTime.atZone( ZoneId.systemDefault() ).toInstant() ) );
+	}
+
+	@Test
+	public void customAttributesForJava8Times() throws ParseException {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm" );
+		LocalDateTime start = LocalDateTime.parse( "2015-08-07 10:31", formatter );
+		LocalDateTime end = LocalDateTime.parse( "2015-08-08 10:31", formatter );
+
+		DateTimeFormElementConfiguration configuration = new DateTimeFormElementConfiguration();
+		configuration.setMinDate( start );
+		configuration.setMaxDate( end );
+		configuration.setShowClearButton( true );
+
+		assertEquals( "2015-08-07 10:31", configuration.get( "minDate" ) );
+		assertEquals( "2015-08-08 10:31", configuration.get( "maxDate" ) );
+
+		configuration = new DateTimeFormElementConfiguration();
+		configuration.setMinDate( start.toLocalDate() );
+		configuration.setMaxDate( end.toLocalDate() );
+
+		assertEquals( "2015-08-07 00:00", configuration.get( "minDate" ) );
+		assertEquals( "2015-08-08 00:00", configuration.get( "maxDate" ) );
+
+		configuration = new DateTimeFormElementConfiguration();
+		configuration.setMinDate( start.toLocalTime() );
+		configuration.setMaxDate( end.toLocalTime() );
+		configuration.setShowClearButton( true );
+
+		String localDateAsString = LocalDate.now().format( DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) );
+
+		assertEquals( localDateAsString + " 10:31", configuration.get( "minDate" ) );
+		assertEquals( localDateAsString + " 10:31", configuration.get( "maxDate" ) );
+
+		DateTimeFormElementConfiguration configurationWithDate = new DateTimeFormElementConfiguration();
+		Date date = DateUtils.parseDate( "2015-08-07 10:31", "yyyy-MM-dd HH:mm" );
+		configuration.setDefaultDate( date );
+
+		DateTimeFormElementConfiguration configurationWithJava8Date = new DateTimeFormElementConfiguration();
+		configuration.setDefaultDate( LocalDateTime.ofInstant( date.toInstant(), configuration.getZoneId() ) );
+
+		assertEquals( configurationWithDate.get( "defaultDate" ), configurationWithJava8Date.get( "defaultDate" ) );
+
+	}
+
+	@Test
+	public void dateTimeFormatterIsEqualToDateFormat() {
+		LocalDateTime localDateTime = LocalDateTime.ofInstant( PRINT_DATE.toInstant(), ZoneId.systemDefault() );
+
+		DateTimeFormElementConfiguration configuration = new DateTimeFormElementConfiguration( Format.DATE );
+		assertEquals( configuration.createDateFormat().format( PRINT_DATE ), configuration.createDateTimeFormatter().format( localDateTime ) );
+
+		configuration = new DateTimeFormElementConfiguration( Format.DATE_FULL );
+		assertEquals( configuration.createDateFormat().format( PRINT_DATE ), configuration.createDateTimeFormatter().format( localDateTime ) );
+
+		configuration = new DateTimeFormElementConfiguration( Format.TIME );
+		assertEquals( configuration.createDateFormat().format( PRINT_DATE ), configuration.createDateTimeFormatter().format( localDateTime ) );
+
+		configuration = new DateTimeFormElementConfiguration( Format.DATETIME );
+		assertEquals( configuration.createDateFormat().format( PRINT_DATE ), configuration.createDateTimeFormatter().format( localDateTime ) );
+
+		configuration = new DateTimeFormElementConfiguration( Format.DATETIME_FULL );
+		assertEquals( configuration.createDateFormat().format( PRINT_DATE ), configuration.createDateTimeFormatter().format( localDateTime ) );
+	}
+
+	@Test
+	public void localizedDateTimeFormatterIsEqualToDateFormat() {
+		Date d1 = Date.from( Instant.EPOCH );
+		Date d2 = Date.from( Instant.now() );
+		List<String> localesThatAreNotEqual = Arrays.asList( "hi-IN", "fi-FI", "ja-JP-u-ca-japanese-x-lvariant-JP", "th-TH", "fi",
+		                                                     "th-TH-u-nu-thai-x-lvariant-TH" );
+		List<Date> randomDates = new ArrayList<>();
+		randomDates.add( PRINT_DATE );
+		for ( int i = 0; i < 2000; i += 1 ) {
+			randomDates.add( getRandomDateBetween( d1, d2 ) );
+		}
+		for ( Date date : randomDates ) {
+			for ( Locale locale : Locale.getAvailableLocales() ) {
+				if ( !localesThatAreNotEqual.contains( locale.toLanguageTag() ) ) {
+					assertLocalizedFormattersReturnEqualValues( date, locale );
+				}
+			}
+		}
+	}
+
+	private void assertLocalizedFormattersReturnEqualValues( Date date, Locale locale ) {
+		LocalDateTime localDateTime = LocalDateTime.ofInstant( date.toInstant(), ZoneId.systemDefault() );
+
+		DateTimeFormElementConfiguration configuration = new DateTimeFormElementConfiguration( Format.DATE );
+		configuration.setLocale( locale );
+		assertEquals( configuration.createDateFormat().format( date ), configuration.createDateTimeFormatter().format( localDateTime ) );
+
+		configuration = new DateTimeFormElementConfiguration( Format.DATE_FULL );
+		configuration.setLocale( locale );
+		assertEquals( configuration.createDateFormat().format( date ), configuration.createDateTimeFormatter().format( localDateTime ) );
+
+		configuration = new DateTimeFormElementConfiguration( Format.TIME );
+		configuration.setLocale( locale );
+		assertEquals( configuration.createDateFormat().format( date ), configuration.createDateTimeFormatter().format( localDateTime ) );
+
+		configuration = new DateTimeFormElementConfiguration( Format.DATETIME );
+		configuration.setLocale( locale );
+		assertEquals( configuration.createDateFormat().format( date ), configuration.createDateTimeFormatter().format( localDateTime ) );
+
+		configuration = new DateTimeFormElementConfiguration( Format.DATETIME_FULL );
+		configuration.setLocale( locale );
+		assertEquals( configuration.createDateFormat().format( date ), configuration.createDateTimeFormatter().format( localDateTime ) );
+	}
+
+	private Date getRandomDateBetween( Date start, Date end ) {
+		long diff = end.getTime() - start.getTime() + 1;
+		return new Date( start.getTime() + (long) ( Math.random() * diff ) );
 	}
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,9 @@ import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 /**
@@ -31,14 +34,57 @@ import java.util.Date;
 public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupport<DateTimeFormElement, DateTimeFormElementBuilder>
 {
 	private Date value;
+	private LocalDateTime valueAsLocalDateTime;
 	private DateTimeFormElementConfiguration configuration;
 
 	public DateTimeFormElementConfiguration getConfiguration() {
 		return configuration;
 	}
 
+	/**
+	 * Sets the date based on the given {@link Date} object.
+	 * If a {@link LocalDateTime} is set, it will override the value.
+	 *
+	 * @deprecated prefer using {@link #value(LocalDateTime)}
+	 * @param value date to set
+	 * @return current builder
+	 */
+	@Deprecated
 	public DateTimeFormElementBuilder value( Date value ) {
 		this.value = value;
+		return this;
+	}
+
+	/**
+	 * Sets the date based on the given {@link LocalDate} object.
+	 *
+	 * @param value date to set
+	 * @return current builder
+	 */
+	public DateTimeFormElementBuilder value( LocalDate value ) {
+		value( DateTimeFormElementConfiguration.localDateToLocalDateTime( value ) );
+		return this;
+	}
+
+	/**
+	 * Sets the date based on the given {@link LocalTime} object.
+	 *
+	 * @param value date to set
+	 * @return current builder
+	 */
+	public DateTimeFormElementBuilder value( LocalTime value ) {
+		value( DateTimeFormElementConfiguration.localTimeToLocalDateTime( value ) );
+		return this;
+	}
+
+	/**
+	 * Sets the date based on the given {@link LocalDateTime} object.
+	 *
+	 * @param value date to set
+	 * @return current builder
+	 */
+	public DateTimeFormElementBuilder value( LocalDateTime value ) {
+		valueAsLocalDateTime = value;
 		return this;
 	}
 
@@ -88,6 +134,9 @@ public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupp
 		}
 		if ( value != null ) {
 			datetime.setValue( value );
+		}
+		if ( valueAsLocalDateTime != null ) {
+			datetime.setLocalDateTime( valueAsLocalDateTime );
 		}
 
 		return datetime;
