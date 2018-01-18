@@ -51,6 +51,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -68,6 +72,8 @@ import static org.mockito.Mockito.when;
 public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<ViewElement>
 {
 	private static final Date PRINT_DATE;
+	private static final LocalDateTime PRINT_DATE_LOCAL_DATE_TIME = LocalDateTime.parse( "2015-08-07 10:31:22",
+	                                                                                     DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm:ss" ) );
 
 	static {
 		try {
@@ -184,6 +190,39 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	}
 
 	@Test
+	public void localDateValueSetFromEntity() {
+		LocalDate date = PRINT_DATE_LOCAL_DATE_TIME.toLocalDate();
+
+		when( properties.get( "date" ).getValueFetcher() ).thenReturn( entity -> date );
+		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+
+		DateTimeFormElement datetime = assembleAndVerify( "date", false );
+		assertEquals( date, datetime.getLocalDate() );
+	}
+
+	@Test
+	public void localTimeValueSetFromEntity() {
+		LocalTime date = PRINT_DATE_LOCAL_DATE_TIME.toLocalTime();
+
+		when( properties.get( "date" ).getValueFetcher() ).thenReturn( entity -> date );
+		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+
+		DateTimeFormElement datetime = assembleAndVerify( "date", false );
+		assertEquals( date, datetime.getLocalTime() );
+	}
+
+	@Test
+	public void localDateTimeValueSetFromEntity() {
+		LocalDateTime date = PRINT_DATE_LOCAL_DATE_TIME;
+
+		when( properties.get( "date" ).getValueFetcher() ).thenReturn( entity -> date );
+		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+
+		DateTimeFormElement datetime = assembleAndVerify( "date", false );
+		assertEquals( date, datetime.getLocalDateTime() );
+	}
+
+	@Test
 	public void customLocaleSpecified() {
 		LocaleContextHolder.setLocale( Locale.FRANCE );
 
@@ -239,6 +278,44 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		}
 	}
 
+	@Test
+	public void supportedTemporalAccessorsAreCorrectlyPrinterFormattedNoFormatSet() {
+		assertPrinterFormat( "localDateTime", PRINT_DATE_LOCAL_DATE_TIME, "07-Aug-2015 10:31" );
+		assertPrinterFormat( "localDate", PRINT_DATE_LOCAL_DATE_TIME.toLocalDate(), "07-Aug-2015" );
+		assertPrinterFormat( "localTime", PRINT_DATE_LOCAL_DATE_TIME.toLocalTime(), "10:31" );
+	}
+
+	@Test
+	public void supportedTemporalAccessorsAreCorrectlyPrinterFormattedWithFormatSet() {
+		assertPrinterFormat( "localDateTime", PRINT_DATE_LOCAL_DATE_TIME.toLocalDate(), Format.DATE, "07-Aug-2015" );
+		assertPrinterFormat( "localDateTime", PRINT_DATE_LOCAL_DATE_TIME.toLocalTime(), Format.TIME, "10:31" );
+	}
+
+	private void assertPrinterFormat( String name, Object value, String expected ) {
+		assertPrinterFormat( name, value, null, expected );
+	}
+
+	private void assertPrinterFormat( String name, Object value, DateTimeFormElementConfiguration.Format format, String expected ) {
+		LocaleContextHolder.setLocale( Locale.UK );
+
+		try {
+			ValueFetcher valueFetcher = mock( ValueFetcher.class );
+			when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+			when( valueFetcher.getValue( any() ) ).thenReturn( value );
+			when( properties.get( name ).getValueFetcher() ).thenReturn( valueFetcher );
+			if ( format != null ) {
+				when( properties.get( name ).hasAttribute( Format.class ) ).thenReturn( true );
+				when( properties.get( name ).getAttribute( Format.class ) ).thenReturn( format );
+			}
+
+			TextViewElement text = assembleValue( name );
+			assertEquals( expected, text.getText() );
+		}
+		finally {
+			LocaleContextHolder.resetLocaleContext();
+		}
+	}
+
 	private TextViewElement assembleValue( String propertyName ) {
 		return (TextViewElement) assemble( propertyName, ViewElementMode.VALUE );
 	}
@@ -262,6 +339,15 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 		@NotNull
 		public Date required;
+
+		@NotNull
+		public LocalDate localDate;
+
+		@NotNull
+		public LocalTime localTime;
+
+		@NotNull
+		public LocalDateTime localDateTime;
 
 		@Future
 		@Temporal(TemporalType.TIMESTAMP)

@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -48,6 +48,9 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -180,6 +183,15 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 				if ( propertyDescriptor.hasAttribute( Format.class ) ) {
 					builder.format( propertyDescriptor.getAttribute( Format.class ) );
 				}
+				else {
+					Class<?> propertyType = propertyDescriptor.getPropertyType();
+					if ( LocalDate.class.isAssignableFrom( propertyType ) ) {
+						builder.format( Format.DATE );
+					}
+					else if ( LocalTime.class.isAssignableFrom( propertyType ) ) {
+						builder.format( Format.TIME );
+					}
+				}
 			}
 
 			return builder;
@@ -202,11 +214,27 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 								ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
 
 								if ( entity != null && valueFetcher != null ) {
-									Date propertyValue = (Date) valueFetcher.getValue( entity );
-
-									if ( propertyValue != null ) {
-										datetime.setValue( propertyValue );
+									Object value = valueFetcher.getValue( entity );
+									if ( value instanceof LocalDate ) {
+										LocalDate propertyValue = (LocalDate) value;
+										datetime.setLocalDate( propertyValue );
 									}
+									else if ( value instanceof LocalTime ) {
+										LocalTime propertyValue = (LocalTime) value;
+										datetime.setLocalTime( propertyValue );
+									}
+									else if ( value instanceof LocalDateTime ) {
+										LocalDateTime propertyValue = (LocalDateTime) value;
+										datetime.setLocalDateTime( propertyValue );
+									}
+									else {
+										Date propertyValue = (Date) value;
+
+										if ( propertyValue != null ) {
+											datetime.setValue( propertyValue );
+										}
+									}
+
 								}
 							}
 					);

@@ -19,11 +19,12 @@ import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfig
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 
+import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
 
 /**
  * Uses a localized {@link DateTimeFormElementConfiguration} and
- * the {@link java.text.DateFormat} it exposes to convert a property value to text.
+ * the {@link java.text.DateFormat} or {@link java.time.format.DateTimeFormatter} it exposes to convert a property value to text.
  *
  * @author Arne Vandamme
  */
@@ -39,6 +40,9 @@ public class DateTimeValueTextPostProcessor<T extends ConfigurableTextViewElemen
 
 	@Override
 	protected String print( Object value, Locale locale ) {
+		if ( TemporalAccessor.class.isInstance( value ) ) {
+			return configuration.localize( locale ).createDateTimeFormatter().format( (TemporalAccessor) value );
+		}
 		return configuration.localize( locale ).createDateFormat().format( value );
 	}
 }

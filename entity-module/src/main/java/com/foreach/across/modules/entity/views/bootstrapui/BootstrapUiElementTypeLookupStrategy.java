@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
@@ -100,7 +103,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 				return BootstrapUiElements.NUMERIC;
 			}
 
-			if ( ClassUtils.isAssignable( propertyType, Date.class ) ) {
+			if ( isDateType( propertyType ) ) {
 				return BootstrapUiElements.DATETIME;
 			}
 		}
@@ -145,6 +148,18 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		}
 
 		return null;
+	}
+
+	/**
+	 * Checks whether the given type is a supported date type.
+	 * Currently {@link Date}, {@link LocalDate}, {@link LocalTime} and {@link LocalDateTime} are supported.
+	 *
+	 * @param propertyType to check
+	 * @return whether it is a supported date type
+	 */
+	private boolean isDateType( Class propertyType ) {
+		return ClassUtils.isAssignable( propertyType, Date.class ) || ClassUtils.isAssignable( propertyType, LocalDate.class )
+				|| ClassUtils.isAssignable( propertyType, LocalTime.class ) || ClassUtils.isAssignable( propertyType, LocalDateTime.class );
 	}
 
 	/**

@@ -40,6 +40,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -209,6 +212,9 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@Test
 	public void dateTypeForDates() throws Exception {
 		assertEquals( BootstrapUiElements.DATETIME, lookup( Date.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDate.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalTime.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDateTime.class, ViewElementMode.CONTROL ) );
 	}
 
 	@Test
