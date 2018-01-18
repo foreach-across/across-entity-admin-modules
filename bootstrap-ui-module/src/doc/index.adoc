@@ -1,9 +1,9 @@
 = BootstrapUiModule
 Arne Vandamme
-1.2.0.RELEASE
+2.0.0-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 1.2.0.RELEASE
+:module-version: 2.0.0-SNAPSHOT
 :module-name: BootstrapUiModule
 :module-artifact: bootstrap-ui-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
@@ -46,6 +46,9 @@ Module website: {module-url}
 
 == What's new in this version?
 :numbered!:
+=== 2.0.0-SNAPSHOT
+* DateTimeFormElements now have support for `LocalDate`, `LocalTime`, `LocalDateTime`
+
 === 1.2.0.RELEASE
 * added `BootstrapUiBuilders` class that is a static facade for all builders
 ** `BootstrapUiFactory` and `BootstrapUiComponentFactory` beans are still available, but because both of them operate stateless the facade was added to reduce wiring verbosity
