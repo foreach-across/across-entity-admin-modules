@@ -126,6 +126,11 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	}
 
 	@Override
+	public void removeView( String viewName ) {
+		registeredViews.remove( viewName );
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public <Y extends EntityViewFactory> Y getViewFactory( String viewName ) {
 		return (Y) registeredViews.get( viewName );

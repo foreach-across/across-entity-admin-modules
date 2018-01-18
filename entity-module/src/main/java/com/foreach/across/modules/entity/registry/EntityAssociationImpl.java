@@ -141,6 +141,11 @@ public class EntityAssociationImpl extends AttributeSupport implements MutableEn
 	}
 
 	@Override
+	public void removeView( String viewName ) {
+		sourceEntityConfiguration.removeView( buildAssociatedViewName( viewName ) );
+	}
+
+	@Override
 	public String[] getViewNames() {
 		String prefix = getName() + "_";
 		return Stream.of( sourceEntityConfiguration.getViewNames() )
