@@ -211,6 +211,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 			else {
 				builder.factoryType( DefaultEntityViewFactory.class );
 				initializeViewFactoryBuilder( viewName, builderTemplateName, builder );
+				builder.messagePrefix( "views[" + viewName + "]" );
 
 				list.forEach( c -> c.accept( builder ) );
 				viewRegistry.registerView( viewName, builder.build() );
