@@ -25,7 +25,11 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Car;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Group;
+import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.processors.TemplateViewProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
@@ -46,13 +50,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Persistable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
-import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -149,6 +150,19 @@ public class TestCustomizingEntityConfiguration
 
 		c.setNew( true );
 		assertEquals( "true", config.getLabel( c ) );
+	}
+
+	@Test
+	public void everyEntityShouldHaveASeparateViewElementLookupRegistry() {
+		EntityConfiguration groupConfig = entityRegistry.getEntityConfiguration( Group.class );
+		EntityConfiguration clientConfig = entityRegistry.getEntityConfiguration( Client.class );
+
+		ViewElementLookupRegistry groupLookupRegistry = groupConfig.getAttribute( ViewElementLookupRegistry.class );
+		assertThat( groupLookupRegistry ).isNotNull();
+		ViewElementLookupRegistry clientLookupRegistry = clientConfig.getAttribute( ViewElementLookupRegistry.class );
+		assertThat( clientLookupRegistry ).isNotNull();
+
+		assertThat( groupLookupRegistry ).isNotSameAs( clientLookupRegistry );
 	}
 
 	@Configuration

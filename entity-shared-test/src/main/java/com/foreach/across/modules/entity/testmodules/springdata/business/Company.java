@@ -17,12 +17,12 @@
 package com.foreach.across.modules.entity.testmodules.springdata.business;
 
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,7 +37,7 @@ public class Company implements Persistable<String>
 	private boolean isNew;
 
 	@Id
-	@NotNull
+	@NotBlank
 	@Length(max = 20)
 	@Column(name = "company_id")
 	private String id;

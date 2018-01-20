@@ -279,7 +279,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 			viewElementLookupRegistry.mergeInto( existingLookupRegistry );
 		}
 		else {
-			descriptor.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry );
+			descriptor.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry.clone() );
 		}
 	}
 }

@@ -104,7 +104,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
 		}
 
-		// todo: fixe me decently
+		// todo: fixme decently
 		ViewElementLookupRegistryImpl existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 		ViewElementLookupRegistry lookupRegistry = new ViewElementLookupRegistryImpl();
 		if ( existingLookupRegistry != null ) {

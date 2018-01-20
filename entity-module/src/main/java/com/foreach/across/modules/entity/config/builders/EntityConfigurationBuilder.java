@@ -439,7 +439,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 			viewElementLookupRegistry.mergeInto( existingLookupRegistry );
 		}
 		else {
-			attributes.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry );
+			attributes.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry.clone() );
 		}
 	}
 

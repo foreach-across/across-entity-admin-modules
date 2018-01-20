@@ -30,7 +30,7 @@ import java.util.Collection;
  *
  * @author Arne Vandamme
  */
-public interface ViewElementLookupRegistry
+public interface ViewElementLookupRegistry extends Cloneable
 {
 	/**
 	 * Set the fixed {@link ViewElementBuilder} for lookups.  If set, this builder will always be returned.
@@ -122,4 +122,9 @@ public interface ViewElementLookupRegistry
 	 * @return true if a builder can be cached
 	 */
 	boolean isCacheable( ViewElementMode mode );
+
+	/**
+	 * @return cloned instance
+	 */
+	ViewElementLookupRegistry clone();
 }
