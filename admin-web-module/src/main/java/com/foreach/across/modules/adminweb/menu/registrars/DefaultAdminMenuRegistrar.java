@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.adminweb.menu.registrars;
 
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate;
@@ -26,6 +25,7 @@ import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +43,7 @@ public final class DefaultAdminMenuRegistrar
 
 	private final CurrentSecurityPrincipalProxy securityPrincipalProxy;
 
-	@Event
+	@EventListener
 	void registerDefaultItems( AdminMenuEvent menuEvent ) {
 		menuEvent.builder()
 		         .root( "/" )

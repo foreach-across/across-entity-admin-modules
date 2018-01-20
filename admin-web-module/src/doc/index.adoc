@@ -6,9 +6,10 @@ Arne Vandamme
 :module-version: 3.0.0-SNAPSHOT
 :module-name: AdminWebModule
 :module-artifact: admin-web-module
-:module-url: https://foreach.atlassian.net/wiki/display/AX/AdminWebModule
-:spring-security-module-url: https://foreach.atlassian.net/wiki/display/AX/SpringSecurityModule
-:bootstrap-ui-module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
+:module-url: https://across.foreach.be/modules/AdminWebModule
+:spring-security-module-url: https://across.foreach.be/modules/SpringSecurityModule
+:bootstrap-ui-module-url: https://across.foreach.be/modules/BootstrapUiModule
+:entity-module-url: https://across.foreach.be/modules/EntityModule
 
 [copyright,verbatim]
 --
@@ -122,7 +123,9 @@ All properties start with the *adminWebModule.* prefix.
 == What's new in this version?
 :numbered!:
 === 3.0.0-SNAPSHOT
-tbd
+
+* `EntityAdminMenu` and `EntityAdminMenuEvent` have been deprecated and will be removed in the future
+** these classes were almost solely used in the context of link:{entity-module-url}[EntityModule] and did not belong in AdminWebModule
 
 === 2.1.1.RELEASE
 
@@ -337,7 +340,7 @@ These default items can be customized using the `AdminMenuEvent`.
 ----
 private ViewElementBuilder myProfilePictureViewElementBuilder;
 
-@Event
+@EventListener
 public void addUserProfilePicture( AdminMenuEvent adminMenuEvent ) {
 	adminMenuEvent.builder()
 	              .group( DefaultAdminMenuRegistrar.PATH )
@@ -353,7 +356,7 @@ The easiest way to do that is by intercepting the `AdminMenuEvent`.
 [source,java,indent=0]
 [subs="verbatim,quotes,attributes"]
 ----
-@Event
+@EventListener
 public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
 	adminMenuEvent.builder()
 	              .group( "/group", "Demo pages" ).and()
@@ -380,7 +383,7 @@ Possible positions are:
 [source,java,indent=0]
 [subs="verbatim,quotes,attributes"]
 ----
-@Event
+@EventListener
 public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
     adminMenuEvent.builder()
                 .group( "/tools", "Tools" )
@@ -399,7 +402,7 @@ Explicitly excluding an item can be done by setting the *adminMenu:breadcrumb* a
 [source,java,indent=0]
 [subs="verbatim,quotes,attributes"]
 ----
-@Event
+@EventListener
 public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
     adminMenuEvent.builder()
                 .group( "/tools", "Tools" )
@@ -500,7 +503,7 @@ public class DevToolsController
 {
 	private final PageContentStructure pageContentStructure;
 
-	@Event
+	@EventListener
 	void registerDeveloperToolsItem( AdminMenuEvent menuEvent ) {
 		menuEvent.builder().item( DeveloperToolsMenuRegistrar.PATH + "/test", "Test controller" );
 	}

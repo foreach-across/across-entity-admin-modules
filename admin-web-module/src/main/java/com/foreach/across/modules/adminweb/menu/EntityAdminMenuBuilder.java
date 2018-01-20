@@ -21,6 +21,10 @@ import com.foreach.across.modules.web.menu.PrefixContextMenuItemBuilderProcessor
 import com.foreach.across.modules.web.menu.RequestMenuBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * @deprecated since 3.0.0 - migrated to EntityModule
+ */
+@Deprecated
 public class EntityAdminMenuBuilder extends RequestMenuBuilder<EntityAdminMenu<Object>, EntityAdminMenuEvent<Object>>
 {
 	@Autowired
