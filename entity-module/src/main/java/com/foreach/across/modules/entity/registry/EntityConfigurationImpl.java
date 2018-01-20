@@ -50,9 +50,7 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 
 	private EntityMessageCodeResolver entityMessageCodeResolver;
 	private EntityConfigurationAllowableActionsBuilder allowableActionsBuilder
-			= new FixedEntityAllowableActionsBuilder(
-			FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS
-	);
+			= new FixedEntityAllowableActionsBuilder( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
 
 	private boolean hidden;
 	private String displayName;

@@ -112,7 +112,6 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		}
 
 		descriptor.setAttributes( child.attributeMap() );
-
 		descriptor.setAttribute( ViewElementLookupRegistry.class, lookupRegistry );
 
 		if ( child.hasAttribute( Sort.Order.class ) ) {

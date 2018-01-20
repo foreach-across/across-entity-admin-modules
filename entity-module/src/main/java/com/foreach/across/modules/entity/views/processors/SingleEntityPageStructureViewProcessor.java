@@ -18,11 +18,11 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
-import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.menu.EntityAdminMenu;
 import com.foreach.across.modules.entity.views.processors.support.EntityPageStructureRenderedEvent;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -126,8 +126,7 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 
 	@SuppressWarnings("unchecked")
 	private void buildEntityMenu( EntityViewContext entityViewContext, PageContentStructure page, ViewElementBuilderContext builderContext ) {
-		EntityAdminMenu<?> entityMenu = new EntityAdminMenu<>( entityViewContext.getEntityConfiguration().getEntityType(),
-		                                                       entityViewContext.getEntity( Object.class ) );
+		EntityAdminMenu entityMenu = EntityAdminMenu.create( entityViewContext );
 		menuFactory.buildMenu( entityMenu );
 
 		page.addToNav(
