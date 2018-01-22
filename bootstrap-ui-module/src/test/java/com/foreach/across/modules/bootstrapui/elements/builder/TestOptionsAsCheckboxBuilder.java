@@ -88,7 +88,7 @@ public class TestOptionsAsCheckboxBuilder extends AbstractBootstrapViewElementTe
 						"</label><input type='hidden' name='_mybox' value='on' /></div>" +
 						"<div class='checkbox disabled'><label for='mybox1'>" +
 						"<input type='checkbox' value='2' checked='checked' disabled='disabled' name='mybox' id='mybox1' /> Short two" +
-						"</label><input type='hidden' name='_mybox' value='on' /></div>" +
+						"</label><input type='hidden' name='_mybox' value='on' disabled='disabled' /></div>" +
 						"</div>"
 		);
 	}

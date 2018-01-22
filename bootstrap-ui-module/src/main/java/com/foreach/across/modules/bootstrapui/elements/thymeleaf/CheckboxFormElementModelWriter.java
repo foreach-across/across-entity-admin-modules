@@ -83,6 +83,11 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 			model.addAttribute( "type", "hidden" );
 			model.addAttribute( "name", "_" + control.getControlName() );
 			model.addAttribute( "value", "on" );
+
+			if ( control.isDisabled() || control.hasAttribute( "disabled" ) ) {
+				model.addBooleanAttribute( "disabled", true );
+			}
+
 			model.addCloseElement();
 		}
 
