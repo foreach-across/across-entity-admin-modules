@@ -217,7 +217,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 	}
 
 	/**
-	 * We add the indicator before the first </label> tag.
+	 * We add the indicator before the first &lt;/label&gt; tag.
 	 */
 	private void addRequiredIndicatorToLabel( IModelFactory modelFactory, IModel labelModel ) {
 		for ( int i = 0; i < labelModel.size(); i++ ) {
