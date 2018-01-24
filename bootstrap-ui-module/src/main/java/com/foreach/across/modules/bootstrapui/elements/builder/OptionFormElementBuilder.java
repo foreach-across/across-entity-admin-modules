@@ -250,7 +250,7 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 		OptionsFormElementBuilder options = builderContext.getAttribute( OptionsFormElementBuilder.class );
 		OptionsFormElementBuilder.Type typeToUse = options != null ? options.getType() : type;
 
-		T control = apply( (T) createControl( typeToUse ), builderContext );
+		T control = apply( (T) createControl( typeToUse, builderContext ), builderContext );
 
 		if ( options != null ) {
 			if ( getControlName() == null ) {
@@ -270,26 +270,26 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 		return control;
 	}
 
-	private FormControlElementSupport createControl( OptionsFormElementBuilder.Type type ) {
+	private FormControlElementSupport createControl( OptionsFormElementBuilder.Type type, ViewElementBuilderContext builderContext ) {
 		switch ( type ) {
 			case CHECKBOX:
 				CheckboxFormElement checkbox = new CheckboxFormElement();
-				checkbox.setText( label != null ? label : text );
+				checkbox.setText( builderContext.resolveText( label != null ? label : text ) );
 				checkbox.setValue( value );
 				checkbox.setChecked( selected );
 				checkbox.setWrapped( wrapped );
 				return checkbox;
 			case RADIO:
 				RadioFormElement radio = new RadioFormElement();
-				radio.setText( label != null ? label : text );
+				radio.setText( builderContext.resolveText( label != null ? label : text ) );
 				radio.setValue( value );
 				radio.setChecked( selected );
 				radio.setWrapped( wrapped );
 				return radio;
 			default:
 				SelectFormElement.Option option = new SelectFormElement.Option();
-				option.setLabel( label );
-				option.setText( text );
+				option.setLabel( builderContext.resolveText( label ) );
+				option.setText( builderContext.resolveText( text ) );
 				option.setValue( value );
 				option.setSelected( selected );
 				return option;

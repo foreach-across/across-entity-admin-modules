@@ -51,6 +51,8 @@ Module website: {module-url}
 * `FormViewElement` and `FormViewElementBuilder` now allow you to configure either a command object or an `Errors` instance directly
 ** this makes it easier to resolve field errors for the `FormGroupElement` members of the form, without having to know the model attribute name
 ** when using the `errors` property directly, it is no longer required that the command object binding result is present on the model
+* the default builders now usually support localized text patterns for any text property
+** for example: `BootstrapUiBuilders.button().title("#{my.button=Default text}")`
 
 === 1.2.0.RELEASE
 * added `BootstrapUiBuilders` class that is a static facade for all builders

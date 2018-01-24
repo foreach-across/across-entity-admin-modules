@@ -287,7 +287,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	                               ViewElementBuilderContext builderContext ) {
 		boolean iconAdded = iconAllowed && addViewElementIfAttributeExists( item, ATTR_ICON, node, builderContext );
 		if ( !iconAdded || !iconOnly ) {
-			node.addChild( new TextViewElement( ( iconAdded ? " " : "" ) + resolvedTitle ) );
+			node.addChild( toTextElement( ( iconAdded ? " " : "" ) + resolvedTitle ) );
 		}
 
 		if ( iconAdded && iconOnly ) {
@@ -295,7 +295,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 
 			NodeViewElement span = new NodeViewElement( "span" );
 			span.addCssClass( "nav-item-title" );
-			span.addChild( TextViewElement.text( resolvedTitle ) );
+			span.addChild( toTextElement( resolvedTitle ) );
 			node.addChild( span );
 		}
 	}

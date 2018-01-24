@@ -24,12 +24,15 @@ import java.util.function.Function;
 
 /**
  * Base class for elements that have url properties that allow using a custom link builder function.
+ * Note that any link supporting builder also implements {@link AbstractHtmlSupportingNodeViewElementBuilder}
+ * and supports configuration of HTML escaping behaviour.
  *
  * @author Arne Vandamme
+ * @see AbstractHtmlSupportingNodeViewElementBuilder
  * @since 1.0.0
  */
 public abstract class AbstractLinkSupportingNodeViewElementBuilder<T extends AbstractNodeViewElement, SELF extends AbstractNodeViewElementBuilder<T, SELF>>
-		extends AbstractNodeViewElementBuilder<T, SELF>
+		extends AbstractHtmlSupportingNodeViewElementBuilder<T, SELF>
 {
 	private Function<String, String> linkBuilder;
 

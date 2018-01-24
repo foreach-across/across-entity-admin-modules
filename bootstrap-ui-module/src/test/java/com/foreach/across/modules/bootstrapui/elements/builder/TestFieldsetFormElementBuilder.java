@@ -43,9 +43,9 @@ public class TestFieldsetFormElementBuilder extends AbstractViewElementBuilderTe
 		assertNull( element.getLegend().getText() );
 
 		builder.formId( "myform" )
-		       .fieldsetName( "name" )
+		       .fieldsetName( "#{name}" )
 		       .disabled()
-		       .legend( "legend text" );
+		       .legend( "#{legend text}" );
 		build();
 
 		assertEquals( "myform", element.getFormId() );

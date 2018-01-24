@@ -59,13 +59,18 @@ public class LinkViewElementBuilder extends AbstractLinkSupportingNodeViewElemen
 		LinkViewElement link = new LinkViewElement();
 
 		if ( text != null ) {
-			link.setText( text );
+			if ( isEscapeHtml() ) {
+				link.setText( builderContext.resolveText( text ) );
+			}
+			else {
+				link.addChild( resolveTextElement( text, builderContext ) );
+			}
 		}
 		if ( url != null ) {
 			link.setUrl( buildLink( url, builderContext ) );
 		}
 		if ( title != null ) {
-			link.setTitle( title );
+			link.setTitle( builderContext.resolveText( title ) );
 		}
 
 		return apply( link, builderContext );

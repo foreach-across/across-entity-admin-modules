@@ -294,7 +294,7 @@ public class TextboxFormElementBuilder extends FormControlElementBuilderSupport<
 			textbox.setType( type );
 		}
 		if ( placeholder != null ) {
-			textbox.setPlaceholder( placeholder );
+			textbox.setPlaceholder( builderContext.resolveText( placeholder ) );
 		}
 		if ( maxLength != null ) {
 			textbox.setMaxLength( maxLength );

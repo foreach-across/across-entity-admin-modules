@@ -222,22 +222,24 @@ public class ButtonViewElementBuilder extends AbstractLinkSupportingNodeViewElem
 		}
 
 		if ( title != null ) {
-			button.setTitle( title );
+			button.setTitle( builderContext.resolveText( title ) );
 		}
+
+		String resolvedText = builderContext.resolveText( text );
 
 		if ( iconOnly && icon != null ) {
 			if ( text != null ) {
-				if ( title == null ) {
-					button.setTitle( text );
+				if ( this.title == null ) {
+					button.setTitle( resolvedText );
 				}
 				else {
-					button.setAttribute( "aria-label", text );
+					button.setAttribute( "aria-label", resolvedText );
 				}
 			}
 		}
 		else {
 			if ( text != null ) {
-				button.setText( text );
+				button.setText( resolvedText );
 			}
 		}
 

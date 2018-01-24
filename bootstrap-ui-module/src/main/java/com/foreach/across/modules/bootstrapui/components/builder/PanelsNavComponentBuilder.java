@@ -20,7 +20,6 @@ import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
@@ -104,7 +103,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		if ( item.hasTitle() ) {
 			NodeViewElement title = new NodeViewElement( "li" );
 			title.addCssClass( "nav-title" );
-			title.addChild( TextViewElement.text( builderContext.resolveText( item.getTitle() ) ) );
+			title.addChild( resolveTextElement( item.getTitle(), builderContext ) );
 			list.addChild( title );
 		}
 

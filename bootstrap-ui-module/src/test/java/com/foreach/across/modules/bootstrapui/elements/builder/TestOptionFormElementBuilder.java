@@ -43,7 +43,7 @@ public class TestOptionFormElementBuilder
 
 	@Test
 	public void selectOption() {
-		builder.controlName( "boe" ).value( "test" ).selected( true ).label( "my label" );
+		builder.controlName( "boe" ).value( "test" ).selected( true ).label( "#{my label}" );
 
 		build();
 
@@ -58,7 +58,7 @@ public class TestOptionFormElementBuilder
 
 	@Test
 	public void checkbox() {
-		builder.checkbox().controlName( "boe" ).value( "test" ).selected( true ).label( "my label" );
+		builder.checkbox().controlName( "boe" ).value( "test" ).selected( true ).label( "#{my label}" );
 
 		build();
 
@@ -73,7 +73,7 @@ public class TestOptionFormElementBuilder
 
 	@Test
 	public void radio() {
-		builder.radio().controlName( "boe" ).value( "test" ).selected( true ).label( "my label" );
+		builder.radio().controlName( "boe" ).value( "test" ).selected( true ).label( "#{my label}" );
 
 		build();
 
