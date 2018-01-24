@@ -65,6 +65,16 @@ import java.util.Optional;
 public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 {
 	/**
+	 * Name of the root form container that contains the rows.
+	 */
+	public static final String FORM = "entityForm";
+
+	/**
+	 * Name of the container that holds the default buttons.
+	 */
+	public static final String FORM_BUTTONS = "entityForm-buttons";
+
+	/**
 	 * Default name of the left column element in case of a default form with a 2 column grid.
 	 */
 	public static final String LEFT_COLUMN = "entityForm-column-0";
@@ -106,12 +116,9 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 
 	@Override
 	protected void createViewElementBuilders( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap ) {
-		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
-		EntityMessages messages = entityViewContext.getEntityMessages();
-
 		FormViewElementBuilder form = bootstrapUiFactory
 				.form()
-				.name( "entityForm" )
+				.name( FORM )
 				.commandAttribute( "entityViewCommand" )
 				.post()
 				.noValidate();
@@ -120,7 +127,7 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 			addGlobalBindingErrors( entityViewRequest, form );
 		}
 
-		builderMap.put( "entityForm", form );
+		builderMap.put( FORM, form );
 
 		val formColumns = buildFormColumns();
 
@@ -137,10 +144,8 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 			ContainerViewElementBuilderSupport buttonsContainer = buildButtonsContainer( entityViewRequest, entityView, fromUrl );
 
 			form.add( buttonsContainer );
-			builderMap.put( "entityForm-buttons", buttonsContainer );
+			builderMap.put( FORM_BUTTONS, buttonsContainer );
 		}
-
-		builderMap.put( "entityForm", form );
 	}
 
 	@Override

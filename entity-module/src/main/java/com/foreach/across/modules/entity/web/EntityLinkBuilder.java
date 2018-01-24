@@ -20,16 +20,38 @@ package com.foreach.across.modules.entity.web;
  */
 public interface EntityLinkBuilder
 {
+	/**
+	 * @return link to the overview/list page
+	 */
 	String overview();
 
+	/**
+	 * @return link to create-new page
+	 */
 	String create();
 
+	/**
+	 * @param entity being updated
+	 * @return link to update page for entity
+	 */
 	String update( Object entity );
 
+	/**
+	 * @param entity being deleted
+	 * @return link to delete page for entity
+	 */
 	String delete( Object entity );
 
+	/**
+	 * @param entity being viewed
+	 * @return link to view page for entity
+	 */
 	String view( Object entity );
 
+	/**
+	 * @param entity being viewed
+	 * @return base link for associations
+	 */
 	String associations( Object entity );
 
 	/**

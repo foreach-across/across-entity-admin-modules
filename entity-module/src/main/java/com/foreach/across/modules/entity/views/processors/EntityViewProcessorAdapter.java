@@ -155,7 +155,6 @@ public abstract class EntityViewProcessorAdapter implements EntityViewProcessor
 	 * @param command           object
 	 * @param bindingResult     for the command object
 	 */
-
 	protected void doPost( EntityViewRequest entityViewRequest,
 	                       EntityView entityView,
 	                       EntityViewCommand command,
