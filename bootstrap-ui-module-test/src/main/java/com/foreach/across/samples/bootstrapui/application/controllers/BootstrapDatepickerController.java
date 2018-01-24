@@ -53,7 +53,6 @@ public class BootstrapDatepickerController
 	 * Register the section in the administration menu.
 	 */
 	@EventListener(condition = "#navMenu.eventName == 'navMenu'")
-	@SuppressWarnings("unused")
 	protected void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
 		       .item( "/test/form-elements/datepicker", "Datepicker", "/datepicker" ).order( 3 );

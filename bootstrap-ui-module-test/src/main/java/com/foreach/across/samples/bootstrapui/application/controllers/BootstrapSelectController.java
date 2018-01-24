@@ -16,8 +16,6 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.core.annotations.Event;
-import com.foreach.across.core.annotations.EventName;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
@@ -28,6 +26,7 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,9 +49,8 @@ public class BootstrapSelectController
 	/**
 	 * Register the section in the administration menu.
 	 */
-	@Event
-	@SuppressWarnings("unused")
-	protected void registerMenuItems( @EventName("navMenu") BuildMenuEvent navMenu ) {
+	@EventListener(condition = "#navMenu.menuName=='navMenu'")
+	protected void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
 		       //.group( "/test", "Functionality demos" ).and()
 		       .group( "/test/form-elements", "Form elements" ).and()
