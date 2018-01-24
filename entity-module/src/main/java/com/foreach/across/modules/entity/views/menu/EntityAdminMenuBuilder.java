@@ -26,7 +26,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Builder responsible for the {@link EntityAdminMenu}. Uses deprecated types from AdminWebModule,
- * in order to keep code backwards compatible.
+ * in order to keep code backwards compatible. Ensures that any default url also gets an admin web
+ * prefixed variant as it is expected most registered items are admin web relative paths.
  *
  * @author Arne Vandamme
  * @since 3.0.0
