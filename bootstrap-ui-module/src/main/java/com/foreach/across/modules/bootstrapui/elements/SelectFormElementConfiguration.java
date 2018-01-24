@@ -17,7 +17,7 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.support.LocalizedTextResolver;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -285,9 +285,7 @@ public class SelectFormElementConfiguration extends TreeMap<String, Object>
 	 * @param localizedTextResolver to use for localizing the text variables
 	 * @return clone
 	 */
-	public SelectFormElementConfiguration localize( Locale locale, LocalizedTextResolver localizedTextResolver ) {
-		Assert.notNull( locale );
-
+	public SelectFormElementConfiguration localize( @NonNull Locale locale, LocalizedTextResolver localizedTextResolver ) {
 		SelectFormElementConfiguration clone = new SelectFormElementConfiguration();
 		clone.putAll( this );
 

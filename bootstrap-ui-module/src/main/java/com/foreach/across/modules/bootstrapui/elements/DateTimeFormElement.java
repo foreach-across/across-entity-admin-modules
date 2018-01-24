@@ -17,8 +17,8 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -55,8 +55,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 		return getAttribute( ATTRIBUTE_DATA_DATEPICKER, DateTimeFormElementConfiguration.class );
 	}
 
-	public void setConfiguration( DateTimeFormElementConfiguration configuration ) {
-		Assert.notNull( configuration );
+	public void setConfiguration( @NonNull DateTimeFormElementConfiguration configuration ) {
 		setAttribute( ATTRIBUTE_DATA_DATEPICKER, configuration );
 	}
 

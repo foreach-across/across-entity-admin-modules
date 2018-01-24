@@ -18,7 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 /**
  * Represents a Bootstrap button.
@@ -129,8 +129,7 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 		return type;
 	}
 
-	public void setType( Type type ) {
-		Assert.notNull( type );
+	public void setType( @NonNull Type type ) {
 		this.type = type;
 	}
 

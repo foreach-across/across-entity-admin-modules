@@ -16,6 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.NonNull;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.util.Assert;
 
@@ -121,8 +122,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 *
 	 * @param format to use
 	 */
-	public void setFormat( Format format ) {
-		Assert.notNull( format );
+	public void setFormat( @NonNull Format format ) {
 		this.format = format;
 
 		switch ( format ) {

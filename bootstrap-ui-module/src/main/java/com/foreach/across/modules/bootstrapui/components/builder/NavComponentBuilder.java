@@ -26,9 +26,9 @@ import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import java.util.Map;
 import java.util.Objects;
@@ -174,8 +174,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	 * @param predicate to match
 	 * @return current builder
 	 */
-	public SELF filter( Predicate<Menu> predicate ) {
-		Assert.notNull( predicate );
+	public SELF filter( @NonNull Predicate<Menu> predicate ) {
 		this.predicate = predicate;
 		return (SELF) this;
 	}
