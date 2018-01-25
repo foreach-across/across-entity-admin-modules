@@ -137,6 +137,7 @@ public class TestEntityAssociationBuilder
 		when( association.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
 		DefaultEntityViewFactory listViewFactory = mock( DefaultEntityViewFactory.class );
 		when( beanFactory.createBean( DefaultEntityViewFactory.class ) ).thenReturn( listViewFactory );
+
 		builder.name( "users" )
 		       .hidden( false )
 		       .associationType( EMBEDDED )

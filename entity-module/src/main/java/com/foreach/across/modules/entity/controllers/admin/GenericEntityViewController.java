@@ -50,6 +50,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Optional;
 
 import static com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController.PATH_ENTITY_TYPE;
@@ -126,6 +127,7 @@ public class GenericEntityViewController
 		}
 
 		entityViewRequest.setViewFactory( viewFactory );
+		entityViewRequest.setConfigurationAttributes( new HashMap<>( viewFactory.attributeMap() ) );
 
 		viewFactory.prepareEntityViewContext( entityViewContext );
 

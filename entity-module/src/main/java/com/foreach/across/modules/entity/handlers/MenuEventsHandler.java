@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
@@ -41,6 +42,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Collections;
+import java.util.function.Consumer;
 
 public class MenuEventsHandler
 {
@@ -156,6 +158,15 @@ public class MenuEventsHandler
 			builder.item( linkBuilder.create(),
 			              messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
+		}
+
+		// Register the view menu items
+		for ( String viewName : entityConfiguration.getViewNames() ) {
+			Consumer<EntityAdminMenuEvent> viewMenuBuilder = entityConfiguration.getViewFactory( viewName )
+			                                                                    .getAttribute( EntityViewFactoryAttributes.ADMIN_MENU, Consumer.class );
+			if ( viewMenuBuilder != null ) {
+				viewMenuBuilder.accept( menu );
+			}
 		}
 	}
 

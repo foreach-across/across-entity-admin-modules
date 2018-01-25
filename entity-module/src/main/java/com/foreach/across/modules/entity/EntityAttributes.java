@@ -24,7 +24,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
- * Contains common Entity attribute keys.
+ * Contains common {@link com.foreach.across.modules.entity.registry.EntityConfiguration}, {@link com.foreach.across.modules.entity.registry.EntityAssociation}
+ * and {@link EntityPropertyDescriptor} attribute keys.
+ *
+ * @see com.foreach.across.modules.entity.views.EntityViewFactoryAttributes
  */
 public interface EntityAttributes
 {

@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
@@ -72,6 +73,43 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	@Override
 	public EntityListViewFactoryBuilder factoryType( Class<? extends EntityViewFactory> factoryType ) {
 		return (EntityListViewFactoryBuilder) super.factoryType( factoryType );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder attribute( String name, Object value ) {
+		return (EntityListViewFactoryBuilder) super.attribute( name, value );
+	}
+
+	@Override
+	public <S> EntityListViewFactoryBuilder attribute( Class<S> type, S value ) {
+		return (EntityListViewFactoryBuilder) super.attribute( type, value );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder attribute( AttributeRegistrar<EntityViewFactory> attributeRegistrar ) {
+		return (EntityListViewFactoryBuilder) super.attribute( attributeRegistrar );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder viewProcessor( EntityViewProcessor processor, int order ) {
+		return (EntityListViewFactoryBuilder) super.viewProcessor( processor, order );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder viewProcessor( String processorName, EntityViewProcessor processor, int order ) {
+		return (EntityListViewFactoryBuilder) super.viewProcessor( processorName, processor, order );
+	}
+
+	@Override
+	public <U extends EntityViewProcessor> EntityListViewFactoryBuilder postProcess( Class<U> viewProcessorType, Consumer<U> postProcessor ) {
+		return (EntityListViewFactoryBuilder) super.postProcess( viewProcessorType, postProcessor );
+	}
+
+	@Override
+	public <U extends EntityViewProcessor> EntityListViewFactoryBuilder postProcess( String viewProcessorName,
+	                                                                                 Class<U> viewProcessorType,
+	                                                                                 Consumer<U> postProcessor ) {
+		return (EntityListViewFactoryBuilder) super.postProcess( viewProcessorName, viewProcessorType, postProcessor );
 	}
 
 	@Override

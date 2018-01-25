@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.registry.properties.registrars.LabelPropertiesRegistrar;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -180,6 +181,11 @@ public class EntityPropertyRegistryBuilder
 		@Override
 		public <S> PropertyDescriptorBuilder attribute( Class<S> type, S value ) {
 			return (PropertyDescriptorBuilder) super.attribute( type, value );
+		}
+
+		@Override
+		public PropertyDescriptorBuilder attribute( AttributeRegistrar<EntityPropertyDescriptor> attributeRegistrar ) {
+			return (PropertyDescriptorBuilder) super.attribute( attributeRegistrar );
 		}
 
 		@Override

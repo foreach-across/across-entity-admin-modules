@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.support.EntityViewMessageSource;
@@ -53,7 +54,7 @@ import java.util.Optional;
  * @see TransactionalEntityViewProcessorRegistry
  * @since 2.0.0
  */
-public class DefaultEntityViewFactory implements DispatchingEntityViewFactory
+public class DefaultEntityViewFactory extends AttributeSupport implements DispatchingEntityViewFactory
 {
 	public static final String ATTRIBUTE_CONTAINER_BUILDER = "entityViewContainerBuilder";
 	public static final String ATTRIBUTE_CONTAINER_ELEMENT = "entityViewContainer";

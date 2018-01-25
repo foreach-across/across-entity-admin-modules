@@ -16,13 +16,12 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.core.support.WritableAttributes;
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.DispatchingEntityViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry;
@@ -59,7 +58,7 @@ import java.util.function.Consumer;
 @Slf4j
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class EntityViewFactoryBuilder
+public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<EntityViewFactory>
 {
 	private final AutowireCapableBeanFactory beanFactory;
 	private final Collection<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayDeque<>();
@@ -103,6 +102,9 @@ public class EntityViewFactoryBuilder
 	/**
 	 * Configure the specific {@link EntityViewFactory} that should be used for this view.
 	 * This will take precedence over a registered {@link #factoryType(Class)}.
+	 * <p/>
+	 * NOTE that the factory will most likely be modified by this builder, so only use
+	 * prototype instances.
 	 *
 	 * @param factory to use
 	 * @return current builder
@@ -110,6 +112,21 @@ public class EntityViewFactoryBuilder
 	public EntityViewFactoryBuilder factory( @NonNull EntityViewFactory factory ) {
 		this.factory = factory;
 		return this;
+	}
+
+	@Override
+	public EntityViewFactoryBuilder attribute( String name, Object value ) {
+		return (EntityViewFactoryBuilder) super.attribute( name, value );
+	}
+
+	@Override
+	public <S> EntityViewFactoryBuilder attribute( Class<S> type, S value ) {
+		return (EntityViewFactoryBuilder) super.attribute( type, value );
+	}
+
+	@Override
+	public EntityViewFactoryBuilder attribute( AttributeRegistrar<EntityViewFactory> attributeRegistrar ) {
+		return (EntityViewFactoryBuilder) super.attribute( attributeRegistrar );
 	}
 
 	/**
@@ -340,6 +357,14 @@ public class EntityViewFactoryBuilder
 	 */
 	public EntityViewFactoryBuilder requiredAllowableAction( AllowableAction action ) {
 		this.requiredAllowableAction = action;
+		attribute( AllowableAction.class, action );
+		if ( action != null ) {
+			attribute( ( viewFactory, attributes ) -> {
+				if ( !attributes.hasAttribute( EntityViewFactoryAttributes.ACCESS_VALIDATOR ) ) {
+					attributes.setAttribute( EntityViewFactoryAttributes.ACCESS_VALIDATOR, EntityViewFactoryAttributes.defaultAccessValidator() );
+				}
+			} );
+		}
 		return this;
 	}
 
@@ -391,7 +416,7 @@ public class EntityViewFactoryBuilder
 
 	/**
 	 * Add a post processor for this entire view factory.  If the view factory is not of type {@link DispatchingEntityViewFactory},
-	 * the second parameter ({@link EntityViewProcessorRegistry} will be {@code null}.
+	 * the second parameter ({@link EntityViewProcessorRegistry}) will be {@code null}.
 	 * <p/>
 	 * Use this method if you want to make global modifications like changing the {@link EntityViewProcessor} ordering.
 	 * <p/>
@@ -430,6 +455,10 @@ public class EntityViewFactoryBuilder
 	 * @param viewFactory to apply the builder settings to
 	 */
 	void apply( EntityViewFactory viewFactory ) {
+		if ( viewFactory instanceof WritableAttributes ) {
+			applyAttributes( viewFactory, (WritableAttributes) viewFactory );
+		}
+
 		if ( viewFactory instanceof DispatchingEntityViewFactory ) {
 			buildViewProcessors( ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry() );
 		}

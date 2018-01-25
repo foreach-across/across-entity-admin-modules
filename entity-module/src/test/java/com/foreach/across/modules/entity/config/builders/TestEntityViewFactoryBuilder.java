@@ -18,10 +18,7 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.DispatchingEntityViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
@@ -78,6 +75,25 @@ public class TestEntityViewFactoryBuilder
 		when( beanFactory.createBean( EntityViewFactory.class ) ).thenReturn( factory );
 
 		assertSame( builder.build(), factory );
+	}
+
+	@Test
+	public void attributesAreRegistered() {
+		builder.attribute( "key", "value" )
+		       .attribute( String.class, "my string" )
+		       .attribute( ( ( entityViewFactory, attributes ) -> {
+			       attributes.setAttribute( "key", "updatedValue" );
+			       attributes.setAttribute( "factory", entityViewFactory );
+		       } ) );
+
+		DispatchingEntityViewFactory factory = new DefaultEntityViewFactory();
+		when( beanFactory.createBean( DispatchingEntityViewFactory.class ) ).thenReturn( factory );
+
+		EntityViewFactory built = builder.build();
+		assertSame( factory, built );
+		assertEquals( "updatedValue", built.getAttribute( "key" ) );
+		assertEquals( "my string", built.getAttribute( String.class ) );
+		assertSame( factory, built.getAttribute( "factory" ) );
 	}
 
 	@Test

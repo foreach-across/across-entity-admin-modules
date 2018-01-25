@@ -19,11 +19,11 @@ package com.foreach.across.samples.entity.application.config;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
+import com.foreach.across.modules.entity.EntityAttributeRegistrars;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
-import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.processors.ExtensionViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.SaveEntityViewProcessor;
 import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
@@ -37,7 +37,6 @@ import com.foreach.across.samples.entity.application.business.Partner;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 
@@ -48,40 +47,26 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.textbox;
 
 /**
+ * Configures a sample extension form on 2 entities, and ensures it shows up as a tab in the entity menu.
+ *
  * @author Arne Vandamme
  * @since 3.0.0
  */
 @Configuration
 public class ExtensionConfiguration implements EntityConfigurer
 {
-	@EventListener
-	public void registerPartnerMenuItem( EntityAdminMenuEvent<Partner> partnerMenu ) {
-		// get link builder
-		if ( partnerMenu.isForUpdate() ) {
-			partnerMenu.builder()
-			           .item( "/extension", "my extension" )
-			           .url( partnerMenu.getLinkBuilder().view( partnerMenu.getEntity() ) + "?view=extension" );
-		}
-	}
-
-	@EventListener
-	public void registerGroupMenuItem( EntityAdminMenuEvent<Group> groupMenu ) {
-		// get link builder
-		if ( groupMenu.isForUpdate() ) {
-			groupMenu.builder()
-			         .item( "/extension", "my extension" )
-			         .url( groupMenu.getLinkBuilder().view( groupMenu.getEntity() ) + "?view=extension" );
-		}
-	}
-
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.matching( cfg -> Partner.class.equals( cfg.getEntityType() ) || Group.class.equals( cfg.getEntityType() ) )
 		        .formView(
-				        "extension",
-				        fvb -> fvb.viewProcessor( new PartnerExtensionViewProcessor() )
-				                  .showProperties()
-				                  .removeViewProcessor( SaveEntityViewProcessor.class.getName() )
+				        "extension", /*EntityViewConfigurations.extensionForm( new PartnerExtensionViewProcessor() )
+				                                             .formLayout( Grid.create( Grid.Device.MD.width( 12 ) ) )
+						                            .adminMenu("/extension", item -> item.order( 1 ) )*/
+				        fvb -> fvb
+						        .attribute( EntityAttributeRegistrars.adminMenu( "/extension" ) )
+						        .viewProcessor( new PartnerExtensionViewProcessor() )
+						        .showProperties()
+						        .removeViewProcessor( SaveEntityViewProcessor.class.getName() )
 		        );
 	}
 

@@ -31,6 +31,9 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Represents a specifically requested {@link com.foreach.across.modules.entity.views.EntityViewFactory} with its
  * full set of information:
@@ -86,6 +89,13 @@ public class EntityViewRequest
 	 * The {@link EntityViewFactory} being used.
 	 */
 	private EntityViewFactory viewFactory;
+
+	/**
+	 * The map of configuration attributes that were used to initialized this {@link EntityViewFactory}.
+	 * Should never be {@code null} and can optionally be modified by early view processors to modify
+	 * behaviour of later processors.
+	 */
+	private Map<String, Object> configurationAttributes = new HashMap<>();
 
 	/**
 	 * Original web request/response context.

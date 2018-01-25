@@ -16,10 +16,13 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.core.support.ReadableAttributes;
 import com.foreach.across.modules.entity.registry.ConfigurableEntityViewRegistry;
+import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
+import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import lombok.NonNull;
 
 import java.util.ArrayDeque;
@@ -34,7 +37,7 @@ import java.util.function.Consumer;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public abstract class AbstractWritableAttributesAndViewsBuilder extends AbstractWritableAttributesBuilder
+public abstract class AbstractWritableAttributesAndViewsBuilder<T extends ReadableAttributes> extends AbstractWritableAttributesBuilder<T>
 {
 	private final Map<String, Collection<Consumer<EntityListViewFactoryBuilder>>> listViewConsumers
 			= new LinkedHashMap<>();
@@ -209,6 +212,8 @@ public abstract class AbstractWritableAttributesAndViewsBuilder extends Abstract
 				builder.apply( viewFactory );
 			}
 			else {
+				builder.attribute( EntityViewFactoryAttributes.VIEW_NAME, viewName );
+				builder.attribute( EntityViewRegistry.class, viewRegistry );
 				builder.factoryType( DefaultEntityViewFactory.class );
 				initializeViewFactoryBuilder( viewName, builderTemplateName, builder );
 				builder.messagePrefix( "views[" + viewName + "]" );

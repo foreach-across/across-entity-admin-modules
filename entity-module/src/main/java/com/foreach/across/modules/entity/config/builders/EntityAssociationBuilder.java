@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -37,7 +38,7 @@ import java.util.function.Consumer;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class EntityAssociationBuilder extends AbstractWritableAttributesAndViewsBuilder
+public class EntityAssociationBuilder extends AbstractWritableAttributesAndViewsBuilder<EntityAssociation>
 {
 	private String name;
 	private boolean hiddenSpecified;
@@ -287,6 +288,11 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 		return (EntityAssociationBuilder) super.attribute( type, value );
 	}
 
+	@Override
+	public EntityAssociationBuilder attribute( AttributeRegistrar<EntityAssociation> attributeRegistrar ) {
+		return (EntityAssociationBuilder) super.attribute( attributeRegistrar );
+	}
+
 	/**
 	 * Apply the association builder to the configuration specified.  This will add or modify the association
 	 * represented by this builder.
@@ -353,7 +359,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 				association.setParentDeleteMode( parentDeleteMode );
 			}
 
-			applyAttributes( association );
+			applyAttributes( association, association );
 			applyViews( association );
 		}
 		finally {

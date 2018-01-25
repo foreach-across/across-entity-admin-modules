@@ -59,7 +59,7 @@ public class EntityAdminMenu<T> extends com.foreach.across.modules.adminweb.menu
 	 * @return menu
 	 */
 	@SuppressWarnings("all")
-	public static EntityAdminMenu create( EntityViewContext viewContext ) {
+	public static EntityAdminMenu<?> create( EntityViewContext viewContext ) {
 		return new EntityAdminMenu(
 				viewContext.getEntityConfiguration().getEntityType(),
 				viewContext.getEntityConfiguration().getName(),

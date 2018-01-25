@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
@@ -47,7 +48,7 @@ import java.util.function.Consumer;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @SuppressWarnings("unchecked")
-public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAndViewsBuilder
+public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAndViewsBuilder<EntityConfiguration<T>>
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityConfigurationBuilder.class );
 
@@ -293,6 +294,11 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	@Override
+	public EntityConfigurationBuilder<T> attribute( AttributeRegistrar<EntityConfiguration<T>> attributeRegistrar ) {
+		return (EntityConfigurationBuilder<T>) super.attribute( attributeRegistrar );
+	}
+
+	@Override
 	public EntityConfigurationBuilder<T> listView( Consumer<EntityListViewFactoryBuilder> consumer ) {
 		return (EntityConfigurationBuilder<T>) super.listView( consumer );
 	}
@@ -416,7 +422,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 				configuration.setAllowableActionsBuilder( allowableActionsBuilder );
 			}
 
-			applyAttributes( configuration );
+			applyAttributes( configuration, configuration );
 			applyViews( configuration );
 			applyAssociations( configuration );
 
@@ -430,8 +436,8 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	@Override
-	protected void applyAttributes( WritableAttributes attributes ) {
-		super.applyAttributes( attributes );
+	protected void applyAttributes( EntityConfiguration<T> owner, WritableAttributes attributes ) {
+		super.applyAttributes( owner, attributes );
 
 		ViewElementLookupRegistry existingLookupRegistry = attributes.getAttribute( ViewElementLookupRegistry.class );
 

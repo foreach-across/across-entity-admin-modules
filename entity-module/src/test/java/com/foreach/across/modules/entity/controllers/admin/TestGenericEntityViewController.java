@@ -48,8 +48,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.foreach.across.modules.entity.web.EntityViewModel.*;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -126,6 +129,7 @@ public class TestGenericEntityViewController
 		when( entityConfiguration.getViewFactory( anyString() ) ).thenReturn( viewFactory );
 
 		when( viewFactory.createView( viewRequest ) ).thenReturn( entityView );
+		when( viewFactory.attributeMap() ).thenReturn( new HashMap<>() );
 		when( entityView.getTemplate() ).thenReturn( "view-template" );
 	}
 
@@ -177,6 +181,27 @@ public class TestGenericEntityViewController
 		       .andExpect( status().isOk() );
 		verify( viewRequest ).setViewName( "otherView" );
 		verify( viewRequest ).setPartialFragment( "header" );
+	}
+
+	@Test
+	public void originalConfigurationAttributesCannotBeModified() throws Exception {
+		viewRequest = new EntityViewRequest();
+		controller.setEntityViewRequest( viewRequest );
+		when( viewFactory.createView( viewRequest ) ).thenReturn( entityView );
+
+		Map<String, Object> original = viewFactory.attributeMap();
+		original.put( "key", "value" );
+
+		mockMvc.perform( get( "/entities/type" ) ).andExpect( status().isOk() );
+
+		Map<String, Object> copied = viewRequest.getConfigurationAttributes();
+		assertNotNull( copied );
+		assertEquals( original, copied );
+
+		copied.remove( "key" );
+		assertNotEquals( original, copied );
+		assertTrue( copied.isEmpty() );
+		assertEquals( "value", original.get( "key" ) );
 	}
 
 	@Test
@@ -317,6 +342,7 @@ public class TestGenericEntityViewController
 
 	private void verifyViewFactoryCalls() {
 		InOrder inOrder = inOrder( viewFactory );
+		inOrder.verify( viewFactory ).attributeMap();
 		inOrder.verify( viewFactory ).prepareEntityViewContext( viewContext );
 		inOrder.verify( viewFactory ).authorizeRequest( viewRequest );
 		inOrder.verify( viewFactory ).initializeCommandObject( same( viewRequest ), same( command ), any() );

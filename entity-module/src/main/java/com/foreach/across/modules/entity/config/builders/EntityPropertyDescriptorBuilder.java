@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
@@ -39,7 +40,7 @@ import org.springframework.core.convert.TypeDescriptor;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesBuilder
+public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesBuilder<EntityPropertyDescriptor>
 {
 	protected final Logger LOG = LoggerFactory.getLogger( getClass() );
 
@@ -104,6 +105,11 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	@Override
 	public <S> EntityPropertyDescriptorBuilder attribute( Class<S> type, S value ) {
 		return (EntityPropertyDescriptorBuilder) super.attribute( type, value );
+	}
+
+	@Override
+	public EntityPropertyDescriptorBuilder attribute( AttributeRegistrar<EntityPropertyDescriptor> attributeRegistrar ) {
+		return (EntityPropertyDescriptorBuilder) super.attribute( attributeRegistrar );
 	}
 
 	/**
@@ -271,7 +277,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 			descriptor.setPropertyType( propertyType );
 		}
 
-		applyAttributes( descriptor );
+		applyAttributes( descriptor, descriptor );
 
 		ViewElementLookupRegistry existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 

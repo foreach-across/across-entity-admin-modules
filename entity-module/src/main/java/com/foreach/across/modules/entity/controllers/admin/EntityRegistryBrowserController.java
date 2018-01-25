@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 class EntityRegistryBrowserController
 {
-	private static final String DOC_BASE_URL = "http://across.foreach.be/docs/across-standard-modules/EntityModule";
+	private static final String DOC_BASE_URL = "https://across-docs.foreach.be/across-standard-modules/EntityModule";
 	private static final String DOC_VIEW_PROCESSORS = "%s/%s/reference/#appendix-view-processors";
 	private static final String DOC_ATTRIBUTES_CONFIGURATION = "%s/%s/reference/#appendix-entity-configuration-attributes";
 	private static final String DOC_ATTRIBUTES_PROPERTY = "%s/%s/reference/#appendix-entity-property-descriptor-attributes";
