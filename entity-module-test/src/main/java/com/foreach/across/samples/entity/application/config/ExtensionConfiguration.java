@@ -73,11 +73,6 @@ public class ExtensionConfiguration implements EntityConfigurer
 	static class PartnerExtensionViewProcessor extends ExtensionViewProcessorAdapter<PartnerExtension>
 	{
 		@Override
-		protected String extensionName() {
-			return "details";
-		}
-
-		@Override
 		protected PartnerExtension createExtension( EntityViewRequest entityViewRequest,
 		                                            EntityViewCommand command,
 		                                            WebDataBinder dataBinder ) {

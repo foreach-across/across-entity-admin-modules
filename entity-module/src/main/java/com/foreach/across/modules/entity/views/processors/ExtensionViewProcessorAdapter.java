@@ -25,6 +25,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import org.springframework.http.HttpMethod;
+import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
@@ -47,9 +48,14 @@ public abstract class ExtensionViewProcessorAdapter<T> extends EntityViewProcess
 	}
 
 	/**
+	 * Optionally provide a unique key of the extension. If not overridden, the short class name will be used.
+	 * It's advised for shared processors to define their own unique name.
+	 *
 	 * @return unique key of the extension
 	 */
-	protected abstract String extensionName();
+	protected String extensionName() {
+		return ClassUtils.getShortName( getClass() );
+	}
 
 	@Override
 	public final void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
