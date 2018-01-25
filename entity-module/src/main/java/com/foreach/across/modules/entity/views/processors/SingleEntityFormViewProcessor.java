@@ -32,6 +32,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -62,6 +63,7 @@ import java.util.Optional;
 @Component
 @Exposed
 @Scope("prototype")
+@Accessors(chain = true)
 public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 {
 	/**

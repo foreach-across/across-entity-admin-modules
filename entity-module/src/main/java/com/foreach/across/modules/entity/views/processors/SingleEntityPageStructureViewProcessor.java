@@ -33,6 +33,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -57,6 +58,7 @@ import java.util.Optional;
 @Component
 @Exposed
 @Scope("prototype")
+@Accessors(chain = true)
 public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorAdapter
 {
 	private BootstrapUiComponentFactory bootstrapUiComponentFactory;
