@@ -60,7 +60,7 @@ final class DeleteViewInitializer extends AbstractViewInitializer<EntityViewFact
 			       .viewProcessor( beanFactory.getBean( GlobalPageFeedbackViewProcessor.class ) );
 
 			if ( entityConfiguration.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME ) ) {
-				builder.transactionManager( entityConfiguration.getAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, String.class ) );
+				builder.transactionManager( entityConfiguration.<String, String>getAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, String.class ) );
 			}
 
 			SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );

@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.ConversionService;
 
 import java.util.Arrays;
@@ -147,9 +147,6 @@ public class TestEQTypeConverter
 		EQString eqString = new EQString( "1234" );
 		when( conversionService.canConvert( valueOf( EQString.class ), valueOf( Integer.class ) ) ).thenReturn( true );
 		when( conversionService.convert( eq( eqString ), eq( valueOf( EQString.class ) ), eq( valueOf( Integer.class ) ) ) ).thenReturn( 1234 );
-
-		when( conversionService.canConvert( valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( true );
-		when( conversionService.convert( "1234", valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( 1234 );
 
 		assertEquals( 1234, typeConverter.convert( valueOf( Integer.class ), eqString ) );
 		verify( conversionService, times( 0 ) ).convert( "1234", valueOf( String.class ), valueOf( Integer.class ) );

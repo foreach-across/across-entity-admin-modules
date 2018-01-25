@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -39,11 +38,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
-import org.springframework.web.context.request.NativeWebRequest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -59,9 +59,6 @@ public class TestSortableTableRenderingViewProcessor
 
 	@Mock
 	private EntityViewContext viewContext;
-
-	@Mock
-	private EntityPropertyRegistry propertyRegistry;
 
 	@Mock
 	private EntityView entityView;
@@ -83,16 +80,9 @@ public class TestSortableTableRenderingViewProcessor
 
 	@Before
 	public void setUp() throws Exception {
-		Map<String, Object> model = new HashMap<>();
-
 		ViewElementBuilderContextHolder.setViewElementBuilderContext( mock( ViewElementBuilderContext.class ) );
 
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
-		when( viewRequest.getWebRequest() ).thenReturn( mock( NativeWebRequest.class ) );
-		when( viewContext.getPropertyRegistry() ).thenReturn( propertyRegistry );
-
-		when( entityView.asMap() ).thenReturn( model );
-
 		when( builderHelper.createSortableTableBuilder( viewContext ) ).thenReturn( sortableTable );
 		when( entityView.getAttribute( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME, Iterable.class ) ).thenReturn( page );
 	}

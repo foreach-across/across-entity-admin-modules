@@ -333,7 +333,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		if ( entityQueryFilter != null ) {
 			if ( entityQueryFilter ) {
 				if ( !processorRegistry.contains( EntityQueryFilterProcessor.class.getName() ) ) {
-					processorRegistry.addProcessor( createBean( EntityQueryFilterProcessor.class ) );
+					processorRegistry.addProcessor( EntityQueryFilterProcessor.class.getName(), createBean( EntityQueryFilterProcessor.class ) );
 				}
 				processorRegistry.getProcessor( EntityQueryFilterProcessor.class.getName(), EntityQueryFilterProcessor.class )
 				                 .ifPresent( p -> {

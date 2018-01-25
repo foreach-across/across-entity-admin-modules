@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Optional;
@@ -275,9 +275,12 @@ public class TestEntityViewFactoryBuilder
 			assertEquals( 10, r.getOrder() );
 		} );
 
-		actual = processors.getProcessorRegistration( SimpleEntityViewProcessorAdapter.class.getName() );
+		actual = processors.getProcessorRegistration( two.getClass().getName() );
 		assertTrue( actual.isPresent() );
-		actual.ifPresent( r -> assertEquals( 0, r.getOrder() ) );
+		actual.ifPresent( r -> {
+			assertEquals( 0, r.getOrder() );
+			assertSame( two, r.getProcessor() );
+		} );
 
 		before();
 

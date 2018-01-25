@@ -15,26 +15,18 @@
  */
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.FormGroupElementBuilderFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.mockito.Mock;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -43,13 +35,18 @@ import static org.mockito.Mockito.when;
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-@ContextConfiguration(classes = TestFormGroupElementBuilderFactory.Config.class, loader = MockedLoader.class)
 public class TestFormGroupElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<FormGroupElement>
 {
-	@Autowired
+	@Mock
 	private EntityViewElementBuilderService viewElementBuilderService;
+
+	@Override
+	protected EntityViewElementBuilderFactory createBuilderFactory() {
+		FormGroupElementBuilderFactory builderFactory = new FormGroupElementBuilderFactory();
+		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
+		builderFactory.setEntityViewElementBuilderService( viewElementBuilderService );
+		return builderFactory;
+	}
 
 	@Override
 	protected Class getTestClass() {
@@ -105,24 +102,9 @@ public class TestFormGroupElementBuilderFactory extends ViewElementBuilderFactor
 		return (V) control;
 	}
 
-	@SuppressWarnings( "unused" )
+	@SuppressWarnings("unused")
 	private static class Instance
 	{
 		private String text;
-	}
-
-	@Configuration
-	protected static class Config
-	{
-		@Bean
-		@Primary
-		public FormGroupElementBuilderFactory formGroupElementBuilderFactory() {
-			return new FormGroupElementBuilderFactory();
-		}
-
-		@Bean
-		public BootstrapUiFactory bootstrapUiFactory() {
-			return new BootstrapUiFactoryImpl();
-		}
 	}
 }

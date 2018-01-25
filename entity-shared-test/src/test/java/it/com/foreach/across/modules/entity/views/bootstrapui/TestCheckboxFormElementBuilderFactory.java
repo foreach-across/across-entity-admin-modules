@@ -16,22 +16,15 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.CheckboxFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -41,11 +34,13 @@ import static org.mockito.Mockito.when;
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-@ContextConfiguration(classes = TestCheckboxFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
 public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<CheckboxFormElement>
 {
+	@Override
+	protected EntityViewElementBuilderFactory createBuilderFactory() {
+		return new CheckboxFormElementBuilderFactory( new BootstrapUiFactoryImpl() );
+	}
+
 	@Override
 	protected Class getTestClass() {
 		return Booleans.class;
@@ -161,19 +156,5 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 		public Boolean object;
 
 		public AtomicBoolean atomic;
-	}
-
-	@Configuration
-	protected static class Config
-	{
-		@Bean
-		public CheckboxFormElementBuilderFactory checkboxFormElementBuilderFactory() {
-			return new CheckboxFormElementBuilderFactory( bootstrapUiFactory() );
-		}
-
-		@Bean
-		public BootstrapUiFactory bootstrapUiFactory() {
-			return new BootstrapUiFactoryImpl();
-		}
 	}
 }

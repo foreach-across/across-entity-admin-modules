@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElement
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.options.FixedOptionIterableBuilder;
@@ -29,16 +30,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterabl
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
@@ -54,11 +46,15 @@ import static org.mockito.Mockito.when;
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-@ContextConfiguration(classes = TestOptionsFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
 public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<AbstractNodeViewElement>
 {
+	@Override
+	protected EntityViewElementBuilderFactory createBuilderFactory() {
+		OptionsFormElementBuilderFactory builderFactory = new OptionsFormElementBuilderFactory();
+		builderFactory.setEntityRegistry( entityRegistry );
+		return builderFactory;
+	}
+
 	@Override
 	protected Class getTestClass() {
 		return Validators.class;
@@ -326,20 +322,5 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		public TestEnum enumManyToOneNonOptional;
 
 		public Set<TestEnum> enumMultiple;
-	}
-
-	@Configuration
-	protected static class Config
-	{
-		@Bean
-		@Primary
-		public OptionsFormElementBuilderFactory optionsFormElementBuilderFactory() {
-			return new OptionsFormElementBuilderFactory();
-		}
-
-		@Bean
-		public ConversionService conversionService() {
-			return mock( ConversionService.class );
-		}
 	}
 }

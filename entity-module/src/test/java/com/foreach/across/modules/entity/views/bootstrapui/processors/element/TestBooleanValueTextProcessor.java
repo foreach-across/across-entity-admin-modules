@@ -19,7 +19,6 @@ package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
-import com.foreach.across.modules.web.support.LocalizedTextResolver;
 import com.foreach.across.modules.web.support.MessageCodeSupportingLocalizedTextResolver;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
@@ -28,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -61,7 +60,6 @@ public class TestBooleanValueTextProcessor
 	public void setUp() throws Exception {
 		processor = new BooleanValueTextProcessor( descriptor );
 
-		when( builderContext.getAttribute( LocalizedTextResolver.class ) ).thenReturn( localizedTextResolver );
 		when( builderContext.resolveText( any( String.class ), any( String.class ) ) ).then( (Answer<String>) invocation -> {
 			Object[] args = invocation.getArguments();
 			return localizedTextResolver.resolveText( (String) args[0], (String) args[1] );

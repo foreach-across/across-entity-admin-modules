@@ -19,28 +19,25 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
-import com.foreach.common.test.MockedLoader;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -54,13 +51,22 @@ import static org.mockito.Mockito.when;
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-@ContextConfiguration(classes = TestTextboxFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
 public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<TextboxFormElement>
 {
-	@Autowired
+	@Mock
 	private ConversionService conversionService;
+
+	@InjectMocks
+	private EntityViewElementBuilderFactoryHelper builderFactoryHelper;
+
+	@Override
+	protected EntityViewElementBuilderFactory createBuilderFactory() {
+		TextboxFormElementBuilderFactory builderFactory = new TextboxFormElementBuilderFactory();
+		builderFactory.setMaximumSingleLineLength( 200 );
+		builderFactory.setBuilderFactoryHelpers( builderFactoryHelper );
+		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
+		return builderFactory;
+	}
 
 	@Override
 	protected Class getTestClass() {

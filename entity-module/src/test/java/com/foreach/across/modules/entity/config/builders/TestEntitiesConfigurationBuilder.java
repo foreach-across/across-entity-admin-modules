@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.EntityConfigurationProvider;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
 import org.junit.Before;
@@ -23,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Arrays;
@@ -45,9 +44,6 @@ public class TestEntitiesConfigurationBuilder
 
 	@Mock
 	private AutowireCapableBeanFactory beanFactory;
-
-	@Mock
-	private EntityConfigurationProvider configurationProvider;
 
 	@Before
 	public void reset() {
@@ -79,7 +75,6 @@ public class TestEntitiesConfigurationBuilder
 
 		MutableEntityConfiguration string = mock( MutableEntityConfiguration.class );
 		when( string.getName() ).thenReturn( "string" );
-		when( string.getEntityType() ).thenReturn( String.class );
 
 		when( entityRegistry.getEntities() ).thenReturn( Collections.singletonList( string ) );
 		when( entityRegistry.getEntityConfiguration( "string" ) ).thenReturn( string );
@@ -235,6 +230,7 @@ public class TestEntitiesConfigurationBuilder
 		when( createBuilder.build( false ) ).thenReturn( created );
 
 		MutableEntityConfiguration existing = mock( MutableEntityConfiguration.class );
+		when( existing.getName() ).thenReturn( "someEntity" );
 		when( existing.getEntityType() ).thenReturn( String.class );
 		when( entityRegistry.getEntities() ).thenReturn( Collections.singletonList( existing ) );
 		when( entityRegistry.getEntityConfiguration( anyString() ) ).thenReturn( existing );

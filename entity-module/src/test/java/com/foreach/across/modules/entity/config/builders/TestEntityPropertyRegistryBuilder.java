@@ -85,8 +85,7 @@ public class TestEntityPropertyRegistryBuilder
 		AtomicBoolean verified = new AtomicBoolean( false );
 
 		doAnswer( invocation -> {
-			MutableEntityPropertyDescriptor descriptor
-					= invocation.getArgumentAt( 0, MutableEntityPropertyDescriptor.class );
+			MutableEntityPropertyDescriptor descriptor = invocation.getArgument( 0 );
 
 			assertEquals( "myprop", descriptor.getName() );
 			assertEquals( "My Property", descriptor.getDisplayName() );

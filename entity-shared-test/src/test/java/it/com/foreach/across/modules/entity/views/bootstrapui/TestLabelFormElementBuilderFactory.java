@@ -16,22 +16,14 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.LabelFormElementBuilderFactory;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,14 +31,18 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-@ContextConfiguration(classes = TestLabelFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
 public class TestLabelFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<ViewElement>
 {
 	@Override
 	protected Class getTestClass() {
 		return Validators.class;
+	}
+
+	@Override
+	protected EntityViewElementBuilderFactory createBuilderFactory() {
+		LabelFormElementBuilderFactory builderFactory = new LabelFormElementBuilderFactory();
+		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
+		return builderFactory;
 	}
 
 	@Test
@@ -73,26 +69,11 @@ public class TestLabelFormElementBuilderFactory extends ViewElementBuilderFactor
 		assertEquals( "resolved: novalidator", text.getText() );
 	}
 
-	@SuppressWarnings( "unused" )
+	@SuppressWarnings("unused")
 	private static class Validators
 	{
 		public String noValidator;
 
 		public int noValidatorNumber;
-	}
-
-	@Configuration
-	protected static class Config
-	{
-		@Bean
-		@Primary
-		public LabelFormElementBuilderFactory labelFormElementBuilderFactory() {
-			return new LabelFormElementBuilderFactory();
-		}
-
-		@Bean
-		public BootstrapUiFactory bootstrapUiFactory() {
-			return new BootstrapUiFactoryImpl();
-		}
 	}
 }

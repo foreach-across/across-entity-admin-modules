@@ -16,10 +16,13 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
+import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElement;
+import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
+import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
-import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -29,20 +32,12 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import com.foreach.common.test.MockedLoader;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.format.Printer;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -66,9 +61,6 @@ import static org.mockito.Mockito.when;
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-@ContextConfiguration(classes = TestDateTimeFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
 public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<ViewElement>
 {
 	private static final Date PRINT_DATE;
@@ -84,11 +76,20 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		}
 	}
 
-	@Autowired
-	private ConversionService mvcConversionService;
-
-	@Autowired
+	@Mock
 	private EntityViewElementBuilderService entityViewElementBuilderService;
+
+	@InjectMocks
+	private EntityViewElementBuilderFactoryHelper builderFactoryHelper;
+
+	@Override
+	protected EntityViewElementBuilderFactory createBuilderFactory() {
+		DateTimeFormElementBuilderFactory builderFactory = new DateTimeFormElementBuilderFactory();
+		builderFactory.setBuilderFactoryHelpers( builderFactoryHelper );
+		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
+		builderFactory.setViewElementBuilderService( entityViewElementBuilderService );
+		return builderFactory;
+	}
 
 	@Override
 	protected Class getTestClass() {
@@ -359,35 +360,5 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 		@Temporal(TemporalType.DATE)
 		public Date date;
-	}
-
-	@Configuration
-	protected static class Config
-	{
-		@Bean
-		@Primary
-		public DateTimeFormElementBuilderFactory dateTimeFormElementBuilderFactory() {
-			return new DateTimeFormElementBuilderFactory();
-		}
-
-		@Bean
-		public BootstrapUiFactory bootstrapUiFactory() {
-			return new BootstrapUiFactoryImpl();
-		}
-
-		@Bean
-		public ConversionService conversionService() {
-			return mock( ConversionService.class );
-		}
-
-		@Bean
-		public EntityRegistry entityRegistry() {
-			return mock( EntityRegistry.class );
-		}
-
-		@Bean
-		public EntityViewElementBuilderFactoryHelper builderFactoryHelper() {
-			return new EntityViewElementBuilderFactoryHelper();
-		}
 	}
 }

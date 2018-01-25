@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
 
 /**
@@ -77,7 +76,7 @@ public class TestDefaultEntityViewContext
 		EntityConfiguration<?> entityConfiguration = mock( EntityConfiguration.class );
 		ctx.setEntityConfiguration( entityConfiguration );
 		assertNull( ctx.getEntityLabel() );
-		verify( entityConfiguration, never() ).getLabel( anyObject() );
+		verify( entityConfiguration, never() ).getLabel( any() );
 	}
 
 	@Test
@@ -85,19 +84,19 @@ public class TestDefaultEntityViewContext
 		EntityConfiguration<?> entityConfiguration = mock( EntityConfiguration.class );
 		ctx.setEntity( "one" );
 		ctx.setEntityConfiguration( entityConfiguration );
-		when( entityConfiguration.getLabel( anyObject() ) ).thenReturn( "label" );
+		when( entityConfiguration.getLabel( any() ) ).thenReturn( "label" );
 
 		assertEquals( "label", ctx.getEntityLabel() );
 		assertEquals( "label", ctx.getEntityLabel() );
-		verify( entityConfiguration, times( 1 ) ).getLabel( anyObject() );
+		verify( entityConfiguration, times( 1 ) ).getLabel( any() );
 
 		ctx.setEntity( "two" );
 		assertEquals( "label", ctx.getEntityLabel() );
-		verify( entityConfiguration, times( 2 ) ).getLabel( anyObject() );
+		verify( entityConfiguration, times( 2 ) ).getLabel( any() );
 
 		ctx.setEntityConfiguration( entityConfiguration );
 		assertEquals( "label", ctx.getEntityLabel() );
-		verify( entityConfiguration, times( 3 ) ).getLabel( anyObject() );
+		verify( entityConfiguration, times( 3 ) ).getLabel( any() );
 	}
 
 	@Test
@@ -113,19 +112,19 @@ public class TestDefaultEntityViewContext
 		AllowableActions global = mock( AllowableActions.class );
 		when( entityConfiguration.getAllowableActions() ).thenReturn( global );
 		AllowableActions forEntity = mock( AllowableActions.class );
-		when( entityConfiguration.getAllowableActions( anyObject() ) ).thenReturn( forEntity );
+		when( entityConfiguration.getAllowableActions( any() ) ).thenReturn( forEntity );
 		ctx.setEntityConfiguration( entityConfiguration );
 
 		assertSame( global, ctx.getAllowableActions() );
 		assertSame( global, ctx.getAllowableActions() );
 		verify( entityConfiguration, times( 1 ) ).getAllowableActions();
-		verify( entityConfiguration, never() ).getAllowableActions( anyObject() );
+		verify( entityConfiguration, never() ).getAllowableActions( any() );
 
 		ctx.setEntity( 123L );
 		assertSame( forEntity, ctx.getAllowableActions() );
 		assertSame( forEntity, ctx.getAllowableActions() );
 		verify( entityConfiguration, times( 1 ) ).getAllowableActions();
-		verify( entityConfiguration, times( 1 ) ).getAllowableActions( anyObject() );
+		verify( entityConfiguration, times( 1 ) ).getAllowableActions( any() );
 
 		ctx.setEntityConfiguration( null );
 		assertNull( ctx.getAllowableActions() );
@@ -136,23 +135,23 @@ public class TestDefaultEntityViewContext
 		AllowableActions fixed = mock( AllowableActions.class );
 		EntityConfiguration<?> entityConfiguration = mock( EntityConfiguration.class );
 		when( entityConfiguration.getAllowableActions() ).thenReturn( mock( AllowableActions.class ) );
-		when( entityConfiguration.getAllowableActions( anyObject() ) ).thenReturn( mock( AllowableActions.class ) );
+		when( entityConfiguration.getAllowableActions( any() ) ).thenReturn( mock( AllowableActions.class ) );
 		ctx.setEntityConfiguration( entityConfiguration );
 		ctx.setAllowableActions( fixed );
 
 		assertSame( fixed, ctx.getAllowableActions() );
 		verify( entityConfiguration, never() ).getAllowableActions();
-		verify( entityConfiguration, never() ).getAllowableActions( anyObject() );
+		verify( entityConfiguration, never() ).getAllowableActions( any() );
 
 		ctx.setEntity( 123L );
 		assertSame( fixed, ctx.getAllowableActions() );
 		verify( entityConfiguration, never() ).getAllowableActions();
-		verify( entityConfiguration, never() ).getAllowableActions( anyObject() );
+		verify( entityConfiguration, never() ).getAllowableActions( any() );
 
 		ctx.setEntityConfiguration( null );
 		assertSame( fixed, ctx.getAllowableActions() );
 		verify( entityConfiguration, never() ).getAllowableActions();
-		verify( entityConfiguration, never() ).getAllowableActions( anyObject() );
+		verify( entityConfiguration, never() ).getAllowableActions( any() );
 
 		AllowableActions otherFixed = mock( AllowableActions.class );
 		ctx.setAllowableActions( otherFixed );

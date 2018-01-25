@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
@@ -84,7 +84,6 @@ public class TestDefaultEntityFetchingViewProcessor
 
 	@Test
 	public void entityConfigurationUsesPagingAndSortingRepositoryIfPossible() {
-		when( entityConfiguration.getAttribute( EntityQueryExecutor.class ) ).thenReturn( mock( EntityQueryExecutor.class ) );
 		PagingAndSortingRepository repository = mock( PagingAndSortingRepository.class );
 		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( repository );
 		when( repository.findAll( pageable ) ).thenReturn( items );

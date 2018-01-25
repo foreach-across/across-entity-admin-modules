@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -53,7 +53,6 @@ import java.util.Map;
 
 import static com.foreach.across.modules.entity.web.EntityViewModel.*;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -123,7 +122,6 @@ public class TestGenericEntityViewController
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 
 		when( viewRequest.getCommand() ).thenReturn( command );
-		when( viewRequest.getViewName() ).thenReturn( "view-name" );
 		when( viewRequest.getViewFactory() ).thenReturn( viewFactory );
 
 		when( entityConfiguration.getViewFactory( anyString() ) ).thenReturn( viewFactory );
@@ -214,7 +212,7 @@ public class TestGenericEntityViewController
 		       .andExpect( view().name( "view-template" ) );
 
 		verify( viewContextLoader ).loadForEntityConfiguration( viewContext, "type" );
-		verify( viewContext, never() ).setEntity( anyObject() );
+		verify( viewContext, never() ).setEntity( any() );
 
 		verify( viewRequest ).setModel( any( ModelMap.class ) );
 		verify( viewRequest ).setRedirectAttributes( any( RedirectAttributes.class ) );
@@ -240,7 +238,7 @@ public class TestGenericEntityViewController
 		       .andExpect( view().name( "view-template" ) );
 
 		verify( viewContextLoader ).loadForEntityConfiguration( viewContext, "type" );
-		verify( viewContext, never() ).setEntity( anyObject() );
+		verify( viewContext, never() ).setEntity( any() );
 
 		verify( viewRequest ).setModel( any( ModelMap.class ) );
 		verify( viewRequest ).setRedirectAttributes( any( RedirectAttributes.class ) );

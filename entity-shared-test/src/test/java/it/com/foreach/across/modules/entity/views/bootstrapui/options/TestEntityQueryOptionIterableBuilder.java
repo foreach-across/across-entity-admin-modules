@@ -29,8 +29,6 @@ import org.junit.Test;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
 
 /**
@@ -63,12 +61,12 @@ public class TestEntityQueryOptionIterableBuilder
 
 		elementBuilderContext = new DefaultViewElementBuilderContext();
 
-		when( entityQueryExecutor.findAll( any( EntityQuery.class ) ) ).thenReturn( Arrays.asList( ONE, TWO, THREE ) );
+		when( entityQueryExecutor.findAll( any() ) ).thenReturn( Arrays.asList( ONE, TWO, THREE ) );
 
-		when( entityModel.getLabel( anyObject() ) )
+		when( entityModel.getLabel( any() ) )
 				.thenAnswer( invocation -> ( (Entity) invocation.getArguments()[0] ).name );
 
-		when( entityModel.getId( anyObject() ) )
+		when( entityModel.getId( any() ) )
 				.thenAnswer( invocation -> StringUtils.upperCase( ( (Entity) invocation.getArguments()[0] ).name ) );
 
 		options.clear();

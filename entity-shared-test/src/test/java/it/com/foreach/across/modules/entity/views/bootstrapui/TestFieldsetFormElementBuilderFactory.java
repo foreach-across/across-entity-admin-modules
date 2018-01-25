@@ -15,7 +15,6 @@
  */
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
@@ -23,22 +22,15 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.FieldsetFormElementBuilderFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.mockito.Mock;
 
 import java.util.Collections;
 
@@ -49,13 +41,18 @@ import static org.mockito.Mockito.*;
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-@ContextConfiguration(classes = TestFieldsetFormElementBuilderFactory.Config.class, loader = MockedLoader.class)
 public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<FieldsetFormElement>
 {
-	@Autowired
+	@Mock
 	private EntityViewElementBuilderService viewElementBuilderService;
+
+	@Override
+	protected EntityViewElementBuilderFactory createBuilderFactory() {
+		FieldsetFormElementBuilderFactory builderFactory = new FieldsetFormElementBuilderFactory();
+		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
+		builderFactory.setEntityViewElementBuilderService( viewElementBuilderService );
+		return builderFactory;
+	}
 
 	@Override
 	protected Class getTestClass() {
@@ -139,20 +136,5 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 	private static class Instance
 	{
 		private Object embedded;
-	}
-
-	@Configuration
-	protected static class Config
-	{
-		@Bean
-		@Primary
-		public FieldsetFormElementBuilderFactory fieldsetFormElementBuilderFactory() {
-			return new FieldsetFormElementBuilderFactory();
-		}
-
-		@Bean
-		public BootstrapUiFactory bootstrapUiFactory() {
-			return new BootstrapUiFactoryImpl();
-		}
 	}
 }

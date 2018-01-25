@@ -24,9 +24,9 @@ import com.foreach.across.modules.entity.util.EntityTypeDescriptor;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.stereotype.Component;
 
@@ -44,9 +44,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Arne Vandamme
  */
 @Component
+@RequiredArgsConstructor
 public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLookupStrategy
 {
-	private EntityRegistry entityRegistry;
+	private final EntityRegistry entityRegistry;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -179,10 +180,5 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		}
 
 		return BootstrapUiElements.TEXTBOX;
-	}
-
-	@Autowired
-	void setEntityRegistry( EntityRegistry entityRegistry ) {
-		this.entityRegistry = entityRegistry;
 	}
 }

@@ -24,13 +24,12 @@ import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
-import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -51,9 +50,6 @@ public class TestEntityAdminMenuAttributeRegistrar
 
 	@Mock
 	private EntityViewContext entityViewContext;
-
-	@Mock
-	private AllowableActions allowableActions;
 
 	private WritableAttributes attributes = spy( AttributeSupport.class );
 
@@ -140,8 +136,6 @@ public class TestEntityAdminMenuAttributeRegistrar
 		EntityLinkBuilder linkBuilder = mock( EntityLinkBuilder.class );
 		when( linkBuilder.update( any() ) ).thenReturn( "/my-entity" );
 		when( entityViewContext.getLinkBuilder() ).thenReturn( linkBuilder );
-
-		when( entityViewContext.getAllowableActions() ).thenReturn( allowableActions );
 
 		PathBasedMenuBuilder menuBuilder = new PathBasedMenuBuilder();
 		EntityAdminMenuEvent event = new EntityAdminMenuEvent<>( EntityAdminMenu.create( entityViewContext ), menuBuilder );

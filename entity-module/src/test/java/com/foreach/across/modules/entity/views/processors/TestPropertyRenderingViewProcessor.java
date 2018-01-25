@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.Arrays;
@@ -193,9 +193,6 @@ public class TestPropertyRenderingViewProcessor
 		when( entityView.getAttribute( ATTRIBUTE_CONTAINER_BUILDER, ContainerViewElementBuilderSupport.class ) ).thenReturn( containerBuilder );
 
 		ContainerViewElementBuilder propertiesContainerBuilder = mock( ContainerViewElementBuilder.class );
-		when( entityView.containsAttribute( PropertyRenderingViewProcessor.ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER ) ).thenReturn( true );
-		when( entityView.getAttribute( PropertyRenderingViewProcessor.ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER, ContainerViewElementBuilderSupport.class ) )
-				.thenReturn( propertiesContainerBuilder );
 
 		ViewElementBuilderMap builders = new ViewElementBuilderMap();
 		builders.put( PropertyRenderingViewProcessor.ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER, propertiesContainerBuilder );

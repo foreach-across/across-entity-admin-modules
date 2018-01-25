@@ -120,7 +120,7 @@ public class TestEntityModelBuilder
 		AtomicReference<Consumer> actualConsumer = new AtomicReference<>();
 
 		doAnswer( invocation -> {
-			actualConsumer.set( invocation.getArgumentAt( 0, Consumer.class ) );
+			actualConsumer.set( invocation.getArgument( 0 ) );
 			return null;
 		} ).when( model ).setDeleteMethod( any( Consumer.class ) );
 

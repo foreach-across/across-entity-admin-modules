@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -123,8 +123,6 @@ public class TestEntityPropertyControlNamePostProcessor
 	@SuppressWarnings("unchecked")
 	@Test
 	public void dontFailIfPostProcessorsNotSupported() {
-		when( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ).thenReturn( true );
-		when( descriptor.hasAttribute( EntityAttributes.CONTROL_NAME ) ).thenReturn( true );
 		EntityPropertyControlNamePostProcessor.registerForProperty( descriptor, mock( ViewElementBuilder.class ), null );
 	}
 }

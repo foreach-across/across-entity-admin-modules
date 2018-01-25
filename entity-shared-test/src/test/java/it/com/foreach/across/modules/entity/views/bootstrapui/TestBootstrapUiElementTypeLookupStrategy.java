@@ -23,21 +23,17 @@ import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersis
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.testmodules.springdata.business.CompanyStatus;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.views.bootstrapui.MultiValueElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -56,16 +52,14 @@ import static org.mockito.Mockito.*;
 /**
  * @author Arne Vandamme
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
-@ContextConfiguration(classes = TestBootstrapUiElementTypeLookupStrategy.Config.class, loader = MockedLoader.class)
+@RunWith(MockitoJUnitRunner.class)
 public class TestBootstrapUiElementTypeLookupStrategy
 {
-	@Autowired
-	private ViewElementTypeLookupStrategy strategy;
-
-	@Autowired
+	@Mock
 	private EntityRegistry entityRegistry;
+
+	@InjectMocks
+	private BootstrapUiElementTypeLookupStrategy strategy;
 
 	private EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 	private EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
@@ -238,7 +232,6 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	public void singleEntityTypeShouldReturnSelectType() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
 
-		when( entityConfiguration.getEntityType() ).thenReturn( Client.class );
 		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
 		when( entityRegistry.contains( Client.class ) ).thenReturn( true );
 
@@ -249,12 +242,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@Test
 	@SuppressWarnings("unchecked")
 	public void collectionEntityTypeShouldReturnOptionsOrSelectTypeForFilterControl() {
-		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
-
-		when( entityConfiguration.getEntityType() ).thenReturn( Client.class );
-		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
 		when( entityRegistry.contains( Client.class ) ).thenReturn( true );
-
 		when( descriptor.getPropertyType() ).thenReturn( (Class) List.class );
 		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( Client.class ) );
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
@@ -265,11 +253,6 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 	@Test
 	public void stringSetsAreSupportedAsMultiValue() {
-		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
-
-		when( entityConfiguration.getEntityType() ).thenReturn( Client.class );
-		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
-
 		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
 		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
 				Set.class, TypeDescriptor.valueOf( String.class )
@@ -283,11 +266,6 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@Test
 	@SuppressWarnings("unchecked")
 	public void collectionEnumShouldReturnOptions() {
-		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
-
-		when( entityConfiguration.getEntityType() ).thenReturn( Client.class );
-		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
-
 		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
 		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
 				Set.class, TypeDescriptor.valueOf( CompanyStatus.class )
@@ -317,9 +295,6 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@Configuration
 	protected static class Config
 	{
-		@Bean
-		public BootstrapUiElementTypeLookupStrategy lookupStrategy() {
-			return new BootstrapUiElementTypeLookupStrategy();
-		}
+
 	}
 }

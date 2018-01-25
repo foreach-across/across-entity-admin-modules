@@ -33,7 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,7 +77,6 @@ public class TestFilterOptionGenerator
 	@Test
 	public void emptyOptionBeforeNotSetOption() {
 		generator.setValueNotSetOption( new OptionFormElementBuilder().label( "ccc" ).rawValue( "123" ) );
-		when( valueFetcher.getValue( "entity" ) ).thenReturn( Collections.emptyList() );
 
 		List<AbstractNodeViewElement> generated = build();
 		assertEquals( 4, generated.size() );

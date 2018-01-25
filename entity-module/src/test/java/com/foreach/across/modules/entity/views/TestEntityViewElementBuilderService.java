@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.Collections;
@@ -127,7 +127,6 @@ public class TestEntityViewElementBuilderService
 	@Test
 	public void propertyBuilderIsUsedIfPresent() {
 		when( propertyLookupRegistry.getViewElementBuilder( CONTROL ) ).thenReturn( actualBuilder );
-		when( propertyLookupRegistry.getViewElementType( CONTROL ) ).thenReturn( "configuredPropertyType" );
 
 		val builder = builderService.createElementBuilder( propertyDescriptor, CONTROL );
 		assertWrapper( builder );
@@ -149,7 +148,6 @@ public class TestEntityViewElementBuilderService
 	@Test
 	public void propertyElementTypeTakesPrecedenceOverEntityConfiguration() {
 		when( propertyLookupRegistry.getViewElementType( CONTROL ) ).thenReturn( "configuredPropertyType" );
-		when( entityLookupRegistry.getViewElementBuilder( CONTROL.forMultiple() ) ).thenReturn( mock( ViewElementBuilder.class ) );
 		when( builderFactory.createBuilder( propertyDescriptor, CONTROL, "configuredPropertyType" ) ).thenReturn( actualBuilder );
 
 		val builder = builderService.createElementBuilder( propertyDescriptor, CONTROL );

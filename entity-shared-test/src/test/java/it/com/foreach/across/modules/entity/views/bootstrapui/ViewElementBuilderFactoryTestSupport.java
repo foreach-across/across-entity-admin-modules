@@ -30,7 +30,9 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.querydsl.core.util.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mapping.PersistentProperty;
@@ -48,18 +50,18 @@ import static org.mockito.Mockito.*;
 /**
  * @author Arne Vandamme
  */
+@RunWith(MockitoJUnitRunner.Silent.class)
 public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement>
 {
-	@Autowired
+	@Mock
 	protected EntityConfiguration entityConfiguration;
 
-	@Autowired
+	@Mock
 	protected EntityPropertyRegistry registry;
 
-	@Autowired
+	@Mock
 	protected EntityRegistry entityRegistry;
 
-	@Autowired
 	protected EntityViewElementBuilderFactory builderFactory;
 
 	protected LocalValidatorFactoryBean validatorFactory = createValidator();
@@ -77,6 +79,8 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	@SuppressWarnings("unchecked")
 	public void before() {
 		reset( entityConfiguration, registry );
+
+		builderFactory = createBuilderFactory();
 
 		builderContext = spy( new DefaultViewElementBuilderContext() );
 
@@ -124,6 +128,8 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 			}
 		}
 	}
+
+	protected abstract EntityViewElementBuilderFactory createBuilderFactory();
 
 	protected abstract Class getTestClass();
 
