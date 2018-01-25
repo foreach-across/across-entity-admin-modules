@@ -31,9 +31,7 @@ import java.util.*;
 import static it.com.foreach.across.modules.entity.views.bootstrapui.options.TestEnumOptionIterableBuilder.Counter.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme

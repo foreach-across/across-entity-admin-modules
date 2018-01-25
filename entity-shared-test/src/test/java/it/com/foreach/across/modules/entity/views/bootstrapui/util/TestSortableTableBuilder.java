@@ -131,7 +131,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.items( Collections.singletonList( "test" ) );
 
 		PagingMessages messages = mock( PagingMessages.class );
-		when( messages.resultsFound( any( Page.class ), anyVararg() ) ).thenReturn( "xx results" );
+		when( messages.resultsFound( any( Page.class ), any() ) ).thenReturn( "xx results" );
 		tableBuilder.pagingMessages( messages );
 
 		when( descriptor.getName() ).thenReturn( "propertyOne" );
@@ -266,7 +266,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.items( page );
 
 		PagingMessages messages = mock( PagingMessages.class );
-		when( messages.resultsFound( any( Page.class ), anyVararg() ) ).thenReturn( "Geen resultaten gevonden" );
+		when( messages.resultsFound( any( Page.class ), any() ) ).thenReturn( "Geen resultaten gevonden" );
 
 		tableBuilder.pagingMessages( messages );
 

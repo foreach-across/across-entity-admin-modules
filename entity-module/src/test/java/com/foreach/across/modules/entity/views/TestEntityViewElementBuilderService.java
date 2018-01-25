@@ -40,7 +40,6 @@ import java.util.Set;
 import static com.foreach.across.modules.entity.views.ViewElementMode.CONTROL;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**

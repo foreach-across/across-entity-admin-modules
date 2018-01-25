@@ -112,7 +112,7 @@ public class TestSortableTableRenderingViewProcessor
 		verify( sortableTable ).items( page );
 		verify( sortableTable ).tableName( "itemsTable" );
 		verify( sortableTable ).formName( null );
-		verify( sortableTable, never() ).sortableOn( anyCollectionOf( String.class ) );
+		verify( sortableTable, never() ).sortableOn( anyCollection() );
 		verify( sortableTable ).showResultNumber( true );
 		verify( sortableTable, never() ).headerRowProcessor( any() );
 		verify( sortableTable, never() ).valueRowProcessor( any() );

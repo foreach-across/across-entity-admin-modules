@@ -28,9 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Collections;
@@ -41,9 +39,8 @@ import static org.mockito.Mockito.*;
 /**
  * @author Arne Vandamme
  */
-@PrepareForTest(EntityViewFactoryBuilderInitializer.class)
-@RunWith(PowerMockRunner.class)
 @SuppressWarnings("unchecked")
+@RunWith(MockitoJUnitRunner.class)
 public class TestEntityAssociationBuilder
 {
 	@Mock
@@ -59,7 +56,7 @@ public class TestEntityAssociationBuilder
 
 	@Before
 	public void reset() {
-		EntityViewFactoryBuilderInitializer builderInitializer = PowerMockito.mock( EntityViewFactoryBuilderInitializer.class );
+		EntityViewFactoryBuilderInitializer builderInitializer = mock( EntityViewFactoryBuilderInitializer.class );
 
 		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistry );
 		builder = new EntityAssociationBuilder( beanFactory );
@@ -135,8 +132,6 @@ public class TestEntityAssociationBuilder
 		when( targetRegistry.getProperty( "id" ) ).thenReturn( targetProperty );
 
 		when( association.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
-		DefaultEntityViewFactory listViewFactory = mock( DefaultEntityViewFactory.class );
-		when( beanFactory.createBean( DefaultEntityViewFactory.class ) ).thenReturn( listViewFactory );
 
 		builder.name( "users" )
 		       .hidden( false )
