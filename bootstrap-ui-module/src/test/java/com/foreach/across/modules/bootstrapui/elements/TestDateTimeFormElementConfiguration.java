@@ -186,6 +186,19 @@ public class TestDateTimeFormElementConfiguration
 	}
 
 	@Test
+	public void sqlDateAndDateAreSuccessfullyConverted() throws ParseException {
+		Date date = DateUtils.parseDate( "2015-08-07 00:00", "yyyy-MM-dd HH:mm" );
+		DateTimeFormElementConfiguration dateConfiguration = new DateTimeFormElementConfiguration();
+		dateConfiguration.setDateAttribute( "test", date );
+
+		java.sql.Date sqlDate = new java.sql.Date( date.getTime() );
+		DateTimeFormElementConfiguration sqlDateConfiguration = new DateTimeFormElementConfiguration();
+		sqlDateConfiguration.setDateAttribute( "test", sqlDate );
+
+		assertEquals( dateConfiguration.get( "test" ), sqlDateConfiguration.get( "test" ) );
+	}
+
+	@Test
 	public void customAttributesForJava8Times() throws ParseException {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm" );
 		LocalDateTime start = LocalDateTime.parse( "2015-08-07 10:31", formatter );

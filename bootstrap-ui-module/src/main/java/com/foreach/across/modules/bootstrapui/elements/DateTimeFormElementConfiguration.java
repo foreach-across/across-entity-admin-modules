@@ -21,10 +21,7 @@ import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.util.Assert;
 
 import java.text.DateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
@@ -468,7 +465,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Converts a {@link Date} to a {@link LocalDateTime} using the configured {@link ZoneId}
 	 */
 	public LocalDateTime dateToLocalDateTime( Date date ) {
-		return LocalDateTime.ofInstant( date.toInstant(), getZoneId() );
+		return LocalDateTime.ofInstant( Instant.ofEpochMilli( date.getTime() ), getZoneId() );
 	}
 
 	/**
