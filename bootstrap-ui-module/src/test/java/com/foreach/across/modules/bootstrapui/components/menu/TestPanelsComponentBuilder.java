@@ -22,6 +22,7 @@ import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElem
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.context.WebAppLinkBuilder;
 import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -270,7 +271,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 		    .item( "/two/sub2", "sub two 2" );
 
 		Menu built = menu.build();
-		built.select( Menu.byTitle( "sub one 2" ) );
+		built.select( MenuSelector.byTitle( "sub one 2" ) );
 
 		renderAndExpect(
 				builder.menu( built ),
@@ -340,7 +341,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 		    .item( "/one/sub/sub/two", "one sub sub two" );
 
 		Menu built = menu.build();
-		built.select( Menu.byTitle( "one sub sub one" ) );
+		built.select( MenuSelector.byTitle( "one sub sub one" ) );
 
 		renderAndExpect(
 				builder.menu( built ).subMenuBaseId( "sidebarMenu" ).keepGroupsAsGroup( true ),

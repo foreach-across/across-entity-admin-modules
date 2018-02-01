@@ -22,6 +22,7 @@ import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBui
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -228,7 +229,7 @@ public class BootstrapMenuController
 		builderConsumer.accept( builder );
 		Menu menu = builder.build();
 		menu.sort();
-		menu.select( Menu.byTitle( "Selected" ) );
+		menu.select( MenuSelector.byTitle( "Selected" ) );
 		return menu;
 	}
 }

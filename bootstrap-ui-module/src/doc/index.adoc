@@ -686,3 +686,5 @@ BootstrapUiModule.registerInitializer( function( node ) {
     } );
 } );
 ----
+
+include::how-tos/index.adoc[]

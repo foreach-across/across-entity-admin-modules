@@ -1,0 +1,35 @@
+## Customizing a datetime picker
+
+Every `DateTimeFormElement` will be turned into a datetime picker as seen in the section <<DateTimeFormElementBuilder>>
+
+Sometimes you want to attach a custom javascript event to this datetime picker.
+
+In the following example we will attach an `on change` event, to refresh a portion of the screen with an AJAX call.
+
+```javascript
+BootstrapUiModule.registerInitializer( function( node ) {
+  $( '[data-bootstrapui-datetimepicker]', node ).first().datetimepicker().on( 'dp.change', function( event ) {
+    $.get( Across.AdminWebModule.rootPath + "/getdata?_partial=::summary&selectedDate=" + event.date.format( "YYYY-MM-DD" ), function( data ) {
+      $( '#form-right-column' ).replaceWith( data );
+    } );
+  } );
+}, true );
+```
+
+The `BootstrapUiModule.registerInitializer()` ensures that your function is registered after that bootstrap-ui has loaded.
+
+After this is done you can register on the `dp.change` to do the AJAX call. See http://eonasdan.github.io/bootstrap-datetimepicker/Events/ for more events supported by this datetime picker.
+
+The AJAX call will render a partial and replace the content.
+
+IMPORTANT: If your callback function is not executed inside `BootstrapUiModule.registerInitializer()`, then this might be due to the fact that your code is executing before that `bootstrapui-formelements.js` is loaded. Sometimes Across fails to include this package in time. If this is the case, you can add this WebResource by adding it to your Controller as shown in the example below.
+
+```java
+	@ModelAttribute
+	public void registerJavascript( WebResourceRegistry registry ) {
+		registry.addPackage( BootstrapUiFormElementsWebResources.NAME );
+		registry.addWithKey( WebResource.JAVASCRIPT_PAGE_END, "data-js", "/static/omega/js/data.js", WebResource.VIEWS );
+	}
+```
+
+TIP: If you encounter an `undefined` error when calling `datetimepicker()`, this might be due to including jQuery twice in your DOM.

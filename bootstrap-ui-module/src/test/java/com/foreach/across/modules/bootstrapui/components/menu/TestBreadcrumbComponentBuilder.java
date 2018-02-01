@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBui
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import org.junit.Before;
@@ -63,7 +64,7 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 
 		Menu built = menu.build();
 		built.setTitle( "Root" );
-		built.select( Menu.byTitle( "two" ) );
+		built.select( MenuSelector.byTitle( "two" ) );
 
 		renderAndExpect( builder.menu( built ), "<ol class='breadcrumb'>" +
 				"<li><a href='' title='Root'>Root</a></li>" +
@@ -80,7 +81,7 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 
 		Menu built = menu.build();
 		built.setTitle( "Root" );
-		built.select( Menu.byTitle( "three" ) );
+		built.select( MenuSelector.byTitle( "three" ) );
 
 		renderAndExpect( builder.menu( built ), "<ol class='breadcrumb'>" +
 				"<li><a href='' title='Root'>Root</a></li>" +
@@ -97,7 +98,7 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 
 		Menu built = menu.build();
 		built.setTitle( "Root" );
-		built.select( Menu.byTitle( "three" ) );
+		built.select( MenuSelector.byTitle( "three" ) );
 
 		renderAndExpect( builder.menu( built ).filter( m -> !m.getTitle().equals( "two" ) ), "<ol class='breadcrumb'>" +
 				"<li><a href='' title='Root'>Root</a></li>" +
@@ -119,7 +120,7 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 
 		Menu built = menu.build();
 		built.setTitle( "Root" );
-		built.select( Menu.byTitle( "three" ) );
+		built.select( MenuSelector.byTitle( "three" ) );
 
 		// by default all levels support icons and icon only
 		renderAndExpect( builder.menu( built ), "<ol class='breadcrumb'>" +
@@ -163,7 +164,7 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 
 		Menu built = menu.build();
 		built.setTitle( "Root" );
-		built.select( Menu.byTitle( "three" ) );
+		built.select( MenuSelector.byTitle( "three" ) );
 
 		renderAndExpect( builder.menu( built ), "<ol class='breadcrumb'>" +
 				"<li><a href='' title='Root'>Root</a></li>" +
