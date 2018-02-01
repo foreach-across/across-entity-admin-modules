@@ -88,7 +88,7 @@ var EntityModule = (function( $ ) {
                     $( this ).select();
                 } )
                 .keypress( function( event ) {
-                    var keyCode = (event.keyCode ? event.keyCode : event.which );
+                    var keyCode = (event.keyCode ? event.keyCode : event.which);
                     if ( keyCode == 13 ) {
                         event.preventDefault();
                         var pageNumber = parseInt( $( this ).val() );
@@ -282,7 +282,7 @@ var EntityModule = (function( $ ) {
                 var container = $( this );
 
                 container.find( '.js-multi-value-input' ).on( 'keypress', function( e ) {
-                    var keyCode = (e.keyCode ? e.keyCode : e.which );
+                    var keyCode = (e.keyCode ? e.keyCode : e.which);
                     if ( keyCode == 13 ) {
                         e.preventDefault();
                         var value = $( this ).val();
@@ -311,6 +311,11 @@ var EntityModule = (function( $ ) {
                     $( this ).closest( 'tr' ).remove();
                 } )
             } );
+
+            /**
+             * Initialize tooltips.
+             */
+            $( '[data-toggle="tooltip"]', node ).tooltip();
 
             // Dispatch to additional initializers
             for ( var i = 0; i < this.initializers.length; i++ ) {

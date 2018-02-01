@@ -23,7 +23,7 @@
     <div class="alert alert-info" th:text="${message}">general message</div>
 
     <div th:each="generatedTable : ${generatedTables}">
-        <h2 th:text="${generatedTable.key}">Table description</h2>
+        <h2>[[${generatedTable.key}]] <a data-toggle="tooltip" href="#" th:title="${generatedTable.key}"><span class="fa fa-question-circle"/></a></h2>
         <across:view element="${generatedTable.value}" />
     </div>
 
