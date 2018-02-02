@@ -53,6 +53,7 @@ Module website: {module-url}
 ** when using the `errors` property directly, it is no longer required that the command object binding result is present on the model
 * the default builders now usually support localized text patterns for any text property
 ** for example: `BootstrapUiBuilders.button().title("#{my.button=Default text}")`
+* `TextboxFormElement` rendered inside a `FormGroupElement` which detects field errors, will now render the original input value if there are errors present
 
 === 1.2.0.RELEASE
 * added `BootstrapUiBuilders` class that is a static facade for all builders

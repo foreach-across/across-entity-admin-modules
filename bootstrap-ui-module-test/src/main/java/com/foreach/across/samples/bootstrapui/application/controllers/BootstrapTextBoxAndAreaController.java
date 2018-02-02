@@ -40,7 +40,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/textbox")
-public class BoostrapTextboxController
+public class BootstrapTextBoxAndAreaController
 {
 	/**
 	 * Register the section in the administration menu.

@@ -21,11 +21,11 @@ import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.*;
-import org.thymeleaf.spring4.expression.Fields;
-import org.thymeleaf.spring4.expression.SpringStandardExpressionObjectFactory;
 import org.thymeleaf.spring4.naming.SpringContextVariableNames;
+import org.thymeleaf.spring4.util.FieldUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -70,6 +70,13 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 
 		ViewElement control = group.getControl();
 		FormControlElement formControl = BootstrapElementUtils.getFormControl( group );
+
+		if ( formControl != null ) {
+			errorBuilder = group.isDetectFieldErrors()
+					? createFieldErrorsBuilder( formControl, model.getTemplateContext() )
+					: null;
+		}
+
 		IModel controlModel = control != null ? model.createViewElementModel( group.getControl() ) : null;
 
 		ViewElement helpBlock = group.getHelpBlock();
@@ -82,7 +89,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 			addRequiredIndicatorToLabel( model.getModelFactory(), labelModel );
 		}
 
-		if ( formControl != null ) {
+		if ( formControl != null && controlModel != null ) {
 			String controlId = model.retrieveHtmlId( formControl );
 
 			if ( helpBlock != null && !formControl.hasAttribute( "aria-describedby" ) ) {
@@ -97,10 +104,6 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 					setPlaceholderAttributeOnControl( model.getModelFactory(), controlModel, labelText );
 				}
 			}
-
-			errorBuilder = group.isDetectFieldErrors()
-					? createFieldErrorsBuilder( formControl.getControlName(), model.getTemplateContext() )
-					: null;
 		}
 
 		if ( helpBlockModel != null && layout.getType() == FormLayout.Type.INLINE ) {
@@ -156,7 +159,8 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		FormLayout layout = group.getFormLayout();
 
 		if ( layout == null ) {
-			FormViewElement form = (FormViewElement) model.getTemplateContext().getVariable( VAR_CURRENT_BOOTSTRAP_FORM );
+			FormViewElement form = (FormViewElement) model.getTemplateContext().getVariable(
+					VAR_CURRENT_BOOTSTRAP_FORM );
 
 			if ( form != null ) {
 				layout = form.getFormLayout();
@@ -296,23 +300,30 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		return null;
 	}
 
-	private Consumer<ThymeleafModelBuilder> createFieldErrorsBuilder( String controlName,
+	private Consumer<ThymeleafModelBuilder> createFieldErrorsBuilder( FormControlElement formControl,
 	                                                                  ITemplateContext templateContext ) {
-		if ( controlName != null
+		if ( formControl != null
 				&& templateContext.containsVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION ) ) {
-			Fields fields = (Fields) templateContext.getExpressionObjects().getObject(
-					SpringStandardExpressionObjectFactory.FIELDS_EXPRESSION_OBJECT_NAME
-			);
-
+			String controlName = formControl.getControlName();
 			String propertyName = StringUtils.startsWith( controlName, "_" )
 					? StringUtils.substring( controlName, 1 )
 					: controlName;
 
-			if ( fields != null && fields.hasErrors( propertyName ) ) {
+			BindStatus bindStatus = FieldUtils.getBindStatus( templateContext, true, "*{" + propertyName + "}" );
+
+			if ( bindStatus != null && bindStatus.isError() ) {
+				if ( formControl instanceof TextboxFormElement ) {
+					// Set value that original value that caused a binding error
+					Object inputValue = bindStatus.getValue();
+					if ( inputValue != null ) {
+						formControl.setAttribute( TextboxFormElementModelWriter.TRANSIENT_ERROR_VALUE_ATTRIBUTE, inputValue.toString() );
+					}
+				}
+
 				return model -> {
 					model.addOpenElement( "div" );
 					model.addAttributeValue( "class", "small", "text-danger" );
-					model.addHtml( "" + StringUtils.join( fields.errors( propertyName ), " " ) );
+					model.addHtml( bindStatus.getErrorMessagesAsString( " " ) );
 					model.addCloseElement();
 				};
 			}

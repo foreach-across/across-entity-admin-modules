@@ -6,6 +6,8 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import org.junit.Test;
 
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+
 public class TestFormPageView extends AbstractBootstrapViewElementTest
 {
 	@Test
@@ -44,22 +46,19 @@ public class TestFormPageView extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void buildFormThroughBuilders() {
-		BootstrapUiFactory bootstrapUi = new BootstrapUiFactoryImpl();
-
-		FormViewElementBuilder formBuilder = bootstrapUi
-				.form()
+		FormViewElementBuilder formBuilder = form()
 				.add(
-						bootstrapUi.formGroup(
-								bootstrapUi.label( "Name *" ),
-								bootstrapUi.textbox().text( "John Doe" )
+						formGroup(
+								label( "Name *" ),
+								textbox().text( "John Doe" )
 						)
 				)
 				.add(
-						bootstrapUi.formGroup()
-						           .add(
-								           bootstrapUi.button().submit().style( Style.Button.PRIMARY ).text( "Save" ),
-								           bootstrapUi.button().link( "/goback" ).text( "Cancel" )
-						           )
+						formGroup()
+								.add(
+										button().submit().style( Style.Button.PRIMARY ).text( "Save" ),
+										button().link( "/goback" ).text( "Cancel" )
+								)
 				);
 
 		verify( formBuilder.build( new DefaultViewElementBuilderContext() ) );

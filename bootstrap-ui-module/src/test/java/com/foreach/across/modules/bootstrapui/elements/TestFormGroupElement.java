@@ -469,7 +469,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				callback,
 				"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>"
 		);
@@ -538,7 +538,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<form role='form' method='post'>" +
 						"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>" +
 						"</form>"
@@ -560,7 +560,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<form role='form' method='post'>" +
 						"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>" +
 						"</form>"
@@ -580,7 +580,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label col-md-2'>title</label>" +
 						"<div class='col-md-10'>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>" +
 						"</div>"

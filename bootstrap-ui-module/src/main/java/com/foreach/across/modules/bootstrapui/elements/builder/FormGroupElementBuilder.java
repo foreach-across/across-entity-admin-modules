@@ -99,7 +99,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder label( String text ) {
-		label( new BootstrapUiFactoryImpl().label( text ) );
+		label( BootstrapUiBuilders.label( text ) );
 		return this;
 	}
 
@@ -125,7 +125,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder helpBlock( String text ) {
-		helpBlock( new BootstrapUiFactoryImpl().helpBlock( text ) );
+		helpBlock( BootstrapUiBuilders.helpBlock( text ) );
 		return this;
 	}
 
