@@ -41,3 +41,7 @@ server:
     whitelabel:
       enabled: false
 
+entityModule:
+  message-codes:
+    SpringDataJpaModule: spring-data
+

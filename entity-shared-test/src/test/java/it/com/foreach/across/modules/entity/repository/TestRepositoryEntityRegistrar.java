@@ -27,6 +27,8 @@ import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecu
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.testmodules.solr.SolrTestModule;
+import com.foreach.across.modules.entity.testmodules.solr.business.Product;
 import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.entity.testmodules.springdata.business.*;
 import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
@@ -124,6 +126,10 @@ public class TestRepositoryEntityRegistrar
 				.hasRepository()
 				.hasAssociation( "company.representatives", true ).from( null ).to( Company.class, "representatives" );
 
+		verify( Product.class )
+				.isVisible( true )
+				.hasRepository();
+
 		// enum entity should not be visible
 		verify( Country.class )
 				.isVisible( false );
@@ -135,7 +141,7 @@ public class TestRepositoryEntityRegistrar
 
 	@Test
 	public void clientShouldBeRegisteredWithRepositoryInformation() {
-		assertEquals( 7, entityRegistry.getEntities().size() );
+		assertEquals( 8, entityRegistry.getEntities().size() );
 		assertTrue( entityRegistry.contains( Client.class ) );
 
 		EntityConfiguration<?> configuration = entityRegistry.getEntityConfiguration( Client.class );
@@ -377,6 +383,11 @@ public class TestRepositoryEntityRegistrar
 			SpringDataJpaModule springDataJpaModule = new SpringDataJpaModule();
 			springDataJpaModule.expose( Repository.class );
 			return springDataJpaModule;
+		}
+
+		@Bean
+		public SolrTestModule solrTestModule() {
+			return new SolrTestModule();
 		}
 	}
 }

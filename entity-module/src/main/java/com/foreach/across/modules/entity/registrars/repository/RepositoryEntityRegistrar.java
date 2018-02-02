@@ -21,6 +21,7 @@ import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
+import com.foreach.across.modules.entity.config.EntityMessageCodeProperties;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
@@ -28,6 +29,7 @@ import com.foreach.across.modules.entity.registrars.EntityRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Scans for {@link org.springframework.data.repository.Repository} implementations
@@ -71,6 +74,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	private MappingContextRegistry mappingContextRegistry;
 	private SmartValidator entityValidator;
 	private PlatformTransactionManagerResolver transactionManagerResolver;
+	private EntityMessageCodeProperties entityMessageCodeProperties;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -216,12 +220,13 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	private EntityMessageCodeResolver buildMessageCodeResolver( EntityConfiguration entityConfiguration,
 	                                                            AcrossModuleInfo moduleInfo ) {
 		String name = StringUtils.uncapitalize( entityConfiguration.getEntityType().getSimpleName() );
+		String[] basePrefixes = entityMessageCodeProperties.getEntityMessageCodePrefixes( moduleInfo );
 
 		EntityMessageCodeResolver resolver = new EntityMessageCodeResolver();
 		resolver.setMessageSource( messageSource );
 		resolver.setEntityConfiguration( entityConfiguration );
-		resolver.setPrefixes( moduleInfo.getName() + ".entities." + name );
-		resolver.setFallbackCollections( moduleInfo.getName() + ".entities", EntityModule.NAME + ".entities" );
+		resolver.setPrefixes( Stream.of( basePrefixes ).map( p -> p + "." + name ).toArray( String[]::new ) );
+		resolver.setFallbackCollections( ArrayUtils.add( basePrefixes, EntityModule.NAME + ".entities" ) );
 
 		return resolver;
 	}
@@ -305,5 +310,10 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	@Autowired
 	public void setTransactionManagerResolver( PlatformTransactionManagerResolver transactionManagerResolver ) {
 		this.transactionManagerResolver = transactionManagerResolver;
+	}
+
+	@Autowired
+	public void setEntityMessageCodeProperties( EntityMessageCodeProperties entityMessageCodeProperties ) {
+		this.entityMessageCodeProperties = entityMessageCodeProperties;
 	}
 }

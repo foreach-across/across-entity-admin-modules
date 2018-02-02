@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.testmodules.solr.business.Product;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Company;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -44,6 +46,7 @@ import static org.junit.Assert.*;
 @DirtiesContext
 @WebAppConfiguration
 @ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
+@TestPropertySource(properties = "entityModule.messageCodes[SolrTestModule]=solr")
 public class ITEntityMessageCodeResolver
 {
 	private static final Locale NL = Locale.forLanguageTag( "nl-BE" );
@@ -84,6 +87,19 @@ public class ITEntityMessageCodeResolver
 		assertArrayEquals(
 				new String[] { "SpringDataJpaModule.entities.company.*", "SpringDataJpaModule.entities.*", "EntityModule.entities.*" },
 				companyResolver.buildMessageCodes( "*", true )
+		);
+	}
+
+	@Test
+	public void customPrefixedResolver() {
+		EntityMessageCodeResolver productResolver = entityRegistry.getEntityConfiguration( Product.class ).getEntityMessageCodeResolver();
+		assertArrayEquals(
+				new String[] { "solr.product.*" },
+				productResolver.buildMessageCodes( "*" )
+		);
+		assertArrayEquals(
+				new String[] { "solr.product.*", "solr.*", "EntityModule.entities.*" },
+				productResolver.buildMessageCodes( "*", true )
 		);
 	}
 
