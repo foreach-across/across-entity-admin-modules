@@ -42,4 +42,5 @@ public interface BootstrapUiElements extends StandardViewElements
 	String DATETIME = "bootstrapDateTime";
 	String NUMERIC = "bootstrapNumeric";
 	String LINK = "bootstrapLink";
+	String FILE_UPLOAD = "bootstrapFileUpload";
 }

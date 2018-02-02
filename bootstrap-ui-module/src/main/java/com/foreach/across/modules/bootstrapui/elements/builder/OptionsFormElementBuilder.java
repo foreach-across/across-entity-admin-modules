@@ -16,10 +16,14 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
+import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
  * Responsible for building option lists as SELECT, RADIO or MULTI CHECKBOX.
@@ -36,6 +40,7 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 	private String controlName;
 	private boolean multiple = false;
 	private Type type = Type.SELECT;
+	private SelectFormElementConfiguration selectConfiguration;
 
 	public boolean isDisabled() {
 		return disabled;
@@ -121,6 +126,17 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 		return this;
 	}
 
+	/**
+	 * Will generate a boostrap-select box with the given configuration.
+	 * If the configuration is {@code null}, will revert to a regular select box.
+	 *
+	 * @return current builder
+	 */
+	public OptionsFormElementBuilder select( SelectFormElementConfiguration configuration ) {
+		this.selectConfiguration = configuration;
+		return select();
+	}
+
 	public OptionsFormElementBuilder controlName( String controlName ) {
 		this.controlName = controlName;
 		return this;
@@ -166,13 +182,13 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 
 			if ( type == Type.CHECKBOX || type == Type.RADIO ) {
 				control = createBoxDiv();
+
+				if ( controlName != null ) {
+					control.setHtmlId( "options-" + controlName );
+				}
 			}
 			else {
-				control = createSelect();
-			}
-
-			if ( controlName != null ) {
-				control.setHtmlId( controlName );
+				control = createSelect( builderContext );
 			}
 
 			return apply( control, builderContext );
@@ -182,8 +198,16 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 		}
 	}
 
-	private AbstractNodeViewElement createSelect() {
+	@Override
+	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
+	}
+
+	private AbstractNodeViewElement createSelect( ViewElementBuilderContext builderContext ) {
 		SelectFormElement select = new SelectFormElement();
+		if ( selectConfiguration != null ) {
+			select.setConfiguration( selectConfiguration.localize( LocaleContextHolder.getLocale(), builderContext ) );
+		}
 		select.setMultiple( multiple );
 
 		if ( controlName != null ) {

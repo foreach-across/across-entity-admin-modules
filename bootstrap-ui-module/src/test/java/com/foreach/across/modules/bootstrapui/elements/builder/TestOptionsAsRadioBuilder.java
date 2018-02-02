@@ -79,12 +79,12 @@ public class TestOptionsAsRadioBuilder extends AbstractBootstrapViewElementTest
 				                                    .disabled() );
 
 		expect(
-				"<div id='mybox'>" +
-						"<div class='radio'><label for='mybox1'>" +
-						"<input type='radio' value='one' id='mybox1' name='mybox' /> Inner text" +
+				"<div id='options-mybox'>" +
+						"<div class='radio'><label for='mybox'>" +
+						"<input type='radio' value='one' id='mybox' name='mybox' /> Inner text" +
 						"</label></div>" +
-						"<div class='radio disabled'><label for='mybox2'>" +
-						"<input type='radio' value='2' checked='checked' disabled='disabled' name='mybox' id='mybox2' /> Short two" +
+						"<div class='radio disabled'><label for='mybox1'>" +
+						"<input type='radio' value='2' checked='checked' disabled='disabled' name='mybox' id='mybox1' /> Short two" +
 						"</label></div>" +
 						"</div>"
 		);

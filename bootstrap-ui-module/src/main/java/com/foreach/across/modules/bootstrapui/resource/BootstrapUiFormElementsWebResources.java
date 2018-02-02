@@ -30,7 +30,8 @@ import com.foreach.across.modules.web.resource.WebResource;
  *
  * @author Arne Vandamme
  */
-public class BootstrapUiFormElementsWebResources extends SimpleWebResourcePackage
+public class
+BootstrapUiFormElementsWebResources extends SimpleWebResourcePackage
 {
 	public static final String NAME = "bootstrapui-formelements";
 
@@ -55,8 +56,18 @@ public class BootstrapUiFormElementsWebResources extends SimpleWebResourcePackag
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-autosize",
 				                 "/static/" + BootstrapUiModule.NAME + "/js/autosize.min.js",
 				                 WebResource.VIEWS ),
-				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME,
-				                 "/static/" + BootstrapUiModule.NAME + "/js/bootstrapui.js",
+
+				// Bootstrap select
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME + "-select",
+				                 "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js",
+				                 WebResource.EXTERNAL ),
+				new WebResource( WebResource.CSS, BootstrapUiModule.NAME + "-select",
+				                 "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css",
+				                 WebResource.EXTERNAL ),
+
+				// Form elements initializer javascript
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
+				                 "/static/" + BootstrapUiModule.NAME + "/js/bootstrapui-formelements.js",
 				                 WebResource.VIEWS ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, "typeahead",
 				                 "https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js",

@@ -16,11 +16,13 @@
 
 package com.foreach.across.modules.bootstrapui.components.menu;
 
+import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.context.WebAppLinkBuilder;
 import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -36,17 +38,17 @@ import static org.mockito.Mockito.when;
  * @author Arne Vandamme
  * @since 1.0.0
  */
-public class TestNavComponentBuilder extends AbstractBootstrapViewElementTest
+public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElementTest
 {
 	private PathBasedMenuBuilder menu;
 	private DefaultViewElementBuilderContext builderContext;
-	private NavComponentBuilder builder;
+	private DefaultNavComponentBuilder builder;
 
 	@Before
 	public void setUp() throws Exception {
 		menu = new PathBasedMenuBuilder();
 		builderContext = new DefaultViewElementBuilderContext();
-		builder = new NavComponentBuilder();
+		builder = new DefaultNavComponentBuilder();
 	}
 
 	@Test
@@ -65,7 +67,7 @@ public class TestNavComponentBuilder extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void namedMenuRendering() {
-		builderContext.setAttribute( "zeMenu", new PathBasedMenuBuilder().item( "two", "two" ).and().build() );
+		builderContext.setAttribute( "zeMenu", new PathBasedMenuBuilder().item( "two", "#{my.code=two}" ).and().build() );
 		renderAndExpect( builder.menu( "zeMenu" ), "<ul class='nav'><li><a href='two' title='two'>two</a></li></ul>" );
 	}
 
@@ -145,7 +147,7 @@ public class TestNavComponentBuilder extends AbstractBootstrapViewElementTest
 		    .item( "/two/sub2", "sub two 2" );
 
 		Menu built = menu.build();
-		built.select( Menu.byTitle( "sub one 2" ) );
+		built.select( MenuSelector.byTitle( "sub one 2" ) );
 
 		renderAndExpect(
 				builder.menu( built ),
@@ -257,7 +259,7 @@ public class TestNavComponentBuilder extends AbstractBootstrapViewElementTest
 
 		Menu built = menu.build();
 		built.sort();
-		built.select( Menu.byTitle( "group item" ) );
+		built.select( MenuSelector.byTitle( "group item" ) );
 
 		renderAndExpect(
 				builder.menu( built ),
@@ -290,7 +292,7 @@ public class TestNavComponentBuilder extends AbstractBootstrapViewElementTest
 		    .item( "/two/two", "group item 2" );
 
 		Menu built = menu.build();
-		built.select( Menu.byTitle( "group item" ) );
+		built.select( MenuSelector.byTitle( "group item" ) );
 
 		renderAndExpect(
 				builder.menu( built ),
@@ -343,6 +345,41 @@ public class TestNavComponentBuilder extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void groupWithSingleItemIsRenderedAsGroupIfDefaultKeepAsGroupIsActive() {
+		menu.group( "/two", "two" )
+		    .and()
+		    .item( "/two/item", "two item" );
+
+		renderAndExpect(
+				builder.menu( menu.build() ).keepGroupsAsGroup( true ),
+				"<ul class='nav'>" +
+						"<li class='dropdown'>" +
+						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='two'>two <span class='caret' /></a>" +
+						"<ul class='dropdown-menu'>" +
+						"<li><a href='/two/item' title='two item'>two item</a></li>" +
+						"</ul>" +
+						"</li>" +
+						"</ul>"
+		);
+	}
+
+	@Test
+	public void groupWithSingleItemIsRenderedAsItemIfDefaultKeepIsActiveButExplicitlyConfiguredToCollapse() {
+		menu.group( "/two", "two" )
+		    .attribute( "html:class", "custom-class" )
+		    .attribute( ATTR_KEEP_AS_GROUP, false )
+		    .and()
+		    .item( "/two/item", "two item" );
+
+		renderAndExpect(
+				builder.menu( menu.build() ).keepGroupsAsGroup( true ),
+				"<ul class='nav'>" +
+						"<li class='custom-class'><a href='/two/item' title='two item'>two item</a></li>" +
+						"</ul>"
+		);
+	}
+
+	@Test
 	public void replaceGroupBySelectedItemRendersItemTextAsTheGroupLink() {
 		menu.group( "/one", "one" ).and()
 		    .item( "/one/item", "one item" ).and()
@@ -365,7 +402,7 @@ public class TestNavComponentBuilder extends AbstractBootstrapViewElementTest
 						"</ul>"
 		);
 
-		built.select( Menu.byTitle( "one item 2" ) );
+		built.select( MenuSelector.byTitle( "one item 2" ) );
 		renderAndExpect(
 				builder,
 				"<ul class='nav'>" +
@@ -391,7 +428,7 @@ public class TestNavComponentBuilder extends AbstractBootstrapViewElementTest
 		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) );
 
 		Menu built = menu.build();
-		built.select( Menu.byTitle( "one item 2" ) );
+		built.select( MenuSelector.byTitle( "one item 2" ) );
 		builder.replaceGroupBySelectedItem().menu( built );
 
 		renderAndExpect(
@@ -535,15 +572,93 @@ public class TestNavComponentBuilder extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				builder.menu( built ),
 				"<ul class='nav'>" +
-						"<li><a href='one' title='one'><span aria-hidden='true' class='glyphicon glyphicon-apple' /></a></li>" +
+						"<li><a href='one' title='one'><span aria-hidden='true' class='glyphicon glyphicon-apple' /> <span class='nav-item-title'>one</span></a></li>" +
 						"<li><a href='two' title='two'>two</a></li>" +
-						"<li><a href='three/one' title='sub three'><span aria-hidden='true' class='glyphicon glyphicon-apple' /></a></li>" +
+						"<li><a href='three/one' title='sub three'><span aria-hidden='true' class='glyphicon glyphicon-apple' /> <span class='nav-item-title'>sub three</span></a></li>" +
 						"<li class='dropdown'>" +
 						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='four'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-apple' /><span class='caret' /></a>" +
+						"<span aria-hidden='true' class='glyphicon glyphicon-apple' /> <span class='nav-item-title'>four</span><span class='caret' /></a>" +
 						"<ul class='dropdown-menu'>" +
 						"<li><a href='four/one' title='sub four 1'><span aria-hidden='true' class='glyphicon glyphicon-trash' />sub four 1</a></li>" +
 						"<li><a href='four/two' title='sub four 2'><span aria-hidden='true' class='glyphicon glyphicon-download' />sub four 2</a></li>" +
+						"</ul>" +
+						"</li>" +
+						"</ul>"
+		);
+	}
+
+	@Test
+	public void onlyItemsMatchingThePredicateAreRenderedIfFilterConfigured() {
+		menu.item( "one", "one" )
+		    .order( 1 )
+		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .and()
+		    .item( "two", "two" )
+		    .order( 2 )
+		    .and()
+		    .group( "three", "three" )
+		    .order( 3 )
+		    .and()
+		    .item( "three/one", "sub three" )
+		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .and()
+		    .group( "four", "four" )
+		    .order( 4 )
+		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .and()
+		    .item( "four/one", "sub four 1" )
+		    .and()
+		    .item( "four/two", "sub four 2" )
+		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) );
+
+		Menu built = menu.build();
+		built.sort();
+
+		// keep as group
+		renderAndExpect(
+				builder.menu( built ).keepGroupsAsGroup( true ).filter( item -> item.hasAttribute( ATTR_ICON ) ),
+				"<ul class='nav'>" +
+						"<li><a href='one' title='one'><span aria-hidden='true' class='glyphicon glyphicon-apple' /> one</a></li>" +
+						"<li class='dropdown'>" +
+						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='four'>" +
+						"<span aria-hidden='true' class='glyphicon glyphicon-apple' /> four<span class='caret' /></a>" +
+						"<ul class='dropdown-menu'>" +
+						"<li><a href='four/two' title='sub four 2'><span aria-hidden='true' class='glyphicon glyphicon-download' />sub four 2</a></li>" +
+						"</ul>" +
+						"</li>" +
+						"</ul>"
+		);
+
+		// collapse group
+		renderAndExpect(
+				builder.keepGroupsAsGroup( false ),
+				"<ul class='nav'>" +
+						"<li><a href='one' title='one'><span aria-hidden='true' class='glyphicon glyphicon-apple' /> one</a></li>" +
+						"<li><a href='four/two' title='sub four 2'><span aria-hidden='true' class='glyphicon glyphicon-download' />sub four 2</a></li>" +
+						"</ul>"
+		);
+	}
+
+	@Test
+	public void filteredItemsInSubGroup() {
+		menu.group( "/one", "one" ).and()
+		    .group( "/one/item", "one group" ).order( 1 )
+		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .and()
+		    .item( "/one/item/sub", "one sub item 1" ).and()
+		    .item( "/one/item/sub2", "one sub item 2" ).and();
+
+		Menu built = menu.build();
+		built.sort();
+
+		renderAndExpect(
+				builder.menu( built ).keepGroupsAsGroup( true ).filter( item -> !item.getTitle().endsWith( "item 1" ) ),
+				"<ul class='nav'>" +
+						"<li class='dropdown'>" +
+						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='one'>one <span class='caret' /></a>" +
+						"<ul class='dropdown-menu'>" +
+						"<li class='dropdown-header'><span aria-hidden='true' class='glyphicon glyphicon-apple' />one group</li>" +
+						"<li><a href='/one/item/sub2' title='one sub item 2'>one sub item 2</a></li>" +
 						"</ul>" +
 						"</li>" +
 						"</ul>"

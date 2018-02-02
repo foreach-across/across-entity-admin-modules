@@ -16,10 +16,15 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.NonNull;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.util.Assert;
 
 import java.text.DateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.FormatStyle;
 import java.util.*;
 
 /**
@@ -44,8 +49,10 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	public static final String FMT_EXTRA_PATTERN_DATE = "YYYY-MM-DD";
 
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
+	public static final ZoneId DEFAULT_ZONE_ID = ZoneId.systemDefault();
 
 	public static final FastDateFormat JAVA_FORMATTER = FastDateFormat.getInstance( FMT_EXPORT_JAVA );
+	public static final DateTimeFormatter JAVA_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern( FMT_EXPORT_JAVA );
 
 	@JsonIgnore
 	private Format format;
@@ -54,17 +61,32 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	private Locale locale;
 
 	@JsonIgnore
+	private ZoneId zoneId;
+
+	@JsonIgnore
 	private boolean localizePatterns = true;
 
 	public DateTimeFormElementConfiguration() {
 		setFormat( Format.DATETIME );
 		setLocale( DEFAULT_LOCALE );
+		setZoneId( DEFAULT_ZONE_ID );
 		put( "datepickerInput", "input[type=text]" );
 	}
 
 	public DateTimeFormElementConfiguration( Format format ) {
 		this();
 		setFormat( format );
+	}
+
+	public DateTimeFormElementConfiguration( ZoneId zoneId ) {
+		this();
+		setZoneId( zoneId );
+	}
+
+	public DateTimeFormElementConfiguration( Format format, ZoneId zoneId ) {
+		this();
+		setFormat( format );
+		setZoneId( zoneId );
 	}
 
 	/**
@@ -76,6 +98,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 		format = existing.format;
 		locale = existing.locale;
 		localizePatterns = existing.localizePatterns;
+		zoneId = existing.zoneId;
 		putAll( existing );
 	}
 
@@ -96,8 +119,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 *
 	 * @param format to use
 	 */
-	public void setFormat( Format format ) {
-		Assert.notNull( format );
+	public void setFormat( @NonNull Format format ) {
 		this.format = format;
 
 		switch ( format ) {
@@ -128,6 +150,25 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 				setExportPattern( FMT_EXPORT_MOMENT_DATETIME );
 				break;
 		}
+	}
+
+	/**
+	 * Get the id of the zone this configuration primarily uses to convert between date types.
+	 *
+	 * @return ZoneId instance
+	 */
+	public ZoneId getZoneId() {
+		return zoneId;
+	}
+
+	/**
+	 * This will ensure that conversion between {@link Date} and  {@link java.time.LocalDateTime},
+	 * {@link java.time.LocalDate}, {@link java.time.LocalTime} use the same time zone.
+	 *
+	 * @param zoneId to use.
+	 */
+	public void setZoneId( ZoneId zoneId ) {
+		this.zoneId = zoneId;
 	}
 
 	/**
@@ -187,9 +228,51 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	}
 
 	/**
+	 * Prevents date/time selections before this date
+	 */
+	public void setMinDate( LocalDate date ) {
+		setDateAttribute( "minDate", date );
+	}
+
+	/**
+	 * Prevents date/time selections before this date
+	 */
+	public void setMinDate( LocalTime date ) {
+		setDateAttribute( "minDate", date );
+	}
+
+	/**
+	 * Prevents date/time selections before this date
+	 */
+	public void setMinDate( LocalDateTime date ) {
+		setDateAttribute( "minDate", date );
+	}
+
+	/**
 	 * Prevents date/time selections after this date
 	 */
 	public void setMaxDate( Date date ) {
+		setDateAttribute( "maxDate", date );
+	}
+
+	/**
+	 * Prevents date/time selections after this date
+	 */
+	public void setMaxDate( LocalDate date ) {
+		setDateAttribute( "maxDate", date );
+	}
+
+	/**
+	 * Prevents date/time selections after this date
+	 */
+	public void setMaxDate( LocalTime date ) {
+		setDateAttribute( "maxDate", date );
+	}
+
+	/**
+	 * Prevents date/time selections after this date
+	 */
+	public void setMaxDate( LocalDateTime date ) {
 		setDateAttribute( "maxDate", date );
 	}
 
@@ -208,6 +291,27 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	}
 
 	/**
+	 * Sets the picker default date/time. Overrides useCurrent
+	 */
+	public void setDefaultDate( LocalDate date ) {
+		setDateAttribute( "defaultDate", date );
+	}
+
+	/**
+	 * Sets the picker default date/time. Overrides useCurrent
+	 */
+	public void setDefaultDate( LocalTime date ) {
+		setDateAttribute( "defaultDate", date );
+	}
+
+	/**
+	 * Sets the picker default date/time. Overrides useCurrent
+	 */
+	public void setDefaultDate( LocalDateTime date ) {
+		setDateAttribute( "defaultDate", date );
+	}
+
+	/**
 	 * This will change the viewDate without changing or setting the selected date.
 	 */
 	public void setViewDate( Date date ) {
@@ -215,16 +319,71 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	}
 
 	/**
-	 * Disables selection of dates in the array, e.g. holidays
+	 * This will change the viewDate without changing or setting the selected date.
+	 */
+	public void setViewDate( LocalDate date ) {
+		setDateAttribute( "viewDate", date );
+	}
+
+	/**
+	 * This will change the viewDate without changing or setting the selected date.
+	 */
+	public void setViewDate( LocalTime date ) {
+		setDateAttribute( "viewDate", date );
+	}
+
+	/**
+	 * This will change the viewDate without changing or setting the selected date.
+	 */
+	public void setViewDate( LocalDateTime date ) {
+		setDateAttribute( "viewDate", date );
+	}
+
+	/**
+	 * Disables selection of dates in the array, e.g. holidays.
+	 * Matched with day granularity.
 	 */
 	public void setDisabledDates( Date... dates ) {
 		setDateAttribute( "disabledDates", dates );
 	}
 
 	/**
+	 * Disables selection of dates in the array, e.g. holidays
+	 * Matched with day granularity.
+	 */
+	public void setDisabledDates( LocalDate... dates ) {
+		setDateAttribute( "disabledDates", dates );
+	}
+
+	/**
+	 * Disables selection of dates in the array, e.g. holidays
+	 * Matched with day granularity.
+	 */
+	public void setDisabledDates( LocalDateTime... dates ) {
+		setDateAttribute( "disabledDates", dates );
+	}
+
+	/**
 	 * Disables selection of dates NOT in the array, e.g. holidays
+	 * Matched with day granularity.
 	 */
 	public void setEnabledDates( Date... dates ) {
+		setDateAttribute( "enabledDates", dates );
+	}
+
+	/**
+	 * Disables selection of dates NOT in the array, e.g. holidays
+	 * Matched with day granularity.
+	 */
+	public void setEnabledDates( LocalDate... dates ) {
+		setDateAttribute( "enabledDates", dates );
+	}
+
+	/**
+	 * Disables selection of dates NOT in the array, e.g. holidays
+	 * Matched with day granularity.
+	 */
+	public void setEnabledDates( LocalDateTime... dates ) {
 		setDateAttribute( "enabledDates", dates );
 	}
 
@@ -296,17 +455,75 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
 	 */
 	public void setDateAttribute( String attributeName, Date... dates ) {
+		LocalDateTime[] localDateTimes = Arrays.stream( dates )
+		                                       .map( this::dateToLocalDateTime )
+		                                       .toArray( LocalDateTime[]::new );
+		setDateAttribute( attributeName, localDateTimes );
+	}
+
+	/**
+	 * Converts a {@link Date} to a {@link LocalDateTime} using the configured {@link ZoneId}
+	 */
+	public LocalDateTime dateToLocalDateTime( Date date ) {
+		return LocalDateTime.ofInstant( Instant.ofEpochMilli( date.getTime() ), getZoneId() );
+	}
+
+	/**
+	 * Converts a {@link LocalDateTime} to a {@link Date} using the configured {@link ZoneId}
+	 */
+	public Date localDateTimeToDate( LocalDateTime date ) {
+		return Date.from( date.atZone( getZoneId() ).toInstant() );
+	}
+
+	/**
+	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
+	 */
+	public void setDateAttribute( String attributeName, LocalDate... dates ) {
+		LocalDateTime[] localDateTimes = Arrays.stream( dates )
+		                                       .map( DateTimeFormElementConfiguration::localDateToLocalDateTime )
+		                                       .toArray( LocalDateTime[]::new );
+		setDateAttribute( attributeName, localDateTimes );
+	}
+
+	/**
+	 * Converts a {@link LocalDate} to a {@link LocalDateTime} with time equal to the start of the day.
+	 */
+	public static LocalDateTime localDateToLocalDateTime( LocalDate date ) {
+		return date.atStartOfDay();
+	}
+
+	/**
+	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
+	 */
+	public void setDateAttribute( String attributeName, LocalTime... dates ) {
+		LocalDateTime[] localDateTimes = Arrays.stream( dates )
+		                                       .map( DateTimeFormElementConfiguration::localTimeToLocalDateTime )
+		                                       .toArray( LocalDateTime[]::new );
+		setDateAttribute( attributeName, localDateTimes );
+	}
+
+	/**
+	 * Converts a {@link LocalTime} to a {@link LocalDateTime} with the day equal to today.
+	 */
+	public static LocalDateTime localTimeToLocalDateTime( LocalTime time ) {
+		return time.atDate( LocalDate.now() );
+	}
+
+	/**
+	 * Set any date attribute on the configuration.  Dates will be converted to the generic export format.
+	 */
+	public void setDateAttribute( String attributeName, LocalDateTime... dates ) {
 		if ( dates == null || ( dates.length == 1 && dates[0] == null ) ) {
 			remove( attributeName );
 		}
 		else {
 			if ( dates.length == 1 ) {
-				put( attributeName, JAVA_FORMATTER.format( dates[0] ) );
+				put( attributeName, JAVA_DATE_TIME_FORMATTER.format( dates[0] ) );
 			}
 			else {
 				List<String> formatted = new ArrayList<>( dates.length );
-				for ( Date date : dates ) {
-					formatted.add( JAVA_FORMATTER.format( date ) );
+				for ( LocalDateTime date : dates ) {
+					formatted.add( JAVA_DATE_TIME_FORMATTER.format( date ) );
 				}
 				put( attributeName, formatted.toArray() );
 			}
@@ -345,7 +562,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	}
 
 	/**
-	 * @return A date format representing the current configuration.
+	 * @return A {@link DateFormat} representing the current configuration.
 	 */
 	public DateFormat createDateFormat() {
 		DateFormat dateFormat = null;
@@ -372,6 +589,32 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	}
 
 	/**
+	 * @return A {@link DateTimeFormatter} representing the current configuration.
+	 */
+	public DateTimeFormatter createDateTimeFormatter() {
+		DateTimeFormatterBuilder dateTimeFormatterBuilder = new DateTimeFormatterBuilder();
+		switch ( format ) {
+			case DATE:
+				dateTimeFormatterBuilder.append( DateTimeFormatter.ofLocalizedDate( FormatStyle.MEDIUM ) );
+				break;
+			case DATE_FULL:
+				dateTimeFormatterBuilder.append( DateTimeFormatter.ofLocalizedDate( FormatStyle.FULL ) );
+				break;
+			case TIME:
+				dateTimeFormatterBuilder.append( DateTimeFormatter.ofLocalizedTime( FormatStyle.SHORT ) );
+				break;
+			case DATETIME:
+				dateTimeFormatterBuilder.append( DateTimeFormatter.ofLocalizedDateTime( FormatStyle.MEDIUM, FormatStyle.SHORT ) );
+				break;
+			case DATETIME_FULL:
+				dateTimeFormatterBuilder.append( DateTimeFormatter.ofLocalizedDateTime( FormatStyle.LONG, FormatStyle.MEDIUM ) );
+				break;
+		}
+
+		return dateTimeFormatterBuilder.toFormatter( locale );
+	}
+
+	/**
 	 * Format will automatically set the patterns to be used.
 	 */
 	public enum Format
@@ -382,4 +625,5 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 		DATETIME,
 		DATETIME_FULL
 	}
+
 }

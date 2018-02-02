@@ -21,15 +21,17 @@ import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.*;
-import org.thymeleaf.spring4.expression.Fields;
-import org.thymeleaf.spring4.expression.SpringStandardExpressionObjectFactory;
 import org.thymeleaf.spring4.naming.SpringContextVariableNames;
+import org.thymeleaf.spring4.util.FieldUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
+
+import static com.foreach.across.modules.bootstrapui.elements.thymeleaf.FormViewElementModelWriter.VAR_CURRENT_BOOTSTRAP_FORM;
 
 /**
  * The FormGroupElementModelWriter is core to default Bootstrap based form rendering.
@@ -62,21 +64,19 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 			model.addAttributeValue( "class", "radio" );
 		}
 
-		FormLayout layout = group.getFormLayout();
-
-		if ( layout == null ) {
-			layout = FormLayout.normal();
-		}
-		else if ( layout.getType() == FormLayout.Type.HORIZONTAL ) {
-			if ( layout.getGrid().size() != 2 ) {
-				throw new IllegalStateException( "Horizontal form requires a grid layout of 2 positions." );
-			}
-		}
+		FormLayout layout = determineFormLayout( group, model );
 
 		Consumer<ThymeleafModelBuilder> errorBuilder = null;
 
 		ViewElement control = group.getControl();
 		FormControlElement formControl = BootstrapElementUtils.getFormControl( group );
+
+		if ( formControl != null ) {
+			errorBuilder = group.isDetectFieldErrors()
+					? createFieldErrorsBuilder( formControl, model.getTemplateContext() )
+					: null;
+		}
+
 		IModel controlModel = control != null ? model.createViewElementModel( group.getControl() ) : null;
 
 		ViewElement helpBlock = group.getHelpBlock();
@@ -89,7 +89,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 			addRequiredIndicatorToLabel( model.getModelFactory(), labelModel );
 		}
 
-		if ( formControl != null ) {
+		if ( formControl != null && controlModel != null ) {
 			String controlId = model.retrieveHtmlId( formControl );
 
 			if ( helpBlock != null && !formControl.hasAttribute( "aria-describedby" ) ) {
@@ -104,10 +104,6 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 					setPlaceholderAttributeOnControl( model.getModelFactory(), controlModel, labelText );
 				}
 			}
-
-			errorBuilder = group.isDetectFieldErrors()
-					? createFieldErrorsBuilder( formControl.getControlName(), model.getTemplateContext() )
-					: null;
 		}
 
 		if ( helpBlockModel != null && layout.getType() == FormLayout.Type.INLINE ) {
@@ -159,6 +155,30 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		writeCloseElement( group, model );
 	}
 
+	private FormLayout determineFormLayout( FormGroupElement group, ThymeleafModelBuilder model ) {
+		FormLayout layout = group.getFormLayout();
+
+		if ( layout == null ) {
+			FormViewElement form = (FormViewElement) model.getTemplateContext().getVariable(
+					VAR_CURRENT_BOOTSTRAP_FORM );
+
+			if ( form != null ) {
+				layout = form.getFormLayout();
+			}
+
+			if ( layout == null ) {
+				layout = FormLayout.normal();
+			}
+		}
+
+		if ( layout.getType() == FormLayout.Type.HORIZONTAL ) {
+			if ( layout.getGrid().size() != 2 ) {
+				throw new IllegalStateException( "Horizontal form requires a grid layout of 2 positions." );
+			}
+		}
+		return layout;
+	}
+
 	/**
 	 * First element will get sr-only class added.
 	 */
@@ -201,7 +221,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 	}
 
 	/**
-	 * We add the indicator before the first </label> tag.
+	 * We add the indicator before the first &lt;/label&gt; tag.
 	 */
 	private void addRequiredIndicatorToLabel( IModelFactory modelFactory, IModel labelModel ) {
 		for ( int i = 0; i < labelModel.size(); i++ ) {
@@ -280,23 +300,30 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		return null;
 	}
 
-	private Consumer<ThymeleafModelBuilder> createFieldErrorsBuilder( String controlName,
+	private Consumer<ThymeleafModelBuilder> createFieldErrorsBuilder( FormControlElement formControl,
 	                                                                  ITemplateContext templateContext ) {
-		if ( controlName != null
+		if ( formControl != null
 				&& templateContext.containsVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION ) ) {
-			Fields fields = (Fields) templateContext.getExpressionObjects().getObject(
-					SpringStandardExpressionObjectFactory.FIELDS_EXPRESSION_OBJECT_NAME
-			);
-
+			String controlName = formControl.getControlName();
 			String propertyName = StringUtils.startsWith( controlName, "_" )
 					? StringUtils.substring( controlName, 1 )
 					: controlName;
 
-			if ( fields != null && fields.hasErrors( propertyName ) ) {
+			BindStatus bindStatus = FieldUtils.getBindStatus( templateContext, true, "*{" + propertyName + "}" );
+
+			if ( bindStatus != null && bindStatus.isError() ) {
+				if ( formControl instanceof TextboxFormElement ) {
+					// Set value that original value that caused a binding error
+					Object inputValue = bindStatus.getValue();
+					if ( inputValue != null ) {
+						formControl.setAttribute( TextboxFormElementModelWriter.TRANSIENT_ERROR_VALUE_ATTRIBUTE, inputValue.toString() );
+					}
+				}
+
 				return model -> {
 					model.addOpenElement( "div" );
 					model.addAttributeValue( "class", "small", "text-danger" );
-					model.addText( "" + StringUtils.join( fields.errors( propertyName ), " " ) );
+					model.addHtml( bindStatus.getErrorMessagesAsString( " " ) );
 					model.addCloseElement();
 				};
 			}

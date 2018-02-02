@@ -89,13 +89,15 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void disabled() {
 		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "myBox" );
 		box.setValue( "on" );
 		box.setDisabled( true );
 
 		renderAndExpect(
 				box,
 				"<div class='checkbox disabled'>" +
-						"<input type='checkbox' value='on' disabled='disabled' />" +
+						"<input type='checkbox' name='myBox' id='myBox' value='on' disabled='disabled' />" +
+						"<input type='hidden' name='_myBox' value='on' disabled='disabled' />" +
 						"</div>"
 		);
 
@@ -105,7 +107,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				box,
 				"<div class='checkbox'>" +
-						"<input type='checkbox' value='on' readonly='readonly' />" +
+						"<input type='checkbox' name='myBox' id='myBox' value='on' readonly='readonly' />" +
+						"<input type='hidden' name='_myBox' value='on' />" +
 						"</div>"
 		);
 	}

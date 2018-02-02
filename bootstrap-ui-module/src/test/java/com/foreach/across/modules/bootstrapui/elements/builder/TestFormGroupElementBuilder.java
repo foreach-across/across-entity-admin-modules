@@ -106,4 +106,10 @@ public class TestFormGroupElementBuilder extends AbstractViewElementBuilderTest<
 		assertNotNull( node );
 		assertEquals( "some help", ( (TextViewElement) node.getChildren().iterator().next() ).getText() );
 	}
+
+	@Test
+	public void detectFieldErrors() {
+		assertTrue( builder.build( builderContext ).isDetectFieldErrors() );
+		assertFalse( builder.detectFieldErrors( false ).build( builderContext ).isDetectFieldErrors() );
+	}
 }

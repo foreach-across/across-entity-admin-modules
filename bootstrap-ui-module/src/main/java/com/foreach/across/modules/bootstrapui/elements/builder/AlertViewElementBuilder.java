@@ -21,18 +21,23 @@ import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
 /**
+ * Create an alert. Note that alert text is not escaped by default.
+ *
  * @author Arne Vandamme
  * @since 1.0.0
  */
-public class AlertViewElementBuilder extends AbstractNodeViewElementBuilder<AlertViewElement, AlertViewElementBuilder>
+public class AlertViewElementBuilder extends AbstractHtmlSupportingNodeViewElementBuilder<AlertViewElement, AlertViewElementBuilder>
 {
 	private Object text;
 	private String closeLabel;
 	private Style style;
 	private boolean dismissible = false;
+
+	public AlertViewElementBuilder() {
+		escapeHtml( false );
+	}
 
 	public AlertViewElementBuilder text( String text ) {
 		this.text = text;
@@ -112,7 +117,12 @@ public class AlertViewElementBuilder extends AbstractNodeViewElementBuilder<Aler
 		}
 
 		if ( text instanceof String ) {
-			alert.setText( (String) text );
+			if ( isEscapeHtml() ) {
+				alert.setText( viewElementBuilderContext.resolveText( (String) text ) );
+			}
+			else {
+				alert.addFirstChild( resolveTextElement( (String) text, viewElementBuilderContext ) );
+			}
 		}
 		else if ( text instanceof ViewElement ) {
 			alert.addFirstChild( (ViewElement) text );

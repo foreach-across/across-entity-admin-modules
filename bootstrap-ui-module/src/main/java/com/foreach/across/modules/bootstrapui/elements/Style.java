@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 /**
  * Contains the common Bootstrap styles and provides ability to define new styles as constants.
@@ -68,8 +68,7 @@ public class Style
 		this( name, false );
 	}
 
-	private Style( String name, boolean isDefault ) {
-		Assert.notNull( name );
+	private Style( @NonNull String name, boolean isDefault ) {
 		this.name = name;
 		this.isDefault = isDefault;
 	}

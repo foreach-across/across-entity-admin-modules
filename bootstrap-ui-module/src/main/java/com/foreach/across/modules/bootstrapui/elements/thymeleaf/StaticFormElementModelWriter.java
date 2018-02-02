@@ -30,6 +30,6 @@ public class StaticFormElementModelWriter extends AbstractHtmlViewElementModelWr
 		super.writeOpenElement( viewElement, writer );
 
 		writer.addAttributeValue( "class", "form-control-static" );
-		writer.addText( viewElement.getText() );
+		writer.addHtml( viewElement.getText() );
 	}
 }

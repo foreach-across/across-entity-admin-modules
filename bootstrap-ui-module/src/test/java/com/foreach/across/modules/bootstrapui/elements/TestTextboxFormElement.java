@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.elements.thymeleaf.TextboxFormElementModelWriter;
 import org.junit.Test;
 
 /**
@@ -53,6 +54,22 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				box,
 				"<input type='text' class='form-control' value='some &quot;text&lt;/input&gt;' />"
+		);
+	}
+
+	@Test
+	public void transientErrorValueGetsRenderedOnceInsteadOfText() {
+		TextboxFormElement box = new TextboxFormElement();
+		box.setText( "text" );
+		box.setAttribute( TextboxFormElementModelWriter.TRANSIENT_ERROR_VALUE_ATTRIBUTE, "bad value" );
+
+		renderAndExpect(
+				box,
+				"<input type='text' class='form-control' value='bad value' />"
+		);
+		renderAndExpect(
+				box,
+				"<input type='text' class='form-control' value='text' />"
 		);
 	}
 

@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 /**
  * @author Arne Vandamme
@@ -35,8 +35,7 @@ public class Size
 		this( name, false );
 	}
 
-	private Size( String name, boolean isDefault ) {
-		Assert.notNull( name );
+	private Size( @NonNull String name, boolean isDefault ) {
 		this.name = name;
 		this.isDefault = isDefault;
 	}

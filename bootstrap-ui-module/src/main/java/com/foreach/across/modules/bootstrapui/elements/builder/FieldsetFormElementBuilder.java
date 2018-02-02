@@ -64,7 +64,7 @@ public class FieldsetFormElementBuilder extends AbstractNodeViewElementBuilder<F
 		fieldset.setDisabled( disabled );
 
 		if ( fieldsetName != null ) {
-			fieldset.setFieldsetName( fieldsetName );
+			fieldset.setFieldsetName( builderContext.resolveText( fieldsetName ) );
 		}
 		if ( formId != null ) {
 			fieldset.setFormId( formId );
@@ -77,7 +77,7 @@ public class FieldsetFormElementBuilder extends AbstractNodeViewElementBuilder<F
 		return fieldset;
 	}
 
-	public static class Legend extends AbstractNodeViewElementBuilder<FieldsetFormElement.Legend, Legend>
+	public static class Legend extends AbstractHtmlSupportingNodeViewElementBuilder<FieldsetFormElement.Legend, Legend>
 	{
 		private final FieldsetFormElementBuilder fieldset;
 
@@ -97,7 +97,12 @@ public class FieldsetFormElementBuilder extends AbstractNodeViewElementBuilder<F
 			FieldsetFormElement.Legend legend = new FieldsetFormElement.Legend();
 
 			if ( text != null ) {
-				legend.setText( text );
+				if ( isEscapeHtml() ) {
+					legend.setText( builderContext.resolveText( text ) );
+				}
+				else {
+					legend.addChild( resolveTextElement( text, builderContext ) );
+				}
 			}
 
 			return apply( legend, builderContext );

@@ -19,7 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.ColumnViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.util.Arrays;
 
@@ -30,8 +30,7 @@ public class ColumnViewElementBuilder extends AbstractNodeViewElementBuilder<Col
 {
 	private Grid.Position position = new Grid.Position();
 
-	public ColumnViewElementBuilder layout( Grid.Position position ) {
-		Assert.notNull( position );
+	public ColumnViewElementBuilder layout( @NonNull Grid.Position position ) {
 		this.position = position;
 		return this;
 	}
@@ -43,9 +42,9 @@ public class ColumnViewElementBuilder extends AbstractNodeViewElementBuilder<Col
 
 	@Override
 	protected ColumnViewElement createElement( ViewElementBuilderContext builderContext ) {
-		ColumnViewElement column = new ColumnViewElement();
+		ColumnViewElement column = apply( new ColumnViewElement(), builderContext );
 		column.setLayouts( position );
 
-		return apply( column, builderContext );
+		return column;
 	}
 }

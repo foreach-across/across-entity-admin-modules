@@ -64,7 +64,7 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 		model.addCloseElement();
 
 		// add initial text
-		model.addText( control.getText() );
+		model.addHtml( control.getText() );
 
 		// add children after checkbox tag and text
 		super.writeChildren( control, model );
@@ -83,6 +83,11 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 			model.addAttribute( "type", "hidden" );
 			model.addAttribute( "name", "_" + control.getControlName() );
 			model.addAttribute( "value", "on" );
+
+			if ( control.isDisabled() || control.hasAttribute( "disabled" ) ) {
+				model.addBooleanAttribute( "disabled", true );
+			}
+
 			model.addCloseElement();
 		}
 

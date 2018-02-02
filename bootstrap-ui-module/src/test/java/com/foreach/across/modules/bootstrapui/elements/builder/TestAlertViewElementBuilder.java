@@ -18,7 +18,11 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.AlertViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
+import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Arne Vandamme
@@ -29,5 +33,26 @@ public class TestAlertViewElementBuilder extends AbstractViewElementBuilderTest<
 	@Override
 	protected AlertViewElementBuilder createBuilder( ViewElementBuilderFactory builderFactory ) {
 		return new AlertViewElementBuilder();
+	}
+
+	@Test
+	public void resolvedNonHtml() {
+		builder.escapeHtml( true ).text( "#{resolved}" );
+
+		build();
+
+		assertThat( element.getText() ).isEqualTo( "resolved" );
+	}
+
+	@Test
+	public void resolvedHtml() {
+		builder.text( "#{resolved}" );
+
+		build();
+
+		assertThat( element.getText() ).isNull();
+		assertThat( element.getChildren().get( 0 ) )
+				.isInstanceOf( TextViewElement.class )
+				.matches( text -> !( (TextViewElement) text ).isEscapeXml() && ( (TextViewElement) text ).getText().equals( "resolved" ) );
 	}
 }

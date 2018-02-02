@@ -1,14 +1,16 @@
 = BootstrapUiModule
 Arne Vandamme
-1.0.0-SNAPSHOT
+2.0.0-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 1.0.0-SNAPSHOT
+:module-version: 2.0.0-SNAPSHOT
 :module-name: BootstrapUiModule
 :module-artifact: bootstrap-ui-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
+:javadoc-url: https://across.foreach.be/docs/across-standard-modules/BootstrapUiModule/{module-version}/javadoc
 :autoNumeric-url: https://github.com/BobKnothe/autoNumeric
 :datetime-url: https://github.com/Eonasdan/bootstrap-datetimepicker
+:bootstrap-select-url: https://silviomoreto.github.io/bootstrap-select/
 
 [copyright,verbatim]
 --
@@ -44,7 +46,30 @@ Module website: {module-url}
 
 == What's new in this version?
 :numbered!:
-=== 1.0.0-SNAPSHOT
+=== 2.0.0-SNAPSHOT
+* DateTimeFormElements now have support for `LocalDate`, `LocalTime`, `LocalDateTime`
+* `FormViewElement` and `FormViewElementBuilder` now allow you to configure either a command object or an `Errors` instance directly
+** this makes it easier to resolve field errors for the `FormGroupElement` members of the form, without having to know the model attribute name
+** when using the `errors` property directly, it is no longer required that the command object binding result is present on the model
+* the default builders now usually support localized text patterns for any text property
+** for example: `BootstrapUiBuilders.button().title("#{my.button=Default text}")`
+* `TextboxFormElement` rendered inside a `FormGroupElement` which detects field errors, will now render the original input value if there are errors present
+
+=== 1.2.0.RELEASE
+* added `BootstrapUiBuilders` class that is a static facade for all builders
+** `BootstrapUiFactory` and `BootstrapUiComponentFactory` beans are still available, but because both of them operate stateless the facade was added to reduce wiring verbosity
+* textbox improvements:
+** `TextboxFormElement` has a property *disableLineBreaks* that will disable the ENTER key
+** the `TextboxFormElementBuilder` will generate a valid single-line auto-sizing textarea if auto-size is requested on a normal textbox
+
+=== 1.1.0.RELEASE
+* added several <<NavComponentBuilder,builders for rendering menu structures>>: `DefaultNavComponentBuilder`, `BreadcrumbNavComponentBuilder` and `PanelsNavComponentBuilder`
+** all nav related builders now also support message code snippets in `Menu` titles: putting for example _#{my.code=Item title}_ as value will be replaced by the Locale specific message for _my.code_ or by _Item title_ if the message code can't be resolved
+* added support for <<bootstrap-select,bootstrap-select dropdown lists>> on `OptionsFormElementBuilder` and `SelectFormElement`
+** allows for more advanced and user-friendly dropdown controls
+* the BootstrapUiModule <<bootstrapui-javascript,javascript library supports adding initializer extensions>>
+
+=== 1.0.0.RELEASE
 Initial public release available on http://search.maven.org/[Maven central].
 
 :numbered:
@@ -67,15 +92,49 @@ You can render a `ViewElement` available on the model anywhere in a Thymeleaf te
 WARNING: You usually do not want to cache and reuse `ViewElement` components.
 It is better to cache `ViewElementBuilder`.
 
+=== Partial rendering
+It is possible to render only a single `ViewElement` by passing the element name.
+In that case all code will still be executed and all markup built, but only the markup of those elements will be written to the response.
+
+The `ViewElement` name is specified in the *_partial_* parameter with a *::* prefix.
+
+.Example
+Assume we create a single `ViewElement` with a specific name.
+[source,java,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+@GetMapping("/render")
+String get() {
+  model.addAttribute( "myViewElement", new TextViewElement( "myViewElement", "some text" ) );
+}
+----
+And we render it in the following snippet:
+[source,xml,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+<h1>title</h1>
+<div th:fragment="mycontent">
+	<across:view element="${myViewElement}" />
+</div>
+----
+
+* _/render_ would output _<h1>title</h1><div>some text</div>_
+* _/render?_partial=mycontent_ would output _<div>some text</div>_
+* _/render?_partial=::myViewElement_ would output _some text_
+* _/render?_partial=mycontent::myViewElement_ would also output _some text_
+
 === Default properties
 In its most simple form, a `ViewElement` has the following properties:
 
-[cols=2]
+[cols="1,3"]
 |===
 
 |*name*
 |An optional internal name of the element.
 This name can be used to retrieve the element from a `ContainerViewElement`.
+Use `ContainerViewElementUtils` to query and modify containers.
+
+See <<development-mode,development mode rendering>> for more information to retrieve generated view names.
 
 |*elementType*
 |A *required* type identification for the element.
@@ -87,6 +146,24 @@ By default only Thymeleaf templates are supported.
 
 |===
 
+==== Custom template
+Every `ViewElement` allows you to configure a *customTemplate*.
+Only Thymeleaf fragments are supported, if you specify a Thymeleaf template without a fragment, a *render(component)* fragment will be appended.
+The *component* variable will always contain the `ViewElement` instance that is being rendered.
+
+You can use a different input variable by specifying the *${component}* manually in your template specification.
+
+.Examples:
+
+* `th/mymodule/mytemplate` results in `th/mymodule/mytemplate :: render(component)`
+* `th/mymodule/mytemplate :: myfragment` results in `th/mymodule/mytemplate :: myfragment(component)`
+* `th/mymodule/mytemplate :: myfragment(${someModelAttribute},${component})` results in `th/mymodule/mytemplate :: myfragment(attributeValue,component)`
+
+NOTE: You should only use model attributes that are sure to be available when the template is being rendered.
+It is usually best to pass the required values as attributes on the `ViewElement` itself.
+
+You can use the `TemplateViewElement` if you only want to render a custom template and optionally pass it some attributes.
+
 === ViewElementBuilder
 A `ViewElementBuilder` is a simple API for creating a `ViewElement` instance based on a configuration and a given `ViewElementBuilderContext`.
 
@@ -95,12 +172,39 @@ It is a way to pass attributes required for building the elements, and it also g
 
 {module-name} comes with a number of default `ViewElementBuilder` implementations for both simple elements and more complex components.
 
+==== Global ViewElementBuilderContext
+Most `ViewElementBuilder` implementations extend `GlobalContextSupportingViewElementBuilder`.
+This class provides a parameterless `build()` method that will attempt to retrieve a `ViewElementBuilderContext` from the current thread, or from the request attached to the thread.
+If no global `ViewElementBuilderContext` is registered however, calls to `build()` will throw an exception.
+
+See the `ViewElementBuilderContextInterceptor` for an interceptor that creates a global `ViewElementBuilderContext`.
+
+==== ViewElementBuilderContext in controllers
+If there is a global `ViewElementBuilderContext` available, you can also `ViewElementBuilderContext` as a method argument in web controller methods.
+
 ==== Creating application links
 The `ViewElementBuilderContext` provides a `buildLink(String)` method that will resolve a link using the `WebAppLinkBuilder` attribute that is available on the builder context.
 By default the request-bound `WebAppLinkBuilder` is already set.
 
+=== Development mode rendering
+
+If development mode is active, all `ViewElement` names will be rendered in the markup.
+Start and end of the element rendering will be marked by a HTML comment.
+If the `ViewElement` is a node (xml-type element) it will also have a data attribute *data-ax-dev-view-element* containing the name.
+
+.Example markup when rendered in development mode
+[source,html,indent=0]
+[subs="verbatim,quotes,attributes"]
+----
+<!--[ax:title]-->
+<input name="entity.title" id="entity.title" data-ax-dev-view-element="title" type="text" class="form-control" value="" required="required" />
+<!--[/ax:title]-->
+----
+
+NOTE: It is not required for a `ViewElement` to have a name, nor is it required for that name to be unique.
+
 == Default elements
-Most default elements can be created through the `BootstrapUiFactory`.
+Most default elements can be created through the `BootstrapUiFactory` (instance) of `BootstrapUiBuilders` (static facade to the factories).
 
 === Overview
 Although elements can be created directly, most have an equivalent `ViewElementBuilder`.
@@ -143,6 +247,10 @@ The builder implementation is rarely created directly but through the `Bootstrap
 |`FieldsetFormElementBuilder`
 |
 
+|`FileUploadFormElement`
+|`FileUploadFormElementBuilder`
+|Creates a file input element.
+
 |`FormGroupElement`
 |`<<FormGroupElementBuilder>>`
 |
@@ -181,7 +289,8 @@ The builder implementation is rarely created directly but through the `Bootstrap
 
 |`SelectFormElement`
 |`<<OptionsFormElementBuilder>>`
-|Creates a select control.
+|Creates a select control, either a regular HTML dropdown or a {bootstrap-select-url}[bootstrap-select].
+Which type gets created depends on the presence of a `SelectFormElementConfiguration` object (`configuration` property).
 
 |`SelectFormElement.Option`
 |`<<OptionsFormElementBuilder,OptionFormElementBuilder>>`
@@ -217,6 +326,49 @@ In case of textarea will by default enable autosizing of the textarea and will r
 === OptionsFormElementBuilder
 To quickly create a list of options, either as a select, list of checkboxes or list or radio buttons.
 
+[[bootstrap-select]]
+==== bootstrap-select support
+If you want to create a more advanced {bootstrap-select-url}[bootstrap-select dropdown] instead of a simple HTML select, you can do so by specifying a `SelectFormElementConfiguration` object.
+See the respective {javadoc-url}/com/foreach/across/modules/bootstrapui/elements/SelectFormElementConfiguration.html[javadoc for all configuration properties].
+
+.Message codes
+The `SelectFormElementConfiguration` allows you to configure the default text for the control.
+These properties support message code text snippets which will be replaced if a `SelectFormElement` is built using the `OptionsFormElementBuilder`.
+
+The following default message codes are used:
+
+[options=header,cols="1,3,2"]
+|===
+
+| Property
+| Message code
+| Default text
+
+| `selectAllText`
+| BootstrapUiModule.SelectFormElementConfiguration.selectAllText
+| Select all
+
+| `noneSelectedText`
+| BootstrapUiModule.SelectFormElementConfiguration.noneSelectedText
+| Nothing selected
+
+| `maxOptionsText`
+| BootstrapUiModule.SelectFormElementConfiguration.maxOptionsText
+| Limit reached ({0} items max)
+
+| `countSelectedText`
+| BootstrapUiModule.SelectFormElementConfiguration.countSelectedText
+| {0} items selected
+
+| `deselectAllText`
+| BootstrapUiModule.SelectFormElementConfiguration.countSelectedText
+| Deselect all
+
+|===
+
+NOTE: Message code replacement is performed when `SelectFormElementConfiguration.localize()` is called.
+This is done automatically when using an `OptionsFormElementBuilder`
+
 === FormGroupElementBuilder
 Takes a label and a control.
 Can optionally take some help text.
@@ -225,33 +377,46 @@ Will render as a form group and will attempt to link the label to the control.
 === NumericFormElementBuilder
 Uses the {autoNumeric-url}[JQuery autoNumeric plugin].
 Supports decimal precision, localization and adding symbols (eg. for currency).
-See the class `NumericFormElementConfiguration` for configuration options.
+
+See `{javadoc-url}/com/foreach/across/modules/bootstrapui/elements/NumericFormElementConfiguration.html[NumericFormElementConfiguration]` for configuration options.
 
 === DateTimeFormElementBuilder
 Represented as a date/time picker.
 Uses the {datetime-url}[Eonasdan datetimepicker] JQuery plugin.
 
+See `{javadoc-url}/com/foreach/across/modules/bootstrapui/elements/DateTimeFormElementConfiguration.html[DateTimeFormElementConfiguration]` for configuration options.
+
 == Custom component builders
 Accessible through the `BootstrapUiComponentFactory`.
 
-=== Overview
-[cols="1,2,4",options=header]
+[[NavComponentBuilder]]
+=== Rendering menus
+The `BootstrapUiComponentFactory` provides several builders for generating markup based on an Across `Menu`.
+All builders extend `NavComponentBuilder` and support some of the same options.
+
+[cols="1,1,4", options=header]
 |===
 
-|Builder
-|Creates
+|Builder class
+|Factory method
 |Description
 
-|`<<NavComponentBuilder,NavComponentBuilder>>`
-|`NodeViewElement`
-|Renders a `Menu` component to a Boostrap nav structure.
+|`DefaultNavComponentBuilder`
+|`bootstrapUiComponentFactory.nav()`
+|Converts a `Menu` component to a http://getbootstrap.com/components/#nav[Bootstrap nav].
+
+|`PanelsNavComponentBuilder`
+|`bootstrapUiComponentFactory.panels()`
+|Converts a `Menu` component to a HTML5 `nav` where every group of `Menu` items is rendered as a panel with a heading.
+
+|`BreadcrumbNavComponentBuilder`
+|`bootstrapUiComponentFactory.breadcrumb()`
+|Generates a http://getbootstrap.com/components/#breadcrumbs[breadcrumb] for the selected items of a `Menu`.
 
 |===
 
-[[NavComponentBuilder]]
-=== Rendering menus: NavComponentBuilder
-The `NavComponentBuilder` converts a `Menu` component to a http://getbootstrap.com/components/#nav[Bootstrap nav]. +
-An example:
+==== Example
+An example of generating a nav structure from a `Menu`.
 
 .Custom menu definition and rendering
 [source,java,indent=0]
@@ -299,7 +464,7 @@ model.addAttribute(
 ----
 
 ==== Supported nav styles
-The `NavComponentBuilder` supports the following styles:
+You can generate specific nav structures using the `DefaultNavComponentBuilder` by specifying a nav style.
 
 [cols="1,2,4",options=header]
 |===
@@ -330,7 +495,7 @@ The `NavComponentBuilder` supports the following styles:
 
 |===
 
-The `NavComponentBuilder` supports custom HTML attributes to be configured directly on the root *ul* element.
+All `NavComponentBuilder` implementations also support custom HTML attributes to be configured directly on the root element.
 
 ==== Default menu conversion behaviour
 When mapping a `Menu` onto a nav, the following rules are followed:
@@ -343,6 +508,11 @@ When mapping a `Menu` onto a nav, the following rules are followed:
 * a group is rendered as a dropdown
 * a group inside a group is rendered as a labeled section in the dropdown
 * a group having only a single item is rendered as that single item unless the attribute _nav:keepAsGroup_ is set
+
+==== Menu item title
+All nav related builders support message code snippets in `Menu` titles.
+
+Putting for example _#{my.code=Item title}_ as `title` property will be replaced by the `Locale` specific message for _my.code_ or by _Item title_ if that message code can't be resolved
 
 ==== Replacing group label by the selected item
 By default the label of a dropdown will always be the title of the group.
@@ -388,6 +558,21 @@ If set to `true` the group will always be rendered as a group, even though there
 |Only applicable on a group and if `replaceGroupBySelectedItem` is set to `true`.
 If so and _nav:keepGroupItem_ is set to true, the replace action will be suppressed and the group label will always be rendered.
 
+*NOTE*: Attribute is only relevant for a `DefaultNavComponentBuilder`.
+
+|_nav:panelStyle_
+|Holds the CSS class that determines the panel styling.
+If set, the default _panel-default_ class will be omitted.
+Only applicable on group menu items that would result in a panel being rendered.
+
+*NOTE*: Attribute is only relevant for a `PanelsNavComponentBuilder`.
+
+|_nav:renderAsPanel_
+|If set to _false_ on an group menu item that would be rendered as a panel (a group on the top level), no panel will be rendered but a sidebar nav list will directly be rendered.
+Optionally a title will still be included if the group has one.  Non-panel lists do not support groups as items, these will be ignored.
+
+*NOTE*: Attribute is only relevant for a `PanelsNavComponentBuilder`.
+
 |_html:*_
 |Any attribute with a name starting with _html:_ will be added as html attribute to the list item.
 Name of the html attribute will be the menu attribute name without the _html:_ prefix.
@@ -431,3 +616,76 @@ menu.group( "/options", "Options", "#" )
     .item( "/options/dl", "Download", "#" )
     .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) );
 ----
+
+== Creating custom view elements
+
+=== Testing facilities
+Across test contains some base classes for testing `ViewElement` infrastructure.
+
+.AbstractViewElementBuilderTest
+A base unit test for any `ViewElementBuilder` that extends `ViewElementBuilderSupport`.
+
+.AbstractViewElementTemplateTest
+Base integration test class for testing the rendering of a `ViewElement`.
+Provides useful methods for rendering and inspecting the generated output.
+
+=== BootstrapUiModule web resources
+To provide the components client-side behaviour, BootstrapUiModule uses several web resource packages.
+These often get registered automatically by the `ViewElementBuilder` used for generating a `ViewElement`.
+Dependent packages will automatically be added as well.
+
+==== Web resource packages
+The following packages are available for adding to your template:
+
+[cols="1,1,2",options="header"]
+|===
+
+| Package
+| Package name
+| Description
+
+| `JQueryWebResources`
+| jquery
+| Registers JQuery library.
+
+| `BootstrapUiWebResources`
+| bootstrap
+| Registers default Bootstrap CSS and javascript library. +
+Depends on `JQueryWebResources`.
+
+| `BootstrapUiFormElementsWebResources`
+| bootstrapui-formelements
+| Registers additional javascript and css for form element components like the datepicker, bootstrap-select etc. +
+Depends on `BootstrapUiWebResources`.
+
+|===
+
+[[bootstrapui-javascript]]
+==== BootstrapUiModule javascript object
+When the javascript is registered correctly, a single `BootstrapUiModule` global object is available.
+BootstrapUiModule javascript is fully JQuery based.
+
+All BootstrapUiModule javascript can then be initialized by calling `BootstrapUiModule.initializeFormElements()`.
+This method optionally takes an argument that is the node in which the form elements should be initialized.
+
+This is automatically done on document load, but when using AJAX fragment rendering, you usually want to re-initialize the DOM element that was updated.
+
+.Custom initializers
+You can easily add a custom initializer function by adding it with `BootstrapUiModule.registerInitializer( callback )`.
+There is no need to manually execute your callback on document load, as that will happen automatically by the BootstrapUiModule.
+
+NOTE: Don't execute your callback on document load and then add it to the initializers.
+Execution will happen automatically when calling `registerInitializer()`.
+
+.Example registering a custom initializer
+[source,html,indent=0]
+[subs="verbatim,attributes"]
+----
+BootstrapUiModule.registerInitializer( function( node ) {
+    $( '[data-my-attribute]', node ).each( function() {
+        // initialize all elements with that attribute
+    } );
+} );
+----
+
+include::how-tos/index.adoc[]

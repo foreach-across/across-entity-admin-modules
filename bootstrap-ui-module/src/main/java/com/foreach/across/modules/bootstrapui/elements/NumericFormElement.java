@@ -17,8 +17,8 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
@@ -57,8 +57,7 @@ public class NumericFormElement extends FormControlElementSupport implements For
 		return textbox.getAttribute( ATTRIBUTE_DATA_NUMERIC, NumericFormElementConfiguration.class );
 	}
 
-	public void setConfiguration( NumericFormElementConfiguration configuration ) {
-		Assert.notNull( configuration );
+	public void setConfiguration( @NonNull NumericFormElementConfiguration configuration ) {
 		textbox.setAttribute( ATTRIBUTE_DATA_NUMERIC, configuration );
 	}
 

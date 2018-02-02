@@ -27,6 +27,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	private ElementOrBuilder label, control, helpBlock;
 	private FormLayout formLayout;
 	private Boolean required;
+	private Boolean detectFieldErrors;
 	private boolean helpBlockBeforeControl;
 
 	public Boolean isRequired() {
@@ -98,7 +99,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder label( String text ) {
-		label( new BootstrapUiFactoryImpl().label( text ) );
+		label( BootstrapUiBuilders.label( text ) );
 		return this;
 	}
 
@@ -124,7 +125,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder helpBlock( String text ) {
-		helpBlock( new BootstrapUiFactoryImpl().helpBlock( text ) );
+		helpBlock( BootstrapUiBuilders.helpBlock( text ) );
 		return this;
 	}
 
@@ -157,6 +158,19 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 		return this;
 	}
 
+	/**
+	 * Should field errors for the control present in this form group be detected automatically.
+	 * If this is the case (default) a {@link org.springframework.validation.Errors} object will be searched
+	 * for on the model and the control name will be used as the selector for possible errors.
+	 *
+	 * @param detectFieldErrors should an Errors model object be used
+	 * @return current builder
+	 */
+	public FormGroupElementBuilder detectFieldErrors( boolean detectFieldErrors ) {
+		this.detectFieldErrors = detectFieldErrors;
+		return this;
+	}
+
 	@Override
 	protected FormGroupElement createElement( ViewElementBuilderContext builderContext ) {
 		FormGroupElement group = new FormGroupElement();
@@ -171,6 +185,10 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 
 		if ( control != null ) {
 			group.setControl( control.get( builderContext ) );
+		}
+
+		if ( detectFieldErrors != null ) {
+			group.setDetectFieldErrors( detectFieldErrors );
 		}
 
 		group.setRenderHelpBlockBeforeControl( helpBlockBeforeControl );

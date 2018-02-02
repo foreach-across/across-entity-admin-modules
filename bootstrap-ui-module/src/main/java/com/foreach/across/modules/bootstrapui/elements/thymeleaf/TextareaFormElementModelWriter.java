@@ -16,7 +16,10 @@
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
+import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
+
+import static com.foreach.across.modules.bootstrapui.elements.thymeleaf.TextboxFormElementModelWriter.TRANSIENT_ERROR_VALUE_ATTRIBUTE;
 
 /**
  * @author Arne Vandamme
@@ -26,14 +29,21 @@ public class TextareaFormElementModelWriter extends FormControlElementModelWrite
 {
 	@Override
 	protected void writeOpenElement( TextareaFormElement control, ThymeleafModelBuilder model ) {
+		String transientErrorValue = control.getAttribute( TRANSIENT_ERROR_VALUE_ATTRIBUTE, String.class );
+
+		if ( transientErrorValue != null ) {
+			control.removeAttribute( TRANSIENT_ERROR_VALUE_ATTRIBUTE );
+		}
+
 		super.writeOpenElement( control, model );
 
 		model.addAttributeValue( "class", "form-control",
-		                         control.isAutoSize() ? TextareaFormElement.CSS_AUTOSIZE : null );
+		                         control.isAutoSize() ? TextareaFormElement.CSS_AUTOSIZE : null,
+		                         control.isDisableLineBreaks() ? TextboxFormElement.CSS_DISABLE_LINE_BREAKS : null );
 
 		model.addAttribute( "rows", control.getRows() );
 		model.addAttribute( "placeholder", control.getPlaceholder() );
 
-		model.addText( control.getText() );
+		model.addText( transientErrorValue != null ? transientErrorValue : control.getText() );
 	}
 }

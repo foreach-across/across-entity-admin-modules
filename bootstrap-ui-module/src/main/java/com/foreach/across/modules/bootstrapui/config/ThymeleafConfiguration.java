@@ -64,5 +64,7 @@ public class ThymeleafConfiguration
 		                                         new TableViewElementModelBuilder.RowElementThymeleafBuilder() );
 		modelWriterRegistry.registerModelWriter( TableViewElement.Cell.class,
 		                                         new TableViewElementModelBuilder.CellElementThymeleafBuilder() );
+		modelWriterRegistry.registerModelWriter( FileUploadFormElement.class,
+		                                         new FileUploadElementModelWriter() );
 	}
 }

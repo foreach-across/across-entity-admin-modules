@@ -44,6 +44,8 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 
 	ButtonViewElementBuilder button();
 
+	FileUploadFormElementBuilder file();
+
 	TextboxFormElementBuilder textbox();
 
 	TextboxFormElementBuilder textarea();
@@ -55,6 +57,20 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 	FieldsetFormElementBuilder fieldset( String legendText );
 
 	TableViewElementBuilder table();
+
+	TableViewElementBuilder.Header tableHeader();
+
+	TableViewElementBuilder.Body tableBody();
+
+	TableViewElementBuilder.Footer tableFooter();
+
+	TableViewElementBuilder.Caption tableCaption();
+
+	TableViewElementBuilder.Cell tableCell();
+
+	TableViewElementBuilder.Cell tableHeaderCell();
+
+	TableViewElementBuilder.Row tableRow();
 
 	NodeViewElementBuilder row();
 
@@ -81,6 +97,10 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 	NumericFormElementBuilder numeric();
 
 	AlertViewElementBuilder alert();
+
+	GlyphIcon glyphIcon( String icon );
+
+	FaIcon faIcon( String icon );
 
 	AutoSuggestFormElementBuilder autosuggest();
 }

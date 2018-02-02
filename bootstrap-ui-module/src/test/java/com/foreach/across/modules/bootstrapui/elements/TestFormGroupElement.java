@@ -24,8 +24,14 @@ import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.test.modules.webtest.controllers.RenderViewElementController;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
@@ -46,6 +52,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		textbox.setName( "control" );
 
 		LabelFormElement label = new LabelFormElement();
+		label.setName( "label" );
 		label.setTarget( textbox );
 		label.setText( "title" );
 
@@ -426,25 +433,43 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void horizontalFormLayoutInheritedFromForm() {
+		FormViewElement form = new FormViewElement();
+		form.setFormLayout( FormLayout.horizontal( 2 ) );
+
+		CheckboxFormElement checkbox = new CheckboxFormElement();
+		checkbox.setText( "checkbox value" );
+
+		group = new FormGroupElement();
+		group.setControl( checkbox );
+
+		form.addChild( group );
+
+		renderAndExpect(
+				form,
+				"<form method='post' role='form' class='form-horizontal'><div class='form-group checkbox'>" +
+						"<div class='col-md-10 col-md-offset-2'>" +
+						"<div class='checkbox'><label>" +
+						"<input type='checkbox' />checkbox value" +
+						"</label>" +
+						"</div>" +
+						"</div>" +
+						"</div></form>"
+		);
+	}
+
+	@Test
 	public void errorFromBoundObject() {
 		ContainerViewElement container = new ContainerViewElement();
 		container.setCustomTemplate( "th/test/formObject" );
 
-		RenderViewElementController.Callback callback = ( model ) -> {
-			TestClass target = new TestClass( "test value" );
-			BindingResult errors = new BeanPropertyBindingResult( target, "item" );
-			errors.rejectValue( "control", "broken", "broken" );
-
-			model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
-			model.addAttribute( "item", target );
-			model.addAttribute( "formGroup", group );
-		};
+		RenderViewElementController.Callback callback = this::sampleModelWithError;
 		renderAndExpect(
 				container,
 				callback,
 				"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>"
 		);
@@ -470,15 +495,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				container,
-				model -> {
-					TestClass target = new TestClass( "test value" );
-					BindingResult errors = new BeanPropertyBindingResult( target, "item" );
-					errors.rejectValue( "control", "broken", "broken" );
-
-					model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
-					model.addAttribute( "item", target );
-					model.addAttribute( "formGroup", group );
-				},
+				this::sampleModelWithError,
 				"<div class='form-group'>" +
 						"<label for='illegalProperty' class='control-label'>title</label>" +
 						"<input type='text' class='form-control' name='illegalProperty' id='illegalProperty' />" +
@@ -487,13 +504,28 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
-	public void errorFromFormCommand() {
+	public void errorFromFormCommandAttributeOrCommandObject() {
 		TestClass target = new TestClass( "test value" );
 
 		FormViewElement form = new FormViewElement();
 		form.setCommandAttribute( "item" );
 		form.addChild( group );
 
+		assertBoundError( target, form );
+	}
+
+	@Test
+	public void errorFromFormCommandObjectOnly() {
+		TestClass target = new TestClass( "test value" );
+
+		FormViewElement form = new FormViewElement();
+		form.setCommandObject( target );
+		form.addChild( group );
+
+		assertBoundError( target, form );
+	}
+
+	private void assertBoundError( TestClass target, FormViewElement form ) {
 		renderAndExpect(
 				form,
 				model -> {
@@ -506,7 +538,29 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<form role='form' method='post'>" +
 						"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
+						"<div class='small text-danger'>broken</div>" +
+						"</div>" +
+						"</form>"
+		);
+	}
+
+	@Test
+	public void errorOnForm() {
+		TestClass target = new TestClass( "test value" );
+		BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+		errors.rejectValue( "control", "broken", "broken" );
+
+		FormViewElement form = new FormViewElement();
+		form.setErrors( errors );
+		form.addChild( group );
+
+		renderAndExpect(
+				form,
+				"<form role='form' method='post'>" +
+						"<div class='form-group has-error'>" +
+						"<label for='control' class='control-label'>title</label>" +
+						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>" +
 						"</form>"
@@ -522,30 +576,52 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				container,
-				model -> {
-					TestClass target = new TestClass( "test value" );
-					BindingResult errors = new BeanPropertyBindingResult( target, "item" );
-					errors.rejectValue( "control", "broken", "broken" );
-
-					model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
-					model.addAttribute( "item", target );
-					model.addAttribute( "formGroup", group );
-				},
+				this::sampleModelWithError,
 				"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label col-md-2'>title</label>" +
 						"<div class='col-md-10'>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>" +
 						"</div>"
 		);
 	}
 
+	private void sampleModelWithError( ModelMap model ) {
+		TestClass target = new TestClass( "test value" );
+		BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+		errors.rejectValue( "control", "broken", "broken" );
+
+		model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
+		model.addAttribute( "item", target );
+		model.addAttribute( "formGroup", group );
+	}
+
+	@SuppressWarnings("all")
+	@Test
+	public void labelAndControlAreNotChildrenButCanBeFound() {
+		TextViewElement help = new TextViewElement( "help", "help" );
+		group.setHelpBlock( help );
+
+		assertSame( group.getControl(), group.find( "control" ).get() );
+		assertSame( group.getLabel(), group.find( "label" ).get() );
+		assertSame( group.getHelpBlock(), group.find( "help" ).get() );
+
+		assertEquals(
+				Arrays.asList( group.getHelpBlock(), group.getLabel(), group.getControl() ),
+				group.removeAllFromTree( "help", "label", "control" ).collect( Collectors.toList() )
+		);
+
+		assertNull( group.getControl() );
+		assertNull( group.getLabel() );
+		assertNull( group.getHelpBlock() );
+	}
+
 	public static class TestClass
 	{
 		private String control;
 
-		public TestClass( String control ) {
+		TestClass( String control ) {
 			this.control = control;
 		}
 

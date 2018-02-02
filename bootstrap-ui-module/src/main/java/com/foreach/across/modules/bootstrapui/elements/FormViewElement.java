@@ -16,9 +16,15 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
+import org.springframework.validation.Errors;
+
+import static com.foreach.across.modules.bootstrapui.elements.FormLayout.Type.HORIZONTAL;
+import static com.foreach.across.modules.bootstrapui.elements.FormLayout.Type.INLINE;
 
 /**
  * Represents a HTML form element, supporting a Bootstrap {@link FormLayout} that will automatically
@@ -37,6 +43,27 @@ public class FormViewElement extends AbstractNodeViewElement
 	private FormLayout formLayout;
 	private String commandAttribute;
 
+	/**
+	 * Set the command object that this form is bound to. Can be used as an alternative to {@link #setCommandAttribute(String)}
+	 * if you do not know the model attribute name. In this case the same instance of the object is expected to be present
+	 * as a request attribute, where its attribute name will be looked for.
+	 * <p/>
+	 * Note that a value for {@link #commandAttribute} will always take precedence over the actual object.
+	 */
+	@Getter
+	@Setter
+	private Object commandObject;
+
+	/**
+	 * Set the collection of {@link Errors} for this form. Usually contains the {@link org.springframework.validation.BindingResult}
+	 * for the object bound to this form. Though setting the object is not strictly required.
+	 * <p/>
+	 * When set, any {@link #commandAttribute} or {@link #commandObject} will be ignored.
+	 */
+	@Getter
+	@Setter
+	private Errors errors;
+
 	public FormViewElement() {
 		super( "form" );
 		setElementType( ELEMENT_TYPE );
@@ -52,12 +79,22 @@ public class FormViewElement extends AbstractNodeViewElement
 
 	/**
 	 * Set the {@link FormLayout} that should be applied to all {@link FormGroupElement} members
-	 * of this form.
+	 * of this form.  Also set the corresponding class.
 	 *
 	 * @param formLayout instance
 	 */
 	public void setFormLayout( FormLayout formLayout ) {
 		this.formLayout = formLayout;
+
+		removeCssClass( "form-horizontal", "form-inline" );
+		if ( formLayout != null ) {
+			if ( HORIZONTAL.equals( formLayout.getType() ) ) {
+				addCssClass( "form-horizontal" );
+			}
+			else if ( INLINE.equals( formLayout.getType() ) ) {
+				addCssClass( "form-inline" );
+			}
+		}
 	}
 
 	public String getCommandAttribute() {

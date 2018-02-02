@@ -18,7 +18,10 @@ package com.foreach.across.modules.bootstrapui.elements.processor;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -31,6 +34,16 @@ import static org.junit.Assert.assertNull;
 @SuppressWarnings("unchecked")
 public class TestControlNamePrefixingPostProcessor
 {
+	@Before
+	public void before(){
+		ViewElementBuilderContextHolder.setViewElementBuilderContext( new DefaultViewElementBuilderContext());
+	}
+
+	@After
+	public void after() {
+		ViewElementBuilderContextHolder.clearViewElementBuilderContext();
+	}
+
 	@Test
 	public void simplePrefixing() {
 		ControlNamePrefixingPostProcessor processor = new ControlNamePrefixingPostProcessor( "test" );
@@ -38,7 +51,7 @@ public class TestControlNamePrefixingPostProcessor
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "textbox" )
 				.postProcessor( processor )
-				.build( new DefaultViewElementBuilderContext() );
+				.build();
 
 		assertEquals( "test.textbox", textbox.getControlName() );
 	}
@@ -50,7 +63,7 @@ public class TestControlNamePrefixingPostProcessor
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "[textbox]" )
 				.postProcessor( processor )
-				.build( new DefaultViewElementBuilderContext() );
+				.build();
 
 		assertEquals( "test[textbox]", textbox.getControlName() );
 	}
@@ -61,7 +74,7 @@ public class TestControlNamePrefixingPostProcessor
 
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.postProcessor( processor )
-				.build( new DefaultViewElementBuilderContext() );
+				.build();
 
 		assertNull( textbox.getControlName() );
 	}
@@ -72,7 +85,7 @@ public class TestControlNamePrefixingPostProcessor
 
 		new TextViewElementBuilder()
 				.postProcessor( processor )
-				.build( new DefaultViewElementBuilderContext() );
+				.build();
 	}
 
 	@Test
@@ -82,7 +95,7 @@ public class TestControlNamePrefixingPostProcessor
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "test.textbox" )
 				.postProcessor( processor )
-				.build( new DefaultViewElementBuilderContext() );
+				.build();
 
 		assertEquals( "test.textbox", textbox.getControlName() );
 	}
@@ -94,7 +107,7 @@ public class TestControlNamePrefixingPostProcessor
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "test.textbox" )
 				.postProcessor( processor )
-				.build( new DefaultViewElementBuilderContext() );
+				.build();
 
 		assertEquals( "test.test.textbox", textbox.getControlName() );
 	}
@@ -107,13 +120,13 @@ public class TestControlNamePrefixingPostProcessor
 		TextboxFormElement textbox = new TextboxFormElementBuilder()
 				.controlName( "textbox" )
 				.postProcessor( processor )
-				.build( new DefaultViewElementBuilderContext() );
+				.build();
 		assertEquals( "testtextbox", textbox.getControlName() );
 
 		textbox = new TextboxFormElementBuilder()
 				.controlName( "[textbox]" )
 				.postProcessor( processor )
-				.build( new DefaultViewElementBuilderContext() );
+				.build();
 		assertEquals( "test[textbox]", textbox.getControlName() );
 	}
 }

@@ -16,8 +16,12 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.ColumnViewElement;
+import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
 import com.foreach.across.test.support.AbstractViewElementBuilderTest;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Arne Vandamme
@@ -27,5 +31,19 @@ public class TestColumnViewElementBuilder extends AbstractViewElementBuilderTest
 	@Override
 	protected ColumnViewElementBuilder createBuilder( ViewElementBuilderFactory builderFactory ) {
 		return new ColumnViewElementBuilder();
+	}
+
+	@Test
+	public void addingCssApartFromLayouts() {
+		builder.css( "my-css" )
+		       .layout( Grid.Device.MD.width( 2 ) )
+		       .css( "other-css" );
+
+		build();
+
+		assertEquals(
+				"my-css other-css col-md-2",
+				element.getAttribute( "class" )
+		);
 	}
 }

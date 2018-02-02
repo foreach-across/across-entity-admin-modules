@@ -16,8 +16,9 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
+import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
+import com.foreach.across.modules.web.support.MessageCodeSupportingLocalizedTextResolver;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,11 +29,12 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 {
 	protected OptionsFormElementBuilder builder;
 
-	protected ViewElementBuilderContext builderContext;
+	protected DefaultViewElementBuilderContext builderContext;
 
 	@Before
 	public void reset() {
 		builderContext = new DefaultViewElementBuilderContext();
+		builderContext.setLocalizedTextResolver( new MessageCodeSupportingLocalizedTextResolver( null ) );
 
 		builder = new OptionsFormElementBuilder();
 	}
@@ -52,6 +54,22 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 
 		expect(
 				"<select class='form-control' multiple='multiple' />"
+		);
+	}
+
+	@Test
+	public void asBootstrapSelect() {
+		SelectFormElementConfiguration configuration = new SelectFormElementConfiguration();
+		configuration.setDeselectAllText( null );
+		configuration.setSelectAllText( null );
+		configuration.setCountSelectedText( null );
+		configuration.setMaxOptionsText( null );
+		configuration.setNoneSelectedText( null );
+
+		builder.select( configuration ).multiple().htmlId( "mybox" ).controlName( "boxName" );
+
+		expect(
+				"<select name='boxName' id='mybox' multiple='multiple' class='form-control' data-bootstrapui-select='{&quot;dropupAuto&quot;:false}' />"
 		);
 	}
 

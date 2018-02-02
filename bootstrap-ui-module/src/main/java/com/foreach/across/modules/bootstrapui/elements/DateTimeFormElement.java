@@ -17,9 +17,12 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +43,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 
 	private final HiddenFormElement hidden = new HiddenFormElement();
 
-	private Date value;
+	private LocalDateTime value;
 
 	public DateTimeFormElement() {
 		setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
@@ -52,17 +55,42 @@ public class DateTimeFormElement extends InputGroupFormElement
 		return getAttribute( ATTRIBUTE_DATA_DATEPICKER, DateTimeFormElementConfiguration.class );
 	}
 
-	public void setConfiguration( DateTimeFormElementConfiguration configuration ) {
-		Assert.notNull( configuration );
+	public void setConfiguration( @NonNull DateTimeFormElementConfiguration configuration ) {
 		setAttribute( ATTRIBUTE_DATA_DATEPICKER, configuration );
 	}
 
+	@Deprecated
 	public Date getValue() {
-		return value;
+		return getConfiguration().localDateTimeToDate( value );
 	}
 
+	@Deprecated
 	public void setValue( Date value ) {
+		setLocalDateTime( getConfiguration().dateToLocalDateTime( value ) );
+	}
+
+	public void setLocalDate( LocalDate value ) {
+		setLocalDateTime( DateTimeFormElementConfiguration.localDateToLocalDateTime( value ) );
+	}
+
+	public LocalDate getLocalDate() {
+		return value.toLocalDate();
+	}
+
+	public void setLocalTime( LocalTime value ) {
+		setLocalDateTime( DateTimeFormElementConfiguration.localTimeToLocalDateTime( value ) );
+	}
+
+	public LocalTime getLocalTime() {
+		return value.toLocalTime();
+	}
+
+	public void setLocalDateTime( LocalDateTime value ) {
 		this.value = value;
+	}
+
+	public LocalDateTime getLocalDateTime() {
+		return value;
 	}
 
 	@Override
@@ -77,7 +105,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 		}
 
 		if ( value != null ) {
-			String dateAsString = DateTimeFormElementConfiguration.JAVA_FORMATTER.format( value );
+			String dateAsString = DateTimeFormElementConfiguration.JAVA_DATE_TIME_FORMATTER.format( value );
 			hidden.setValue( dateAsString );
 
 			if ( controlElement instanceof ConfigurableTextViewElement ) {

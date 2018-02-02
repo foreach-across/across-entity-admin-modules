@@ -95,6 +95,11 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	}
 
 	@Override
+	public FileUploadFormElementBuilder file() {
+		return new FileUploadFormElementBuilder();
+	}
+
+	@Override
 	public TextboxFormElementBuilder textarea() {
 		return textbox().multiLine();
 	}
@@ -107,6 +112,41 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	@Override
 	public TableViewElementBuilder table() {
 		return new TableViewElementBuilder();
+	}
+
+	@Override
+	public TableViewElementBuilder.Header tableHeader() {
+		return TableViewElementBuilder.createHeader();
+	}
+
+	@Override
+	public TableViewElementBuilder.Body tableBody() {
+		return TableViewElementBuilder.createBody();
+	}
+
+	@Override
+	public TableViewElementBuilder.Footer tableFooter() {
+		return TableViewElementBuilder.createFooter();
+	}
+
+	@Override
+	public TableViewElementBuilder.Caption tableCaption() {
+		return TableViewElementBuilder.createCaption();
+	}
+
+	@Override
+	public TableViewElementBuilder.Cell tableCell() {
+		return new TableViewElementBuilder.Cell();
+	}
+
+	@Override
+	public TableViewElementBuilder.Cell tableHeaderCell() {
+		return new TableViewElementBuilder.Cell().heading( true );
+	}
+
+	@Override
+	public TableViewElementBuilder.Row tableRow() {
+		return new TableViewElementBuilder.Row();
 	}
 
 	@Override
@@ -172,6 +212,16 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	@Override
 	public AlertViewElementBuilder alert() {
 		return new AlertViewElementBuilder();
+	}
+
+	@Override
+	public GlyphIcon glyphIcon( String icon ) {
+		return new GlyphIcon( icon );
+	}
+
+	@Override
+	public FaIcon faIcon( String icon ) {
+		return new FaIcon( icon );
 	}
 
 	@Override

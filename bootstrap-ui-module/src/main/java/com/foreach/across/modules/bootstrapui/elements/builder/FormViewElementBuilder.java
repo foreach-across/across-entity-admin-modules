@@ -22,6 +22,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import org.springframework.http.HttpMethod;
+import org.springframework.validation.Errors;
 
 import java.util.Map;
 
@@ -33,9 +34,48 @@ public class FormViewElementBuilder extends AbstractLinkSupportingNodeViewElemen
 	private HttpMethod method = HttpMethod.POST;
 	private FormLayout formLayout;
 	private String commandAttribute;
+	private Object commandObject;
+	private Errors errors;
 
+	/**
+	 * Set the attribute name of the command object that should be bound to this form.
+	 * It is expected a {@link org.springframework.validation.BindingResult} is present on the model
+	 * for this attribute. That {@link org.springframework.validation.BindingResult} will be used
+	 * for field error binding by the {@link com.foreach.across.modules.bootstrapui.elements.FormGroupElement}
+	 * members of this form.
+	 *
+	 * @param attributeName name of the command object
+	 * @return current builder
+	 */
 	public FormViewElementBuilder commandAttribute( String attributeName ) {
 		this.commandAttribute = attributeName;
+		return this;
+	}
+
+	/**
+	 * Set the command object that should be bound to this form.
+	 * It is expected a {@link org.springframework.validation.BindingResult} is present on the model
+	 * for this object. That {@link org.springframework.validation.BindingResult} will be used
+	 * for field error binding by the {@link com.foreach.across.modules.bootstrapui.elements.FormGroupElement}
+	 * members of this form.
+	 *
+	 * @param commandObject command bject
+	 * @return current builder
+	 */
+	public FormViewElementBuilder commandObject( Object commandObject ) {
+		this.commandObject = commandObject;
+		return this;
+	}
+
+	/**
+	 * Set the {@link Errors} that should be used for field error binding by t
+	 * he {@link com.foreach.across.modules.bootstrapui.elements.FormGroupElement} members of this form.
+	 *
+	 * @param errors to use for field error lookup
+	 * @return current builder
+	 */
+	public FormViewElementBuilder errors( Errors errors ) {
+		this.errors = errors;
 		return this;
 	}
 
@@ -169,6 +209,14 @@ public class FormViewElementBuilder extends AbstractLinkSupportingNodeViewElemen
 
 		if ( commandAttribute != null ) {
 			form.setCommandAttribute( commandAttribute );
+		}
+
+		if ( commandObject != null ) {
+			form.setCommandObject( commandObject );
+		}
+
+		if ( errors != null ) {
+			form.setErrors( errors );
 		}
 
 		if ( action != null ) {

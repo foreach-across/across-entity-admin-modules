@@ -35,6 +35,19 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void simpleAsBootstrapSelect() {
+		SelectFormElement box = new SelectFormElement();
+		box.setHtmlId( null );
+		box.setConfiguration( new SelectFormElementConfiguration() );
+		box.setControlName( "boxName" );
+
+		renderAndExpect(
+				box,
+				"<select name='boxName' class='form-control' data-bootstrapui-select='{&quot;dropupAuto&quot;:false}' />"
+		);
+	}
+
+	@Test
 	public void multiple() {
 		SelectFormElement box = new SelectFormElement();
 		box.setMultiple( true );

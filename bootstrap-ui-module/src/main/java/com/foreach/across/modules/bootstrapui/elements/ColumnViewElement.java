@@ -41,10 +41,22 @@ public class ColumnViewElement extends AbstractNodeViewElement
 
 	/**
 	 * Set all device related layouts for this column.
+	 * Replaces any previously registered, use {@link #addLayout(Grid.DeviceGridLayout...)} if you want to add
+	 * a single layout.
+	 *
+	 * @param layouts to be used
+	 */
+	public void setLayouts( Grid.DeviceGridLayout... layouts ) {
+		setLayouts( Arrays.asList( layouts ) );
+	}
+
+	/**
+	 * Set all device related layouts for this column.
 	 *
 	 * @param layouts to be used
 	 */
 	public void setLayouts( Collection<Grid.DeviceGridLayout> layouts ) {
+		removePositionClass();
 		position.clear();
 		position.addAll( layouts );
 
@@ -66,6 +78,7 @@ public class ColumnViewElement extends AbstractNodeViewElement
 	 * @param layouts to add
 	 */
 	public void addLayout( Grid.DeviceGridLayout... layouts ) {
+		removePositionClass();
 		Collections.addAll( position, layouts );
 		updatePositionClass();
 	}
@@ -76,16 +89,22 @@ public class ColumnViewElement extends AbstractNodeViewElement
 	 * @param layouts to remove
 	 */
 	public void removeLayout( Grid.DeviceGridLayout... layouts ) {
+		removePositionClass();
 		position.removeAll( Arrays.asList( layouts ) );
 		updatePositionClass();
 	}
 
 	public void clearLayouts() {
+		removePositionClass();
 		position.clear();
 		updatePositionClass();
 	}
 
+	private void removePositionClass() {
+		removeCssClass( position.toString() );
+	}
+
 	private void updatePositionClass() {
-		setAttribute( "class", position.toString() );
+		addCssClass( position.toString() );
 	}
 }

@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.elements.thymeleaf.TextboxFormElementModelWriter;
 import org.junit.Test;
 
 /**
@@ -33,6 +34,22 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 				"<textarea class='form-control js-autosize' placeholder='Text input' rows='3'>" +
 						"some &lt;strong class=&quot;test&quot;&gt;html&lt;/strong&gt;" +
 						"</textarea>"
+		);
+	}
+
+	@Test
+	public void transientErrorValueGetsRenderedOnceInsteadOfText() {
+		TextareaFormElement box = new TextareaFormElement();
+		box.setText( "text" );
+		box.setAttribute( TextboxFormElementModelWriter.TRANSIENT_ERROR_VALUE_ATTRIBUTE, "bad value" );
+
+		renderAndExpect(
+				box,
+				"<textarea class='form-control js-autosize' rows='3'>bad value</textarea>"
+		);
+		renderAndExpect(
+				box,
+				"<textarea class='form-control js-autosize' rows='3'>text</textarea>"
 		);
 	}
 

@@ -16,7 +16,9 @@
 
 package com.foreach.across.modules.bootstrapui.components;
 
-import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.components.builder.BreadcrumbNavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +27,20 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
-class BootstrapUiComponentFactoryImpl implements BootstrapUiComponentFactory
+public class BootstrapUiComponentFactoryImpl implements BootstrapUiComponentFactory
 {
 	@Override
-	public NavComponentBuilder nav( Menu menu ) {
-		return new NavComponentBuilder().menu( menu );
+	public DefaultNavComponentBuilder nav( Menu menu ) {
+		return new DefaultNavComponentBuilder().menu( menu );
+	}
+
+	@Override
+	public PanelsNavComponentBuilder panels( Menu menu ) {
+		return new PanelsNavComponentBuilder().menu( menu );
+	}
+
+	@Override
+	public BreadcrumbNavComponentBuilder breadcrumb( Menu menu ) {
+		return new BreadcrumbNavComponentBuilder().menu( menu );
 	}
 }

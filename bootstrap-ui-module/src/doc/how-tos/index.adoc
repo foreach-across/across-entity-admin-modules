@@ -1,0 +1,7 @@
+= How-tos
+:sectnums:
+:chapter-number: 0
+
+include::customizing-a-datetimepicker.adoc[]
+
+:!sectnums:
