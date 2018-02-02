@@ -16,9 +16,6 @@
 
 package com.foreach.across.modules.entity.config;
 
-import com.foreach.across.modules.entity.EntityModuleSettings;
-import com.foreach.across.modules.entity.annotations.EntityValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +25,6 @@ import org.springframework.data.web.ProxyingHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.data.web.config.HateoasAwareSpringDataWebConfiguration;
 import org.springframework.data.web.config.SpringDataWebConfiguration;
-import org.springframework.validation.SmartValidator;
-import org.springframework.validation.Validator;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -41,7 +36,7 @@ import java.util.List;
  * @author Arne Vandamme
  */
 @Configuration
-class AcrossWebConfiguration extends WebMvcConfigurerAdapter
+class AcrossWebConfiguration
 {
 	/**
 	 * Activate Spring Data web support if not yet activated on the parent application context.
@@ -73,31 +68,5 @@ class AcrossWebConfiguration extends WebMvcConfigurerAdapter
 			}
 			argumentResolvers.addAll( proxyingHandlerMethodArgumentResolvers );
 		}
-	}
-
-	private SmartValidator entityValidator;
-	private EntityModuleSettings settings;
-
-	/**
-	 * Register the entity validator as the default web mvc validator if necessary.
-	 */
-	@Override
-	public Validator getValidator() {
-		if ( entityValidator != null && settings.isEntityValidatorRegisterForMvc() ) {
-			return entityValidator;
-		}
-
-		return null;
-	}
-
-	@EntityValidator
-	@SuppressWarnings({ "unused", "SpringJavaAutowiringInspection" })
-	void setEntityValidator( SmartValidator entityValidator ) {
-		this.entityValidator = entityValidator;
-	}
-
-	@Autowired
-	void setEntityModuleSettings( EntityModuleSettings settings ) {
-		this.settings = settings;
 	}
 }
