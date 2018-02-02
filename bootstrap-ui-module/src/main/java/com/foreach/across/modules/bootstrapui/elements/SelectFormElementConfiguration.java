@@ -293,7 +293,7 @@ public class SelectFormElementConfiguration extends TreeMap<String, Object>
 		putIfKeyAbsent( clone, "noneSelectedText", "#{BootstrapUiModule.SelectFormElementConfiguration.noneSelectedText=Nothing selected}" );
 		putIfKeyAbsent( clone, "maxOptionsText", "#{BootstrapUiModule.SelectFormElementConfiguration.maxOptionsText=Limit reached ({0} items max)}" );
 		putIfKeyAbsent( clone, "countSelectedText", "#{BootstrapUiModule.SelectFormElementConfiguration.countSelectedText={0} items selected}" );
-		putIfKeyAbsent( clone, "deselectAllText", "#{BootstrapUiModule.SelectFormElementConfiguration.countSelectedText=Deselect all}" );
+		putIfKeyAbsent( clone, "deselectAllText", "#{BootstrapUiModule.SelectFormElementConfiguration.deselectAllText=Deselect all}" );
 
 		if ( localizedTextResolver != null ) {
 			Stream.of( "countSelectedText", "deselectAllText", "maxOptionsText", "noneSelectedText", "selectAllText" )
