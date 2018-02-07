@@ -17,8 +17,11 @@
 package com.foreach.across.modules.entity.config.modules;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
+import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataController;
+import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.controllers.admin.EntityOverviewController;
@@ -44,7 +47,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @ConditionalOnAcrossModule(AdminWebModule.NAME)
 @Configuration
-@ComponentScan(basePackageClasses = EntityOverviewController.class)
+@ComponentScan(basePackageClasses = { EntityOverviewController.class, AutoSuggestDataEndpoint.class })
 @RequiredArgsConstructor
 @Slf4j
 public class AdminWebConfiguration implements EntityConfigurer
@@ -60,6 +63,12 @@ public class AdminWebConfiguration implements EntityConfigurer
 	@Bean
 	public MenuEventsHandler menuEventsHandler() {
 		return new MenuEventsHandler();
+	}
+
+	@Bean
+	@Exposed
+	public AutoSuggestDataEndpoint autoSuggestDataEndpoint() {
+		return new AutoSuggestDataEndpoint( "@adminWeb:" + AutoSuggestDataController.DEFAULT_REQUEST_MAPPING );
 	}
 
 	@Override
