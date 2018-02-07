@@ -43,4 +43,5 @@ public interface BootstrapUiElements extends StandardViewElements
 	String NUMERIC = "bootstrapNumeric";
 	String LINK = "bootstrapLink";
 	String FILE_UPLOAD = "bootstrapFileUpload";
+	String AUTOSUGGEST = "bootstrapAutoSuggest";
 }

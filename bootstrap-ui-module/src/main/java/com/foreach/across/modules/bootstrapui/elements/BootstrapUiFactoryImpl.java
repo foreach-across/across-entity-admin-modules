@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
 import com.foreach.across.modules.web.ui.StandardViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -226,6 +227,6 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 
 	@Override
 	public AutoSuggestFormElementBuilder autosuggest() {
-		return new AutoSuggestFormElementBuilder( this );
+		return new AutoSuggestFormElementBuilder();
 	}
 }

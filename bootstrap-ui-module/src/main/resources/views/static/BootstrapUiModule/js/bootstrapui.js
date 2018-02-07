@@ -17,6 +17,8 @@
 // Exposes infrastructure for form initialization logic
 var BootstrapUiModule = (function( $ ) {
     var bootstrapUiModule = {
+        Controls: {},
+
         documentInitialized: false,
         initializers: [],
 
@@ -30,7 +32,7 @@ var BootstrapUiModule = (function( $ ) {
         registerInitializer: function( callback, callIfAlreadyInitialized ) {
             this.initializers.push( callback );
 
-            var shouldExecute = (callIfAlreadyInitialized === undefined || true == callIfAlreadyInitialized) && this.documentInitialized;
+            var shouldExecute = (callIfAlreadyInitialized === undefined || true === callIfAlreadyInitialized) && this.documentInitialized;
 
             if ( shouldExecute ) {
                 callback();

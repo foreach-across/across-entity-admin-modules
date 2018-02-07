@@ -55,7 +55,7 @@ public class BootstrapDatepickerController
 	@EventListener(condition = "#navMenu.eventName == 'navMenu'")
 	protected void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
-		       .item( "/test/form-elements/datepicker", "Datepicker", "/datepicker" ).order( 3 );
+		       .item( "/test/form-elements/datepicker", "Datepicker", "/datepicker" ).order( 5 );
 	}
 
 	@RequestMapping(method = RequestMethod.GET)

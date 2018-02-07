@@ -16,14 +16,18 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.modules.bootstrapui.elements.AutosuggestFormElementConfiguration;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.builder.AutoSuggestFormElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration;
+import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,16 +35,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.foreach.across.modules.bootstrapui.elements.builder.AutoSuggestFormElementBuilder.CSS_PREFILL_TABLE;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder.CSS_PREFILL_TABLE;
 
 /**
- * Generates Twitter Typeahead autosuggest instances with
+ * Generates Twitter Typeahead autosuggest instances.
  *
  * @author Sander Van Loock
  * @since 2.0.0
@@ -50,49 +52,61 @@ import static com.foreach.across.modules.bootstrapui.elements.builder.AutoSugges
 @RequestMapping("/bootstrapAutosuggest")
 public class AutoSuggestFormController
 {
-	private final BootstrapUiFactory bootstrapUiFactory;
+	@EventListener(condition = "#navMenu.menuName=='navMenu'")
+	protected void registerMenuItems( BuildMenuEvent navMenu ) {
+		navMenu.builder()
+		       .item( "/test/form-elements/autosuggest", "AutoSuggest", "/bootstrapAutosuggest" ).order( 4 );
+	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String autosuggest( ModelMap model ) {
+	public String showElements( ModelMap model, ViewElementBuilderContext builderContext ) {
+		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
 
-		AutosuggestFormElementConfiguration configuration = new AutosuggestFormElementConfiguration(
-				"/bootstrapAutosuggest/suggest" );
+		//AutoSuggestFormElementConfiguration.withDataSet( dataset -> dataset.endpoint( "bla" ) ).showHint( true );
 
-		model.addAttribute( "autosuggest1", bootstrapUiFactory.autosuggest()
-		                                                      .build() );
+		generatedElements.put( "Simple autosuggest with default settings", defaultAutoSuggest().build( builderContext ) );
 
-		model.addAttribute( "autosuggest2", bootstrapUiFactory.autosuggest()
-		                                                      .configuration( configuration )
-		                                                      .idProperty( "id" )
-		                                                      .properties( "label", "other" )
-		                                                      .prefill( Arrays.asList( createPrefill( "abc" ),
-		                                                                               createPrefill( "def" ) )
-		                                                      )
-		                                                      .build() );
+//		AutoSuggestFormElementConfiguration configuration = AutoSuggestFormElementConfiguration.withDataSet(
+//				dataSet -> dataSet.remoteUrl( "/bootstrapAutosuggest/suggest" ) );
+//		generatedElements.put( "autosuggest2", autosuggest()
+//				.configuration( configuration )
+//				.idProperty( "id" )
+//				.properties( "label", "other" )
+//				.prefill( Arrays.asList( createPrefill( "abc" ),
+//				                         createPrefill( "def" ) )
+//				)
+//				.build() );
+//
+//		NodeViewElement container = new NodeViewElementBuilder( "ul" )
+//				.css( CSS_PREFILL_TABLE )
+//				.build( new DefaultViewElementBuilderContext() );
+//		NodeViewElement item = new NodeViewElementBuilder( "ul" )
+//				.add( node( "li" )
+//						      .css( AutoSuggestFormElementBuilder.CSS_ITEM_TEMPLATE )
+//						      .add( div()
+//								            .attribute( AutoSuggestFormElementBuilder.ATTRIBUTE_DATA_PROPERTY,
+//								                        "label" )
+//						      )
+//				)
+//				.build( new DefaultViewElementBuilderContext() );
+//		generatedElements.put( "autosuggest3", autosuggest()
+//				.configuration( configuration )
+//				.itemTemplate( container, item )
+//				.build() );
 
-		NodeViewElement container = new NodeViewElementBuilder( "ul" )
-				.css( CSS_PREFILL_TABLE )
-				.build( new DefaultViewElementBuilderContext() );
-		NodeViewElement item = new NodeViewElementBuilder( "ul" )
-				.add( bootstrapUiFactory.node( "li" )
-				                        .css( AutoSuggestFormElementBuilder.CSS_ITEM_TEMPLATE )
-				                        .add( bootstrapUiFactory
-						                              .div()
-						                              .attribute( AutoSuggestFormElementBuilder.ATTRIBUTE_DATA_PROPERTY,
-						                                          "label" )
-				                        )
-				)
-				.build( new DefaultViewElementBuilderContext() );
-		model.addAttribute( "autosuggest3", bootstrapUiFactory.autosuggest()
-		                                                      .configuration( configuration )
-		                                                      .itemTemplate( container, item )
-		                                                      .build() );
+		model.addAttribute( "generatedElements", generatedElements );
 
-		return "th/bootstrapUiTest/autosuggest";
+		return "th/bootstrapUiTest/elementsRendering";
+	}
+
+	private ViewElementBuilder defaultAutoSuggest() {
+		return autosuggest().configuration(
+				AutoSuggestFormElementConfiguration.withDataSet( dataset -> dataset.remoteUrl( "/bootstrapAutosuggest/suggest?query={{query}}" ) )
+		);
 	}
 
 	private Map<String, Object> createPrefill( String description ) {
-		HashMap item = new HashMap();
+		HashMap<String, Object> item = new HashMap<>();
 		item.put( "label", description );
 		item.put( "other", "qksmjdfmlqsj" );
 		return item;
@@ -100,7 +114,7 @@ public class AutoSuggestFormController
 
 	@RequestMapping(method = RequestMethod.GET, value = "/suggest", produces = "application/json; charset=UTF-8")
 	@ResponseBody
-	public List<Suggestion> suggetions( @RequestParam("query") String query ) {
+	public List<Suggestion> suggestions( @RequestParam("query") String query ) {
 		List<Suggestion> suggestions = Arrays.asList(
 				Suggestion.builder()
 				          .id( 1 )
@@ -127,7 +141,7 @@ public class AutoSuggestFormController
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Data
-	static class Suggestion
+	private static class Suggestion
 	{
 		private int id;
 		private String label;

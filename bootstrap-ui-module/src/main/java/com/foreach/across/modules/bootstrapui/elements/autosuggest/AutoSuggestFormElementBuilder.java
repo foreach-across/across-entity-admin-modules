@@ -14,61 +14,95 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements.builder;
+package com.foreach.across.modules.bootstrapui.elements.autosuggest;
 
-import com.foreach.across.modules.bootstrapui.elements.AutosuggestFormElementConfiguration;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
-import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
+import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.builder.FormControlElementBuilderSupport;
+import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Will create an autosuggest component backed by a Typeahead JS implementation.
+ * The textbox will serve as the typeahead input control, a hidden control will be
+ * <p/>
+ * The client-side javascript is responsible for swapping the actual textbox and hidden field control,
+ * so the hidden field is used for the post-back value.
+ */
 @RequiredArgsConstructor
 @Slf4j
-public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeViewElementBuilder<NodeViewElement, AutoSuggestFormElementBuilder>
+@Accessors(fluent = true)
+public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupport<AutoSuggestFormElement, AutoSuggestFormElementBuilder>
 {
-	public static final String CSS_TYPEAHEAD_CLASS = "js-typeahead";
-	public static final String CSS_TYPEAHEAD_INPUT = "js-typeahead-input";
+	public static final String ATTRIBUTE_DATA_PROPERTY = "data-as-property";
+
+	/**
+	 * CSS class on the wrapper, representing the autosuggest (typeahead) component.
+	 */
+	public static final String CSS_TYPEAHEAD_MODULE = "axbum-typeahead";
+
+	/**
+	 * CSS class put on the textbox, that will actually be initialized as the typeahead control.
+	 */
+	public static final String CSS_TYPEAHEAD = "js-typeahead";
+	public static final String CSS_TYPEAHEAD_VALUE = "js-typeahead-value";
+
 	public static final String CSS_TYPEAHEAD_ITEM_CLASS = "js-typeahead-item";
 	public static final String CSS_PREFILL_TABLE = "js-typeahead-prefill";
-
 	public static final String CSS_SUGGESTION_TEMPLATE = "js-typeahead-suggestion-template";
 	public static final String CSS_ITEM_TEMPLATE = "js-typeahead-template";
 	public static final String CSS_EMPTY_TEMPLATE = "js-typeahead-empty-template";
 
-	public static final String ATTRIBUTE_DATA_AUTOSUGGEST = "data-autosuggest";
-	public static final String ATTRIBUTE_DATA_PROPERTY = "data-as-property";
 	public static final String DEFAULT_PROPERTY = "label";
 
-	private final BootstrapUiFactory bootstrapUiFactory;
-	private AutosuggestFormElementConfiguration configuration = new AutosuggestFormElementConfiguration();
+	private AutoSuggestFormElementConfiguration configuration = new AutoSuggestFormElementConfiguration();
 
 	private String idProperty = "id";
-	private String endPoint;
+	private String endpoint;
 
 	private List<String> properties = Collections.singletonList( DEFAULT_PROPERTY );
 	private List<Map<String, Object>> prefill = Collections.emptyList();
-	private ElementOrBuilder notFoundTemplate;
-	private ElementOrBuilder suggestionTemplate;
-	private ElementOrBuilder itemTemplate;
+	private ViewElementBuilderSupport.ElementOrBuilder notFoundTemplate;
+	private ViewElementBuilderSupport.ElementOrBuilder suggestionTemplate;
+	private ViewElementBuilderSupport.ElementOrBuilder itemTemplate;
+
+	/**
+	 * -- SETTER --
+	 * A textbox builder for creating a custom text input element.
+	 * Note that the control name of the textbox will be cleared.
+	 */
+	@Setter
+	private TextboxFormElementBuilder textboxBuilder;
+
 	private ViewElement containerTemplate;
 
-	public AutoSuggestFormElementBuilder configuration( AutosuggestFormElementConfiguration configuration ) {
+	private Function<String, String> linkBuilder;
+
+	/**
+	 * Set the configuration for the autosuggest control.
+	 *
+	 * @param configuration to use
+	 * @return current builder
+	 */
+	public AutoSuggestFormElementBuilder configuration( @NonNull AutoSuggestFormElementConfiguration configuration ) {
 		this.configuration = configuration;
 		return this;
 	}
@@ -88,8 +122,14 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		return this;
 	}
 
-	public AutoSuggestFormElementBuilder endPoint( String endPoint ) {
-		this.endPoint = endPoint;
+	/**
+	 * Configure the endpoint that this control should use to retrieve suggestions.
+	 *
+	 * @param endpoint url
+	 * @return current builder
+	 */
+	public AutoSuggestFormElementBuilder endpoint( String endpoint ) {
+		this.endpoint = endpoint;
 		return this;
 	}
 
@@ -138,29 +178,66 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 	 * attribute {@code ATTRIBUTE_DATA_PROPERTY}to the node element which inner HTML should be replaced
 	 * </p>
 	 */
-	public AutoSuggestFormElementBuilder itemTemplate( ViewElement containerTemplate,
-	                                                   ViewElement itemTemplate ) {
+	public AutoSuggestFormElementBuilder itemTemplate( ViewElement containerTemplate, ViewElement itemTemplate ) {
 		this.containerTemplate = containerTemplate;
 		this.itemTemplate = ElementOrBuilder.wrap( itemTemplate );
 		return this;
 	}
 
+	/**
+	 * Set a conversion function that should be applied to all url type properties
+	 * when setting them as the attribute for the generated links.
+	 * <p/>
+	 * If not set, this builder will dispatch to {@link ViewElementBuilderContext#buildLink(String)}.
+	 * You can suppress the default behaviour by setting this property to {@link Function#identity()}.
+	 *
+	 * @param linkBuilder to use for translating the urls
+	 * @return current builder
+	 */
+	@SuppressWarnings("unchecked")
+	public AutoSuggestFormElementBuilder linkBuilder( Function<String, String> linkBuilder ) {
+		this.linkBuilder = linkBuilder;
+		return this;
+	}
+
 	@Override
-	protected NodeViewElement createElement( ViewElementBuilderContext viewElementBuilderContext ) {
-		if ( StringUtils.isNotBlank( endPoint ) ) {
-			this.configuration.setEndPoint( buildLink( endPoint, viewElementBuilderContext ) );
+	protected AutoSuggestFormElement createElement( ViewElementBuilderContext builderContext ) {
+	/*
+		if ( StringUtils.isNotBlank( endpoint ) ) {
+			this.configuration.setEndpoint( buildLink( endpoint, viewElementBuilderContext ) );
 		}
 		if ( configuration != null ) {
 			this.configuration = configuration.localize( LocaleContextHolder.getLocale() );
+		}*/
+
+/*		return BootstrapUiBuilders.div()
+		                          .css( CSS_TYPEAHEAD )
+		                          .attribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration )
+		                          .add( renderInputElement() )
+		                          .add( renderTemplates( viewElementBuilderContext ) )
+		                          //.add( renderPrefillValues( viewElementBuilderContext ) )
+		                          .build( viewElementBuilderContext );
+		                          */
+		TextboxFormElement textbox = createTextbox( builderContext );
+
+		HiddenFormElement value = new HiddenFormElement();
+		value.addCssClass( CSS_TYPEAHEAD_VALUE );
+
+		AutoSuggestFormElement container = new AutoSuggestFormElement( textbox, value );
+		container.addCssClass( CSS_TYPEAHEAD_MODULE );
+		container.setConfiguration( configuration.translate( url -> buildLink( url, builderContext ) ) );
+		container.addChild( textbox );
+		container.addChild( value );
+
+		return apply( container, builderContext );
+	}
+
+	protected String buildLink( String link, ViewElementBuilderContext builderContext ) {
+		if ( linkBuilder != null ) {
+			return linkBuilder.apply( link );
 		}
 
-		return bootstrapUiFactory.div()
-		                         .css( CSS_TYPEAHEAD_CLASS )
-		                         .attribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration )
-		                         .add( renderInputElement() )
-		                         .add( renderTemplates( viewElementBuilderContext ) )
-		                         .add( renderPrefillValues( viewElementBuilderContext ) )
-		                         .build( viewElementBuilderContext );
+		return builderContext.buildLink( link );
 	}
 
 	@Override
@@ -168,12 +245,17 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 	}
 
-	private TextboxFormElementBuilder renderInputElement() {
-		return bootstrapUiFactory.textbox().css( CSS_TYPEAHEAD_INPUT );
+	private TextboxFormElement createTextbox( ViewElementBuilderContext context ) {
+		TextboxFormElement textbox = textboxBuilder != null
+				? textboxBuilder.build( context )
+				: BootstrapUiBuilders.textbox().type( TextboxFormElement.Type.SEARCH ).attribute( "autocomplete", "off" ).build( context );
+		textbox.addCssClass( CSS_TYPEAHEAD );
+
+		return textbox;
 	}
 
 	private ViewElement renderPrefillValues( ViewElementBuilderContext viewElementBuilderContext ) {
-		TableViewElementBuilder prefillTableElement = bootstrapUiFactory.table();
+		TableViewElementBuilder prefillTableElement = BootstrapUiBuilders.table();
 		TableViewElement defaultPrefillValues = prefillTableElement.css( CSS_PREFILL_TABLE )
 		                                                           .addAll( prefill.stream()
 		                                                                           .map( it -> renderDefaultPrefill(
@@ -186,35 +268,35 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 	}
 
 	private NodeViewElementBuilder renderTemplates( ViewElementBuilderContext viewElementBuilderContext ) {
-		return bootstrapUiFactory.div()
-		                         .css( "hidden" )
-		                         .add( getSuggestionTemplate( viewElementBuilderContext ) )
-		                         .add( getItemTemplate( viewElementBuilderContext ) )
-		                         .add( getNotFoundTemplate( viewElementBuilderContext ) );
+		return BootstrapUiBuilders.div()
+		                          .css( "hidden" )
+		                          .add( getSuggestionTemplate( viewElementBuilderContext ) )
+		                          .add( getItemTemplate( viewElementBuilderContext ) )
+		                          .add( getNotFoundTemplate( viewElementBuilderContext ) );
 	}
 
 	private NodeViewElementBuilder getNotFoundTemplate( ViewElementBuilderContext viewElementBuilderContext ) {
-		NodeViewElementBuilder notFoundContainer = bootstrapUiFactory.div()
-		                                                             .css( CSS_EMPTY_TEMPLATE );
-		ViewElement defaultNotFoundViewElement = bootstrapUiFactory.text( "Not Found" )
-		                                                           .build( viewElementBuilderContext );
+		NodeViewElementBuilder notFoundContainer = BootstrapUiBuilders.div()
+		                                                              .css( CSS_EMPTY_TEMPLATE );
+		ViewElement defaultNotFoundViewElement = BootstrapUiBuilders.text( "Not Found" )
+		                                                            .build( viewElementBuilderContext );
 		return notFoundContainer.add( notFoundTemplate != null ?
 				                              notFoundTemplate
 						                              .get( viewElementBuilderContext ) : defaultNotFoundViewElement );
 	}
 
 	private NodeViewElementBuilder getSuggestionTemplate( ViewElementBuilderContext viewElementBuilderContext ) {
-		NodeViewElementBuilder suggestionContainer = bootstrapUiFactory.div()
-		                                                               .css( CSS_SUGGESTION_TEMPLATE );
+		NodeViewElementBuilder suggestionContainer = BootstrapUiBuilders.div()
+		                                                                .css( CSS_SUGGESTION_TEMPLATE );
 		ViewElement defaultSuggestionElementOrBuilder =
-				bootstrapUiFactory.container()
-				                  .addAll( properties.stream()
-				                                     .map( prop -> bootstrapUiFactory.div()
-				                                                                     .attribute(
-						                                                                     ATTRIBUTE_DATA_PROPERTY,
-						                                                                     prop ) )
-				                                     .collect( Collectors.toList() ) )
-				                  .build( viewElementBuilderContext );
+				BootstrapUiBuilders.container()
+				                   .addAll( properties.stream()
+				                                      .map( prop -> BootstrapUiBuilders.div()
+				                                                                       .attribute(
+						                                                                       ATTRIBUTE_DATA_PROPERTY,
+						                                                                       prop ) )
+				                                      .collect( Collectors.toList() ) )
+				                   .build( viewElementBuilderContext );
 		return suggestionContainer.add( suggestionTemplate != null ?
 				                                suggestionTemplate
 						                                .get( viewElementBuilderContext ) : defaultSuggestionElementOrBuilder );
@@ -224,7 +306,7 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		if ( itemTemplate != null ) {
 			return itemTemplate.get( viewElementBuilderContext );
 		}
-		TableViewElementBuilder defaultItemContainer = bootstrapUiFactory.table();
+		TableViewElementBuilder defaultItemContainer = BootstrapUiBuilders.table();
 		return defaultItemContainer.add( defaultItemContainer.row()
 		                                                     .css( CSS_ITEM_TEMPLATE )
 		                                                     .addAll( properties.stream()
@@ -238,12 +320,12 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 						                                                                        .toList() ) )
 		                                                     .add( defaultItemContainer.cell()
 		                                                                               .css( "row-actions" )
-		                                                                               .add( bootstrapUiFactory
+		                                                                               .add( BootstrapUiBuilders
 				                                                                                     .link()
 				                                                                                     .title( "REMOVE" ) //TODO make configurable
 				                                                                                     .add( new GlyphIcon(
 						                                                                                     GlyphIcon.REMOVE ) ) )
-		                                                                               .add( bootstrapUiFactory
+		                                                                               .add( BootstrapUiBuilders
 				                                                                                     .hidden()
 				                                                                                     .controlName(
 						                                                                                     idProperty ) ) ) )
@@ -260,11 +342,11 @@ public class AutoSuggestFormElementBuilder extends AbstractLinkSupportingNodeVie
 		                          .collect( Collectors.toList() ) )
 		            .add( table.cell()
 		                       .css( "row-actions" )
-		                       .add( bootstrapUiFactory
+		                       .add( BootstrapUiBuilders
 				                             .link()
 				                             .title( "REMOVE" ) //TODO make configurable
 				                             .add( new GlyphIcon( GlyphIcon.REMOVE ) ) )
-		                       .add( bootstrapUiFactory
+		                       .add( BootstrapUiBuilders
 				                             .hidden()
 				                             .value( items.get( idProperty ) )
 				                             .controlName( idProperty ) ) );

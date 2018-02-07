@@ -16,7 +16,6 @@
 
 .twitter-typeahead {
     display: block !important;
-    margin-bottom: 10px;
 }
 
 .typeahead,
@@ -29,9 +28,9 @@
     /*font-size: 24px;
     line-height: 30px;*/
     border: 2px solid #ccc;
-    -webkit-border-radius: 8px;
+    /*-webkit-border-radius: 8px;
     -moz-border-radius: 8px;
-    border-radius: 8px;
+    border-radius: 8px;*/
     outline: none;
 }
 
@@ -54,15 +53,18 @@
 }
 
 .tt-menu {
-    width: 422px;
-    margin: 12px 0;
+    /*width: 422px;*/
+    width: 100%;
+    margin: -1px 0;
     padding: 8px 0;
     background-color: #fff;
-    border: 1px solid #ccc;
+    /*border: 1px solid #ccc;*/
     border: 1px solid rgba(0, 0, 0, 0.2);
+    border-top: 1px dotted rgba(0, 0, 0, 0.2);
+    /*
     -webkit-border-radius: 8px;
     -moz-border-radius: 8px;
-    border-radius: 8px;
+    border-radius: 8px;*/
     -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
     -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
     box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
