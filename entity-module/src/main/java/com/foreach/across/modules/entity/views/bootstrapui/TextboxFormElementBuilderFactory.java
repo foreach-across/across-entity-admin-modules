@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,9 +27,8 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySu
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +53,6 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	private int maximumSingleLineLength = 300;
 
 	public TextboxFormElementBuilderFactory() {
-		addProcessor( new FormControlRequiredBuilderProcessor<>() );
 		addProcessor( new TextboxConstraintsProcessor() );
 		addProcessor( new EmailTypeDetectionProcessor() );
 		addProcessor( new TextboxTypeDetectionProcessor() );
@@ -80,11 +78,12 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 				.textbox()
 				.name( propertyDescriptor.getName() )
 				.controlName( EntityAttributes.controlName( propertyDescriptor ) )
+				.required( EntityAttributes.isRequired( propertyDescriptor ) )
 				.multiLine(
 						String.class.equals( propertyDescriptor.getPropertyType() ) || BootstrapUiElements.TEXTAREA.equals( viewElementType )
 				)
 				.postProcessor( builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) )
-				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
+				.postProcessor( new PropertyPlaceholderTextPostProcessor<>() );
 	}
 
 	@Autowired

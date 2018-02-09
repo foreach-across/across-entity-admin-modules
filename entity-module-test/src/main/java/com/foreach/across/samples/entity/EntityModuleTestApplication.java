@@ -25,20 +25,15 @@ import com.foreach.across.modules.entity.testmodules.solr.SolrTestModule;
 import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
-@AcrossApplication(modules =
-		{ AdminWebModule.NAME, EntityModule.NAME, DebugWebModule.NAME, SolrTestModule.NAME, SpringDataJpaModule.NAME, MongoTestModule.NAME }
-		)
-@Import({ DataSourceAutoConfiguration.class })
+@AcrossApplication(
+		modules = { AdminWebModule.NAME, EntityModule.NAME, DebugWebModule.NAME, SolrTestModule.NAME, SpringDataJpaModule.NAME, MongoTestModule.NAME }
+)
 public class EntityModuleTestApplication
 {
 	@Bean

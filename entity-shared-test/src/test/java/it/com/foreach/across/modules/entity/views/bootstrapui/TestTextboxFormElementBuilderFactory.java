@@ -17,6 +17,7 @@
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
@@ -241,6 +242,10 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@SuppressWarnings("unchecked")
 	private <V> V assembleAndVerify( String propertyName, boolean required ) {
+		if ( required ) {
+			EntityPropertyDescriptor descriptor = properties.get( propertyName );
+			when( descriptor.getAttribute( EntityAttributes.PROPERTY_REQUIRED, Boolean.class ) ).thenReturn( true );
+		}
 		TextboxFormElement control = assemble( propertyName, ViewElementMode.CONTROL );
 		assertEquals( propertyName, control.getName() );
 		assertEquals( propertyName, control.getControlName() );

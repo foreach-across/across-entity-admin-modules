@@ -15,22 +15,18 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.ConfigurablePlaceholderText;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Resolves a message code and sets it as the value of the placeholder property.
  *
  * @author Arne Vandamme
  */
-public class PlaceholderTextPostProcessor<T extends ConfigurablePlaceholderText & ViewElement>
-		implements ViewElementPostProcessor<T>
+public class PlaceholderTextPostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
 {
 	private final String messageCode;
 
@@ -44,6 +40,7 @@ public class PlaceholderTextPostProcessor<T extends ConfigurablePlaceholderText 
 
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
+		/*
 		EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
 
 		if ( codeResolver != null ) {
@@ -53,5 +50,6 @@ public class PlaceholderTextPostProcessor<T extends ConfigurablePlaceholderText 
 					)
 			);
 		}
+		*/
 	}
 }

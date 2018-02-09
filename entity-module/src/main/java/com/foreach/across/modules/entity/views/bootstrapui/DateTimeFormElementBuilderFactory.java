@@ -27,12 +27,11 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySu
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.DateTimeValueTextPostProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -152,7 +151,6 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 	private class ControlBuilderFactory extends EntityViewElementBuilderFactorySupport<DateTimeFormElementBuilder>
 	{
 		public ControlBuilderFactory() {
-			addProcessor( new FormControlRequiredBuilderProcessor<>() );
 			addProcessor( new TemporalAnnotationProcessor() );
 			addProcessor( new PastAndFutureValidationProcessor() );
 			addProcessor( new FormControlNameBuilderProcessor<>() );
@@ -206,7 +204,8 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 					.datetime()
 					.name( propertyDescriptor.getName() )
 					.controlName( EntityAttributes.controlName( propertyDescriptor ) )
-					.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) )
+					.required( EntityAttributes.isRequired( propertyDescriptor ) )
+					.postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
 					.postProcessor(
 							( builderContext, datetime ) ->
 							{

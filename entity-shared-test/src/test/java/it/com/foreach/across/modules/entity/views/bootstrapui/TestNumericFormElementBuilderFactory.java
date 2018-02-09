@@ -20,6 +20,8 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
+import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
@@ -214,6 +216,10 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@SuppressWarnings("unchecked")
 	private <V> V assembleControl( String propertyName, boolean required ) {
+		if ( required ) {
+			EntityPropertyDescriptor descriptor = properties.get( propertyName );
+			when( descriptor.getAttribute( EntityAttributes.PROPERTY_REQUIRED, Boolean.class ) ).thenReturn( true );
+		}
 		NumericFormElement control = assemble( propertyName, ViewElementMode.CONTROL );
 		assertEquals( propertyName, control.getName() );
 		assertEquals( propertyName, control.getControlName() );

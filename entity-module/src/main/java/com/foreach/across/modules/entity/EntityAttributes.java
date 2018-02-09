@@ -50,6 +50,12 @@ public interface EntityAttributes
 	String NATIVE_PROPERTY_DESCRIPTOR = EntityPropertyDescriptor.class.getName() + ".nativeProperty";
 
 	/**
+	 * If set, determines if a control for this property should be marked as required or not.
+	 * The actual value should be either {@code true} or {@code false}.
+	 */
+	String PROPERTY_REQUIRED = EntityPropertyDescriptor.class.getName() + ".required";
+
+	/**
 	 * If set, this attribute should contain the
 	 * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertySelector} to be used for selecting
 	 * the members of a {@link FieldsetFormElement}.
@@ -86,5 +92,16 @@ public interface EntityAttributes
 	 */
 	static String controlName( EntityPropertyDescriptor descriptor ) {
 		return StringUtils.defaultString( descriptor.getAttribute( CONTROL_NAME, String.class ), descriptor.getName() );
+	}
+
+	/**
+	 * Check if the descriptor has the {@link #PROPERTY_REQUIRED} attribute with a {@code true} value,
+	 * marking the control as required.
+	 *
+	 * @param descriptor of the property
+	 * @return true if it is required
+	 */
+	static boolean isRequired( EntityPropertyDescriptor descriptor ) {
+		return Boolean.TRUE.equals( descriptor.getAttribute( PROPERTY_REQUIRED, Boolean.class ) );
 	}
 }

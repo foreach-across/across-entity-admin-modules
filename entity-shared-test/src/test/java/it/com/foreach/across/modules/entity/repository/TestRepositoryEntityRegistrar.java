@@ -40,6 +40,7 @@ import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossWebAppConfiguration;
+import it.com.foreach.across.modules.entity.utils.EntityPropertyDescriptorVerifier;
 import it.com.foreach.across.modules.entity.utils.EntityVerifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -193,12 +194,18 @@ public class TestRepositoryEntityRegistrar
 		EntityConfiguration configuration = entityRegistry.getEntityConfiguration( Client.class );
 		EntityPropertyRegistry registry = configuration.getPropertyRegistry();
 
-		assertProperty( registry, "name", "Name", true, true );
-		assertProperty( registry, "id", "Id", true, false );
-		assertProperty( registry, "company", "Company", true, false );
-		assertProperty( registry, "newEntityId", "New entity id", false, false );
-		assertProperty( registry, "nameWithId", "Name with id", false, false );
-		assertProperty( registry, "class", "Class", false, false );
+		assertProperty( registry, "name", "Name", true, true )
+				.hasAttribute( EntityAttributes.PROPERTY_REQUIRED, true );
+		assertProperty( registry, "id", "Id", true, false )
+				.doesNotHaveAttribute( EntityAttributes.PROPERTY_REQUIRED );
+		assertProperty( registry, "company", "Company", true, false )
+				.doesNotHaveAttribute( EntityAttributes.PROPERTY_REQUIRED );
+		assertProperty( registry, "newEntityId", "New entity id", false, false )
+				.doesNotHaveAttribute( EntityAttributes.PROPERTY_REQUIRED );
+		assertProperty( registry, "nameWithId", "Name with id", false, false )
+				.doesNotHaveAttribute( EntityAttributes.PROPERTY_REQUIRED );
+		assertProperty( registry, "class", "Class", false, false )
+				.doesNotHaveAttribute( EntityAttributes.PROPERTY_REQUIRED );
 	}
 
 	@Test
@@ -220,11 +227,11 @@ public class TestRepositoryEntityRegistrar
 		validator.validate( new Company(), errors );
 	}
 
-	private void assertProperty( EntityPropertyRegistry registry,
-	                             String propertyName,
-	                             String displayName,
-	                             boolean sortable,
-	                             boolean hasValidators ) {
+	private EntityPropertyDescriptorVerifier assertProperty( EntityPropertyRegistry registry,
+	                                                         String propertyName,
+	                                                         String displayName,
+	                                                         boolean sortable,
+	                                                         boolean hasValidators ) {
 		EntityPropertyDescriptor descriptor = registry.getProperty( propertyName );
 		assertNotNull( propertyName );
 		assertEquals( propertyName, descriptor.getName() );
@@ -243,6 +250,8 @@ public class TestRepositoryEntityRegistrar
 		else {
 			assertFalse( descriptor.hasAttribute( PropertyDescriptor.class ) );
 		}
+
+		return new EntityPropertyDescriptorVerifier( descriptor );
 	}
 
 	@Test

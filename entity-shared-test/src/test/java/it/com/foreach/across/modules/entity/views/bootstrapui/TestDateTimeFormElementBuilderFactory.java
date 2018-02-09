@@ -22,6 +22,8 @@ import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfig
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
+import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
@@ -321,6 +323,10 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 	@SuppressWarnings("unchecked")
 	private <V> V assembleAndVerify( String propertyName, boolean required ) {
+		if ( required ) {
+			EntityPropertyDescriptor descriptor = properties.get( propertyName );
+			when( descriptor.getAttribute( EntityAttributes.PROPERTY_REQUIRED, Boolean.class ) ).thenReturn( true );
+		}
 		DateTimeFormElement control = assemble( propertyName, ViewElementMode.CONTROL );
 		assertEquals( propertyName, control.getName() );
 		assertEquals( propertyName, control.getControlName() );

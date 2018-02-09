@@ -150,6 +150,8 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 	protected <V extends T> V assemble( EntityPropertyDescriptor descriptor,
 	                                    ViewElementMode viewElementMode,
 	                                    String viewElementType ) {
+		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
+
 		return (V) builderFactory
 				.createBuilder( descriptor, viewElementMode, viewElementType )
 				.build( builderContext );
