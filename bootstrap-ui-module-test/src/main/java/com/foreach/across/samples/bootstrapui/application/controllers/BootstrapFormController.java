@@ -16,9 +16,15 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
+import com.foreach.across.modules.bootstrapui.elements.FaIcon;
+import com.foreach.across.modules.bootstrapui.elements.FormLayout;
+import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
+import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.Data;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
@@ -58,6 +64,11 @@ public class BootstrapFormController
 		return "th/bootstrapUiTest/elementsRendering";
 	}
 
+	@ModelAttribute
+	public void registerWebResources( WebResourceRegistry resources ) {
+		resources.add( WebResource.CSS, "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" );
+	}
+
 	@PostMapping
 	public String updateForm( @ModelAttribute @Validated FormDto formDto, BindingResult bindingResult, Model model ) {
 		return renderForm( formDto, model );
@@ -69,6 +80,7 @@ public class BootstrapFormController
 				.add(
 						formGroup()
 								.label( "My number" )
+								.tooltip( tooltip( "another tooltip" ) )
 								.required()
 								.detectFieldErrors( true )
 								.control(
@@ -77,8 +89,43 @@ public class BootstrapFormController
 												.text( "" + data.getNumber() )
 								)
 				)
-				.add( button().submit().text( "Update" ) );
+				.add(
+						formGroup().tooltip( tooltip( "hello" ) ).control( checkbox().controlName( "checkme" ).label( "Check me out" ) )
+				)
+				.add(
+						formGroup()
+								.label( "My text" )
+								.descriptionBlock( "My text is a very important field containing... your text!" )
+								.helpBlock( "Please fill in all the data" )
+								.control( textbox().controlName( "mytext" ) )
+				)
+				.add(
+						formGroup()
+								.control( checkbox().controlName( "checkmetoo" ).label( "Try me babe" ) )
+								.helpBlock( "Try clicking *on* the checkbox in front of you." )
+				)
+				.add( row().add( column( Grid.Device.MD.width( 12 ) ).add( button().submit().text( "Update" ) ) ) );
 	}
+
+	public ViewElementBuilder tooltip( String text ) {
+		return node( "a" )
+				.css( "tooltip-link", "text-muted" )
+				.attribute( "title", text )
+				.attribute( "data-html", true )
+				.attribute( "data-toggle", "tooltip" )
+				.add( new FaIcon( FaIcon.WebApp.QUESTION_CIRCLE ) );
+	}
+
+	/*
+		if ( !StringUtils.isEmpty( tooltip ) ) {
+			return node( "a" )
+					.css( "tooltip-link", "text-muted" )
+					.attribute( "title", tooltip )
+					.attribute( "data-html", true )
+					.attribute( "data-toggle", "tooltip" )
+					.add( new FaIcon( FaIcon.WebApp.QUESTION_CIRCLE ) );
+		}
+	 */
 
 	@Data
 	static class FormDto

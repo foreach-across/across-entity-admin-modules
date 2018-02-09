@@ -126,6 +126,20 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void requiredGroupWithTooltip() {
+		group.setRequired( true );
+		group.setTooltip( TextViewElement.html( "<a>my tooltip</a>" ) );
+
+		renderAndExpect(
+				group,
+				"<div class='form-group required'>" +
+						"<label for='control' class='control-label'>title<sup class='required'>*</sup><a>my tooltip</a></label>" +
+						"<input type='text' class='form-control' name='control' id='control' />" +
+						"</div>"
+		);
+	}
+
+	@Test
 	public void requiredGroupWithInputGroup() {
 		groupWithInputGroup.setRequired( true );
 
@@ -174,10 +188,13 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
-	public void withHelpText() {
+	public void withHelpTextOrDescription() {
 		NodeViewElement help = new NodeViewElement( "p" );
 		help.setAttribute( "class", "help-block" );
 		help.addChild( new TextViewElement( "example help text" ) );
+
+		NodeViewElement descr = new NodeViewElement( "p" );
+		descr.addChild( TextViewElement.text( "description" ) );
 
 		group.setHelpBlock( help );
 
@@ -190,14 +207,15 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"</div>"
 		);
 
-		group.setRenderHelpBlockBeforeControl( true );
+		group.setDescriptionBlock( descr );
+		group.setHelpBlock( null );
 
 		renderAndExpect(
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<p class='help-block' id='control.help'>example help text</p>" +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"<p id='control.description'>description</p>" +
+						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.description' />" +
 						"</div>"
 		);
 
@@ -205,13 +223,15 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		select.setName( "list" );
 
 		group.setControl( select );
+		group.setHelpBlock( help );
 
 		renderAndExpect(
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
+						"<p id='list.description'>description</p>" +
+						"<select class='form-control' name='list' id='list' aria-describedby='list.description list.help' />" +
 						"<p class='help-block' id='list.help'>example help text</p>" +
-						"<select class='form-control' name='list' id='list' aria-describedby='list.help' />" +
 						"</div>"
 		);
 
@@ -226,20 +246,6 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
 						"</div>" +
 						"<p class='help-block' id='control.help'>example help text</p>" +
-						"</div>"
-		);
-
-		group.setRenderHelpBlockBeforeControl( true );
-
-		renderAndExpect(
-				groupWithInputGroup,
-				"<div class='form-group'>" +
-						"<label for='control' class='control-label'>title input group</label>" +
-						"<p class='help-block' id='control.help'>example help text</p>" +
-						"<div class='input-group'>" +
-						INPUT_GROUP_ADDON +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
-						"</div>" +
 						"</div>"
 		);
 	}
@@ -442,6 +448,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 		group = new FormGroupElement();
 		group.setControl( checkbox );
+		group.setTooltip( TextViewElement.text( "(tooltip)" ) );
 
 		form.addChild( group );
 
@@ -451,7 +458,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<div class='col-md-10 col-md-offset-2'>" +
 						"<div class='checkbox'><label>" +
 						"<input type='checkbox' />checkbox value" +
-						"</label>" +
+						"(tooltip)</label>" +
 						"</div>" +
 						"</div>" +
 						"</div></form>"

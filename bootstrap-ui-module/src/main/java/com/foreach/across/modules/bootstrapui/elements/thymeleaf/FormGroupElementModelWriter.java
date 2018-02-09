@@ -57,10 +57,14 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 			model.addAttributeValue( "class", "required" );
 		}
 
+		boolean boxGroup = false;
+
 		if ( isCheckboxGroup( group ) ) {
+			boxGroup = true;
 			model.addAttributeValue( "class", "checkbox" );
 		}
 		else if ( isRadioGroup( group ) ) {
+			boxGroup = true;
 			model.addAttributeValue( "class", "radio" );
 		}
 
@@ -82,19 +86,37 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		ViewElement helpBlock = group.getHelpBlock();
 		IModel helpBlockModel = helpBlock != null ? model.createViewElementModel( helpBlock ) : null;
 
+		ViewElement descriptionBlock = group.getDescriptionBlock();
+		IModel descriptionBlockModel = descriptionBlock != null ? model.createViewElementModel( descriptionBlock ) : null;
+
 		ViewElement label = group.getLabel();
-		IModel labelModel = label != null ? model.createViewElementModel( group.getLabel() ) : null;
+		IModel labelModel = label != null ? model.createViewElementModel( label ) : null;
+
+		ViewElement tooltip = group.getTooltip();
+		IModel tooltipModel = tooltip != null ? model.createViewElementModel( tooltip ) : null;
 
 		if ( labelModel != null && group.isRequired() ) {
 			addRequiredIndicatorToLabel( model.getModelFactory(), labelModel );
 		}
 
+		if ( tooltipModel != null ) {
+			if ( labelModel != null ) {
+				addTooltipToLabel( tooltipModel, labelModel );
+			}
+			else if ( boxGroup && controlModel != null ) {
+				addTooltipToLabel( tooltipModel, controlModel );
+			}
+		}
+
 		if ( formControl != null && controlModel != null ) {
 			String controlId = model.retrieveHtmlId( formControl );
 
-			if ( helpBlock != null && !formControl.hasAttribute( "aria-describedby" ) ) {
-				String helpId = setOrRetrieveHelpBlockId( model.getModelFactory(), helpBlockModel, controlId );
-				setDescribedByAttributeOnControl( model.getModelFactory(), controlModel, helpId );
+			if ( !formControl.hasAttribute( "aria-describedby" ) ) {
+				String helpId = retrieveDescribedByIds( model.getModelFactory(), controlId, descriptionBlockModel, helpBlockModel, tooltipModel );
+
+				if ( !helpId.isEmpty() ) {
+					setDescribedByAttributeOnControl( model.getModelFactory(), controlModel, helpId );
+				}
 			}
 
 			if ( layout.getType() == FormLayout.Type.INLINE && !layout.isShowLabels() ) {
@@ -106,8 +128,13 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 			}
 		}
 
-		if ( helpBlockModel != null && layout.getType() == FormLayout.Type.INLINE ) {
-			makeHelpBlockScreenReaderOnly( model.getModelFactory(), helpBlockModel );
+		if ( layout.getType() == FormLayout.Type.INLINE ) {
+			if ( descriptionBlockModel != null ) {
+				makeBlockScreenReaderOnly( model.getModelFactory(), descriptionBlockModel );
+			}
+			if ( helpBlockModel != null ) {
+				makeBlockScreenReaderOnly( model.getModelFactory(), helpBlockModel );
+			}
 		}
 
 		if ( errorBuilder != null ) {
@@ -129,15 +156,15 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 			}
 		}
 
-		if ( helpBlockModel != null && group.isRenderHelpBlockBeforeControl() ) {
-			model.addModel( helpBlockModel );
+		if ( descriptionBlockModel != null ) {
+			model.addModel( descriptionBlockModel );
 		}
 
 		if ( controlModel != null ) {
 			model.addModel( controlModel );
 		}
 
-		if ( helpBlockModel != null && !group.isRenderHelpBlockBeforeControl() ) {
+		if ( helpBlockModel != null ) {
 			model.addModel( helpBlockModel );
 		}
 
@@ -182,7 +209,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 	/**
 	 * First element will get sr-only class added.
 	 */
-	private void makeHelpBlockScreenReaderOnly( IModelFactory modelFactory, IModel helpBlockModel ) {
+	private void makeBlockScreenReaderOnly( IModelFactory modelFactory, IModel helpBlockModel ) {
 		for ( int i = 0; i < helpBlockModel.size(); i++ ) {
 			ITemplateEvent event = helpBlockModel.get( i );
 			if ( event instanceof IOpenElementTag ) {
@@ -239,6 +266,20 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		}
 	}
 
+	private void addTooltipToLabel( IModel tooltipModel, IModel labelModel ) {
+		for ( int i = 0; i < labelModel.size(); i++ ) {
+			ITemplateEvent event = labelModel.get( i );
+			if ( event instanceof ICloseElementTag ) {
+				ICloseElementTag closeElementTag = (ICloseElementTag) event;
+
+				if ( "label".equalsIgnoreCase( closeElementTag.getElementCompleteName() ) ) {
+					labelModel.insertModel( i, tooltipModel );
+					return;
+				}
+			}
+		}
+	}
+
 	/**
 	 * Find the very first control (input, select or textarea) and set the aria-describedby attribute.
 	 */
@@ -276,28 +317,44 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		}
 	}
 
+	private String retrieveDescribedByIds( IModelFactory modelFactory, String controlId, IModel descriptionModel, IModel helpModel, IModel tooltipModel ) {
+		StringBuilder concatenated = new StringBuilder();
+
+		if ( descriptionModel != null ) {
+			concatenated.append( setOrRetrieveBlockId( modelFactory, descriptionModel, controlId, "description" ) );
+		}
+		if ( helpModel != null ) {
+			concatenated.append( setOrRetrieveBlockId( modelFactory, helpModel, controlId, "help" ) );
+		}
+		if ( tooltipModel != null ) {
+			concatenated.append( setOrRetrieveBlockId( modelFactory, tooltipModel, controlId, "tooltip" ) );
+		}
+
+		return concatenated.toString().trim();
+	}
+
 	/**
 	 * We assume the first open element to be the help block.  If an id is set on the first open element,
 	 * we use that one.  Else we set one on.
 	 */
-	private String setOrRetrieveHelpBlockId( IModelFactory modelFactory, IModel helpBlockModel, String controlId ) {
+	private String setOrRetrieveBlockId( IModelFactory modelFactory, IModel helpBlockModel, String controlId, String blockType ) {
 		for ( int i = 0; i < helpBlockModel.size(); i++ ) {
 			ITemplateEvent event = helpBlockModel.get( i );
 			if ( event instanceof IOpenElementTag ) {
 				IOpenElementTag elementTag = (IOpenElementTag) event;
 
 				if ( elementTag.hasAttribute( "id" ) ) {
-					return elementTag.getAttributeValue( "id" );
+					return elementTag.getAttributeValue( "id" ) + " ";
 				}
 				else {
-					String helpId = controlId + ".help";
+					String helpId = controlId + "." + blockType;
 					helpBlockModel.replace( i, modelFactory.setAttribute( elementTag, "id", helpId ) );
-					return helpId;
+					return helpId + " ";
 				}
 			}
 		}
 
-		return null;
+		return "";
 	}
 
 	private Consumer<ThymeleafModelBuilder> createFieldErrorsBuilder( FormControlElement formControl,

@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+.tooltip-link {
+    margin-left: 5px;
+}
 
 .twitter-typeahead {
     display: block !important;

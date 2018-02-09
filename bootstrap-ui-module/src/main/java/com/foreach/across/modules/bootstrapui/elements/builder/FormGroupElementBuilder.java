@@ -24,10 +24,22 @@ import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElemen
 
 public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<FormGroupElement, FormGroupElementBuilder>
 {
-	private ElementOrBuilder label, control, helpBlock;
+	/**
+	 * CSS class added to default description block.
+	 */
+	public static final String CSS_FORM_TEXT_DESCRIPTION = "form-text-description";
+
+	/**
+	 * CSS class added to default help block.
+	 */
+	public static final String CSS_FORM_TEXT_HELP = "form-text-help";
+
+	private ElementOrBuilder label, control, helpBlock, descriptionBlock, tooltip;
 	private FormLayout formLayout;
 	private Boolean required;
 	private Boolean detectFieldErrors;
+
+	@Deprecated
 	private boolean helpBlockBeforeControl;
 
 	public Boolean isRequired() {
@@ -120,25 +132,110 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 
 	/**
 	 * Quick create a basic help block and add it to the form group.
+	 * Usually added after the control, providing contextual help.
 	 *
 	 * @param text for the help block
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder helpBlock( String text ) {
-		helpBlock( BootstrapUiBuilders.helpBlock( text ) );
+		helpBlock( BootstrapUiBuilders.helpBlock( text ).css( CSS_FORM_TEXT_HELP ) );
 		return this;
 	}
 
+	/**
+	 * Add a help block to the form group.
+	 * Usually added after the control, providing contextual help.
+	 *
+	 * @param helpBlock the help block
+	 * @return current builder
+	 */
 	public FormGroupElementBuilder helpBlock( ViewElement helpBlock ) {
 		this.helpBlock = ElementOrBuilder.wrap( helpBlock );
 		return this;
 	}
 
+	/**
+	 * Add a help block to the form group.
+	 * Usually added after the control, providing contextual help.
+	 *
+	 * @param helpBlock the help block
+	 * @return current builder
+	 */
 	public FormGroupElementBuilder helpBlock( ViewElementBuilder helpBlock ) {
 		this.helpBlock = ElementOrBuilder.wrap( helpBlock );
 		return this;
 	}
 
+	/**
+	 * Quick create a description text block, to show at the top of the form group.
+	 *
+	 * @param text for the description block
+	 * @return current builder
+	 */
+	public FormGroupElementBuilder descriptionBlock( String text ) {
+		descriptionBlock( BootstrapUiBuilders.helpBlock( text ).css( CSS_FORM_TEXT_DESCRIPTION ) );
+		return this;
+	}
+
+	/**
+	 * Add a description block to show at the top of the form group.
+	 *
+	 * @param descriptionBlock for the description block
+	 * @return current builder
+	 */
+	public FormGroupElementBuilder descriptionBlock( ViewElement descriptionBlock ) {
+		this.descriptionBlock = ElementOrBuilder.wrap( descriptionBlock );
+		return this;
+	}
+
+	/**
+	 * Add a description block to show at the top of the form group.
+	 *
+	 * @param descriptionBlock for the description block
+	 * @return current builder
+	 */
+	public FormGroupElementBuilder descriptionBlock( ViewElementBuilder descriptionBlock ) {
+		this.descriptionBlock = ElementOrBuilder.wrap( descriptionBlock );
+		return this;
+	}
+
+	/**
+	 * Add a tooltip with the given (html supporting) text.
+	 * Tooltip will be added after the label text.
+	 *
+	 * @param text for the tooltip
+	 * @return current builder
+	 */
+	public FormGroupElementBuilder tooltip( String text ) {
+		tooltip( BootstrapUiBuilders.helpBlock( text ) );
+		return this;
+	}
+
+	/**
+	 * Add a tooltip to the form group.
+	 * Tooltip will be added after the label text.
+	 *
+	 * @param tooltip element
+	 * @return current builder
+	 */
+	public FormGroupElementBuilder tooltip( ViewElement tooltip ) {
+		this.tooltip = ElementOrBuilder.wrap( tooltip );
+		return this;
+	}
+
+	/**
+	 * Add a tooltip to the form group.
+	 * Tooltip will be added after the label text.
+	 *
+	 * @param tooltip element
+	 * @return current builder
+	 */
+	public FormGroupElementBuilder tooltip( ViewElementBuilder tooltip ) {
+		this.tooltip = ElementOrBuilder.wrap( tooltip );
+		return this;
+	}
+
+	@Deprecated
 	public FormGroupElementBuilder helpBlockRenderedBeforeControl( boolean helpBlockBeforeControl ) {
 		this.helpBlockBeforeControl = helpBlockBeforeControl;
 		return this;
@@ -195,6 +292,14 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 
 		if ( helpBlock != null ) {
 			group.setHelpBlock( helpBlock.get( builderContext ) );
+		}
+
+		if ( descriptionBlock != null ) {
+			group.setDescriptionBlock( descriptionBlock.get( builderContext ) );
+		}
+
+		if ( tooltip != null ) {
+			group.setTooltip( tooltip.get( builderContext ) );
 		}
 
 		if ( group.getLabel() instanceof LabelFormElement ) {

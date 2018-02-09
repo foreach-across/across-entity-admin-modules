@@ -179,6 +179,11 @@
                     var configuration = $( this ).data( 'bootstrapui-autosuggest' );
                     BootstrapUiModule.Controls.AutoSuggest.create( $( this ), configuration );
                 } );
+
+                /**
+                 * Initialize tooltips.
+                 */
+                $( '[data-toggle="tooltip"]', node ).tooltip();
             } );
         }( jQuery )
 );
