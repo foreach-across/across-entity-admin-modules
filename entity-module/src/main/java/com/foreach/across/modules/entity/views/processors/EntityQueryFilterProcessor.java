@@ -105,7 +105,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		Map<String, Object> properties = new HashMap<>();
 		entityViewRequest.getEntityViewContext().getPropertyRegistry().getRegisteredDescriptors()
 		                 .forEach( property -> properties.put( property.getName(), null ) );
-		command.addExtension( PARAM, "" );
+		command.addExtension( PARAM, filterConfiguration.getDefaultQuery() != null ? filterConfiguration.getDefaultQuery().toString() : "" );
 		command.addExtension( PARAM_PROPERTIES, properties );
 		EntityQueryRequest entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setShowBasicFilter( filterConfiguration.isBasicMode() && filterConfiguration.isAdvancedMode() );
