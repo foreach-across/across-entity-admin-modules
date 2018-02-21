@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FieldsetFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
@@ -48,7 +48,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<FieldsetFormElementBuilder>
 {
-	private BootstrapUiFactory bootstrapUi;
 	private EntityViewElementBuilderService entityViewElementBuilderService;
 
 	@Override
@@ -61,15 +60,15 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 	                                                           ViewElementMode viewElementMode,
 	                                                           String viewElementType ) {
 		FieldsetFormElementBuilder fieldset
-				= bootstrapUi.fieldset()
-				             .name( propertyDescriptor.getName() )
-				             .legend()
-				             .text( propertyDescriptor.getDisplayName() )
-				             .postProcessor(
-						             new TextCodeResolverPostProcessor<>( "properties." + propertyDescriptor.getName() )
-				             )
-				             .and()
-				             .postProcessor( new DescriptionTextPostProcessor( bootstrapUi, propertyDescriptor ) );
+				= BootstrapUiBuilders.fieldset()
+				                     .name( propertyDescriptor.getName() )
+				                     .legend()
+				                     .text( propertyDescriptor.getDisplayName() )
+				                     .postProcessor(
+						                     new TextCodeResolverPostProcessor<>( "properties." + propertyDescriptor.getName() )
+				                     )
+				                     .and()
+				                     .postProcessor( new DescriptionTextPostProcessor( propertyDescriptor ) );
 
 		EntityPropertySelector selector = retrieveMembersSelector( propertyDescriptor );
 		EntityPropertyRegistry propertyRegistry = propertyDescriptor.getPropertyRegistry();
@@ -101,11 +100,6 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 	}
 
 	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
-	}
-
-	@Autowired
 	public void setEntityViewElementBuilderService( EntityViewElementBuilderService entityViewElementBuilderService ) {
 		this.entityViewElementBuilderService = entityViewElementBuilderService;
 	}
@@ -115,13 +109,10 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 	 */
 	public static class DescriptionTextPostProcessor implements ViewElementPostProcessor<FieldsetFormElement>
 	{
-		private final BootstrapUiFactory bootstrapUi;
 		private final EntityPropertyDescriptor propertyDescriptor;
 		private EntityMessageCodeResolver defaultMessageCodeResolver;
 
-		public DescriptionTextPostProcessor( BootstrapUiFactory bootstrapUi,
-		                                     EntityPropertyDescriptor propertyDescriptor ) {
-			this.bootstrapUi = bootstrapUi;
+		public DescriptionTextPostProcessor( EntityPropertyDescriptor propertyDescriptor ) {
 			this.propertyDescriptor = propertyDescriptor;
 		}
 
@@ -143,7 +134,7 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 				);
 
 				if ( !StringUtils.isBlank( description ) ) {
-					element.addFirstChild( bootstrapUi.helpBlock( description ).build( builderContext ) );
+					element.addFirstChild( BootstrapUiBuilders.helpBlock( description ).build( builderContext ) );
 				}
 			}
 		}

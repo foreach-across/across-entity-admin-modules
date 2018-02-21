@@ -16,7 +16,6 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -38,7 +37,7 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 {
 	@Override
 	protected EntityViewElementBuilderFactory createBuilderFactory() {
-		return new CheckboxFormElementBuilderFactory( new BootstrapUiFactoryImpl() );
+		return new CheckboxFormElementBuilderFactory();
 	}
 
 	@Override

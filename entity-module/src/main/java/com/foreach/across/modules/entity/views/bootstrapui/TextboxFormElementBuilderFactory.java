@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
@@ -48,7 +48,6 @@ import java.util.Map;
 public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<TextboxFormElementBuilder>
 {
 	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
-	private BootstrapUiFactory bootstrapUi;
 
 	private int maximumSingleLineLength = 300;
 
@@ -74,7 +73,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	protected TextboxFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                          ViewElementMode viewElementMode,
 	                                                          String viewElementType ) {
-		return bootstrapUi
+		return BootstrapUiBuilders
 				.textbox()
 				.name( propertyDescriptor.getName() )
 				.controlName( EntityAttributes.controlName( propertyDescriptor ) )
@@ -89,11 +88,6 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Autowired
 	public void setBuilderFactoryHelpers( EntityViewElementBuilderFactoryHelper builderFactoryHelpers ) {
 		this.builderFactoryHelpers = builderFactoryHelpers;
-	}
-
-	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
 	}
 
 	/**

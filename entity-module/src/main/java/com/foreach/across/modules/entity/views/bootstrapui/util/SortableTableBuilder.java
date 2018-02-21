@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.views.bootstrapui.util;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
@@ -85,7 +85,6 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	public static final String DATA_ATTR_FORM = "data-tbl-form";
 
 	protected final EntityViewElementBuilderService viewElementBuilderService;
-	protected final BootstrapUiFactory bootstrapUi;
 
 	private String tableName = "sortableTable";
 	private String entityType;
@@ -110,10 +109,8 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	private Collection<EntityPropertyDescriptor> resolvedPropertyDescriptors;
 
 	@Autowired
-	public SortableTableBuilder( EntityViewElementBuilderService viewElementBuilderService,
-	                             BootstrapUiFactory bootstrapUi ) {
+	public SortableTableBuilder( EntityViewElementBuilderService viewElementBuilderService ) {
 		this.viewElementBuilderService = viewElementBuilderService;
-		this.bootstrapUi = bootstrapUi;
 	}
 
 	public String getEntityType() {
@@ -191,6 +188,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 
 	/**
 	 * Set the table name that will be added as data-attribute on the table element, and will be the internal name of the main container ViewElement.
+	 *
 	 * @param tableName to be used both internally and as data attribute on the resulting html table
 	 */
 	public SortableTableBuilder tableName( String tableName ) {
@@ -485,10 +483,10 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 
 		if ( !page.hasContent() ) {
 			if ( noResultsElement != null ) {
-				return bootstrapUi.container().name( getTableName() ).add( noResultsElement.get( builderContext ) ).build( builderContext );
+				return BootstrapUiBuilders.container().name( getTableName() ).add( noResultsElement.get( builderContext ) ).build( builderContext );
 			}
 
-			return bootstrapUi.container().name( getTableName() ).add( createDefaultNoResultsPanel() ).build( builderContext );
+			return BootstrapUiBuilders.container().name( getTableName() ).add( createDefaultNoResultsPanel() ).build( builderContext );
 		}
 
 		TableViewElementBuilder table = createTable();
@@ -497,11 +495,11 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	}
 
 	protected TableViewElementBuilder createTable() {
-		TableViewElementBuilder table = bootstrapUi.table()
-		                                           .name( elementName( ELEMENT_TABLE ) )
-		                                           .responsive()
-		                                           .style( getTableStyles() )
-		                                           .attributes( createTableAttributes() );
+		TableViewElementBuilder table = BootstrapUiBuilders.table()
+		                                                   .name( elementName( ELEMENT_TABLE ) )
+		                                                   .responsive()
+		                                                   .style( getTableStyles() )
+		                                                   .attributes( createTableAttributes() );
 
 		createTableHeader( table );
 		createTableBody( table );
@@ -596,7 +594,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 					table.cell()
 					     .css( "result-number" )
 					     .add(
-							     bootstrapUi.text().postProcessor( new ResultNumberProcessor( startIndex ) )
+							     BootstrapUiBuilders.text().postProcessor( new ResultNumberProcessor( startIndex ) )
 					     )
 			);
 		}
@@ -621,9 +619,9 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 
 		table.body()
 		     .add(
-				     bootstrapUi.generator( Object.class, TableViewElement.Row.class )
-				                .itemBuilder( valueRow )
-				                .items( page.getContent() )
+				     BootstrapUiBuilders.generator( Object.class, TableViewElement.Row.class )
+				                        .itemBuilder( valueRow )
+				                        .items( page.getContent() )
 		     );
 	}
 
@@ -638,98 +636,98 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	protected NodeViewElementBuilder createPanelForTable( TableViewElementBuilder tableBody ) {
 		String resultsFound = getResolvedPagingMessages().resultsFound( getPage() );
 
-		NodeViewElementBuilder panel = bootstrapUi.node( "div" )
-		                                          .name( elementName( ELEMENT_PANEL ) )
-		                                          .css( "panel", "panel-default" )
-		                                          .add(
-				                                          bootstrapUi.node( "div" )
-				                                                     .name( elementName( ELEMENT_PANEL_HEADING ) )
-				                                                     .css( "panel-heading" )
-				                                                     .add( bootstrapUi.html( resultsFound ) )
-		                                          )
-		                                          .add(
-				                                          bootstrapUi.node( "div" )
-				                                                     .name( elementName( ELEMENT_PANEL_BODY ) )
-				                                                     .css( "panel-body" )
-				                                                     .add( tableBody )
-		                                          );
+		NodeViewElementBuilder panel = BootstrapUiBuilders.node( "div" )
+		                                                  .name( elementName( ELEMENT_PANEL ) )
+		                                                  .css( "panel", "panel-default" )
+		                                                  .add(
+				                                                  BootstrapUiBuilders.node( "div" )
+				                                                                     .name( elementName( ELEMENT_PANEL_HEADING ) )
+				                                                                     .css( "panel-heading" )
+				                                                                     .add( BootstrapUiBuilders.html( resultsFound ) )
+		                                                  )
+		                                                  .add(
+				                                                  BootstrapUiBuilders.node( "div" )
+				                                                                     .name( elementName( ELEMENT_PANEL_BODY ) )
+				                                                                     .css( "panel-body" )
+				                                                                     .add( tableBody )
+		                                                  );
 
 		if ( page.getTotalPages() > 1 ) {
 			panel.add(
-					bootstrapUi.node( "div" )
-					           .name( elementName( ELEMENT_PANEL_FOOTER ) )
-					           .css( "panel-footer" )
-					           .add( createPager() )
+					BootstrapUiBuilders.node( "div" )
+					                   .name( elementName( ELEMENT_PANEL_FOOTER ) )
+					                   .css( "panel-footer" )
+					                   .add( createPager() )
 			);
 		}
 		return panel;
 	}
 
 	protected ViewElementBuilder createDefaultNoResultsPanel() {
-		return bootstrapUi.node( "div" )
-		                  .name( elementName( ELEMENT_NORESULTS ) )
-		                  .css( "panel", "panel-warning" )
-		                  .add(
-				                  bootstrapUi.node( "div" )
-				                             .css( "panel-body", "text-warning" )
-				                             .add( bootstrapUi.html( getResolvedPagingMessages().resultsFound( getPage() ) ) )
-		                  );
+		return BootstrapUiBuilders.node( "div" )
+		                          .name( elementName( ELEMENT_NORESULTS ) )
+		                          .css( "panel", "panel-warning" )
+		                          .add(
+				                          BootstrapUiBuilders.node( "div" )
+				                                             .css( "panel-body", "text-warning" )
+				                                             .add( BootstrapUiBuilders.html( getResolvedPagingMessages().resultsFound( getPage() ) ) )
+		                          );
 	}
 
 	protected ViewElementBuilder createPager() {
 		Page currentPage = getPage();
 		PagingMessages messages = getResolvedPagingMessages();
 
-		NodeViewElementBuilder pager = bootstrapUi.node( "div" )
-		                                          .name( elementName( ELEMENT_PAGER ) )
-		                                          .css( "pager-form", "form-inline", "text-center" );
+		NodeViewElementBuilder pager = BootstrapUiBuilders.node( "div" )
+		                                                  .name( elementName( ELEMENT_PAGER ) )
+		                                                  .css( "pager-form", "form-inline", "text-center" );
 
 		if ( currentPage.hasPrevious() ) {
 			pager.add(
-					bootstrapUi.button()
-					           .link( "#" )
-					           .icon( new GlyphIcon( GlyphIcon.STEP_BACKWARD ) )
-					           .title( messages.previousPage( currentPage ) )
-					           .attribute( DATA_ATTR_PAGE, currentPage.getNumber() - 1 )
-					           .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
+					BootstrapUiBuilders.button()
+					                   .link( "#" )
+					                   .icon( new GlyphIcon( GlyphIcon.STEP_BACKWARD ) )
+					                   .title( messages.previousPage( currentPage ) )
+					                   .attribute( DATA_ATTR_PAGE, currentPage.getNumber() - 1 )
+					                   .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
 			);
 		}
 		else {
-			pager.add( bootstrapUi.node( "span" ).css( "no-btn" ) );
+			pager.add( BootstrapUiBuilders.node( "span" ).css( "no-btn" ) );
 		}
 
 		pager.add(
-				bootstrapUi.label()
-				           .add( bootstrapUi.node( "span" ).add( bootstrapUi.html( messages.page( currentPage ) ) ) )
-				           .add(
-						           bootstrapUi.textbox()
-						                      .attribute( "data-tbl-page-selector", "selector" )
-						                      .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
-						                      .text( String.valueOf( currentPage.getNumber() + 1 ) )
-				           )
+				BootstrapUiBuilders.label()
+				                   .add( BootstrapUiBuilders.node( "span" ).add( BootstrapUiBuilders.html( messages.page( currentPage ) ) ) )
+				                   .add(
+						                   BootstrapUiBuilders.textbox()
+						                                      .attribute( "data-tbl-page-selector", "selector" )
+						                                      .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
+						                                      .text( String.valueOf( currentPage.getNumber() + 1 ) )
+				                   )
 		)
-		     .add( bootstrapUi.node( "span" ).add( bootstrapUi.html( messages.ofPages( currentPage ) ) ) )
+		     .add( BootstrapUiBuilders.node( "span" ).add( BootstrapUiBuilders.html( messages.ofPages( currentPage ) ) ) )
 		     .add(
-				     bootstrapUi.link()
-				                .url( "#" )
-				                .css( "total-pages-link" )
-				                .attribute( DATA_ATTR_PAGE, currentPage.getTotalPages() - 1 )
-				                .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
-				                .add( bootstrapUi.html( String.valueOf( currentPage.getTotalPages() ) ) )
+				     BootstrapUiBuilders.link()
+				                        .url( "#" )
+				                        .css( "total-pages-link" )
+				                        .attribute( DATA_ATTR_PAGE, currentPage.getTotalPages() - 1 )
+				                        .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
+				                        .add( BootstrapUiBuilders.html( String.valueOf( currentPage.getTotalPages() ) ) )
 		     );
 
 		if ( currentPage.hasNext() ) {
 			pager.add(
-					bootstrapUi.button()
-					           .link( "#" )
-					           .icon( new GlyphIcon( GlyphIcon.STEP_FORWARD ) )
-					           .title( messages.nextPage( currentPage ) )
-					           .attribute( DATA_ATTR_PAGE, currentPage.getNumber() + 1 )
-					           .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
+					BootstrapUiBuilders.button()
+					                   .link( "#" )
+					                   .icon( new GlyphIcon( GlyphIcon.STEP_FORWARD ) )
+					                   .title( messages.nextPage( currentPage ) )
+					                   .attribute( DATA_ATTR_PAGE, currentPage.getNumber() + 1 )
+					                   .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
 			);
 		}
 		else {
-			pager.add( bootstrapUi.node( "span" ).css( "no-btn" ) );
+			pager.add( BootstrapUiBuilders.node( "span" ).css( "no-btn" ) );
 		}
 
 		return pager;

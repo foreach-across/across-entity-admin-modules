@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -25,7 +25,6 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,8 +36,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class LabelFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<ViewElementBuilder>
 {
-	private BootstrapUiFactory bootstrapUi;
-
 	@Override
 	public boolean supports( String viewElementType ) {
 		return BootstrapUiElements.LABEL.equals( viewElementType );
@@ -49,19 +46,14 @@ public class LabelFormElementBuilderFactory extends EntityViewElementBuilderFact
 	                                                   ViewElementMode viewElementMode, String viewElementType ) {
 		boolean labelTextOnly = ViewElementMode.isLabel( viewElementMode );
 
-		TextViewElementBuilder labelText = bootstrapUi
+		TextViewElementBuilder labelText = BootstrapUiBuilders
 				.text( propertyDescriptor.getDisplayName() )
 				.postProcessor( labelCodeResolver( propertyDescriptor ) );
 
-		return labelTextOnly ? labelText : bootstrapUi.label().add( labelText );
+		return labelTextOnly ? labelText : BootstrapUiBuilders.label().add( labelText );
 	}
 
 	protected ViewElementPostProcessor<TextViewElement> labelCodeResolver( EntityPropertyDescriptor propertyDescriptor ) {
 		return new TextCodeResolverPostProcessor<>( "properties." + propertyDescriptor.getName() );
-	}
-
-	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
 	}
 }

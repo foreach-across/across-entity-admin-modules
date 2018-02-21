@@ -19,7 +19,7 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenu;
@@ -61,7 +61,6 @@ import java.util.Optional;
 @Accessors(chain = true)
 public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorAdapter
 {
-	private BootstrapUiComponentFactory bootstrapUiComponentFactory;
 	private MenuFactory menuFactory;
 	private ApplicationEventPublisher eventPublisher;
 
@@ -132,10 +131,10 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		menuFactory.buildMenu( entityMenu );
 
 		page.addToNav(
-				bootstrapUiComponentFactory.nav( entityMenu )
-				                           .tabs()
-				                           .replaceGroupBySelectedItem()
-				                           .build( builderContext )
+				BootstrapUiBuilders.nav( entityMenu )
+				                   .tabs()
+				                   .replaceGroupBySelectedItem()
+				                   .build( builderContext )
 		);
 	}
 
@@ -147,11 +146,6 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		}
 
 		return entityViewContext;
-	}
-
-	@Autowired
-	void setBootstrapUiComponentFactory( BootstrapUiComponentFactory bootstrapUiComponentFactory ) {
-		this.bootstrapUiComponentFactory = bootstrapUiComponentFactory;
 	}
 
 	@Autowired

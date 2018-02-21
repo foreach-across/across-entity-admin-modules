@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
@@ -35,16 +35,13 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 {
 	public static final String CELL_NAME = "row-actions";
 
-	protected final BootstrapUiFactory bootstrapUi;
 	protected final EntityConfiguration<Object> entityConfiguration;
 	protected final EntityLinkBuilder linkBuilder;
 	protected final EntityMessages messages;
 
 	@SuppressWarnings("unchecked")
-	public EntityListActionsProcessor( BootstrapUiFactory bootstrapUi,
-	                                   EntityConfiguration entityConfiguration,
+	public EntityListActionsProcessor( EntityConfiguration entityConfiguration,
 	                                   EntityLinkBuilder linkBuilder, EntityMessages messages ) {
-		this.bootstrapUi = bootstrapUi;
 		this.entityConfiguration = entityConfiguration;
 		this.linkBuilder = linkBuilder;
 		this.messages = messages;
@@ -73,19 +70,19 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 
 		if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
 			cell.add(
-					bootstrapUi.button()
-					           .link( linkBuilder.update( entity ) )
-					           .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
-					           .text( messages.updateAction() )
+					BootstrapUiBuilders.button()
+					                   .link( linkBuilder.update( entity ) )
+					                   .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
+					                   .text( messages.updateAction() )
 			);
 		}
 
 		if ( allowableActions.contains( AllowableAction.DELETE ) ) {
 			cell.add(
-					bootstrapUi.button()
-					           .link( linkBuilder.delete( entity ) )
-					           .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
-					           .text( messages.deleteAction() )
+					BootstrapUiBuilders.button()
+					                   .link( linkBuilder.delete( entity ) )
+					                   .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
+					                   .text( messages.deleteAction() )
 			);
 		}
 	}

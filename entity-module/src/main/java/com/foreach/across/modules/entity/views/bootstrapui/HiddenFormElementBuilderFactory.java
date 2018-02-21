@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.HiddenFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
@@ -50,7 +50,6 @@ public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFac
 {
 	private ConversionService conversionService;
 	private EntityRegistry entityRegistry;
-	private BootstrapUiFactory bootstrapUi;
 
 	public HiddenFormElementBuilderFactory() {
 		addProcessor( new FormControlNameBuilderProcessor<>() );
@@ -64,14 +63,14 @@ public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFac
 	@Override
 	protected HiddenFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                         ViewElementMode viewElementMode, String viewElementType ) {
-		return bootstrapUi.hidden()
-		                  .name( propertyDescriptor.getName() )
-		                  .controlName( EntityAttributes.controlName( propertyDescriptor ) )
-		                  .postProcessor(
-				                  new EntityPropertyValueHiddenPostProcessor(
-						                  entityRegistry, conversionService, propertyDescriptor
-				                  )
-		                  );
+		return BootstrapUiBuilders.hidden()
+		                          .name( propertyDescriptor.getName() )
+		                          .controlName( EntityAttributes.controlName( propertyDescriptor ) )
+		                          .postProcessor(
+				                          new EntityPropertyValueHiddenPostProcessor(
+						                          entityRegistry, conversionService, propertyDescriptor
+				                          )
+		                          );
 	}
 
 	@Autowired
@@ -82,11 +81,6 @@ public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFac
 	@Autowired
 	public void setEntityRegistry( EntityRegistry entityRegistry ) {
 		this.entityRegistry = entityRegistry;
-	}
-
-	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
 	}
 
 	/**

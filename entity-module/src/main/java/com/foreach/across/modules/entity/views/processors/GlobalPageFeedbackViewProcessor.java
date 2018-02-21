@@ -18,7 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -29,7 +29,6 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
@@ -56,8 +55,6 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 {
 	public static final String FEEDBACK_ATTRIBUTE_KEY = "feedbackMessageCodes";
 
-	private BootstrapUiFactory bootstrapUiFactory;
-
 	@Override
 	protected void render( EntityViewRequest entityViewRequest,
 	                       EntityView entityView,
@@ -74,11 +71,11 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 			// todo: move to EntityViewPageHelper
 			feedback.forEach( ( messageCode, style ) -> {
 				page.addToFeedback(
-						bootstrapUiFactory.alert()
-						                  .style( style )
-						                  .dismissible()
-						                  .text( messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) )
-						                  .build( builderContext )
+						BootstrapUiBuilders.alert()
+						                   .style( style )
+						                   .dismissible()
+						                   .text( messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) )
+						                   .build( builderContext )
 				);
 			} );
 		}
@@ -97,11 +94,6 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 		feedback.putAll( decodeFeedbackMessages( (String) entityViewRequest.getModel().get( FEEDBACK_ATTRIBUTE_KEY ) ) );
 
 		return feedback;
-	}
-
-	@Autowired
-	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUiFactory = bootstrapUiFactory;
 	}
 
 	/**

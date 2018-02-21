@@ -16,7 +16,6 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
@@ -44,7 +43,6 @@ public class TestHiddenFormElementBuilderFactory extends ViewElementBuilderFacto
 	@Override
 	protected EntityViewElementBuilderFactory createBuilderFactory() {
 		HiddenFormElementBuilderFactory builderFactory = new HiddenFormElementBuilderFactory();
-		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
 		builderFactory.setEntityRegistry( entityRegistry );
 		builderFactory.setConversionService( conversionService );
 		return builderFactory;

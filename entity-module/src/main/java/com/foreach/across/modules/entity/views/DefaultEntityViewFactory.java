@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.core.support.AttributeSupport;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.support.EntityViewMessageSource;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
@@ -36,7 +36,6 @@ import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBu
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.WebDataBinder;
@@ -58,8 +57,6 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 {
 	public static final String ATTRIBUTE_CONTAINER_BUILDER = "entityViewContainerBuilder";
 	public static final String ATTRIBUTE_CONTAINER_ELEMENT = "entityViewContainer";
-
-	private BootstrapUiFactory bootstrapUiFactory;
 
 	@Getter
 	@Setter
@@ -105,7 +102,7 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 				processorRegistry.dispatch( p -> p.preRender( entityViewRequest, entityView ) );
 
 				// create a container builder
-				ContainerViewElementBuilder containerBuilder = bootstrapUiFactory.container();
+				ContainerViewElementBuilder containerBuilder = BootstrapUiBuilders.container();
 				entityView.addAttribute( ATTRIBUTE_CONTAINER_BUILDER, containerBuilder );
 
 				// do the initial render
@@ -171,10 +168,5 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 				new HttpMethod[] { HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.DELETE },
 				entityViewRequest.getHttpMethod()
 		);
-	}
-
-	@Autowired
-	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUiFactory = bootstrapUiFactory;
 	}
 }

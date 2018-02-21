@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
@@ -34,7 +34,6 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
@@ -86,8 +85,6 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 	 */
 	public static final String RIGHT_COLUMN = "entityForm-column-1";
 
-	private BootstrapUiFactory bootstrapUiFactory;
-
 	/**
 	 * Should default save and cancel buttons be added at the bottom of the form, below the column structure?  Defaults to {@code false}.
 	 */
@@ -112,13 +109,9 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 			Grid.position( Grid.Device.MD.width( Grid.Width.HALF ) )
 	);
 
-	protected BootstrapUiFactory bootstrapUiFactory() {
-		return bootstrapUiFactory;
-	}
-
 	@Override
 	protected void createViewElementBuilders( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap ) {
-		FormViewElementBuilder form = bootstrapUiFactory
+		FormViewElementBuilder form = BootstrapUiBuilders
 				.form()
 				.name( FORM )
 				.commandAttribute( "entityViewCommand" )
@@ -133,7 +126,7 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 
 		val formColumns = buildFormColumns();
 
-		NodeViewElementBuilder columnRow = bootstrapUiFactory.row();
+		NodeViewElementBuilder columnRow = BootstrapUiBuilders.row();
 		formColumns.forEach( ( name, column ) -> {
 			columnRow.add( column );
 			builderMap.put( name, column );
@@ -169,16 +162,16 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 
 		if ( errors != null && errors.hasErrors() ) {
 
-			val alert = bootstrapUiFactory
+			val alert = BootstrapUiBuilders
 					.alert()
 					.danger()
 					.text( messages.withNameSingular( "feedback.validationErrors", entityViewContext.getEntityLabel() ) );
 
 			if ( errors.hasGlobalErrors() ) {
-				val globalErrorList = bootstrapUiFactory.node( "ul" ).css( "global-errors" );
+				val globalErrorList = BootstrapUiBuilders.node( "ul" ).css( "global-errors" );
 
 				errors.getGlobalErrors().forEach(
-						e -> globalErrorList.add( bootstrapUiFactory.html(
+						e -> globalErrorList.add( BootstrapUiBuilders.html(
 								"<strong>" + messageCodeResolver.getMessage( e ) + "</strong>"
 						) )
 				);
@@ -192,7 +185,7 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 
 	private String resolveFromUrl( EntityViewRequest entityViewRequest, FormViewElementBuilder form ) {
 		Optional<String> fromUrl = Optional.ofNullable( entityViewRequest.getWebRequest().getParameter( "from" ) );
-		fromUrl.ifPresent( url -> form.add( bootstrapUiFactory.hidden().controlName( "from" ).value( url ) ) );
+		fromUrl.ifPresent( url -> form.add( BootstrapUiBuilders.hidden().controlName( "from" ).value( url ) ) );
 
 		return fromUrl.orElseGet( entityViewRequest.getEntityViewContext().getLinkBuilder()::overview );
 	}
@@ -200,21 +193,21 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 	protected ContainerViewElementBuilderSupport buildButtonsContainer( EntityViewRequest entityViewRequest,
 	                                                                    EntityView entityView, String fromUrl ) {
 		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
-		return bootstrapUiFactory
+		return BootstrapUiBuilders
 				.container()
 				.name( "buttons" )
 				.add(
-						bootstrapUiFactory.button()
-						                  .name( "btn-save" )
-						                  .style( Style.PRIMARY )
-						                  .submit()
-						                  .text( messages.messageWithFallback( "actions.save" ) )
+						BootstrapUiBuilders.button()
+						                   .name( "btn-save" )
+						                   .style( Style.PRIMARY )
+						                   .submit()
+						                   .text( messages.messageWithFallback( "actions.save" ) )
 				)
 				.add(
-						bootstrapUiFactory.button()
-						                  .name( "btn-cancel" )
-						                  .link( fromUrl )
-						                  .text( messages.messageWithFallback( "actions.cancel" ) )
+						BootstrapUiBuilders.button()
+						                   .name( "btn-cancel" )
+						                   .link( fromUrl )
+						                   .text( messages.messageWithFallback( "actions.cancel" ) )
 				);
 	}
 
@@ -226,17 +219,12 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 			String name = "entityForm-column-" + i;
 			columns.put(
 					name,
-					bootstrapUiFactory
+					BootstrapUiBuilders
 							.column( position.toArray( new Grid.DeviceGridLayout[position.size()] ) )
 							.name( name )
 			);
 		}
 
 		return columns;
-	}
-
-	@Autowired
-	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUiFactory = bootstrapUiFactory;
 	}
 }

@@ -16,7 +16,6 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
@@ -68,7 +67,6 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 	protected EntityViewElementBuilderFactory createBuilderFactory() {
 		NumericFormElementBuilderFactory builderFactory = new NumericFormElementBuilderFactory();
 		builderFactory.setBuilderFactoryHelpers( builderFactoryHelper );
-		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
 		builderFactory.setViewElementBuilderService( entityViewElementBuilderService );
 		return builderFactory;
 	}

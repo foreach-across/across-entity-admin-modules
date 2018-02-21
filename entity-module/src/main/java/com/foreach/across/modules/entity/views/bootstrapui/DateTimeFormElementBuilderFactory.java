@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
@@ -62,7 +62,6 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 	private final ControlBuilderFactory controlBuilderFactory = new ControlBuilderFactory();
 	private final ValueBuilderFactory valueBuilderFactory = new ValueBuilderFactory();
 
-	private BootstrapUiFactory bootstrapUi;
 	private EntityViewElementBuilderService viewElementBuilderService;
 	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
 
@@ -80,11 +79,6 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 		}
 
 		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
-	}
-
-	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
 	}
 
 	@Autowired
@@ -141,7 +135,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 				}
 			}
 
-			return bootstrapUi.text().postProcessor( valueTextPostProcessor );
+			return BootstrapUiBuilders.text().postProcessor( valueTextPostProcessor );
 		}
 	}
 
@@ -200,7 +194,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 		                                                           ViewElementMode viewElementMode,
 		                                                           String viewElementType ) {
 
-			return bootstrapUi
+			return BootstrapUiBuilders
 					.datetime()
 					.name( propertyDescriptor.getName() )
 					.controlName( EntityAttributes.controlName( propertyDescriptor ) )

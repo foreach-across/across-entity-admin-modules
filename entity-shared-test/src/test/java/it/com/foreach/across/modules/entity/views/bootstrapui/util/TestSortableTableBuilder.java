@@ -19,8 +19,6 @@ package it.com.foreach.across.modules.entity.views.bootstrapui.util;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -105,9 +103,6 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	@Autowired
 	private EntityViewElementBuilderService viewElementBuilderService;
 
-	@Autowired
-	private BootstrapUiFactory bootstrapUiFactory;
-
 	private EntityConfiguration entityConfiguration;
 	private SortableTableBuilder tableBuilder;
 	private EntityPropertyDescriptor descriptor;
@@ -116,7 +111,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	public void before() {
 		reset( viewElementBuilderService );
 
-		tableBuilder = new SortableTableBuilder( viewElementBuilderService, bootstrapUiFactory );
+		tableBuilder = new SortableTableBuilder( viewElementBuilderService );
 
 		entityConfiguration = mock( EntityConfiguration.class );
 		when( entityConfiguration.getName() ).thenReturn( "entity" );
@@ -277,7 +272,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 	@Test
 	public void entityTypeAndDescriptorsSpecified() {
-		tableBuilder = new SortableTableBuilder( viewElementBuilderService, bootstrapUiFactory )
+		tableBuilder = new SortableTableBuilder( viewElementBuilderService )
 				.noSorting()
 				.properties( Collections.singleton( descriptor ) )
 				.entityType( "my-entity" )
@@ -293,7 +288,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		when( propertyRegistry.select( new EntityPropertySelector( "myprop" ) ) )
 				.thenReturn( Collections.singletonList( descriptor ) );
 
-		tableBuilder = new SortableTableBuilder( viewElementBuilderService, bootstrapUiFactory )
+		tableBuilder = new SortableTableBuilder( viewElementBuilderService )
 				.noSorting()
 				.propertyRegistry( propertyRegistry )
 				.properties( "myprop" )
@@ -312,7 +307,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 		when( entityConfiguration.getPropertyRegistry() ).thenReturn( propertyRegistry );
 
-		tableBuilder = new SortableTableBuilder( viewElementBuilderService, bootstrapUiFactory )
+		tableBuilder = new SortableTableBuilder( viewElementBuilderService )
 				.noSorting()
 				.entityConfiguration( entityConfiguration )
 				.properties( new EntityPropertySelector( "myprop" ) )
@@ -338,7 +333,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 		when( entityConfiguration.getPropertyRegistry() ).thenReturn( propertyRegistry );
 
-		tableBuilder = new SortableTableBuilder( viewElementBuilderService, bootstrapUiFactory )
+		tableBuilder = new SortableTableBuilder( viewElementBuilderService )
 				.setLabelViewElementMode( ViewElementMode.LABEL )
 				.setValueViewElementMode( ViewElementMode.LIST_CONTROL )
 				.noSorting()
@@ -480,11 +475,6 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		@Bean
 		public EntityViewElementBuilderService viewElementBuilderService() {
 			return mock( EntityViewElementBuilderService.class );
-		}
-
-		@Bean
-		public BootstrapUiFactory bootstrapUiFactory() {
-			return new BootstrapUiFactoryImpl();
 		}
 	}
 }

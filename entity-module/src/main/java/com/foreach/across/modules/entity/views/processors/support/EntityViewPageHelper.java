@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.views.processors.support;
 
 import com.foreach.across.core.development.AcrossDevelopmentMode;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -50,7 +50,6 @@ import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedb
 public class EntityViewPageHelper
 {
 	private AcrossDevelopmentMode developmentMode;
-	private BootstrapUiFactory bootstrapUiFactory;
 
 	/**
 	 * Should flash attributes be used for redirect attributes.
@@ -96,7 +95,7 @@ public class EntityViewPageHelper
 		EntityMessages messages = entityViewContext.getEntityMessages();
 
 		viewRequest.getPageContentStructure().addToFeedback(
-				bootstrapUiFactory
+				BootstrapUiBuilders
 						.alert()
 						.danger()
 						.dismissible()
@@ -110,11 +109,6 @@ public class EntityViewPageHelper
 	}
 
 	// EntityViewPageUtils.addGlobalFeedback( entityViewRequest, INFO, "feedback.entitySaved", e  );
-
-	@Autowired
-	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUiFactory = bootstrapUiFactory;
-	}
 
 	@Autowired
 	void setDevelopmentMode( AcrossDevelopmentMode developmentMode ) {

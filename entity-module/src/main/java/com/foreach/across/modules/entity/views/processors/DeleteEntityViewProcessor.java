@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
@@ -60,7 +60,6 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 	static final String DELETE_CONFIGURATION = "deleteEntityConfiguration";
 
 	private ApplicationEventPublisher eventPublisher;
-	private BootstrapUiFactory bootstrapUiFactory;
 	private EntityViewPageHelper entityViewPageHelper;
 
 	@Override
@@ -111,10 +110,10 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 		builderMap.get( "entityForm-column-0", ContainerViewElementBuilderSupport.class )
 		          .add( deleteConfiguration.messages() )
 		          .add(
-				          bootstrapUiFactory
+				          BootstrapUiBuilders
 						          .paragraph()
 						          .css( deleteConfiguration.isDeleteDisabled() ? Style.DANGER.forPrefix( "text" ) : "" )
-						          .add( bootstrapUiFactory.text( confirmationMessage ) )
+						          .add( BootstrapUiBuilders.text( confirmationMessage ) )
 		          );
 	}
 
@@ -133,12 +132,12 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 					ContainerViewElementUtils.remove( buttons, "btn-save" );
 					if ( !deleteConfiguration.isDeleteDisabled() ) {
 						buttons.addFirstChild(
-								bootstrapUiFactory.button()
-								                  .name( "btn-delete" )
-								                  .style( Style.DANGER )
-								                  .submit()
-								                  .text( messages.messageWithFallback( "buttons.delete" ) )
-								                  .build( builderContext )
+								BootstrapUiBuilders.button()
+								                   .name( "btn-delete" )
+								                   .style( Style.DANGER )
+								                   .submit()
+								                   .text( messages.messageWithFallback( "buttons.delete" ) )
+								                   .build( builderContext )
 						);
 					}
 					else {
@@ -155,21 +154,21 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 				= new BuildEntityDeleteViewEvent<>( entityViewContext.getEntity(), builderContext );
 		event.setDeleteDisabled( false );
 
-		ContainerViewElement associations = bootstrapUiFactory.node( "ul" ).build( builderContext );
+		ContainerViewElement associations = BootstrapUiBuilders.node( "ul" ).build( builderContext );
 
 		event.setAssociations( associations );
 		EntityMessages entityMessages = entityViewContext.getEntityMessages();
 		event.setMessages(
-				bootstrapUiFactory
+				BootstrapUiBuilders
 						.container()
 						.add(
-								bootstrapUiFactory
+								BootstrapUiBuilders
 										.container()
 										.name( "associations" )
 										.add(
-												bootstrapUiFactory
+												BootstrapUiBuilders
 														.paragraph()
-														.add( bootstrapUiFactory.text( entityMessages.withNameSingular( "delete.associations" ) ) )
+														.add( BootstrapUiBuilders.text( entityMessages.withNameSingular( "delete.associations" ) ) )
 										)
 										.add( associations )
 						)
@@ -228,10 +227,10 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 		String title = messages.withNamePlural( "delete.associatedResults", itemCount );
 
 		viewConfiguration.associations().addChild(
-				bootstrapUiFactory
+				BootstrapUiBuilders
 						.node( "li" )
 						.name( association.getName() )
-						.add( bootstrapUiFactory
+						.add( BootstrapUiBuilders
 								      .link()
 								      .url( linkBuilder.overview() )
 								      .text( title ) )
@@ -254,11 +253,6 @@ public class DeleteEntityViewProcessor extends EntityViewProcessorAdapter
 	@Autowired
 	void setEventPublisher( ApplicationEventPublisher eventPublisher ) {
 		this.eventPublisher = eventPublisher;
-	}
-
-	@Autowired
-	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUiFactory = bootstrapUiFactory;
 	}
 
 	@Autowired

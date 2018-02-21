@@ -16,7 +16,6 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElement;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
@@ -86,7 +85,6 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	protected EntityViewElementBuilderFactory createBuilderFactory() {
 		DateTimeFormElementBuilderFactory builderFactory = new DateTimeFormElementBuilderFactory();
 		builderFactory.setBuilderFactoryHelpers( builderFactoryHelper );
-		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
 		builderFactory.setViewElementBuilderService( entityViewElementBuilderService );
 		return builderFactory;
 	}

@@ -15,7 +15,6 @@
  */
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -49,7 +48,6 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 	@Override
 	protected EntityViewElementBuilderFactory createBuilderFactory() {
 		FieldsetFormElementBuilderFactory builderFactory = new FieldsetFormElementBuilderFactory();
-		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
 		builderFactory.setEntityViewElementBuilderService( viewElementBuilderService );
 		return builderFactory;
 	}

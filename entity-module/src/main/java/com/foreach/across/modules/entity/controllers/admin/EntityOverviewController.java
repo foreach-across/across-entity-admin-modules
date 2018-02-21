@@ -19,7 +19,7 @@ package com.foreach.across.modules.entity.controllers.admin;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 public class EntityOverviewController
 {
 	private final EntityRegistry entityRegistry;
-	private final BootstrapUiFactory bootstrapUiFactory;
 	private final PageContentStructure pageContentStructure;
 
 	@RequestMapping(GenericEntityViewController.ROOT_PATH)
@@ -58,41 +57,41 @@ public class EntityOverviewController
 				.filter( c -> !c.isHidden() && c.getAllowableActions().contains( AllowableAction.READ ) )
 				.collect( Collectors.groupingBy( this::determineGroupName ) );
 
-		NodeViewElementBuilder row = bootstrapUiFactory.row();
+		NodeViewElementBuilder row = BootstrapUiBuilders.row();
 
 		entitiesByGroup.forEach( ( groupName, entities ) -> {
-			NodeViewElementBuilder body = bootstrapUiFactory.div().css( "panel-body" );
+			NodeViewElementBuilder body = BootstrapUiBuilders.div().css( "panel-body" );
 
 			entities.forEach( entityConfiguration -> {
 				EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
 				EntityMessageCodeResolver codeResolver = entityConfiguration.getEntityMessageCodeResolver();
 
 				body.add(
-						bootstrapUiFactory.paragraph().add(
-								bootstrapUiFactory.link()
-								                  .text( codeResolver.getNameSingular() )
-								                  .url( linkBuilder.overview() )
+						BootstrapUiBuilders.paragraph().add(
+								BootstrapUiBuilders.link()
+								                   .text( codeResolver.getNameSingular() )
+								                   .url( linkBuilder.overview() )
 						)
 				);
 			} );
 
 			row.add(
-					bootstrapUiFactory.column( Grid.Device.MD.width( 3 ) )
-					                  .add(
-							                  bootstrapUiFactory.div()
-							                                    .css( "panel", "panel-primary" )
-							                                    .add(
-									                                    bootstrapUiFactory
-											                                    .div()
-											                                    .css( "panel-heading" )
-											                                    .add(
-													                                    bootstrapUiFactory.node( "h3" )
-													                                                      .css( "panel-title" )
-													                                                      .add( TextViewElement.text( groupName ) )
-											                                    )
-							                                    )
-							                                    .add( body )
-					                  )
+					BootstrapUiBuilders.column( Grid.Device.MD.width( 3 ) )
+					                   .add(
+							                   BootstrapUiBuilders.div()
+							                                      .css( "panel", "panel-primary" )
+							                                      .add(
+									                                      BootstrapUiBuilders
+											                                      .div()
+											                                      .css( "panel-heading" )
+											                                      .add(
+													                                      BootstrapUiBuilders.node( "h3" )
+													                                                         .css( "panel-title" )
+													                                                         .add( TextViewElement.text( groupName ) )
+											                                      )
+							                                      )
+							                                      .add( body )
+					                   )
 			);
 		} );
 

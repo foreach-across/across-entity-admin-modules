@@ -20,6 +20,7 @@ import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.repositories.GroupRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,7 +36,7 @@ public class StringToGroupConverter implements Converter<String, Group>
 
 	@Override
 	public Group convert( String name ) {
-		if ( NumberUtils.isNumber( name ) ) {
+		if ( StringUtils.isNumeric( name ) ) {
 			return groupRepository.findOne( NumberUtils.toLong( name ) );
 		}
 		return groupRepository.findByName( name );

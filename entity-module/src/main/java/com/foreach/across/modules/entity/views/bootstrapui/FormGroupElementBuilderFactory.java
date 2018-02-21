@@ -39,7 +39,6 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 	public static final String NAME_PREFIX = "formGroup-";
 
 	private EntityViewElementBuilderService entityViewElementBuilderService;
-	private BootstrapUiFactory bootstrapUi;
 
 	public FormGroupElementBuilderFactory() {
 		//addProcessor( new FormGroupRequiredBuilderProcessor() );
@@ -64,20 +63,20 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		);
 
 		DescriptionTextPostProcessor descriptionTextPostProcessor
-				= new DescriptionTextPostProcessor( bootstrapUi, propertyDescriptor );
+				= new DescriptionTextPostProcessor( propertyDescriptor );
 
 		FormGroupElementBuilder formGroup
-				= bootstrapUi.formGroup()
-				             .name( NAME_PREFIX + propertyDescriptor.getName() )
-				             .control( controlBuilder )
-				             .postProcessor( descriptionTextPostProcessor )
-				             .postProcessor( ( builderContext, element ) -> {
-					             FormControlElement control = element.getControl( FormControlElement.class );
+				= BootstrapUiBuilders.formGroup()
+				                     .name( NAME_PREFIX + propertyDescriptor.getName() )
+				                     .control( controlBuilder )
+				                     .postProcessor( descriptionTextPostProcessor )
+				                     .postProcessor( ( builderContext, element ) -> {
+					                     FormControlElement control = element.getControl( FormControlElement.class );
 
-					             if ( control != null && control.isRequired() ) {
-						             element.setRequired( true );
-					             }
-				             } );
+					                     if ( control != null && control.isRequired() ) {
+						                     element.setRequired( true );
+					                     }
+				                     } );
 
 		// todo: clean this up, work with separate control (?) allow list value to be without link, but other to be with
 		if ( controlMode.equals( ViewElementMode.VALUE ) ) {
@@ -92,7 +91,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 				propertyDescriptor, ViewElementMode.LABEL
 		);
 
-		LabelFormElementBuilder labelBuilder = bootstrapUi.label().text( labelText );
+		LabelFormElementBuilder labelBuilder = BootstrapUiBuilders.label().text( labelText );
 
 		formGroup.label( labelBuilder );
 
@@ -104,23 +103,15 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		this.entityViewElementBuilderService = entityViewElementBuilderService;
 	}
 
-	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
-	}
-
 	/**
 	 * Attempts to resolve a property description (help block).
 	 */
 	public static class DescriptionTextPostProcessor implements ViewElementPostProcessor<FormGroupElement>
 	{
-		private final BootstrapUiFactory bootstrapUi;
 		private final EntityPropertyDescriptor propertyDescriptor;
 		private EntityMessageCodeResolver defaultMessageCodeResolver;
 
-		public DescriptionTextPostProcessor( BootstrapUiFactory bootstrapUi,
-		                                     EntityPropertyDescriptor propertyDescriptor ) {
-			this.bootstrapUi = bootstrapUi;
+		public DescriptionTextPostProcessor( EntityPropertyDescriptor propertyDescriptor ) {
 			this.propertyDescriptor = propertyDescriptor;
 		}
 
@@ -142,7 +133,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 				);
 
 				if ( !StringUtils.isBlank( description ) ) {
-					element.setHelpBlock( bootstrapUi.helpBlock().add( bootstrapUi.html( description ) ).build( builderContext ) );
+					element.setHelpBlock( BootstrapUiBuilders.helpBlock().add( BootstrapUiBuilders.html( description ) ).build( builderContext ) );
 				}
 			}
 		}

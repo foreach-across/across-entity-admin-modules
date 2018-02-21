@@ -17,7 +17,7 @@
 package com.foreach.across.samples.entity.application.controllers;
 
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
@@ -56,15 +56,12 @@ public class SortableTableWithPagingController
 {
 	private PartnerRepository partnerRepository;
 	private EntityViewElementBuilderHelper builderHelper;
-	private BootstrapUiFactory bootstrapUiFactory;
 
 	@Autowired
 	public SortableTableWithPagingController( PartnerRepository partnerRepository,
-	                                          EntityViewElementBuilderHelper builderHelper,
-	                                          BootstrapUiFactory bootstrapUiFactory ) {
+	                                          EntityViewElementBuilderHelper builderHelper ) {
 		this.partnerRepository = partnerRepository;
 		this.builderHelper = builderHelper;
-		this.bootstrapUiFactory = bootstrapUiFactory;
 	}
 
 	/**
@@ -75,6 +72,7 @@ public class SortableTableWithPagingController
 	public void registerWebResources( WebResourceRegistry registry ) {
 		registry.addPackage( EntityModuleWebResources.NAME );
 	}
+
 	/**
 	 * Entry point that adds the different tables to the model.
 	 * Fetches the page of partner entities we wish to render, using a page size of 2.
@@ -129,10 +127,10 @@ public class SortableTableWithPagingController
 			                    cell.setHeading( true );
 			                    cell.addChild(
 					                    // the checkbox should be unwrapped in order to render correctly
-					                    bootstrapUiFactory.checkbox()
-					                                      .unwrapped()
-					                                      .htmlId( "select-all-partners" )
-					                                      .build( builderCtx )
+					                    BootstrapUiBuilders.checkbox()
+					                                       .unwrapped()
+					                                       .htmlId( "select-all-partners" )
+					                                       .build( builderCtx )
 			                    );
 			                    row.addFirstChild( cell );
 		                    } )
@@ -141,12 +139,12 @@ public class SortableTableWithPagingController
 
 			                    TableViewElement.Cell cell = new TableViewElement.Cell();
 			                    cell.addChild(
-					                    bootstrapUiFactory.checkbox()
-					                                      .unwrapped()
-					                                      .controlName( "partners" )
-					                                      .selected( selectedPartners.contains( partner ) )
-					                                      .value( partner.getId() )
-					                                      .build( builderCtx )
+					                    BootstrapUiBuilders.checkbox()
+					                                       .unwrapped()
+					                                       .controlName( "partners" )
+					                                       .selected( selectedPartners.contains( partner ) )
+					                                       .value( partner.getId() )
+					                                       .build( builderCtx )
 			                    );
 			                    row.addFirstChild( cell );
 		                    } )

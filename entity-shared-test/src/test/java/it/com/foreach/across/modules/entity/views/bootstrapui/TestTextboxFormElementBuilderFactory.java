@@ -16,7 +16,9 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
+import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -62,7 +64,6 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 		TextboxFormElementBuilderFactory builderFactory = new TextboxFormElementBuilderFactory();
 		builderFactory.setMaximumSingleLineLength( 200 );
 		builderFactory.setBuilderFactoryHelpers( builderFactoryHelper );
-		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
 		return builderFactory;
 	}
 
@@ -302,11 +303,6 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 			factory.setMaximumSingleLineLength( 200 );
 
 			return factory;
-		}
-
-		@Bean
-		public BootstrapUiFactory bootstrapUiFactory() {
-			return new BootstrapUiFactoryImpl();
 		}
 
 		@Bean

@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -76,7 +75,6 @@ public class TestDeleteEntityViewProcessor
 
 	@Before
 	public void setUp() throws Exception {
-		processor.setBootstrapUiFactory( new BootstrapUiFactoryImpl() );
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
 		when( viewContext.getEntityMessages() ).thenReturn( entityMessages );
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );

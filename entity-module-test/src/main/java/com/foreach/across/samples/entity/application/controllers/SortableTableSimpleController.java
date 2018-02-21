@@ -18,7 +18,7 @@ package com.foreach.across.samples.entity.application.controllers;
 
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
@@ -62,15 +62,12 @@ public class SortableTableSimpleController
 {
 	private PartnerRepository partnerRepository;
 	private EntityViewElementBuilderHelper builderHelper;
-	private BootstrapUiFactory bootstrapUiFactory;
 
 	@Autowired
 	public SortableTableSimpleController( PartnerRepository partnerRepository,
-	                                      EntityViewElementBuilderHelper builderHelper,
-	                                      BootstrapUiFactory bootstrapUiFactory ) {
+	                                      EntityViewElementBuilderHelper builderHelper ) {
 		this.partnerRepository = partnerRepository;
 		this.builderHelper = builderHelper;
-		this.bootstrapUiFactory = bootstrapUiFactory;
 	}
 
 	/**
@@ -223,20 +220,20 @@ public class SortableTableSimpleController
 				.properties( "*" )
 				.headerRowProcessor( ( ctx, element ) -> {
 					// add cell to the header
-					element.addChild( bootstrapUiFactory.table().heading().build( ctx ) );
+					element.addChild( BootstrapUiBuilders.table().heading().build( ctx ) );
 				} )
 				.valueRowProcessor( ( ctx, element ) -> {
 					Partner partner = EntityViewElementUtils.currentEntity( ctx, Partner.class );
 
 					// add cell linking to the url of the partner
 					element.addChild(
-							bootstrapUiFactory.table().cell().add(
-									bootstrapUiFactory.button()
-									                  .link( partner.getUrl() )
-									                  .icon( new GlyphIcon( GlyphIcon.NEW_WINDOW ) )
-									                  .iconOnly()
-									                  .attribute( "target", "_blank" )
-									                  .text( "Visit partner website" )
+							BootstrapUiBuilders.table().cell().add(
+									BootstrapUiBuilders.button()
+									                   .link( partner.getUrl() )
+									                   .icon( new GlyphIcon( GlyphIcon.NEW_WINDOW ) )
+									                   .iconOnly()
+									                   .attribute( "target", "_blank" )
+									                   .text( "Visit partner website" )
 							).build( ctx )
 					);
 				} )

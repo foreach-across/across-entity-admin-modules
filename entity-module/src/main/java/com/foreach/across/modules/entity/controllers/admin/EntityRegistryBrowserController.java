@@ -22,7 +22,7 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -77,7 +77,6 @@ class EntityRegistryBrowserController
 
 	private final EntityRegistry entityRegistry;
 	private final PageContentStructure page;
-	private final BootstrapUiComponentFactory bootstrapUiComponentFactory;
 	private final AcrossModuleInfo entityModuleInfo;
 
 	@EventListener
@@ -129,7 +128,7 @@ class EntityRegistryBrowserController
 		menu.sort();
 		menu.select( new RequestMenuSelector( request ) );
 
-		page.addToNav( bootstrapUiComponentFactory.nav( menu ).tabs().build() );
+		page.addToNav( BootstrapUiBuilders.nav( menu ).tabs().build() );
 
 		if ( "associations".equals( detailView ) ) {
 			if ( detailName != null ) {

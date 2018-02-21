@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
@@ -56,7 +56,6 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 	private final ControlBuilderFactory controlBuilderFactory = new ControlBuilderFactory();
 	private final ValueBuilderFactory valueBuilderFactory = new ValueBuilderFactory();
 
-	private BootstrapUiFactory bootstrapUi;
 	private EntityViewElementBuilderService viewElementBuilderService;
 	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
 
@@ -85,11 +84,6 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
-	}
-
-	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
 	}
 
 	@Autowired
@@ -141,7 +135,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 				}
 			}
 
-			return bootstrapUi.text().postProcessor( valueTextPostProcessor );
+			return BootstrapUiBuilders.text().postProcessor( valueTextPostProcessor );
 		}
 	}
 
@@ -163,7 +157,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 		protected NumericFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 		                                                          ViewElementMode viewElementMode,
 		                                                          String viewElementType ) {
-			return bootstrapUi
+			return BootstrapUiBuilders
 					.numeric()
 					.name( propertyDescriptor.getName() )
 					.controlName( EntityAttributes.controlName( propertyDescriptor ) )

@@ -16,7 +16,6 @@
 
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -41,7 +40,6 @@ public class TestLabelFormElementBuilderFactory extends ViewElementBuilderFactor
 	@Override
 	protected EntityViewElementBuilderFactory createBuilderFactory() {
 		LabelFormElementBuilderFactory builderFactory = new LabelFormElementBuilderFactory();
-		builderFactory.setBootstrapUi( new BootstrapUiFactoryImpl() );
 		return builderFactory;
 	}
 
