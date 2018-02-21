@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,13 +18,11 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
@@ -43,15 +41,8 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 	private EntityViewElementBuilderService entityViewElementBuilderService;
 	private BootstrapUiFactory bootstrapUi;
 
-	private boolean renderHelpBlockBeforeControl = true;
-
 	public FormGroupElementBuilderFactory() {
 		//addProcessor( new FormGroupRequiredBuilderProcessor() );
-	}
-
-	@Deprecated
-	public void setRenderHelpBlockBeforeControl( boolean renderHelpBlockBeforeControl ) {
-		this.renderHelpBlockBeforeControl = renderHelpBlockBeforeControl;
 	}
 
 	@Override
@@ -97,26 +88,15 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 			} );
 		}
 
-		// todo: clean this up
-		if ( isRadioOrCheckboxControl( controlBuilder ) ) {
-			// Form groups for checkbox and radio buttons are different
-			formGroup.helpBlockRenderedBeforeControl( false );
-		}
-		else {
-			ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder(
-					propertyDescriptor, ViewElementMode.LABEL
-			);
+		ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder(
+				propertyDescriptor, ViewElementMode.LABEL
+		);
 
-			LabelFormElementBuilder labelBuilder = bootstrapUi.label().text( labelText );
+		LabelFormElementBuilder labelBuilder = bootstrapUi.label().text( labelText );
 
-			formGroup.label( labelBuilder ).helpBlockRenderedBeforeControl( renderHelpBlockBeforeControl );
-		}
+		formGroup.label( labelBuilder );
 
 		return formGroup;
-	}
-
-	private boolean isRadioOrCheckboxControl( ViewElementBuilder builder ) {
-		return PropertyViewElementBuilderWrapper.retrieveTargetBuilder( builder ) instanceof OptionFormElementBuilder;
 	}
 
 	@Autowired
