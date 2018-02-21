@@ -23,6 +23,7 @@ import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavCompo
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
+import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElementBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -245,5 +246,24 @@ public class BootstrapUiBuilders
 
 	public static BreadcrumbNavComponentBuilder breadcrumb( Menu menu ) {
 		return COMPONENT_FACTORY.breadcrumb( menu );
+	}
+
+	/**
+	 * Create a new builder for a {@link com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement}.
+	 *
+	 * @return tooltip builder
+	 */
+	public static TooltipViewElementBuilder tooltip() {
+		return new TooltipViewElementBuilder();
+	}
+
+	/**
+	 * Create a new builder for a {@link com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement}.
+	 *
+	 * @param tooltipText text for the tooltip
+	 * @return tooltip builder
+	 */
+	public static TooltipViewElementBuilder tooltip( String tooltipText ) {
+		return new TooltipViewElementBuilder().text( tooltipText );
 	}
 }

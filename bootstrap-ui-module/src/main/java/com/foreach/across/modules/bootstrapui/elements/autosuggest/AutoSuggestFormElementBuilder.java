@@ -31,7 +31,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,7 +47,6 @@ import java.util.stream.Collectors;
  * so the hidden field is used for the post-back value.
  */
 @RequiredArgsConstructor
-@Slf4j
 @Accessors(fluent = true)
 public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupport<AutoSuggestFormElement, AutoSuggestFormElementBuilder>
 {

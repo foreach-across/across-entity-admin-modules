@@ -59,9 +59,6 @@ public class FormGroupElement extends AbstractNodeViewElement
 	private FormLayout formLayout;
 	private boolean required;
 
-	@Deprecated
-	private boolean renderHelpBlockBeforeControl;
-
 	/**
 	 * -- SETTER --
 	 * When rendering, should field errors be detected from the bound object.
@@ -87,17 +84,12 @@ public class FormGroupElement extends AbstractNodeViewElement
 		return returnIfType( helpBlock, elementType );
 	}
 
-	/**
-	 * @return true if helpBlock should be rendered before the control (default: false)
-	 */
-	@Deprecated
-	public boolean isRenderHelpBlockBeforeControl() {
-		return renderHelpBlockBeforeControl;
+	public <V extends ViewElement> V getDescriptionBlock( Class<V> elementType ) {
+		return returnIfType( descriptionBlock, elementType );
 	}
 
-	@Deprecated
-	public void setRenderHelpBlockBeforeControl( boolean renderHelpBlockBeforeControl ) {
-		this.renderHelpBlockBeforeControl = renderHelpBlockBeforeControl;
+	public <V extends ViewElement> V getTooltip( Class<V> elementType ) {
+		return returnIfType( tooltip, elementType );
 	}
 
 	@Override
@@ -107,13 +99,16 @@ public class FormGroupElement extends AbstractNodeViewElement
 		if ( label != null ) {
 			stream.accept( label );
 		}
-		if ( renderHelpBlockBeforeControl && helpBlock != null ) {
-			stream.accept( helpBlock );
+		if ( tooltip != null ) {
+			stream.accept( tooltip );
+		}
+		if ( descriptionBlock != null ) {
+			stream.accept( descriptionBlock );
 		}
 		if ( control != null ) {
 			stream.accept( control );
 		}
-		if ( !renderHelpBlockBeforeControl && helpBlock != null ) {
+		if ( helpBlock != null ) {
 			stream.accept( helpBlock );
 		}
 		return Stream.concat( stream.build(), super.elementStream() );
@@ -134,6 +129,14 @@ public class FormGroupElement extends AbstractNodeViewElement
 			}
 			if ( element.equals( helpBlock ) ) {
 				setHelpBlock( null );
+				removed = true;
+			}
+			if ( element.equals( descriptionBlock ) ) {
+				setDescriptionBlock( null );
+				removed = true;
+			}
+			if ( element.equals( tooltip ) ) {
+				setTooltip( null );
 				removed = true;
 			}
 		}

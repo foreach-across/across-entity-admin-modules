@@ -16,15 +16,12 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.modules.bootstrapui.elements.FaIcon;
-import com.foreach.across.modules.bootstrapui.elements.FormLayout;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.Data;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
@@ -106,26 +103,6 @@ public class BootstrapFormController
 				)
 				.add( row().add( column( Grid.Device.MD.width( 12 ) ).add( button().submit().text( "Update" ) ) ) );
 	}
-
-	public ViewElementBuilder tooltip( String text ) {
-		return node( "a" )
-				.css( "tooltip-link", "text-muted" )
-				.attribute( "title", text )
-				.attribute( "data-html", true )
-				.attribute( "data-toggle", "tooltip" )
-				.add( new FaIcon( FaIcon.WebApp.QUESTION_CIRCLE ) );
-	}
-
-	/*
-		if ( !StringUtils.isEmpty( tooltip ) ) {
-			return node( "a" )
-					.css( "tooltip-link", "text-muted" )
-					.attribute( "title", tooltip )
-					.attribute( "data-html", true )
-					.attribute( "data-toggle", "tooltip" )
-					.add( new FaIcon( FaIcon.WebApp.QUESTION_CIRCLE ) );
-		}
-	 */
 
 	@Data
 	static class FormDto

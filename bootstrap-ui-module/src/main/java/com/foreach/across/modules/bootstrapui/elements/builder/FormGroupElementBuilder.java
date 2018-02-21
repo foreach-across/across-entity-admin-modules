@@ -39,9 +39,6 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	private Boolean required;
 	private Boolean detectFieldErrors;
 
-	@Deprecated
-	private boolean helpBlockBeforeControl;
-
 	public Boolean isRequired() {
 		return required;
 	}
@@ -52,10 +49,6 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 
 	public ElementOrBuilder getHelpBlock() {
 		return helpBlock;
-	}
-
-	public boolean isHelpBlockBeforeControl() {
-		return helpBlockBeforeControl;
 	}
 
 	/**
@@ -235,12 +228,6 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 		return this;
 	}
 
-	@Deprecated
-	public FormGroupElementBuilder helpBlockRenderedBeforeControl( boolean helpBlockBeforeControl ) {
-		this.helpBlockBeforeControl = helpBlockBeforeControl;
-		return this;
-	}
-
 	public FormGroupElementBuilder formLayout( FormLayout formLayout ) {
 		this.formLayout = formLayout;
 		return this;
@@ -287,8 +274,6 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 		if ( detectFieldErrors != null ) {
 			group.setDetectFieldErrors( detectFieldErrors );
 		}
-
-		group.setRenderHelpBlockBeforeControl( helpBlockBeforeControl );
 
 		if ( helpBlock != null ) {
 			group.setHelpBlock( helpBlock.get( builderContext ) );

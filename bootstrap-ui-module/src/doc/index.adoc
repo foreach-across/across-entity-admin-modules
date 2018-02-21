@@ -54,10 +54,19 @@ Module website: {module-url}
 * the default builders now usually support localized text patterns for any text property
 ** for example: `BootstrapUiBuilders.button().title("#{my.button=Default text}")`
 * `TextboxFormElement` rendered inside a `FormGroupElement` which detects field errors, will now render the original input value if there are errors present
+* direct use of `BootstrapUiFactory` or `BootstrapUiComponentFactory` is now discouraged, these interfaces have been deprecated
+** use the stateless `BootstrapUiBuilders` facade instead
+* added a `TooltipViewElement` with corresponding builder to quickly generate a tooltip with a default question mark icon
+** see `BootstrapUiBuilders.tooltip()` for a builder method
+* `FormGroupElement` has been refactored to support more descriptions
+** a `tooltip` can be set which will be added to the label - after the label text and required indicator
+** a `descriptionBlock` can be set which will be added to the group before the control
+** a `helpBlock` can be set which will be added to the group after the control
+** the property `renderHelpBlockBeforeControl` has been removed as the `descriptionBlock` is always rendered before the control, and the `helpBlock` always after the control
 
 === 1.2.0.RELEASE
 * added `BootstrapUiBuilders` class that is a static facade for all builders
-** `BootstrapUiFactory` and `BootstrapUiComponentFactory` beans are still available, but because both of them operate stateless the facade was added to reduce wiring verbosity
+** `BootstrapUiFactory` and `BootstrapUiComponentFactory` beans are still available, but because both of them operate stateless, the facade was added to reduce wiring verbosity
 * textbox improvements:
 ** `TextboxFormElement` has a property *disableLineBreaks* that will disable the ENTER key
 ** the `TextboxFormElementBuilder` will generate a valid single-line auto-sizing textarea if auto-size is requested on a normal textbox
@@ -223,6 +232,11 @@ The builder implementation is rarely created directly but through the `Bootstrap
 |`AlertViewElementBuilder`
 |Create a Bootstrap alert component.
 
+|`AutoSuggestFormElement`
+|`AutoSuggestFormElementBuilder`
+|Configure and create a Typeahead based auto-suggest textbox.
+See also the `AutoSuggestFormElementConfiguration` for configuration of the required datasets.
+
 |`ButtonViewElement`
 |`ButtonViewElementBuilder`
 |Create buttons or button links.
@@ -311,6 +325,12 @@ Which type gets created depends on the presence of a `SelectFormElementConfigura
 |`TextboxFormElement` +
 |`<<TextboxFormElementBuilder>>`
 |Single-line text field - supporting HTML5 types.
+
+|`TooltipViewElement` +
+|`TooltipViewElementBuilder`
+|Generate a simple tooltip element (text shown when hovering).
+By default this is a link with a question mark icon.
+
 
 |===
 

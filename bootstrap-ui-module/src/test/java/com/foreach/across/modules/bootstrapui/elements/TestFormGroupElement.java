@@ -606,22 +606,32 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 	@SuppressWarnings("all")
 	@Test
-	public void labelAndControlAreNotChildrenButCanBeFound() {
+	public void propertyMembersAreNotChildrenButCanBeFound() {
 		TextViewElement help = new TextViewElement( "help", "help" );
 		group.setHelpBlock( help );
+
+		TextViewElement description = new TextViewElement( "description", "description" );
+		group.setDescriptionBlock( description );
+
+		TextViewElement tooltip = new TextViewElement( "tooltip", "tooltip" );
+		group.setTooltip( tooltip );
 
 		assertSame( group.getControl(), group.find( "control" ).get() );
 		assertSame( group.getLabel(), group.find( "label" ).get() );
 		assertSame( group.getHelpBlock(), group.find( "help" ).get() );
+		assertSame( group.getDescriptionBlock(), group.find( "description" ).get() );
+		assertSame( group.getTooltip(), group.find( "tooltip" ).get() );
 
 		assertEquals(
-				Arrays.asList( group.getHelpBlock(), group.getLabel(), group.getControl() ),
-				group.removeAllFromTree( "help", "label", "control" ).collect( Collectors.toList() )
+				Arrays.asList( group.getHelpBlock(), group.getLabel(), group.getControl(), group.getTooltip(), group.getDescriptionBlock() ),
+				group.removeAllFromTree( "help", "label", "control", "tooltip", "description" ).collect( Collectors.toList() )
 		);
 
 		assertNull( group.getControl() );
 		assertNull( group.getLabel() );
 		assertNull( group.getHelpBlock() );
+		assertNull( group.getDescriptionBlock() );
+		assertNull( group.getTooltip() );
 	}
 
 	public static class TestClass
