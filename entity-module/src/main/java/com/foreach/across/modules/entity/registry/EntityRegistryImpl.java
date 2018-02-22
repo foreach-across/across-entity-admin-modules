@@ -130,7 +130,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> MutableEntityConfiguration<T> getEntityConfiguration( Class<T> entityType ) {
+	public <T> MutableEntityConfiguration<T> getEntityConfiguration( @NonNull Class<T> entityType ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
 			// Consider 2 classes the same if they have the same name - workaround some issues with spring boot devtools classloader
 			if ( configuration.getEntityType().getName().equals( entityType.getName() ) ) {
@@ -143,7 +143,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> MutableEntityConfiguration<T> getEntityConfiguration( String entityName ) {
+	public <T> MutableEntityConfiguration<T> getEntityConfiguration( @NonNull String entityName ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
 			if ( StringUtils.equals( configuration.getName(), entityName ) ) {
 				return (MutableEntityConfiguration<T>) configuration;

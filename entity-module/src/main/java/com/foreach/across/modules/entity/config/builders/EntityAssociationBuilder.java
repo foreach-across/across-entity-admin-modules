@@ -27,6 +27,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.util.function.Consumer;
 
@@ -300,6 +301,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param configuration to register the association in
 	 */
 	void apply( MutableEntityConfiguration configuration ) {
+		Assert.notNull( name, "A name() is required for an AssociationBuilder." );
 		MutableEntityAssociation association = configuration.association( name );
 
 		if ( association == null ) {
@@ -374,7 +376,8 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 				: entityRegistry.getEntityConfiguration( targetEntityType );
 
 		if ( targetConfiguration == null ) {
-			throw new IllegalArgumentException( "Unable to retrieve target entity configured: " + targetEntityType );
+			throw new IllegalArgumentException(
+					"Unable to retrieve target entity, targetEntityType: [" + targetEntityType + "], targetEntityName: [" + targetEntityName + "], association name: [" + name + "]" );
 		}
 
 		return targetConfiguration;

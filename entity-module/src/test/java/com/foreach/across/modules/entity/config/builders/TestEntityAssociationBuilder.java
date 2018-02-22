@@ -34,6 +34,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import java.util.Collections;
 
 import static com.foreach.across.modules.entity.registry.EntityAssociation.Type.EMBEDDED;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 /**
@@ -152,5 +153,22 @@ public class TestEntityAssociationBuilder
 		verify( association ).setHidden( false );
 		verify( association ).setAttributes( Collections.singletonMap( "someAttribute", "someAttributeValue" ) );
 		verify( association ).setParentDeleteMode( EntityAssociation.ParentDeleteMode.WARN );
+	}
+
+	@Test
+	public void parentDeleteModeWithoutNamedAssociationShouldFail() {
+		assertThatThrownBy( () -> builder.parentDeleteMode( EntityAssociation.ParentDeleteMode.IGNORE ).apply( configuration ) ).isInstanceOf(
+				IllegalArgumentException.class ).hasMessageContaining( "A name() is required for an AssociationBuilder." );
+	}
+
+	@Test
+	public void parentDeleteModeWithUnknownNamedAssociationShouldFail() {
+		MutableEntityRegistry entityRegistryImpl = new EntityRegistryImpl();
+		entityRegistryImpl.register( new EntityConfigurationImpl<>( "-bad-association-name", String.class ) );
+		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistryImpl );
+
+		assertThatThrownBy( () -> builder.parentDeleteMode( EntityAssociation.ParentDeleteMode.IGNORE ).name( "foobar" ).apply( configuration ) ).isInstanceOf(
+				NullPointerException.class ).hasMessageContaining(
+				"entityType" );
 	}
 }
