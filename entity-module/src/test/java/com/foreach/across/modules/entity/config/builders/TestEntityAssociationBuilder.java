@@ -168,7 +168,7 @@ public class TestEntityAssociationBuilder
 		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistryImpl );
 
 		assertThatThrownBy( () -> builder.parentDeleteMode( EntityAssociation.ParentDeleteMode.IGNORE ).name( "foobar" ).apply( configuration ) ).isInstanceOf(
-				IllegalArgumentException.class ).hasMessageContaining(
-				"Unable to retrieve target entity, targetEntityType: [null], targetEntityName: [null], association name: [foobar]" );
+				NullPointerException.class ).hasMessageContaining(
+				"entityType" );
 	}
 }
