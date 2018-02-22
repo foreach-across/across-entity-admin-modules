@@ -200,7 +200,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder tooltip( String text ) {
-		tooltip( BootstrapUiBuilders.helpBlock( text ) );
+		tooltip( BootstrapUiBuilders.tooltip( text ) );
 		return this;
 	}
 

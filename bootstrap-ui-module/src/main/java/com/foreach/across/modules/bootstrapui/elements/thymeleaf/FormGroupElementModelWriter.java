@@ -111,7 +111,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		if ( formControl != null && controlModel != null ) {
 			String controlId = model.retrieveHtmlId( formControl );
 
-			if ( !formControl.hasAttribute( "aria-describedby" ) ) {
+			if ( controlId != null && !formControl.hasAttribute( "aria-describedby" ) ) {
 				String helpId = retrieveDescribedByIds( model.getModelFactory(), controlId, descriptionBlockModel, helpBlockModel, tooltipModel );
 
 				if ( !helpId.isEmpty() ) {

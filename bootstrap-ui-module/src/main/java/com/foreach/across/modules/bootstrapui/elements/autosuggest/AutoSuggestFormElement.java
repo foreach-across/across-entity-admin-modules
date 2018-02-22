@@ -42,6 +42,24 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 	}
 
 	@Override
+	public String getHtmlId() {
+		String htmlId = super.getHtmlId();
+
+		if ( htmlId != null ) {
+			return htmlId;
+		}
+
+		htmlId = valueControl.getHtmlId();
+
+		return htmlId != null ? "autosuggest-" + htmlId : null;
+	}
+
+	@Override
+	public void setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+	}
+
+	@Override
 	public boolean isReadonly() {
 		return textbox.isReadonly();
 	}
