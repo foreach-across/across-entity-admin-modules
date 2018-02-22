@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
+import com.foreach.across.modules.bootstrapui.elements.ConfigurablePlaceholderText;
+import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -34,15 +36,32 @@ import static org.mockito.Mockito.*;
 public class TestEntityPropertyDescriptorAwareElementPostProcessor
 {
 	@Spy
-	private AbstractPropertyDescriptorAwarePostProcessor<ViewElement> postProcessor;
+	private AbstractPropertyDescriptorAwarePostProcessor<ViewElement, ConfigurablePlaceholderText> postProcessor =
+			new AbstractPropertyDescriptorAwarePostProcessor<ViewElement, ConfigurablePlaceholderText>( ConfigurablePlaceholderText.class )
+			{
+				@Override
+				protected void postProcess( ViewElementBuilderContext builderContext,
+				                            ConfigurablePlaceholderText element,
+				                            EntityPropertyDescriptor propertyDescriptor ) {
 
-	private TextViewElement element = new TextViewElement();
+				}
+			};
+
 	private ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
 
 	@Test
 	public void neverForwardedIfNoPropertyDescriptor() {
-		postProcessor.postProcess( builderContext, element );
-		verify( postProcessor, never() ).postProcess( eq( builderContext ), eq( element ), any() );
+		postProcessor.postProcess( builderContext, new TextViewElement() );
+		verify( postProcessor, never() ).postProcess( eq( builderContext ), any(), any() );
+	}
+
+	@Test
+	public void notForwardedIfNotAnInstanceOfType() {
+		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
+		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
+
+		postProcessor.postProcess( builderContext, new TextViewElement() );
+		verify( postProcessor, never() ).postProcess( eq( builderContext ), any(), any() );
 	}
 
 	@Test
@@ -50,7 +69,8 @@ public class TestEntityPropertyDescriptorAwareElementPostProcessor
 		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
 
-		postProcessor.postProcess( builderContext, element );
-		verify( postProcessor ).postProcess( builderContext, element, descriptor );
+		TextboxFormElement textbox = new TextboxFormElement();
+		postProcessor.postProcess( builderContext, textbox );
+		verify( postProcessor ).postProcess( builderContext, textbox, descriptor );
 	}
 }

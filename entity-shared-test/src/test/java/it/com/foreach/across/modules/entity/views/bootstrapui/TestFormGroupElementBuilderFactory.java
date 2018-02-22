@@ -41,9 +41,7 @@ public class TestFormGroupElementBuilderFactory extends ViewElementBuilderFactor
 
 	@Override
 	protected EntityViewElementBuilderFactory createBuilderFactory() {
-		FormGroupElementBuilderFactory builderFactory = new FormGroupElementBuilderFactory();
-		builderFactory.setEntityViewElementBuilderService( viewElementBuilderService );
-		return builderFactory;
+		return new FormGroupElementBuilderFactory( viewElementBuilderService );
 	}
 
 	@Override

@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 public class EntityViewElementPostProcessors
 {
 	/**
-	 * Registers a set of default post processors to apply when rendering a control or form group
+	 * Registers a set of default post processors to apply when rendering a control or write mode form group
 	 * for a {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor}.
 	 *
 	 * @return element builder configuration consumer

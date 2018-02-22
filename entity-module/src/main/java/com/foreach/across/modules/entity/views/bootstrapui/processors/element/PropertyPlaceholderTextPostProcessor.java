@@ -20,7 +20,6 @@ import com.foreach.across.modules.bootstrapui.elements.ConfigurablePlaceholderTe
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import lombok.val;
 
 /**
  * If the target element is a {@link com.foreach.across.modules.bootstrapui.elements.ConfigurablePlaceholderText}
@@ -29,16 +28,13 @@ import lombok.val;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-public class PropertyPlaceholderTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T>
+public class PropertyPlaceholderTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, ConfigurablePlaceholderText>
 {
 	@Override
-	protected void postProcess( ViewElementBuilderContext builderContext, T element, EntityPropertyDescriptor propertyDescriptor ) {
-		if ( element instanceof ConfigurablePlaceholderText ) {
-			val placeholderAware = ( (ConfigurablePlaceholderText) element );
-			if ( placeholderAware.getPlaceholder() == null ) {
-				String messageCode = "properties." + propertyDescriptor.getName() + "[placeholder]";
-				placeholderAware.setPlaceholder( builderContext.getMessage( messageCode, "" ) );
-			}
+	protected void postProcess( ViewElementBuilderContext builderContext, ConfigurablePlaceholderText element, EntityPropertyDescriptor propertyDescriptor ) {
+		if ( element.getPlaceholder() == null ) {
+			String messageCode = "properties." + propertyDescriptor.getName() + "[placeholder]";
+			element.setPlaceholder( builderContext.getMessage( messageCode, "" ) );
 		}
 	}
 }

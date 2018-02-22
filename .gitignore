@@ -2,7 +2,6 @@ target
 .idea/workspace.xml
 .idea/excludeFromValidation
 .idea/libraries
-.idea/template/template_variable_settings.xml
 *.iml
 db
 .DS_Store

@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +48,7 @@ public class TestRequiredControlPostProcessor
 	@Spy
 	private TextboxFormElement box = new TextboxFormElement();
 
-	private RequiredControlPostProcessor postProcessor = new RequiredControlPostProcessor();
+	private RequiredControlPostProcessor<ViewElement> postProcessor = new RequiredControlPostProcessor<>();
 
 	@Before
 	public void before() {

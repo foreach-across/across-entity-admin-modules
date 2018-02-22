@@ -30,16 +30,14 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-public class RequiredControlPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T>
+public class RequiredControlPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, FormControlElement>
 {
 	@Override
-	protected void postProcess( ViewElementBuilderContext builderContext, T element, EntityPropertyDescriptor propertyDescriptor ) {
-		if ( element instanceof FormControlElement ) {
-			Boolean required = propertyDescriptor.getAttribute( EntityAttributes.PROPERTY_REQUIRED, Boolean.class );
+	protected void postProcess( ViewElementBuilderContext builderContext, FormControlElement element, EntityPropertyDescriptor propertyDescriptor ) {
+		Boolean required = propertyDescriptor.getAttribute( EntityAttributes.PROPERTY_REQUIRED, Boolean.class );
 
-			if ( required != null ) {
-				( (FormControlElement) element ).setRequired( Boolean.TRUE.equals( required ) );
-			}
+		if ( required != null ) {
+			element.setRequired( Boolean.TRUE.equals( required ) );
 		}
 	}
 }

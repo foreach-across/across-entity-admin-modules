@@ -26,6 +26,7 @@ import lombok.NonNull;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class PlaceholderTextPostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
 {
 	private final String messageCode;

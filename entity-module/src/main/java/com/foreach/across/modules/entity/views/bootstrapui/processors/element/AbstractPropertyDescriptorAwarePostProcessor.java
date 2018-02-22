@@ -22,6 +22,7 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import lombok.val;
+import org.springframework.core.ResolvableType;
 
 /**
  * Base class for an element post-processor that looks for the current {@link EntityPropertyDescriptor}
@@ -29,21 +30,38 @@ import lombok.val;
  * <p/>
  * This is a useful base class for creating general post-processors that determine their actions
  * based on property descriptor attributes when they are being used on a property bound element.
+ * <p/>
+ * This class has two generic types. The first defines the base type to which this post-processor can be added,
+ * and determines for which elements you can actually add the post processor without it throwing class cast exceptions.
+ * The second generic type defines the actual type that the element should match before the post processing should happen,
+ * an actual instance check will be performed on this type. This second type does not need to be an actual {@code ViewElement} type.
  *
- * @param <T> view element
+ * @param <T> the supported input view element type to which this processor can be configured (type matching)
+ * @param <Y> the actual type that the element must match before the actual {@link #postProcess(ViewElementBuilderContext, Object, EntityPropertyDescriptor)} will be called
  * @author Arne Vandamme
  * @since 3.0.0
  */
-public abstract class AbstractPropertyDescriptorAwarePostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
+public abstract class AbstractPropertyDescriptorAwarePostProcessor<T extends ViewElement, Y> implements ViewElementPostProcessor<T>
 {
+	private final Class<Y> typedClass;
+
+	@SuppressWarnings("unchecked")
+	AbstractPropertyDescriptorAwarePostProcessor() {
+		typedClass = (Class<Y>) ResolvableType.forClass( getClass() ).as( AbstractPropertyDescriptorAwarePostProcessor.class ).getGeneric( 1 ).resolve();
+	}
+
+	protected AbstractPropertyDescriptorAwarePostProcessor( Class<Y> typedClass ) {
+		this.typedClass = typedClass;
+	}
+
 	@Override
 	public final void postProcess( ViewElementBuilderContext builderContext, T element ) {
 		val descriptor = EntityViewElementUtils.currentPropertyDescriptor( builderContext );
 
-		if ( descriptor != null ) {
-			postProcess( builderContext, element, descriptor );
+		if ( descriptor != null && typedClass.isInstance( element ) ) {
+			postProcess( builderContext, typedClass.cast( element ), descriptor );
 		}
 	}
 
-	protected abstract void postProcess( ViewElementBuilderContext builderContext, T element, EntityPropertyDescriptor propertyDescriptor );
+	protected abstract void postProcess( ViewElementBuilderContext builderContext, Y element, EntityPropertyDescriptor propertyDescriptor );
 }
