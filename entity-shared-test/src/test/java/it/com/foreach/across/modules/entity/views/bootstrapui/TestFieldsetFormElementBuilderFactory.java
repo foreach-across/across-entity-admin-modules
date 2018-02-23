@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
-import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -28,13 +27,13 @@ import com.foreach.across.modules.entity.views.bootstrapui.FieldsetFormElementBu
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -47,9 +46,7 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 
 	@Override
 	protected EntityViewElementBuilderFactory createBuilderFactory() {
-		FieldsetFormElementBuilderFactory builderFactory = new FieldsetFormElementBuilderFactory();
-		builderFactory.setEntityViewElementBuilderService( viewElementBuilderService );
-		return builderFactory;
+		return new FieldsetFormElementBuilderFactory( viewElementBuilderService );
 	}
 
 	@Override
@@ -58,12 +55,15 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 	}
 
 	@Test
-	public void legendTextShouldBeSet() {
+	public void legendTextShouldBeSetToTheLabel() {
+		ViewElementBuilder labelBuilder = new TextViewElementBuilder().text( "label text" );
+		when( viewElementBuilderService.getElementBuilder( properties.get( "embedded" ), ViewElementMode.LABEL ) ).thenReturn( labelBuilder );
+
 		EntityPropertyDescriptor embedded = properties.get( "embedded" );
 
 		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_READ );
 		assertNotNull( fieldset );
-		assertEquals( "resolved: embedded", fieldset.getLegend().getText() );
+		assertEquals( "label text", ( (TextViewElement) fieldset.getLegend().getChildren().get( 0 ) ).getText() );
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 	}
 
 	@Test
-	public void descriptionTextIsAddedOnTopOfFieldSet() {
+	public void inWriteModeTextSettingsAreAdded() {
 		EntityPropertyDescriptor member = mock( EntityPropertyDescriptor.class );
 
 		EntityPropertySelector selector = new EntityPropertySelector( "embedded.one" );
@@ -113,22 +113,39 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 		when( embedded.getAttribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.class ) )
 				.thenReturn( selector );
 
-		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
-		when( codeResolver.getMessageWithFallback( "properties.embedded[description]", "" ) ).thenReturn( "help text" );
-		when( builderContext.getAttribute( EntityMessageCodeResolver.class ) ).thenReturn( codeResolver );
+		doReturn( "description" ).when( builderContext ).getMessage( "properties.embedded[description]", "" );
+		doReturn( "" ).when( builderContext ).getMessage( "properties.embedded[help]", "" );
+		doReturn( "tooltip" ).when( builderContext ).getMessage( "properties.embedded[tooltip]", "" );
 
 		ViewElementBuilder propertyBuilder = mock( ViewElementBuilder.class );
-		when( viewElementBuilderService.getElementBuilder( member, ViewElementMode.FORM_READ ) ).thenReturn(
+		when( viewElementBuilderService.getElementBuilder( member, ViewElementMode.FORM_WRITE ) ).thenReturn(
 				propertyBuilder );
 		when( propertyBuilder.build( builderContext ) ).thenReturn( mock( TextViewElement.class ) );
 
+		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_WRITE );
+		assertNotNull( fieldset );
+		assertTrue( fieldset.getChildren().get( 0 ) instanceof FieldsetFormElement.Legend );
+
+		NodeViewElement descriptionBlock = (NodeViewElement) fieldset.getChildren().get( 1 );
+		assertNotNull( descriptionBlock );
+		assertEquals( "description", ( (TextViewElement) descriptionBlock.getChildren().get( 0 ) ).getText() );
+
+		verify( builderContext ).getMessage( eq( "properties.embedded[description]" ), any( String.class ) );
+		verify( builderContext ).getMessage( eq( "properties.embedded[help]" ), any( String.class ) );
+		verify( builderContext ).getMessage( eq( "properties.embedded[tooltip]" ), any( String.class ) );
+	}
+
+	@Test
+	public void inReadModeTheTextSettingsAreNotAdded() {
+		EntityPropertyDescriptor embedded = properties.get( "embedded" );
+
 		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_READ );
 		assertNotNull( fieldset );
-		verify( codeResolver ).getMessageWithFallback( "properties.embedded[description]", "" );
+		assertTrue( fieldset.getChildren().isEmpty() );
 
-		NodeViewElement helpBlock = (NodeViewElement) fieldset.getChildren().get( 0 );
-		assertNotNull( helpBlock );
-		assertEquals( "help text", ( (TextViewElement) helpBlock.getChildren().get( 0 ) ).getText() );
+		verify( builderContext, never() ).getMessage( eq( "properties.embedded[description]" ), any( String.class ) );
+		verify( builderContext, never() ).getMessage( eq( "properties.embedded[help]" ), any( String.class ) );
+		verify( builderContext, never() ).getMessage( eq( "properties.embedded[tooltip]" ), any( String.class ) );
 	}
 
 	private static class Instance

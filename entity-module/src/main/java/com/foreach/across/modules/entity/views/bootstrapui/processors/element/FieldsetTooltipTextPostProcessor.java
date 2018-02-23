@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -27,18 +27,18 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Post-processor that resolves a tooltip text for a current property and a {@link FormGroupElement}.
+ * Post-processor that resolves a tooltip text for a current property and the legend of a {@link FieldsetFormElement}.
  * By default supports HTML in the resulting message.
  * <p/>
  * This post processor is usually registered automatically when rendering {@link com.foreach.across.modules.entity.views.ViewElementMode#FORM_WRITE}.
  *
  * @author Arne Vandamme
+ * @see FormGroupTooltipTextPostProcessor
  * @since 3.0.0
- * @see FieldsetTooltipTextPostProcessor
  */
 @AllArgsConstructor
 @NoArgsConstructor
-public class FormGroupTooltipTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, FormGroupElement>
+public class FieldsetTooltipTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, FieldsetFormElement>
 {
 	/**
 	 * -- SETTER --
@@ -47,16 +47,14 @@ public class FormGroupTooltipTextPostProcessor<T extends ViewElement> extends Ab
 	private boolean escapeHtml;
 
 	@Override
-	protected void postProcess( ViewElementBuilderContext builderContext, FormGroupElement element, EntityPropertyDescriptor propertyDescriptor ) {
-		if ( element.getTooltip() == null ) {
-			val text = builderContext.getMessage( "properties." + propertyDescriptor.getName() + "[tooltip]", "" );
+	protected void postProcess( ViewElementBuilderContext builderContext, FieldsetFormElement element, EntityPropertyDescriptor propertyDescriptor ) {
+		val text = builderContext.getMessage( "properties." + propertyDescriptor.getName() + "[tooltip]", "" );
 
-			if ( !StringUtils.isEmpty( text ) ) {
-				TooltipViewElement tooltip = new TooltipViewElement();
-				tooltip.setText( text );
-				tooltip.setEscapeHtml( escapeHtml );
-				element.setTooltip( tooltip );
-			}
+		if ( !StringUtils.isEmpty( text ) ) {
+			TooltipViewElement tooltip = new TooltipViewElement();
+			tooltip.setText( text );
+			tooltip.setEscapeHtml( escapeHtml );
+			element.getLegend().addChild( tooltip );
 		}
 	}
 }

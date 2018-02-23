@@ -17,23 +17,20 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FieldsetFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
-import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.TextCodeResolverPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FieldsetDescriptionTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FieldsetHelpTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FieldsetTooltipTextPostProcessor;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,9 +43,10 @@ import org.springframework.stereotype.Component;
  * @see com.foreach.across.modules.entity.EntityAttributes#FIELDSET_PROPERTY_SELECTOR
  */
 @Component
+@RequiredArgsConstructor
 public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<FieldsetFormElementBuilder>
 {
-	private EntityViewElementBuilderService entityViewElementBuilderService;
+	private final EntityViewElementBuilderService entityViewElementBuilderService;
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -59,25 +57,27 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 	protected FieldsetFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                           ViewElementMode viewElementMode,
 	                                                           String viewElementType ) {
-		FieldsetFormElementBuilder fieldset
-				= BootstrapUiBuilders.fieldset()
-				                     .name( propertyDescriptor.getName() )
-				                     .legend()
-				                     .text( propertyDescriptor.getDisplayName() )
-				                     .postProcessor(
-						                     new TextCodeResolverPostProcessor<>( "properties." + propertyDescriptor.getName() )
-				                     )
-				                     .and()
-				                     .postProcessor( new DescriptionTextPostProcessor( propertyDescriptor ) );
+
+		ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder( propertyDescriptor, ViewElementMode.LABEL );
+
+		FieldsetFormElementBuilder fieldset = BootstrapUiBuilders.fieldset()
+		                                                         .name( propertyDescriptor.getName() )
+		                                                         .legend()
+		                                                         .add( labelText )
+		                                                         .and();
+
+		if ( ViewElementMode.FORM_WRITE.equals( viewElementMode.forSingle() ) ) {
+			fieldset.postProcessor( new FieldsetDescriptionTextPostProcessor<>() )
+			        .postProcessor( new FieldsetTooltipTextPostProcessor<>() )
+			        .postProcessor( new FieldsetHelpTextPostProcessor<>() );
+		}
 
 		EntityPropertySelector selector = retrieveMembersSelector( propertyDescriptor );
 		EntityPropertyRegistry propertyRegistry = propertyDescriptor.getPropertyRegistry();
 
 		if ( selector != null && propertyRegistry != null ) {
 			for ( EntityPropertyDescriptor member : propertyRegistry.select( selector ) ) {
-				ViewElementBuilder memberBuilder = entityViewElementBuilderService.getElementBuilder(
-						member, viewElementMode
-				);
+				ViewElementBuilder memberBuilder = entityViewElementBuilderService.getElementBuilder( member, viewElementMode );
 
 				if ( memberBuilder != null ) {
 					fieldset.add( memberBuilder );
@@ -89,54 +89,12 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 	}
 
 	private EntityPropertySelector retrieveMembersSelector( EntityPropertyDescriptor descriptor ) {
-		EntityPropertySelector selector
-				= descriptor.getAttribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.class );
+		EntityPropertySelector selector = descriptor.getAttribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.class );
 
 		if ( selector == null && PropertyPersistenceMetadata.isEmbeddedProperty( descriptor ) ) {
 			selector = new EntityPropertySelector( descriptor.getName() + ".*" );
 		}
 
 		return selector;
-	}
-
-	@Autowired
-	public void setEntityViewElementBuilderService( EntityViewElementBuilderService entityViewElementBuilderService ) {
-		this.entityViewElementBuilderService = entityViewElementBuilderService;
-	}
-
-	/**
-	 * Attempts to resolve a property description (help block).
-	 */
-	public static class DescriptionTextPostProcessor implements ViewElementPostProcessor<FieldsetFormElement>
-	{
-		private final EntityPropertyDescriptor propertyDescriptor;
-		private EntityMessageCodeResolver defaultMessageCodeResolver;
-
-		public DescriptionTextPostProcessor( EntityPropertyDescriptor propertyDescriptor ) {
-			this.propertyDescriptor = propertyDescriptor;
-		}
-
-		public void setDefaultMessageCodeResolver( EntityMessageCodeResolver defaultMessageCodeResolver ) {
-			this.defaultMessageCodeResolver = defaultMessageCodeResolver;
-		}
-
-		@Override
-		public void postProcess( ViewElementBuilderContext builderContext, FieldsetFormElement element ) {
-			EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
-
-			if ( codeResolver == null ) {
-				codeResolver = defaultMessageCodeResolver;
-			}
-
-			if ( codeResolver != null ) {
-				String description = codeResolver.getMessageWithFallback(
-						"properties." + propertyDescriptor.getName() + "[description]", ""
-				);
-
-				if ( !StringUtils.isBlank( description ) ) {
-					element.addFirstChild( BootstrapUiBuilders.helpBlock( description ).build( builderContext ) );
-				}
-			}
-		}
 	}
 }

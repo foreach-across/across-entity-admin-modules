@@ -89,12 +89,12 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			return BootstrapUiElements.FORM_GROUP;
 		}
 
-		if ( isEmbedded ) {
-			return null;
-		}
-
 		if ( ViewElementMode.isLabel( singleMode ) ) {
 			return BootstrapUiElements.LABEL;
+		}
+
+		if ( isEmbedded ) {
+			return null;
 		}
 
 		Class propertyType = descriptor.getPropertyType();

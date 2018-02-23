@@ -33,11 +33,11 @@ import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupE
  * Post-processor that resolves a description text for a current property and a {@link com.foreach.across.modules.bootstrapui.elements.FormGroupElement}.
  * By default supports HTML in the resulting message.
  * <p/>
- * This post processor is usually registered automatically when rendering {@link com.foreach.across.modules.entity.views.ViewElementMode#FORM_READ}
- * or {@link com.foreach.across.modules.entity.views.ViewElementMode#FORM_WRITE}.
+ * This post processor is usually registered automatically when rendering {@link com.foreach.across.modules.entity.views.ViewElementMode#FORM_WRITE}.
  *
  * @author Arne Vandamme
  * @since 3.0.0
+ * @see FieldsetDescriptionTextPostProcessor
  */
 @AllArgsConstructor
 @NoArgsConstructor

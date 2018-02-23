@@ -16,29 +16,32 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
-import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement;
+import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.helpBlock;
+import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder.CSS_FORM_TEXT_HELP;
+
 /**
- * Post-processor that resolves a tooltip text for a current property and a {@link FormGroupElement}.
- * By default supports HTML in the resulting message.
+ * Post-processor that resolves a help text for a current property and a {@link com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement}.
+ * By default supports HTML in the resulting message. The help text is added at the bottom of the fieldset.
  * <p/>
  * This post processor is usually registered automatically when rendering {@link com.foreach.across.modules.entity.views.ViewElementMode#FORM_WRITE}.
  *
  * @author Arne Vandamme
+ * @see FormGroupHelpTextPostProcessor
  * @since 3.0.0
- * @see FieldsetTooltipTextPostProcessor
  */
 @AllArgsConstructor
 @NoArgsConstructor
-public class FormGroupTooltipTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, FormGroupElement>
+public class FieldsetHelpTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, FieldsetFormElement>
 {
 	/**
 	 * -- SETTER --
@@ -47,16 +50,15 @@ public class FormGroupTooltipTextPostProcessor<T extends ViewElement> extends Ab
 	private boolean escapeHtml;
 
 	@Override
-	protected void postProcess( ViewElementBuilderContext builderContext, FormGroupElement element, EntityPropertyDescriptor propertyDescriptor ) {
-		if ( element.getTooltip() == null ) {
-			val text = builderContext.getMessage( "properties." + propertyDescriptor.getName() + "[tooltip]", "" );
+	protected void postProcess( ViewElementBuilderContext builderContext, FieldsetFormElement element, EntityPropertyDescriptor propertyDescriptor ) {
+		val text = builderContext.getMessage( "properties." + propertyDescriptor.getName() + "[help]", "" );
 
-			if ( !StringUtils.isEmpty( text ) ) {
-				TooltipViewElement tooltip = new TooltipViewElement();
-				tooltip.setText( text );
-				tooltip.setEscapeHtml( escapeHtml );
-				element.setTooltip( tooltip );
-			}
+		if ( !StringUtils.isEmpty( text ) ) {
+			element.addChild(
+					helpBlock().css( CSS_FORM_TEXT_HELP )
+					           .add( new TextViewElement( text, escapeHtml ) )
+					           .build( builderContext )
+			);
 		}
 	}
 }

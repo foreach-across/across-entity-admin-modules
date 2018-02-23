@@ -190,6 +190,18 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
+	public void labelForEmbeddedTypesWhenLabelRequested() {
+		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
+		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
+		metadata.setEmbedded( true );
+
+		assertEquals( BootstrapUiElements.LABEL, lookup( AtomicInteger.class, ViewElementMode.LABEL ) );
+		assertEquals( BootstrapUiElements.LABEL, lookup( AtomicInteger.class, ViewElementMode.LIST_LABEL ) );
+		assertEquals( BootstrapUiElements.LABEL, lookup( AtomicInteger.class, ViewElementMode.LABEL.forMultiple() ) );
+		assertEquals( BootstrapUiElements.LABEL, lookup( AtomicInteger.class, ViewElementMode.LIST_LABEL.forMultiple() ) );
+	}
+
+	@Test
 	public void nullForEmbeddedTypesIfNotAFormElement() {
 		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
 		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
@@ -199,7 +211,6 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		metadata.setEmbedded( true );
 
 		assertNull( lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
-		assertNull( lookup( AtomicInteger.class, ViewElementMode.LIST_LABEL ) );
 		assertNull( lookup( AtomicInteger.class, ViewElementMode.LIST_VALUE ) );
 	}
 
