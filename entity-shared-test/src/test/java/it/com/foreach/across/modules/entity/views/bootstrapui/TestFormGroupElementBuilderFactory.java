@@ -18,7 +18,6 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
-import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -28,8 +27,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
@@ -50,48 +48,51 @@ public class TestFormGroupElementBuilderFactory extends ViewElementBuilderFactor
 	}
 
 	@Test
-	public void noDescriptionTextMeansNoHelpBlock() {
+	public void textElementsAreBeingLookedUp() {
 		when( properties.get( "text" ).isWritable() ).thenReturn( true );
 
 		ViewElementBuilder controlBuilder = new TextboxFormElementBuilder().required();
-		when( viewElementBuilderService
-				      .getElementBuilder( properties.get( "text" ), ViewElementMode.CONTROL ) )
-				.thenReturn( controlBuilder );
+		when( viewElementBuilderService.getElementBuilder( properties.get( "text" ), ViewElementMode.CONTROL ) ).thenReturn( controlBuilder );
 
 		ViewElementBuilder labelBuilder = new LabelFormElementBuilder();
-		when( viewElementBuilderService
-				      .getElementBuilder( properties.get( "text" ), ViewElementMode.LABEL ) )
-				.thenReturn( labelBuilder );
+		when( viewElementBuilderService.getElementBuilder( properties.get( "text" ), ViewElementMode.LABEL ) ).thenReturn( labelBuilder );
 
-		FormGroupElement group = assembleAndVerify( "text", true );
+		doReturn( "description" ).when( builderContext ).getMessage( "properties.text[description]", "" );
+		doReturn( "" ).when( builderContext ).getMessage( "properties.text[help]", "" );
+		doReturn( "tooltip" ).when( builderContext ).getMessage( "properties.text[tooltip]", "" );
+
+		FormGroupElement group = assembleAndVerify( "text", true, ViewElementMode.FORM_WRITE );
+		assertNotNull( group.getDescriptionBlock() );
 		assertNull( group.getHelpBlock() );
+		assertNotNull( group.getTooltip() );
+
+		verify( builderContext ).getMessage( "properties.text[description]", "" );
+		verify( builderContext ).getMessage( "properties.text[tooltip]", "" );
+		verify( builderContext ).getMessage( "properties.text[help]", "" );
 	}
 
 	@Test
-	public void descriptionTextIsBeingLookedUp() {
+	public void inReadModeTheTextAndRequiredSettingsAreNotAdded() {
 		when( properties.get( "text" ).isWritable() ).thenReturn( true );
 
 		ViewElementBuilder controlBuilder = new TextboxFormElementBuilder().required();
-		when( viewElementBuilderService
-				      .getElementBuilder( properties.get( "text" ), ViewElementMode.CONTROL ) )
-				.thenReturn( controlBuilder );
+		when( viewElementBuilderService.getElementBuilder( properties.get( "text" ), ViewElementMode.VALUE ) ).thenReturn( controlBuilder );
 
 		ViewElementBuilder labelBuilder = new LabelFormElementBuilder();
-		when( viewElementBuilderService
-				      .getElementBuilder( properties.get( "text" ), ViewElementMode.LABEL ) )
-				.thenReturn( labelBuilder );
+		when( viewElementBuilderService.getElementBuilder( properties.get( "text" ), ViewElementMode.LABEL ) ).thenReturn( labelBuilder );
 
-		EntityMessageCodeResolver codeResolver = mock( EntityMessageCodeResolver.class );
-		when( codeResolver.getMessageWithFallback( "properties.text[description]", "" ) ).thenReturn( "help text" );
-		when( builderContext.getAttribute( EntityMessageCodeResolver.class ) ).thenReturn( codeResolver );
-
-		FormGroupElement group = assembleAndVerify( "text", true );
-		assertNotNull( group.getHelpBlock() );
+		FormGroupElement group = assembleAndVerify( "text", false, ViewElementMode.FORM_READ );
+		assertNull( group.getHelpBlock() );
+		assertNull( group.getTooltip() );
+		assertNull( group.getDescriptionBlock() );
+		verify( builderContext, never() ).getMessage( eq( "properties.text[description]" ), any( String.class ) );
+		verify( builderContext, never() ).getMessage( eq( "properties.text[help]" ), any( String.class ) );
+		verify( builderContext, never() ).getMessage( eq( "properties.text[tooltip]" ), any( String.class ) );
 	}
 
 	@SuppressWarnings("unchecked")
-	private <V> V assembleAndVerify( String propertyName, boolean required ) {
-		FormGroupElement control = assemble( propertyName, ViewElementMode.FORM_WRITE );
+	private <V> V assembleAndVerify( String propertyName, boolean required, ViewElementMode mode ) {
+		FormGroupElement control = assemble( propertyName, mode );
 		assertEquals( "formGroup-" + propertyName, control.getName() );
 		assertEquals( required, control.isRequired() );
 

@@ -13,44 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
+import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import lombok.NonNull;
 
 /**
- * Resolves a message code and sets it as the value of the placeholder property.
+ * Post-processor that will automatically set a {@link FormGroupElement} as required if the (optional) control inside
+ * it is required. This will only ever set the required status to {@code true} but will not set it back to
+ * {@code false} in case the control is not required.
+ * <p/>
+ * This processor will simply do nothing when it is being used on an element that is not a {@link FormGroupElement}.
  *
  * @author Arne Vandamme
+ * @since 3.0.0
  */
-@Deprecated
-public class PlaceholderTextPostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
+public class FormGroupRequiredPostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
 {
-	private final String messageCode;
-
-	public PlaceholderTextPostProcessor( EntityPropertyDescriptor descriptor ) {
-		this( "properties." + descriptor.getName() + "[placeholder]" );
-	}
-
-	public PlaceholderTextPostProcessor( @NonNull String messageCode ) {
-		this.messageCode = messageCode;
-	}
-
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
-		/*
-		EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
+		if ( element instanceof FormGroupElement ) {
+			FormGroupElement formGroup = (FormGroupElement) element;
+			FormControlElement control = formGroup.getControl( FormControlElement.class );
 
-		if ( codeResolver != null ) {
-			element.setPlaceholder(
-					codeResolver.getMessageWithFallback(
-							messageCode, StringUtils.defaultString( element.getPlaceholder() )
-					)
-			);
+			if ( control != null && control.isRequired() ) {
+				formGroup.setRequired( true );
+			}
 		}
-		*/
 	}
 }

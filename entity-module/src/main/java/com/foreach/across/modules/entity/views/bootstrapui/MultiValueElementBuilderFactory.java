@@ -23,7 +23,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySu
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.MultiValueControlViewElementBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -57,7 +57,7 @@ public class MultiValueElementBuilderFactory extends EntityViewElementBuilderFac
 				.name( propertyDescriptor.getName() )
 				.controlName( EntityAttributes.controlName( propertyDescriptor ) )
 				.postProcessor( new PropertyValueFetcher( propertyDescriptor ) )
-				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
+				.postProcessor( new PropertyPlaceholderTextPostProcessor<>() );
 	}
 
 	@SuppressWarnings("unchecked")

@@ -17,7 +17,6 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
@@ -28,6 +27,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupDescriptionTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupHelpTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupRequiredPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupTooltipTextPostProcessor;
 import com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -64,20 +64,12 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 
 		ViewElementBuilder controlBuilder = entityViewElementBuilderService.getElementBuilder( propertyDescriptor, controlMode );
 
-		FormGroupElementBuilder formGroup = formGroup()
-				.name( NAME_PREFIX + propertyDescriptor.getName() )
-				.control( controlBuilder )
-				.postProcessor( ( builderContext, element ) -> {
-					FormControlElement control = element.getControl( FormControlElement.class );
-
-					if ( control != null && control.isRequired() ) {
-						element.setRequired( true );
-					}
-				} );
+		FormGroupElementBuilder formGroup = formGroup().name( NAME_PREFIX + propertyDescriptor.getName() ).control( controlBuilder );
 
 		// add form write post processors
 		if ( ViewElementMode.FORM_WRITE.equals( viewElementMode.forSingle() ) ) {
-			formGroup.postProcessor( new FormGroupDescriptionTextPostProcessor<>() )
+			formGroup.postProcessor( new FormGroupRequiredPostProcessor<>() )
+			         .postProcessor( new FormGroupDescriptionTextPostProcessor<>() )
 			         .postProcessor( new FormGroupTooltipTextPostProcessor<>() )
 			         .postProcessor( new FormGroupHelpTextPostProcessor<>() );
 		}
