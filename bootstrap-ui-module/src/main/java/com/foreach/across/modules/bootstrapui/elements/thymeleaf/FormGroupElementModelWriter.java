@@ -20,7 +20,9 @@ import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.*;
@@ -43,6 +45,7 @@ import static com.foreach.across.modules.bootstrapui.elements.thymeleaf.FormView
  * @author Arne Vandamme
  * @since 1.0.0
  */
+@Slf4j
 public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWriter<FormGroupElement>
 {
 	private final Collection<String> CONTROL_ELEMENTS = Arrays.asList( "input", "textarea", "select" );
@@ -366,7 +369,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 					? StringUtils.substring( controlName, 1 )
 					: controlName;
 
-			BindStatus bindStatus = FieldUtils.getBindStatus( templateContext, true, "*{" + propertyName + "}" );
+			BindStatus bindStatus = retrieveBindStatus( templateContext, propertyName );
 
 			if ( bindStatus != null && bindStatus.isError() ) {
 				if ( formControl instanceof TextboxFormElement ) {
@@ -387,6 +390,21 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		}
 
 		return null;
+	}
+
+	// Temporary workaround for what appears to be a bug when Thymeleaf which does not allow map indexed properties
+	// even though they are allowed by Spring (see https://github.com/thymeleaf/thymeleaf-spring/issues/176)
+	private BindStatus retrieveBindStatus( ITemplateContext templateContext, String propertyName ) {
+		if ( propertyName.indexOf( '[' ) >= 0 ) {
+			try {
+				return FieldUtils.getBindStatus( templateContext, false, "*{" + propertyName + "}" );
+			}
+			catch ( NotReadablePropertyException e ) {
+				return null;
+			}
+		}
+
+		return FieldUtils.getBindStatus( templateContext, true, "*{" + propertyName + "}" );
 	}
 
 	private boolean isCheckboxGroup( FormGroupElement group ) {

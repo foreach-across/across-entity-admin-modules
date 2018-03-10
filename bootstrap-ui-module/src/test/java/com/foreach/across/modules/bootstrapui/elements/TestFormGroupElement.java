@@ -22,6 +22,8 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.test.modules.webtest.controllers.RenderViewElementController;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.ui.ModelMap;
@@ -29,6 +31,8 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -511,6 +515,24 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void complexControlNameWithError() {
+		ContainerViewElement container = new ContainerViewElement();
+		container.setCustomTemplate( "th/test/formObject" );
+
+		group.getControl( TextboxFormElement.class ).setControlName( "values[sub.item].name" );
+
+		renderAndExpect(
+				container,
+				this::sampleModelWithError,
+				"<div class='form-group has-error'>" +
+						"<label for='values[sub.item].name' class='control-label'>title</label>" +
+						"<input type='text' class='form-control' name='values[sub.item].name' id='values[sub.item].name' />" +
+						"<div class='small text-danger'>map-broken</div>" +
+						"</div>"
+		);
+	}
+
+	@Test
 	public void errorFromFormCommandAttributeOrCommandObject() {
 		TestClass target = new TestClass( "test value" );
 
@@ -598,6 +620,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		TestClass target = new TestClass( "test value" );
 		BindingResult errors = new BeanPropertyBindingResult( target, "item" );
 		errors.rejectValue( "control", "broken", "broken" );
+		errors.rejectValue( "values[sub.item].name", "map-broken", "map-broken" );
 
 		model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
 		model.addAttribute( "item", target );
@@ -634,20 +657,22 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		assertNull( group.getTooltip() );
 	}
 
+	@Getter
+	@Setter
 	public static class TestClass
 	{
+		private final Map<String, Object> values = Collections.singletonMap( "sub.item", new NamedItem() );
 		private String control;
 
 		TestClass( String control ) {
 			this.control = control;
 		}
 
-		public String getControl() {
-			return control;
-		}
-
-		public void setControl( String control ) {
-			this.control = control;
+		@Getter
+		@Setter
+		static class NamedItem
+		{
+			String name;
 		}
 	}
 }
