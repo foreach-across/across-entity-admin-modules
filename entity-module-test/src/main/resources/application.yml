@@ -42,3 +42,7 @@ across:
 entityModule:
   message-codes:
     SpringDataJpaModule: spring-data
+
+server:
+  error:
+    include-stacktrace: always

@@ -20,12 +20,14 @@ import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
 @ModuleConfiguration(SpringSecurityModule.NAME)
+@EnableGlobalAuthentication
 public class SecurityConfiguration
 {
 	@Autowired

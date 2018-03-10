@@ -78,7 +78,7 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void controlNamePrefixing() {
-		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		simulateEntityViewForm();
 		NumericFormElement numeric = assemble( "withoutAnnotations", ViewElementMode.CONTROL );
 		assertEquals( "entity.withoutAnnotations", numeric.getControlName() );
 	}

@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.CheckboxFormElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
@@ -47,7 +48,7 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 
 	@Test
 	public void controlNamePrefixing() {
-		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		simulateEntityViewForm();
 		CheckboxFormElement checkbox = assemble( "primitive", ViewElementMode.CONTROL );
 		assertEquals( "entity.primitive", checkbox.getControlName() );
 	}

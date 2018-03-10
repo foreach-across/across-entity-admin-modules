@@ -26,7 +26,6 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBuilderFactory;
-import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import org.hibernate.validator.constraints.Email;
@@ -74,7 +73,7 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void controlNamePrefixing() {
-		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		simulateEntityViewForm();
 		TextboxFormElement textbox = assemble( "noValidatorNumber", ViewElementMode.CONTROL );
 		assertEquals( "entity.noValidatorNumber", textbox.getControlName() );
 	}

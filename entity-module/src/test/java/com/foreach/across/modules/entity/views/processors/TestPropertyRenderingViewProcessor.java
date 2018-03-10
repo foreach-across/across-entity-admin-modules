@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertySelec
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -35,6 +36,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -84,6 +86,9 @@ public class TestPropertyRenderingViewProcessor
 	@Mock
 	private ViewElementBuilder builderTwo;
 
+	@Mock
+	private ViewElementBuilderContext builderContext;
+
 	@InjectMocks
 	private PropertyRenderingViewProcessor processor;
 
@@ -93,7 +98,7 @@ public class TestPropertyRenderingViewProcessor
 	public void setUp() throws Exception {
 		model = new HashMap<>();
 
-		ViewElementBuilderContextHolder.setViewElementBuilderContext( mock( ViewElementBuilderContext.class ) );
+		ViewElementBuilderContextHolder.setViewElementBuilderContext( builderContext );
 
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
 		when( viewRequest.getWebRequest() ).thenReturn( mock( NativeWebRequest.class ) );
@@ -185,6 +190,10 @@ public class TestPropertyRenderingViewProcessor
 
 		verify( containerBuilder ).add( elementOne );
 		verify( containerBuilder ).add( elementTwo );
+
+		InOrder inOrder = inOrder( builderContext );
+		inOrder.verify( builderContext ).setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, true );
+		inOrder.verify( builderContext ).removeAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES );
 	}
 
 	@Test

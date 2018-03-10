@@ -24,6 +24,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -127,6 +129,11 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 				}
 			}
 		}
+	}
+
+	protected void simulateEntityViewForm() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		when( builderContext.getAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, Boolean.class ) ).thenReturn( true );
 	}
 
 	protected abstract EntityViewElementBuilderFactory createBuilderFactory();

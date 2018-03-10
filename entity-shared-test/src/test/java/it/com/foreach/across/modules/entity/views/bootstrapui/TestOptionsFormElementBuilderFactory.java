@@ -60,7 +60,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void controlNamePrefixingSelect() {
-		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		simulateEntityViewForm();
 		SelectFormElement select = assemble( "enumNoValidator", ViewElementMode.CONTROL );
 		assertEquals( "entity.enumNoValidator", select.getControlName() );
 		assertEquals( "entity.enumNoValidator", select.getHtmlId() );
@@ -68,7 +68,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void controlNamePrefixingRadio() {
-		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		simulateEntityViewForm();
 
 		ContainerViewElement container = assemble( "enumNoValidator", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
 
@@ -82,7 +82,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void controlNamePrefixingCheckbox() {
-		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		simulateEntityViewForm();
 		ContainerViewElement container = assemble( "enumMultiple", ViewElementMode.CONTROL );
 
 		assertEquals(
