@@ -26,8 +26,7 @@ import com.foreach.across.modules.entity.query.support.EQStringToDateConverter;
 import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -39,14 +38,12 @@ import org.springframework.validation.SmartValidator;
 
 @Configuration
 @ComponentScan(basePackageClasses = { EntityRegistry.class, ModuleEntityRegistration.class, EntityView.class })
+@Slf4j
 public class EntityModuleConfiguration
 {
-	private static final Logger LOG = LoggerFactory.getLogger( EntityModuleConfiguration.class );
-
 	@Autowired
 	public void registerConverters( FormattingConversionService mvcConversionService, EntityRegistry entityRegistry ) {
 		mvcConversionService.addConverter( new StringToEntityConfigurationConverter( entityRegistry ) );
-		mvcConversionService.addConverter( new EntityConverter<>( mvcConversionService, entityRegistry ) );
 		mvcConversionService.addConverter( new EntityToStringConverter( entityRegistry ) );
 
 		DateFormatterRegistrar dateFormatterRegistrar = new DateFormatterRegistrar();

@@ -91,8 +91,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 
 		List<MutableEntityConfiguration> registered = new ArrayList<>( repositoryFactoryInformationMap.size() );
 
-		for ( Map.Entry<String, RepositoryFactoryInformation> informationBean
-				: repositoryFactoryInformationMap.entrySet() ) {
+		for ( Map.Entry<String, RepositoryFactoryInformation> informationBean : repositoryFactoryInformationMap.entrySet() ) {
 			RepositoryFactoryInformation repositoryFactoryInformation = informationBean.getValue();
 
 			if ( repositoryFactoryInformation.getPersistentEntity() == null ) {
@@ -114,17 +113,15 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 			if ( !entityRegistry.contains( entityType ) ) {
 				LOG.debug( "Auto registering entity type {} as repository", entityType.getName() );
 
-				MutableEntityConfiguration entityConfiguration =
-						registerEntity( moduleInfo, entityRegistry, entityType, repositoryFactoryInformation,
-						                repository );
+				MutableEntityConfiguration entityConfiguration
+						= registerEntity( moduleInfo, entityRegistry, entityType, repositoryFactoryInformation, repository );
 
 				if ( entityConfiguration != null ) {
 					registered.add( entityConfiguration );
 				}
 			}
 			else {
-				LOG.info( "Skipping auto registration of entity type {} as it is already registered",
-				          entityType.getName() );
+				LOG.trace( "Skipping auto registration of entity type {} as it is already registered", entityType.getName() );
 			}
 		}
 
@@ -175,8 +172,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 			return entityConfiguration;
 		}
 		else {
-			LOG.warn( "Skipping registration of entity type {} as no unique name could be determined",
-			          entityType.getName() );
+			LOG.warn( "Skipping registration of entity type {} as no unique name could be determined", entityType.getName() );
 		}
 
 		return null;

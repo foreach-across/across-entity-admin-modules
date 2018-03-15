@@ -42,6 +42,9 @@
     <MarkdownNavigatorCodeStyleSettings>
       <option name="RIGHT_MARGIN" value="72" />
     </MarkdownNavigatorCodeStyleSettings>
+    <Properties>
+      <option name="KEEP_BLANK_LINES" value="true" />
+    </Properties>
     <XML>
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>

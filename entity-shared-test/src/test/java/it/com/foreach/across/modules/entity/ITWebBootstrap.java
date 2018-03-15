@@ -19,7 +19,11 @@ package it.com.foreach.across.modules.entity;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.entity.config.EntityConfigurer;
+import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
+import com.foreach.across.modules.entity.testmodules.springdata.business.Client;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestConfiguration;
@@ -29,12 +33,20 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import com.foreach.across.modules.entity.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.modules.entity.testmodules.springdata.repositories.ClientRepository;
 
+import java.io.Serializable;
+import java.util.function.Function;
+
+import static com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer.CONTEXT_POSTPROCESSOR_MODULE;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Arne Vandamme
@@ -47,14 +59,32 @@ public class ITWebBootstrap
 	@Autowired
 	private AcrossContextBeanRegistry beanRegistry;
 
+	@Autowired
+	private ConversionService mvcConversionService;
+
+	@Autowired
+	private Function<Serializable, Client> mockClientFinder;
+
 	@Test
 	public void bootstrappedOk() {
 		assertNotNull( beanRegistry.getBeanOfType( EntityRegistry.class ) );
 	}
 
+	@Test
+	public void springDataWebSupportShouldBeEnabled() {
+		assertNotNull( beanRegistry.getBeanOfTypeFromModule( CONTEXT_POSTPROCESSOR_MODULE, PageableHandlerMethodArgumentResolver.class ) );
+		assertTrue( mvcConversionService.canConvert( Long.class, Client.class ) );
+	}
+
+	@Test
+	public void conversionServiceShouldUseTheEntityConverter() {
+		assertNull( mvcConversionService.convert( "123", Client.class ) );
+		verify( mockClientFinder ).apply( 123L );
+	}
+
 	@Configuration
 	@AcrossTestConfiguration(modules = { EntityModule.NAME, AdminWebModule.NAME, SpringSecurityModule.NAME })
-	protected static class Config
+	protected static class Config implements EntityConfigurer
 	{
 		@Bean
 		public AcrossHibernateJpaModule acrossHibernateJpaModule() {
@@ -65,9 +95,19 @@ public class ITWebBootstrap
 
 		@Bean
 		public SpringDataJpaModule springDataJpaModule() {
-			SpringDataJpaModule springDataJpaModule = new SpringDataJpaModule();
-			springDataJpaModule.expose( ClientRepository.class );
-			return springDataJpaModule;
+			return new SpringDataJpaModule();
+		}
+
+		@Bean
+		@SuppressWarnings( "unchecked" )
+		public Function<Serializable, Client> mockClientFinder() {
+			return mock( Function.class );
+		}
+
+		@Override
+		public void configure( EntitiesConfigurationBuilder entities ) {
+			entities.withType( Client.class )
+			        .entityModel( model -> model.findOneMethod( mockClientFinder() ) );
 		}
 	}
 }
