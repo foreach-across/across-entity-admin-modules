@@ -19,6 +19,9 @@ spring:
     username: sa
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration
+  #devtools:
+  #  restart:
+  #    additional-paths: ../entity-module,../entity-shared-test
 
 acrossModule:
   EntityModule:
@@ -46,3 +49,6 @@ entityModule:
 server:
   error:
     include-stacktrace: always
+security:
+  basic:
+    enabled: false

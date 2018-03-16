@@ -32,8 +32,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
-import static org.springframework.data.repository.support.RepositoryInvokerUtils.createRepositoryInvoker;
-
 /**
  * Builds an {@link com.foreach.across.modules.entity.registry.EntityModel} for a Spring data repository.
  */
@@ -50,9 +48,7 @@ class RepositoryEntityModelBuilder
 		Repository<T, ?> repository = entityConfiguration.getAttribute( Repository.class );
 
 		DefaultEntityModel<T, Serializable> entityModel = new DefaultEntityModel<>();
-		RepositoryInvoker repositoryInvoker
-				= createRepositoryInvoker( repositoryFactoryInformation.getRepositoryInformation(),
-				                           repository, mvcConversionService );
+		RepositoryInvoker repositoryInvoker = entityConfiguration.getAttribute( RepositoryInvoker.class );
 		entityModel.setFindOneMethod( repositoryInvoker::invokeFindOne );
 		entityModel.setSaveMethod( repositoryInvoker::invokeSave );
 

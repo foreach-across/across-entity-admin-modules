@@ -389,9 +389,7 @@ public class TestRepositoryEntityRegistrar
 
 		@Bean
 		public SpringDataJpaModule springDataJpaModule() {
-			SpringDataJpaModule springDataJpaModule = new SpringDataJpaModule();
-			springDataJpaModule.expose( Repository.class );
-			return springDataJpaModule;
+			return new SpringDataJpaModule();
 		}
 
 		@Bean

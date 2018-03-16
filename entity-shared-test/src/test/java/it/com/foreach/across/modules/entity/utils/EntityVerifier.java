@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityView;
 import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.support.RepositoryInvoker;
 
 import static org.junit.Assert.*;
 
@@ -46,6 +47,7 @@ public class EntityVerifier
 	public EntityVerifier hasRepository() {
 		assertTrue( "EntityModel not present", configuration.hasEntityModel() );
 		assertTrue( "Repository not present", configuration.hasAttribute( Repository.class ) );
+		assertTrue( "RepositoryInvoker not present", configuration.hasAttribute( RepositoryInvoker.class ) );
 		return this;
 	}
 
