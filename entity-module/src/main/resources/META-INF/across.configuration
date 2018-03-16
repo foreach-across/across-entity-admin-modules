@@ -14,7 +14,15 @@
 # limitations under the License.
 #
 com.foreach.across.Exposed=\
-  org.springframework.data.repository.core.support.RepositoryFactoryInformation
+  org.springframework.data.repository.core.support.RepositoryFactoryInformation,\
+  org.springframework.data.mapping.context.MappingContext,\
+  org.springframework.plugin.core.Plugin,\
+  org.springframework.hateoas.ResourceProcessor,\
+  org.springframework.hateoas.ResourceAssembler,\
+  org.springframework.hateoas.LinkBuilderFactory,\
+  org.springframework.hateoas.LinkBuilder
 
 com.foreach.across.AutoConfigurationDisabled=\
-  org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration
+  org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration,\
+  org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration,\
+  org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration

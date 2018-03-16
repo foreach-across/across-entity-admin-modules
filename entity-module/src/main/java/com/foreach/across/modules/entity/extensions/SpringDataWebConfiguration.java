@@ -22,7 +22,9 @@ import com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer;
 import com.foreach.across.modules.entity.converters.EntityConverter;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
@@ -35,7 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 3.0.0
  */
 @ModuleConfiguration(AcrossBootstrapConfigurer.CONTEXT_POSTPROCESSOR_MODULE)
-@Import(SpringDataWebAutoConfiguration.class)
+@Import({ RepositoryRestMvcAutoConfiguration.class, HypermediaAutoConfiguration.class, SpringDataWebAutoConfiguration.class })
 @OrderInModule
 @RequiredArgsConstructor
 class SpringDataWebConfiguration extends WebMvcConfigurerAdapter
