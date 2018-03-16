@@ -20,6 +20,7 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
@@ -49,6 +50,7 @@ import java.util.stream.Stream;
  * @see com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper#addGlobalFeedbackAfterRedirect(EntityViewRequest, Style, String)
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 @Component
 @Exposed
 public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAdapter

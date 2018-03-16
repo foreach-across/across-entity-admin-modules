@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.builders;
 
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -35,6 +36,7 @@ import java.util.function.BiConsumer;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 @Component
 final class GenericViewInitializer extends AbstractViewInitializer<EntityViewFactoryBuilder>
 {

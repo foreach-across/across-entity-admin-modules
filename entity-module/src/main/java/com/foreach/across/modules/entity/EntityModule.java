@@ -17,13 +17,17 @@ package com.foreach.across.modules.entity;
 
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
+import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.web.AcrossWebModule;
 
+import java.util.Set;
+
 @AcrossDepends(
-		required = { AcrossWebModule.NAME, BootstrapUiModule.NAME },
-		optional = { AdminWebModule.NAME }
+		required = { AcrossWebModule.NAME },
+		optional = { AdminWebModule.NAME, BootstrapUiModule.NAME }
 )
 public class EntityModule extends AcrossModule
 {
@@ -45,5 +49,10 @@ public class EntityModule extends AcrossModule
 	@Override
 	public String getResourcesKey() {
 		return RESOURCES;
+	}
+
+	@Override
+	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
+		contextConfigurers.add( ComponentScanConfigurer.forAcrossModule( EntityModule.class ) );
 	}
 }

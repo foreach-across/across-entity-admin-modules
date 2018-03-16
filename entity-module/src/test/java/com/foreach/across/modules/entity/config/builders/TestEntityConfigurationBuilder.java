@@ -264,6 +264,8 @@ public class TestEntityConfigurationBuilder
 
 	@Test
 	public void existingListView() {
+		enableDefaultViewsBuilding();
+
 		builder.listView( lvb -> lvb.template( "hello" ) );
 
 		when( config.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
@@ -277,8 +279,7 @@ public class TestEntityConfigurationBuilder
 
 	@Test
 	public void newViewsOfRightType() {
-		EntityViewFactoryBuilderInitializer builderInitializer = mock( EntityViewFactoryBuilderInitializer.class );
-		when( beanFactory.getBean( EntityViewFactoryBuilderInitializer.class ) ).thenReturn( builderInitializer );
+		EntityViewFactoryBuilderInitializer builderInitializer = enableDefaultViewsBuilding();
 
 		builder.view( "customView", vb -> vb.template( "custom-template" ) )
 		       .formView( "formView", fvb -> fvb.template( "form-template" ) )
@@ -316,5 +317,14 @@ public class TestEntityConfigurationBuilder
 		inOrder.verify( one ).apply( config );
 		inOrder.verify( two ).hidden( false );
 		inOrder.verify( two ).apply( config );
+	}
+
+	private EntityViewFactoryBuilderInitializer enableDefaultViewsBuilding() {
+		EntityViewFactoryBuilderInitializer builderInitializer = mock( EntityViewFactoryBuilderInitializer.class );
+		when( beanFactory.containsBean( EntityViewFactoryBuilder.BEAN_NAME ) ).thenReturn( true );
+		when( beanFactory.getBean( EntityViewFactoryBuilder.class ) ).thenReturn( new EntityViewFactoryBuilder( beanFactory ) );
+		when( beanFactory.getBean( EntityListViewFactoryBuilder.class ) ).thenReturn( new EntityListViewFactoryBuilder( beanFactory ) );
+		when( beanFactory.getBean( EntityViewFactoryBuilderInitializer.class ) ).thenReturn( builderInitializer );
+		return builderInitializer;
 	}
 }

@@ -80,8 +80,7 @@ public class ModuleEntityRegistration
 
 	@EventListener
 	protected void contextBootstrapped( AcrossContextBootstrappedEvent contextBootstrappedEvent ) {
-		AcrossContextBeanRegistry beanRegistry
-				= AcrossContextUtils.getBeanRegistry( contextBootstrappedEvent.getContext() );
+		AcrossContextBeanRegistry beanRegistry = AcrossContextUtils.getBeanRegistry( contextBootstrappedEvent.getContext() );
 
 		// Configure the configuration builder
 		EntitiesConfigurationBuilder builder = new EntitiesConfigurationBuilder( beanFactory );

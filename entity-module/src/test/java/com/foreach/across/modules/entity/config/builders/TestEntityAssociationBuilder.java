@@ -67,6 +67,8 @@ public class TestEntityAssociationBuilder
 
 	@Test
 	public void newAssociation() {
+		enableDefaultViewsBuilding();
+
 		MutableEntityAssociation association = mock( MutableEntityAssociation.class );
 		when( configuration.createAssociation( "users" ) ).thenReturn( association );
 		when( association.getSourceEntityConfiguration() ).thenReturn( configuration );
@@ -113,6 +115,11 @@ public class TestEntityAssociationBuilder
 		verify( association ).setAttribute( eq( EntityMessageCodeResolver.class ), any( EntityMessageCodeResolver.class ) );
 	}
 
+	private void enableDefaultViewsBuilding() {
+		when( beanFactory.containsBean( EntityViewFactoryBuilder.BEAN_NAME ) ).thenReturn( true );
+		when( beanFactory.getBean( EntityListViewFactoryBuilder.class ) ).thenReturn( new EntityListViewFactoryBuilder( beanFactory ) );
+	}
+
 	@Test
 	public void updateExisting() {
 		MutableEntityAssociation association = mock( MutableEntityAssociation.class );
@@ -131,8 +138,6 @@ public class TestEntityAssociationBuilder
 		when( target.getPropertyRegistry() ).thenReturn( targetRegistry );
 		EntityPropertyDescriptor targetProperty = mock( EntityPropertyDescriptor.class );
 		when( targetRegistry.getProperty( "id" ) ).thenReturn( targetProperty );
-
-		when( association.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
 
 		builder.name( "users" )
 		       .hidden( false )

@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.builders;
 
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.config.builders.EntityListViewFactoryBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -43,6 +44,7 @@ import java.util.function.BiConsumer;
  * @since 2.0.0
  */
 @Component
+@ConditionalOnAdminWeb
 final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFactoryBuilder>
 {
 	public ListViewInitializer( AutowireCapableBeanFactory beanFactory,

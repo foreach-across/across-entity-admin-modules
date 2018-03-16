@@ -423,7 +423,13 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 			}
 
 			applyAttributes( configuration, configuration );
-			applyViews( configuration );
+			if ( beanFactory.containsBean( EntityViewFactoryBuilder.BEAN_NAME ) ) {
+				applyViews( configuration );
+			}
+			else {
+				LOG.trace( "Skipping default views registration for '{}' - the default EntityViewFactoryBuilder is not present, probably no AdminWebModule",
+				           configuration.getName() );
+			}
 			applyAssociations( configuration );
 
 			if ( applyPostProcessors ) {
@@ -464,10 +470,10 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	@Override
 	protected <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType ) {
 		if ( EntityListViewFactoryBuilder.class.isAssignableFrom( builderType ) ) {
-			return builderType.cast( new EntityListViewFactoryBuilder( beanFactory ) );
+			return builderType.cast( beanFactory.getBean( EntityListViewFactoryBuilder.class ) );
 		}
 
-		return builderType.cast( new EntityViewFactoryBuilder( beanFactory ) );
+		return builderType.cast( beanFactory.getBean( EntityViewFactoryBuilder.class ) );
 	}
 
 	@Override

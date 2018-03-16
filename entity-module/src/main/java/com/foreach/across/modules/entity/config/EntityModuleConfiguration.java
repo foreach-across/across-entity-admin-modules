@@ -17,27 +17,22 @@ package com.foreach.across.modules.entity.config;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityModule;
-import com.foreach.across.modules.entity.converters.EntityConverter;
 import com.foreach.across.modules.entity.converters.EntityToStringConverter;
 import com.foreach.across.modules.entity.converters.StringToEntityConfigurationConverter;
 import com.foreach.across.modules.entity.formatters.DateFormatter;
 import com.foreach.across.modules.entity.formatters.TemporalFormatterFactory;
 import com.foreach.across.modules.entity.query.support.EQStringToDateConverter;
-import com.foreach.across.modules.entity.registrars.ModuleEntityRegistration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.views.EntityView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.SmartValidator;
 
 @Configuration
-@ComponentScan(basePackageClasses = { EntityRegistry.class, ModuleEntityRegistration.class, EntityView.class })
 @Slf4j
 public class EntityModuleConfiguration
 {

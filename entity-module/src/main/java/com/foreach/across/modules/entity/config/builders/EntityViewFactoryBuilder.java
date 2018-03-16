@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.core.support.WritableAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -33,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -45,6 +47,8 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder.BEAN_NAME;
+
 /**
  * Builder for creating a single {@link com.foreach.across.modules.entity.views.EntityViewFactory}.
  * Supports configuring default processors on a {@link DispatchingEntityViewFactory}.  If a custom factory
@@ -55,11 +59,15 @@ import java.util.function.Consumer;
  * @see com.foreach.across.modules.entity.views.DefaultEntityViewFactory
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 @Slf4j
-@Component
+@Component(BEAN_NAME)
+@Primary
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<EntityViewFactory>
 {
+	static final String BEAN_NAME = "entityViewFactoryBuilder";
+
 	private final AutowireCapableBeanFactory beanFactory;
 	private final Collection<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayDeque<>();
 	private final Collection<ProcessorEntry> processors = new ArrayDeque<>();

@@ -15,9 +15,8 @@
  */
 package com.foreach.across.modules.entity.views.menu;
 
-import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.modules.adminweb.AdminWeb;
-import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.*;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +31,8 @@ import org.springframework.stereotype.Component;
  * @author Arne Vandamme
  * @since 3.0.0
  */
+@ConditionalOnAdminWeb
 @Component
-@ConditionalOnAcrossModule(AdminWebModule.NAME)
 @RequiredArgsConstructor
 class EntityAdminMenuBuilder extends RequestMenuBuilder
 {

@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.request;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import lombok.Data;
@@ -53,6 +54,7 @@ import java.util.Map;
 @Exposed
 @Scope(scopeName = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Data
+@ConditionalOnAdminWeb
 public class EntityViewRequest
 {
 	/**

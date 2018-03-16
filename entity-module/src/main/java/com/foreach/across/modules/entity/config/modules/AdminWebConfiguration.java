@@ -24,7 +24,6 @@ import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataController;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.controllers.admin.EntityOverviewController;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.handlers.MenuEventsHandler;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -40,17 +39,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @ConditionalOnAcrossModule(AdminWebModule.NAME)
 @Configuration
-@ComponentScan(basePackageClasses = { EntityOverviewController.class, AutoSuggestDataEndpoint.class })
 @RequiredArgsConstructor
 @Slf4j
-public class AdminWebConfiguration implements EntityConfigurer
+class AdminWebConfiguration implements EntityConfigurer
 {
 	private final ConversionService mvcConversionService;
 	private final AdminWeb adminWeb;

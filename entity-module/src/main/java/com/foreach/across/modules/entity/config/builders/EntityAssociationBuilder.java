@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -39,6 +40,7 @@ import java.util.function.Consumer;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Slf4j
 public class EntityAssociationBuilder extends AbstractWritableAttributesAndViewsBuilder<EntityAssociation>
 {
 	private String name;
@@ -362,7 +364,13 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 			}
 
 			applyAttributes( association, association );
-			applyViews( association );
+			if ( beanFactory.containsBean( EntityViewFactoryBuilder.BEAN_NAME ) ) {
+				applyViews( association );
+			}
+			else {
+				LOG.trace( "Skipping default views registration for '{}->{}' - the default EntityViewFactoryBuilder is not present, probably no AdminWebModule",
+				           configuration.getName(), association.getName() );
+			}
 		}
 		finally {
 			associationBeingBuilt = null;
@@ -386,10 +394,10 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	@Override
 	protected <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType ) {
 		if ( EntityListViewFactoryBuilder.class.isAssignableFrom( builderType ) ) {
-			return builderType.cast( new EntityListViewFactoryBuilder( beanFactory ) );
+			return builderType.cast( beanFactory.getBean( EntityListViewFactoryBuilder.class ) );
 		}
 
-		return builderType.cast( new EntityViewFactoryBuilder( beanFactory ) );
+		return builderType.cast( beanFactory.getBean( EntityViewFactoryBuilder.class ) );
 	}
 
 	@Override

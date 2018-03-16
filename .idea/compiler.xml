@@ -7,14 +7,20 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="entity-module" />
+        <module name="entity-module-integration-test" />
+        <module name="entity-module-no-adminweb" />
         <module name="entity-module-test" />
+        <module name="entity-module-test-application" />
         <module name="entity-shared-test" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="entity-module" target="1.8" />
+      <module name="entity-module-integration-test" target="1.8" />
+      <module name="entity-module-no-adminweb" target="1.8" />
       <module name="entity-module-project" target="1.8" />
       <module name="entity-module-test" target="1.8" />
+      <module name="entity-module-test-application" target="1.8" />
       <module name="entity-shared-test" target="1.8" />
     </bytecodeTargetLevel>
   </component>

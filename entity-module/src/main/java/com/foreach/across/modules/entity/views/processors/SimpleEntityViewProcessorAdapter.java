@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.WebDataBinder;
  * @see EntityViewProcessorAdapter
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 public abstract class SimpleEntityViewProcessorAdapter implements EntityViewProcessor
 {
 	@Override

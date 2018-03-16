@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.builders;
 
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
@@ -37,6 +38,7 @@ import java.util.function.BiConsumer;
  * @since 2.0.0
  */
 @Component
+@ConditionalOnAdminWeb
 final class DeleteViewInitializer extends AbstractViewInitializer<EntityViewFactoryBuilder>
 {
 	public DeleteViewInitializer( AutowireCapableBeanFactory beanFactory,
