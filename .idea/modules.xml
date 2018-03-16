@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/entity-module/entity-module.iml" filepath="$PROJECT_DIR$/entity-module/entity-module.iml" />
       <module fileurl="file://$PROJECT_DIR$/entity-module-integration-test/entity-module-integration-test.iml" filepath="$PROJECT_DIR$/entity-module-integration-test/entity-module-integration-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/entity-module-no-adminweb/entity-module-no-adminweb.iml" filepath="$PROJECT_DIR$/entity-module-no-adminweb/entity-module-no-adminweb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/entity-module-no-bootstrapui/entity-module-no-bootstrapui.iml" filepath="$PROJECT_DIR$/entity-module-no-bootstrapui/entity-module-no-bootstrapui.iml" />
       <module fileurl="file://$PROJECT_DIR$/entity-module-project.iml" filepath="$PROJECT_DIR$/entity-module-project.iml" />
       <module fileurl="file://$PROJECT_DIR$/entity-module-test-application/entity-module-test-application.iml" filepath="$PROJECT_DIR$/entity-module-test-application/entity-module-test-application.iml" />
     </modules>

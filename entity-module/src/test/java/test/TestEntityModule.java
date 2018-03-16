@@ -20,9 +20,9 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
+import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
 import com.foreach.across.test.AcrossTestContext;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.foreach.across.test.support.AcrossTestBuilders.web;
@@ -35,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TestEntityModule
 {
 	@Test
-	@Ignore
 	public void bootstrapWithoutBootstrapUiModule() {
 		try (AcrossTestContext context = web( false )
 				.modules( EntityModule.NAME )
@@ -44,7 +43,7 @@ public class TestEntityModule
 			assertThat( context.contextInfo().hasModule( AdminWebModule.NAME ) ).isFalse();
 
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, GenericEntityViewController.class ) ).isEmpty();
-			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, BootstrapUiElementTypeLookupStrategy.class ) ).isEmpty();
+			assertThat( context.getBeansOfType( EntityViewElementBuilderFactory.class ) ).isEmpty();
 		}
 	}
 

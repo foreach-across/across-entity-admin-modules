@@ -66,6 +66,7 @@
 		<module>entity-module</module>
 		<module>entity-module-integration-test</module>
 		<module>entity-module-no-adminweb</module>
+		<module>entity-module-no-bootstrapui</module>
 		<module>entity-module-test-application</module>
 	</modules>
 

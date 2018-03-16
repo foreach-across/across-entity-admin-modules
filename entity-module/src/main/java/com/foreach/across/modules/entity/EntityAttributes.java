@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.entity;
 
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
@@ -58,9 +57,9 @@ public interface EntityAttributes
 	/**
 	 * If set, this attribute should contain the
 	 * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertySelector} to be used for selecting
-	 * the members of a {@link FieldsetFormElement}.
+	 * the members of a {@link com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement}.
 	 */
-	String FIELDSET_PROPERTY_SELECTOR = FieldsetFormElement.class.getName() + ".EntityPropertySelector";
+	String FIELDSET_PROPERTY_SELECTOR = "com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement.EntityPropertySelector";
 
 	/**
 	 * If set, contains the EQL statement or {@link com.foreach.across.modules.entity.query.EntityQuery} that should be used

@@ -9,6 +9,7 @@
         <module name="entity-module" />
         <module name="entity-module-integration-test" />
         <module name="entity-module-no-adminweb" />
+        <module name="entity-module-no-bootstrapui" />
         <module name="entity-module-test" />
         <module name="entity-module-test-application" />
         <module name="entity-shared-test" />
@@ -18,6 +19,7 @@
       <module name="entity-module" target="1.8" />
       <module name="entity-module-integration-test" target="1.8" />
       <module name="entity-module-no-adminweb" target="1.8" />
+      <module name="entity-module-no-bootstrapui" target="1.8" />
       <module name="entity-module-project" target="1.8" />
       <module name="entity-module-test" target="1.8" />
       <module name="entity-module-test-application" target="1.8" />

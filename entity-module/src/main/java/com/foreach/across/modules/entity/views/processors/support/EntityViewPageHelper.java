@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.views.processors.support;
 import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
@@ -45,6 +46,7 @@ import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedb
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 @Slf4j
 @Service
 public class EntityViewPageHelper

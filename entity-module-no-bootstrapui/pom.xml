@@ -25,7 +25,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>entity-module-integration-test</artifactId>
+	<artifactId>entity-module-no-bootstrapui</artifactId>
 
 	<properties>
 		<sonar.skip>true</sonar.skip>
@@ -39,83 +39,24 @@
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>across-hibernate-module</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>spring-security-module</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>bootstrap-ui-module</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>admin-web-module</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.foreach.across</groupId>
-			<artifactId>across-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-solr</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.el</groupId>
-			<artifactId>javax.el-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.foreach.libs</groupId>
-			<artifactId>common-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-		</dependency>
-		<!-- Test -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.jtds</groupId>
-			<artifactId>jtds</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc6</artifactId>
-			<scope>test</scope>
+			<artifactId>entity-module-integration-test</artifactId>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.foreach.across</groupId>
+			<artifactId>across-test</artifactId>
 		</dependency>
 	</dependencies>
 

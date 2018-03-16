@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfigu
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
@@ -50,6 +51,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author Arne Vandamme
  */
+@ConditionalOnBootstrapUI
 @Component
 public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<ViewElementBuilder>
 {

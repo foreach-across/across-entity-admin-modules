@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.HiddenFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -45,6 +46,7 @@ import java.io.Serializable;
  *
  * @author Arne Vandamme
  */
+@ConditionalOnBootstrapUI
 @Component
 public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<HiddenFormElementBuilder>
 {

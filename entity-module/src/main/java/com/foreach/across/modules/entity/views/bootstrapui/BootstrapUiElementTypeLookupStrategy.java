@@ -27,6 +27,7 @@ import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Arne Vandamme
  */
+@ConditionalOnClass(BootstrapUiElements.class)
 @Component
 @RequiredArgsConstructor
 public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLookupStrategy

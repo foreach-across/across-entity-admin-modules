@@ -22,6 +22,7 @@ import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -49,6 +50,7 @@ import java.util.*;
  *
  * @author Arne Vandamme
  */
+@ConditionalOnBootstrapUI
 @Component
 @Scope("prototype")
 public class SortableTableBuilder extends GlobalContextSupportingViewElementBuilder<ContainerViewElement>

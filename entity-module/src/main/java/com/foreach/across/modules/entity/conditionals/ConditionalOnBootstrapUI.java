@@ -17,12 +17,12 @@
 package com.foreach.across.modules.entity.conditionals;
 
 import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
-import com.foreach.across.modules.adminweb.AdminWebModule;
+import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 
 import java.lang.annotation.*;
 
 /**
- * Helper conditional to verify that AdminWebModule is on the classpath and the module is active.
+ * Helper conditional to verify that BootstrapUiModule is on the classpath and the module is active.
  * Unlike most other conditionals, this conditional is inherited.
  *
  * @author Arne Vandamme
@@ -31,8 +31,8 @@ import java.lang.annotation.*;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@ConditionalOnAcrossModule(AdminWebModule.NAME)
-public @interface ConditionalOnAdminWeb
+@ConditionalOnAcrossModule(BootstrapUiModule.NAME)
+public @interface ConditionalOnBootstrapUI
 {
 }
 

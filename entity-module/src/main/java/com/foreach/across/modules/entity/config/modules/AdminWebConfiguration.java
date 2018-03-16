@@ -16,12 +16,11 @@
 
 package com.foreach.across.modules.entity.config.modules;
 
-import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.AdminWeb;
-import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataController;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
@@ -43,7 +42,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-@ConditionalOnAcrossModule(AdminWebModule.NAME)
+@ConditionalOnAdminWeb
 @Configuration
 @RequiredArgsConstructor
 @Slf4j

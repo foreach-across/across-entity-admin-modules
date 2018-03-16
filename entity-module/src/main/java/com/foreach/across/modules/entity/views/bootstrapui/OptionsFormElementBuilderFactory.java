@@ -23,6 +23,7 @@ import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfigur
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -64,6 +65,7 @@ import static com.foreach.across.modules.entity.EntityAttributes.OPTIONS_ENHANCE
  *
  * @author Arne Vandamme
  */
+@ConditionalOnBootstrapUI
 @Component
 public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<OptionsFormElementBuilder>
 {

@@ -20,16 +20,15 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
-import com.foreach.across.testmodules.springdata.business.*;
-import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
-import com.foreach.across.testmodules.springdata.validators.CompanyValidator;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
+import com.foreach.across.testmodules.springdata.business.*;
+import com.foreach.across.testmodules.springdata.validators.CompanyValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -38,9 +37,9 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.transaction.PlatformTransactionManager;
 
+@ConditionalOnBootstrapUI
 @Configuration
-@EnableAcrossJpaRepositories(basePackageClasses = ClientRepository.class)
-public class ClientConfig implements EntityConfigurer
+public class EntityCustomization implements EntityConfigurer
 {
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {

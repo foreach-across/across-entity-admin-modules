@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewProcessor;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
@@ -57,6 +58,7 @@ import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.A
  * @see SimpleEntityViewProcessorAdapter
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 public abstract class EntityViewProcessorAdapter implements EntityViewProcessor
 {
 	private static final String ATTRIBUTE_BUILDER_MAP = "entityViewBuilderMap";

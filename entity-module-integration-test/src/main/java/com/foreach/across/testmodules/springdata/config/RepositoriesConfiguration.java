@@ -16,16 +16,27 @@
 
 package com.foreach.across.testmodules.springdata.config;
 
-import com.foreach.across.testmodules.springdata.repositories2.RepresentativeRepository;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
+import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
+import com.foreach.across.testmodules.springdata.repositories2.RepresentativeRepository;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Arne Vandamme
- * @since 2.0.0
+ * @since 3.0.0
  */
-@Configuration
-@EnableAcrossJpaRepositories(basePackageClasses = RepresentativeRepository.class, transactionManagerRef = "otherTransactionManager")
-public class RepresentativeConfig
+@SuppressWarnings("unused")
+public class RepositoriesConfiguration
 {
+	@Configuration
+	@EnableAcrossJpaRepositories(basePackageClasses = ClientRepository.class)
+	public static class ClientConfig
+	{
+	}
+
+	@Configuration
+	@EnableAcrossJpaRepositories(basePackageClasses = RepresentativeRepository.class, transactionManagerRef = "otherTransactionManager")
+	public static class RepresentativeConfig
+	{
+	}
 }

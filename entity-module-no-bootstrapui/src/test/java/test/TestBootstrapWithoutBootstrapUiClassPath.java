@@ -16,13 +16,13 @@
 
 package test;
 
-import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
 import com.foreach.across.test.AcrossTestContext;
 import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
@@ -39,20 +39,21 @@ import static org.springframework.util.ClassUtils.isPresent;
  * @author Arne Vandamme
  * @since 3.0.0
  */
-public class TestBootstrapWithoutAdminWebClassPath
+public class TestBootstrapWithoutBootstrapUiClassPath
 {
 	@Test
 	public void classesShouldNotBeOnTheClassPath() {
 		assertThat( isPresent( "com.foreach.across.modules.adminweb.AdminWebModule", currentThread().getContextClassLoader() ) ).isFalse();
+		assertThat( isPresent( "com.foreach.across.modules.bootstrapui.BootstrapUiModule", currentThread().getContextClassLoader() ) ).isFalse();
 	}
 
 	@Test
 	public void emptyBootstrap() {
 		try (AcrossTestContext context = web( false )
-				.modules( EntityModule.NAME, BootstrapUiModule.NAME )
+				.modules( EntityModule.NAME )
 				.build()) {
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, GenericEntityViewController.class ) ).isEmpty();
-			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, BootstrapUiElementTypeLookupStrategy.class ) ).isNotEmpty();
+			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, BootstrapUiElementTypeLookupStrategy.class ) ).isEmpty();
 		}
 	}
 
@@ -60,11 +61,11 @@ public class TestBootstrapWithoutAdminWebClassPath
 	public void bootstrapWithDataModule() {
 		try (AcrossTestContext context = web()
 				.property( "acrossHibernate.hibernate.ddl-auto", "create-drop" )
-				.modules( EntityModule.NAME, BootstrapUiModule.NAME )
+				.modules( EntityModule.NAME )
 				.modules( new SpringDataJpaModule() )
 				.build()) {
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, GenericEntityViewController.class ) ).isEmpty();
-			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, BootstrapUiElementTypeLookupStrategy.class ) ).isNotEmpty();
+			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, ViewElementTypeLookupStrategy.class ) ).isEmpty();
 
 			GroupRepository groupRepository = context.getBeanOfType( GroupRepository.class );
 			Group group = new Group();
@@ -86,7 +87,7 @@ public class TestBootstrapWithoutAdminWebClassPath
 			EntityViewElementBuilderService builderService = context.getBeanOfType( EntityViewElementBuilderService.class );
 			assertThat(
 					builderService.getElementBuilder( entityConfiguration.getPropertyRegistry().getProperty( "name" ), ViewElementMode.CONTROL )
-			).isNotNull();
+			).isNull();
 		}
 	}
 }

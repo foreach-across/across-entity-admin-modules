@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
@@ -39,6 +40,7 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
 /**
  * @author Arne Vandamme
  */
+@ConditionalOnBootstrapUI
 @Component
 @RequiredArgsConstructor
 public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFactorySupport<FormGroupElementBuilder>
