@@ -40,11 +40,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>across-hibernate-module</artifactId>
+			<artifactId>spring-security-module</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
-			<artifactId>spring-security-module</artifactId>
+			<artifactId>across-hibernate-module</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>

@@ -27,6 +27,7 @@ import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -37,9 +38,10 @@ import org.springframework.data.domain.Sort;
  *
  * @author Arne Vandamme
  */
-@Configuration
-@OrderInModule(2)
+@ConditionalOnClass(Auditable.class)
 @ConditionalOnAcrossModule(SpringSecurityModule.NAME)
+@Configuration
+@OrderInModule(3)
 @RequiredArgsConstructor
 public class AuditableEntityUiConfiguration implements EntityConfigurer
 {
