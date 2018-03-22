@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
@@ -50,6 +51,7 @@ public class CheckboxFormElementBuilderFactory extends EntityViewElementBuilderF
 	                                                      ViewElementMode viewElementMode, String viewElementType ) {
 		return BootstrapUiBuilders.checkbox()
 		                          .name( descriptor.getName() )
+		                          .controlName( EntityAttributes.controlName( descriptor ) )
 		                          .text( descriptor.getDisplayName() )
 		                          .value( "on" )
 		                          .postProcessor( new EntityPropertyValueCheckboxPostProcessor( descriptor ) )
