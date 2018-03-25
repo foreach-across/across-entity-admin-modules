@@ -22,12 +22,15 @@ import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.testmodules.springdata.business.Client;
+import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinks;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossWebAppConfiguration;
+import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
+import com.foreach.across.testmodules.springdata.business.Client;
+import com.foreach.across.testmodules.springdata.business.Company;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,15 +39,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.Serializable;
 import java.util.function.Function;
 
 import static com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer.CONTEXT_POSTPROCESSOR_MODULE;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -54,6 +56,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @AcrossWebAppConfiguration
+@TestPropertySource(properties = "adminWebModule.root-path=/hidden")
 public class ITWebBootstrap
 {
 	@Autowired
@@ -64,6 +67,12 @@ public class ITWebBootstrap
 
 	@Autowired
 	private Function<Serializable, Client> mockClientFinder;
+
+	@Autowired
+	private EntityViewLinks entityViewLinks;
+
+	@Autowired
+	private EntityRegistry entityRegistry;
 
 	@Test
 	public void bootstrappedOk() {
@@ -82,8 +91,37 @@ public class ITWebBootstrap
 		verify( mockClientFinder ).apply( 123L );
 	}
 
+	@Test
+	public void linksShouldBeRegistered() {
+		EntityLinkBuilder clientLinkBuilder = entityRegistry.getEntityConfiguration( Client.class ).getAttribute( EntityLinkBuilder.class );
+		EntityLinkBuilder companyLinkBuilder = entityRegistry.getEntityConfiguration( Company.class ).getAttribute( EntityLinkBuilder.class );
+		EntityLinkBuilder associatedLinkBuilder = entityRegistry.getEntityConfiguration( Company.class )
+		                                                        .association( "client.company" )
+		                                                        .getAttribute( EntityLinkBuilder.class );
+
+		assertEquals( "@adminWeb:/entities/client", entityViewLinks.linkTo( Client.class ).toString() );
+		assertEquals( "/hidden/entities/client", entityViewLinks.linkTo( Client.class ).toUriString() );
+		assertEquals( "/hidden/entities/client", clientLinkBuilder.overview() );
+
+		Client client = new Client();
+		client.setId( 55L );
+		assertEquals( entityViewLinks.linkTo( client ).toUriString(), clientLinkBuilder.view( client ) );
+
+		Company company = new Company();
+		company.setId( "123" );
+
+		assertEquals(
+				"/hidden/entities/client/55?from=/hidden/entities/company/123/associations/client.company",
+				entityViewLinks.linkTo( company ).association( client ).toUriString()
+		);
+		assertEquals(
+				"/hidden/entities/client/55?from=/hidden/entities/company/123/associations/client.company",
+				associatedLinkBuilder.asAssociationFor( companyLinkBuilder, company ).view( client )
+		);
+	}
+
 	@Configuration
-	@AcrossTestConfiguration(modules = { EntityModule.NAME, AdminWebModule.NAME, SpringSecurityModule.NAME })
+	@AcrossTestConfiguration(modules = { EntityModule.NAME, SpringSecurityModule.NAME, AdminWebModule.NAME })
 	protected static class Config implements EntityConfigurer
 	{
 		@Bean
@@ -99,7 +137,7 @@ public class ITWebBootstrap
 		}
 
 		@Bean
-		@SuppressWarnings( "unchecked" )
+		@SuppressWarnings("unchecked")
 		public Function<Serializable, Client> mockClientFinder() {
 			return mock( Function.class );
 		}

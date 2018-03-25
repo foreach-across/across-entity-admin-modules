@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.views.menu;
 
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 
@@ -66,9 +66,9 @@ public class EntityAdminMenuEvent<T> extends com.foreach.across.modules.adminweb
 	}
 
 	/**
-	 * @return the link builder for the current entity
+	 * @return the link builder for the current entity type
 	 */
-	public EntityLinkBuilder getLinkBuilder() {
+	public EntityViewLinkBuilder getLinkBuilder() {
 		return getViewContext().getLinkBuilder();
 	}
 

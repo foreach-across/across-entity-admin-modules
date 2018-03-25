@@ -29,9 +29,9 @@ import com.foreach.across.modules.entity.views.context.EntityViewContextLoader;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.entity.web.links.EntityViewLinks;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
@@ -83,6 +83,7 @@ public class GenericEntityViewController
 	private PageContentStructure pageContentStructure;
 	private EntityViewContextLoader entityViewContextLoader;
 	private WebAppPathResolver webAppPathResolver;
+	private EntityViewLinks entityViewLinks;
 
 	/**
 	 * Responsible for building the initial {@link com.foreach.across.modules.entity.views.context.EntityViewContext}
@@ -190,10 +191,7 @@ public class GenericEntityViewController
 			entityViewContextLoader.loadForEntityConfiguration( entityViewContext, association.getTargetEntityConfiguration() );
 			entityViewContext.setEntityAssociation( association );
 			entityViewContext.setParentContext( parentViewContext );
-			entityViewContext.setLinkBuilder(
-					association.getAttribute( EntityLinkBuilder.class )
-					           .asAssociationFor( parentViewContext.getLinkBuilder(), parentViewContext.getEntity() )
-			);
+			entityViewContext.setLinkBuilder( entityViewLinks.linkTo( parentEntityConfiguration ).withId( entityId ).association( associationName ) );
 
 			EntityMessageCodeResolver codeResolver = association.getAttribute( EntityMessageCodeResolver.class );
 			if ( codeResolver != null ) {
@@ -260,5 +258,10 @@ public class GenericEntityViewController
 	@Autowired
 	void setWebAppPathResolver( WebAppPathResolver webAppPathResolver ) {
 		this.webAppPathResolver = webAppPathResolver;
+	}
+
+	@Autowired
+	void setEntityViewLinks( EntityViewLinks entityViewLinks ) {
+		this.entityViewLinks = entityViewLinks;
 	}
 }

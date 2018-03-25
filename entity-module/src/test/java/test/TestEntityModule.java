@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
+import com.foreach.across.modules.entity.web.links.EntityViewLinks;
 import com.foreach.across.test.AcrossTestContext;
 import org.junit.Test;
 
@@ -43,6 +44,7 @@ public class TestEntityModule
 			assertThat( context.contextInfo().hasModule( AdminWebModule.NAME ) ).isFalse();
 
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, GenericEntityViewController.class ) ).isEmpty();
+			assertThat( context.getBeansOfType( EntityViewLinks.class ) ).isEmpty();
 			assertThat( context.getBeansOfType( EntityViewElementBuilderFactory.class ) ).isEmpty();
 		}
 	}
@@ -55,6 +57,7 @@ public class TestEntityModule
 			assertThat( context.contextInfo().hasModule( AdminWebModule.NAME ) ).isFalse();
 
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, GenericEntityViewController.class ) ).isEmpty();
+			assertThat( context.getBeansOfType( EntityViewLinks.class ) ).isEmpty();
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, BootstrapUiElementTypeLookupStrategy.class ) ).isNotEmpty();
 		}
 	}
@@ -65,6 +68,7 @@ public class TestEntityModule
 				.modules( EntityModule.NAME, AdminWebModule.NAME )
 				.build()) {
 			assertThat( context.findBeanOfTypeFromModule( EntityModule.NAME, GenericEntityViewController.class ) ).isNotEmpty();
+			assertThat( context.getBeanOfType( EntityViewLinks.class ) ).isNotNull();
 		}
 	}
 }

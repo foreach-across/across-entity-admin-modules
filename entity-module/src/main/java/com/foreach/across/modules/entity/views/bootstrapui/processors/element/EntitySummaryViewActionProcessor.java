@@ -17,10 +17,9 @@ package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * Registers an expandable detail view for an entity.
@@ -30,9 +29,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class EntitySummaryViewActionProcessor implements ViewElementPostProcessor<TableViewElement.Row>
 {
 	private final String viewName;
-	private final EntityLinkBuilder linkBuilder;
+	private final EntityViewLinkBuilder linkBuilder;
 
-	public EntitySummaryViewActionProcessor( EntityLinkBuilder linkBuilder, String viewName ) {
+	public EntitySummaryViewActionProcessor( EntityViewLinkBuilder linkBuilder, String viewName ) {
 		this.linkBuilder = linkBuilder;
 		this.viewName = viewName;
 	}
@@ -40,13 +39,6 @@ public class EntitySummaryViewActionProcessor implements ViewElementPostProcesso
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row element ) {
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-
-		element.setAttribute( "data-summary-url",
-		                      ServletUriComponentsBuilder
-				                      .fromUriString( linkBuilder.view( entity ) )
-				                      .queryParam( "view", viewName )
-				                      .queryParam( "_partial", "content" )
-				                      .toUriString()
-		);
+		element.setAttribute( "data-summary-url", linkBuilder.forInstance( entity ).withViewName( viewName ).withPartial( "content" ).toString() );
 	}
 }

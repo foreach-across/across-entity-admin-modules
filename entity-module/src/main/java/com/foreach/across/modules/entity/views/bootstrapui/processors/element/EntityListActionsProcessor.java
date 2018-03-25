@@ -22,7 +22,8 @@ import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementB
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
+import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -36,12 +37,13 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 	public static final String CELL_NAME = "row-actions";
 
 	protected final EntityConfiguration<Object> entityConfiguration;
-	protected final EntityLinkBuilder linkBuilder;
+	protected final EntityViewLinkBuilder linkBuilder;
 	protected final EntityMessages messages;
 
 	@SuppressWarnings("unchecked")
 	public EntityListActionsProcessor( EntityConfiguration entityConfiguration,
-	                                   EntityLinkBuilder linkBuilder, EntityMessages messages ) {
+	                                   EntityViewLinkBuilder linkBuilder,
+	                                   EntityMessages messages ) {
 		this.entityConfiguration = entityConfiguration;
 		this.linkBuilder = linkBuilder;
 		this.messages = messages;
@@ -68,10 +70,12 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 	protected void addEntityActions( TableViewElementBuilder.Cell cell, Object entity ) {
 		AllowableActions allowableActions = entityConfiguration.getAllowableActions( entity );
 
+		SingleEntityViewLinkBuilder url = linkBuilder.forInstance( entity );
+
 		if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
 			cell.add(
 					BootstrapUiBuilders.button()
-					                   .link( linkBuilder.update( entity ) )
+					                   .link( url.updateView().toUriString() )
 					                   .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
 					                   .text( messages.updateAction() )
 			);
@@ -80,7 +84,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 		if ( allowableActions.contains( AllowableAction.DELETE ) ) {
 			cell.add(
 					BootstrapUiBuilders.button()
-					                   .link( linkBuilder.delete( entity ) )
+					                   .link( url.deleteView().toUriString() )
 					                   .iconOnly( new GlyphIcon( GlyphIcon.REMOVE ) )
 					                   .text( messages.deleteAction() )
 			);

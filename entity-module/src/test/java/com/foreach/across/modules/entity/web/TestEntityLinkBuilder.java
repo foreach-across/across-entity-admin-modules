@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Deprecated
 public class TestEntityLinkBuilder
 {
 	private static final WebAppPathResolver TEST_RESOLVER = new WebAppPathResolver()

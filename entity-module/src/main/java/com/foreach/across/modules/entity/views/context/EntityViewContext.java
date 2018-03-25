@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 
 /**
@@ -73,7 +73,7 @@ public interface EntityViewContext
 	/**
 	 * @return link builder for the entity
 	 */
-	EntityLinkBuilder getLinkBuilder();
+	EntityViewLinkBuilder getLinkBuilder();
 
 	/**
 	 * @return message code resolver for the current entity

@@ -21,6 +21,8 @@ import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
+import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -28,32 +30,34 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.menu.RequestMenuSelector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Collections;
 import java.util.function.Consumer;
 
-public class MenuEventsHandler
+@ConditionalOnAdminWeb
+@Component
+@Slf4j
+@RequiredArgsConstructor
+class EntityModuleAdminMenuRegistrar
 {
-	private static final Logger LOG = LoggerFactory.getLogger( MenuEventsHandler.class );
-
-	private EntityRegistry entityRegistry;
+	private final EntityRegistry entityRegistry;
 
 	@EventListener
 	public void adminMenu( AdminMenuEvent adminMenuEvent ) {
 		PathBasedMenuBuilder builder = adminMenuEvent.builder();
-		builder.item( "/entities", "#{EntityModule.adminMenu=Entity management}", "@adminWeb:/entities" ).group( true );
+		builder.item( "/entities", "#{EntityModule.adminMenu=Entity management}", "@adminWeb:" + GenericEntityViewController.ROOT_PATH ).group( true );
 
 		for ( EntityConfiguration entityConfiguration : entityRegistry.getEntities() ) {
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions();
@@ -68,7 +72,7 @@ public class MenuEventsHandler
 				);
 
 				EntityMessages messages = new EntityMessages( messageCodeResolver );
-				EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
+				EntityViewLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityViewLinkBuilder.class );
 				AcrossModuleInfo moduleInfo = entityConfiguration.getAttribute( AcrossModuleInfo.class );
 
 				if ( linkBuilder != null ) {
@@ -76,18 +80,18 @@ public class MenuEventsHandler
 
 					if ( moduleInfo != null ) {
 						group = "/entities/" + moduleInfo.getName();
-						builder.group( group, "#{" + moduleInfo.getName() + ".adminMenu=" + moduleInfo.getName() + "}" ).attribute( AdminMenu.ATTR_BREADCRUMB,
-						                                                                                                            false );
+						builder.group( group, "#{" + moduleInfo.getName() + ".adminMenu=" + moduleInfo.getName() + "}" )
+						       .attribute( AdminMenu.ATTR_BREADCRUMB, false );
 					}
 
 					builder.item( group + "/" + entityConfiguration.getName(),
 					              messageCodeResolver.getMessageWithFallback( "adminMenu", messageCodeResolver.getNameSingular() ),
-					              linkBuilder.overview() );
+					              linkBuilder.listView().toString() );
 
 					if ( allowableActions.contains( AllowableAction.CREATE ) ) {
 						builder.item( group + "/" + entityConfiguration.getName() + "/create",
 						              messages.createAction(),
-						              linkBuilder.create()
+						              linkBuilder.createView().toString()
 						);
 					}
 				}
@@ -107,10 +111,10 @@ public class MenuEventsHandler
 		EntityConfiguration<Object> entityConfiguration = entityRegistry.getEntityConfiguration( menu.getEntityType() );
 		EntityMessageCodeResolver messageCodeResolver = entityConfiguration.getEntityMessageCodeResolver();
 
-		EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
-
 		if ( menu.isForUpdate() ) {
-			builder.item( linkBuilder.update( menu.getEntity() ),
+			val currentEntityLink = menu.getLinkBuilder().forInstance( menu.getEntity() );
+
+			builder.item( currentEntityLink.updateView().toString(),
 			              messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
 
@@ -118,16 +122,13 @@ public class MenuEventsHandler
 			for ( EntityAssociation association : entityConfiguration.getAssociations() ) {
 				if ( !association.isHidden() ) {
 					EntityConfiguration associated = association.getTargetEntityConfiguration();
-					EntityLinkBuilder associatedLinkBuilder
-							= association.getAttribute( EntityLinkBuilder.class )
-							             .asAssociationFor( linkBuilder, menu.getEntity() );
 
 					String itemTitle = messageCodeResolver.getMessageWithFallback(
 							"adminMenu." + association.getName(),
 							associated.getEntityMessageCodeResolver().getNamePlural()
 					);
 
-					builder.item( association.getName(), itemTitle, associatedLinkBuilder.overview() );
+					builder.item( association.getName(), itemTitle, currentEntityLink.association( association.getName() ).listView().toString() );
 				}
 			}
 
@@ -141,21 +142,19 @@ public class MenuEventsHandler
 
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
 			if ( allowableActions.contains( AllowableAction.DELETE ) ) {
-				String deleteBaseUrl = linkBuilder.delete( menu.getEntity() );
+				val deleteLink = currentEntityLink.deleteView();
 
 				builder.item( "/advanced-options/delete",
 				              messageCodeResolver.getMessageWithFallback( "menu.delete", "Delete" ),
-				              UriComponentsBuilder.fromUriString( deleteBaseUrl )
-				                                  .queryParam( "from", linkBuilder.update( menu.getEntity() ) )
-				                                  .toUriString() )
-				       .attribute( RequestMenuSelector.ATTRIBUTE_MATCHERS, Collections.singleton( deleteBaseUrl ) )
+				              deleteLink.withFromUrl( currentEntityLink.updateView().toUriString() ).toString() )
+				       .attribute( RequestMenuSelector.ATTRIBUTE_MATCHERS, Collections.singleton( deleteLink.toUriString() ) )
 				       .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
 				       .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.BEFORE )
 				       .order( Ordered.LOWEST_PRECEDENCE );
 			}
 		}
 		else {
-			builder.item( linkBuilder.create(),
+			builder.item( menu.getLinkBuilder().createView().toString(),
 			              messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
 		}
@@ -168,10 +167,5 @@ public class MenuEventsHandler
 				viewMenuBuilder.accept( menu );
 			}
 		}
-	}
-
-	@Autowired
-	void setEntityRegistry( EntityRegistry entityRegistry ) {
-		this.entityRegistry = entityRegistry;
 	}
 }

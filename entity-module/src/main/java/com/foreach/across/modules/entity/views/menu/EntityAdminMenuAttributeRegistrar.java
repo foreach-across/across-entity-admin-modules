@@ -22,7 +22,6 @@ import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import lombok.experimental.UtilityClass;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -65,9 +64,7 @@ public class EntityAdminMenuAttributeRegistrar
 					PathBasedMenuBuilder.PathBasedMenuItemBuilder builder = menuEvent.builder().item(
 							menuPath,
 							"#{adminMenu.views[" + viewName + "]=" + viewName + "}",
-							UriComponentsBuilder.fromUriString( menuEvent.getLinkBuilder().update( menuEvent.getEntity() ) )
-							                    .queryParam( "view", viewName )
-							                    .toUriString()
+							menuEvent.getLinkBuilder().forInstance( menuEvent.getEntity() ).updateView().withViewName( viewName ).toString()
 					);
 					if ( itemCustomizer != null ) {
 						itemCustomizer.accept( builder );

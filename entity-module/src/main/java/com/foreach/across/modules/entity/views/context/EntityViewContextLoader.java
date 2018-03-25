@@ -19,7 +19,7 @@ package com.foreach.across.modules.entity.views.context;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,7 +71,7 @@ public class EntityViewContextLoader
 		context.setEntityModel( entityConfiguration.getEntityModel() );
 		context.setMessageCodeResolver( entityConfiguration.getEntityMessageCodeResolver() );
 		context.setEntityMessages( new EntityMessages( context.getMessageCodeResolver() ) );
-		context.setLinkBuilder( entityConfiguration.getAttribute( EntityLinkBuilder.class ) );
+		context.setLinkBuilder( entityConfiguration.getAttribute( EntityViewLinkBuilder.class ) );
 		context.setPropertyRegistry( entityConfiguration.getPropertyRegistry() );
 	}
 

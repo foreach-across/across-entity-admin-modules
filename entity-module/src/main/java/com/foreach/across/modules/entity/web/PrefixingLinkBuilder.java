@@ -21,7 +21,9 @@ import lombok.NonNull;
  * Prefxes paths generated from another {@link com.foreach.across.modules.entity.web.EntityLinkBuilder} instance.
  *
  * @author Arne Vandamme
+ * @deprecated since 3.0.0 - use {@link com.foreach.across.modules.entity.web.links.EntityViewLinks} instead
  */
+@Deprecated
 public class PrefixingLinkBuilder implements EntityLinkBuilder
 {
 	private final String prefixPath;

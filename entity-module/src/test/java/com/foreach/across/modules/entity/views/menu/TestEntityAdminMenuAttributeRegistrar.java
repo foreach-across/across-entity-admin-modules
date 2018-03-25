@@ -23,7 +23,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import org.junit.Test;
@@ -133,8 +133,9 @@ public class TestEntityAdminMenuAttributeRegistrar
 		when( entityConfiguration.getName() ).thenReturn( "entityName" );
 		when( entityViewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 
-		EntityLinkBuilder linkBuilder = mock( EntityLinkBuilder.class );
-		when( linkBuilder.update( any() ) ).thenReturn( "/my-entity" );
+		EntityViewLinkBuilder linkBuilder = mock( EntityViewLinkBuilder.class, RETURNS_DEEP_STUBS );
+		when( linkBuilder.forInstance( any() ).updateView().withViewName( any() ).toString() ).thenReturn( "/my-entity" );
+		when( linkBuilder.forInstance( any() ).updateView().withViewName( eq( "myView" ) ).toString() ).thenReturn( "/my-entity?view=myView" );
 		when( entityViewContext.getLinkBuilder() ).thenReturn( linkBuilder );
 
 		PathBasedMenuBuilder menuBuilder = new PathBasedMenuBuilder();
