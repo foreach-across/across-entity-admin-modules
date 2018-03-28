@@ -20,7 +20,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Arne Vandamme
@@ -88,5 +94,93 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 						"<input type='hidden' />" +
 						"</div>"
 		);
+	}
+
+	@Test
+	public void withLocalDate() {
+		LocalDate date = LocalDate.of( 2015, 8, 7 );
+		datetime.setLocalDate( date );
+
+		renderAndExpect(
+				datetime,
+				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
+						"<input class='form-control' type='text' " +
+						" value='2015-08-07 00:00' />" +
+						"<span class='input-group-addon'>" +
+						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
+						"</span>" +
+						"<input type='hidden' value='2015-08-07 00:00' />" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void withLocalTime() {
+		String today = LocalDate.now().format( DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) );
+		LocalTime time = LocalTime.of( 10, 31 );
+		datetime.setLocalTime( time );
+
+		renderAndExpect(
+				datetime,
+				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
+						"<input class='form-control' type='text'" +
+						" value='" + today + " 10:31' />" +
+						"<span class='input-group-addon'>" +
+						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
+						"</span>" +
+						"<input type='hidden' value='" + today + " 10:31' />" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void withLocalDateTime() throws ParseException {
+		Date date = DateUtils.parseDate( "2015-08-07 10:31", "yyyy-MM-dd HH:mm" );
+		LocalDateTime localDateTime = datetime.getConfiguration().dateToLocalDateTime( date );
+		datetime.setLocalDateTime( localDateTime );
+
+		renderAndExpect(
+				datetime,
+				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
+						"<input class='form-control' type='text' " +
+						" value='2015-08-07 10:31' />" +
+						"<span class='input-group-addon'>" +
+						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
+						"</span>" +
+						"<input type='hidden' value='2015-08-07 10:31' />" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void dateAndLocalDateTimeAreEqual() throws ParseException {
+		Date date = DateUtils.parseDate( "2015-08-07 10:31", "yyyy-MM-dd HH:mm" );
+		LocalDateTime localDateTime = datetime.getConfiguration().dateToLocalDateTime( date );
+		datetime.setLocalDateTime( localDateTime );
+
+		String expectedContent = "<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
+				"<input class='form-control' type='text' " +
+				" value='2015-08-07 10:31' />" +
+				"<span class='input-group-addon'>" +
+				"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
+				"</span>" +
+				"<input type='hidden' value='2015-08-07 10:31' />" +
+				"</div>";
+		renderAndExpect( datetime, expectedContent );
+		DateTimeFormElement dateTimeWithDate = new DateTimeFormElement();
+		dateTimeWithDate.setValue( date );
+		renderAndExpect( dateTimeWithDate, expectedContent );
+	}
+
+	@Test
+	public void retrieveTheDateForASpecificClass() throws ParseException {
+		Date date = DateUtils.parseDate( "2015-08-07 10:31", "yyyy-MM-dd HH:mm" );
+		LocalDateTime localDateTime = datetime.getConfiguration().dateToLocalDateTime( date );
+		datetime.setLocalDateTime( localDateTime );
+
+		assertEquals( date, datetime.getValue() );
+		assertEquals( localDateTime.toLocalDate(), datetime.getLocalDate() );
+		assertEquals( localDateTime.toLocalTime(), datetime.getLocalTime() );
+		assertEquals( localDateTime, datetime.getLocalDateTime() );
 	}
 }

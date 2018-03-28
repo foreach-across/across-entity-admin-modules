@@ -15,11 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
-import com.foreach.across.modules.bootstrapui.elements.FormLayout;
 import com.foreach.across.modules.bootstrapui.elements.FormViewElement;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
 import org.springframework.http.HttpMethod;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
@@ -31,8 +32,7 @@ import org.thymeleaf.standard.expression.VariableExpression;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.Map;
-
-import static com.foreach.across.modules.bootstrapui.elements.FormLayout.Type.HORIZONTAL;
+import java.util.UUID;
 
 /**
  * @author Arne Vandamme
@@ -41,6 +41,7 @@ import static com.foreach.across.modules.bootstrapui.elements.FormLayout.Type.HO
 public class FormViewElementModelWriter extends AbstractHtmlViewElementModelWriter<FormViewElement>
 {
 	public static final String VAR_CURRENT_BOOTSTRAP_FORM = "_currentBootstrapForm";
+	private static final String VAR_BOUND_ERRORS = "_temporaryErrorsAttribute";
 
 	@Override
 	protected void writeOpenElement( FormViewElement form, ThymeleafModelBuilder model ) {
@@ -53,24 +54,55 @@ public class FormViewElementModelWriter extends AbstractHtmlViewElementModelWrit
 			IEngineContext engineContext = (IEngineContext) templateContext;
 			engineContext.setVariable( VAR_CURRENT_BOOTSTRAP_FORM, form );
 
-			String commandAttribute = form.getCommandAttribute();
+			registerBoundObject( form, engineContext );
+		}
+	}
 
-			if ( commandAttribute != null ) {
-				IEngineConfiguration configuration = engineContext.getConfiguration();
-				IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser( configuration );
+	private void registerBoundObject( FormViewElement form, IEngineContext engineContext ) {
+		String commandAttribute = form.getCommandAttribute();
 
-				VariableExpression varExpression =
-						(VariableExpression) expressionParser.parseExpression(
-								engineContext, commandAttributeName( commandAttribute )
-						);
+		RequestContext requestContext = (RequestContext) engineContext.getVariable( SpringContextVariableNames.SPRING_REQUEST_CONTEXT );
 
-				engineContext.setVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION, varExpression );
+		if ( form.getErrors() != null ) {
+			Map<String, Object> requestContextModel = requestContext.getModel();
+
+			String beanName = UUID.randomUUID().toString();
+			String bindingResultName = BindingResult.MODEL_KEY_PREFIX + beanName;
+			if ( requestContextModel != null ) {
+				requestContextModel.put( bindingResultName, form.getErrors() );
 			}
+			else {
+				engineContext.setVariable( bindingResultName, form.getErrors() );
+			}
+			commandAttribute = beanName;
+			engineContext.setVariable( VAR_BOUND_ERRORS, bindingResultName );
+		}
+
+		if ( commandAttribute == null && form.getCommandObject() != null ) {
+			commandAttribute = resolveCommandAttributeName( form.getCommandObject(), engineContext );
+		}
+
+		if ( commandAttribute != null ) {
+			IEngineConfiguration configuration = engineContext.getConfiguration();
+			IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser( configuration );
+
+			VariableExpression varExpression = (VariableExpression) expressionParser.parseExpression( engineContext, commandAttributeName( commandAttribute ) );
+			engineContext.setVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION, varExpression );
 		}
 	}
 
 	private String commandAttributeName( String attributeName ) {
 		return StringUtils.startsWith( attributeName, "${" ) ? attributeName : "${" + attributeName + "}";
+	}
+
+	private String resolveCommandAttributeName( Object commandObject, IEngineContext engineContext ) {
+		for ( String variableName : engineContext.getVariableNames() ) {
+			if ( engineContext.getVariable( variableName ) == commandObject
+					&& engineContext.getVariable( BindingResult.MODEL_KEY_PREFIX + variableName ) != null ) {
+				return variableName;
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -92,6 +124,28 @@ public class FormViewElementModelWriter extends AbstractHtmlViewElementModelWrit
 		}
 
 		super.writeCloseElement( viewElement, writer );
+
+		ITemplateContext templateContext = writer.getTemplateContext();
+
+		if ( templateContext instanceof IEngineContext ) {
+			removeBoundObject( (IEngineContext) templateContext );
+		}
+	}
+
+	private void removeBoundObject( IEngineContext templateContext ) {
+		String attr = (String) templateContext.getVariable( VAR_BOUND_ERRORS );
+
+		if ( attr != null ) {
+			templateContext.removeVariable( attr );
+
+			RequestContext requestContext = (RequestContext) templateContext.getVariable( SpringContextVariableNames.SPRING_REQUEST_CONTEXT );
+			if ( requestContext != null ) {
+				Map<String, Object> requestContextModel = requestContext.getModel();
+				if ( requestContextModel != null ) {
+					requestContextModel.remove( attr );
+				}
+			}
+		}
 	}
 
 	private boolean shouldWriteExtraField( String fieldName, HttpMethod httpMethod ) {

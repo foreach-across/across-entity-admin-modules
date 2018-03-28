@@ -20,9 +20,8 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
-public class LabelFormElementBuilder extends AbstractNodeViewElementBuilder<LabelFormElement, LabelFormElementBuilder>
+public class LabelFormElementBuilder extends AbstractHtmlSupportingNodeViewElementBuilder<LabelFormElement, LabelFormElementBuilder>
 {
 	private Object text;
 	private Object target;
@@ -64,28 +63,34 @@ public class LabelFormElementBuilder extends AbstractNodeViewElementBuilder<Labe
 	protected LabelFormElement createElement( ViewElementBuilderContext viewElementBuilderContext ) {
 		LabelFormElement label = new LabelFormElement();
 
+		ViewElement textElement = null;
+
 		if ( text instanceof String ) {
-			label.setText( (String) text );
+			if ( isEscapeHtml() ) {
+				label.setText( viewElementBuilderContext.resolveText( (String) text ) );
+			}
+			else {
+				textElement = resolveTextElement( (String) text, viewElementBuilderContext );
+			}
 		}
 		else if ( text instanceof ViewElementBuilder ) {
-			ViewElementBuilder textBuilder = (ViewElementBuilder) text;
-			ViewElement textElement = textBuilder.build( viewElementBuilderContext );
+			textElement = ( (ViewElementBuilder) text ).build( viewElementBuilderContext );
+		}
 
-			if ( textElement != null ) {
-				boolean addAsChild = true;
+		if ( textElement != null ) {
+			boolean addAsChild = true;
 
-				if ( textElement instanceof TextViewElement ) {
-					TextViewElement textViewElement = (TextViewElement) textElement;
+			if ( textElement instanceof TextViewElement ) {
+				TextViewElement textViewElement = (TextViewElement) textElement;
 
-					if ( textViewElement.isEscapeXml() && textViewElement.getCustomTemplate() == null ) {
-						label.setText( textViewElement.getText() );
-						addAsChild = false;
-					}
+				if ( textViewElement.isEscapeXml() && textViewElement.getCustomTemplate() == null ) {
+					label.setText( textViewElement.getText() );
+					addAsChild = false;
 				}
+			}
 
-				if ( addAsChild ) {
-					label.addFirstChild( textElement );
-				}
+			if ( addAsChild ) {
+				label.addFirstChild( textElement );
 			}
 		}
 

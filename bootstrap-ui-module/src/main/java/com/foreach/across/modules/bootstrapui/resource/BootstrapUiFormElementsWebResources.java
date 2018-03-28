@@ -68,6 +68,12 @@ BootstrapUiFormElementsWebResources extends SimpleWebResourcePackage
 				// Form elements initializer javascript
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
 				                 "/static/" + BootstrapUiModule.NAME + "/js/bootstrapui-formelements.js",
+				                 WebResource.VIEWS ),
+				new WebResource( WebResource.JAVASCRIPT_PAGE_END, "typeahead",
+				                 "https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js",
+				                 WebResource.EXTERNAL ),
+				new WebResource( WebResource.CSS, "autosuggest",
+				                 "/static/BootstrapUiModule/css/bootstrapui.css",
 				                 WebResource.VIEWS )
 		);
 	}

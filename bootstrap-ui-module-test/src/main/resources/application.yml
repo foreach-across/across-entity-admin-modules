@@ -30,3 +30,7 @@ spring:
 acrossWebModule:
   registerGlobalBuilderContext: true
 
+server:
+  error:
+    whitelabel:
+      enabled: false

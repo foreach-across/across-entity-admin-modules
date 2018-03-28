@@ -83,7 +83,7 @@ public abstract class InputGroupFormElementBuilderSupport<T extends InputGroupFo
 			group.setAddonAfter( addonAfter.get( builderContext ) );
 		}
 		if ( placeholder != null ) {
-			group.setPlaceholder( placeholder );
+			group.setPlaceholder( builderContext.resolveText( placeholder ) );
 		}
 
 		return super.apply( group, builderContext );

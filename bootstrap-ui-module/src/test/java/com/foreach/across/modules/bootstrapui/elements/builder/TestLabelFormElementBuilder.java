@@ -32,7 +32,7 @@ public class TestLabelFormElementBuilder extends AbstractViewElementBuilderTest<
 
 	@Test
 	public void labelTextFromViewElementEndsUpAsText() {
-		TextViewElementBuilder textBuilder = new TextViewElementBuilder().text( "Simple text" );
+		TextViewElementBuilder textBuilder = new TextViewElementBuilder().text( "#{Simple text}" );
 		builder.text( textBuilder );
 
 		build();

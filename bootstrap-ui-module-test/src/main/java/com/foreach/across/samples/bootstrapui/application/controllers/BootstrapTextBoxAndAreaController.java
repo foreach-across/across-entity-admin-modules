@@ -16,8 +16,6 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.core.annotations.Event;
-import com.foreach.across.core.annotations.EventName;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
@@ -26,6 +24,7 @@ import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,14 +40,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/textbox")
-public class BoostrapTextboxController
+public class BootstrapTextBoxAndAreaController
 {
 	/**
 	 * Register the section in the administration menu.
 	 */
-	@Event
-	@SuppressWarnings("unused")
-	protected void registerMenuItems( @EventName("navMenu") BuildMenuEvent navMenu ) {
+	@EventListener(condition = "#navMenu.menuName=='navMenu'")
+	protected void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
 		       .item( "/test/form-elements/textbox", "Textbox", "/textbox" ).order( 2 );
 	}

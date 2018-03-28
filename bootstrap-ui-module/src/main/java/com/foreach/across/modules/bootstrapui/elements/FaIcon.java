@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 /**
  * Represents a FontAwesome icon.
@@ -773,11 +773,8 @@ public class FaIcon extends IconViewElement
 		setGlyph( glyph );
 	}
 
-	public void setGlyph( String glyph ) {
-		Assert.notNull( glyph );
-
+	public void setGlyph( @NonNull String glyph ) {
 		this.glyph = glyph;
-
 		setIconCss( "fa " + glyph );
 	}
 

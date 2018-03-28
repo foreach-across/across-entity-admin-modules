@@ -16,18 +16,18 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.core.annotations.Event;
-import com.foreach.across.core.annotations.EventName;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,7 +42,7 @@ import java.util.function.Consumer;
  * Generates Bootstrap based tabs from a {@link Menu} instance.
  *
  * @author Arne Vandamme
- * @since 2.0.0
+ * @since 1.0.0
  */
 @RequiredArgsConstructor
 @Controller
@@ -54,9 +54,8 @@ public class BootstrapMenuController
 	/**
 	 * Register the section in the administration menu.
 	 */
-	@Event
-	@SuppressWarnings("unused")
-	protected void registerMenuItems( @EventName("navMenu") BuildMenuEvent navMenu ) {
+	@EventListener(condition = "#navMenu.menuName=='navMenu'")
+	protected void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
 		       //.group( "/test", "Functionality demos" ).and()
 		       .group( "/test/menu", "Bootstrap menu rendering" ).and()
@@ -230,7 +229,7 @@ public class BootstrapMenuController
 		builderConsumer.accept( builder );
 		Menu menu = builder.build();
 		menu.sort();
-		menu.select( Menu.byTitle( "Selected" ) );
+		menu.select( MenuSelector.byTitle( "Selected" ) );
 		return menu;
 	}
 }

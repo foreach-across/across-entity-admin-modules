@@ -19,8 +19,8 @@ import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 /**
  * Prefixes the control name of any {@link FormInputElement}.  Meant for bean property prefixing.
@@ -43,8 +43,7 @@ public class ControlNamePrefixingPostProcessor<T extends ViewElement> implements
 		setAlwaysPrefix( alwaysPrefix );
 	}
 
-	public void setPrefix( String prefix ) {
-		Assert.notNull( prefix );
+	public void setPrefix( @NonNull String prefix ) {
 		this.prefix = prefix;
 	}
 

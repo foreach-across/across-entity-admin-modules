@@ -15,11 +15,16 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 
+/**
+ * @deprecated use the static facade {@link BootstrapUiBuilders} instead
+ */
+@Deprecated
 public interface BootstrapUiFactory extends ViewElementBuilderFactory
 {
 	HiddenFormElementBuilder hidden();
@@ -101,4 +106,6 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 	GlyphIcon glyphIcon( String icon );
 
 	FaIcon faIcon( String icon );
+
+	AutoSuggestFormElementBuilder autosuggest();
 }

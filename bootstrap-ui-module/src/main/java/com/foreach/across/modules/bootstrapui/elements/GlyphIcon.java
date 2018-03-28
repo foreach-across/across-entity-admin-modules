@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 /**
  * Lists the standard Bootstrap GlyphIcons.
@@ -293,9 +293,7 @@ public class GlyphIcon extends IconViewElement
 		setGlyph( glyph );
 	}
 
-	public void setGlyph( String glyph ) {
-		Assert.notNull( glyph );
-
+	public void setGlyph( @NonNull String glyph ) {
 		this.glyph = glyph;
 		setIconCss( "glyphicon " + glyph );
 	}

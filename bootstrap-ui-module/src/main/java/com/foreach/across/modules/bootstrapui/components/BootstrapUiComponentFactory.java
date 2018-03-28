@@ -26,6 +26,7 @@ import com.foreach.across.modules.web.menu.Menu;
  *
  * @author Arne Vandamme
  * @since 1.0.0
+ * @deprecated use the static {@link com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders} instead
  */
 public interface BootstrapUiComponentFactory
 {
