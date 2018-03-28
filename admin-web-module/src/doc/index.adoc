@@ -1,9 +1,9 @@
 = AdminWebModule
 Arne Vandamme
-3.0.0-SNAPSHOT
+3.0.0.RELEASE
 :toc: left
 :sectanchors:
-:module-version: 3.0.0-SNAPSHOT
+:module-version: 3.0.0.RELEASE
 :module-name: AdminWebModule
 :module-artifact: admin-web-module
 :module-url: https://across.foreach.be/modules/AdminWebModule
@@ -122,7 +122,7 @@ All properties start with the *adminWebModule.* prefix.
 
 == What's new in this version?
 :numbered!:
-=== 3.0.0-SNAPSHOT
+=== 3.0.0.RELEASE
 
 * `EntityAdminMenu` and `EntityAdminMenuEvent` have been deprecated and will be removed in the future
 ** these classes were almost solely used in the context of link:{entity-module-url}[EntityModule] and did not belong in AdminWebModule
