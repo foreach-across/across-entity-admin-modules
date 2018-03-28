@@ -22,13 +22,17 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.util.function.Predicate;
 
 /**
  * Post processor for {@link com.foreach.across.modules.bootstrapui.elements.FormInputElement} that will prefix the control name
- * with <strong>entity</strong> if the builder context contains an {@link com.foreach.across.modules.entity.views.request.EntityViewCommand}.
+ * with <strong>entity</strong> if the builder context contains an {@link com.foreach.across.modules.entity.views.request.EntityViewCommand}
+ * and the value of attribute {@link EntityPropertyControlNamePostProcessor#PREFIX_CONTROL_NAMES} on the builder context is set to {@code true}.
+ * Usually the attribute value is set by the {@link com.foreach.across.modules.entity.views.processors.PropertyRenderingViewProcessor} if the right
+ * {@link com.foreach.across.modules.entity.views.ViewElementMode} is being requested.
+ * <p/>
  * Optionally specify a child element predicate.  If one is specified and the element is a {@link com.foreach.across.modules.web.ui.elements.ContainerViewElement},
  * all children matching the predicate in the entire element tree of the container will also be prefixed.
  * <p/>
@@ -46,6 +50,11 @@ import java.util.function.Predicate;
  */
 public final class EntityPropertyControlNamePostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
 {
+	/**
+	 * Name of the {@link ViewElementBuilderContext} attribute that should contain {@code true} if actual prefixing should be done.
+	 */
+	public final static String PREFIX_CONTROL_NAMES = EntityPropertyControlNamePostProcessor.class.getName() + ".enabled";
+
 	private final static ControlNamePrefixingPostProcessor PREFIXING_POST_PROCESSOR = new ControlNamePrefixingPostProcessor<>( "entity" );
 
 	private final Predicate<ViewElement> childElementPredicate;
@@ -69,7 +78,8 @@ public final class EntityPropertyControlNamePostProcessor<T extends ViewElement>
 
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
-		if ( builderContext.hasAttribute( EntityViewCommand.class ) ) {
+		if ( builderContext.hasAttribute( EntityViewCommand.class )
+				&& Boolean.TRUE.equals( builderContext.getAttribute( PREFIX_CONTROL_NAMES, Boolean.class ) ) ) {
 			PREFIXING_POST_PROCESSOR.postProcess( builderContext, element );
 
 			if ( childElementPredicate != null && element instanceof ContainerViewElement ) {
@@ -91,12 +101,9 @@ public final class EntityPropertyControlNamePostProcessor<T extends ViewElement>
 	 * @param childElementPredicate optional predicate for all child elements that should also be prefixed
 	 */
 	@SuppressWarnings("unchecked")
-	public static void registerForProperty( EntityPropertyDescriptor propertyDescriptor,
-	                                        ViewElementBuilder<? extends ViewElement> builder,
+	public static void registerForProperty( @NonNull EntityPropertyDescriptor propertyDescriptor,
+	                                        @NonNull ViewElementBuilder<? extends ViewElement> builder,
 	                                        Predicate<ViewElement> childElementPredicate ) {
-		Assert.notNull( propertyDescriptor );
-		Assert.notNull( builder );
-
 		if ( builder instanceof ViewElementBuilderSupport
 				&& propertyDescriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR )
 				&& !propertyDescriptor.hasAttribute( EntityAttributes.CONTROL_NAME ) ) {

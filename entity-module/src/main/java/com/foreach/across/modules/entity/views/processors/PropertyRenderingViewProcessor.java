@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertySelec
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -108,9 +109,15 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 					? builderMap.get( ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER, ContainerViewElementBuilderSupport.class )
 					: containerBuilder;
 
-			propertyBuilders.forEach( ( propertyName, builder ) -> {
-				propertiesContainerBuilder.add( builder.build( builderContext ) );
-			} );
+			try {
+				builderContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, true );
+				propertyBuilders.forEach( ( propertyName, builder ) -> {
+					propertiesContainerBuilder.add( builder.build( builderContext ) );
+				} );
+			}
+			finally {
+				builderContext.removeAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES );
+			}
 		}
 	}
 

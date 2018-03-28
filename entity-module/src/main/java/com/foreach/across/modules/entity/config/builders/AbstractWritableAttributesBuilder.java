@@ -16,9 +16,13 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.core.support.ReadableAttributes;
 import com.foreach.across.core.support.WritableAttributes;
-import org.springframework.util.Assert;
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
+import lombok.NonNull;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,9 +33,10 @@ import java.util.Map;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public abstract class AbstractWritableAttributesBuilder
+public abstract class AbstractWritableAttributesBuilder<T extends ReadableAttributes>
 {
 	private final Map<String, Object> attributes = new HashMap<>();
+	private final Collection<AttributeRegistrar<T>> registrars = new ArrayDeque<>();
 
 	/**
 	 * Add a custom attribute this builder should add to the entity.
@@ -40,8 +45,7 @@ public abstract class AbstractWritableAttributesBuilder
 	 * @param value Value of the attribute.
 	 * @return current builder
 	 */
-	public AbstractWritableAttributesBuilder attribute( String name, Object value ) {
-		Assert.notNull( name );
+	public AbstractWritableAttributesBuilder attribute( @NonNull String name, Object value ) {
 		attributes.put( name, value );
 		return this;
 	}
@@ -54,13 +58,25 @@ public abstract class AbstractWritableAttributesBuilder
 	 * @param <S>   Class that is both key and value type of the attribute
 	 * @return current builder
 	 */
-	public <S> AbstractWritableAttributesBuilder attribute( Class<S> type, S value ) {
-		Assert.notNull( type );
+	public <S> AbstractWritableAttributesBuilder attribute( @NonNull Class<S> type, S value ) {
 		attributes.put( type.getName(), value );
 		return this;
 	}
 
-	protected void applyAttributes( WritableAttributes attributes ) {
+	/**
+	 * Add an attribute registrar for one or more attributes that should be added.
+	 * Provides a mechanism to get the owner (eg. {@code EntityConfiguration}...) to be made accessible to the attribute values.
+	 *
+	 * @param attributeRegistrar registrar
+	 * @return current builder
+	 */
+	public AbstractWritableAttributesBuilder attribute( @NonNull AttributeRegistrar<T> attributeRegistrar ) {
+		registrars.add( attributeRegistrar );
+		return this;
+	}
+
+	protected void applyAttributes( T owner, WritableAttributes attributes ) {
 		attributes.setAttributes( this.attributes );
+		registrars.forEach( r -> r.accept( owner, attributes ) );
 	}
 }

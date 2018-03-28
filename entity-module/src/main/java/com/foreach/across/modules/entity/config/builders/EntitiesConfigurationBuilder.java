@@ -19,6 +19,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityConfigurationProvider;
 import com.foreach.across.modules.entity.registry.MutableEntityConfiguration;
 import com.foreach.across.modules.entity.registry.MutableEntityRegistry;
+import lombok.NonNull;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.BeanFactory;
@@ -117,8 +118,7 @@ public class EntitiesConfigurationBuilder
 	 * @param entityType that entities can be assigned to
 	 * @return entity builder instance
 	 */
-	public <U> EntityConfigurationBuilder<U> assignableTo( Class<U> entityType ) {
-		Assert.notNull( entityType );
+	public <U> EntityConfigurationBuilder<U> assignableTo( @NonNull Class<U> entityType ) {
 		return matching( c -> entityType.isAssignableFrom( c.getEntityType() ) ).as( entityType );
 	}
 
@@ -128,9 +128,7 @@ public class EntitiesConfigurationBuilder
 	 * @param configurationPredicate predicate the configurations should match
 	 * @return current builder
 	 */
-	public EntityConfigurationBuilder<Object> matching( Predicate<MutableEntityConfiguration> configurationPredicate ) {
-		Assert.notNull( configurationPredicate );
-
+	public EntityConfigurationBuilder<Object> matching( @NonNull Predicate<MutableEntityConfiguration> configurationPredicate ) {
 		return predicateBuilders.computeIfAbsent( configurationPredicate, c -> createConfigurationBuilder() );
 	}
 
@@ -142,9 +140,7 @@ public class EntitiesConfigurationBuilder
 	 * @param entityRegistry to modify
 	 */
 	@SuppressWarnings("unchecked")
-	public void apply( MutableEntityRegistry entityRegistry ) {
-		Assert.notNull( entityRegistry );
-
+	public void apply( @NonNull MutableEntityRegistry entityRegistry ) {
 		List<Pair<EntityConfigurationBuilder, MutableEntityConfiguration>> appliedBuilders = new ArrayList<>();
 
 		// First create manual new entities
@@ -247,7 +243,7 @@ public class EntitiesConfigurationBuilder
 		}
 		else {
 			// should never be null as the creation call should have registered it
-			Assert.notNull( config );
+			Assert.notNull( config, "existing MutableEntityConfiguration should not be null" );
 
 			// register applied builders only once
 			configurationBuilder.apply( config, false );

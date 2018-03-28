@@ -17,13 +17,12 @@
 package com.foreach.across.modules.entity.controllers.admin;
 
 import com.foreach.across.core.annotations.ConditionalOnDevelopmentMode;
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -42,6 +41,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.event.EventListener;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 class EntityRegistryBrowserController
 {
-	private static final String DOC_BASE_URL = "http://across.foreach.be/docs/across-standard-modules/EntityModule";
+	private static final String DOC_BASE_URL = "https://across-docs.foreach.be/across-standard-modules/EntityModule";
 	private static final String DOC_VIEW_PROCESSORS = "%s/%s/reference/#appendix-view-processors";
 	private static final String DOC_ATTRIBUTES_CONFIGURATION = "%s/%s/reference/#appendix-entity-configuration-attributes";
 	private static final String DOC_ATTRIBUTES_PROPERTY = "%s/%s/reference/#appendix-entity-property-descriptor-attributes";
@@ -77,10 +77,9 @@ class EntityRegistryBrowserController
 
 	private final EntityRegistry entityRegistry;
 	private final PageContentStructure page;
-	private final BootstrapUiComponentFactory bootstrapUiComponentFactory;
 	private final AcrossModuleInfo entityModuleInfo;
 
-	@Event
+	@EventListener
 	public void registerAdminMenu( AdminMenuEvent menuEvent ) {
 		menuEvent.builder().item( "/ax/developer/entityModule/entities", "Entities" );
 	}
@@ -129,7 +128,7 @@ class EntityRegistryBrowserController
 		menu.sort();
 		menu.select( new RequestMenuSelector( request ) );
 
-		page.addToNav( bootstrapUiComponentFactory.nav( menu ).tabs().build() );
+		page.addToNav( BootstrapUiBuilders.nav( menu ).tabs().build() );
 
 		if ( "associations".equals( detailView ) ) {
 			if ( detailName != null ) {

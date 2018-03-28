@@ -16,15 +16,17 @@
 
 package com.foreach.across.modules.entity.registry.properties.registrars;
 
-import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;

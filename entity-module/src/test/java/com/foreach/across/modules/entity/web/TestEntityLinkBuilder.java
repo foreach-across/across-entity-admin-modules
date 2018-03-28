@@ -27,10 +27,11 @@ import org.springframework.core.convert.ConversionService;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Deprecated
 public class TestEntityLinkBuilder
 {
 	private static final WebAppPathResolver TEST_RESOLVER = new WebAppPathResolver()
@@ -53,7 +54,7 @@ public class TestEntityLinkBuilder
 		when( entityConfiguration.getName() ).thenReturn( "basicPrincipal" );
 
 		EntityModel model = mock( EntityModel.class );
-		when( model.getId( anyObject() ) ).thenReturn( new BigDecimal( "100.01" ) );
+		when( model.getId( any() ) ).thenReturn( new BigDecimal( "100.01" ) );
 
 		when( entityConfiguration.getEntityModel() ).thenReturn( model );
 
@@ -79,7 +80,7 @@ public class TestEntityLinkBuilder
 		when( entityConfiguration.getName() ).thenReturn( "basicPrincipal" );
 
 		EntityModel model = mock( EntityModel.class );
-		when( model.getId( anyObject() ) ).thenReturn( new BigDecimal( "100.01" ) );
+		when( model.getId( any() ) ).thenReturn( new BigDecimal( "100.01" ) );
 
 		when( entityConfiguration.getEntityModel() ).thenReturn( model );
 
@@ -105,7 +106,7 @@ public class TestEntityLinkBuilder
 		when( entityConfiguration.getName() ).thenReturn( "basicPrincipal" );
 
 		EntityModel model = mock( EntityModel.class );
-		when( model.getId( anyObject() ) ).thenReturn( "someStringId" );
+		when( model.getId( any() ) ).thenReturn( "someStringId" );
 		when( model.getIdType() ).thenReturn( String.class );
 
 		when( entityConfiguration.getEntityModel() ).thenReturn( model );
@@ -139,7 +140,7 @@ public class TestEntityLinkBuilder
 		when( parentConfig.getEntityModel() ).thenReturn( parentModel );
 
 		EntityModel associationModel = mock( EntityModel.class );
-		when( associationModel.getId( anyObject() ) ).thenReturn( 123 );
+		when( associationModel.getId( any() ) ).thenReturn( 123 );
 		when( associatedConfig.getEntityModel() ).thenReturn( associationModel );
 
 		EntityAssociation association = mock( EntityAssociation.class );
@@ -193,7 +194,7 @@ public class TestEntityLinkBuilder
 		when( parentConfig.getEntityModel() ).thenReturn( parentModel );
 
 		EntityModel associationModel = mock( EntityModel.class );
-		when( associationModel.getId( anyObject() ) ).thenReturn( 123 );
+		when( associationModel.getId( any() ) ).thenReturn( 123 );
 		when( associatedConfig.getEntityModel() ).thenReturn( associationModel );
 
 		EntityPropertyDescriptor targetProperty = mock( EntityPropertyDescriptor.class );

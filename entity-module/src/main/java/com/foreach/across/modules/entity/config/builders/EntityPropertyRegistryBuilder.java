@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.registry.properties.registrars.LabelPropertiesRegistrar;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -23,10 +24,10 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,9 +63,7 @@ public class EntityPropertyRegistryBuilder
 		return property( EntityPropertyRegistry.LABEL );
 	}
 
-	public synchronized PropertyDescriptorBuilder property( String name ) {
-		Assert.notNull( name );
-
+	public synchronized PropertyDescriptorBuilder property( @NonNull String name ) {
 		PropertyDescriptorBuilder builder = builders.get( name );
 
 		if ( builder == null ) {
@@ -182,6 +181,11 @@ public class EntityPropertyRegistryBuilder
 		@Override
 		public <S> PropertyDescriptorBuilder attribute( Class<S> type, S value ) {
 			return (PropertyDescriptorBuilder) super.attribute( type, value );
+		}
+
+		@Override
+		public PropertyDescriptorBuilder attribute( AttributeRegistrar<EntityPropertyDescriptor> attributeRegistrar ) {
+			return (PropertyDescriptorBuilder) super.attribute( attributeRegistrar );
 		}
 
 		@Override

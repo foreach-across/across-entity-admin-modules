@@ -24,7 +24,7 @@ public class TestEntityRegistry
 		entityConfiguration = mock( MutableEntityConfiguration.class );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullEntityConfigurationThrowsException() {
 		registry.register( null );
 	}

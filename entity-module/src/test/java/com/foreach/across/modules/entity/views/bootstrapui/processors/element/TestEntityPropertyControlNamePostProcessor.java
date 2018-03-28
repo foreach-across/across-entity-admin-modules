@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -56,6 +56,7 @@ public class TestEntityPropertyControlNamePostProcessor
 	@Before
 	public void setUp() throws Exception {
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		when( builderContext.getAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, Boolean.class ) ).thenReturn( true );
 
 		postProcessor = new EntityPropertyControlNamePostProcessor<>();
 		input = new TextboxFormElement();
@@ -69,7 +70,20 @@ public class TestEntityPropertyControlNamePostProcessor
 
 	@Test
 	public void notPrefixedIfNoCommand() {
-		reset( builderContext );
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( false );
+		postProcessor.postProcess( builderContext, input );
+		assertEquals( "input", input.getControlName() );
+		assertEquals( "child", child.getControlName() );
+	}
+
+	@Test
+	public void notPrefixedIfNoAttributeNotSet() {
+		when( builderContext.getAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, Boolean.class ) ).thenReturn( false );
+		postProcessor.postProcess( builderContext, input );
+		assertEquals( "input", input.getControlName() );
+		assertEquals( "child", child.getControlName() );
+
+		when( builderContext.getAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, Boolean.class ) ).thenReturn( null );
 		postProcessor.postProcess( builderContext, input );
 		assertEquals( "input", input.getControlName() );
 		assertEquals( "child", child.getControlName() );
@@ -123,8 +137,6 @@ public class TestEntityPropertyControlNamePostProcessor
 	@SuppressWarnings("unchecked")
 	@Test
 	public void dontFailIfPostProcessorsNotSupported() {
-		when( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ).thenReturn( true );
-		when( descriptor.hasAttribute( EntityAttributes.CONTROL_NAME ) ).thenReturn( true );
 		EntityPropertyControlNamePostProcessor.registerForProperty( descriptor, mock( ViewElementBuilder.class ), null );
 	}
 }

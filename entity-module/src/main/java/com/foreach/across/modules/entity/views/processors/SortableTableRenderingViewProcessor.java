@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -66,7 +65,6 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 {
 	public static final String TABLE_BUILDER = "sortableTableBuilder";
 
-	private BootstrapUiFactory bootstrapUiFactory;
 	private EntityViewElementBuilderHelper builderHelper;
 
 	/**
@@ -195,8 +193,7 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 
 	private void registerDefaultListActions( EntityViewContext entityViewContext, SortableTableBuilder tableBuilder ) {
 		if ( includeDefaultActions ) {
-			EntityListActionsProcessor actionsProcessor = new EntityListActionsProcessor( bootstrapUiFactory,
-			                                                                              entityViewContext.getEntityConfiguration(),
+			EntityListActionsProcessor actionsProcessor = new EntityListActionsProcessor( entityViewContext.getEntityConfiguration(),
 			                                                                              entityViewContext.getLinkBuilder(),
 			                                                                              entityViewContext.getEntityMessages() );
 			tableBuilder.headerRowProcessor( actionsProcessor );
@@ -232,10 +229,5 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 	@Autowired
 	void setBuilderHelper( EntityViewElementBuilderHelper builderHelper ) {
 		this.builderHelper = builderHelper;
-	}
-
-	@Autowired
-	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUiFactory = bootstrapUiFactory;
 	}
 }

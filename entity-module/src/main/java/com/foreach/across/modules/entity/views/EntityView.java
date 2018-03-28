@@ -19,10 +19,10 @@ package com.foreach.across.modules.entity.views;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collection;
@@ -66,9 +66,7 @@ public class EntityView implements Model
 	@Getter(AccessLevel.NONE)
 	private boolean shouldRender = true;
 
-	public EntityView( ModelMap model, RedirectAttributes redirectAttributes ) {
-		Assert.notNull( model );
-		Assert.notNull( redirectAttributes );
+	public EntityView( @NonNull ModelMap model, @NonNull RedirectAttributes redirectAttributes ) {
 		this.model = model;
 		this.redirectAttributes = redirectAttributes;
 	}

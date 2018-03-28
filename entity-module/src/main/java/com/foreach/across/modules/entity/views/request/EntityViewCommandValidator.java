@@ -20,10 +20,10 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -51,11 +51,8 @@ public class EntityViewCommandValidator implements SmartValidator
 	private final Validator fallbackValidator;
 
 	@Autowired
-	public EntityViewCommandValidator( EntityViewContext entityViewContext,
-	                                   @Qualifier(EntityModule.VALIDATOR) Validator fallbackValidator ) {
-		Assert.notNull( entityViewContext );
-		Assert.notNull( fallbackValidator );
-
+	public EntityViewCommandValidator( @NonNull EntityViewContext entityViewContext,
+	                                   @NonNull @Qualifier(EntityModule.VALIDATOR) Validator fallbackValidator ) {
 		this.entityViewContext = entityViewContext;
 		this.fallbackValidator = fallbackValidator;
 	}

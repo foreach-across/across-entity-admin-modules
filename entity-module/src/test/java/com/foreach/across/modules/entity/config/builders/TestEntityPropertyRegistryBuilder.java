@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -85,8 +84,7 @@ public class TestEntityPropertyRegistryBuilder
 		AtomicBoolean verified = new AtomicBoolean( false );
 
 		doAnswer( invocation -> {
-			MutableEntityPropertyDescriptor descriptor
-					= invocation.getArgumentAt( 0, MutableEntityPropertyDescriptor.class );
+			MutableEntityPropertyDescriptor descriptor = invocation.getArgument( 0 );
 
 			assertEquals( "myprop", descriptor.getName() );
 			assertEquals( "My Property", descriptor.getDisplayName() );

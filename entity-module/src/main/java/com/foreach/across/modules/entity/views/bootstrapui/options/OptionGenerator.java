@@ -246,6 +246,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		return Collections.emptyList();
 	}
 
+	@SuppressWarnings( "unused" )
 	public static class OptionGeneratorBuilder
 	{
 		private OptionFormElementBuilder emptyOption = new OptionFormElementBuilder().label( "" ).value( "" );

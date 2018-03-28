@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,9 +15,11 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
+import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -31,13 +33,11 @@ import org.springframework.stereotype.Component;
  *
  * @author Arne Vandamme
  */
+@ConditionalOnBootstrapUI
 @Component
 public class CheckboxFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<OptionFormElementBuilder>
 {
-	private final BootstrapUiFactory bootstrapUi;
-
-	public CheckboxFormElementBuilderFactory( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
+	public CheckboxFormElementBuilderFactory() {
 		addProcessor( new FormControlNameBuilderProcessor<>() );
 	}
 
@@ -49,11 +49,12 @@ public class CheckboxFormElementBuilderFactory extends EntityViewElementBuilderF
 	@Override
 	public OptionFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor,
 	                                                      ViewElementMode viewElementMode, String viewElementType ) {
-		return bootstrapUi.checkbox()
-		                  .name( descriptor.getName() )
-		                  .text( descriptor.getDisplayName() )
-		                  .value( "on" )
-		                  .postProcessor( new EntityPropertyValueCheckboxPostProcessor( descriptor ) )
-		                  .postProcessor( new TextCodeResolverPostProcessor<>( "properties." + descriptor.getName() ) );
+		return BootstrapUiBuilders.checkbox()
+		                          .name( descriptor.getName() )
+		                          .controlName( EntityAttributes.controlName( descriptor ) )
+		                          .text( descriptor.getDisplayName() )
+		                          .value( "on" )
+		                          .postProcessor( new EntityPropertyValueCheckboxPostProcessor( descriptor ) )
+		                          .postProcessor( new TextCodeResolverPostProcessor<>( "properties." + descriptor.getName() ) );
 	}
 }

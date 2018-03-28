@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 
 /**
@@ -39,7 +39,7 @@ public interface ConfigurableEntityViewContext extends EntityViewContext
 
 	void setEntityModel( EntityModel entityModel );
 
-	void setLinkBuilder( EntityLinkBuilder linkBuilder );
+	void setLinkBuilder( EntityViewLinkBuilder linkBuilder );
 
 	void setMessageCodeResolver( EntityMessageCodeResolver codeResolver );
 

@@ -22,7 +22,6 @@ import com.foreach.across.modules.entity.registry.properties.MutableEntityProper
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.stereotype.Component;
@@ -52,8 +51,7 @@ class RepositoryEntityPropertyRegistryBuilder
 		RepositoryFactoryInformation<T, ?> repositoryFactoryInformation
 				= entityConfiguration.getAttribute( RepositoryFactoryInformation.class );
 
-		MutableEntityPropertyRegistry registry =
-				(MutableEntityPropertyRegistry) entityPropertyRegistryProvider.get( entityType );
+		MutableEntityPropertyRegistry registry = entityPropertyRegistryProvider.get( entityType );
 
 		registry.setDefaultOrder( new EntityPropertyComparators.Ordered() );
 

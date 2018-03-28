@@ -410,6 +410,18 @@
                     </tr>
                 </table>
             </div>
+            <h4>Attributes
+                <small>(<a th:href="${referenceDocumentationConfigurationAttributes}" target="_blank">view documentation</a>)</small>
+            </h4>
+            <table class="table table-striped table-hover">
+                <tbody>
+                <tr th:each="attributeName : ${viewFactory.attributeNames()}">
+                    <td>
+                        <small th:utext="${javadoc.name(attributeName)}">attribute name</small>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
         <div class="col-md-6">
             <div class="form-group" th:if="${properties}">

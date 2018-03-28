@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ResolvableType;
 
 import static org.junit.Assert.*;
@@ -73,7 +73,10 @@ public class TestEntityPageStructureRenderedEvent
 	@Test
 	public void eventTypeIsEntityConfigurationType() {
 		when( entityConfiguration.getEntityType() ).thenReturn( String.class );
-		assertArrayEquals( new ResolvableType[] { ResolvableType.forClass( String.class ) }, event.getEventGenericTypes() );
+		assertEquals(
+				ResolvableType.forClassWithGenerics( EntityPageStructureRenderedEvent.class, String.class ),
+				event.getResolvableType()
+		);
 	}
 
 	@Test

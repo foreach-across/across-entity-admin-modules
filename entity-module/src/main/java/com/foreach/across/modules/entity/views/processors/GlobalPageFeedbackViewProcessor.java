@@ -18,8 +18,9 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
@@ -27,10 +28,9 @@ import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,13 +50,12 @@ import java.util.stream.Stream;
  * @see com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper#addGlobalFeedbackAfterRedirect(EntityViewRequest, Style, String)
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 @Component
 @Exposed
 public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAdapter
 {
 	public static final String FEEDBACK_ATTRIBUTE_KEY = "feedbackMessageCodes";
-
-	private BootstrapUiFactory bootstrapUiFactory;
 
 	@Override
 	protected void render( EntityViewRequest entityViewRequest,
@@ -74,11 +73,11 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 			// todo: move to EntityViewPageHelper
 			feedback.forEach( ( messageCode, style ) -> {
 				page.addToFeedback(
-						bootstrapUiFactory.alert()
-						                  .style( style )
-						                  .dismissible()
-						                  .text( messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) )
-						                  .build( builderContext )
+						BootstrapUiBuilders.alert()
+						                   .style( style )
+						                   .dismissible()
+						                   .text( messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) )
+						                   .build( builderContext )
 				);
 			} );
 		}
@@ -97,11 +96,6 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 		feedback.putAll( decodeFeedbackMessages( (String) entityViewRequest.getModel().get( FEEDBACK_ATTRIBUTE_KEY ) ) );
 
 		return feedback;
-	}
-
-	@Autowired
-	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUiFactory = bootstrapUiFactory;
 	}
 
 	/**
@@ -129,10 +123,7 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 	 * @param messageCode   message
 	 * @return new value string
 	 */
-	public static String addFeedbackMessage( String currentValue, Style feedbackStyle, String messageCode ) {
-		Assert.notNull( feedbackStyle );
-		Assert.notNull( messageCode );
-
+	public static String addFeedbackMessage( String currentValue, @NonNull Style feedbackStyle, @NonNull String messageCode ) {
 		String feedbackToken = ( feedbackStyle.isDefaultStyle() ? feedbackStyle.forPrefix( "alert" ) : feedbackStyle.getName() )
 				+ ":" + messageCode;
 		return StringUtils.defaultString( currentValue ).isEmpty() ? feedbackToken : currentValue + "," + feedbackToken;

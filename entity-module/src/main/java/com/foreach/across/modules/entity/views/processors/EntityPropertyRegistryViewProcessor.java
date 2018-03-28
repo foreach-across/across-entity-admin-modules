@@ -19,7 +19,7 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import lombok.Getter;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.util.Objects;
 
@@ -34,8 +34,7 @@ public final class EntityPropertyRegistryViewProcessor extends SimpleEntityViewP
 	@Getter
 	private final EntityPropertyRegistry propertyRegistry;
 
-	public EntityPropertyRegistryViewProcessor( EntityPropertyRegistry propertyRegistry ) {
-		Assert.notNull( propertyRegistry );
+	public EntityPropertyRegistryViewProcessor( @NonNull EntityPropertyRegistry propertyRegistry ) {
 		this.propertyRegistry = propertyRegistry;
 	}
 

@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -120,7 +120,7 @@ public class TestTransactionalEntityViewProcessorRegistry
 	public void explicitTypeTransactionalDispatchingIsRunThroughTheTransactionTemplate() {
 		AtomicReference<TransactionCallback> callback = new AtomicReference<>();
 		doAnswer( invocation -> {
-			callback.set( invocation.getArgumentAt( 0, TransactionCallback.class ) );
+			callback.set( invocation.getArgument( 0 ) );
 			return null;
 		} ).when( transactionTemplate ).execute( any() );
 		@SuppressWarnings("unchecked")
@@ -141,7 +141,7 @@ public class TestTransactionalEntityViewProcessorRegistry
 	public void transactionalDispatchingIsRunThroughTheTransactionTemplate() {
 		AtomicReference<TransactionCallback> callback = new AtomicReference<>();
 		doAnswer( invocation -> {
-			callback.set( invocation.getArgumentAt( 0, TransactionCallback.class ) );
+			callback.set( invocation.getArgument( 0 ) );
 			return null;
 		} ).when( transactionTemplate ).execute( any() );
 

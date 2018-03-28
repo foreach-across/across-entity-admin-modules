@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,12 +24,16 @@ import com.foreach.across.modules.entity.util.EntityTypeDescriptor;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
@@ -40,10 +44,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Arne Vandamme
  */
+@ConditionalOnClass(BootstrapUiElements.class)
 @Component
+@RequiredArgsConstructor
 public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLookupStrategy
 {
-	private EntityRegistry entityRegistry;
+	private final EntityRegistry entityRegistry;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -85,12 +91,12 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			return BootstrapUiElements.FORM_GROUP;
 		}
 
-		if ( isEmbedded ) {
-			return null;
-		}
-
 		if ( ViewElementMode.isLabel( singleMode ) ) {
 			return BootstrapUiElements.LABEL;
+		}
+
+		if ( isEmbedded ) {
+			return null;
 		}
 
 		Class propertyType = descriptor.getPropertyType();
@@ -100,7 +106,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 				return BootstrapUiElements.NUMERIC;
 			}
 
-			if ( ClassUtils.isAssignable( propertyType, Date.class ) ) {
+			if ( isDateType( propertyType ) ) {
 				return BootstrapUiElements.DATETIME;
 			}
 		}
@@ -148,6 +154,18 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	}
 
 	/**
+	 * Checks whether the given type is a supported date type.
+	 * Currently {@link Date}, {@link LocalDate}, {@link LocalTime} and {@link LocalDateTime} are supported.
+	 *
+	 * @param propertyType to check
+	 * @return whether it is a supported date type
+	 */
+	private boolean isDateType( Class propertyType ) {
+		return ClassUtils.isAssignable( propertyType, Date.class ) || ClassUtils.isAssignable( propertyType, LocalDate.class )
+				|| ClassUtils.isAssignable( propertyType, LocalTime.class ) || ClassUtils.isAssignable( propertyType, LocalDateTime.class );
+	}
+
+	/**
 	 * Filter controls use a different lookup strategy.  Only the member property descriptor type is used in case of a collection,
 	 * it is the multiple boolean that determines if a control for multiple values should be built or not.  For example:
 	 * if a property is a set of users, the fact that it is a set will determine the filter operand that should be used, but the actual
@@ -164,10 +182,5 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		}
 
 		return BootstrapUiElements.TEXTBOX;
-	}
-
-	@Autowired
-	void setEntityRegistry( EntityRegistry entityRegistry ) {
-		this.entityRegistry = entityRegistry;
 	}
 }

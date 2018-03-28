@@ -21,7 +21,7 @@ import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewCon
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -38,7 +38,7 @@ public class TestEntityPropertyRegistryViewProcessor
 	@Mock
 	private ConfigurableEntityViewContext viewContext;
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void propertyRegistryIsRequired() {
 		new EntityPropertyRegistryViewProcessor( null );
 	}

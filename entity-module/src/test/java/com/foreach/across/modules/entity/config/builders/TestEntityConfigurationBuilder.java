@@ -30,9 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.io.Serializable;
@@ -46,8 +44,8 @@ import static org.mockito.Mockito.*;
 /**
  * @author Arne Vandamme
  */
-@PrepareForTest(EntityViewFactoryBuilderInitializer.class)
-@RunWith(PowerMockRunner.class)
+
+@RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
 public class TestEntityConfigurationBuilder
 {
@@ -261,11 +259,13 @@ public class TestEntityConfigurationBuilder
 		assertSame( builder, builder.entityModel( mock( Consumer.class ) ) );
 		builder.apply( config, false );
 
-		verify( config ).setEntityModel( notNull( EntityModel.class ) );
+		verify( config ).setEntityModel( isNotNull() );
 	}
 
 	@Test
 	public void existingListView() {
+		enableDefaultViewsBuilding();
+
 		builder.listView( lvb -> lvb.template( "hello" ) );
 
 		when( config.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
@@ -279,16 +279,12 @@ public class TestEntityConfigurationBuilder
 
 	@Test
 	public void newViewsOfRightType() {
-		EntityViewFactoryBuilderInitializer builderInitializer = PowerMockito.mock( EntityViewFactoryBuilderInitializer.class );
-		when( beanFactory.getBean( EntityViewFactoryBuilderInitializer.class ) ).thenReturn( builderInitializer );
+		EntityViewFactoryBuilderInitializer builderInitializer = enableDefaultViewsBuilding();
 
 		builder.view( "customView", vb -> vb.template( "custom-template" ) )
 		       .formView( "formView", fvb -> fvb.template( "form-template" ) )
 		       .listView( "listView", lvb -> lvb.template( "list-template" ) )
 		       .deleteFormView( dvb -> dvb.template( "delete-template" ) );
-
-		when( beanFactory.createBean( EntityListViewFactoryBuilder.class ) ).thenReturn( mock( EntityListViewFactoryBuilder.class ) );
-		when( beanFactory.createBean( EntityViewFactoryBuilder.class ) ).thenReturn( mock( EntityViewFactoryBuilder.class ) );
 
 		builder.apply( config, false );
 
@@ -321,5 +317,14 @@ public class TestEntityConfigurationBuilder
 		inOrder.verify( one ).apply( config );
 		inOrder.verify( two ).hidden( false );
 		inOrder.verify( two ).apply( config );
+	}
+
+	private EntityViewFactoryBuilderInitializer enableDefaultViewsBuilding() {
+		EntityViewFactoryBuilderInitializer builderInitializer = mock( EntityViewFactoryBuilderInitializer.class );
+		when( beanFactory.containsBean( EntityViewFactoryBuilder.BEAN_NAME ) ).thenReturn( true );
+		when( beanFactory.getBean( EntityViewFactoryBuilder.class ) ).thenReturn( new EntityViewFactoryBuilder( beanFactory ) );
+		when( beanFactory.getBean( EntityListViewFactoryBuilder.class ) ).thenReturn( new EntityListViewFactoryBuilder( beanFactory ) );
+		when( beanFactory.getBean( EntityViewFactoryBuilderInitializer.class ) ).thenReturn( builderInitializer );
+		return builderInitializer;
 	}
 }

@@ -18,12 +18,13 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.MultiValueControlViewElementBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Component;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@ConditionalOnBootstrapUI
 @Component
 public class MultiValueElementBuilderFactory extends EntityViewElementBuilderFactorySupport<ViewElementBuilder>
 {
@@ -57,7 +59,7 @@ public class MultiValueElementBuilderFactory extends EntityViewElementBuilderFac
 				.name( propertyDescriptor.getName() )
 				.controlName( EntityAttributes.controlName( propertyDescriptor ) )
 				.postProcessor( new PropertyValueFetcher( propertyDescriptor ) )
-				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
+				.postProcessor( new PropertyPlaceholderTextPostProcessor<>() );
 	}
 
 	@SuppressWarnings("unchecked")

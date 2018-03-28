@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>entity-module-project</artifactId>
-		<version>2.2.0.RELEASE</version>
+		<version>3.0.0.RELEASE</version>
 	</parent>
 
 	<artifactId>entity-module</artifactId>
@@ -35,17 +35,31 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.foreach.across</groupId>
+			<artifactId>across-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>spring-security-module</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>across-hibernate-module</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>bootstrap-ui-module</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.foreach.across.modules</groupId>
 			<artifactId>admin-web-module</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -87,6 +101,12 @@
 			<groupId>com.foreach.across</groupId>
 			<artifactId>across-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mockito</groupId>
+					<artifactId>mockito-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -103,43 +123,10 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>com.mysema.maven</groupId>
-				<artifactId>apt-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.asciidoctor</groupId>
-				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>1.5.0</version>
-				<configuration>
-					<sourceDirectory>${project.basedir}/src/doc</sourceDirectory>
-					<sourceDocumentName>index.adoc</sourceDocumentName>
-					<outputDirectory>${project.reporting.outputDirectory}/${project.version}/reference</outputDirectory>
-					<backend>html</backend>
-				</configuration>
-				<executions>
-					<execution>
-						<id>output-html</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>process-asciidoc</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-maven-plugin</artifactId>

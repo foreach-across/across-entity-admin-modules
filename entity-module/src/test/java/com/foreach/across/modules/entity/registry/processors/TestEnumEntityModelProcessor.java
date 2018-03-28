@@ -28,13 +28,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -88,7 +87,7 @@ public class TestEnumEntityModelProcessor
 		AtomicReference<DefaultEntityModel> modelRef = new AtomicReference<>();
 
 		doAnswer( invocationOnMock -> {
-			DefaultEntityModel model = invocationOnMock.getArgumentAt( 0, DefaultEntityModel.class );
+			DefaultEntityModel model = invocationOnMock.getArgument( 0 );
 			modelRef.set( model );
 			return null;
 		} )

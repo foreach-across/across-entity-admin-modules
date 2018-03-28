@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,7 +54,7 @@ public class TestPropertyViewElementBuilderWrapper
 		builderContext.setAttribute( EntityPropertyDescriptor.class, original );
 
 		doAnswer( invocation -> {
-			assertSame( propertyDescriptor, invocation.getArgumentAt( 0, ViewElementBuilderContext.class ).getAttribute( EntityPropertyDescriptor.class ) );
+			assertSame( propertyDescriptor, invocation.<ViewElementBuilderContext>getArgument( 0 ).getAttribute( EntityPropertyDescriptor.class ) );
 			return element;
 		} ).when( targetBuilder ).build( builderContext );
 

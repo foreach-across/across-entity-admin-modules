@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.registry;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -55,10 +56,9 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 	}
 
 	@Override
-	public void register( MutableEntityConfiguration<?> entityConfiguration ) {
-		Assert.notNull( entityConfiguration );
-		Assert.notNull( entityConfiguration.getEntityType() );
-		Assert.notNull( entityConfiguration.getName() );
+	public void register( @NonNull MutableEntityConfiguration<?> entityConfiguration ) {
+		Assert.notNull( entityConfiguration.getEntityType(), "entityType of entityConfiguration cannot be null" );
+		Assert.notNull( entityConfiguration.getName(), "name of entityConfiguration cannot be null" );
 
 		EntityConfiguration existingByName = getEntityConfiguration( entityConfiguration.getName() );
 
@@ -130,7 +130,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> MutableEntityConfiguration<T> getEntityConfiguration( Class<T> entityType ) {
+	public <T> MutableEntityConfiguration<T> getEntityConfiguration( @NonNull Class<T> entityType ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
 			// Consider 2 classes the same if they have the same name - workaround some issues with spring boot devtools classloader
 			if ( configuration.getEntityType().getName().equals( entityType.getName() ) ) {
@@ -143,7 +143,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> MutableEntityConfiguration<T> getEntityConfiguration( String entityName ) {
+	public <T> MutableEntityConfiguration<T> getEntityConfiguration( @NonNull String entityName ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
 			if ( StringUtils.equals( configuration.getName(), entityName ) ) {
 				return (MutableEntityConfiguration<T>) configuration;

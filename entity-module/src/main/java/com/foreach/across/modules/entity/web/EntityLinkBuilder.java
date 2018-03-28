@@ -15,21 +15,56 @@
  */
 package com.foreach.across.modules.entity.web;
 
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinks;
+
 /**
  * @author Arne Vandamme
+ * @see EntityViewLinkBuilder
+ * @see EntityViewLinks
+ * @deprecated since 3.0.0 - use {@link EntityViewLinks} or the {@link EntityViewLinkBuilder} instead
  */
+@Deprecated
 public interface EntityLinkBuilder
 {
+	/**
+	 * @return link to the overview/list page
+	 */
+	@Deprecated
 	String overview();
 
+	/**
+	 * @return link to create-new page
+	 */
+	@Deprecated
 	String create();
 
+	/**
+	 * @param entity being updated
+	 * @return link to update page for entity
+	 */
+	@Deprecated
 	String update( Object entity );
 
+	/**
+	 * @param entity being deleted
+	 * @return link to delete page for entity
+	 */
+	@Deprecated
 	String delete( Object entity );
 
+	/**
+	 * @param entity being viewed
+	 * @return link to view page for entity
+	 */
+	@Deprecated
 	String view( Object entity );
 
+	/**
+	 * @param entity being viewed
+	 * @return base link for associations
+	 */
+	@Deprecated
 	String associations( Object entity );
 
 	/**
@@ -37,5 +72,6 @@ public interface EntityLinkBuilder
 	 * this will use {@link com.foreach.across.modules.entity.web.EntityLinkBuilder#associations(Object)} on the
 	 * source link builder for prefixing the current link builder.
 	 */
+	@Deprecated
 	EntityLinkBuilder asAssociationFor( EntityLinkBuilder sourceLinkBuilder, Object sourceEntity );
 }

@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.builders;
 
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
@@ -37,6 +38,7 @@ import java.util.function.BiConsumer;
  * @since 2.0.0
  */
 @Component
+@ConditionalOnAdminWeb
 final class DeleteViewInitializer extends AbstractViewInitializer<EntityViewFactoryBuilder>
 {
 	public DeleteViewInitializer( AutowireCapableBeanFactory beanFactory,
@@ -60,7 +62,7 @@ final class DeleteViewInitializer extends AbstractViewInitializer<EntityViewFact
 			       .viewProcessor( beanFactory.getBean( GlobalPageFeedbackViewProcessor.class ) );
 
 			if ( entityConfiguration.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME ) ) {
-				builder.transactionManager( entityConfiguration.getAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, String.class ) );
+				builder.transactionManager( entityConfiguration.<String, String>getAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, String.class ) );
 			}
 
 			SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );

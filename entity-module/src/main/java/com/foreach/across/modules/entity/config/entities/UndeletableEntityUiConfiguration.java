@@ -18,6 +18,8 @@ package com.foreach.across.modules.entity.config.entities;
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.hibernate.repositories.Undeletable;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 
 /**
  * Configures some basic settings for {@link com.foreach.across.modules.hibernate.repositories.Undeletable} entities.
@@ -25,7 +27,8 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
  * @author Arne Vandamme
  */
 //@Configuration
-@OrderInModule(3)
+@ConditionalOnClass(Undeletable.class)
+@OrderInModule(4)
 public class UndeletableEntityUiConfiguration implements EntityConfigurer
 {
 	@Override

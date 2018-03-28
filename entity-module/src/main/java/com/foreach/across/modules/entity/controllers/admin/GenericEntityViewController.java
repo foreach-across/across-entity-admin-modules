@@ -29,17 +29,17 @@ import com.foreach.across.modules.entity.views.context.EntityViewContextLoader;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityModuleWebResources;
 import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.entity.web.links.EntityViewLinks;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -50,6 +50,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Optional;
 
 import static com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController.PATH_ENTITY_TYPE;
@@ -82,6 +83,7 @@ public class GenericEntityViewController
 	private PageContentStructure pageContentStructure;
 	private EntityViewContextLoader entityViewContextLoader;
 	private WebAppPathResolver webAppPathResolver;
+	private EntityViewLinks entityViewLinks;
 
 	/**
 	 * Responsible for building the initial {@link com.foreach.across.modules.entity.views.context.EntityViewContext}
@@ -126,6 +128,7 @@ public class GenericEntityViewController
 		}
 
 		entityViewRequest.setViewFactory( viewFactory );
+		entityViewRequest.setConfigurationAttributes( new HashMap<>( viewFactory.attributeMap() ) );
 
 		viewFactory.prepareEntityViewContext( entityViewContext );
 
@@ -158,9 +161,7 @@ public class GenericEntityViewController
 	                          PATH_ASSOCIATED_ENTITY,
 	                          PATH_ASSOCIATED_ENTITY + "/{action:delete|update}"
 	})
-	public Object executeView( @ModelAttribute(EntityViewModel.VIEW_COMMAND) EntityViewCommand command, BindingResult bindingResult ) {
-		Assert.notNull( command );
-
+	public Object executeView( @NonNull @ModelAttribute(EntityViewModel.VIEW_COMMAND) EntityViewCommand command, BindingResult bindingResult ) {
 		entityViewRequest.setBindingResult( bindingResult );
 
 		EntityView entityView = entityViewRequest.getViewFactory().createView( entityViewRequest );
@@ -190,10 +191,7 @@ public class GenericEntityViewController
 			entityViewContextLoader.loadForEntityConfiguration( entityViewContext, association.getTargetEntityConfiguration() );
 			entityViewContext.setEntityAssociation( association );
 			entityViewContext.setParentContext( parentViewContext );
-			entityViewContext.setLinkBuilder(
-					association.getAttribute( EntityLinkBuilder.class )
-					           .asAssociationFor( parentViewContext.getLinkBuilder(), parentViewContext.getEntity() )
-			);
+			entityViewContext.setLinkBuilder( entityViewLinks.linkTo( parentEntityConfiguration ).withId( entityId ).association( associationName ) );
 
 			EntityMessageCodeResolver codeResolver = association.getAttribute( EntityMessageCodeResolver.class );
 			if ( codeResolver != null ) {
@@ -260,5 +258,10 @@ public class GenericEntityViewController
 	@Autowired
 	void setWebAppPathResolver( WebAppPathResolver webAppPathResolver ) {
 		this.webAppPathResolver = webAppPathResolver;
+	}
+
+	@Autowired
+	void setEntityViewLinks( EntityViewLinks entityViewLinks ) {
+		this.entityViewLinks = entityViewLinks;
 	}
 }

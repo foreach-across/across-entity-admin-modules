@@ -17,13 +17,13 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
-import com.foreach.across.modules.adminweb.menu.EntityAdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.menu.EntityAdminMenu;
 import com.foreach.across.modules.entity.views.processors.support.EntityPageStructureRenderedEvent;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -34,8 +34,10 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -54,14 +56,15 @@ import java.util.Optional;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 @Component
 @Exposed
 @Scope("prototype")
+@Accessors(chain = true)
 public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorAdapter
 {
-	private BootstrapUiComponentFactory bootstrapUiComponentFactory;
 	private MenuFactory menuFactory;
-	private AcrossEventPublisher eventPublisher;
+	private ApplicationEventPublisher eventPublisher;
 
 	/**
 	 * Should the entity menu be generated and added to the page nav.
@@ -119,21 +122,21 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 	                           ViewElementBuilderContext builderContext ) {
 		EntityViewContext entityViewContext = resolveEntityViewContext( entityViewRequest );
 
-		EntityPageStructureRenderedEvent event = new EntityPageStructureRenderedEvent( false, entityViewRequest, entityView, entityViewContext, builderContext );
-		eventPublisher.publish( event );
+		EntityPageStructureRenderedEvent event = new EntityPageStructureRenderedEvent( false, entityViewRequest, entityView, entityViewContext,
+		                                                                               builderContext );
+		eventPublisher.publishEvent( event );
 	}
 
 	@SuppressWarnings("unchecked")
 	private void buildEntityMenu( EntityViewContext entityViewContext, PageContentStructure page, ViewElementBuilderContext builderContext ) {
-		EntityAdminMenu<?> entityMenu = new EntityAdminMenu<>( entityViewContext.getEntityConfiguration().getEntityType(),
-		                                                       entityViewContext.getEntity( Object.class ) );
+		EntityAdminMenu entityMenu = EntityAdminMenu.create( entityViewContext );
 		menuFactory.buildMenu( entityMenu );
 
 		page.addToNav(
-				bootstrapUiComponentFactory.nav( entityMenu )
-				                           .tabs()
-				                           .replaceGroupBySelectedItem()
-				                           .build( builderContext )
+				BootstrapUiBuilders.nav( entityMenu )
+				                   .tabs()
+				                   .replaceGroupBySelectedItem()
+				                   .build( builderContext )
 		);
 	}
 
@@ -148,17 +151,12 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 	}
 
 	@Autowired
-	void setBootstrapUiComponentFactory( BootstrapUiComponentFactory bootstrapUiComponentFactory ) {
-		this.bootstrapUiComponentFactory = bootstrapUiComponentFactory;
-	}
-
-	@Autowired
 	void setMenuFactory( MenuFactory menuFactory ) {
 		this.menuFactory = menuFactory;
 	}
 
 	@Autowired
-	void setEventPublisher( AcrossEventPublisher eventPublisher ) {
+	void setEventPublisher( ApplicationEventPublisher eventPublisher ) {
 		this.eventPublisher = eventPublisher;
 	}
 }

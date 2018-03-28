@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,22 +15,22 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.NumericValueTextPostProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -51,13 +51,13 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author Arne Vandamme
  */
+@ConditionalOnBootstrapUI
 @Component
 public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<ViewElementBuilder>
 {
 	private final ControlBuilderFactory controlBuilderFactory = new ControlBuilderFactory();
 	private final ValueBuilderFactory valueBuilderFactory = new ValueBuilderFactory();
 
-	private BootstrapUiFactory bootstrapUi;
 	private EntityViewElementBuilderService viewElementBuilderService;
 	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
 
@@ -86,11 +86,6 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
-	}
-
-	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
 	}
 
 	@Autowired
@@ -142,7 +137,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 				}
 			}
 
-			return bootstrapUi.text().postProcessor( valueTextPostProcessor );
+			return BootstrapUiBuilders.text().postProcessor( valueTextPostProcessor );
 		}
 	}
 
@@ -152,7 +147,6 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 	private class ControlBuilderFactory extends EntityViewElementBuilderFactorySupport<NumericFormElementBuilder>
 	{
 		public ControlBuilderFactory() {
-			addProcessor( new FormControlRequiredBuilderProcessor<>() );
 			addProcessor( new FormControlNameBuilderProcessor<>() );
 		}
 
@@ -165,12 +159,13 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 		protected NumericFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 		                                                          ViewElementMode viewElementMode,
 		                                                          String viewElementType ) {
-			return bootstrapUi
+			return BootstrapUiBuilders
 					.numeric()
 					.name( propertyDescriptor.getName() )
 					.controlName( EntityAttributes.controlName( propertyDescriptor ) )
+					.required( EntityAttributes.isRequired( propertyDescriptor ) )
 					.configuration( determineBaseConfiguration( propertyDescriptor ) )
-					.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) )
+					.postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
 					.postProcessor(
 							( builderContext, numericFormElement ) ->
 							{

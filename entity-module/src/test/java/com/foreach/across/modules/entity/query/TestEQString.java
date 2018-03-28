@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNotEquals;
  */
 public class TestEQString
 {
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullValueNotAllowed() {
 		new EQString( null );
 	}

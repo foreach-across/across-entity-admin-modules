@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.registry.properties.registrars.DefaultP
 import com.foreach.across.modules.entity.registry.properties.registrars.TestEntityPropertyRegistryDefaultPropertiesBuilder.Address;
 import com.foreach.across.modules.entity.registry.properties.registrars.TestEntityPropertyRegistryDefaultPropertiesBuilder.Customer;
 import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
-import com.foreach.common.test.MockedLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = MockedLoader.class, classes = { TestEntityPropertyRegistries.Config.class })
+@ContextConfiguration(classes = { TestEntityPropertyRegistries.Config.class })
 public class TestEntityPropertyRegistries
 {
 	@Autowired

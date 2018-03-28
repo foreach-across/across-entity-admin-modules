@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.config.entities;
 
-import com.foreach.across.core.annotations.AcrossDepends;
+import com.foreach.across.core.annotations.ConditionalOnAcrossModule;
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -27,6 +27,7 @@ import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -37,9 +38,10 @@ import org.springframework.data.domain.Sort;
  *
  * @author Arne Vandamme
  */
+@ConditionalOnClass(Auditable.class)
+@ConditionalOnAcrossModule(SpringSecurityModule.NAME)
 @Configuration
-@OrderInModule(2)
-@AcrossDepends(required = SpringSecurityModule.NAME)
+@OrderInModule(3)
 @RequiredArgsConstructor
 public class AuditableEntityUiConfiguration implements EntityConfigurer
 {

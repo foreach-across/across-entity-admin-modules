@@ -100,7 +100,7 @@ public class EntityViewElementUtils
 			return null;
 		}
 
-		EntityPropertyDescriptor descriptor = builderContext.getAttribute( EntityPropertyDescriptor.class );
+		EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
 
 		if ( descriptor == null ) {
 			return null;
@@ -109,6 +109,18 @@ public class EntityViewElementUtils
 		Object propertyValue = descriptor.getPropertyValue( currentEntity( builderContext ) );
 
 		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
+	}
+
+	/**
+	 * Retrieve the current property descriptor, if there is one. This looks for the {@link EntityPropertyDescriptor} attribute on the context.
+	 *
+	 * @param builderContext current builder context
+	 * @return descriptor or null if not present
+	 * @see com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper
+	 * @see com.foreach.across.modules.entity.views.EntityViewElementBuilderService
+	 */
+	public static EntityPropertyDescriptor currentPropertyDescriptor( ViewElementBuilderContext builderContext ) {
+		return builderContext.getAttribute( EntityPropertyDescriptor.class );
 	}
 
 	/**

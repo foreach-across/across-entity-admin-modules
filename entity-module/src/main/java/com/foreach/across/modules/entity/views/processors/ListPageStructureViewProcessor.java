@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -32,6 +31,7 @@ import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBu
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -51,7 +51,7 @@ import java.util.Optional;
 @Scope("prototype")
 public class ListPageStructureViewProcessor extends EntityViewProcessorAdapter
 {
-	private AcrossEventPublisher eventPublisher;
+	private ApplicationEventPublisher eventPublisher;
 
 	/**
 	 * Message code that should be resolved for the title of the page.
@@ -85,11 +85,11 @@ public class ListPageStructureViewProcessor extends EntityViewProcessorAdapter
 	                           ViewElementBuilderContext builderContext ) {
 		EntityPageStructureRenderedEvent event = new EntityPageStructureRenderedEvent( true, entityViewRequest, entityView,
 		                                                                               entityViewRequest.getEntityViewContext(), builderContext );
-		eventPublisher.publish( event );
+		eventPublisher.publishEvent( event );
 	}
 
 	@Autowired
-	void setEventPublisher( AcrossEventPublisher eventPublisher ) {
+	void setEventPublisher( ApplicationEventPublisher eventPublisher ) {
 		this.eventPublisher = eventPublisher;
 	}
 }

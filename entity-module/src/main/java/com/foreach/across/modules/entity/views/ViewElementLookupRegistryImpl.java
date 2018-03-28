@@ -130,4 +130,16 @@ public class ViewElementLookupRegistryImpl implements ViewElementLookupRegistry
 
 		existing.clearCache();
 	}
+
+	@Override
+	@SuppressWarnings("all")
+	public ViewElementLookupRegistryImpl clone() {
+		ViewElementLookupRegistryImpl clone = new ViewElementLookupRegistryImpl();
+		clone.cacheableStatus.putAll( this.cacheableStatus );
+		clone.viewElementTypes.putAll( this.viewElementTypes );
+		clone.fixedViewElementBuilders.putAll( this.fixedViewElementBuilders );
+		clone.postProcessors.putAll( this.postProcessors );
+		clone.defaultCacheable = this.defaultCacheable;
+		return clone;
+	}
 }

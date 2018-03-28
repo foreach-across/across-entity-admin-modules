@@ -21,6 +21,7 @@ import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
+import com.foreach.across.modules.entity.config.EntityMessageCodeProperties;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
@@ -28,19 +29,24 @@ import com.foreach.across.modules.entity.registrars.EntityRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
+import org.springframework.data.repository.support.DefaultRepositoryInvokerFactory;
+import org.springframework.data.repository.support.Repositories;
+import org.springframework.data.repository.support.RepositoryInvoker;
+import org.springframework.data.repository.support.RepositoryInvokerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.SmartValidator;
@@ -50,6 +56,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Scans for {@link org.springframework.data.repository.Repository} implementations
@@ -71,6 +78,8 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	private MappingContextRegistry mappingContextRegistry;
 	private SmartValidator entityValidator;
 	private PlatformTransactionManagerResolver transactionManagerResolver;
+	private EntityMessageCodeProperties entityMessageCodeProperties;
+	private ConversionService mvcConversionService;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -82,13 +91,14 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 		applicationContext.getBeansOfType( MappingContext.class )
 		                  .forEach( ( name, bean ) -> mappingContextRegistry.addMappingContext( bean ) );
 
-		Map<String, RepositoryFactoryInformation> repositoryFactoryInformationMap
-				= applicationContext.getBeansOfType( RepositoryFactoryInformation.class );
+		Map<String, RepositoryFactoryInformation> repositoryFactoryInformationMap = applicationContext.getBeansOfType( RepositoryFactoryInformation.class );
+
+		Repositories repositories = new Repositories( applicationContext );
+		RepositoryInvokerFactory repositoryInvokerFactory = new DefaultRepositoryInvokerFactory( repositories, mvcConversionService );
 
 		List<MutableEntityConfiguration> registered = new ArrayList<>( repositoryFactoryInformationMap.size() );
 
-		for ( Map.Entry<String, RepositoryFactoryInformation> informationBean
-				: repositoryFactoryInformationMap.entrySet() ) {
+		for ( Map.Entry<String, RepositoryFactoryInformation> informationBean : repositoryFactoryInformationMap.entrySet() ) {
 			RepositoryFactoryInformation repositoryFactoryInformation = informationBean.getValue();
 
 			if ( repositoryFactoryInformation.getPersistentEntity() == null ) {
@@ -99,28 +109,21 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 				continue;
 			}
 
-			Class<?> entityType = ClassUtils.getUserClass(
-					repositoryFactoryInformation.getRepositoryInformation().getDomainType()
-			);
-
-			Repository repository = applicationContext.getBean(
-					BeanFactoryUtils.transformedBeanName( informationBean.getKey() ), Repository.class
-			);
+			Class<?> entityType = ClassUtils.getUserClass( repositoryFactoryInformation.getRepositoryInformation().getDomainType() );
 
 			if ( !entityRegistry.contains( entityType ) ) {
 				LOG.debug( "Auto registering entity type {} as repository", entityType.getName() );
 
-				MutableEntityConfiguration entityConfiguration =
-						registerEntity( moduleInfo, entityRegistry, entityType, repositoryFactoryInformation,
-						                repository );
+				MutableEntityConfiguration entityConfiguration
+						= registerEntity( moduleInfo, entityRegistry, entityType, repositoryFactoryInformation, repositories, repositoryInvokerFactory );
 
 				if ( entityConfiguration != null ) {
 					registered.add( entityConfiguration );
 				}
+
 			}
 			else {
-				LOG.info( "Skipping auto registration of entity type {} as it is already registered",
-				          entityType.getName() );
+				LOG.trace( "Skipping auto registration of entity type {} as it is already registered", entityType.getName() );
 			}
 		}
 
@@ -137,16 +140,18 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 			MutableEntityRegistry entityRegistry,
 			Class<?> entityType,
 			RepositoryFactoryInformation repositoryFactoryInformation,
-			Repository repository ) {
+			Repositories repositories,
+			RepositoryInvokerFactory repositoryInvokerFactory ) {
 		String entityTypeName = determineUniqueEntityTypeName( entityRegistry, entityType );
+		Object repository = repositories.getRepositoryFor( entityType );
 
-		if ( entityTypeName != null ) {
+		if ( entityTypeName != null && repository instanceof Repository ) {
 			EntityConfigurationImpl entityConfiguration = new EntityConfigurationImpl<>( entityTypeName, entityType );
 			entityConfiguration.setAttribute( AcrossModuleInfo.class, moduleInfo );
 			entityConfiguration.setAttribute( RepositoryFactoryInformation.class, repositoryFactoryInformation );
-			entityConfiguration.setAttribute( Repository.class, repository );
-			entityConfiguration.setAttribute( PersistentEntity.class,
-			                                  repositoryFactoryInformation.getPersistentEntity() );
+			entityConfiguration.setAttribute( Repository.class, (Repository) repository );
+			entityConfiguration.setAttribute( PersistentEntity.class, repositoryFactoryInformation.getPersistentEntity() );
+			entityConfiguration.setAttribute( RepositoryInvoker.class, repositoryInvokerFactory.getInvokerFor( entityType ) );
 
 			String transactionManagerBeanName = transactionManagerResolver.resolveTransactionManagerBeanName( repositoryFactoryInformation );
 			if ( transactionManagerBeanName != null ) {
@@ -171,8 +176,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 			return entityConfiguration;
 		}
 		else {
-			LOG.warn( "Skipping registration of entity type {} as no unique name could be determined",
-			          entityType.getName() );
+			LOG.warn( "Skipping registration of entity type {} as no unique name could be determined - repository {}", entityType.getName(), repository );
 		}
 
 		return null;
@@ -216,12 +220,13 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	private EntityMessageCodeResolver buildMessageCodeResolver( EntityConfiguration entityConfiguration,
 	                                                            AcrossModuleInfo moduleInfo ) {
 		String name = StringUtils.uncapitalize( entityConfiguration.getEntityType().getSimpleName() );
+		String[] basePrefixes = entityMessageCodeProperties.getEntityMessageCodePrefixes( moduleInfo );
 
 		EntityMessageCodeResolver resolver = new EntityMessageCodeResolver();
 		resolver.setMessageSource( messageSource );
 		resolver.setEntityConfiguration( entityConfiguration );
-		resolver.setPrefixes( moduleInfo.getName() + ".entities." + name );
-		resolver.setFallbackCollections( moduleInfo.getName() + ".entities", EntityModule.NAME + ".entities" );
+		resolver.setPrefixes( Stream.of( basePrefixes ).map( p -> p + "." + name ).toArray( String[]::new ) );
+		resolver.setFallbackCollections( ArrayUtils.add( basePrefixes, EntityModule.NAME + ".entities" ) );
 
 		return resolver;
 	}
@@ -237,8 +242,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 		// Because of some bugs related to JPA - Hibernate integration, favour the use of QueryDsl if possible,
 		// see particular issue: https://hibernate.atlassian.net/browse/HHH-5948
 		if ( repository instanceof QueryDslPredicateExecutor ) {
-			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QueryDslPredicateExecutor) repository,
-			                                                       entityConfiguration );
+			entityQueryExecutor = new EntityQueryQueryDslExecutor( (QueryDslPredicateExecutor) repository, entityConfiguration );
 		}
 		else if ( repository instanceof JpaSpecificationExecutor ) {
 			entityQueryExecutor = new EntityQueryJpaExecutor( (JpaSpecificationExecutor) repository );
@@ -305,5 +309,15 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	@Autowired
 	public void setTransactionManagerResolver( PlatformTransactionManagerResolver transactionManagerResolver ) {
 		this.transactionManagerResolver = transactionManagerResolver;
+	}
+
+	@Autowired
+	public void setEntityMessageCodeProperties( EntityMessageCodeProperties entityMessageCodeProperties ) {
+		this.entityMessageCodeProperties = entityMessageCodeProperties;
+	}
+
+	@Autowired
+	public void setMvcConversionService( ConversionService mvcConversionService ) {
+		this.mvcConversionService = mvcConversionService;
 	}
 }

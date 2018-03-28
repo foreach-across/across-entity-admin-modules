@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.entity;
 
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
@@ -24,7 +23,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
- * Contains common Entity attribute keys.
+ * Contains common {@link com.foreach.across.modules.entity.registry.EntityConfiguration}, {@link com.foreach.across.modules.entity.registry.EntityAssociation}
+ * and {@link EntityPropertyDescriptor} attribute keys.
+ *
+ * @see com.foreach.across.modules.entity.views.EntityViewFactoryAttributes
  */
 public interface EntityAttributes
 {
@@ -47,11 +49,17 @@ public interface EntityAttributes
 	String NATIVE_PROPERTY_DESCRIPTOR = EntityPropertyDescriptor.class.getName() + ".nativeProperty";
 
 	/**
+	 * If set, determines if a control for this property should be marked as required or not.
+	 * The actual value should be either {@code true} or {@code false}.
+	 */
+	String PROPERTY_REQUIRED = EntityPropertyDescriptor.class.getName() + ".required";
+
+	/**
 	 * If set, this attribute should contain the
 	 * {@link com.foreach.across.modules.entity.registry.properties.EntityPropertySelector} to be used for selecting
-	 * the members of a {@link FieldsetFormElement}.
+	 * the members of a {@link com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement}.
 	 */
-	String FIELDSET_PROPERTY_SELECTOR = FieldsetFormElement.class.getName() + ".EntityPropertySelector";
+	String FIELDSET_PROPERTY_SELECTOR = "com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement.EntityPropertySelector";
 
 	/**
 	 * If set, contains the EQL statement or {@link com.foreach.across.modules.entity.query.EntityQuery} that should be used
@@ -83,5 +91,16 @@ public interface EntityAttributes
 	 */
 	static String controlName( EntityPropertyDescriptor descriptor ) {
 		return StringUtils.defaultString( descriptor.getAttribute( CONTROL_NAME, String.class ), descriptor.getName() );
+	}
+
+	/**
+	 * Check if the descriptor has the {@link #PROPERTY_REQUIRED} attribute with a {@code true} value,
+	 * marking the control as required.
+	 *
+	 * @param descriptor of the property
+	 * @return true if it is required
+	 */
+	static boolean isRequired( EntityPropertyDescriptor descriptor ) {
+		return Boolean.TRUE.equals( descriptor.getAttribute( PROPERTY_REQUIRED, Boolean.class ) );
 	}
 }

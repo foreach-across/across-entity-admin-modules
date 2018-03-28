@@ -104,7 +104,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
 		}
 
-		// todo: fixe me decently
+		// todo: fixme decently
 		ViewElementLookupRegistryImpl existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 		ViewElementLookupRegistry lookupRegistry = new ViewElementLookupRegistryImpl();
 		if ( existingLookupRegistry != null ) {
@@ -112,7 +112,6 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		}
 
 		descriptor.setAttributes( child.attributeMap() );
-
 		descriptor.setAttribute( ViewElementLookupRegistry.class, lookupRegistry );
 
 		if ( child.hasAttribute( Sort.Order.class ) ) {

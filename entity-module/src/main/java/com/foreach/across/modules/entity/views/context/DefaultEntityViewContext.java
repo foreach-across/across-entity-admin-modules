@@ -23,7 +23,7 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -48,7 +48,7 @@ public class DefaultEntityViewContext implements ConfigurableEntityViewContext
 {
 	private Object entity;
 	private EntityConfiguration entityConfiguration;
-	private EntityLinkBuilder linkBuilder;
+	private EntityViewLinkBuilder linkBuilder;
 	private EntityMessageCodeResolver messageCodeResolver;
 	private EntityMessages entityMessages;
 	private EntityAssociation entityAssociation;

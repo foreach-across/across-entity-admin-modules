@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
@@ -26,6 +27,7 @@ import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilder
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,7 @@ import java.util.function.Consumer;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @SuppressWarnings("unchecked")
-public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAndViewsBuilder
+public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAndViewsBuilder<EntityConfiguration<T>>
 {
 	private static final Logger LOG = LoggerFactory.getLogger( EntityConfigurationBuilder.class );
 
@@ -84,8 +86,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * @param <U>     subType of the original generic type
 	 * @return downcast version of the current builder
 	 */
-	public <U extends T> EntityConfigurationBuilder<U> as( Class<U> subType ) {
-		Assert.notNull( subType );
+	public <U extends T> EntityConfigurationBuilder<U> as( @NonNull Class<U> subType ) {
 		return (EntityConfigurationBuilder<U>) this;
 	}
 
@@ -138,8 +139,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * @param registryConsumer to customize the registry builder
 	 * @return current builder
 	 */
-	public EntityConfigurationBuilder<T> properties( Consumer<EntityPropertyRegistryBuilder> registryConsumer ) {
-		Assert.notNull( registryConsumer );
+	public EntityConfigurationBuilder<T> properties( @NonNull Consumer<EntityPropertyRegistryBuilder> registryConsumer ) {
 		registryConsumers.add( registryConsumer );
 		return this;
 	}
@@ -180,8 +180,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * @param allowableActionsBuilder instance
 	 * @return current builder
 	 */
-	public EntityConfigurationBuilder<T> allowableActionsBuilder( EntityConfigurationAllowableActionsBuilder allowableActionsBuilder ) {
-		Assert.notNull( allowableActionsBuilder );
+	public EntityConfigurationBuilder<T> allowableActionsBuilder( @NonNull EntityConfigurationAllowableActionsBuilder allowableActionsBuilder ) {
 		this.allowableActionsBuilder = allowableActionsBuilder;
 		return this;
 	}
@@ -226,8 +225,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * @param postProcessor instance
 	 * @return current builder
 	 */
-	public EntityConfigurationBuilder<T> postProcessor( Consumer<MutableEntityConfiguration<T>> postProcessor ) {
-		Assert.notNull( postProcessor );
+	public EntityConfigurationBuilder<T> postProcessor( @NonNull Consumer<MutableEntityConfiguration<T>> postProcessor ) {
 		postProcessors.add( postProcessor );
 		return this;
 	}
@@ -293,6 +291,11 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	@SuppressWarnings("unchecked")
 	public <S> EntityConfigurationBuilder<T> attribute( Class<S> type, S value ) {
 		return (EntityConfigurationBuilder<T>) super.attribute( type, value );
+	}
+
+	@Override
+	public EntityConfigurationBuilder<T> attribute( AttributeRegistrar<EntityConfiguration<T>> attributeRegistrar ) {
+		return (EntityConfigurationBuilder<T>) super.attribute( attributeRegistrar );
 	}
 
 	@Override
@@ -370,7 +373,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	MutableEntityConfiguration<T> build( boolean applyPostProcessors ) {
-		Assert.notNull( entityType );
+		Assert.notNull( entityType, "EntityType should not be null" );
 
 		EntityConfigurationProvider configurationProvider = beanFactory.getBean( EntityConfigurationProvider.class );
 		String defaultName = name != null ? name : EntityUtils.generateEntityName( entityType );
@@ -392,9 +395,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 		apply( configuration, true );
 	}
 
-	synchronized void apply( MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
-		Assert.notNull( configuration );
-
+	synchronized void apply( @NonNull MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
 		configurationBeingBuilt = configuration;
 
 		try {
@@ -421,8 +422,14 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 				configuration.setAllowableActionsBuilder( allowableActionsBuilder );
 			}
 
-			applyAttributes( configuration );
-			applyViews( configuration );
+			applyAttributes( configuration, configuration );
+			if ( beanFactory.containsBean( EntityViewFactoryBuilder.BEAN_NAME ) ) {
+				applyViews( configuration );
+			}
+			else {
+				LOG.trace( "Skipping default views registration for '{}' - the default EntityViewFactoryBuilder is not present, probably no AdminWebModule",
+				           configuration.getName() );
+			}
 			applyAssociations( configuration );
 
 			if ( applyPostProcessors ) {
@@ -435,8 +442,8 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	@Override
-	protected void applyAttributes( WritableAttributes attributes ) {
-		super.applyAttributes( attributes );
+	protected void applyAttributes( EntityConfiguration<T> owner, WritableAttributes attributes ) {
+		super.applyAttributes( owner, attributes );
 
 		ViewElementLookupRegistry existingLookupRegistry = attributes.getAttribute( ViewElementLookupRegistry.class );
 
@@ -444,7 +451,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 			viewElementLookupRegistry.mergeInto( existingLookupRegistry );
 		}
 		else {
-			attributes.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry );
+			attributes.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry.clone() );
 		}
 	}
 
@@ -463,10 +470,10 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	@Override
 	protected <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType ) {
 		if ( EntityListViewFactoryBuilder.class.isAssignableFrom( builderType ) ) {
-			return builderType.cast( new EntityListViewFactoryBuilder( beanFactory ) );
+			return builderType.cast( beanFactory.getBean( EntityListViewFactoryBuilder.class ) );
 		}
 
-		return builderType.cast( new EntityViewFactoryBuilder( beanFactory ) );
+		return builderType.cast( beanFactory.getBean( EntityViewFactoryBuilder.class ) );
 	}
 
 	@Override

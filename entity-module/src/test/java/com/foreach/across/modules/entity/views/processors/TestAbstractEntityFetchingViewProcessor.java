@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Pageable;
 
 import static org.mockito.Mockito.*;
@@ -72,7 +72,6 @@ public class TestAbstractEntityFetchingViewProcessor
 
 	@Test
 	public void fetchingSkippedIfExistingItem() {
-		when( command.getExtension( PageableExtensionViewProcessor.DEFAULT_EXTENSION_NAME, Pageable.class ) ).thenReturn( pageable );
 		when( entityView.containsAttribute( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME ) ).thenReturn( true );
 
 		processor.doControl( viewRequest, entityView, command );

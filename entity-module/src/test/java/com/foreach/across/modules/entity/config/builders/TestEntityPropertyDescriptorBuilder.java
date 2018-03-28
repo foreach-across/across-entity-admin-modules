@@ -49,7 +49,7 @@ public class TestEntityPropertyDescriptorBuilder
 		descriptor = null;
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nameIsRequired() {
 		builder = new EntityPropertyDescriptorBuilder( null );
 	}

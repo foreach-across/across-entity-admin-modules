@@ -25,7 +25,10 @@ import java.text.MessageFormat;
 /**
  * Creates links to entity views and standard controllers.
  * By default crud and list views are included.
+ *
+ * @deprecated since 3.0.0 - use {@link com.foreach.across.modules.entity.web.links.EntityViewLinks} instead
  */
+@Deprecated
 public class EntityConfigurationLinkBuilder implements EntityLinkBuilder
 {
 	private final String rootPath;

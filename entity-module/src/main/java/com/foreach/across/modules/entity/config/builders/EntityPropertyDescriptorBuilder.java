@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
@@ -27,10 +28,10 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.util.Assert;
 
 /**
  * Builder for a configuring a single {@link SimpleEntityPropertyDescriptor}.  The builder can also be
@@ -39,7 +40,7 @@ import org.springframework.util.Assert;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesBuilder
+public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesBuilder<EntityPropertyDescriptor>
 {
 	protected final Logger LOG = LoggerFactory.getLogger( getClass() );
 
@@ -58,8 +59,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	 *
 	 * @param name of the property
 	 */
-	public EntityPropertyDescriptorBuilder( String name ) {
-		Assert.notNull( name );
+	public EntityPropertyDescriptorBuilder( @NonNull String name ) {
 		this.name = name;
 	}
 
@@ -107,6 +107,11 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 		return (EntityPropertyDescriptorBuilder) super.attribute( type, value );
 	}
 
+	@Override
+	public EntityPropertyDescriptorBuilder attribute( AttributeRegistrar<EntityPropertyDescriptor> attributeRegistrar ) {
+		return (EntityPropertyDescriptorBuilder) super.attribute( attributeRegistrar );
+	}
+
 	/**
 	 * @param displayName Display name to be configured on the property.
 	 * @return current builder
@@ -120,8 +125,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	 * @param expression SpEL expression that should be used as value.
 	 * @return current builder
 	 */
-	public EntityPropertyDescriptorBuilder spelValueFetcher( String expression ) {
-		Assert.notNull( expression );
+	public EntityPropertyDescriptorBuilder spelValueFetcher( @NonNull String expression ) {
 		return valueFetcher( new SpelValueFetcher<>( expression ) );
 	}
 
@@ -238,9 +242,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	 *
 	 * @param descriptor whose settings to update
 	 */
-	public void apply( MutableEntityPropertyDescriptor descriptor ) {
-		Assert.notNull( descriptor );
-
+	public void apply( @NonNull MutableEntityPropertyDescriptor descriptor ) {
 		if ( name != null && !name.equals( descriptor.getName() ) ) {
 			LOG.error( "Unable to change the name of an existing EntityPropertyDescriptor: {} to {}",
 			           descriptor.getName(), name );
@@ -275,7 +277,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 			descriptor.setPropertyType( propertyType );
 		}
 
-		applyAttributes( descriptor );
+		applyAttributes( descriptor, descriptor );
 
 		ViewElementLookupRegistry existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 
@@ -283,7 +285,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 			viewElementLookupRegistry.mergeInto( existingLookupRegistry );
 		}
 		else {
-			descriptor.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry );
+			descriptor.setAttribute( ViewElementLookupRegistry.class, viewElementLookupRegistry.clone() );
 		}
 	}
 }

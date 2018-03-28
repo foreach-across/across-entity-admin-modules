@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors.support;
 
 import com.foreach.across.core.events.NamedAcrossEvent;
-import com.foreach.across.core.events.ParameterizedAcrossEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -26,6 +25,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.ResolvableTypeProvider;
 
 /**
  * Published by the {@link com.foreach.across.modules.entity.views.processors.SingleEntityPageStructureViewProcessor} or the
@@ -39,7 +39,7 @@ import org.springframework.core.ResolvableType;
  * @since 2.0.0
  */
 @RequiredArgsConstructor
-public final class EntityPageStructureRenderedEvent<T> implements NamedAcrossEvent, ParameterizedAcrossEvent
+public final class EntityPageStructureRenderedEvent<T> implements NamedAcrossEvent, ResolvableTypeProvider
 {
 	/**
 	 * Does the page structure represent a list view ({@code true}) or a single entity ({@code false}).
@@ -79,8 +79,8 @@ public final class EntityPageStructureRenderedEvent<T> implements NamedAcrossEve
 	}
 
 	@Override
-	public ResolvableType[] getEventGenericTypes() {
-		return new ResolvableType[] { ResolvableType.forClass( entityViewContext.getEntityConfiguration().getEntityType() ) };
+	public ResolvableType getResolvableType() {
+		return ResolvableType.forClassWithGenerics( EntityPageStructureRenderedEvent.class, entityViewContext.getEntityConfiguration().getEntityType() );
 	}
 
 	public PageContentStructure getPageContentStructure() {

@@ -20,10 +20,10 @@ import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -66,9 +66,7 @@ public class DefaultEntityConfigurationProvider implements EntityConfigurationPr
 	}
 
 	@Override
-	public <T> MutableEntityConfiguration<T> create( Class<T> entityType ) {
-		Assert.notNull( entityType );
-
+	public <T> MutableEntityConfiguration<T> create( @NonNull Class<T> entityType ) {
 		MutableEntityConfiguration<T> configuration = new EntityConfigurationImpl<>( entityType );
 		configuration.setHidden( true );
 		configuration.setEntityMessageCodeResolver( createMessageCodeResolver( configuration ) );
@@ -79,12 +77,9 @@ public class DefaultEntityConfigurationProvider implements EntityConfigurationPr
 	}
 
 	@Override
-	public <T> MutableEntityConfiguration<T> create( String name,
-	                                                 Class<? extends T> entityType,
+	public <T> MutableEntityConfiguration<T> create( @NonNull String name,
+	                                                 @NonNull Class<? extends T> entityType,
 	                                                 boolean registerForClass ) {
-		Assert.notNull( name );
-		Assert.notNull( entityType );
-
 		MutableEntityConfiguration<T> configuration = new EntityConfigurationImpl<>( name, entityType );
 		configuration.setHidden( true );
 		configuration.setEntityMessageCodeResolver( createMessageCodeResolver( configuration ) );

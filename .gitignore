@@ -4,4 +4,5 @@ target
 .idea/libraries
 *.iml
 db
+local-data
 .DS_Store

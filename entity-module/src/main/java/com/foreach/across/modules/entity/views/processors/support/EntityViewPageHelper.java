@@ -17,17 +17,18 @@
 package com.foreach.across.modules.entity.views.processors.support;
 
 import com.foreach.across.core.development.AcrossDevelopmentMode;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
@@ -45,12 +46,12 @@ import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedb
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 @Slf4j
 @Service
 public class EntityViewPageHelper
 {
 	private AcrossDevelopmentMode developmentMode;
-	private BootstrapUiFactory bootstrapUiFactory;
 
 	/**
 	 * Should flash attributes be used for redirect attributes.
@@ -70,11 +71,7 @@ public class EntityViewPageHelper
 	 * @param messageCode   that should be resolved when rendering the message
 	 */
 	@SuppressWarnings("unchecked")
-	public void addGlobalFeedbackAfterRedirect( EntityViewRequest viewRequest, Style feedbackStyle, String messageCode ) {
-		Assert.notNull( viewRequest );
-		Assert.notNull( feedbackStyle );
-		Assert.notNull( messageCode );
-
+	public void addGlobalFeedbackAfterRedirect( @NonNull EntityViewRequest viewRequest, @NonNull Style feedbackStyle, @NonNull String messageCode ) {
 		RedirectAttributes redirectAttributes = viewRequest.getRedirectAttributes();
 		Map<String, Object> model = useFlashAttributesForRedirect ? (Map<String, Object>) redirectAttributes.getFlashAttributes() : redirectAttributes.asMap();
 		model.compute( FEEDBACK_ATTRIBUTE_KEY, ( key, value ) -> addFeedbackMessage( (String) value, feedbackStyle, messageCode ) );
@@ -100,7 +97,7 @@ public class EntityViewPageHelper
 		EntityMessages messages = entityViewContext.getEntityMessages();
 
 		viewRequest.getPageContentStructure().addToFeedback(
-				bootstrapUiFactory
+				BootstrapUiBuilders
 						.alert()
 						.danger()
 						.dismissible()
@@ -114,11 +111,6 @@ public class EntityViewPageHelper
 	}
 
 	// EntityViewPageUtils.addGlobalFeedback( entityViewRequest, INFO, "feedback.entitySaved", e  );
-
-	@Autowired
-	void setBootstrapUiFactory( BootstrapUiFactory bootstrapUiFactory ) {
-		this.bootstrapUiFactory = bootstrapUiFactory;
-	}
 
 	@Autowired
 	void setDevelopmentMode( AcrossDevelopmentMode developmentMode ) {

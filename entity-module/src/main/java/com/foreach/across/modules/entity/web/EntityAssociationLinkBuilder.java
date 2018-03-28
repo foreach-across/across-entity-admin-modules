@@ -26,7 +26,9 @@ import org.springframework.web.util.UriComponentsBuilder;
  * This link builder is the base for scoped versions created with {@link #asAssociationFor(EntityLinkBuilder, Object)}.</p>
  *
  * @author Arne Vandamme
+ * @deprecated since 3.0.0 - use {@link com.foreach.across.modules.entity.web.links.EntityViewLinks} instead
  */
+@Deprecated
 public class EntityAssociationLinkBuilder extends EntityConfigurationLinkBuilder
 {
 	private final EntityAssociation association;

@@ -28,22 +28,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Collections;
 
 import static com.foreach.across.modules.entity.registry.EntityAssociation.Type.EMBEDDED;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  */
-@PrepareForTest(EntityViewFactoryBuilderInitializer.class)
-@RunWith(PowerMockRunner.class)
 @SuppressWarnings("unchecked")
+@RunWith(MockitoJUnitRunner.class)
 public class TestEntityAssociationBuilder
 {
 	@Mock
@@ -59,7 +57,7 @@ public class TestEntityAssociationBuilder
 
 	@Before
 	public void reset() {
-		EntityViewFactoryBuilderInitializer builderInitializer = PowerMockito.mock( EntityViewFactoryBuilderInitializer.class );
+		EntityViewFactoryBuilderInitializer builderInitializer = mock( EntityViewFactoryBuilderInitializer.class );
 
 		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistry );
 		builder = new EntityAssociationBuilder( beanFactory );
@@ -69,6 +67,8 @@ public class TestEntityAssociationBuilder
 
 	@Test
 	public void newAssociation() {
+		enableDefaultViewsBuilding();
+
 		MutableEntityAssociation association = mock( MutableEntityAssociation.class );
 		when( configuration.createAssociation( "users" ) ).thenReturn( association );
 		when( association.getSourceEntityConfiguration() ).thenReturn( configuration );
@@ -115,6 +115,11 @@ public class TestEntityAssociationBuilder
 		verify( association ).setAttribute( eq( EntityMessageCodeResolver.class ), any( EntityMessageCodeResolver.class ) );
 	}
 
+	private void enableDefaultViewsBuilding() {
+		when( beanFactory.containsBean( EntityViewFactoryBuilder.BEAN_NAME ) ).thenReturn( true );
+		when( beanFactory.getBean( EntityListViewFactoryBuilder.class ) ).thenReturn( new EntityListViewFactoryBuilder( beanFactory ) );
+	}
+
 	@Test
 	public void updateExisting() {
 		MutableEntityAssociation association = mock( MutableEntityAssociation.class );
@@ -134,9 +139,6 @@ public class TestEntityAssociationBuilder
 		EntityPropertyDescriptor targetProperty = mock( EntityPropertyDescriptor.class );
 		when( targetRegistry.getProperty( "id" ) ).thenReturn( targetProperty );
 
-		when( association.hasView( EntityView.LIST_VIEW_NAME ) ).thenReturn( true );
-		DefaultEntityViewFactory listViewFactory = mock( DefaultEntityViewFactory.class );
-		when( beanFactory.createBean( DefaultEntityViewFactory.class ) ).thenReturn( listViewFactory );
 		builder.name( "users" )
 		       .hidden( false )
 		       .associationType( EMBEDDED )
@@ -156,5 +158,22 @@ public class TestEntityAssociationBuilder
 		verify( association ).setHidden( false );
 		verify( association ).setAttributes( Collections.singletonMap( "someAttribute", "someAttributeValue" ) );
 		verify( association ).setParentDeleteMode( EntityAssociation.ParentDeleteMode.WARN );
+	}
+
+	@Test
+	public void parentDeleteModeWithoutNamedAssociationShouldFail() {
+		assertThatThrownBy( () -> builder.parentDeleteMode( EntityAssociation.ParentDeleteMode.IGNORE ).apply( configuration ) ).isInstanceOf(
+				IllegalArgumentException.class ).hasMessageContaining( "A name() is required for an AssociationBuilder." );
+	}
+
+	@Test
+	public void parentDeleteModeWithUnknownNamedAssociationShouldFail() {
+		MutableEntityRegistry entityRegistryImpl = new EntityRegistryImpl();
+		entityRegistryImpl.register( new EntityConfigurationImpl<>( "-bad-association-name", String.class ) );
+		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistryImpl );
+
+		assertThatThrownBy( () -> builder.parentDeleteMode( EntityAssociation.ParentDeleteMode.IGNORE ).name( "foobar" ).apply( configuration ) ).isInstanceOf(
+				NullPointerException.class ).hasMessageContaining(
+				"entityType" );
 	}
 }

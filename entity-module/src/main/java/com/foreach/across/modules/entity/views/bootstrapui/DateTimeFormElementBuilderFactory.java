@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,24 +15,24 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.DateTimeValueTextPostProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -48,19 +48,22 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.Past;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.Map;
 
 /**
  * @author Arne Vandamme
  */
+@ConditionalOnBootstrapUI
 @Component
 public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<ViewElementBuilder>
 {
 	private final ControlBuilderFactory controlBuilderFactory = new ControlBuilderFactory();
 	private final ValueBuilderFactory valueBuilderFactory = new ValueBuilderFactory();
 
-	private BootstrapUiFactory bootstrapUi;
 	private EntityViewElementBuilderService viewElementBuilderService;
 	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
 
@@ -78,11 +81,6 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 		}
 
 		return valueBuilderFactory.createBuilder( propertyDescriptor, viewElementMode, viewElementType );
-	}
-
-	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
 	}
 
 	@Autowired
@@ -139,7 +137,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 				}
 			}
 
-			return bootstrapUi.text().postProcessor( valueTextPostProcessor );
+			return BootstrapUiBuilders.text().postProcessor( valueTextPostProcessor );
 		}
 	}
 
@@ -149,7 +147,6 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 	private class ControlBuilderFactory extends EntityViewElementBuilderFactorySupport<DateTimeFormElementBuilder>
 	{
 		public ControlBuilderFactory() {
-			addProcessor( new FormControlRequiredBuilderProcessor<>() );
 			addProcessor( new TemporalAnnotationProcessor() );
 			addProcessor( new PastAndFutureValidationProcessor() );
 			addProcessor( new FormControlNameBuilderProcessor<>() );
@@ -180,6 +177,15 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 				if ( propertyDescriptor.hasAttribute( Format.class ) ) {
 					builder.format( propertyDescriptor.getAttribute( Format.class ) );
 				}
+				else {
+					Class<?> propertyType = propertyDescriptor.getPropertyType();
+					if ( LocalDate.class.isAssignableFrom( propertyType ) ) {
+						builder.format( Format.DATE );
+					}
+					else if ( LocalTime.class.isAssignableFrom( propertyType ) ) {
+						builder.format( Format.TIME );
+					}
+				}
 			}
 
 			return builder;
@@ -190,11 +196,12 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 		                                                           ViewElementMode viewElementMode,
 		                                                           String viewElementType ) {
 
-			return bootstrapUi
+			return BootstrapUiBuilders
 					.datetime()
 					.name( propertyDescriptor.getName() )
 					.controlName( EntityAttributes.controlName( propertyDescriptor ) )
-					.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) )
+					.required( EntityAttributes.isRequired( propertyDescriptor ) )
+					.postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
 					.postProcessor(
 							( builderContext, datetime ) ->
 							{
@@ -202,11 +209,27 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 								ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
 
 								if ( entity != null && valueFetcher != null ) {
-									Date propertyValue = (Date) valueFetcher.getValue( entity );
-
-									if ( propertyValue != null ) {
-										datetime.setValue( propertyValue );
+									Object value = valueFetcher.getValue( entity );
+									if ( value instanceof LocalDate ) {
+										LocalDate propertyValue = (LocalDate) value;
+										datetime.setLocalDate( propertyValue );
 									}
+									else if ( value instanceof LocalTime ) {
+										LocalTime propertyValue = (LocalTime) value;
+										datetime.setLocalTime( propertyValue );
+									}
+									else if ( value instanceof LocalDateTime ) {
+										LocalDateTime propertyValue = (LocalDateTime) value;
+										datetime.setLocalDateTime( propertyValue );
+									}
+									else {
+										Date propertyValue = (Date) value;
+
+										if ( propertyValue != null ) {
+											datetime.setValue( propertyValue );
+										}
+									}
+
 								}
 							}
 					);

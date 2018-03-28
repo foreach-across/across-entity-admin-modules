@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
@@ -26,6 +28,7 @@ import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterConfiguration;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -36,7 +39,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -52,6 +54,7 @@ import java.util.function.Function;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
@@ -72,6 +75,43 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	@Override
 	public EntityListViewFactoryBuilder factoryType( Class<? extends EntityViewFactory> factoryType ) {
 		return (EntityListViewFactoryBuilder) super.factoryType( factoryType );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder attribute( String name, Object value ) {
+		return (EntityListViewFactoryBuilder) super.attribute( name, value );
+	}
+
+	@Override
+	public <S> EntityListViewFactoryBuilder attribute( Class<S> type, S value ) {
+		return (EntityListViewFactoryBuilder) super.attribute( type, value );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder attribute( AttributeRegistrar<EntityViewFactory> attributeRegistrar ) {
+		return (EntityListViewFactoryBuilder) super.attribute( attributeRegistrar );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder viewProcessor( EntityViewProcessor processor, int order ) {
+		return (EntityListViewFactoryBuilder) super.viewProcessor( processor, order );
+	}
+
+	@Override
+	public EntityListViewFactoryBuilder viewProcessor( String processorName, EntityViewProcessor processor, int order ) {
+		return (EntityListViewFactoryBuilder) super.viewProcessor( processorName, processor, order );
+	}
+
+	@Override
+	public <U extends EntityViewProcessor> EntityListViewFactoryBuilder postProcess( Class<U> viewProcessorType, Consumer<U> postProcessor ) {
+		return (EntityListViewFactoryBuilder) super.postProcess( viewProcessorType, postProcessor );
+	}
+
+	@Override
+	public <U extends EntityViewProcessor> EntityListViewFactoryBuilder postProcess( String viewProcessorName,
+	                                                                                 Class<U> viewProcessorType,
+	                                                                                 Consumer<U> postProcessor ) {
+		return (EntityListViewFactoryBuilder) super.postProcess( viewProcessorName, viewProcessorType, postProcessor );
 	}
 
 	@Override
@@ -156,8 +196,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	 * @param pageFetcher function - may not be null
 	 * @return current builder
 	 */
-	public EntityListViewFactoryBuilder pageFetcher( Function<Pageable, Iterable<?>> pageFetcher ) {
-		Assert.notNull( pageFetcher );
+	public EntityListViewFactoryBuilder pageFetcher( @NonNull Function<Pageable, Iterable<?>> pageFetcher ) {
 		return pageFetcher( ( ctx, pageable ) -> pageFetcher.apply( pageable ) );
 	}
 
@@ -168,8 +207,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	 * @param pageFetcher function - may not be null
 	 * @return current builder
 	 */
-	public EntityListViewFactoryBuilder pageFetcher( BiFunction<EntityViewContext, Pageable, Iterable<?>> pageFetcher ) {
-		Assert.notNull( pageFetcher );
+	public EntityListViewFactoryBuilder pageFetcher( @NonNull BiFunction<EntityViewContext, Pageable, Iterable<?>> pageFetcher ) {
 		this.pageFetcher = pageFetcher;
 		return this;
 	}
@@ -297,7 +335,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		if ( entityQueryFilter != null ) {
 			if ( entityQueryFilter ) {
 				if ( !processorRegistry.contains( EntityQueryFilterProcessor.class.getName() ) ) {
-					processorRegistry.addProcessor( createBean( EntityQueryFilterProcessor.class ) );
+					processorRegistry.addProcessor( EntityQueryFilterProcessor.class.getName(), createBean( EntityQueryFilterProcessor.class ) );
 				}
 				processorRegistry.getProcessor( EntityQueryFilterProcessor.class.getName(), EntityQueryFilterProcessor.class )
 				                 .ifPresent( p -> {

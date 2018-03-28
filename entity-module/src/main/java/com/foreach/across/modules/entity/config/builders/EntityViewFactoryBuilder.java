@@ -16,23 +16,25 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.core.support.WritableAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.DispatchingEntityViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewFactory;
-import com.foreach.across.modules.entity.views.EntityViewProcessor;
-import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -45,6 +47,8 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder.BEAN_NAME;
+
 /**
  * Builder for creating a single {@link com.foreach.across.modules.entity.views.EntityViewFactory}.
  * Supports configuring default processors on a {@link DispatchingEntityViewFactory}.  If a custom factory
@@ -55,11 +59,15 @@ import java.util.function.Consumer;
  * @see com.foreach.across.modules.entity.views.DefaultEntityViewFactory
  * @since 2.0.0
  */
+@ConditionalOnAdminWeb
 @Slf4j
-@Component
+@Component(BEAN_NAME)
+@Primary
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class EntityViewFactoryBuilder
+public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<EntityViewFactory>
 {
+	static final String BEAN_NAME = "entityViewFactoryBuilder";
+
 	private final AutowireCapableBeanFactory beanFactory;
 	private final Collection<Consumer<EntityPropertyRegistryBuilder>> registryConsumers = new ArrayDeque<>();
 	private final Collection<ProcessorEntry> processors = new ArrayDeque<>();
@@ -102,14 +110,31 @@ public class EntityViewFactoryBuilder
 	/**
 	 * Configure the specific {@link EntityViewFactory} that should be used for this view.
 	 * This will take precedence over a registered {@link #factoryType(Class)}.
+	 * <p/>
+	 * NOTE that the factory will most likely be modified by this builder, so only use
+	 * prototype instances.
 	 *
 	 * @param factory to use
 	 * @return current builder
 	 */
-	public EntityViewFactoryBuilder factory( EntityViewFactory factory ) {
-		Assert.notNull( factory );
+	public EntityViewFactoryBuilder factory( @NonNull EntityViewFactory factory ) {
 		this.factory = factory;
 		return this;
+	}
+
+	@Override
+	public EntityViewFactoryBuilder attribute( String name, Object value ) {
+		return (EntityViewFactoryBuilder) super.attribute( name, value );
+	}
+
+	@Override
+	public <S> EntityViewFactoryBuilder attribute( Class<S> type, S value ) {
+		return (EntityViewFactoryBuilder) super.attribute( type, value );
+	}
+
+	@Override
+	public EntityViewFactoryBuilder attribute( AttributeRegistrar<EntityViewFactory> attributeRegistrar ) {
+		return (EntityViewFactoryBuilder) super.attribute( attributeRegistrar );
 	}
 
 	/**
@@ -227,8 +252,7 @@ public class EntityViewFactoryBuilder
 	 * @param registryConsumer to customize the property registry builder
 	 * @return current builder
 	 */
-	public EntityViewFactoryBuilder properties( Consumer<EntityPropertyRegistryBuilder> registryConsumer ) {
-		Assert.notNull( registryConsumer );
+	public EntityViewFactoryBuilder properties( @NonNull Consumer<EntityPropertyRegistryBuilder> registryConsumer ) {
 		registryConsumers.add( registryConsumer );
 		return this;
 	}
@@ -264,8 +288,7 @@ public class EntityViewFactoryBuilder
 	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
 	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
 	 */
-	public EntityViewFactoryBuilder viewProcessor( EntityViewProcessor processor ) {
-		Assert.notNull( processor );
+	public EntityViewFactoryBuilder viewProcessor( @NonNull EntityViewProcessor processor ) {
 		return viewProcessor( viewProcessorName( processor.getClass() ), processor );
 	}
 
@@ -278,8 +301,7 @@ public class EntityViewFactoryBuilder
 	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
 	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
 	 */
-	public EntityViewFactoryBuilder viewProcessor( EntityViewProcessor processor, int order ) {
-		Assert.notNull( processor );
+	public EntityViewFactoryBuilder viewProcessor( @NonNull EntityViewProcessor processor, int order ) {
 		return viewProcessor( viewProcessorName( processor.getClass() ), processor, order );
 	}
 
@@ -298,9 +320,7 @@ public class EntityViewFactoryBuilder
 	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
 	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
 	 */
-	public EntityViewFactoryBuilder viewProcessor( String processorName, EntityViewProcessor processor ) {
-		Assert.notNull( processorName );
-		Assert.notNull( processor );
+	public EntityViewFactoryBuilder viewProcessor( @NonNull String processorName, @NonNull EntityViewProcessor processor ) {
 		processors.add( new ProcessorEntry( processorName, processor ) );
 		return this;
 	}
@@ -317,9 +337,7 @@ public class EntityViewFactoryBuilder
 	 * @see com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter
 	 * @see com.foreach.across.modules.entity.views.processors.SimpleEntityViewProcessorAdapter
 	 */
-	public EntityViewFactoryBuilder viewProcessor( String processorName, EntityViewProcessor processor, int order ) {
-		Assert.notNull( processorName );
-		Assert.notNull( processor );
+	public EntityViewFactoryBuilder viewProcessor( @NonNull String processorName, @NonNull EntityViewProcessor processor, int order ) {
 		ProcessorEntry entry = new ProcessorEntry( processorName, processor );
 		entry.setOrder( order );
 		processors.add( entry );
@@ -347,6 +365,14 @@ public class EntityViewFactoryBuilder
 	 */
 	public EntityViewFactoryBuilder requiredAllowableAction( AllowableAction action ) {
 		this.requiredAllowableAction = action;
+		attribute( AllowableAction.class, action );
+		if ( action != null ) {
+			attribute( ( viewFactory, attributes ) -> {
+				if ( !attributes.hasAttribute( EntityViewFactoryAttributes.ACCESS_VALIDATOR ) ) {
+					attributes.setAttribute( EntityViewFactoryAttributes.ACCESS_VALIDATOR, EntityViewFactoryAttributes.defaultAccessValidator() );
+				}
+			} );
+		}
 		return this;
 	}
 
@@ -356,8 +382,7 @@ public class EntityViewFactoryBuilder
 	 * @param processorName unique name of the processor
 	 * @return current builder
 	 */
-	public EntityViewFactoryBuilder removeViewProcessor( String processorName ) {
-		Assert.notNull( processorName );
+	public EntityViewFactoryBuilder removeViewProcessor( @NonNull String processorName ) {
 		processors.add( new ProcessorEntry( processorName, null ) );
 		return this;
 	}
@@ -371,9 +396,7 @@ public class EntityViewFactoryBuilder
 	 * @param <U>               type of the view processor
 	 * @return current builder
 	 */
-	public <U extends EntityViewProcessor> EntityViewFactoryBuilder postProcess( Class<U> viewProcessorType, Consumer<U> postProcessor ) {
-		Assert.notNull( viewProcessorType );
-		Assert.notNull( postProcessor );
+	public <U extends EntityViewProcessor> EntityViewFactoryBuilder postProcess( @NonNull Class<U> viewProcessorType, @NonNull Consumer<U> postProcessor ) {
 		return postProcess( viewProcessorName( viewProcessorType ), viewProcessorType, postProcessor );
 	}
 
@@ -387,12 +410,9 @@ public class EntityViewFactoryBuilder
 	 * @param <U>               type of the view processor
 	 * @return current builder
 	 */
-	public <U extends EntityViewProcessor> EntityViewFactoryBuilder postProcess( String viewProcessorName,
-	                                                                             Class<U> viewProcessorType,
-	                                                                             Consumer<U> postProcessor ) {
-		Assert.notNull( viewProcessorName );
-		Assert.notNull( viewProcessorType );
-		Assert.notNull( postProcessor );
+	public <U extends EntityViewProcessor> EntityViewFactoryBuilder postProcess( @NonNull String viewProcessorName,
+	                                                                             @NonNull Class<U> viewProcessorType,
+	                                                                             @NonNull Consumer<U> postProcessor ) {
 		postProcessors.add( ( factory, registry ) -> {
 			if ( registry != null ) {
 				registry.getProcessor( viewProcessorName, viewProcessorType )
@@ -404,7 +424,7 @@ public class EntityViewFactoryBuilder
 
 	/**
 	 * Add a post processor for this entire view factory.  If the view factory is not of type {@link DispatchingEntityViewFactory},
-	 * the second parameter ({@link EntityViewProcessorRegistry} will be {@code null}.
+	 * the second parameter ({@link EntityViewProcessorRegistry}) will be {@code null}.
 	 * <p/>
 	 * Use this method if you want to make global modifications like changing the {@link EntityViewProcessor} ordering.
 	 * <p/>
@@ -413,8 +433,7 @@ public class EntityViewFactoryBuilder
 	 * @param postProcessor post processor
 	 * @return current builder
 	 */
-	public EntityViewFactoryBuilder postProcess( BiConsumer<EntityViewFactory, EntityViewProcessorRegistry> postProcessor ) {
-		Assert.notNull( postProcessor );
+	public EntityViewFactoryBuilder postProcess( @NonNull BiConsumer<EntityViewFactory, EntityViewProcessorRegistry> postProcessor ) {
 		postProcessors.add( postProcessor );
 		return this;
 	}
@@ -426,7 +445,7 @@ public class EntityViewFactoryBuilder
 	 * @return factory instance
 	 */
 	public EntityViewFactory build() {
-		Assert.notNull( factoryType );
+		Assert.notNull( factoryType, "factoryType cannot be null" );
 
 		EntityViewFactory viewFactory = factory != null ? factory : createNewViewFactory( factoryType );
 		apply( viewFactory );
@@ -444,6 +463,10 @@ public class EntityViewFactoryBuilder
 	 * @param viewFactory to apply the builder settings to
 	 */
 	void apply( EntityViewFactory viewFactory ) {
+		if ( viewFactory instanceof WritableAttributes ) {
+			applyAttributes( viewFactory, (WritableAttributes) viewFactory );
+		}
+
 		if ( viewFactory instanceof DispatchingEntityViewFactory ) {
 			buildViewProcessors( ( (DispatchingEntityViewFactory) viewFactory ).getProcessorRegistry() );
 		}

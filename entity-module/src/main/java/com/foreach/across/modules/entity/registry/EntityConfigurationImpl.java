@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -50,9 +50,7 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 
 	private EntityMessageCodeResolver entityMessageCodeResolver;
 	private EntityConfigurationAllowableActionsBuilder allowableActionsBuilder
-			= new FixedEntityAllowableActionsBuilder(
-			FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS
-	);
+			= new FixedEntityAllowableActionsBuilder( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
 
 	private boolean hidden;
 	private String displayName;
@@ -64,10 +62,7 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 		this( EntityUtils.generateEntityName( entityType ), entityType );
 	}
 
-	public EntityConfigurationImpl( String name, Class<? extends T> entityType ) {
-		Assert.notNull( entityType );
-		Assert.notNull( name );
-
+	public EntityConfigurationImpl( @NonNull String name, @NonNull Class<? extends T> entityType ) {
 		this.name = name;
 		this.entityType = entityType;
 
@@ -124,10 +119,13 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	}
 
 	@Override
-	public void registerView( String viewName, EntityViewFactory viewFactory ) {
-		Assert.notNull( viewName );
-		Assert.notNull( viewFactory );
+	public void registerView( @NonNull String viewName, @NonNull EntityViewFactory viewFactory ) {
 		registeredViews.put( viewName, viewFactory );
+	}
+
+	@Override
+	public void removeView( String viewName ) {
+		registeredViews.remove( viewName );
 	}
 
 	@Override
@@ -149,8 +147,7 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	}
 
 	@Override
-	public void setPropertyRegistry( MutableEntityPropertyRegistry propertyRegistry ) {
-		Assert.notNull( propertyRegistry );
+	public void setPropertyRegistry( @NonNull MutableEntityPropertyRegistry propertyRegistry ) {
 		this.propertyRegistry = propertyRegistry;
 	}
 
@@ -160,8 +157,7 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	}
 
 	@Override
-	public void setEntityMessageCodeResolver( EntityMessageCodeResolver entityMessageCodeResolver ) {
-		Assert.notNull( entityMessageCodeResolver );
+	public void setEntityMessageCodeResolver( @NonNull EntityMessageCodeResolver entityMessageCodeResolver ) {
 		this.entityMessageCodeResolver = entityMessageCodeResolver;
 	}
 
@@ -210,8 +206,7 @@ public class EntityConfigurationImpl<T> extends AttributeSupport implements Muta
 	}
 
 	@Override
-	public void setAllowableActionsBuilder( EntityConfigurationAllowableActionsBuilder allowableActionsBuilder ) {
-		Assert.notNull( allowableActionsBuilder );
+	public void setAllowableActionsBuilder( @NonNull EntityConfigurationAllowableActionsBuilder allowableActionsBuilder ) {
 		this.allowableActionsBuilder = allowableActionsBuilder;
 	}
 

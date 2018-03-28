@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.config.entities;
 import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Persistable;
 
@@ -38,8 +37,5 @@ public class PersistableEntityUiConfiguration implements EntityConfigurer
 		        .properties(
 				        props -> props.property( "new" ).readable( false ).hidden( true )
 		        );
-
-		entities.assignableTo( SettableIdBasedEntity.class )
-		        .properties( props -> props.property( "newEntityId" ).readable( false ).hidden( true ) );
 	}
 }

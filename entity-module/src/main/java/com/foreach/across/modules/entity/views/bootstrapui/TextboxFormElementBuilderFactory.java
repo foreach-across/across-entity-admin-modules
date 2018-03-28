@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,21 +15,21 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlRequiredBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PlaceholderTextPostProcessor;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,16 +45,15 @@ import java.util.Map;
  *
  * @author Arne Vandamme
  */
+@ConditionalOnBootstrapUI
 @Component
 public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<TextboxFormElementBuilder>
 {
 	private EntityViewElementBuilderFactoryHelper builderFactoryHelpers;
-	private BootstrapUiFactory bootstrapUi;
 
 	private int maximumSingleLineLength = 300;
 
 	public TextboxFormElementBuilderFactory() {
-		addProcessor( new FormControlRequiredBuilderProcessor<>() );
 		addProcessor( new TextboxConstraintsProcessor() );
 		addProcessor( new EmailTypeDetectionProcessor() );
 		addProcessor( new TextboxTypeDetectionProcessor() );
@@ -76,25 +75,21 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	protected TextboxFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                          ViewElementMode viewElementMode,
 	                                                          String viewElementType ) {
-		return bootstrapUi
+		return BootstrapUiBuilders
 				.textbox()
 				.name( propertyDescriptor.getName() )
 				.controlName( EntityAttributes.controlName( propertyDescriptor ) )
+				.required( EntityAttributes.isRequired( propertyDescriptor ) )
 				.multiLine(
 						String.class.equals( propertyDescriptor.getPropertyType() ) || BootstrapUiElements.TEXTAREA.equals( viewElementType )
 				)
 				.postProcessor( builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) )
-				.postProcessor( new PlaceholderTextPostProcessor<>( propertyDescriptor ) );
+				.postProcessor( new PropertyPlaceholderTextPostProcessor<>() );
 	}
 
 	@Autowired
 	public void setBuilderFactoryHelpers( EntityViewElementBuilderFactoryHelper builderFactoryHelpers ) {
 		this.builderFactoryHelpers = builderFactoryHelpers;
-	}
-
-	@Autowired
-	public void setBootstrapUi( BootstrapUiFactory bootstrapUi ) {
-		this.bootstrapUi = bootstrapUi;
 	}
 
 	/**

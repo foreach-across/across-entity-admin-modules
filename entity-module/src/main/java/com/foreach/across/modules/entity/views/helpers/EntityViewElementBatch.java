@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.views.helpers;
 
+import com.foreach.across.core.support.ReadableAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -25,22 +26,22 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
+import lombok.NonNull;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.*;
 
 /**
  * Helper to quickly generate {@link com.foreach.across.modules.web.ui.ViewElement} instances
  * for a number of properties of a certain {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry}.
  * <p>
  * The properties are determined by the selector assigned through {@link #setPropertySelector(EntityPropertySelector)}.
+ * <p>
+ * Note: this class is not thread safe.
  *
  * @author Arne Vandamme
  */
+@NotThreadSafe
 public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 {
 	private final EntityViewElementBuilderService viewElementBuilderService;
@@ -52,8 +53,8 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 
 	private Map<String, Object> builderHints = Collections.emptyMap();
 
-	@Autowired
 	public EntityViewElementBatch( EntityViewElementBuilderService viewElementBuilderService ) {
+		super( false );
 		this.viewElementBuilderService = viewElementBuilderService;
 	}
 
@@ -63,6 +64,11 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 
 	public void setParentViewElementBuilderContext( ViewElementBuilderContext viewElementBuilderContext ) {
 		setParent( viewElementBuilderContext );
+	}
+
+	@Override
+	protected ViewElementBuilderContext getParent() {
+		return (ViewElementBuilderContext) super.getParent();
 	}
 
 	public void setPropertySelector( EntityPropertySelector propertySelector ) {
@@ -94,8 +100,7 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 	 *
 	 * @param builderHints map instance, should not be null
 	 */
-	public void setBuilderHints( Map<String, Object> builderHints ) {
-		Assert.notNull( builderHints );
+	public void setBuilderHints( @NonNull Map<String, Object> builderHints ) {
 		this.builderHints = builderHints;
 	}
 
@@ -105,7 +110,26 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 	 * @return map of property name/ element
 	 */
 	public Map<String, ViewElement> build() {
+		return build(
+				Optional.ofNullable( getParent() )
+				        .orElseGet(
+						        () -> ViewElementBuilderContext.retrieveGlobalBuilderContext().orElseGet( DefaultViewElementBuilderContext::new )
+				        )
+		);
+	}
+
+	/**
+	 * Generates the final elements using the specified builder context as parent.
+	 * This will override the default parent context set with {@link #setParentViewElementBuilderContext(ViewElementBuilderContext)}.
+	 *
+	 * @param parentBuilderContext to use
+	 * @return map of property name/element
+	 */
+	public Map<String, ViewElement> build( ViewElementBuilderContext parentBuilderContext ) {
 		List<EntityPropertyDescriptor> descriptors = propertyRegistry.select( propertySelector );
+
+		ReadableAttributes currentParent = getParent();
+		setParent( parentBuilderContext );
 
 		Map<String, ViewElement> elements = new LinkedHashMap<>();
 
@@ -115,6 +139,8 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 
 			elements.put( propertyName, getViewElement( descriptor, builderHint ) );
 		}
+
+		setParent( currentParent );
 
 		return elements;
 	}

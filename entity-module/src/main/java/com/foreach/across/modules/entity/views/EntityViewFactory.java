@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import com.foreach.across.core.support.ReadableAttributes;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -24,17 +25,17 @@ import org.springframework.web.bind.WebDataBinder;
  * Central API for building custom entity views using the generic controllers.
  * For correct assembly of a view, the methods of the EntityViewFactory are expected to be called in specific order:
  * <ol>
- *     <li>{@link #prepareEntityViewContext(ConfigurableEntityViewContext)}</li>
- *     <li>{@link #authorizeRequest(EntityViewRequest)}</li>
- *     <li>{@link #initializeCommandObject(EntityViewRequest, EntityViewCommand, WebDataBinder)}</li>
- *     <li>{@link #createView(EntityViewRequest)}</li>
+ * <li>{@link #prepareEntityViewContext(ConfigurableEntityViewContext)}</li>
+ * <li>{@link #authorizeRequest(EntityViewRequest)}</li>
+ * <li>{@link #initializeCommandObject(EntityViewRequest, EntityViewCommand, WebDataBinder)}</li>
+ * <li>{@link #createView(EntityViewRequest)}</li>
  * </ol>
  *
  * @author Arne Vandamme
- * @since 2.0.0
  * @see com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController
+ * @since 2.0.0
  */
-public interface EntityViewFactory
+public interface EntityViewFactory extends ReadableAttributes
 {
 	/**
 	 * Apply possible factory modifications to the {@link ConfigurableEntityViewContext}.

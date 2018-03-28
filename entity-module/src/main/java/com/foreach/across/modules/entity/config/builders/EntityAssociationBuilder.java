@@ -16,10 +16,13 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -37,7 +40,8 @@ import java.util.function.Consumer;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class EntityAssociationBuilder extends AbstractWritableAttributesAndViewsBuilder
+@Slf4j
+public class EntityAssociationBuilder extends AbstractWritableAttributesAndViewsBuilder<EntityAssociation>
 {
 	private String name;
 	private boolean hiddenSpecified;
@@ -65,8 +69,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param name of the association
 	 * @return current builder
 	 */
-	public EntityAssociationBuilder name( String name ) {
-		Assert.notNull( name );
+	public EntityAssociationBuilder name( @NonNull String name ) {
 		this.name = name;
 		return this;
 	}
@@ -77,8 +80,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param associationType of the association
 	 * @return current builder
 	 */
-	public EntityAssociationBuilder associationType( EntityAssociation.Type associationType ) {
-		Assert.notNull( associationType );
+	public EntityAssociationBuilder associationType( @NonNull EntityAssociation.Type associationType ) {
 		this.associationType = associationType;
 		return this;
 	}
@@ -90,8 +92,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param targetEntityType type of the target entity
 	 * @return current builder
 	 */
-	public EntityAssociationBuilder targetEntityType( Class<?> targetEntityType ) {
-		Assert.notNull( targetEntityType );
+	public EntityAssociationBuilder targetEntityType( @NonNull Class<?> targetEntityType ) {
 		this.targetEntityType = targetEntityType;
 		return this;
 	}
@@ -104,8 +105,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param entityName name of the target entity
 	 * @return current builder
 	 */
-	public EntityAssociationBuilder targetEntity( String entityName ) {
-		Assert.notNull( entityName );
+	public EntityAssociationBuilder targetEntity( @NonNull String entityName ) {
 		this.targetEntityName = entityName;
 		return this;
 	}
@@ -120,8 +120,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param sourceProperty name, not null
 	 * @return current builder
 	 */
-	public EntityAssociationBuilder sourceProperty( String sourceProperty ) {
-		Assert.notNull( sourceProperty );
+	public EntityAssociationBuilder sourceProperty( @NonNull String sourceProperty ) {
 		this.sourceProperty = sourceProperty;
 		sourcePropertyRemoved = false;
 		return this;
@@ -148,8 +147,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param targetProperty name, not null
 	 * @return current builder
 	 */
-	public EntityAssociationBuilder targetProperty( String targetProperty ) {
-		Assert.notNull( targetProperty );
+	public EntityAssociationBuilder targetProperty( @NonNull String targetProperty ) {
 		this.targetProperty = targetProperty;
 		targetPropertyRemoved = false;
 		return this;
@@ -293,6 +291,11 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 		return (EntityAssociationBuilder) super.attribute( type, value );
 	}
 
+	@Override
+	public EntityAssociationBuilder attribute( AttributeRegistrar<EntityAssociation> attributeRegistrar ) {
+		return (EntityAssociationBuilder) super.attribute( attributeRegistrar );
+	}
+
 	/**
 	 * Apply the association builder to the configuration specified.  This will add or modify the association
 	 * represented by this builder.
@@ -300,6 +303,7 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	 * @param configuration to register the association in
 	 */
 	void apply( MutableEntityConfiguration configuration ) {
+		Assert.notNull( name, "A name() is required for an AssociationBuilder." );
 		MutableEntityAssociation association = configuration.association( name );
 
 		if ( association == null ) {
@@ -359,8 +363,14 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 				association.setParentDeleteMode( parentDeleteMode );
 			}
 
-			applyAttributes( association );
-			applyViews( association );
+			applyAttributes( association, association );
+			if ( beanFactory.containsBean( EntityViewFactoryBuilder.BEAN_NAME ) ) {
+				applyViews( association );
+			}
+			else {
+				LOG.trace( "Skipping default views registration for '{}->{}' - the default EntityViewFactoryBuilder is not present, probably no AdminWebModule",
+				           configuration.getName(), association.getName() );
+			}
 		}
 		finally {
 			associationBeingBuilt = null;
@@ -374,7 +384,8 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 				: entityRegistry.getEntityConfiguration( targetEntityType );
 
 		if ( targetConfiguration == null ) {
-			throw new IllegalArgumentException( "Unable to retrieve target entity configured: " + targetEntityType );
+			throw new IllegalArgumentException(
+					"Unable to retrieve target entity, targetEntityType: [" + targetEntityType + "], targetEntityName: [" + targetEntityName + "], association name: [" + name + "]" );
 		}
 
 		return targetConfiguration;
@@ -383,10 +394,10 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	@Override
 	protected <U extends EntityViewFactoryBuilder> U createViewFactoryBuilder( Class<U> builderType ) {
 		if ( EntityListViewFactoryBuilder.class.isAssignableFrom( builderType ) ) {
-			return builderType.cast( new EntityListViewFactoryBuilder( beanFactory ) );
+			return builderType.cast( beanFactory.getBean( EntityListViewFactoryBuilder.class ) );
 		}
 
-		return builderType.cast( new EntityViewFactoryBuilder( beanFactory ) );
+		return builderType.cast( beanFactory.getBean( EntityViewFactoryBuilder.class ) );
 	}
 
 	@Override

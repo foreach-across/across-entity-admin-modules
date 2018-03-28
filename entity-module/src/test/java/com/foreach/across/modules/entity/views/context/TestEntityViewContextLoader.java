@@ -22,12 +22,12 @@ import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.EntityLinkBuilder;
+import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.function.Consumer;
 
@@ -53,17 +53,17 @@ public class TestEntityViewContextLoader
 	@InjectMocks
 	private EntityViewContextLoader loader;
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullEntityIsNotAllowed() {
 		loader.loadForEntity( context, null );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullEntityNameIsNotAllowed() {
 		loader.loadForEntityConfiguration( context, (String) null );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullEntityConfigurationIsNotAllowed() {
 		loader.loadForEntityConfiguration( context, (EntityConfiguration<?>) null );
 	}
@@ -87,14 +87,14 @@ public class TestEntityViewContextLoader
 
 	private void mockAndLoad( Consumer<ConfigurableEntityViewContext> caller ) {
 		EntityMessageCodeResolver messageCodeResolver = mock( EntityMessageCodeResolver.class );
-		EntityLinkBuilder linkBuilder = mock( EntityLinkBuilder.class );
+		EntityViewLinkBuilder linkBuilder = mock( EntityViewLinkBuilder.class );
 		EntityModel entityModel = mock( EntityModel.class );
 		EntityPropertyRegistry propertyRegistry = mock( EntityPropertyRegistry.class );
 
 		when( entityRegistry.getEntityConfiguration( "entityName" ) ).thenReturn( entityConfiguration );
 		when( entityConfiguration.getEntityModel() ).thenReturn( entityModel );
 		when( entityConfiguration.getEntityMessageCodeResolver() ).thenReturn( messageCodeResolver );
-		when( entityConfiguration.getAttribute( EntityLinkBuilder.class ) ).thenReturn( linkBuilder );
+		when( entityConfiguration.getAttribute( EntityViewLinkBuilder.class ) ).thenReturn( linkBuilder );
 		when( entityConfiguration.getPropertyRegistry() ).thenReturn( propertyRegistry );
 
 		caller.accept( context );

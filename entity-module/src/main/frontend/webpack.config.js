@@ -10,13 +10,13 @@ export default {
   "context": path.join( __dirname, config.js.src ),
   "entry": {
     // "main": ["./main"],
-    "entity-query": ["./entity-query"],
+    "entity-query.js": ["./entity-query"],
     // "common": ["jquery"]
   },
   "output": {
     "path": path.join( __dirname, config.js.dest ),
     "publicPath": "http://localhost:3000/js/",
-    "filename": "[name].js",
+    "filename": "[name]",
     "chunkFilename": "[name].chunk.[chunkhash].js"
   },
   "resolve": {

@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.BeanFactory;
 
 import static org.junit.Assert.assertSame;
@@ -47,7 +47,7 @@ public class TestEntityViewElementBuilderHelper
 	@InjectMocks
 	private EntityViewElementBuilderHelper builderHelper;
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void nullEntityViewContext() {
 		builderHelper.createSortableTableBuilder( (EntityViewContext) null );
 	}

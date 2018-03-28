@@ -15,10 +15,10 @@
  */
 package com.foreach.across.modules.entity.registry;
 
+import lombok.NonNull;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
-import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.Locale;
@@ -59,8 +59,7 @@ public class DefaultEntityModel<T, U extends Serializable> implements EntityMode
 	 *
 	 * @param labelPrinter instance
 	 */
-	public void setLabelPrinter( Printer<T> labelPrinter ) {
-		Assert.notNull( labelPrinter );
+	public void setLabelPrinter( @NonNull Printer<T> labelPrinter ) {
 		this.labelPrinter = labelPrinter;
 	}
 
@@ -80,8 +79,7 @@ public class DefaultEntityModel<T, U extends Serializable> implements EntityMode
 	 *
 	 * @param entityFactory instance
 	 */
-	public void setEntityFactory( EntityFactory<T> entityFactory ) {
-		Assert.notNull( entityFactory );
+	public void setEntityFactory( @NonNull EntityFactory<T> entityFactory ) {
 		this.entityFactory = entityFactory;
 	}
 
@@ -100,8 +98,7 @@ public class DefaultEntityModel<T, U extends Serializable> implements EntityMode
 	 *
 	 * @param findOneMethod callback
 	 */
-	public void setFindOneMethod( Function<U, T> findOneMethod ) {
-		Assert.notNull( findOneMethod );
+	public void setFindOneMethod( @NonNull Function<U, T> findOneMethod ) {
 		this.findOneMethod = findOneMethod;
 	}
 
@@ -115,8 +112,7 @@ public class DefaultEntityModel<T, U extends Serializable> implements EntityMode
 	 *
 	 * @param saveMethod callback
 	 */
-	public void setSaveMethod( UnaryOperator<T> saveMethod ) {
-		Assert.notNull( saveMethod );
+	public void setSaveMethod( @NonNull UnaryOperator<T> saveMethod ) {
 		this.saveMethod = saveMethod;
 	}
 
@@ -130,8 +126,7 @@ public class DefaultEntityModel<T, U extends Serializable> implements EntityMode
 	 *
 	 * @param deleteMethod callback
 	 */
-	public void setDeleteMethod( Consumer<T> deleteMethod ) {
-		Assert.notNull( deleteMethod );
+	public void setDeleteMethod( @NonNull Consumer<T> deleteMethod ) {
 		this.deleteMethod = deleteMethod;
 	}
 
@@ -145,8 +140,7 @@ public class DefaultEntityModel<T, U extends Serializable> implements EntityMode
 	 *
 	 * @param entityInformation implementation
 	 */
-	public void setEntityInformation( EntityInformation<T, U> entityInformation ) {
-		Assert.notNull( entityInformation );
+	public void setEntityInformation( @NonNull EntityInformation<T, U> entityInformation ) {
 		this.entityInformation = entityInformation;
 	}
 

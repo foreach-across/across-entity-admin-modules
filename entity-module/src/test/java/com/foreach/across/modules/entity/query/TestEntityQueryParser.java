@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
@@ -50,13 +50,13 @@ public class TestEntityQueryParser
 		parser.validateProperties();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void validatePropertiesRequiresMetadataProvider() {
 		parser.setMetadataProvider( null );
 		parser.validateProperties();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void validatePropertiesRequiresQueryTranslator() {
 		parser.setQueryTranslator( null );
 		parser.validateProperties();

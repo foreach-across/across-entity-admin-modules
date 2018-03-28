@@ -16,13 +16,13 @@
 
 package com.foreach.across.modules.entity.views.events;
 
-import com.foreach.across.core.events.ParameterizedAcrossEvent;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.ResolvableTypeProvider;
 
 /**
- * Event published by the {@link com.foreach.across.modules.entity.views.EntityDeleteViewFactory} before building
+ * Event published by the {@link com.foreach.across.modules.entity.views.processors.DeleteEntityViewProcessor} before building
  * the actual view.  Allows basic configuration of the delete form: customizing feedback messages, showing related
  * entities and suppressing the actual ability to delete the entity.  The delete view can be seen as the confirmation
  * page (are you sure you want to?) before the actual delete.
@@ -34,7 +34,7 @@ import org.springframework.core.ResolvableType;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public class BuildEntityDeleteViewEvent<T> implements ParameterizedAcrossEvent
+public final class BuildEntityDeleteViewEvent<T> implements ResolvableTypeProvider
 {
 	private final T entity;
 	private final ViewElementBuilderContext builderContext;
@@ -73,8 +73,8 @@ public class BuildEntityDeleteViewEvent<T> implements ParameterizedAcrossEvent
 	}
 
 	@Override
-	public ResolvableType[] getEventGenericTypes() {
-		return new ResolvableType[] { ResolvableType.forInstance( entity ) };
+	public ResolvableType getResolvableType() {
+		return ResolvableType.forClassWithGenerics( BuildEntityDeleteViewEvent.class, ResolvableType.forInstance( entity ) );
 	}
 
 	/**
