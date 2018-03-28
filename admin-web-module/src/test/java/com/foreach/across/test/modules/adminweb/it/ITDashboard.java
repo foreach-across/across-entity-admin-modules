@@ -24,6 +24,7 @@ import com.foreach.across.test.AcrossTestWebContext;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -92,6 +93,7 @@ public class ITDashboard
 	}
 
 	@ModuleConfiguration(SpringSecurityModule.NAME)
+	@EnableGlobalAuthentication
 	public static class DashboardUserConfiguration
 	{
 		@Autowired

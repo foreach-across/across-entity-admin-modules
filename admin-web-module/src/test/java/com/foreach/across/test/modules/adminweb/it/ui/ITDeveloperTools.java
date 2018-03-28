@@ -21,6 +21,7 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.test.AcrossTestWebContext;
 import org.junit.Test;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -80,7 +81,7 @@ public class ITDeveloperTools
 		@ResponseBody
 		@GetMapping("/devtools")
 		public String developerToolsMenuItemFound( AdminMenu adminMenu ) {
-			Menu menu = adminMenu.getItem( Menu.byTitle( "Developer tools" ) );
+			Menu menu = adminMenu.getItem( MenuSelector.byTitle( "Developer tools" ) );
 			return menu == null ? "notFound" : menu.getPath();
 		}
 	}

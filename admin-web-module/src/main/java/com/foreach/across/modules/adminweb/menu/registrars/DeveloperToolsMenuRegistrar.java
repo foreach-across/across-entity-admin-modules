@@ -17,13 +17,13 @@
 package com.foreach.across.modules.adminweb.menu.registrars;
 
 import com.foreach.across.core.annotations.ConditionalOnDevelopmentMode;
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +39,7 @@ public final class DeveloperToolsMenuRegistrar
 {
 	public static final String PATH = "/ax/developer";
 
-	@Event
+	@EventListener
 	void registerDeveloperToolsItem( AdminMenuEvent menuEvent ) {
 		menuEvent.builder()
 		         .group( PATH, "Developer tools" )

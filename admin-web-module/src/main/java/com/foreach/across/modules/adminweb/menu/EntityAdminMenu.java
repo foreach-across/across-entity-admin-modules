@@ -4,6 +4,10 @@ import com.foreach.across.modules.web.menu.Menu;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
+/**
+ * @deprecated since 3.0.0 - migrated to EntityModule
+ */
+@Deprecated
 public class EntityAdminMenu<T> extends Menu
 {
 	private final Class<T> entityClass;

@@ -17,12 +17,12 @@
 package admin.application.controllers;
 
 import com.foreach.across.core.annotations.ConditionalOnDevelopmentMode;
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
-import com.foreach.across.modules.adminweb.menu.registrars.DeveloperToolsMenuRegistrar;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
+import com.foreach.across.modules.adminweb.menu.registrars.DeveloperToolsMenuRegistrar;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -36,7 +36,7 @@ public class DevToolsController
 {
 	private final PageContentStructure pageContentStructure;
 
-	@Event
+	@EventListener
 	void registerDeveloperToolsItem( AdminMenuEvent menuEvent ) {
 		menuEvent.builder()
 		         .item( DeveloperToolsMenuRegistrar.PATH + "/test", "Test controller" );

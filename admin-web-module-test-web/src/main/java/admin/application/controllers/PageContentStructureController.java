@@ -16,7 +16,6 @@
 
 package admin.application.controllers;
 
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
@@ -30,6 +29,7 @@ import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -44,7 +44,7 @@ public class PageContentStructureController
 	private final BootstrapUiFactory bootstrapUiFactory;
 	private final BootstrapUiComponentFactory bootstrapUiComponentFactory;
 
-	@Event
+	@EventListener
 	public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
 		adminMenuEvent.builder()
 		              .group( "/demo", "Demo pages" ).and()
@@ -104,7 +104,8 @@ public class PageContentStructureController
 
 		page.addToNav( bootstrapUiComponentFactory.nav( menu ).tabs().build( builderContext ) );
 		page.addToFeedback(
-				bootstrapUiFactory.alert().danger().dismissible().text( "Global feedback section with a lot of content that will be rendered as a toastr notification." )
+				bootstrapUiFactory.alert().danger().dismissible()
+				                  .text( "Global feedback section with a lot of content that will be rendered as a toastr notification." )
 				                  .build( builderContext )
 		);
 

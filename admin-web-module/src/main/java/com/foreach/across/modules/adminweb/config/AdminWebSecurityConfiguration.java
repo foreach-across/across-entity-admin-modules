@@ -17,7 +17,6 @@
 package com.foreach.across.modules.adminweb.config;
 
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
-import com.foreach.across.core.events.AcrossEventPublisher;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.events.AdminWebUrlRegistry;
@@ -30,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -50,7 +50,7 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	private static final Logger LOG = LoggerFactory.getLogger( AdminWebSecurityConfiguration.class );
 
 	@Autowired
-	private AcrossEventPublisher publisher;
+	private ApplicationEventPublisher publisher;
 
 	@Autowired
 	private AdminWeb adminWeb;
@@ -88,7 +88,7 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry urlRegistry =
 				http.authorizeRequests();
 
-		publisher.publish( new AdminWebUrlRegistry( adminWeb, urlRegistry ) );
+		publisher.publishEvent( new AdminWebUrlRegistry( adminWeb, urlRegistry ) );
 
 		// Only users with any of the configured admin permissions can login
 		urlRegistry.anyRequest().hasAnyAuthority( settings.getAccessPermissions() );
