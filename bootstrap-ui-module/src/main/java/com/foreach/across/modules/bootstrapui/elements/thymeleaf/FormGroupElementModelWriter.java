@@ -365,27 +365,30 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		if ( formControl != null
 				&& templateContext.containsVariable( SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION ) ) {
 			String controlName = formControl.getControlName();
-			String propertyName = StringUtils.startsWith( controlName, "_" )
-					? StringUtils.substring( controlName, 1 )
-					: controlName;
 
-			BindStatus bindStatus = retrieveBindStatus( templateContext, propertyName );
+			if ( controlName != null ) {
+				String propertyName = StringUtils.startsWith( controlName, "_" )
+						? StringUtils.substring( controlName, 1 )
+						: controlName;
 
-			if ( bindStatus != null && bindStatus.isError() ) {
-				if ( formControl instanceof TextboxFormElement ) {
-					// Set value that original value that caused a binding error
-					Object inputValue = bindStatus.getValue();
-					if ( inputValue != null ) {
-						formControl.setAttribute( TextboxFormElementModelWriter.TRANSIENT_ERROR_VALUE_ATTRIBUTE, inputValue.toString() );
+				BindStatus bindStatus = retrieveBindStatus( templateContext, propertyName );
+
+				if ( bindStatus != null && bindStatus.isError() ) {
+					if ( formControl instanceof TextboxFormElement ) {
+						// Set value that original value that caused a binding error
+						Object inputValue = bindStatus.getValue();
+						if ( inputValue != null ) {
+							formControl.setAttribute( TextboxFormElementModelWriter.TRANSIENT_ERROR_VALUE_ATTRIBUTE, inputValue.toString() );
+						}
 					}
-				}
 
-				return model -> {
-					model.addOpenElement( "div" );
-					model.addAttributeValue( "class", "small", "text-danger" );
-					model.addHtml( bindStatus.getErrorMessagesAsString( " " ) );
-					model.addCloseElement();
-				};
+					return model -> {
+						model.addOpenElement( "div" );
+						model.addAttributeValue( "class", "small", "text-danger" );
+						model.addHtml( bindStatus.getErrorMessagesAsString( " " ) );
+						model.addCloseElement();
+					};
+				}
 			}
 		}
 

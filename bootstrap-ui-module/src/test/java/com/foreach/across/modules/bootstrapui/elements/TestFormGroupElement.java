@@ -89,6 +89,29 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void anonymousControlOnBoundForm() {
+		TestClass target = new TestClass( "test value" );
+		BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+
+		FormViewElement form = new FormViewElement();
+		form.setErrors( errors );
+
+		group = new FormGroupElement();
+		group.setControl( new TextboxFormElement() );
+		form.addChild( group );
+
+		renderAndExpect(
+				form,
+				this::sampleModelWithError,
+				"<form method='post' role='form'>" +
+						"<div class='form-group'>" +
+						"<input type='text' class='form-control' />" +
+						"</div>" +
+						"</form>"
+		);
+	}
+
+	@Test
 	public void formGroupWithoutControl() {
 		group.getLabel( LabelFormElement.class ).setTarget( (ViewElement) null );
 		group.setControl( new TemplateViewElement( "th/test/template :: value" ) );
