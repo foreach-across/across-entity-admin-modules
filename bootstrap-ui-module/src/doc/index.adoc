@@ -1,9 +1,9 @@
 = BootstrapUiModule
 Arne Vandamme
-2.0.0.RELEASE
+2.0.1-SNAPSHOT
 :toc: left
 :sectanchors:
-:module-version: 2.0.0.RELEASE
+:module-version: 2.0.1-SNAPSHOT
 :module-name: BootstrapUiModule
 :module-artifact: bootstrap-ui-module
 :module-url: https://foreach.atlassian.net/wiki/display/AX/BootstrapUiModule
@@ -46,7 +46,7 @@ Module website: {module-url}
 
 == What's new in this version?
 :numbered!:
-=== 2.0.0.RELEASE
+=== 2.0.1-SNAPSHOT
 * DateTimeFormElements now have support for `LocalDate`, `LocalTime`, `LocalDateTime`
 * `FormViewElement` and `FormViewElementBuilder` now allow you to configure either a command object or an `Errors` instance directly
 ** this makes it easier to resolve field errors for the `FormGroupElement` members of the form, without having to know the model attribute name
