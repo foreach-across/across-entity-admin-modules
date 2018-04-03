@@ -20,13 +20,11 @@ import com.foreach.across.modules.bootstrapui.components.builder.BreadcrumbNavCo
 import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.web.menu.Menu;
-import org.springframework.stereotype.Service;
 
 /**
  * @author Arne Vandamme
  * @since 1.0.0
  */
-@Service
 public class BootstrapUiComponentFactoryImpl implements BootstrapUiComponentFactory
 {
 	@Override

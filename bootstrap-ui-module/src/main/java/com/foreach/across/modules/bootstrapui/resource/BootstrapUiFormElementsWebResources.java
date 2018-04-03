@@ -30,8 +30,7 @@ import com.foreach.across.modules.web.resource.WebResource;
  *
  * @author Arne Vandamme
  */
-public class
-BootstrapUiFormElementsWebResources extends SimpleWebResourcePackage
+public class BootstrapUiFormElementsWebResources extends SimpleWebResourcePackage
 {
 	public static final String NAME = "bootstrapui-formelements";
 
