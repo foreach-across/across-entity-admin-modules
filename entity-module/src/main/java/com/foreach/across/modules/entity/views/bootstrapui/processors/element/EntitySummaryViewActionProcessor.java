@@ -39,6 +39,6 @@ public class EntitySummaryViewActionProcessor implements ViewElementPostProcesso
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row element ) {
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		element.setAttribute( "data-summary-url", linkBuilder.forInstance( entity ).withViewName( viewName ).withPartial( "content" ).toString() );
+		element.setAttribute( "data-summary-url", linkBuilder.forInstance( entity ).withViewName( viewName ).withPartial( "content" ).toUriString());
 	}
 }
