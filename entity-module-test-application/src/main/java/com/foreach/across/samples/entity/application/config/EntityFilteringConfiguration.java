@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionElementBuilderFactory;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.query.EntityQueryValueEnhancer;
@@ -45,6 +46,7 @@ import com.foreach.across.samples.entity.application.business.Partner;
 import com.foreach.across.samples.entity.application.business.User;
 import com.foreach.across.samples.entity.application.repositories.PartnerRepository;
 import com.foreach.across.samples.entity.application.repositories.UserRepository;
+import com.foreach.across.testmodules.springdata.business.Client;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,8 +110,11 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text" )
 		                                                                .basicMode( true )
 		                                                                .advancedMode( true ) ) )
-		;
+		;configuration.withType( Client.class )
+                      .properties( props -> props.property( "phones" ).viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE ) );
+
 		configuration.withType( User.class )
+		             .properties( props -> props.property( "address" ).viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE ) )
 		             .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate", "active" )
 		                                  .properties(
 				                                  props -> props.property( "id" )

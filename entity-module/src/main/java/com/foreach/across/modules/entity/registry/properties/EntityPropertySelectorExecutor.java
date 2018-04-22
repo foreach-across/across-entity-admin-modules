@@ -15,7 +15,9 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -100,8 +102,20 @@ public class EntityPropertySelectorExecutor
 	private List<EntityPropertyDescriptor> selectNestedProperties( String propertyName, String selectorString ) {
 		EntityPropertyDescriptor descriptor = current.getProperty( propertyName );
 
-		if ( descriptor.getPropertyType() != null ) {
-			EntityPropertyRegistry registry = propertyRegistries.get( descriptor.getPropertyType() );
+		// todo might cause problems with specific types implementing a collection
+		// problem is that 'get' creates the registry
+		Class<?> propertyType = descriptor.getPropertyType();
+
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		if ( typeDescriptor != null && ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) ) {
+			val elementType = typeDescriptor.getElementTypeDescriptor();
+			if ( elementType != null ) {
+				propertyType = elementType.getObjectType();
+			}
+		}
+
+		if ( propertyType != null ) {
+			EntityPropertyRegistry registry = propertyRegistries.get( propertyType );
 
 			List<EntityPropertyDescriptor> subProperties = registry.select(
 					new EntityPropertySelector( selectorString )

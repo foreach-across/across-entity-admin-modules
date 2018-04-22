@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,9 @@ package com.foreach.across.modules.entity.registry.properties;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import com.foreach.across.modules.entity.views.support.NestedValueFetcher;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
 
 /**
@@ -71,12 +73,10 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				EntityPropertyDescriptor rootDescriptor = super.getProperty( rootProperty );
 
 				if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
-					EntityPropertyRegistry subRegistry
-							= getRegistryProvider().get( rootDescriptor.getPropertyType() );
+					EntityPropertyRegistry subRegistry = getRegistryProvider().get( findPropertyType( rootDescriptor ) );
 
 					if ( subRegistry != null ) {
-						EntityPropertyDescriptor childDescriptor
-								= subRegistry.getProperty( findChildProperty( propertyName ) );
+						EntityPropertyDescriptor childDescriptor = subRegistry.getProperty( findChildProperty( propertyName ) );
 
 						if ( childDescriptor != null ) {
 							descriptor = buildNestedDescriptor( propertyName, rootDescriptor, childDescriptor );
@@ -87,6 +87,20 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		}
 
 		return descriptor;
+	}
+
+	private Class<?> findPropertyType( EntityPropertyDescriptor descriptor ) {
+		Class<?> propertyType = descriptor.getPropertyType();
+
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		if ( typeDescriptor != null && ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) ) {
+			val elementType = typeDescriptor.getElementTypeDescriptor();
+			if ( elementType != null ) {
+				return elementType.getObjectType();
+			}
+		}
+
+		return propertyType;
 	}
 
 	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name,

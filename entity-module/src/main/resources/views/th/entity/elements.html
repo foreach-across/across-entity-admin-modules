@@ -18,7 +18,7 @@
 
 <!--/* Renders multi-value control */-->
 <div th:fragment="multi-value-control(component)" class="js-multi-value-control">
-    <input th:id="${component.htmlId}" type="text" class="form-control js-multi-value-input" th:placeholder="${component.placeholder}" />
+    <input th:id="${component.htmlId}" type="text" class="form-control js-multi-value-input" th:placeholder="${component.placeholder}"/>
     <table class="table table-striped">
         <tr class="js-multi-value-template hidden">
             <td class="js-multi-value-value">{{value}}</td>
@@ -36,5 +36,27 @@
         </tr>
     </table>
     <input type="hidden" th:name="${'_' + component.controlName}" value="on"/>
+</div>
+
+<!--/* Renders embedded collection control */-->
+<div th:fragment="embedded-collection(component)"
+     class="form-group js-embedded-collection-form-group"
+     data-source-property="entity.phones"
+     data-target-property="extensions[EmbeddedCollections][entity.phones]">
+    <a style="float: right" data-action="add-item"><span class="glyphicon glyphicon-plus-sign"></span></a>
+    <label>Phones</label>
+    <fieldset data-role="items">
+    </fieldset>
+    <div data-role="templates" class="hidden">
+        <div data-role="edit-item-template">
+            <a style="float: right" data-action="remove-item"><span style="color:red" class="glyphicon glyphicon-remove"></span></a>
+            <across:view element="${component.children[0]}" />
+        </div>
+        <div data-role="view-item-template">
+
+        </div>
+    </div>
+    <input type="hidden" name="embedded" value="entity.phones"/>
+    <input type="hidden" data-role="item-count" value="0"/>
 </div>
 </html>

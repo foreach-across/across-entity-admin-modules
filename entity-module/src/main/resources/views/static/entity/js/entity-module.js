@@ -13,6 +13,61 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var EmbeddedCollection = function( element ) {
+    var index = 0;
+
+    var wrapper = element;
+    var items = wrapper.find( '[data-role=items]' );
+    var editItemTemplate = wrapper.find( '[data-role=edit-item-template]' );
+
+    var sourcePrefix = wrapper.attr( 'data-source-property' );
+    var targetPrefix = wrapper.attr( 'data-target-property' );
+
+    wrapper.find( '[data-action=add-item]' ).click( function() {
+        var id = 'item-' + ++index;
+        var target = targetPrefix + '[' + id + ']';
+
+        var template = editItemTemplate.clone( false );
+        template.attr( 'data-role', 'item' );
+        template.attr( 'data-item-id', id );
+
+        console.log(sourcePrefix);
+        template.find( '[name^="' + sourcePrefix + '"]' ).each( function( node ) {
+            $(this).attr( 'name', $(this).attr( 'name' ).replace( sourcePrefix, target ) );
+        } );
+        template.find( '[for^="' + sourcePrefix + '"]' ).each( function( node ) {
+            $(this).attr( 'for', $(this).attr( 'for' ).replace( sourcePrefix, target ) );
+        } );
+        template.find( '[id^="' + sourcePrefix + '"]' ).each( function( node ) {
+            $(this).attr( 'id', $(this).attr( 'id' ).replace( sourcePrefix, target ) );
+        } );
+
+        template.find( '[data-action=remove-item]' ).click( function() {
+            $( this ).closest( '[data-role=item]' ).remove();
+        } );
+
+        items.append( template );
+    } );
+
+    /*
+
+    var template = container.find( '.js-multi-value-template' ).clone( false );
+                            template.removeClass( 'hidden js-multi-value-template' );
+                            template.addClass( 'js-multi-value-item' );
+
+                            template.find( '.js-multi-value-value' ).each( function( i, node ) {
+                                node.innerText = value;
+                            } );
+
+                            template.find( '[type=hidden]' ).val( value ).removeAttr( 'disabled' );
+                            container.find( 'table' ).append( template );
+
+                            template.find( 'a' ).on( 'click', function() {
+                                $( this ).closest( 'tr' ).remove();
+                            } );
+
+     */
+};
 
 // expose global var
 var EntityModule = (function( $ ) {
@@ -310,6 +365,13 @@ var EntityModule = (function( $ ) {
                 container.find( '.js-multi-value-item a' ).on( 'click', function() {
                     $( this ).closest( 'tr' ).remove();
                 } )
+            } );
+
+            /**
+             * Experimental: initialize embedded collections.
+             */
+            $( '.js-embedded-collection-form-group', node ).each( function() {
+                new EmbeddedCollection( $( this ) );
             } );
 
             /**

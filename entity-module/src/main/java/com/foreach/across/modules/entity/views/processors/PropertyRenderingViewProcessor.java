@@ -19,21 +19,27 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.WebDataBinder;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -83,6 +89,24 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	 */
 	public void setSelector( EntityPropertySelector selector ) {
 		this.selector = this.selector.combine( selector );
+	}
+
+	@Override
+	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
+		command.addExtension( "EmbeddedCollections", new EmbeddedCollectionsMap( entityViewRequest.getEntityViewContext().getPropertyRegistry() ) );
+	}
+
+	@Override
+	protected void preProcess( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command ) {
+		EmbeddedCollectionsMap collections = command.getExtension( "EmbeddedCollections" );
+		collections.values()
+		           .forEach( map -> {
+			           val td = map.getDescriptor();
+
+			           MutablePropertyValues mpv = new MutablePropertyValues( Collections.singletonMap( "entity." + td.getName(), map.values() ) );
+			           entityViewRequest.getDataBinder().bind( mpv );
+
+		           } );
 	}
 
 	@Override
@@ -148,5 +172,48 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	@Autowired
 	void setViewElementBuilderService( EntityViewElementBuilderService viewElementBuilderService ) {
 		this.viewElementBuilderService = viewElementBuilderService;
+	}
+
+	@RequiredArgsConstructor
+	static class EmbeddedCollectionsMap extends HashMap<String, TargetTypeMap>
+	{
+		private final EntityPropertyRegistry propertyRegistry;
+
+		@Override
+		public TargetTypeMap get( Object key ) {
+
+			TargetTypeMap existing = super.get( key );
+
+			if ( existing == null ) {
+				val descriptor = propertyRegistry.getProperty( key.toString().replace( "entity.", "" ) );
+				existing = new TargetTypeMap( descriptor );
+				super.put( key.toString(), existing );
+			}
+
+			return existing;
+		}
+	}
+
+	@RequiredArgsConstructor
+	static class TargetTypeMap extends HashMap
+	{
+		@Getter
+		private final EntityPropertyDescriptor descriptor;
+
+		@SneakyThrows
+		@Override
+		public Object get( Object key ) {
+			Object existing = super.get( key );
+
+			if ( existing == null ) {
+				existing = descriptor.getPropertyTypeDescriptor().getElementTypeDescriptor().getObjectType().newInstance();
+				/*
+				val descriptor = propertyRegistry.getProperty( key.toString().replace( "entity.", "" ) );
+				existing = new TargetTypeMap( descriptor );*/
+				super.put( key.toString(), existing );
+			}
+
+			return existing;
+		}
 	}
 }
