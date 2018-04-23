@@ -16,13 +16,13 @@
 
 package com.foreach.across.samples.entity.application.business;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Arne Vandamme
@@ -31,25 +31,39 @@ import javax.persistence.Embeddable;
 @Getter
 @Setter
 @Embeddable
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Address
 {
+	@Column
+	@NotNull
+	private AddressType addressType;
+
 	@Column
 	@NotBlank
 	@Length(max = 250)
 	private String street;
-
+/*
 	@Column
 	@NotBlank
 	@Length(max = 10)
 	private String number;
-
+*/
 	@Column
 	@NotBlank
 	@Length(max = 50)
 	private String city;
 
-	@Column
+/*	@Column
 	@NotBlank
 	@Length(max = 2)
-	private String country;
+	private String country;*/
+
+	public enum AddressType
+	{
+		PRIMARY,
+		WORK,
+		OTHER
+	}
 }

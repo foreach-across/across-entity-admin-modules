@@ -110,11 +110,17 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text" )
 		                                                                .basicMode( true )
 		                                                                .advancedMode( true ) ) )
-		;configuration.withType( Client.class )
-                      .properties( props -> props.property( "phones" ).viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE ) );
+		;
+		configuration.withType( Client.class )
+		             .properties( props -> props.property( "phones" )
+		                                        .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE ) );
 
 		configuration.withType( User.class )
-		             .properties( props -> props.property( "address" ).viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE ) )
+		             .properties(
+				             props -> props.property( "address" )
+				                           .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
+				                           .viewElementType( ViewElementMode.FORM_READ, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
+		             )
 		             .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate", "active" )
 		                                  .properties(
 				                                  props -> props.property( "id" )
@@ -149,7 +155,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                                                )
 		                                  )
 		             )
-		             .view( EntityView.SUMMARY_VIEW_NAME, vb -> vb.showProperties( "name", "group" ) );
+		             .view( EntityView.SUMMARY_VIEW_NAME, vb -> vb.showProperties( "name", "group", "address" ) );
 
 		configuration.matching( c -> c.hasAttribute( EntityQueryExecutor.class ) )
 		             .listView( lvb -> lvb.entityQueryFilter( true ) );

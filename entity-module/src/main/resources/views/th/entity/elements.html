@@ -48,10 +48,10 @@
     <fieldset data-role="items">
     </fieldset>
     <div data-role="templates" class="hidden">
-        <div data-role="edit-item-template">
+        <script data-role="edit-item-template" type="text/html">
             <a style="float: right" data-action="remove-item"><span style="color:red" class="glyphicon glyphicon-remove"></span></a>
             <across:view element="${component.children[0]}" />
-        </div>
+        </script>
         <div data-role="view-item-template">
 
         </div>

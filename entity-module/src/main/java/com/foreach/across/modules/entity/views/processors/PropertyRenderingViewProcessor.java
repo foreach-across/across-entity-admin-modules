@@ -19,27 +19,24 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
+import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinder;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
-import lombok.*;
-import org.springframework.beans.MutablePropertyValues;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.WebDataBinder;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -83,7 +80,7 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 
 	/**
 	 * Define the properties that should be rendered.
-	 * Defaults to all readable properties, a new selector will be combined with the default.  If the new selector
+	 * Defaults to all readable properties. A new selector will be combined with the default.  If the new selector
 	 * defines the {@link EntityPropertySelector#CONFIGURED} property, the selector will be considered an extension
 	 * of the previously registered selector.
 	 */
@@ -93,20 +90,23 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 
 	@Override
 	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
-		command.addExtension( "EmbeddedCollections", new EmbeddedCollectionsMap( entityViewRequest.getEntityViewContext().getPropertyRegistry() ) );
+		command.addExtension(
+				EmbeddedCollectionsBinder.class.getSimpleName(),
+				new EmbeddedCollectionsBinder( entityViewRequest.getEntityViewContext().getPropertyRegistry(),
+				                               "extensions[" + EmbeddedCollectionsBinder.class.getSimpleName() + "]" )
+		);
 	}
 
 	@Override
 	protected void preProcess( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command ) {
-		EmbeddedCollectionsMap collections = command.getExtension( "EmbeddedCollections" );
-		collections.values()
-		           .forEach( map -> {
-			           val td = map.getDescriptor();
+		EmbeddedCollectionsBinder collections = command.getExtension( EmbeddedCollectionsBinder.class.getSimpleName() );
+		collections.apply( command.getEntity() );
+	}
 
-			           MutablePropertyValues mpv = new MutablePropertyValues( Collections.singletonMap( "entity." + td.getName(), map.values() ) );
-			           entityViewRequest.getDataBinder().bind( mpv );
-
-		           } );
+	@Override
+	protected void prepareViewElementBuilderContext( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderContext builderContext ) {
+		builderContext.setAttribute( EmbeddedCollectionsBinder.class,
+		                             entityViewRequest.getCommand().getExtension( EmbeddedCollectionsBinder.class.getSimpleName() ) );
 	}
 
 	@Override
@@ -172,48 +172,5 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	@Autowired
 	void setViewElementBuilderService( EntityViewElementBuilderService viewElementBuilderService ) {
 		this.viewElementBuilderService = viewElementBuilderService;
-	}
-
-	@RequiredArgsConstructor
-	static class EmbeddedCollectionsMap extends HashMap<String, TargetTypeMap>
-	{
-		private final EntityPropertyRegistry propertyRegistry;
-
-		@Override
-		public TargetTypeMap get( Object key ) {
-
-			TargetTypeMap existing = super.get( key );
-
-			if ( existing == null ) {
-				val descriptor = propertyRegistry.getProperty( key.toString().replace( "entity.", "" ) );
-				existing = new TargetTypeMap( descriptor );
-				super.put( key.toString(), existing );
-			}
-
-			return existing;
-		}
-	}
-
-	@RequiredArgsConstructor
-	static class TargetTypeMap extends HashMap
-	{
-		@Getter
-		private final EntityPropertyDescriptor descriptor;
-
-		@SneakyThrows
-		@Override
-		public Object get( Object key ) {
-			Object existing = super.get( key );
-
-			if ( existing == null ) {
-				existing = descriptor.getPropertyTypeDescriptor().getElementTypeDescriptor().getObjectType().newInstance();
-				/*
-				val descriptor = propertyRegistry.getProperty( key.toString().replace( "entity.", "" ) );
-				existing = new TargetTypeMap( descriptor );*/
-				super.put( key.toString(), existing );
-			}
-
-			return existing;
-		}
 	}
 }

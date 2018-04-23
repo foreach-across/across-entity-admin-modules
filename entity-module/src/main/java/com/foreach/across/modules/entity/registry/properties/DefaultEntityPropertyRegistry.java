@@ -64,16 +64,16 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 	@Override
 	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
-		MutableEntityPropertyDescriptor descriptor = super.getProperty( propertyName );
+		MutableEntityPropertyDescriptor descriptor = resolveProperty( propertyName );
 
 		if ( descriptor == null && getRegistryProvider() != null ) {
 			String rootProperty = findRootProperty( propertyName );
 
 			if ( rootProperty != null ) {
-				EntityPropertyDescriptor rootDescriptor = super.getProperty( rootProperty );
+				EntityPropertyDescriptor rootDescriptor = resolveProperty( rootProperty );
 
 				if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
-					EntityPropertyRegistry subRegistry = getRegistryProvider().get( findPropertyType( rootDescriptor ) );
+					EntityPropertyRegistry subRegistry = getRegistryProvider().get( rootDescriptor.getPropertyType() );
 
 					if ( subRegistry != null ) {
 						EntityPropertyDescriptor childDescriptor = subRegistry.getProperty( findChildProperty( propertyName ) );
@@ -89,18 +89,53 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		return descriptor;
 	}
 
-	private Class<?> findPropertyType( EntityPropertyDescriptor descriptor ) {
-		Class<?> propertyType = descriptor.getPropertyType();
+	private MutableEntityPropertyDescriptor resolveProperty( String propertyName ) {
+		MutableEntityPropertyDescriptor descriptor = super.getProperty( propertyName );
 
-		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
-		if ( typeDescriptor != null && ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) ) {
-			val elementType = typeDescriptor.getElementTypeDescriptor();
-			if ( elementType != null ) {
-				return elementType.getObjectType();
+		if ( descriptor == null && propertyName.endsWith( INDEXER ) ) {
+			String nonIndexedProperty = propertyName.substring( 0, propertyName.length() - 2 );
+			MutableEntityPropertyDescriptor parent = resolveProperty( nonIndexedProperty );
+
+			if ( parent != null ) {
+				TypeDescriptor memberTypeDescriptor = resolveMemberType( parent );
+
+				if ( memberTypeDescriptor != null ) {
+					return buildIndexedDescriptor( parent, memberTypeDescriptor );
+				}
 			}
 		}
 
-		return propertyType;
+		return descriptor;
+	}
+
+	private TypeDescriptor resolveMemberType( EntityPropertyDescriptor descriptor ) {
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		if ( typeDescriptor != null && ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) ) {
+			TypeDescriptor memberType = typeDescriptor.getElementTypeDescriptor();
+			return memberType != null ? memberType : TypeDescriptor.valueOf( Object.class );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Create an indexed property descriptor. This descriptor represents the member type of the corresponding
+	 * parent descriptor. An indexed property descriptor does not have a wrapping value fetcher, as it has no
+	 * way to access a specific member. As such, when building a nested descriptor, the target value fetcher
+	 * of the member type will be used, meaning that it is up to the outer code to set the correct instance
+	 * of the specific member as the entity.
+	 */
+	private MutableEntityPropertyDescriptor buildIndexedDescriptor( EntityPropertyDescriptor parent, TypeDescriptor typeDescriptor ) {
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( parent.getName() + INDEXER );
+		descriptor.setDisplayName( parent.getDisplayName() );
+		descriptor.setPropertyTypeDescriptor( typeDescriptor );
+		descriptor.setReadable( false );
+		descriptor.setWritable( false );
+		descriptor.setHidden( true );
+
+		register( descriptor );
+
+		return descriptor;
 	}
 
 	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name,
@@ -115,7 +150,13 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		descriptor.setHidden( child.isHidden() );
 
 		if ( descriptor.isReadable() ) {
-			descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
+			val parentValueFetcher = parent.getValueFetcher();
+			if ( parentValueFetcher != null ) {
+				descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
+			}
+			else {
+				descriptor.setValueFetcher( child.getValueFetcher() );
+			}
 		}
 
 		// todo: fixme decently

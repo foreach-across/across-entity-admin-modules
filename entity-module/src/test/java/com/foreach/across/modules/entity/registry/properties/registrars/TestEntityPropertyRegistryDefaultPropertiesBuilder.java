@@ -20,6 +20,9 @@ import com.foreach.across.modules.entity.registry.properties.DefaultEntityProper
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,13 +60,14 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 		                                                   .stream()
 		                                                   .map( EntityPropertyDescriptor::getName )
 		                                                   .collect( Collectors.toList() );
-		assertEquals( 6, propertyNames.size() );
+		assertEquals( 7, propertyNames.size() );
 		assertTrue( propertyNames.contains( "id" ) );
 		assertTrue( propertyNames.contains( "name" ) );
 		assertTrue( propertyNames.contains( "displayName" ) );
 		assertTrue( propertyNames.contains( "someValue" ) );
 		assertTrue( propertyNames.contains( "class" ) );
 		assertTrue( propertyNames.contains( "address" ) );
+		assertTrue( propertyNames.contains( "stays" ) );
 	}
 
 	@Test
@@ -73,10 +77,11 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 		                                                   .map( EntityPropertyDescriptor::getName )
 		                                                   .collect( Collectors.toList() );
 
-		assertEquals( 3, propertyNames.size() );
+		assertEquals( 4, propertyNames.size() );
 		assertTrue( propertyNames.contains( "id" ) );
 		assertTrue( propertyNames.contains( "name" ) );
 		assertTrue( propertyNames.contains( "address" ) );
+		assertTrue( propertyNames.contains( "stays" ) );
 	}
 
 	@Test
@@ -103,6 +108,34 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 
 		assertEquals( "my street", fetch( customer, "address.street" ) );
 		assertNull( propertyRegistry.getProperty( "address.size()" ) );
+	}
+
+	@Test
+	public void collectionMemberPropertiesCanBeRetrievedButOnlyFetchedFrom() {
+		DefaultEntityPropertyRegistry addressRegistry = new DefaultEntityPropertyRegistry( registryProvider );
+		new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() )
+				.accept( Address.class, addressRegistry );
+
+		when( registryProvider.get( Address.class ) ).thenReturn( addressRegistry );
+
+		val collection = propertyRegistry.getProperty( "stays" );
+		assertTrue( collection.getPropertyTypeDescriptor().isCollection() );
+		val member = propertyRegistry.getProperty( "stays[]" );
+		assertEquals( "stays[]", member.getName() );
+		assertEquals( "Stays", member.getDisplayName() );
+		assertEquals( Address.class, member.getPropertyType() );
+		assertNull( member.getValueFetcher() );
+		assertFalse( member.isReadable() );
+		assertFalse( member.isWritable() );
+		assertTrue( member.isHidden() );
+
+		val street = propertyRegistry.getProperty( "stays[].street" );
+		assertNotNull( street );
+
+		Address address = new Address();
+		address.setStreet( "my street" );
+		address.setNumber( 666 );
+		assertEquals( "my street", fetch( address, "stays[].street" ) );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -151,25 +184,19 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 
 	public static class Customer extends BaseCustomer
 	{
+		@Getter
+		@Setter
 		private String name;
+
+		@Getter
+		@Setter
 		private Address address;
+
+		@Getter
+		@Setter
+		private Collection<Address> stays;
+
 		private Object value;
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName( String name ) {
-			this.name = name;
-		}
-
-		public Address getAddress() {
-			return address;
-		}
-
-		public void setAddress( Address address ) {
-			this.address = address;
-		}
 
 		public String getDisplayName() {
 			return String.format( "%s (%s)", getName(), getId() );

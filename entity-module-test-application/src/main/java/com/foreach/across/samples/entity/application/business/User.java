@@ -26,7 +26,10 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author Arne Vandamme
@@ -66,11 +69,12 @@ public class User extends SettableIdBasedEntity<User>
 	@Column(name = "telephone")
 	private Set<String> phoneNumbers = new LinkedHashSet<>();
 
+	//@NotEmpty
 	@ElementCollection
 	@CollectionTable
 	@Getter
 	@Setter
-	private List<Address> address = new ArrayList<>(  );
+	private Set<Address> address = new HashSet<>();
 
 	private boolean active;
 

@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersis
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.EmbeddedCollectionViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -35,7 +36,7 @@ import org.springframework.stereotype.Component;
  * Experimental control for managing collection of embedded elements.
  *
  * @author Arne Vandamme
- * @since 3.0.0
+ * @since 3.1.0
  */
 @ConditionalOnBootstrapUI
 @Component
@@ -53,11 +54,25 @@ public class EmbeddedCollectionElementBuilderFactory implements EntityViewElemen
 
 	@Override
 	public ViewElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode, String viewElementType ) {
-		val template = BootstrapUiBuilders.container();
+		val embedded = new EmbeddedCollectionViewElementBuilder();
+		embedded.itemTemplate( createItemTemplate( propertyDescriptor, viewElementMode ) );
+		return embedded;
+		/*
 
+
+
+
+		return BootstrapUiBuilders.node( "div" )
+		                          .customTemplate( "th/entity/elements :: embedded-collection" )
+		                          .add( template );
+		                          */
+	}
+
+	private ViewElementBuilder createItemTemplate( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode ) {
 		EntityPropertySelector selector = retrieveMembersSelector( propertyDescriptor );
 		EntityPropertyRegistry propertyRegistry = propertyDescriptor.getPropertyRegistry();
 
+		val template = BootstrapUiBuilders.container();
 		if ( selector != null && propertyRegistry != null ) {
 			for ( EntityPropertyDescriptor member : propertyRegistry.select( selector ) ) {
 				ViewElementBuilder memberBuilder = entityViewElementBuilderService.getElementBuilder( member, viewElementMode );
@@ -68,16 +83,14 @@ public class EmbeddedCollectionElementBuilderFactory implements EntityViewElemen
 			}
 		}
 
-		return BootstrapUiBuilders.node( "div" )
-		                          .customTemplate( "th/entity/elements :: embedded-collection" )
-		                          .add( template );
+		return template;
 	}
 
 	private EntityPropertySelector retrieveMembersSelector( EntityPropertyDescriptor descriptor ) {
 		EntityPropertySelector selector = descriptor.getAttribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.class );
 
 		if ( selector == null && PropertyPersistenceMetadata.isEmbeddedProperty( descriptor ) ) {
-			selector = new EntityPropertySelector( descriptor.getName() + ".*" );
+			selector = new EntityPropertySelector( descriptor.getName() + "[].*" );
 		}
 
 		return selector;

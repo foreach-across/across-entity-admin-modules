@@ -16,13 +16,16 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.convert.TypeDescriptor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -51,6 +54,7 @@ public class TestDefaultEntityPropertyRegistry
 		register( "id", Long.class );
 		register( "name", String.class );
 		register( "created", Date.class );
+		register( "aliases", TypeDescriptor.collection( ArrayList.class, TypeDescriptor.valueOf( String.class ) ) );
 	}
 
 	@Test
@@ -67,16 +71,16 @@ public class TestDefaultEntityPropertyRegistry
 
 	@Test
 	public void initialOrderIsKeptAsFallback() {
-		registry.setDefaultOrder( "created", "name", "id" );
+		registry.setDefaultOrder( "created", "name", "id", "aliases" );
 		assertEquals(
-				Arrays.asList( "created", "name", "id" ),
+				Arrays.asList( "created", "name", "id", "aliases" ),
 				registry.getProperties()
 				        .stream().map( EntityPropertyDescriptor::getName ).collect( toList() )
 		);
 
 		registry.setDefaultOrder( "name" );
 		assertEquals(
-				Arrays.asList( "name", "created", "id" ),
+				Arrays.asList( "name", "aliases", "created", "id" ),
 				registry.getProperties()
 				        .stream().map( EntityPropertyDescriptor::getName ).collect( toList() )
 		);
@@ -87,7 +91,7 @@ public class TestDefaultEntityPropertyRegistry
 		registry.getProperty( "id" ).setHidden( true );
 
 		assertEquals(
-				Sets.newSet( "name", "created" ),
+				Sets.newSet( "name", "created", "aliases" ),
 				registry.getProperties()
 				        .stream().map( EntityPropertyDescriptor::getName ).collect( toSet() )
 		);
@@ -97,7 +101,7 @@ public class TestDefaultEntityPropertyRegistry
 	public void customDefaultFilter() {
 		registry.setDefaultFilter( entityPropertyDescriptor -> true );
 		assertEquals(
-				Sets.newSet( "name", "created", "id" ),
+				Sets.newSet( "name", "created", "id", "aliases" ),
 				registry.getProperties()
 				        .stream().map( EntityPropertyDescriptor::getName ).collect( toSet() )
 		);
@@ -116,13 +120,29 @@ public class TestDefaultEntityPropertyRegistry
 
 	@Test
 	public void customExcludeFilterKeepsTheDefaultOrder() {
-		registry.setDefaultOrder( "created", "name", "id" );
+		registry.setDefaultOrder( "created", "name", "id", "aliases" );
 
 		assertEquals(
-				Arrays.asList( "created", "id" ),
+				Arrays.asList( "created", "id", "aliases" ),
 				registry.getProperties( entityPropertyDescriptor -> !"name".equals( entityPropertyDescriptor.getName() ) )
 				        .stream().map( EntityPropertyDescriptor::getName ).collect( toList() )
 		);
+	}
+
+	@Test
+	public void collectionPropertyHasHiddenAliasWithMemberType() {
+		val descriptor = registry.getProperty( "aliases" );
+		assertEquals( "aliases", descriptor.getName() );
+		assertEquals( ArrayList.class, descriptor.getPropertyType() );
+		assertEquals( TypeDescriptor.collection( ArrayList.class, TypeDescriptor.valueOf( String.class ) ), descriptor.getPropertyTypeDescriptor() );
+
+		val member = registry.getProperty( "aliases[]" );
+		assertNotNull( member );
+		assertEquals( "aliases[]", member.getName() );
+		assertEquals( String.class, member.getPropertyType() );
+		assertEquals( TypeDescriptor.valueOf( String.class ), member.getPropertyTypeDescriptor() );
+		assertSame( member, registry.getProperty( "aliases[]" ) );
+		assertTrue( member.isHidden() );
 	}
 
 	@Test
@@ -157,6 +177,16 @@ public class TestDefaultEntityPropertyRegistry
 	private SimpleEntityPropertyDescriptor register( String name, Class type ) {
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name );
 		descriptor.setPropertyType( type );
+		descriptor.setHidden( false );
+
+		registry.register( descriptor );
+
+		return descriptor;
+	}
+
+	private SimpleEntityPropertyDescriptor register( String name, TypeDescriptor type ) {
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name );
+		descriptor.setPropertyTypeDescriptor( type );
 		descriptor.setHidden( false );
 
 		registry.register( descriptor );
