@@ -15,7 +15,9 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 
 /**
  * @author Arne Vandamme
@@ -32,7 +34,12 @@ public interface FormControlElement extends FormInputElement
 
 	/**
 	 * Marks the implementation as being a proxy for the actual control that is
-	 * to be one of its children.
+	 * to be one of its children. This interface should only be implemented by
+	 * {@link com.foreach.across.modules.web.ui.elements.ContainerViewElement} extensions.
+	 * It is expected that the target control is then present in the {@link ContainerViewElement#elementStream()}.
+	 * <p/>
+	 * Some methods like {@link BootstrapElementUtils#prefixControlNames(String, ContainerViewElement)}
+	 * inspect this interface to exclude elements from processing.
 	 */
 	interface Proxy extends FormControlElement
 	{

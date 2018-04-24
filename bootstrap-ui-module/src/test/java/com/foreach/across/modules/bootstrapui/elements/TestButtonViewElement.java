@@ -16,7 +16,9 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -242,5 +244,33 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 		                 "<button type='button' class='btn btn-default' title='icon button'>" +
 				                 "<span class='glyphicon glyphicon-barcode' aria-hidden='true'></span>" +
 				                 "</button>" );
+	}
+
+	@Test
+	public void updateControlName() {
+		ButtonViewElement control = new ButtonViewElement();
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<button id='two' type='button' name='two' class='btn btn-default' />"
+		);
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = new ButtonViewElement();
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<button id='prefix.one' type='button' name='prefix.one' class='btn btn-default' />"
+		);
 	}
 }

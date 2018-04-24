@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
 /**
@@ -152,6 +154,34 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 						"<optgroup disabled='disabled' label='some label'></optgroup>" +
 						"<option value='one'>Inner text</option>" +
 						"</select>"
+		);
+	}
+
+	@Test
+	public void updateControlName() {
+		SelectFormElement control = new SelectFormElement();
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<select name='two' id='two' class='form-control' />"
+		);
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = new SelectFormElement();
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<select name='prefix.one' id='prefix.one' class='form-control' />"
 		);
 	}
 }

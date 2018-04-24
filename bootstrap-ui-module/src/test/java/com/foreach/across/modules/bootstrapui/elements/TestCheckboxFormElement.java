@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import org.junit.Test;
 
@@ -181,6 +183,40 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 				box,
 				"<input type='checkbox' id='boxName' name='boxName' class='one two' data-role='item' value='123' />" +
 						"<input type='hidden' name='_boxName' value='on' />"
+		);
+	}
+
+	@Test
+	public void updateControlName() {
+		CheckboxFormElement control = new CheckboxFormElement();
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<div class='checkbox'>"
+						+ "<input type='checkbox' id='two' name='two' />"
+						+ "<input type='hidden' name='_two' value='on' />"
+						+ "</div>"
+		);
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = new CheckboxFormElement();
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<div class='checkbox'>"
+						+ "<input type='checkbox' id='prefix.one' name='prefix.one' />"
+						+ "<input type='hidden' name='_prefix.one' value='on' />"
+						+ "</div>"
 		);
 	}
 }

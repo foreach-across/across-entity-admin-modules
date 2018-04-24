@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
 /**
@@ -150,6 +152,38 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				box,
 				"<input type='radio' id='boxName' name='boxName' class='one two' data-role='item' value='123' />"
+		);
+	}
+
+	@Test
+	public void updateControlName() {
+		RadioFormElement control = new RadioFormElement();
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<div class='radio'>"
+						+ "<input type='radio' id='two' name='two' />"
+						+ "</div>"
+		);
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = new RadioFormElement();
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<div class='radio'>"
+						+ "<input type='radio' id='prefix.one' name='prefix.one' />"
+						+ "</div>"
 		);
 	}
 }

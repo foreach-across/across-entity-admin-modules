@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -50,5 +52,33 @@ public class TestHiddenFormElement extends AbstractBootstrapViewElementTest
 		);
 
 		assertEquals( Integer.valueOf( 123 ), hidden.getValue( Integer.class ) );
+	}
+
+	@Test
+	public void updateControlName() {
+		HiddenFormElement hidden = new HiddenFormElement();
+		hidden.setControlName( "one" );
+		render( hidden );
+		hidden.setControlName( "two" );
+		renderAndExpect(
+				hidden,
+				"<input type='hidden' name='two' />"
+		);
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = new HiddenFormElement();
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<input type='hidden' name='prefix.one' />"
+		);
 	}
 }

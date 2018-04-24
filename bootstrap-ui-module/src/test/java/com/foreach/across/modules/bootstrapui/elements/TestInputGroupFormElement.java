@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -131,6 +133,38 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 						+ "<span class='input-group-btn'>"
 						+ "<button type='button' class='btn btn-default' />"
 						+ "</span>"
+						+ "</div>"
+		);
+	}
+
+	@Test
+	public void updateControlName() {
+		InputGroupFormElement control = inputGroup;
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<div class='input-group'>"
+						+ "<input type='text' class='form-control' name='two' id='two' />"
+						+ "</div>"
+		);
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = inputGroup;
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<div class='input-group'>"
+						+ "<input type='text' class='form-control' name='prefix.one' id='prefix.one' />"
 						+ "</div>"
 		);
 	}

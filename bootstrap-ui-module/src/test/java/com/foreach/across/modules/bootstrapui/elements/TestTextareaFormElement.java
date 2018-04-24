@@ -16,6 +16,8 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.thymeleaf.TextboxFormElementModelWriter;
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
 /**
@@ -87,6 +89,34 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				box,
 				"<textarea class='form-control js-autosize' rows='3' readonly='readonly' />"
+		);
+	}
+
+	@Test
+	public void updateControlName() {
+		TextareaFormElement control = new TextareaFormElement();
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<textarea class='form-control js-autosize' rows='3' id='two' name='two' />"
+		);
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = new TextareaFormElement();
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<textarea class='form-control js-autosize' rows='3' id='prefix.one' name='prefix.one' />"
 		);
 	}
 }

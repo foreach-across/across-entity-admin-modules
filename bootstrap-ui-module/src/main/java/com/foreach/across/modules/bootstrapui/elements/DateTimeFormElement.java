@@ -98,10 +98,11 @@ public class DateTimeFormElement extends InputGroupFormElement
 		FormControlElement controlElement = getControl( FormControlElement.class );
 		String controlName = controlElement.getControlName();
 
-		if ( controlName != null && !StringUtils.equals( "_" + hidden.getControlName(), controlName ) ) {
-			hidden.setControlName( controlName );
-			controlElement.setHtmlId( controlElement.getHtmlId() );
-			controlElement.setControlName( "_" + controlName );
+		if ( controlName != null ) {
+			String withoutUnderscore = StringUtils.removeStart( controlName, "_" );
+			hidden.setControlName( withoutUnderscore );
+			controlElement.setHtmlId( withoutUnderscore );
+			controlElement.setControlName( "_" + withoutUnderscore );
 		}
 
 		if ( value != null ) {
