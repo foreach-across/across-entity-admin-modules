@@ -91,13 +91,13 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 	@Test
 	public void options() {
 		builder
-				.add( new OptionFormElementBuilder().text( "Inner text" ).value( "one" ) )
+				.add( new OptionFormElementBuilder().text( "Inner text" ).value( "one" ).css( "one", "two" ).attribute( "data-role", "item" ) )
 				.add( new OptionFormElementBuilder().label( "Only label" ).value( 123 ) )
 				.add( new OptionFormElementBuilder().label( "Short two" ).text( "Some text" ).selected().disabled() );
 
 		expect(
 				"<select class='form-control'>" +
-						"<option value='one'>Inner text</option>" +
+						"<option class='one two' data-role='item' value='one'>Inner text</option>" +
 						"<option value='123'>Only label</option>" +
 						"<option label='Short two' selected='selected' disabled='disabled'>Some text</option>" +
 						"</select>"

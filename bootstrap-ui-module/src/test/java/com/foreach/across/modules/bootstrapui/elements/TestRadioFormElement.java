@@ -103,4 +103,53 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 						"</div>"
 		);
 	}
+
+	@Test
+	public void attributesAreAddedToTheWrapperIfPresent() {
+		RadioFormElement box = new RadioFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setText( "label text" );
+		box.setAttribute( "data-role", "item" );
+		box.addCssClass( "one", "two" );
+
+		renderAndExpect(
+				box,
+				"<div class='one two radio' data-role='item'><label for='boxName'>" +
+						"<input type='radio' id='boxName' name='boxName' value='123' />label text</label>" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void attributesAreAddedToTheLabelIfNotWrapped() {
+		RadioFormElement box = new RadioFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setText( "label text" );
+		box.setAttribute( "data-role", "item" );
+		box.addCssClass( "one", "two" );
+		box.setWrapped( false );
+
+		renderAndExpect(
+				box,
+				"<label for='boxName' class='one two' data-role='item'>" +
+						"<input type='radio' id='boxName' name='boxName' value='123' />label text</label>"
+		);
+	}
+
+	@Test
+	public void attributesAreAddedToTheInputIfNotWrappedAndNoLabel() {
+		RadioFormElement box = new RadioFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setAttribute( "data-role", "item" );
+		box.addCssClass( "one", "two" );
+		box.setWrapped( false );
+
+		renderAndExpect(
+				box,
+				"<input type='radio' id='boxName' name='boxName' class='one two' data-role='item' value='123' />"
+		);
+	}
 }

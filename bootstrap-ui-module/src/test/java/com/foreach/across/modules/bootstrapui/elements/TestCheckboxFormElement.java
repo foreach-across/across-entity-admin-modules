@@ -130,4 +130,57 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 						"</div>"
 		);
 	}
+
+	@Test
+	public void attributesAreAddedToTheWrapperIfPresent() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setText( "label text" );
+		box.setAttribute( "data-role", "item" );
+		box.addCssClass( "one", "two" );
+
+		renderAndExpect(
+				box,
+				"<div class='one two checkbox' data-role='item'><label for='boxName'>" +
+						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text" +
+						"</label>" +
+						"<input type='hidden' name='_boxName' value='on' />" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void attributesAreAddedToTheLabelIfNotWrapped() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setText( "label text" );
+		box.setAttribute( "data-role", "item" );
+		box.addCssClass( "one", "two" );
+		box.setWrapped( false );
+
+		renderAndExpect(
+				box,
+				"<label for='boxName' class='one two' data-role='item'>" +
+						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text</label>" +
+						"<input type='hidden' name='_boxName' value='on' />"
+		);
+	}
+
+	@Test
+	public void attributesAreAddedToTheInputIfNotWrappedAndNoLabel() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setAttribute( "data-role", "item" );
+		box.addCssClass( "one", "two" );
+		box.setWrapped( false );
+
+		renderAndExpect(
+				box,
+				"<input type='checkbox' id='boxName' name='boxName' class='one two' data-role='item' value='123' />" +
+						"<input type='hidden' name='_boxName' value='on' />"
+		);
+	}
 }

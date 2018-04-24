@@ -94,6 +94,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 		SelectFormElement.Option three = new SelectFormElement.Option();
 		three.setValue( 123 );
 		three.setLabel( "Label only" );
+		three.addCssClass( "one", "two" );
 
 		box.addChild( one );
 		box.addChild( two );
@@ -104,7 +105,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 				"<select class='form-control'>" +
 						"<option value='one'>Inner text</option>" +
 						"<option label='Short two' selected='selected' disabled='disabled'>Some text</option>" +
-						"<option value='123'>Label only</option>" +
+						"<option class='one two' value='123'>Label only</option>" +
 						"</select>"
 		);
 	}

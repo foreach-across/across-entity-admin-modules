@@ -75,7 +75,7 @@ public class TestOptionsAsCheckboxBuilder extends AbstractBootstrapViewElementTe
 		builder
 				.controlName( "mybox" )
 				.add(
-						new OptionFormElementBuilder().text( "Inner text" ).value( "one" )
+						new OptionFormElementBuilder().text( "Inner text" ).value( "one" ).css( "one", "two" ).attribute( "data-role", "item" )
 				)
 				.add(
 						new OptionFormElementBuilder().label( "Short two" ).text( "Some text" ).value( 2 ).selected().disabled()
@@ -83,7 +83,7 @@ public class TestOptionsAsCheckboxBuilder extends AbstractBootstrapViewElementTe
 
 		expect(
 				"<div id='options-mybox'>" +
-						"<div class='checkbox'><label for='mybox'>" +
+						"<div class='one two checkbox' data-role='item'><label for='mybox'>" +
 						"<input type='checkbox' value='one' id='mybox' name='mybox' /> Inner text" +
 						"</label><input type='hidden' name='_mybox' value='on' /></div>" +
 						"<div class='checkbox disabled'><label for='mybox1'>" +
