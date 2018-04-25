@@ -16,13 +16,19 @@
 
 package com.foreach.across.modules.bootstrapui.utils;
 
+import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.IdentityHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -33,12 +39,18 @@ import java.util.function.Predicate;
  * <p/>
  * A new instance is pre-configured for bean style element control names: dotted separators will be added and any control
  * name starting with an underscore is modified *after* the underscore.
+ * <p/>
+ * When processing the container members, this prefixer ensures that controls are only modified a single time,
+ * and ensures correct handling of {@link com.foreach.across.modules.bootstrapui.elements.FormControlElement.Proxy} controls.
+ * <p/>
+ * This is an implementation of both {@link Consumer<ViewElement>} and {@link ViewElementPostProcessor} so it can easily
+ * be passed around and used in different contexts.
  *
  * @author Arne Vandamme
  * @since 2.1.0
  */
 @Accessors(fluent = true, chain = true)
-public class ControlNamePrefixer implements Consumer<ViewElement>
+public class ControlNamePrefixAdjuster<T extends ViewElement> implements Consumer<T>, ViewElementPostProcessor<T>
 {
 	/**
 	 * Prefix value that should be replaced. When specified, only controls matching the prefixToAdd will be modified.
@@ -81,6 +93,7 @@ public class ControlNamePrefixer implements Consumer<ViewElement>
 
 	/**
 	 * Additional predicate that the candidates should match before they are modified.
+	 * Recursing through members of a candidate will happen regardless of the predicate.
 	 */
 	@Setter
 	private Predicate<FormInputElement> elementPredicate;
@@ -93,8 +106,13 @@ public class ControlNamePrefixer implements Consumer<ViewElement>
 	private Predicate<String> controlNamePredicate;
 
 	@Override
+	public void postProcess( ViewElementBuilderContext builderContext, ViewElement element ) {
+		accept( element );
+	}
+
+	@Override
 	public void accept( ViewElement element ) {
-		if ( prefixToAdd == null ) {
+		if ( prefixToAdd == null || element == null ) {
 			return;
 		}
 
@@ -102,6 +120,16 @@ public class ControlNamePrefixer implements Consumer<ViewElement>
 			replaceControlNamePrefix( (FormInputElement) element );
 		}
 
+		if ( recurse && element instanceof ContainerViewElement ) {
+			val processed = new IdentityHashMap<FormInputElement, Object>();
+			( (ContainerViewElement) element ).findAll( FormInputElement.class, i -> !FormControlElement.Proxy.class.isInstance( i ) )
+			                                  .forEach( control -> {
+				                                  if ( !processed.containsKey( control ) ) {
+					                                  replaceControlNamePrefix( control );
+					                                  processed.put( control, null );
+				                                  }
+			                                  } );
+		}
 	}
 
 	private void replaceControlNamePrefix( FormInputElement control ) {
@@ -152,7 +180,8 @@ public class ControlNamePrefixer implements Consumer<ViewElement>
 		}
 
 		if ( insertDotSeparator ) {
-			if ( controlName.charAt( 0 ) != '['
+			if ( prefixToAdd.charAt( prefixToAdd.length() - 1 ) != '.'
+					&& controlName.charAt( 0 ) != '['
 					&& controlName.charAt( 0 ) != '('
 					&& controlName.charAt( 0 ) != '{'
 					&& controlName.charAt( 0 ) != '.' ) {

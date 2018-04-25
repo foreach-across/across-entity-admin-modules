@@ -16,6 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements.processor;
 
 import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
+import com.foreach.across.modules.bootstrapui.utils.ControlNamePrefixAdjuster;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
@@ -28,7 +29,9 @@ import org.apache.commons.lang3.StringUtils;
  * which can be overruled using the {@link #setExactPrefix(boolean)}.
  *
  * @author Arne Vandamme
+ * @deprecated since 2.1.0, see {@link ControlNamePrefixAdjuster} instead
  */
+@Deprecated
 public class ControlNamePrefixingPostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
 {
 	private String prefix;

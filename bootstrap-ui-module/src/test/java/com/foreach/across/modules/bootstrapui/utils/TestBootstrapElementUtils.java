@@ -18,7 +18,8 @@ package com.foreach.across.modules.bootstrapui.utils;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author Arne Vandamme
@@ -29,31 +30,15 @@ public class TestBootstrapElementUtils
 	private final CheckboxFormElement child = new CheckboxFormElement();
 
 	@Test
-	public void replaceSingleControlName() {
-		HiddenFormElement control = new HiddenFormElement();
-
-		BootstrapElementUtils.replaceControlNamePrefix( "", "my.", control );
-		assertNull( control.getControlName() );
-
+	public void updateControlNames() {
+		TextboxFormElement control = new TextboxFormElement();
 		control.setControlName( "ctl" );
 
-		BootstrapElementUtils.replaceControlNamePrefix( "not", "my.", control );
-		assertEquals( "ctl", control.getControlName() );
-
-		BootstrapElementUtils.replaceControlNamePrefix( "", "my.", control );
+		BootstrapElementUtils.prefixControlNames( "my", control );
 		assertEquals( "my.ctl", control.getControlName() );
 
-		BootstrapElementUtils.replaceControlNamePrefix( "my", "_your", control );
-		assertEquals( "_your.ctl", control.getControlName() );
-
-		BootstrapElementUtils.replaceControlNamePrefix( "your", "mine", control );
-		assertEquals( "_mine.ctl", control.getControlName() );
-
-		BootstrapElementUtils.replaceControlNamePrefix( "", "yours.", control );
-		assertEquals( "_yours.mine.ctl", control.getControlName() );
-
-		BootstrapElementUtils.replaceControlNamePrefix( "_yours.mine.", "", control );
-		assertEquals( "ctl", control.getControlName() );
+		BootstrapElementUtils.replaceControlNamesPrefix( "my.", "yours.", control );
+		assertEquals( "yours.ctl", control.getControlName() );
 	}
 
 	@Test
