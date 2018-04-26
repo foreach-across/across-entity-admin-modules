@@ -20,6 +20,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -193,7 +194,7 @@ public class NumericFormElement extends FormControlElementSupport implements For
 
 	@Override
 	public List<ViewElement> getChildren() {
-		List<ViewElement> children = super.getChildren();
+		List<ViewElement> children = new ArrayList<>( super.getChildren() );
 
 		if ( getConfiguration() != null ) {
 			String controlName = textbox.getControlName();
@@ -206,12 +207,7 @@ public class NumericFormElement extends FormControlElementSupport implements For
 			}
 
 			if ( controlName != null ) {
-				if ( !children.contains( hidden ) ) {
-					children.add( hidden );
-				}
-			}
-			else {
-				children.remove( hidden );
+				children.add( hidden );
 			}
 		}
 
