@@ -206,7 +206,9 @@ public class NumericFormElement extends FormControlElementSupport implements For
 			}
 
 			if ( controlName != null ) {
-				children.add( hidden );
+				if ( !children.contains( hidden ) ) {
+					children.add( hidden );
+				}
 			}
 			else {
 				children.remove( hidden );

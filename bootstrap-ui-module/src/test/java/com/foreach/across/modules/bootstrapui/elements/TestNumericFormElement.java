@@ -119,4 +119,27 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 				"<input type='text' class='numeric form-control' id='prefix.one' name='prefix.one' />"
 		);
 	}
+
+	@Test
+	public void updateControlNameThroughContainerWithElementConfiguration() {
+		ContainerViewElement container = new ContainerViewElement();
+		NumericFormElement control = new NumericFormElement();
+		control.setConfiguration( new NumericFormElementConfiguration() );
+		control.setControlName( "number" );
+		control.setValue( 1433 );
+
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+		control.setControlName( "two" );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<input id='one' name='_prefix.two' class='numeric form-control' " +
+						"type='text' " + DATA_ATTRIBUTE + " value='1433' />" +
+						"<input type='hidden' name='prefix.two' value='1433' />"
+		);
+	}
 }
