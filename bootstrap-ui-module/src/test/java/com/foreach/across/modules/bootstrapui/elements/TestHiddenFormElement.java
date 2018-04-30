@@ -64,6 +64,8 @@ public class TestHiddenFormElement extends AbstractBootstrapViewElementTest
 				hidden,
 				"<input type='hidden' name='two' />"
 		);
+
+		assertEquals( "two", hidden.getControlName() );
 	}
 
 	@Test
@@ -80,5 +82,7 @@ public class TestHiddenFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<input type='hidden' name='prefix.one' />"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

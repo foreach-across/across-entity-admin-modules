@@ -20,6 +20,8 @@ import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Arne Vandamme
  */
@@ -102,6 +104,8 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<textarea class='form-control js-autosize' rows='3' id='two' name='two' />"
 		);
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -118,5 +122,7 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<textarea class='form-control js-autosize' rows='3' id='prefix.one' name='prefix.one' />"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

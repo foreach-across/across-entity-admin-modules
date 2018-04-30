@@ -256,6 +256,8 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 				control,
 				"<button id='two' type='button' name='two' class='btn btn-default' />"
 		);
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -272,5 +274,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 				control,
 				"<button id='prefix.one' type='button' name='prefix.one' class='btn btn-default' />"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

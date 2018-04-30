@@ -18,7 +18,6 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,6 +58,16 @@ public class DateTimeFormElement extends InputGroupFormElement
 		setAttribute( ATTRIBUTE_DATA_DATEPICKER, configuration );
 	}
 
+	@Override
+	public String getControlName() {
+		return hidden.getControlName();
+	}
+
+	@Override
+	public void setControlName( String controlName ) {
+		hidden.setControlName( controlName );
+	}
+
 	@Deprecated
 	public Date getValue() {
 		return getConfiguration().localDateTimeToDate( value );
@@ -96,13 +105,14 @@ public class DateTimeFormElement extends InputGroupFormElement
 	@Override
 	public List<ViewElement> getChildren() {
 		FormControlElement controlElement = getControl( FormControlElement.class );
-		String controlName = controlElement.getControlName();
+		String controlName = hidden.getControlName();
 
 		if ( controlName != null ) {
-			String withoutUnderscore = StringUtils.removeStart( controlName, "_" );
-			hidden.setControlName( withoutUnderscore );
-			controlElement.setHtmlId( withoutUnderscore );
-			controlElement.setControlName( "_" + withoutUnderscore );
+			controlElement.setControlName( "_" + controlName );
+			controlElement.setHtmlId( controlName );
+		}
+		else {
+			controlElement.setControlName( null );
 		}
 
 		if ( value != null ) {
@@ -114,8 +124,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 			}
 		}
 
-		List<ViewElement> elements = new ArrayList<>();
-		elements.addAll( super.getChildren() );
+		List<ViewElement> elements = new ArrayList<>( super.getChildren() );
 		elements.add( hidden );
 
 		return elements;

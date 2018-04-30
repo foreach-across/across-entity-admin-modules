@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Arne Vandamme
  */
@@ -48,6 +50,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 	public void simpleNumericWithControlNameAndValue() {
 		numeric.setControlName( "number" );
 		numeric.setValue( 123L );
+		assertEquals( "number", numeric.getControlName() );
 
 		renderAndExpect(
 				numeric,
@@ -61,6 +64,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 		numeric.setConfiguration( new NumericFormElementConfiguration() );
 		numeric.setControlName( "number" );
 		numeric.setValue( number );
+		assertEquals( "number", numeric.getControlName() );
 
 		renderAndExpect(
 				numeric,
@@ -102,6 +106,8 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<input type='text' class='numeric form-control' id='two' name='two' />"
 		);
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -118,6 +124,8 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<input type='text' class='numeric form-control' id='prefix.one' name='prefix.one' />"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 
 	@Test
@@ -127,6 +135,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 		control.setConfiguration( new NumericFormElementConfiguration() );
 		control.setControlName( "number" );
 		control.setValue( 1433 );
+		control.setHtmlId( "my-specific-id" );
 
 		control.setControlName( "one" );
 		render( control );
@@ -137,9 +146,11 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<input id='one' name='_prefix.two' class='numeric form-control' " +
+				"<input id='my-specific-id' name='_prefix.two' class='numeric form-control' " +
 						"type='text' " + DATA_ATTRIBUTE + " value='1433' />" +
 						"<input type='hidden' name='prefix.two' value='1433' />"
 		);
+
+		assertEquals( "prefix.two", control.getControlName() );
 	}
 }

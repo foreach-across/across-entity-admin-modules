@@ -21,6 +21,8 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Arne Vandamme
  */
@@ -199,6 +201,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 						+ "<input type='hidden' name='_two' value='on' />"
 						+ "</div>"
 		);
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -218,5 +222,7 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 						+ "<input type='hidden' name='_prefix.one' value='on' />"
 						+ "</div>"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

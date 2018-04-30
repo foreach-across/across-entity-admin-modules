@@ -19,6 +19,8 @@ import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Arne Vandamme
  */
@@ -167,6 +169,8 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 						+ "<input type='radio' id='two' name='two' />"
 						+ "</div>"
 		);
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -185,5 +189,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 						+ "<input type='radio' id='prefix.one' name='prefix.one' />"
 						+ "</div>"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

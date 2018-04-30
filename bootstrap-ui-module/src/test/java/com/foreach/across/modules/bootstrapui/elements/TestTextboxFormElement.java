@@ -21,6 +21,8 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Arne Vandamme
  */
@@ -141,6 +143,8 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<input type='text' class='form-control' id='two' name='two' />"
 		);
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -157,5 +161,7 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<input type='text' class='form-control' id='prefix.one' name='prefix.one' />"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

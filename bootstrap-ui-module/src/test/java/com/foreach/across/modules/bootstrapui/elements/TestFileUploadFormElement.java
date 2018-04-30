@@ -20,6 +20,8 @@ import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Arne Vandamme
  * @since 1.0.0
@@ -97,6 +99,8 @@ public class TestFileUploadFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<input type='file' id='two' name='two' />"
 		);
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -113,5 +117,7 @@ public class TestFileUploadFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<input type='file' id='prefix.one' name='prefix.one' />"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

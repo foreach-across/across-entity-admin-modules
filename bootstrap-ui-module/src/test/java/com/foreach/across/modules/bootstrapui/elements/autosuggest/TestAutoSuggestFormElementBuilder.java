@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Sander Van Loock, Arne Vandamme
@@ -90,6 +91,8 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 		Element markup = parse( render( control ) );
 		Element value = single( markup.getElementsByClass( CSS_TYPEAHEAD_VALUE ) );
 		assertThat( value.attr( "name" ) ).isEqualTo( "two" );
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -105,6 +108,8 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 		Element markup = parse( render( control ) );
 		Element value = single( markup.getElementsByClass( CSS_TYPEAHEAD_VALUE ) );
 		assertThat( value.attr( "name" ) ).isEqualTo( "prefix.one" );
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 
 	@Test

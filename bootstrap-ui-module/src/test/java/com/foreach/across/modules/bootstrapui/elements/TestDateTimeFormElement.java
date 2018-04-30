@@ -188,7 +188,7 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void updateControlName() {
-		DateTimeFormElement control =datetime;
+		DateTimeFormElement control = datetime;
 		control.setControlName( "one" );
 		render( control );
 		control.setControlName( "two" );
@@ -202,6 +202,8 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 						"<input name='two' type='hidden' />" +
 						"</div>"
 		);
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -224,5 +226,7 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 						"<input name='prefix.one' type='hidden' />" +
 						"</div>"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

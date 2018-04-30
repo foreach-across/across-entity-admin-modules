@@ -19,6 +19,8 @@ import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Arne Vandamme
  */
@@ -167,6 +169,8 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<select name='two' id='two' class='form-control' />"
 		);
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -183,5 +187,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<select name='prefix.one' id='prefix.one' class='form-control' />"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

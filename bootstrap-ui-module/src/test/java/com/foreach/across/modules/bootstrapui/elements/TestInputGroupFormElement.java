@@ -20,6 +20,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -149,6 +150,8 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 						+ "<input type='text' class='form-control' name='two' id='two' />"
 						+ "</div>"
 		);
+
+		assertEquals( "two", control.getControlName() );
 	}
 
 	@Test
@@ -167,5 +170,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 						+ "<input type='text' class='form-control' name='prefix.one' id='prefix.one' />"
 						+ "</div>"
 		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }
