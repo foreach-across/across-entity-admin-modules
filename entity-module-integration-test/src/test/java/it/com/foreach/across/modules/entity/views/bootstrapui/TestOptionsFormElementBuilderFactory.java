@@ -32,8 +32,6 @@ import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotNull;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -63,16 +61,16 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	@Test
 	public void controlNamePrefixingSelect() {
 		simulateEntityViewForm();
-		SelectFormElement select = assemble( "enumNoValidator", ViewElementMode.CONTROL );
-		assertEquals( "entity.enumNoValidator", select.getControlName() );
-		assertEquals( "entity.enumNoValidator", select.getHtmlId() );
+		SelectFormElement select = assemble( "singleValue", ViewElementMode.CONTROL );
+		assertEquals( "entity.singleValue", select.getControlName() );
+		assertEquals( "entity.singleValue", select.getHtmlId() );
 	}
 
 	@Test
 	public void controlNamePrefixingRadio() {
 		simulateEntityViewForm();
 
-		ContainerViewElement container = assemble( "enumNoValidator", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
+		ContainerViewElement container = assemble( "singleValue", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
 
 		assertEquals(
 				3,
@@ -85,7 +83,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	@Test
 	public void controlNamePrefixingCheckbox() {
 		simulateEntityViewForm();
-		ContainerViewElement container = assemble( "enumMultiple", ViewElementMode.CONTROL );
+		ContainerViewElement container = assemble( "multiValue", ViewElementMode.CONTROL );
 
 		assertEquals(
 				2,
@@ -101,10 +99,10 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
 
 		SelectFormElementConfiguration configuration = SelectFormElementConfiguration.liveSearch().setActionsBox( true );
-		when( properties.get( "enumMultiple" ).getAttribute( SelectFormElementConfiguration.class ) )
+		when( properties.get( "multiValue" ).getAttribute( SelectFormElementConfiguration.class ) )
 				.thenReturn( configuration );
 
-		SelectFormElement select = assemble( "enumMultiple", ViewElementMode.CONTROL );
+		SelectFormElement select = assemble( "multiValue", ViewElementMode.CONTROL );
 		assertTrue( select.isMultiple() );
 		assertNotNull( select.getConfiguration() );
 		assertEquals( true, select.getConfiguration().get( "actionsBox" ) );
@@ -114,7 +112,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	public void selectSpecifiedAsType() {
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
 
-		SelectFormElement select = assemble( "enumMultiple", ViewElementMode.CONTROL, BootstrapUiElements.SELECT );
+		SelectFormElement select = assemble( "multiValue", ViewElementMode.CONTROL, BootstrapUiElements.SELECT );
 		assertTrue( select.isMultiple() );
 		assertNotNull( select.getConfiguration() );
 	}
@@ -124,18 +122,18 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
 
 		SelectFormElementConfiguration configuration = SelectFormElementConfiguration.liveSearch().setActionsBox( true );
-		when( properties.get( "enumMultiple" ).getAttribute( SelectFormElementConfiguration.class ) )
+		when( properties.get( "multiValue" ).getAttribute( SelectFormElementConfiguration.class ) )
 				.thenReturn( configuration );
 
-		ContainerViewElement container = assemble( "enumMultiple", ViewElementMode.CONTROL, BootstrapUiElements.MULTI_CHECKBOX );
+		ContainerViewElement container = assemble( "multiValue", ViewElementMode.CONTROL, BootstrapUiElements.MULTI_CHECKBOX );
 		assertFalse( container instanceof SelectFormElement );
 	}
 
 	@Test
-	public void enumNoValidator() {
+	public void singleValueNotRequiredAsRadio() {
 		simulateEntityViewForm();
 
-		ContainerViewElement container = assemble( "enumNoValidator", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
+		ContainerViewElement container = assemble( "singleValue", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
 		List<RadioFormElement> radioElements = container.findAll( RadioFormElement.class ).collect( Collectors.toList() );
 
 		assertEquals( 3, radioElements.size() );
@@ -145,17 +143,8 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	}
 
 	@Test
-	public void enumNotNullValidator() {
-		SelectFormElement select = assembleAndVerify( "enumNotNullValidator" );
-
-		assertTrue( select.isRequired() );
-		assertFalse( select.isMultiple() );
-		assertEquals( 1, select.getChildren().size() );
-	}
-
-	@Test
-	public void enumNoValidatorRadio() {
-		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+	public void singleValueNotRequiredAsSelect() {
+		SelectFormElement select = assembleAndVerify( "singleValue" );
 
 		assertFalse( select.isRequired() );
 		assertFalse( select.isMultiple() );
@@ -166,11 +155,11 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	}
 
 	@Test
-	public void enumNotNullValidatorRadio() {
-		when( properties.get( "enumNotNullValidator" ).getAttribute( EntityAttributes.PROPERTY_REQUIRED, Boolean.class ) ).thenReturn( true );
+	public void singleValueRequiredAsRadio() {
+		when( properties.get( "singleValue" ).getAttribute( EntityAttributes.PROPERTY_REQUIRED, Boolean.class ) ).thenReturn( true );
 		simulateEntityViewForm();
 
-		ContainerViewElement container = assemble( "enumNotNullValidator", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
+		ContainerViewElement container = assemble( "singleValue", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
 		List<RadioFormElement> radioElements = container.findAll( RadioFormElement.class ).collect( Collectors.toList() );
 
 		assertEquals( 2, radioElements.size() );
@@ -179,17 +168,9 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	}
 
 	@Test
-	public void enumManyToOneOptional() {
-		SelectFormElement select = assembleAndVerify( "enumManyToOneOptional" );
-
-		assertFalse( select.isRequired() );
-		assertFalse( select.isMultiple() );
-		assertEquals( 1, select.getChildren().size() );
-	}
-
-	@Test
-	public void enumManyToOneNonOptional() {
-		SelectFormElement select = assembleAndVerify( "enumManyToOneNonOptional" );
+	public void singleValueRequiredAsSelect() {
+		when( properties.get( "singleValue" ).getAttribute( EntityAttributes.PROPERTY_REQUIRED, Boolean.class ) ).thenReturn( true );
+		SelectFormElement select = assembleAndVerify( "singleValue" );
 
 		assertTrue( select.isRequired() );
 		assertFalse( select.isMultiple() );
@@ -198,10 +179,10 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void allowedValuesSpecified() {
-		when( properties.get( "enumNoValidator" ).getAttribute( EntityAttributes.OPTIONS_ALLOWED_VALUES ) )
+		when( properties.get( "singleValue" ).getAttribute( EntityAttributes.OPTIONS_ALLOWED_VALUES ) )
 				.thenReturn( EnumSet.of( TestEnum.TWO ) );
 
-		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+		SelectFormElement select = assembleAndVerify( "singleValue" );
 
 		assertFalse( select.isRequired() );
 		assertFalse( select.isMultiple() );
@@ -217,10 +198,10 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	@Test
 	public void fixedIterableOnPropertyIsUsed() {
 		OptionIterableBuilder optionBuilder = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
-		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
+		when( properties.get( "singleValue" ).getAttribute( OptionIterableBuilder.class ) )
 				.thenReturn( optionBuilder );
 
-		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+		SelectFormElement select = assembleAndVerify( "singleValue" );
 
 		assertFalse( select.isRequired() );
 		assertFalse( select.isMultiple() );
@@ -235,13 +216,13 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	@Test
 	public void descriptorEnhancerIsApplied() {
 		Consumer<OptionFormElementBuilder> propertyEnhancer = option -> option.attribute( "data-test-property", "test property" );
-		when( properties.get( "enumNoValidator" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyEnhancer );
+		when( properties.get( "singleValue" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyEnhancer );
 
 		OptionIterableBuilder optionBuilder = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
-		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
+		when( properties.get( "singleValue" ).getAttribute( OptionIterableBuilder.class ) )
 				.thenReturn( optionBuilder );
 
-		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+		SelectFormElement select = assembleAndVerify( "singleValue" );
 
 		assertEquals( 1, select.getChildren().size() );
 		SelectFormElement.Option option = (SelectFormElement.Option) ( (ContainerViewElement) select.getChildren().get( 0 ) ).getChildren().get( 1 );
@@ -251,10 +232,10 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	@Test
 	public void multipleEnhancersAreExecuted() {
 		Consumer<OptionFormElementBuilder> propertyEnhancer = option -> option.attribute( "data-test-property", "test property" );
-		when( properties.get( "enumNoValidator" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyEnhancer );
+		when( properties.get( "singleValue" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyEnhancer );
 
 		OptionIterableBuilder optionBuilder = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
-		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
+		when( properties.get( "singleValue" ).getAttribute( OptionIterableBuilder.class ) )
 				.thenReturn( optionBuilder );
 
 		EntityConfiguration configuration = mock( EntityConfiguration.class );
@@ -263,7 +244,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		when( configuration.getEntityType() ).thenReturn( getTestClass() );
 		when( entityRegistry.getEntityConfiguration( any( Class.class ) ) ).thenReturn( configuration );
 
-		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+		SelectFormElement select = assembleAndVerify( "singleValue" );
 
 		assertEquals( 1, select.getChildren().size() );
 		SelectFormElement.Option option = (SelectFormElement.Option) ( (ContainerViewElement) select.getChildren().get( 0 ) ).getChildren().get( 1 );
@@ -275,10 +256,10 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	public void propertyDescriptorEnhancerIsExecutedAfterConfigurationEnhancer() {
 		Consumer<OptionFormElementBuilder> configurationEnhancer = option -> option.attribute( "data-test", "configuration property" );
 		Consumer<OptionFormElementBuilder> propertyEnhancer = option -> option.removeAttribute( "data-test" );
-		when( properties.get( "enumNoValidator" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyEnhancer );
+		when( properties.get( "singleValue" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyEnhancer );
 
 		OptionIterableBuilder optionBuilder = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
-		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
+		when( properties.get( "singleValue" ).getAttribute( OptionIterableBuilder.class ) )
 				.thenReturn( optionBuilder );
 
 		EntityConfiguration configuration = mock( EntityConfiguration.class );
@@ -286,7 +267,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		when( configuration.getEntityType() ).thenReturn( getTestClass() );
 		when( entityRegistry.getEntityConfiguration( any( Class.class ) ) ).thenReturn( configuration );
 
-		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+		SelectFormElement select = assembleAndVerify( "singleValue" );
 		assertEquals( 1, select.getChildren().size() );
 		SelectFormElement.Option option = (SelectFormElement.Option) ( (ContainerViewElement) select.getChildren().get( 0 ) ).getChildren().get( 1 );
 		assertNull( option.getAttribute( "data-test" ) );
@@ -296,10 +277,10 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	public void optionGeneratorEnhancerIsExecutedAfterPropertyDescriptorEnhancer() {
 		Consumer<OptionFormElementBuilder> propertyDescriptorEnhancer = option -> option.attribute( "data-test", "configuration property" );
 		Consumer<OptionFormElementBuilder> optionGeneratorEnhancer = option -> option.removeAttribute( "data-test" );
-		when( properties.get( "enumNoValidator" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyDescriptorEnhancer );
+		when( properties.get( "singleValue" ).getAttribute( EntityAttributes.OPTIONS_ENHANCER ) ).thenReturn( propertyDescriptorEnhancer );
 
 		OptionIterableBuilder optionBuilder = FixedOptionIterableBuilder.of( new OptionFormElementBuilder().label( "test" ).value( "fixed" ).selected() );
-		when( properties.get( "enumNoValidator" ).getAttribute( OptionIterableBuilder.class ) )
+		when( properties.get( "singleValue" ).getAttribute( OptionIterableBuilder.class ) )
 				.thenReturn( optionBuilder );
 
 		EntityConfiguration configuration = mock( EntityConfiguration.class );
@@ -310,7 +291,7 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 		when( configuration.getEntityType() ).thenReturn( getTestClass() );
 		when( entityRegistry.getEntityConfiguration( any( Class.class ) ) ).thenReturn( configuration );
 
-		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
+		SelectFormElement select = assembleAndVerify( "singleValue" );
 		assertEquals( 1, select.getChildren().size() );
 		SelectFormElement.Option option = (SelectFormElement.Option) ( (ContainerViewElement) select.getChildren().get( 0 ) ).getChildren().get( 1 );
 		assertNull( option.getAttribute( "data-test" ) );
@@ -336,17 +317,8 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	@SuppressWarnings("unused")
 	private static class Validators
 	{
-		public TestEnum enumNoValidator;
+		public TestEnum singleValue;
 
-		@NotNull
-		public TestEnum enumNotNullValidator;
-
-		@Column
-		public TestEnum enumManyToOneOptional;
-
-		@Column(nullable = false)
-		public TestEnum enumManyToOneNonOptional;
-
-		public Set<TestEnum> enumMultiple;
+		public Set<TestEnum> multiValue;
 	}
 }

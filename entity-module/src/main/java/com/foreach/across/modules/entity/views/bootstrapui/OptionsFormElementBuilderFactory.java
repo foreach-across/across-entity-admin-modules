@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
@@ -34,24 +33,13 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySu
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.*;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
-import javax.validation.metadata.ConstraintDescriptor;
-import java.lang.annotation.Annotation;
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.option;
@@ -75,10 +63,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	private EntityRegistry entityRegistry;
 
 	public OptionsFormElementBuilderFactory() {
-		addProcessor( new PersistenceAnnotationsBuilderProcessor() );
-		addProcessor( new OptionsRequiredBuilderProcessor() );
-		// ensure that checkboxes are prefixed
-		addProcessor( new FormControlNameBuilderProcessor<>( CheckboxFormElement.class::isInstance ) );
+		addProcessor( new FormControlNameBuilderProcessor<>() );
 	}
 
 	@Override
@@ -127,9 +112,13 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			options.radio();
 		}
 
+		if ( EntityAttributes.isRequired( descriptor ) ) {
+			options.required();
+		}
+
 		boolean isFilterControl = ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() );
-		boolean nullValuePossible = !typeDescriptor.getSimpleTargetType().isPrimitive() &&
-				!( RADIO.equals( viewElementType ) && EntityAttributes.isRequired( descriptor ) );
+		boolean nullValuePossible = !typeDescriptor.getSimpleTargetType().isPrimitive()
+				&& !( OptionsFormElementBuilder.Type.RADIO.equals( options.getType() ) && EntityAttributes.isRequired( descriptor ) );
 
 		if ( isFilterControl ) {
 			optionGenerator.setEmptyOption(
@@ -338,47 +327,5 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Autowired
 	public void setEntityRegistry( EntityRegistry entityRegistry ) {
 		this.entityRegistry = entityRegistry;
-	}
-
-	public static class OptionsRequiredBuilderProcessor
-			extends ValidationConstraintsBuilderProcessor<OptionsFormElementBuilder>
-	{
-		@Override
-		protected void handleConstraint( EntityPropertyDescriptor propertyDescriptor,
-		                                 ViewElementMode viewElementMode,
-		                                 String viewElementType,
-		                                 OptionsFormElementBuilder options,
-		                                 Annotation annotation,
-		                                 Map<String, Object> annotationAttributes,
-		                                 ConstraintDescriptor constraint ) {
-			if ( isOfType( annotation, NotNull.class, NotEmpty.class ) ) {
-				options.required();
-			}
-		}
-	}
-
-	public static class PersistenceAnnotationsBuilderProcessor
-			extends PersistenceAnnotationBuilderProcessor<OptionsFormElementBuilder>
-	{
-		@Override
-		protected void handleAnnotation( OptionsFormElementBuilder builder,
-		                                 Annotation annotation,
-		                                 Map<String, Object> annotationAttributes,
-		                                 PersistentProperty property ) {
-			if ( isOfType( annotation, ManyToOne.class, OneToOne.class ) ) {
-				Boolean optional = (Boolean) annotationAttributes.get( "optional" );
-
-				if ( optional != null && !optional ) {
-					builder.required();
-				}
-			}
-			else if ( isOfType( annotation, Column.class ) ) {
-				Boolean nullable = (Boolean) annotationAttributes.get( "nullable" );
-
-				if ( nullable != null && !nullable ) {
-					builder.required();
-				}
-			}
-		}
 	}
 }

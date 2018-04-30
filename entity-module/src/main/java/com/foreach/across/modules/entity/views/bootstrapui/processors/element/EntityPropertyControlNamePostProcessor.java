@@ -16,15 +16,14 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.processor.ControlNamePrefixingPostProcessor;
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.*;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.NonNull;
-
-import java.util.function.Predicate;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Post processor for {@link com.foreach.across.modules.bootstrapui.elements.FormInputElement} that will prefix the control name
@@ -36,7 +35,7 @@ import java.util.function.Predicate;
  * Optionally specify a child element predicate.  If one is specified and the element is a {@link com.foreach.across.modules.web.ui.elements.ContainerViewElement},
  * all children matching the predicate in the entire element tree of the container will also be prefixed.
  * <p/>
- * Use the static {@link #registerForProperty(EntityPropertyDescriptor, ViewElementBuilder, Predicate)} method to conditionally register the postprocessor
+ * Use the static {@link #registerForProperty(EntityPropertyDescriptor, ViewElementBuilde)} method to conditionally register the postprocessor
  * for entity properties.  Only registers the postprocessor if:
  * <ul>
  * <li>the builder supports postprocessors by extending {@link com.foreach.across.modules.web.ui.ViewElementBuilderSupport}</li>
@@ -45,7 +44,6 @@ import java.util.function.Predicate;
  * </ul>
  *
  * @author Arne Vandamme
- * @see ControlNamePrefixingPostProcessor
  * @since 2.0.0
  */
 public final class EntityPropertyControlNamePostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
@@ -55,59 +53,38 @@ public final class EntityPropertyControlNamePostProcessor<T extends ViewElement>
 	 */
 	public final static String PREFIX_CONTROL_NAMES = EntityPropertyControlNamePostProcessor.class.getName() + ".enabled";
 
-	private final static ControlNamePrefixingPostProcessor PREFIXING_POST_PROCESSOR = new ControlNamePrefixingPostProcessor<>( "entity" );
-
-	private final Predicate<ViewElement> childElementPredicate;
-
-	/**
-	 * Create a new post processor that will always prefix the current element
-	 * if a {@link com.foreach.across.modules.entity.views.request.EntityViewCommand} is present.
-	 */
-	public EntityPropertyControlNamePostProcessor() {
-		childElementPredicate = null;
-	}
-
-	/**
-	 * Create a new post processor that will also prefix all child elements if they match the given predicate.
-	 *
-	 * @param childElementPredicate predicate that child elements should match in order to be prefixed
-	 */
-	public EntityPropertyControlNamePostProcessor( Predicate<ViewElement> childElementPredicate ) {
-		this.childElementPredicate = childElementPredicate;
-	}
-
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
 		if ( builderContext.hasAttribute( EntityViewCommand.class )
 				&& Boolean.TRUE.equals( builderContext.getAttribute( PREFIX_CONTROL_NAMES, Boolean.class ) ) ) {
-			PREFIXING_POST_PROCESSOR.postProcess( builderContext, element );
+			EntityPropertyDescriptor descriptor = EntityViewElementUtils.currentPropertyDescriptor( builderContext );
 
-			if ( childElementPredicate != null && element instanceof ContainerViewElement ) {
-				( (ContainerViewElement) element ).findAll( childElementPredicate )
-				                                  .forEach( input -> PREFIXING_POST_PROCESSOR.postProcess( builderContext, input ) );
+			if ( descriptor != null ) {
+				BootstrapElementUtils.prefixControlNames( "entity" )
+				                     .controlNamePredicate(
+						                     controlName -> StringUtils.startsWithAny( controlName, descriptor.getName(), "_" + descriptor.getName() )
+				                     )
+				                     .accept( element );
 			}
 		}
 	}
 
 	/**
 	 * Attempts to register the post processor if the property descriptor is a native property and does not have a control name specified.
-	 * If a child element predicate is specified and the resulting parent element is a container, all input elements in the container tree
-	 * that match the predicate will also be prefixed.
+	 * All controls part of that
 	 * <p/>
 	 * If the builder is not of type {@link com.foreach.across.modules.web.ui.ViewElementBuilderSupport} this method will do nothing.
 	 *
-	 * @param propertyDescriptor    to check the attributes
-	 * @param builder               to add the postprocessor to
-	 * @param childElementPredicate optional predicate for all child elements that should also be prefixed
+	 * @param propertyDescriptor to check the attributes
+	 * @param builder            to add the postprocessor to
 	 */
 	@SuppressWarnings("unchecked")
 	public static void registerForProperty( @NonNull EntityPropertyDescriptor propertyDescriptor,
-	                                        @NonNull ViewElementBuilder<? extends ViewElement> builder,
-	                                        Predicate<ViewElement> childElementPredicate ) {
+	                                        @NonNull ViewElementBuilder<? extends ViewElement> builder ) {
 		if ( builder instanceof ViewElementBuilderSupport
 				&& propertyDescriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR )
 				&& !propertyDescriptor.hasAttribute( EntityAttributes.CONTROL_NAME ) ) {
-			( (ViewElementBuilderSupport) builder ).postProcessor( new EntityPropertyControlNamePostProcessor<>( childElementPredicate ) );
+			( (ViewElementBuilderSupport) builder ).postProcessor( new EntityPropertyControlNamePostProcessor<>() );
 		}
 	}
 }
