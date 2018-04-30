@@ -134,7 +134,7 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 				        .and().property( "booleanSelect" )
 				        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.SELECT )
 				        .and().property( "booleanSelectNonNull" )
-				        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.SELECT )
+				        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.RADIO )
 		        )
 		        .listView( lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( booleanDummyRepository ) )
 		                             .entityQueryFilter( cfg -> cfg.showProperties( "booleanRadio" ) )

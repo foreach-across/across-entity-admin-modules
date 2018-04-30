@@ -35,8 +35,10 @@ import org.junit.Test;
 import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -131,6 +133,28 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void enumNoValidator() {
+		simulateEntityViewForm();
+
+		ContainerViewElement container = assemble( "enumNoValidator", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
+		List<RadioFormElement> radioElements = container.findAll( RadioFormElement.class ).collect( Collectors.toList() );
+
+		assertEquals( 3, radioElements.size() );
+		assertFalse( radioElements.stream().anyMatch( FormControlElementSupport::isRequired ) );
+		assertEquals( 1, radioElements.stream().filter( RadioFormElement::isChecked ).count() );
+		assertEquals( "", radioElements.stream().filter( RadioFormElement::isChecked ).findFirst().get().getText() );
+	}
+
+	@Test
+	public void enumNotNullValidator() {
+		SelectFormElement select = assembleAndVerify( "enumNotNullValidator" );
+
+		assertTrue( select.isRequired() );
+		assertFalse( select.isMultiple() );
+		assertEquals( 1, select.getChildren().size() );
+	}
+
+	@Test
+	public void enumNoValidatorRadio() {
 		SelectFormElement select = assembleAndVerify( "enumNoValidator" );
 
 		assertFalse( select.isRequired() );
@@ -142,12 +166,16 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	}
 
 	@Test
-	public void enumNotNullValidator() {
-		SelectFormElement select = assembleAndVerify( "enumNotNullValidator" );
+	public void enumNotNullValidatorRadio() {
+		when( properties.get( "enumNotNullValidator" ).getAttribute( EntityAttributes.PROPERTY_REQUIRED, Boolean.class ) ).thenReturn( true );
+		simulateEntityViewForm();
 
-		assertTrue( select.isRequired() );
-		assertFalse( select.isMultiple() );
-		assertEquals( 1, select.getChildren().size() );
+		ContainerViewElement container = assemble( "enumNotNullValidator", ViewElementMode.CONTROL, BootstrapUiElements.RADIO );
+		List<RadioFormElement> radioElements = container.findAll( RadioFormElement.class ).collect( Collectors.toList() );
+
+		assertEquals( 2, radioElements.size() );
+		assertTrue( radioElements.stream().allMatch( FormControlElementSupport::isRequired ) );
+		assertEquals( 0, radioElements.stream().filter( RadioFormElement::isChecked ).count() );
 	}
 
 	@Test

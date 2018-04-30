@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
@@ -56,6 +55,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.option;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.*;
 import static com.foreach.across.modules.entity.EntityAttributes.OPTIONS_ENHANCER;
 
 /**
@@ -84,9 +84,9 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Override
 	public boolean supports( String viewElementType ) {
 		return StringUtils.equals( OPTIONS, viewElementType )
-				|| StringUtils.equals( BootstrapUiElements.SELECT, viewElementType )
-				|| StringUtils.equals( BootstrapUiElements.RADIO, viewElementType )
-				|| StringUtils.equals( BootstrapUiElements.MULTI_CHECKBOX, viewElementType );
+				|| StringUtils.equals( SELECT, viewElementType )
+				|| StringUtils.equals( RADIO, viewElementType )
+				|| StringUtils.equals( MULTI_CHECKBOX, viewElementType );
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( typeDescriptor.getSimpleTargetType() );
 		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, typeDescriptor.getSimpleTargetType(), optionConfiguration, viewElementMode );
 
-		if ( BootstrapUiElements.SELECT.equals( actualType ) ) {
+		if ( SELECT.equals( actualType ) ) {
 			if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
 				selectFormElementConfiguration = createFilterSelectFormElementConfiguration();
 			}
@@ -120,7 +120,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			}
 			options.select( selectFormElementConfiguration );
 		}
-		else if ( BootstrapUiElements.MULTI_CHECKBOX.equals( actualType ) ) {
+		else if ( MULTI_CHECKBOX.equals( actualType ) ) {
 			options.checkbox();
 		}
 		else {
@@ -128,7 +128,8 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		}
 
 		boolean isFilterControl = ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() );
-		boolean nullValuePossible = !typeDescriptor.getSimpleTargetType().isPrimitive();
+		boolean nullValuePossible = !typeDescriptor.getSimpleTargetType().isPrimitive() &&
+				!( RADIO.equals( viewElementType ) && EntityAttributes.isRequired( descriptor ) );
 
 		if ( isFilterControl ) {
 			optionGenerator.setEmptyOption(
@@ -179,14 +180,14 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	private String determineActualType( String requestedType, SelectFormElementConfiguration selectFormElementConfiguration, boolean isCollection ) {
 		if ( OPTIONS.equals( requestedType ) || requestedType == null ) {
 			if ( selectFormElementConfiguration != null ) {
-				return BootstrapUiElements.SELECT;
+				return SELECT;
 			}
 
 			if ( isCollection ) {
-				return BootstrapUiElements.MULTI_CHECKBOX;
+				return MULTI_CHECKBOX;
 			}
 
-			return BootstrapUiElements.SELECT;
+			return SELECT;
 		}
 
 		return requestedType;
