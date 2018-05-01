@@ -21,10 +21,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import lombok.*;
 
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +39,10 @@ public class EmbeddedCollectionData extends HashMap<String, EmbeddedCollectionDa
 
 	@NonNull
 	private final EntityPropertyDescriptor memberDescriptor;
+
+	public Map<String, Member> getItem() {
+		return this;
+	}
 
 	@Override
 	public Member get( Object key ) {

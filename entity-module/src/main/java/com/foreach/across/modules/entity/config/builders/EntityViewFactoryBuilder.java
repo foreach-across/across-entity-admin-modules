@@ -439,6 +439,17 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	}
 
 	/**
+	 * Apply an additional consumer to this builder.
+	 *
+	 * @param consumer to apply
+	 * @return current builder
+	 */
+	public EntityViewFactoryBuilder and( @NonNull Consumer<EntityViewFactoryBuilder> consumer ) {
+		consumer.accept( this );
+		return this;
+	}
+
+	/**
 	 * Build a new factory instance of the type configured using {@link #factoryType(Class)}.
 	 * If no {@link #factoryType(Class)} has been configured, an exception will be thrown.
 	 *

@@ -189,6 +189,11 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		return (EntityListViewFactoryBuilder) super.postProcess( postProcessor );
 	}
 
+	@Override
+	public EntityListViewFactoryBuilder and( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityListViewFactoryBuilder) super.and( consumer );
+	}
+
 	/**
 	 * Configure a page fetching function that will retrieve the entities requested by a specific {@link Pageable}.
 	 * This will result in a {@link com.foreach.across.modules.entity.views.processors.DelegatingEntityFetchingViewProcessor} being added.

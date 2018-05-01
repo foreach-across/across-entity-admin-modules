@@ -30,6 +30,7 @@ import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -48,6 +49,13 @@ public class TestEntityPropertyRegistryBuilder
 	public void before() {
 		builder = new EntityPropertyRegistryBuilder();
 		registry = mock( EntityPropertyRegistrySupport.class );
+	}
+
+	@Test
+	public void andAppliesAdditionalConsumer() {
+		Consumer<EntityPropertyRegistryBuilder> consumer = mock( Consumer.class );
+		assertSame( builder, builder.and( consumer ) );
+		verify( consumer ).accept( builder );
 	}
 
 	@Test

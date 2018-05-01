@@ -37,8 +37,8 @@ var EmbeddedCollection = function( element ) {
     } );
 
     wrapper.find( '[data-action=add-item]' ).click( function() {
-        var id = 'item-' + ++index;
-        var target = targetPrefix + '[' + id + ']';
+        var id = 'item-' + index++;
+        var target = targetPrefix + '.item[' + id + ']';
 
         var template = $( '<div>' + editItemTemplate.html() + '</div>' );
         template.attr( 'data-role', 'item' );

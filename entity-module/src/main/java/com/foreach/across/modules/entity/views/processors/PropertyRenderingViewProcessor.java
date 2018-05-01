@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinder;
+import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinderValidator;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -69,6 +70,7 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	public static final String ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER = "entityForm-column-0";
 
 	private EntityViewElementBuilderService viewElementBuilderService;
+	private EmbeddedCollectionsBinderValidator collectionsBinderValidator;
 
 	private EntityPropertySelector selector = EntityPropertySelector.of( EntityPropertySelector.READABLE );
 
@@ -90,10 +92,11 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 
 	@Override
 	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
-		command.addExtension(
+		command.addExtensionWithValidator(
 				EmbeddedCollectionsBinder.class.getSimpleName(),
 				new EmbeddedCollectionsBinder( entityViewRequest.getEntityViewContext().getPropertyRegistry(),
-				                               "extensions[" + EmbeddedCollectionsBinder.class.getSimpleName() + "]" )
+				                               "extensions[" + EmbeddedCollectionsBinder.class.getSimpleName() + "]" ),
+				collectionsBinderValidator
 		);
 	}
 
@@ -172,5 +175,10 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	@Autowired
 	void setViewElementBuilderService( EntityViewElementBuilderService viewElementBuilderService ) {
 		this.viewElementBuilderService = viewElementBuilderService;
+	}
+
+	@Autowired
+	void setCollectionsBinderValidator( EmbeddedCollectionsBinderValidator collectionsBinderValidator ) {
+		this.collectionsBinderValidator = collectionsBinderValidator;
 	}
 }

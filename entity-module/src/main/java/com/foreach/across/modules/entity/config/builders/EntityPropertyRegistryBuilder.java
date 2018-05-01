@@ -31,6 +31,7 @@ import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Builder to customize a {@link com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry}.
@@ -72,6 +73,16 @@ public class EntityPropertyRegistryBuilder
 		}
 
 		return builder;
+	}
+
+	/**
+	 * Apply an additional consumer to the registry builder.
+	 *
+	 * @return registry builder
+	 */
+	public EntityPropertyRegistryBuilder and( @NonNull Consumer<EntityPropertyRegistryBuilder> consumer ) {
+		consumer.accept( this );
+		return this;
 	}
 
 	/**
@@ -246,6 +257,15 @@ public class EntityPropertyRegistryBuilder
 		 */
 		public EntityPropertyRegistryBuilder and() {
 			return parent;
+		}
+
+		/**
+		 * Apply an additional consumer to the registry builder, and return it.
+		 *
+		 * @return parent registry builder
+		 */
+		public EntityPropertyRegistryBuilder and( Consumer<EntityPropertyRegistryBuilder> consumer ) {
+			return parent.and( consumer );
 		}
 	}
 }

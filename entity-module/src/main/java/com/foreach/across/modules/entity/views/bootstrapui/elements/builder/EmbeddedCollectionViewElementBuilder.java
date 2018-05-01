@@ -57,6 +57,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 		val binderPrefix = buildBinderPrefix( collectionsBinder, descriptor );
 
+
 		NodeViewElement node = super.createElement( builderContext );
 		node.addCssClass( "js-embedded-collection-form-group" );
 		node.setAttribute( "data-source-property", descriptor.getName() + "[]" );
@@ -87,7 +88,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 							                                               } );
 
 							                                      HiddenFormElement sortIndex = new HiddenFormElement();
-							                                      sortIndex.setControlName( binderPrefix + "[item-" + item.getIndex() + "].sortIndex" );
+							                                      sortIndex.setControlName( binderPrefix + ".item[item-" + item.getIndex() + "].sortIndex" );
 							                                      sortIndex.setValue( item.getIndex() );
 							                                      container.addChild( sortIndex );
 
@@ -117,14 +118,15 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 	}
 
 	private String buildBinderPrefix( EmbeddedCollectionsBinder binder, EntityPropertyDescriptor propertyDescriptor ) {
-		return ( binder != null ? binder.getBinderPrefix() : "" ) + "[" + propertyDescriptor.getName() + "]";
+		return ( binder != null ? binder.getBinderPrefix() : "" ) + ".prop[" + propertyDescriptor.getName() + "]";
 	}
 
+	// todo use correct prefixing approach
 	private void updateControlName( EntityPropertyDescriptor descriptor, int itemIndex, FormGroupElement groupElement, String binderPrefix ) {
 		val ctl = groupElement.getControl( FormControlElement.class );
 		if ( ctl != null ) {
 			ctl.setControlName( StringUtils.replaceOnce( ctl.getControlName(), descriptor.getName() + "[]",
-			                                             binderPrefix + "[item-" + itemIndex + "].data" ) );
+			                                             binderPrefix + ".item[item-" + itemIndex + "].data" ) );
 		}
 		else if ( groupElement.getControl() instanceof ContainerViewElement ) {
 			( (ContainerViewElement) groupElement.getControl() )

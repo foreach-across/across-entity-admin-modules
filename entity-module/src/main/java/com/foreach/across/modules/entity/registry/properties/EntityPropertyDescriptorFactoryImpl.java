@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.registry.properties;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.support.MethodValueFetcher;
+import com.foreach.across.modules.entity.views.support.MethodValueWriter;
 import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.stereotype.Service;
@@ -35,19 +36,20 @@ import java.lang.reflect.Method;
 public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescriptorFactory
 {
 	@Override
-	public MutableEntityPropertyDescriptor create( PropertyDescriptor prop, Class<?> entityType ) {
-		Method writeMethod = prop.getWriteMethod();
-		Method readMethod = prop.getReadMethod();
-		Property property = new Property( entityType, readMethod, writeMethod, prop.getName() );
-		MutableEntityPropertyDescriptor descriptor = create( property );
+	public MutableEntityPropertyDescriptor create( PropertyDescriptor originalProperty, Class<?> entityType ) {
+		Method writeMethod = originalProperty.getWriteMethod();
+		Method readMethod = originalProperty.getReadMethod();
+		Property customProperty = new Property( entityType, readMethod, writeMethod, originalProperty.getName() );
+		MutableEntityPropertyDescriptor descriptor = create( customProperty );
 
-		if ( StringUtils.equals( prop.getName(), prop.getDisplayName() ) ) {
-			descriptor.setDisplayName( EntityUtils.generateDisplayName( prop.getName() ) );
+		if ( StringUtils.equals( originalProperty.getName(), originalProperty.getDisplayName() ) ) {
+			descriptor.setDisplayName( EntityUtils.generateDisplayName( originalProperty.getName() ) );
 		}
 		else {
-			descriptor.setDisplayName( prop.getDisplayName() );
+			descriptor.setDisplayName( originalProperty.getDisplayName() );
 		}
-		descriptor.setAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR, prop );
+
+		descriptor.setAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR, originalProperty );
 
 		return descriptor;
 	}
@@ -72,8 +74,22 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 		}
 
 		descriptor.setAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR, property );
+		descriptor.setAttribute( EntityPropertyController.class, createPropertyController( property ) );
 
 		return descriptor;
+	}
+
+	private EntityPropertyController<?, ?> createPropertyController( Property property ) {
+		GenericEntityPropertyController<Object, Object> controller = new GenericEntityPropertyController<>();
+
+		if ( property.getReadMethod() != null ) {
+			controller.setValueReader( new MethodValueFetcher<>( property.getReadMethod() ) );
+		}
+		if ( property.getWriteMethod() != null ) {
+			controller.setValueWriter( new MethodValueWriter<>( property.getWriteMethod() ) );
+		}
+
+		return controller;
 	}
 
 	@Override

@@ -51,14 +51,26 @@ public class TestEntityPropertyDescriptorFactory
 	@Test
 	public void readableAndWritableProperty() {
 		PropertyDescriptor nativeDescriptor = BeanUtils.getPropertyDescriptor( Instance.class, "name" );
-		EntityPropertyDescriptor descriptor = descriptorFactory.create(
-				nativeDescriptor, Instance.class
-		);
+		EntityPropertyDescriptor descriptor = descriptorFactory.create( nativeDescriptor, Instance.class );
 
 		assertTrue( descriptor.isReadable() );
 		assertTrue( descriptor.isWritable() );
 		assertFalse( descriptor.isHidden() );
 		assertSame( nativeDescriptor, descriptor.getAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) );
+
+		EntityPropertyController<Instance, String> controller = descriptor.getAttribute( EntityPropertyController.class );
+		assertNotNull( controller );
+
+		Instance instance = new Instance();
+		assertNull( instance.getName() );
+		assertNull( controller.getValue( instance ) );
+		instance.setName( "original" );
+		assertEquals( "original", controller.getValue( instance ) );
+		assertTrue( controller.setValue( instance, "my name" ) );
+		assertEquals( "my name", instance.getName() );
+		assertEquals( "my name", controller.getValue( instance ) );
+
+		assertFalse( controller.setValue( null, "any" ) );
 	}
 
 	@Test
@@ -70,6 +82,18 @@ public class TestEntityPropertyDescriptorFactory
 		assertTrue( descriptor.isReadable() );
 		assertFalse( descriptor.isWritable() );
 		assertTrue( descriptor.isHidden() );
+
+		EntityPropertyController<Instance, Integer> controller = descriptor.getAttribute( EntityPropertyController.class );
+		assertNotNull( controller );
+
+		Instance instance = new Instance();
+		assertEquals( 0, instance.readonly );
+		assertEquals( Integer.valueOf( 0 ), controller.getValue( instance ) );
+		assertFalse( controller.setValue( instance, 123 ) );
+		assertEquals( 0, instance.readonly );
+
+		instance.readonly = 456;
+		assertEquals( Integer.valueOf( 456 ), controller.getValue( instance ) );
 	}
 
 	@Test
@@ -81,6 +105,18 @@ public class TestEntityPropertyDescriptorFactory
 		assertFalse( descriptor.isReadable() );
 		assertTrue( descriptor.isWritable() );
 		assertTrue( descriptor.isHidden() );
+
+		EntityPropertyController<Instance, Date> controller = descriptor.getAttribute( EntityPropertyController.class );
+		assertNotNull( controller );
+
+		Date now = new Date();
+
+		Instance instance = new Instance();
+		assertNull( instance.writeonly );
+		assertNull( controller.getValue( instance ) );
+		assertTrue( controller.setValue( instance, now ) );
+		assertNull( controller.getValue( instance ) );
+		assertSame( now, instance.writeonly );
 	}
 
 	@SuppressWarnings("unused")

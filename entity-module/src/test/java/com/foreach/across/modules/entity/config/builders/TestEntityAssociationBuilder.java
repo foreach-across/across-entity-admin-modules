@@ -32,9 +32,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Collections;
+import java.util.function.Consumer;
 
 import static com.foreach.across.modules.entity.registry.EntityAssociation.Type.EMBEDDED;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.*;
 
 /**
@@ -54,6 +56,13 @@ public class TestEntityAssociationBuilder
 	private MutableEntityConfiguration configuration;
 
 	private EntityAssociationBuilder builder;
+
+	@Test
+	public void andAppliesAdditionalConsumer() {
+		Consumer<EntityAssociationBuilder> consumer = mock( Consumer.class );
+		assertSame( builder, builder.and( consumer ) );
+		verify( consumer ).accept( builder );
+	}
 
 	@Before
 	public void reset() {

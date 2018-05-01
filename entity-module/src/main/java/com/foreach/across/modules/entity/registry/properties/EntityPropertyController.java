@@ -1,0 +1,118 @@
+/*
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.foreach.across.modules.entity.registry.properties;
+
+import org.springframework.validation.Errors;
+
+/**
+ * Generic controller for a single property on an entity.
+ * Allows reading and writing a property value, as well as validating a value.
+ * <p/>
+ * The difference between a {@link #save(Object, Object)} and a {@link #setValue(Object, Object)}
+ * method, is that setting the value is usually done on the entity before the entity itself is saved.
+ * The {@link #save(Object, Object)} method is useful for properties that are not actually present
+ * on the entity instance itself.
+ * <p/>
+ * Likewise the {@link #delete(Object)} method is only relevant for properties where delete means
+ * something. For most properties this is simply a no-op.
+ *
+ * @param <T> entity type that the property belongs to
+ * @param <U> property type
+ * @author Arne Vandamme
+ * @since 3.1.0
+ */
+public interface EntityPropertyController<T, U>
+{
+	/**
+	 * Get the current value of the property for the owning entity.
+	 *
+	 * @param owner entity
+	 * @return property value
+	 */
+	default U getValue( T owner ) {
+		return null;
+	}
+
+	/**
+	 * Set the current value of the property on the owning entity.
+	 * Usually relevant for properties that modify the entity itself,
+	 * but do not persist any data outside of the entity.
+	 *
+	 * @param owner         entity
+	 * @param propertyValue to set
+	 * @return true if value has been set
+	 * @see #save(Object, Object)
+	 */
+	default boolean setValue( T owner, U propertyValue ) {
+		return false;
+	}
+
+	/**
+	 * Validate the property value for the given owner entity.
+	 * Validation errors should be registered on the {@link Errors} argument.
+	 * Validating should happen before {@link #setValue(Object, Object)} or {@link #save(Object, Object)}
+	 * calls, to check that a property value can in fact be set.
+	 *
+	 * @param owner           entity
+	 * @param propertyValue   to validate
+	 * @param errors          where validation errors should be added to
+	 * @param validationHints optional hints for validation (eg. validation groups)
+	 * @see org.springframework.validation.SmartValidator
+	 */
+	default void validate( T owner, U propertyValue, Errors errors, Object... validationHints ) {
+	}
+
+	/**
+	 * Save the property value for the owning entity.
+	 * Usually relevant for properties not present on the entity.
+	 *
+	 * @param owner         entity
+	 * @param propertyValue to save
+	 * @return true if the property value has been saved
+	 */
+	default boolean save( T owner, U propertyValue ) {
+		return false;
+	}
+
+	/**
+	 * Remove the property altogether from the owning entity.
+	 * Depending on the actual implementation this might simply reset to a default value,
+	 * set {@code null} or remove the "property" (for example delete database records).
+	 *
+	 * @param owner entity
+	 * @return true if property has been deleted
+	 */
+	default boolean delete( T owner ) {
+		return false;
+	}
+
+	/**
+	 * Check if the property is present on the given entity.
+	 * This is relevant only in cases where the property itself might not be set;
+	 * which is different than being set with a {@code null} value.
+	 * <p/>
+	 * This method can be used to introduce some kind of optional property presence
+	 * semantics, for example in case of a map key: to distinguish between the presence
+	 * of the key and the {@code null} value.
+	 *
+	 * @param owner entity
+	 * @return true if the property is supposed to exist
+	 */
+	default boolean exists( T owner ) {
+		return true;
+	}
+}

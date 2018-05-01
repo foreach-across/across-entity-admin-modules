@@ -13,33 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.foreach.across.modules.entity.views.support;
 
+import lombok.NonNull;
+import lombok.SneakyThrows;
+
 import java.lang.reflect.Method;
+import java.util.function.BiFunction;
 
 /**
  * @author Arne Vandamme
+ * @since 3.1.0
  */
-public class MethodValueFetcher<T> implements ValueFetcher<T>
+public class MethodValueWriter<T, U> implements BiFunction<T, U, Boolean>
 {
 	private final Method method;
 
-	public MethodValueFetcher( Method method ) {
+	public MethodValueWriter( @NonNull Method method ) {
 		method.setAccessible( true );
 		this.method = method;
 	}
 
+	@SneakyThrows
 	@Override
-	public Object getValue( T entity ) {
+	public Boolean apply( T entity, U value ) {
 		if ( entity == null ) {
-			return null;
+			return false;
 		}
-
-		try {
-			return method.invoke( entity );
-		}
-		catch ( Exception e ) {
-			return null;
-		}
+		method.invoke( entity, value );
+		return true;
 	}
+
 }

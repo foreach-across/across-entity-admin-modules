@@ -362,6 +362,17 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	/**
+	 * Apply an additional consumer to this builder.
+	 *
+	 * @param consumer to apply
+	 * @return current builder
+	 */
+	public EntityConfigurationBuilder<T> and( @NonNull Consumer<EntityConfigurationBuilder<T>> consumer ) {
+		consumer.accept( this );
+		return this;
+	}
+
+	/**
 	 * Build a new {@link EntityConfigurationImpl} with the settings specified.
 	 * Allows setting both name and entity type. Will apply the post processors after initial creation.
 	 *

@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
@@ -28,12 +29,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Configures a dummy <strong>category</strong> entity.
@@ -90,6 +91,8 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .writable( true )
 						        .<Map>valueFetcher( map -> map.get( "name" ) )
 						        .order( 2 )
+						        .and( registerStockCountProperty() )
+						        .and( registerGenerateIdProperty() )
 		        )
 		        .entityModel(
 				        model -> model
@@ -120,10 +123,57 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .deleteMethod( categoryRepository::remove )
 		        )
 		        .listView( lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( categoryRepository ) ) )
-		        .createFormView( fvb -> fvb.showProperties( "id", "name" ) )
-		        .updateFormView( fvb -> fvb.showProperties( "name" ) )
+		        .createFormView( fvb -> fvb.showProperties( "id", "name", "stockCount" ) )
+		        .updateFormView( fvb -> fvb.showProperties( "name", "stockCount" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
 		        .show();
+	}
+
+	/**
+	 * Add a custom integer property: the stock count.
+	 */
+	private Consumer<EntityPropertyRegistryBuilder> registerStockCountProperty() {
+		return props -> {
+			props.property( "stockCount" )
+			     .displayName( "Stock count" )
+			     .propertyType( Integer.class )
+			     .readable( true )
+			     .writable( true )
+			     .hidden( false )
+			     .spelValueFetcher( "0" );
+		};
+	}
+
+	/**
+	 * Add a custom checkbox, that when checked will generate an id based on the name.
+	 * If checked it will first validate that name is not empty but id is empty,
+	 * and when the setValue method is called, will lowercase the name and replace all whitespace.
+	 * <p>
+	 * If there is a validation error and the checkbox is checked, it should still be checked on the re-render.
+	 */
+	private Consumer<EntityPropertyRegistryBuilder> registerGenerateIdProperty() {
+		return props -> {
+		};
+	}
+
+	/**
+	 * Add a custom Manager property, a simple object with name and email representing the manager of a category.
+	 * This is a single embedded entity that should only be saved after the category itself is saved.
+	 * A reference using the unique category id is inserted in the categoryManagers map.
+	 */
+	private Consumer<EntityPropertyRegistryBuilder> registerManagerProperty() {
+		return props -> {
+		};
+	}
+
+	/**
+	 * Add a custom brands property: a list of Brand entities for a category.
+	 * A single brand has a name and a code.
+	 * When the entity is saved, an entry will be added to the categoryBrands map.
+	 */
+	private Consumer<EntityPropertyRegistryBuilder> registerBrandsProperty() {
+		return props -> {
+		};
 	}
 
 	@Bean

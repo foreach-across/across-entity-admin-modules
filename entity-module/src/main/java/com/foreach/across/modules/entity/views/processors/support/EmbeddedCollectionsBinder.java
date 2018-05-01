@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Helper target object for binding embedded collection properties of an entity.
@@ -48,12 +49,18 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class EmbeddedCollectionsBinder extends HashMap<String, EmbeddedCollectionData>
 {
+	public static final String PATH_SEGMENT = "prop";
+
 	@NonNull
 	private final EntityPropertyRegistry propertyRegistry;
 
 	@Getter
 	@NonNull
 	private final String binderPrefix;
+
+	public Map<String, EmbeddedCollectionData> getProp() {
+		return this;
+	}
 
 	/**
 	 * Gets the collection data but creates it if there is a property
