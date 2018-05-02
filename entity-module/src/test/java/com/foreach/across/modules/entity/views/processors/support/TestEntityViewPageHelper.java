@@ -64,7 +64,6 @@ public class TestEntityViewPageHelper
 		flashAttributes = new HashMap<>();
 
 		RedirectAttributes ra = mock( RedirectAttributes.class );
-		when( ra.asMap() ).thenReturn( redirectAttributes );
 		when( (Map<String, Object>) ra.getFlashAttributes() ).thenReturn( flashAttributes );
 
 		when( entityViewRequest.getRedirectAttributes() ).thenReturn( ra );
