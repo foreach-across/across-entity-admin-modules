@@ -22,27 +22,26 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
-import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.RequestContextUtils;
+import org.thymeleaf.util.MapUtils;
 
-import java.util.LinkedHashMap;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * Checks if there is global feedback present on the model and renders it in the {@link com.foreach.across.modules.adminweb.ui.PageContentStructure}.
  * Feedback should be registered as either model attribute or request parameter {@link #FEEDBACK_ATTRIBUTE_KEY}.  If both are present, first the feedback
  * defined as request parameter will be retrieved, followed by the feedback as model attribute.
  * <p/>
- * The feedback attribute is a formatted string of STYLE:MESSAGE_CODE.  Helper methods {@link #addFeedbackMessage(String, Style, String)} and
- * {@link #decodeFeedbackMessages(String)} are available for building and decoding the feedback values.
+ * The feedback attribute is a formatted string of STYLE:MESSAGE_CODE.  Helper methods {@link #addFeedbackMessage(Map, Style, String)}
+ * is are available for building the feedback values.
  * <p/>
  * Feedback messages will be added as dismissible alerts to the {@link com.foreach.across.modules.adminweb.ui.PageContentStructure} feedback.
  *
@@ -65,67 +64,45 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 	                       ViewElementBuilderContext builderContext ) {
 		Map<String, Style> feedback = retrieveFeedbackMessage( entityViewRequest );
 
-		if ( !feedback.isEmpty() ) {
-			EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
-			PageContentStructure page = entityViewRequest.getPageContentStructure();
-			EntityMessages messages = entityViewContext.getEntityMessages();
-
+		if ( !MapUtils.isEmpty( feedback ) ) {
 			// todo: move to EntityViewPageHelper
-			feedback.forEach( ( messageCode, style ) -> {
-				page.addToFeedback(
-						BootstrapUiBuilders.alert()
-						                   .style( style )
-						                   .dismissible()
-						                   .text( messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) )
-						                   .build( builderContext )
-				);
-			} );
+			PageContentStructure page = entityViewRequest.getPageContentStructure();
+			feedback.forEach( ( message, style ) -> page.addToFeedback( BootstrapUiBuilders.alert()
+			                                                                               .style( style )
+			                                                                               .dismissible()
+			                                                                               .text( message )
+			                                                                               .build( builderContext ) ) );
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private Map<String, Style> retrieveFeedbackMessage( EntityViewRequest entityViewRequest ) {
-		Map<String, Style> feedback = new LinkedHashMap<>();
+		Map<String, Style> feedback = new HashMap<>();
+		Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap( (HttpServletRequest) entityViewRequest.getWebRequest().getNativeRequest() );
 
-		String[] parameterValues = entityViewRequest.getWebRequest().getParameterValues( FEEDBACK_ATTRIBUTE_KEY );
-
-		if ( parameterValues != null ) {
-			Stream.of( parameterValues )
-			      .forEach( paramValue -> feedback.putAll( decodeFeedbackMessages( paramValue ) ) );
+		if ( flashMap != null && flashMap.containsKey( FEEDBACK_ATTRIBUTE_KEY ) ) {
+			Map<String, Style> feedbackValues = (Map<String, Style>) flashMap.get( FEEDBACK_ATTRIBUTE_KEY );
+			feedback.putAll( feedbackValues );
 		}
-
-		feedback.putAll( decodeFeedbackMessages( (String) entityViewRequest.getModel().get( FEEDBACK_ATTRIBUTE_KEY ) ) );
 
 		return feedback;
 	}
 
 	/**
-	 * Decode a string of feedback messages to a {@link java.util.LinkedHashMap} of message code along with their style.
-	 *
-	 * @param attributeValue string to decode
-	 * @return map of message code with style value
-	 */
-	public static Map<String, Style> decodeFeedbackMessages( String attributeValue ) {
-		Map<String, Style> decoded = new LinkedHashMap<>();
-
-		Stream.of( StringUtils.defaultString( attributeValue ).split( "," ) )
-		      .map( s -> s.split( ":" ) )
-		      .filter( p -> p.length == 2 )
-		      .forEach( p -> decoded.put( p[1], new Style( p[0] ) ) );
-
-		return decoded;
-	}
-
-	/**
 	 * Add a feedback message (combination of message code and style) to an attribute.
 	 *
-	 * @param currentValue  current attribute value to add the feedback to
+	 * @param currentValue  map holding the current resolved messages and their style to add the feedback to.
 	 * @param feedbackStyle style of the feedback
-	 * @param messageCode   message
-	 * @return new value string
+	 * @param message       resolved message
+	 * @return new map holding the existing messages and the new message.
 	 */
-	public static String addFeedbackMessage( String currentValue, @NonNull Style feedbackStyle, @NonNull String messageCode ) {
-		String feedbackToken = ( feedbackStyle.isDefaultStyle() ? feedbackStyle.forPrefix( "alert" ) : feedbackStyle.getName() )
-				+ ":" + messageCode;
-		return StringUtils.defaultString( currentValue ).isEmpty() ? feedbackToken : currentValue + "," + feedbackToken;
+	public static Map<String, Style> addFeedbackMessage( Map<String, Style> currentValue, @NonNull Style feedbackStyle, @NonNull String message ) {
+		Map<String, Style> feedback = new HashMap<>();
+		if ( !MapUtils.isEmpty( currentValue ) ) {
+			feedback.putAll( currentValue );
+		}
+		feedback.put( message, feedbackStyle );
+		return feedback;
 	}
+
 }

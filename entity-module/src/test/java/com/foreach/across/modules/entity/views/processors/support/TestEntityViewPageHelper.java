@@ -17,7 +17,9 @@
 package com.foreach.across.modules.entity.views.processors.support;
 
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +33,8 @@ import java.util.Map;
 
 import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor.FEEDBACK_ATTRIBUTE_KEY;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +45,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class TestEntityViewPageHelper
 {
+	@Mock
+	private EntityMessages entityMessages;
+
 	@Mock
 	private EntityViewRequest entityViewRequest;
 
@@ -61,29 +68,35 @@ public class TestEntityViewPageHelper
 		when( (Map<String, Object>) ra.getFlashAttributes() ).thenReturn( flashAttributes );
 
 		when( entityViewRequest.getRedirectAttributes() ).thenReturn( ra );
+
+		EntityViewContext entityViewContext = mock( EntityViewContext.class );
+		when( entityViewRequest.getEntityViewContext() ).thenReturn( entityViewContext );
+		when( entityViewContext.getEntityMessages() ).thenReturn( entityMessages );
 	}
 
 	@Test
-	public void addGlobalFeedbackUsesFlashByDefault() {
+	@SuppressWarnings("unchecked")
+	public void addGlobalFeedbackResolvesMessageCode() {
+		when( entityMessages.withNameSingular( eq( "my.message" ), any() ) ).thenReturn( "My message" );
+		when( entityMessages.withNameSingular( eq( "other.message" ), any() ) ).thenReturn( "Other message" );
 		assertNull( flashAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
+
 		pageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.DANGER, "my.message" );
-		assertEquals( "alert-danger:my.message", flashAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
+		Map<String, Style> attributes = (Map<String, Style>) flashAttributes.get( FEEDBACK_ATTRIBUTE_KEY );
+		assertEquals( 1, attributes.size() );
+		assertMapContainsPair( attributes, "My message", Style.DANGER );
+
 		pageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.INFO, "other.message" );
-		assertEquals( "alert-danger:my.message,alert-info:other.message", flashAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
+		attributes = (Map<String, Style>) flashAttributes.get( FEEDBACK_ATTRIBUTE_KEY );
+		assertEquals( 2, attributes.size() );
+		assertMapContainsPair( attributes, "My message", Style.DANGER );
+		assertMapContainsPair( attributes, "Other message", Style.INFO );
 
 		assertTrue( redirectAttributes.isEmpty() );
 	}
 
-	@Test
-	public void addGlobalFeedbackAsRedirectAttribute() {
-		pageHelper.setUseFlashAttributesForRedirect( false );
-
-		assertNull( redirectAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
-		pageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.DANGER, "my.message" );
-		assertEquals( "alert-danger:my.message", redirectAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
-		pageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.INFO, "other.message" );
-		assertEquals( "alert-danger:my.message,alert-info:other.message", redirectAttributes.get( FEEDBACK_ATTRIBUTE_KEY ) );
-
-		assertTrue( flashAttributes.isEmpty() );
+	private void assertMapContainsPair( Map<String, Style> map, String key, Style value ) {
+		assertTrue( map.containsKey( key ) );
+		assertEquals( value, map.get( key ) );
 	}
 }

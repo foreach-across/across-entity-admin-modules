@@ -25,7 +25,6 @@ import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,15 +53,8 @@ public class EntityViewPageHelper
 	private AcrossDevelopmentMode developmentMode;
 
 	/**
-	 * Should flash attributes be used for redirect attributes.
-	 */
-	@Setter
-	private boolean useFlashAttributesForRedirect = true;
-
-	/**
-	 * Registers a feedback message that should be shown after redirect.  Depending on the value of {@link #useFlashAttributesForRedirect},
-	 * the attribute will be registered in the flash map or as a visible redirect attribute.  The message codes and styles will be registered
-	 * as model attribute {@link com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor#FEEDBACK_ATTRIBUTE_KEY}.
+	 * Registers a feedback message that should be shown after redirect.  The attribute will always be registered in the flash map.
+	 * The message codes will be resolved and registered with their specified style as model attribute {@link com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor#FEEDBACK_ATTRIBUTE_KEY}.
 	 * <p/>
 	 * Only support message codes, use together with {@link com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor}.
 	 *
@@ -73,8 +65,13 @@ public class EntityViewPageHelper
 	@SuppressWarnings("unchecked")
 	public void addGlobalFeedbackAfterRedirect( @NonNull EntityViewRequest viewRequest, @NonNull Style feedbackStyle, @NonNull String messageCode ) {
 		RedirectAttributes redirectAttributes = viewRequest.getRedirectAttributes();
-		Map<String, Object> model = useFlashAttributesForRedirect ? (Map<String, Object>) redirectAttributes.getFlashAttributes() : redirectAttributes.asMap();
-		model.compute( FEEDBACK_ATTRIBUTE_KEY, ( key, value ) -> addFeedbackMessage( (String) value, feedbackStyle, messageCode ) );
+		Map<String, Object> model = (Map<String, Object>) redirectAttributes.getFlashAttributes();
+
+		EntityViewContext entityViewContext = viewRequest.getEntityViewContext();
+		EntityMessages messages = entityViewContext.getEntityMessages();
+
+		model.compute( FEEDBACK_ATTRIBUTE_KEY, ( key, value ) ->
+				addFeedbackMessage( (Map<String, Style>) value, feedbackStyle, messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) ) );
 	}
 
 	public void throwOrAddExceptionFeedback( EntityViewRequest viewRequest, String messageCode, Throwable exception ) {
