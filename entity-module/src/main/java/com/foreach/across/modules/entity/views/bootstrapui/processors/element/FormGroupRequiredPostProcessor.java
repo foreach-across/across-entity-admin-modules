@@ -38,9 +38,9 @@ public class FormGroupRequiredPostProcessor<T extends ViewElement> implements Vi
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
 		if ( element instanceof FormGroupElement ) {
 			FormGroupElement formGroup = (FormGroupElement) element;
-			FormControlElement control = formGroup.getControl( FormControlElement.class );
+			boolean required = formGroup.findAll( FormControlElement.class ).anyMatch( FormControlElement::isRequired );
 
-			if ( control != null && control.isRequired() ) {
+			if ( required ) {
 				formGroup.setRequired( true );
 			}
 		}

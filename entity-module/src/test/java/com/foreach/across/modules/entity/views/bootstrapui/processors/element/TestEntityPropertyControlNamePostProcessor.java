@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
-import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -57,13 +56,16 @@ public class TestEntityPropertyControlNamePostProcessor
 	public void setUp() throws Exception {
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
 		when( builderContext.getAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, Boolean.class ) ).thenReturn( true );
+		when( builderContext.getAttribute( EntityPropertyDescriptor.class ) ).thenReturn( descriptor );
+
+		when( descriptor.getName() ).thenReturn( "myprop" );
 
 		postProcessor = new EntityPropertyControlNamePostProcessor<>();
 		input = new TextboxFormElement();
-		input.setName( "input" );
+		input.setName( "myprop" );
 
 		child = new TextboxFormElement();
-		child.setName( "child" );
+		child.setName( "myprop.child" );
 
 		input.addChild( child );
 	}
@@ -72,49 +74,54 @@ public class TestEntityPropertyControlNamePostProcessor
 	public void notPrefixedIfNoCommand() {
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( false );
 		postProcessor.postProcess( builderContext, input );
-		assertEquals( "input", input.getControlName() );
-		assertEquals( "child", child.getControlName() );
+		assertEquals( "myprop", input.getControlName() );
+		assertEquals( "myprop.child", child.getControlName() );
+	}
+
+	@Test
+	public void notPrefixedIfNoEntityPropertyDescriptor() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+		when( builderContext.getAttribute( EntityPropertyDescriptor.class ) ).thenReturn( null );
+		postProcessor.postProcess( builderContext, input );
+		assertEquals( "myprop", input.getControlName() );
+		assertEquals( "myprop.child", child.getControlName() );
 	}
 
 	@Test
 	public void notPrefixedIfNoAttributeNotSet() {
 		when( builderContext.getAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, Boolean.class ) ).thenReturn( false );
 		postProcessor.postProcess( builderContext, input );
-		assertEquals( "input", input.getControlName() );
-		assertEquals( "child", child.getControlName() );
+		assertEquals( "myprop", input.getControlName() );
+		assertEquals( "myprop.child", child.getControlName() );
 
 		when( builderContext.getAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, Boolean.class ) ).thenReturn( null );
 		postProcessor.postProcess( builderContext, input );
-		assertEquals( "input", input.getControlName() );
-		assertEquals( "child", child.getControlName() );
-	}
-
-	@Test
-	public void prefixCurrentElementOnly() {
-		postProcessor.postProcess( builderContext, input );
-		assertEquals( "entity.input", input.getControlName() );
-		assertEquals( "child", child.getControlName() );
+		assertEquals( "myprop", input.getControlName() );
+		assertEquals( "myprop.child", child.getControlName() );
 	}
 
 	@Test
 	public void prefixChildren() {
-		postProcessor = new EntityPropertyControlNamePostProcessor<>( FormInputElement.class::isInstance );
+		postProcessor = new EntityPropertyControlNamePostProcessor<>();
 		postProcessor.postProcess( builderContext, input );
-		assertEquals( "entity.input", input.getControlName() );
-		assertEquals( "entity.child", child.getControlName() );
+		assertEquals( "entity.myprop", input.getControlName() );
+		assertEquals( "entity.myprop.child", child.getControlName() );
 	}
 
 	@Test
 	public void prefixOnlyMatchingChildren() {
-		postProcessor = new EntityPropertyControlNamePostProcessor<>( SelectFormElement.class::isInstance );
+		input.setControlName( "input" );
+
+		postProcessor = new EntityPropertyControlNamePostProcessor<>();
 		postProcessor.postProcess( builderContext, input );
-		assertEquals( "entity.input", input.getControlName() );
-		assertEquals( "child", child.getControlName() );
+
+		assertEquals( "input", input.getControlName() );
+		assertEquals( "entity.myprop.child", child.getControlName() );
 	}
 
 	@Test
 	public void dontRegisterIfNotANativeProperty() {
-		EntityPropertyControlNamePostProcessor.registerForProperty( descriptor, builder, null );
+		EntityPropertyControlNamePostProcessor.registerForProperty( descriptor, builder );
 		verifyNoMoreInteractions( builder );
 	}
 
@@ -122,7 +129,7 @@ public class TestEntityPropertyControlNamePostProcessor
 	@Test
 	public void registerIfNativeProperty() {
 		when( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ).thenReturn( true );
-		EntityPropertyControlNamePostProcessor.registerForProperty( descriptor, builder, null );
+		EntityPropertyControlNamePostProcessor.registerForProperty( descriptor, builder );
 		verify( builder ).postProcessor( any( EntityPropertyControlNamePostProcessor.class ) );
 	}
 
@@ -130,13 +137,13 @@ public class TestEntityPropertyControlNamePostProcessor
 	public void dontRegisterIfControlName() {
 		when( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ).thenReturn( true );
 		when( descriptor.hasAttribute( EntityAttributes.CONTROL_NAME ) ).thenReturn( true );
-		EntityPropertyControlNamePostProcessor.registerForProperty( descriptor, builder, null );
+		EntityPropertyControlNamePostProcessor.registerForProperty( descriptor, builder );
 		verifyNoMoreInteractions( builder );
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void dontFailIfPostProcessorsNotSupported() {
-		EntityPropertyControlNamePostProcessor.registerForProperty( descriptor, mock( ViewElementBuilder.class ), null );
+		EntityPropertyControlNamePostProcessor.registerForProperty( descriptor, mock( ViewElementBuilder.class ) );
 	}
 }

@@ -95,7 +95,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	}
 
 	@Test
-	public void controlNam0ePrefixing() {
+	public void controlNamePrefixing() {
 		simulateEntityViewForm();
 		DateTimeFormElement datetime = assemble( "withoutAnnotations", ViewElementMode.CONTROL );
 		assertEquals( "entity.withoutAnnotations", datetime.getControlName() );

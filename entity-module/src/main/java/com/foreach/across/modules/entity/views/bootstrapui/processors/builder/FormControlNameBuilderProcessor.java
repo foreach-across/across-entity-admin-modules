@@ -20,10 +20,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
-import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-
-import java.util.function.Predicate;
 
 /**
  * Registers the {@link EntityPropertyControlNamePostProcessor} on the builder if we are in a control {@link ViewElementMode}.
@@ -35,20 +32,10 @@ import java.util.function.Predicate;
 @SuppressWarnings("unchecked")
 public class FormControlNameBuilderProcessor<T extends ViewElementBuilder> implements EntityViewElementBuilderProcessor<T>
 {
-	private final Predicate<ViewElement> childElementPredicate;
-
-	public FormControlNameBuilderProcessor() {
-		this.childElementPredicate = null;
-	}
-
-	public FormControlNameBuilderProcessor( Predicate<ViewElement> childElementPredicate ) {
-		this.childElementPredicate = childElementPredicate;
-	}
-
 	@Override
 	public void process( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode, String viewElementType, T builder ) {
 		if ( ViewElementMode.isControl( viewElementMode ) ) {
-			EntityPropertyControlNamePostProcessor.registerForProperty( propertyDescriptor, builder, childElementPredicate );
+			EntityPropertyControlNamePostProcessor.registerForProperty( propertyDescriptor, builder );
 		}
 	}
 }
