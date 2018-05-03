@@ -75,7 +75,9 @@ public abstract class ExtensionViewProcessorAdapter<T> extends EntityViewProcess
 	@Override
 	protected final void validateCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, Errors errors, HttpMethod httpMethod ) {
 		T extension = command.getExtension( extensionName() );
+		errors.pushNestedPath( controlPrefix() );
 		validateExtension( extension, errors, httpMethod, entityViewRequest );
+		errors.popNestedPath();
 	}
 
 	/**
