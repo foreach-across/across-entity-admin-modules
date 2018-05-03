@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertyValueHolder;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -31,6 +32,7 @@ import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.AcrossWebModule;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import lombok.val;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,12 +121,20 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 	protected void doPost( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command, BindingResult bindingResult ) {
 		if ( !bindingResult.hasErrors() ) {
 			try {
+				val properties = command.getProperties();
+
+
 				EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 				EntityModel<Object, ?> entityModel = entityViewContext.getEntityModel();
 
 				Object entityToSave = command.getEntity();
 				boolean isNew = entityModel.isNew( entityToSave );
 				Object savedEntity = entityModel.save( entityToSave );
+
+				if ( properties != null ) {
+					properties.values()
+					          .forEach( EntityPropertyValueHolder::save );
+				}
 
 				entityViewPageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.SUCCESS,
 				                                                     isNew ? "feedback.entityCreated" : "feedback.entityUpdated" );

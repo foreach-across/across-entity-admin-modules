@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
+import org.springframework.core.Ordered;
 import org.springframework.validation.Errors;
 
 /**
@@ -35,8 +36,22 @@ import org.springframework.validation.Errors;
  * @author Arne Vandamme
  * @since 3.1.0
  */
-public interface EntityPropertyController<T, U>
+public interface EntityPropertyController<T, U> extends Ordered
 {
+	/**
+	 * Controller methods for this property should be executed before the equivalent method
+	 * on the entity itself. Eg. {@code validate()} on the property controller should be done
+	 * before the entity validation.
+	 */
+	int BEFORE_ENTITY = Ordered.HIGHEST_PRECEDENCE + 1000;
+
+	/**
+	 * Controller methods for this property should be executed after the equivalent method
+	 * on the entity itself. Eg. {@code validate()} on the property controller should be done
+	 * after the entity validation.
+	 */
+	int AFTER_ENTITY = Ordered.LOWEST_PRECEDENCE - 1000;
+
 	/**
 	 * Get the current value of the property for the owning entity.
 	 *
@@ -114,5 +129,17 @@ public interface EntityPropertyController<T, U>
 	 */
 	default boolean exists( T owner ) {
 		return true;
+	}
+
+	/**
+	 * The order in which this controller should be applied.
+	 * Defaults to {@link #AFTER_ENTITY} meaning the controller methods will be executed after
+	 * the equivalent entity methods.
+	 *
+	 * @return order
+	 */
+	@Override
+	default int getOrder() {
+		return AFTER_ENTITY;
 	}
 }

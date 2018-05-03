@@ -31,7 +31,6 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.Fo
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.NumericValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
@@ -169,15 +168,10 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 					.postProcessor(
 							( builderContext, numericFormElement ) ->
 							{
-								Object entity = EntityViewElementUtils.currentEntity( builderContext );
-								ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
+								Number propertyValue = EntityViewElementUtils.currentPropertyValue( builderContext, Number.class );
 
-								if ( entity != null && valueFetcher != null ) {
-									Number propertyValue = (Number) valueFetcher.getValue( entity );
-
-									if ( propertyValue != null ) {
-										numericFormElement.setValue( propertyValue );
-									}
+								if ( propertyValue != null ) {
+									numericFormElement.setValue( propertyValue );
 								}
 							}
 					);

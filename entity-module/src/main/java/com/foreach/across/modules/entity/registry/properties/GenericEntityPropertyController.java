@@ -69,13 +69,13 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	/**
 	 * Set the consumer that should be called when setting the property value using {@link #setValue(Object, Object)}.
 	 * The return value of calling {@link #setValue(Object, Object)} will always be {@code true}
-	 * if you specify a {@link BiConsumer}. See {@link #setValueWriter(BiFunction)} if you
+	 * if you specify a {@link BiConsumer}. See {@link #setValueWriterFunction(BiFunction)} if you
 	 * want to control the return value.
 	 *
 	 * @param valueWriter consumer for setting the value
 	 * @return self
 	 */
-	public GenericEntityPropertyController<T, U> setValueWriter( @NonNull BiConsumer<T, U> valueWriter ) {
+	public GenericEntityPropertyController<T, U> setValueWriterConsumer( @NonNull BiConsumer<T, U> valueWriter ) {
 		this.valueWriter = ( entity, value ) -> {
 			valueWriter.accept( entity, value );
 			return true;
@@ -90,7 +90,7 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	 * @param valueWriter function for setting the value
 	 * @return self
 	 */
-	public GenericEntityPropertyController<T, U> setValueWriter( BiFunction<T, U, Boolean> valueWriter ) {
+	public GenericEntityPropertyController<T, U> setValueWriterFunction( BiFunction<T, U, Boolean> valueWriter ) {
 		this.valueWriter = valueWriter;
 		return this;
 	}
@@ -104,7 +104,7 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	 * @param saveFunction consumer for saving the value
 	 * @return self
 	 */
-	public GenericEntityPropertyController<T, U> setSaveFunction( @NotNull BiConsumer<T, U> saveFunction ) {
+	public GenericEntityPropertyController<T, U> setSaveConsumer( @NotNull BiConsumer<T, U> saveFunction ) {
 		this.saveFunction = ( entity, value ) -> {
 			saveFunction.accept( entity, value );
 			return true;
@@ -133,7 +133,7 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	 * @param deleteFunction function for deleting the property
 	 * @return self
 	 */
-	public GenericEntityPropertyController<T, U> setDeleteFunction( @NonNull Consumer<T> deleteFunction ) {
+	public GenericEntityPropertyController<T, U> setDeleteConsumer( @NonNull Consumer<T> deleteFunction ) {
 		this.deleteFunction = entity -> {
 			deleteFunction.accept( entity );
 			return true;

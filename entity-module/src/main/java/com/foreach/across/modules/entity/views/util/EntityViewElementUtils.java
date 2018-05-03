@@ -15,10 +15,14 @@
  */
 package com.foreach.across.modules.entity.views.util;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import lombok.val;
 
 /**
  * Contains utility methods related to view elements and view building in an entity context.
@@ -88,6 +92,9 @@ public class EntityViewElementUtils
 
 	/**
 	 * Retrieve the current property value being rendered, if it is of the expected type.
+	 * Depending on the type of property, this will fetch the property directly from the entity,
+	 * or from the {@link com.foreach.across.modules.entity.views.processors.support.EntityPropertyValues} that
+	 * is present on the {@link ViewElementBuilderContext}.
 	 *
 	 * @param builderContext current builder context
 	 * @param expectedType   the property value should have
@@ -106,7 +113,17 @@ public class EntityViewElementUtils
 			return null;
 		}
 
-		Object propertyValue = descriptor.getPropertyValue( currentEntity( builderContext ) );
+		EntityPropertiesBinder properties = builderContext.getAttribute( EntityPropertiesBinder.class );
+
+		Object propertyValue;
+
+		if ( properties != null && EntityAttributes.handlingType( descriptor ) == EntityPropertyHandlingType.EXTENSION ) {
+			val valueHolder = properties.get( descriptor.getName() );
+			propertyValue = valueHolder.getValue();
+		}
+		else {
+			propertyValue = descriptor.getPropertyValue( currentEntity( builderContext ) );
+		}
 
 		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
 	}

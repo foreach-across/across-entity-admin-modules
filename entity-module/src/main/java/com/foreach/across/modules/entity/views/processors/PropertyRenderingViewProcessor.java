@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinder;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinderValidator;
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -35,11 +36,13 @@ import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBu
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.WebDataBinder;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Renders one or more registered properties from the {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry}
@@ -71,6 +74,7 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 
 	private EntityViewElementBuilderService viewElementBuilderService;
 	private EmbeddedCollectionsBinderValidator collectionsBinderValidator;
+	private ConversionService conversionService;
 
 	private EntityPropertySelector selector = EntityPropertySelector.of( EntityPropertySelector.READABLE );
 
@@ -92,6 +96,13 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 
 	@Override
 	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
+		EntityPropertiesBinder propertiesBinder = new EntityPropertiesBinder( entityViewRequest.getEntityViewContext().getPropertyRegistry() );
+		propertiesBinder.setConversionService( conversionService );
+		propertiesBinder.setBinderPrefix( "properties" );
+		propertiesBinder.setEntitySupplier( () -> Optional.ofNullable( command.getEntity() ).orElseGet( entityViewRequest.getEntityViewContext()::getEntity ) );
+
+		command.setProperties( propertiesBinder );
+
 		command.addExtensionWithValidator(
 				EmbeddedCollectionsBinder.class.getSimpleName(),
 				new EmbeddedCollectionsBinder( entityViewRequest.getEntityViewContext().getPropertyRegistry(),
@@ -180,5 +191,10 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	@Autowired
 	void setCollectionsBinderValidator( EmbeddedCollectionsBinderValidator collectionsBinderValidator ) {
 		this.collectionsBinderValidator = collectionsBinderValidator;
+	}
+
+	@Autowired
+	void setConversionService( ConversionService conversionService ) {
+		this.conversionService = conversionService;
 	}
 }

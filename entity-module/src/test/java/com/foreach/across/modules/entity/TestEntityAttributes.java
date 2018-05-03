@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -44,13 +45,22 @@ public class TestEntityAttributes
 	@Test
 	public void nameAsControlName() {
 		when( descriptor.getName() ).thenReturn( "propertyName" );
+		when( descriptor.getAttribute( EntityPropertyHandlingType.class ) ).thenReturn( EntityPropertyHandlingType.MANUAL );
 		assertEquals( "propertyName", EntityAttributes.controlName( descriptor ) );
 	}
 
 	@Test
 	public void specificControlName() {
 		when( descriptor.getName() ).thenReturn( "propertyName" );
+		when( descriptor.getAttribute( EntityPropertyHandlingType.class ) ).thenReturn( EntityPropertyHandlingType.DIRECT );
 		when( descriptor.getAttribute( EntityAttributes.CONTROL_NAME, String.class ) ).thenReturn( "controlName" );
 		assertEquals( "controlName", EntityAttributes.controlName( descriptor ) );
+	}
+
+	@Test
+	public void extensionControlName() {
+		when( descriptor.getName() ).thenReturn( "propertyName" );
+		when( descriptor.getAttribute( EntityPropertyHandlingType.class ) ).thenReturn( EntityPropertyHandlingType.EXTENSION );
+		assertEquals( "properties[propertyName].value", EntityAttributes.controlName( descriptor ) );
 	}
 }

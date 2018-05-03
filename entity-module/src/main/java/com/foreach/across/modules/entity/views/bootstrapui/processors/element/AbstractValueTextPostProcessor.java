@@ -16,7 +16,6 @@
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
@@ -44,15 +43,10 @@ public abstract class AbstractValueTextPostProcessor<T extends ConfigurableTextV
 	@Override
 	@SuppressWarnings("unchecked")
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
-		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
+		Object propertyValue = EntityViewElementUtils.currentPropertyValue( builderContext );
 
-		if ( entity != null && valueFetcher != null ) {
-			Object propertyValue = valueFetcher.getValue( entity );
-
-			if ( propertyValue != null ) {
-				element.setText( print( propertyValue, LocaleContextHolder.getLocale() ) );
-			}
+		if ( propertyValue != null ) {
+			element.setText( print( propertyValue, LocaleContextHolder.getLocale() ) );
 		}
 	}
 

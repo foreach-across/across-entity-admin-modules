@@ -34,6 +34,7 @@ import org.springframework.validation.Validator;
  * @author Arne Vandamme
  * @since 3.1.0
  */
+@Deprecated
 @Component
 @Exposed
 public class EmbeddedCollectionsBinderValidator implements SmartValidator

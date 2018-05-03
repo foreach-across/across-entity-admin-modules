@@ -86,7 +86,7 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 			controller.setValueReader( new MethodValueFetcher<>( property.getReadMethod() ) );
 		}
 		if ( property.getWriteMethod() != null ) {
-			controller.setValueWriter( new MethodValueWriter<>( property.getWriteMethod() ) );
+			controller.setValueWriterFunction( new MethodValueWriter<>( property.getWriteMethod() ) );
 		}
 
 		return controller;

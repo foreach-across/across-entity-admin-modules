@@ -17,8 +17,11 @@
 package com.foreach.across.modules.entity;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertyValueHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -84,13 +87,30 @@ public interface EntityAttributes
 
 	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.
+	 * Which control name gets generated depends on the value of {@link #handlingType(EntityPropertyDescriptor)}.
+	 * An extension property will return a path to a {@link EntityPropertyValueHolder} on the {@link EntityPropertiesBinder}.
+	 * A direct or manual property will generate a control name based on the property name or attribute.
 	 * If an attribute {@link #CONTROL_NAME} is present, it will be used, else the regular name will be used.
 	 *
 	 * @param descriptor of the property
 	 * @return control name to use
 	 */
 	static String controlName( EntityPropertyDescriptor descriptor ) {
+		if ( handlingType( descriptor ) == EntityPropertyHandlingType.EXTENSION && descriptor.getName() != null ) {
+			return "properties[" + descriptor.getName() + "].value";
+		}
 		return StringUtils.defaultString( descriptor.getAttribute( CONTROL_NAME, String.class ), descriptor.getName() );
+	}
+
+	/**
+	 * Determine the {@link EntityPropertyHandlingType} for a {@link EntityPropertyDescriptor}.
+	 * If no attribute of the former type is present, a handling type will be resolved.
+	 *
+	 * @param descriptor of the property
+	 * @return handling type - never {@code null}
+	 */
+	static EntityPropertyHandlingType handlingType( EntityPropertyDescriptor descriptor ) {
+		return EntityPropertyHandlingType.forProperty( descriptor );
 	}
 
 	/**

@@ -16,12 +16,15 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import lombok.val;
 
 /**
  * @author Steven Gentens
@@ -37,12 +40,20 @@ public final class BooleanValueTextProcessor<T extends ConfigurableTextViewEleme
 
 	@SuppressWarnings("unchecked")
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
-		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		ValueFetcher valueFetcher = getPropertyDescriptor().getValueFetcher();
+		EntityPropertiesBinder properties = builderContext.getAttribute( EntityPropertiesBinder.class );
 
-		if ( entity != null && valueFetcher != null ) {
-			Boolean propertyValue = (Boolean) valueFetcher.getValue( entity );
-			element.setText( convert( builderContext, propertyValue ) );
+		if ( properties != null && !propertyDescriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ) {
+			val valueHolder = properties.get( propertyDescriptor.getName() );
+// todo: implement
+		}
+		else {
+			Object entity = EntityViewElementUtils.currentEntity( builderContext );
+			ValueFetcher valueFetcher = getPropertyDescriptor().getValueFetcher();
+
+			if ( entity != null && valueFetcher != null ) {
+				Boolean propertyValue = (Boolean) valueFetcher.getValue( entity );
+				element.setText( convert( builderContext, propertyValue ) );
+			}
 		}
 	}
 

@@ -22,9 +22,12 @@ import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
 import com.foreach.across.modules.entity.registry.EntityFactory;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.samples.entity.EntityModuleTestApplication;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,6 +55,8 @@ import java.util.function.Consumer;
 public class CategoryEntityConfiguration implements EntityConfigurer
 {
 	private final List<Map<String, Object>> categoryRepository = new ArrayList<>();
+
+	private final Map<Object, Integer> stockCounts = new HashMap<>();
 
 	/**
 	 * Builds the initial category repository.
@@ -134,13 +139,24 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	 */
 	private Consumer<EntityPropertyRegistryBuilder> registerStockCountProperty() {
 		return props -> {
+			val controller = new GenericEntityPropertyController<Map<String, Object>, Integer>();
+			controller.setValueReader( category -> stockCounts.get( category.get( "id" ) ) );
+			controller.addValidator( ( category, stockCount, errors, validationHints ) -> {
+				// stock count must be positive number`
+				if ( stockCount == null || stockCount < 0 ) {
+					errors.rejectValue( "", "must-be-positive", "Must be a positive number" );
+				}
+			} );
+			controller.setSaveConsumer( ( category, stockCount ) -> stockCounts.put( category.get( "id" ), stockCount ) );
+
 			props.property( "stockCount" )
 			     .displayName( "Stock count" )
 			     .propertyType( Integer.class )
 			     .readable( true )
 			     .writable( true )
 			     .hidden( false )
-			     .spelValueFetcher( "0" );
+			     .valueFetcher( controller::getValue )
+			     .attribute( EntityPropertyController.class, controller );
 		};
 	}
 

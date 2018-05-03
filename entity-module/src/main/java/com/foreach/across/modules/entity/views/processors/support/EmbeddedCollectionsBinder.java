@@ -45,7 +45,9 @@ import java.util.Map;
  * @author Arne Vandamme
  * @see EmbeddedCollectionData
  * @since 3.1.0
+ * @deprecated see {@link EntityPropertiesBinder}
  */
+@Deprecated
 @RequiredArgsConstructor
 public class EmbeddedCollectionsBinder extends HashMap<String, EmbeddedCollectionData>
 {

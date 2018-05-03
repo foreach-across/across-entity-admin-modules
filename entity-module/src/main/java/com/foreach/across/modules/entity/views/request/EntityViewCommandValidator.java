@@ -20,6 +20,7 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -71,6 +72,19 @@ public class EntityViewCommandValidator implements SmartValidator
 	public void validate( Object target, Errors errors, Object... validationHints ) {
 		EntityViewCommand command = (EntityViewCommand) target;
 		Object entity = command.getEntity();
+
+		// build list of separate validators to execute
+		// get the property validators, get the extension validators
+		EntityPropertiesBinder properties = command.getProperties();
+		if ( properties != null ) {
+			properties.forEach( ( name, valueHolder ) -> {
+				errors.pushNestedPath( "properties[" + name + "]" );
+				if ( valueHolder.validate( errors, validationHints ) ) {
+					//valueHolder.bind();
+				}
+				errors.popNestedPath();
+			} );
+		}
 
 		if ( entity != null ) {
 			errors.pushNestedPath( "entity" );

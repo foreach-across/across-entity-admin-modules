@@ -16,6 +16,9 @@
 
 package com.foreach.across.modules.entity.views.request;
 
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.validation.Validator;
 
 import javax.validation.Valid;
@@ -38,6 +41,13 @@ public class EntityViewCommand
 
 	@Valid
 	private final Map<String, Object> extensions = new HashMap<>();
+
+	/**
+	 * A binder object for custom property binding through {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyController}.
+	 */
+	@Getter
+	@Setter
+	private EntityPropertiesBinder properties = null;
 
 	private final Map<String, Collection<Validator>> extensionValidators = new HashMap<>();
 
