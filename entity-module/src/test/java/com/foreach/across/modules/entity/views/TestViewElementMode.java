@@ -31,6 +31,12 @@ public class TestViewElementMode
 	private static final String NAME_MULTIPLE = "MY_NAME_MULTIPLE";
 
 	@Test
+	public void toSringEqualsType() {
+		assertEquals( NAME_SINGLE, new ViewElementMode( NAME_SINGLE ).toString() );
+		assertEquals( NAME_MULTIPLE, new ViewElementMode( NAME_MULTIPLE ).toString() );
+	}
+
+	@Test
 	public void multipleSuffixIsAddedIfMissing() {
 		ViewElementMode mode = new ViewElementMode( NAME_SINGLE );
 		assertFalse( mode.isForMultiple() );
