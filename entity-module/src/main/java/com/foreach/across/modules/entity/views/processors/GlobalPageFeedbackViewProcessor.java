@@ -40,8 +40,8 @@ import java.util.Map;
  * Feedback should be registered as either model attribute or request parameter {@link #FEEDBACK_ATTRIBUTE_KEY}.  If both are present, first the feedback
  * defined as request parameter will be retrieved, followed by the feedback as model attribute.
  * <p/>
- * The feedback attribute is a formatted string of STYLE:MESSAGE_CODE.  Helper methods {@link #addFeedbackMessage(Map, Style, String)}
- * is are available for building the feedback values.
+ * The feedback attribute is a formatted string of STYLE:MESSAGE_CODE.  Helper method {@link #addFeedbackMessage(Map, Style, String)}
+ * is available for building the feedback values.
  * <p/>
  * Feedback messages will be added as dismissible alerts to the {@link com.foreach.across.modules.adminweb.ui.PageContentStructure} feedback.
  *
@@ -80,7 +80,7 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 		Map<String, Style> feedback = new HashMap<>();
 		Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap( (HttpServletRequest) entityViewRequest.getWebRequest().getNativeRequest() );
 
-		if ( flashMap != null && flashMap.containsKey( FEEDBACK_ATTRIBUTE_KEY ) ) {
+		if ( MapUtils.containsKey( flashMap, FEEDBACK_ATTRIBUTE_KEY ) ) {
 			Map<String, Style> feedbackValues = (Map<String, Style>) flashMap.get( FEEDBACK_ATTRIBUTE_KEY );
 			feedback.putAll( feedbackValues );
 		}
