@@ -29,7 +29,6 @@ import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBu
 import lombok.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.RequestContextUtils;
-import org.thymeleaf.util.MapUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -64,7 +63,7 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 	                       ViewElementBuilderContext builderContext ) {
 		Map<String, Style> feedback = retrieveFeedbackMessage( entityViewRequest );
 
-		if ( !MapUtils.isEmpty( feedback ) ) {
+		if ( !isEmptyMap( feedback ) ) {
 			// todo: move to EntityViewPageHelper
 			PageContentStructure page = entityViewRequest.getPageContentStructure();
 			feedback.forEach( ( message, style ) -> page.addToFeedback( BootstrapUiBuilders.alert()
@@ -80,7 +79,7 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 		Map<String, Style> feedback = new HashMap<>();
 		Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap( (HttpServletRequest) entityViewRequest.getWebRequest().getNativeRequest() );
 
-		if ( MapUtils.containsKey( flashMap, FEEDBACK_ATTRIBUTE_KEY ) ) {
+		if ( flashMap != null && flashMap.containsKey( FEEDBACK_ATTRIBUTE_KEY ) ) {
 			Map<String, Style> feedbackValues = (Map<String, Style>) flashMap.get( FEEDBACK_ATTRIBUTE_KEY );
 			feedback.putAll( feedbackValues );
 		}
@@ -98,11 +97,14 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 	 */
 	public static Map<String, Style> addFeedbackMessage( Map<String, Style> currentValue, @NonNull Style feedbackStyle, @NonNull String message ) {
 		Map<String, Style> feedback = new HashMap<>();
-		if ( !MapUtils.isEmpty( currentValue ) ) {
+		if ( !isEmptyMap( currentValue ) ) {
 			feedback.putAll( currentValue );
 		}
 		feedback.put( message, feedbackStyle );
 		return feedback;
 	}
 
+	private static boolean isEmptyMap( Map<String, Style> map ) {
+		return map == null || map.isEmpty();
+	}
 }
