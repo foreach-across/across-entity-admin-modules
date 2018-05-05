@@ -23,7 +23,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -47,10 +46,10 @@ public class TestExtensionViewProcessorAdapter
 		Errors errors = mock( Errors.class );
 		EntityViewCommand entityViewCommand = new EntityViewCommand();
 		EntityViewRequest entityViewRequest = new EntityViewRequest();
-		errors.pushNestedPath( adapter.controlPrefix() );
+
 		adapter.validateCommandObject( entityViewRequest, entityViewCommand, errors, HttpMethod.POST );
 
-		verify( errors ).pushNestedPath( eq( "extensions[" + extensionName + "]" ) );
+		verify( errors ).pushNestedPath( "extensions[" + extensionName + "]" );
 		verify( errors ).popNestedPath();
 	}
 }
