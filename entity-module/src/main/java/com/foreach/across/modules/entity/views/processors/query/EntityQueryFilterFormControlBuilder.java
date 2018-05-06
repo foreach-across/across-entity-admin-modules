@@ -194,7 +194,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 			}
 
 			if ( !advancedFilterEnabled ) {
-				container.add( hidden().controlName( eqlControlName ) );
+				container.add( hidden().controlName( eqlControlName ).value( eqlStatement ) );
 			}
 			else {
 				NodeViewElementBuilder advancedFilter = div().name( "entity-query-filter-form-advanced" )

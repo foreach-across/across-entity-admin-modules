@@ -49,7 +49,7 @@ public class TestEntityQueryFilterFormControlBuilder extends AbstractViewElement
 			"<input data-entity-query-control=\"marker\" name=\"extensions[myName]\" data-entity-query-operand=\"LIKE\" id=\"extensions[myName]\" type=\"text\" class=\"form-control\" data-entity-query-property=\"myName\"></input>" +
 			"<div data-entity-query-control=\"marker\" data-entity-query-operand=\"IN\" id=\"extensions[myOption]\" data-entity-query-property=\"myOption\"><div class=\"checkbox\"><input name=\"extensions[myOption]\" id=\"extensions[myOption]1\" type=\"checkbox\" value=\"myOption\"></input><input name=\"_extensions[myOption]\" type=\"hidden\" value=\"on\"></input></div></div>" +
 			"<button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-search\"></span>entityQueryFilter.searchButton</button></div>" +
-			"<input name=\"extensions[eqFilter]\" type=\"hidden\" />" +
+			"<input name=\"extensions[eqFilter]\" type=\"hidden\"  value=\"\" />" +
 			"</div>";
 	private static final String FILTER_BASIC_ADVANCED_WITH_BASIC = "<div data-entity-query-filter-form=\"default\" class=\"entity-query-filter-form\">" +
 			"<div class=\"entity-query-filter-form-basic\">" +
