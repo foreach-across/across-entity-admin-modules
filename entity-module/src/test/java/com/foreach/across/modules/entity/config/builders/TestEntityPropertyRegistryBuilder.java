@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.Collections;
@@ -65,6 +66,19 @@ public class TestEntityPropertyRegistryBuilder
 
 		assertSame( propertyBuilder, builder.property( "test" ) );
 		assertNotSame( propertyBuilder, builder.property( "other" ) );
+	}
+
+	@Test
+	public void propertiesAreAppliedInOrder() {
+		builder.property( "manager" )
+		       .and()
+		       .property( "manager.email" );
+
+		build();
+
+		InOrder inOrder = inOrder( registry );
+		inOrder.verify( registry ).getProperty( "manager" );
+		inOrder.verify( registry ).getProperty( "manager.email" );
 	}
 
 	@Test

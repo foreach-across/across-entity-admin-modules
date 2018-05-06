@@ -150,6 +150,9 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 			try {
 				builderContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, true );
 				propertyBuilders.forEach( ( propertyName, builder ) -> {
+					if ( builder == null ) {
+						throw new IllegalStateException( "No ViewElementBuilder was registered for property '" + propertyName + "'" );
+					}
 					propertiesContainerBuilder.add( builder.build( builderContext ) );
 				} );
 			}

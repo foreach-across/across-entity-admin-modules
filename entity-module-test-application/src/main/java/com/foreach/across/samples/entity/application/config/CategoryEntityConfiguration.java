@@ -16,21 +16,31 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
+import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionElementBuilderFactory;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.samples.entity.EntityModuleTestApplication;
+import lombok.Data;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.validation.Errors;
@@ -57,6 +67,10 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	private final List<Map<String, Object>> categoryRepository = new ArrayList<>();
 
 	private final Map<Object, Integer> stockCounts = new HashMap<>();
+	private final Map<Object, Manager> categoryManagers = new HashMap<>();
+
+	@EntityValidator
+	private Validator validator;
 
 	/**
 	 * Builds the initial category repository.
@@ -98,6 +112,8 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .order( 2 )
 						        .and( registerStockCountProperty() )
 						        .and( registerGenerateIdProperty() )
+						        .and( registerManagerProperty() )
+						        .and( registerBrandsProperty() )
 		        )
 		        .entityModel(
 				        model -> model
@@ -128,8 +144,8 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .deleteMethod( categoryRepository::remove )
 		        )
 		        .listView( lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( categoryRepository ) ) )
-		        .createFormView( fvb -> fvb.showProperties( "id", "name", "stockCount" ) )
-		        .updateFormView( fvb -> fvb.showProperties( "name", "stockCount" ) )
+		        .createFormView( fvb -> fvb.showProperties( "id", "generateId", "name", "manager", "stockCount", "brands" ) )
+		        .updateFormView( fvb -> fvb.showProperties( "name", "stockCount", "manager", "brands" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
 		        .show();
 	}
@@ -140,7 +156,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	private Consumer<EntityPropertyRegistryBuilder> registerStockCountProperty() {
 		return props -> {
 			val controller = new GenericEntityPropertyController<Map<String, Object>, Integer>();
-			controller.setValueReader( category -> stockCounts.get( category.get( "id" ) ) );
+			controller.setValueFetcher( category -> stockCounts.get( category.get( "id" ) ) );
 			controller.addValidator( ( category, stockCount, errors, validationHints ) -> {
 				// stock count must be positive number`
 				if ( stockCount == null || stockCount < 0 ) {
@@ -155,7 +171,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .readable( true )
 			     .writable( true )
 			     .hidden( false )
-			     .valueFetcher( controller::getValue )
+			     .valueFetcher( controller::fetchValue )
 			     .attribute( EntityPropertyController.class, controller );
 		};
 	}
@@ -163,12 +179,35 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	/**
 	 * Add a custom checkbox, that when checked will generate an id based on the name.
 	 * If checked it will first validate that name is not empty but id is empty,
-	 * and when the setValue method is called, will lowercase the name and replace all whitespace.
+	 * and when the applyapplyValue method is called, will lowercase the name and replace all whitespace.
 	 * <p>
 	 * If there is a validation error and the checkbox is checked, it should still be checked on the re-render.
 	 */
 	private Consumer<EntityPropertyRegistryBuilder> registerGenerateIdProperty() {
 		return props -> {
+			val controller = new GenericEntityPropertyController<Map<String, Object>, Boolean>();
+			controller.setOrder( EntityPropertyController.BEFORE_ENTITY );
+			controller.setValueFetcher( category -> false );
+			controller.addValidator( ( category, shouldGenerate, errors, validationHints ) -> {
+				// category name must not yet be filled in
+				if ( Boolean.TRUE.equals( shouldGenerate ) && !StringUtils.isEmpty( (String) category.get( "id" ) ) ) {
+					errors.rejectValue( "", "id-not-empty", "Unable to generate identity when already set." );
+				}
+			} );
+			controller.setApplyValueConsumer( ( category, shouldGenerate ) -> {
+				if ( Boolean.TRUE.equals( shouldGenerate ) ) {
+					category.put( "id", UUID.randomUUID().toString() );
+				}
+			} );
+
+			props.property( "generateId" )
+			     .displayName( "Generate Identity" )
+			     .propertyType( Boolean.class )
+			     .readable( false )
+			     .writable( true )
+			     .hidden( false )
+			     .valueFetcher( controller::fetchValue )
+			     .attribute( EntityPropertyController.class, controller );
 		};
 	}
 
@@ -179,6 +218,25 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	 */
 	private Consumer<EntityPropertyRegistryBuilder> registerManagerProperty() {
 		return props -> {
+			val controller = new GenericEntityPropertyController<Map<String, Object>, Manager>();
+			controller.setValueFetcher( category -> categoryManagers.getOrDefault( category.get( "id" ), new Manager() ) );
+			controller.addValidator( validator );
+			controller.setSaveConsumer( ( category, manager ) -> categoryManagers.put( category.get( "id" ), manager ) );
+
+			props.property( "manager" )
+			     .displayName( "Manager" )
+			     .propertyType( Manager.class )
+			     .readable( true )
+			     .writable( true )
+			     .hidden( false )
+			     .valueFetcher( controller::fetchValue )
+			     .attribute( EntityPropertyController.class, controller )
+			     .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
+			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "manager.*" ) )
+			     .and()
+			     .property( "manager.email" )
+					.<TextboxFormElement>viewElementPostProcessor( ViewElementMode.CONTROL,
+					                                               ( builderContext, textbox ) -> textbox.addCssClass( "custom-email" ) );
 		};
 	}
 
@@ -189,12 +247,55 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	 */
 	private Consumer<EntityPropertyRegistryBuilder> registerBrandsProperty() {
 		return props -> {
+			val controller = new GenericEntityPropertyController<Map<String, Object>, List<Brand>>();
+
+			val memberController = new GenericEntityPropertyController<Map<String, Object>, Brand>();
+			memberController.setValueFetcher( category -> new Brand() );
+
+			props.property( "brands" )
+			     .displayName( "Brands" )
+			     .propertyType( TypeDescriptor.collection( ArrayList.class, TypeDescriptor.valueOf( Brand.class ) ) )
+			     .readable( true )
+			     .writable( true )
+			     .hidden( false )
+			     .valueFetcher( controller::fetchValue )
+			     .attribute( EntityPropertyController.class, controller )
+			     .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
+			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) )
+			     .and()
+			     .property( "brands[]" )
+			     .valueFetcher( memberController::fetchValue )
+			     .attribute( EntityPropertyController.class, memberController );
 		};
 	}
 
 	@Bean
 	protected CategoryValidator categoryValidator() {
 		return new CategoryValidator();
+	}
+
+	@Data
+	public static class Manager
+	{
+		@Length(max = 100)
+		@NotBlank
+		private String name;
+
+		@Length(max = 250)
+		@Email
+		private String email;
+	}
+
+	@Data
+	public static class Brand
+	{
+		@Length(max = 5)
+		@NotBlank
+		private String code;
+
+		@Length(max = 100)
+		@NotBlank
+		private String name;
 	}
 
 	private static class CategoryValidator extends EntityValidatorSupport<Map<String, Object>>

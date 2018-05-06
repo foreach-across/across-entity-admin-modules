@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -60,6 +60,16 @@ public interface EntityPropertyDescriptor extends ReadableAttributes
 	 * @return the property registry that owns this property
 	 */
 	EntityPropertyRegistry getPropertyRegistry();
+
+	/**
+	 * @return does this property represent a nested property ({@link #getParentDescriptor()} will not return {@code null})
+	 */
+	boolean isNestedProperty();
+
+	/**
+	 * @return the parent descriptor in case of a nested property descriptor ({@link #isNestedProperty()} should return {@code true})
+	 */
+	EntityPropertyDescriptor getParentDescriptor();
 
 	/**
 	 * Create a builder for a new {@link SimpleEntityPropertyDescriptor}.

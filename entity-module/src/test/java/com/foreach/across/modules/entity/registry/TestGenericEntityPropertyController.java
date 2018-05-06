@@ -45,31 +45,31 @@ public class TestGenericEntityPropertyController
 
 	@Test
 	public void getValue() {
-		assertThat( controller.getValue( "any-string" ) ).isNull();
+		assertThat( controller.fetchValue( "any-string" ) ).isNull();
 
 		val vf = mock( Function.class );
 		when( vf.apply( "any-string" ) ).thenReturn( 123L );
-		assertThat( controller.setValueReader( vf ) ).isSameAs( controller );
+		assertThat( controller.setValueFetcher( vf ) ).isSameAs( controller );
 
-		assertThat( controller.getValue( "any-string" ) ).isEqualTo( 123L );
-		assertThat( controller.getValue( "other" ) ).isNull();
+		assertThat( controller.fetchValue( "any-string" ) ).isEqualTo( 123L );
+		assertThat( controller.fetchValue( "other" ) ).isNull();
 	}
 
 	@Test
 	public void setValue() {
-		assertThat( controller.setValue( "any-string", 123L ) ).isFalse();
+		assertThat( controller.applyValue( "any-string", 123L ) ).isFalse();
 
 		val consumer = mock( BiConsumer.class );
-		assertThat( controller.setValueWriterConsumer( consumer ) ).isSameAs( controller );
-		assertThat( controller.setValue( "some-string", 555L ) ).isTrue();
+		assertThat( controller.setApplyValueConsumer( consumer ) ).isSameAs( controller );
+		assertThat( controller.applyValue( "some-string", 555L ) ).isTrue();
 		verify( consumer ).accept( "some-string", 555L );
 
 		val vw = mock( BiFunction.class );
 		when( vw.apply( "any-string", 123L ) ).thenReturn( true );
-		assertThat( controller.setValueWriterFunction( vw ) ).isSameAs( controller );
+		assertThat( controller.setApplyValueFunction( vw ) ).isSameAs( controller );
 
-		assertThat( controller.setValue( "any-string", 123L ) ).isTrue();
-		assertThat( controller.setValue( "any-string", 0L ) ).isFalse();
+		assertThat( controller.applyValue( "any-string", 123L ) ).isTrue();
+		assertThat( controller.applyValue( "any-string", 0L ) ).isFalse();
 	}
 
 	@Test

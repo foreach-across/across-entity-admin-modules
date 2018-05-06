@@ -46,4 +46,8 @@ public interface EntityPropertyValueHolder<T>
 	boolean save();
 
 	boolean validate( Errors errors, Object... validationHints );
+
+	boolean applyValue();
+
+	int getControllerOrder();
 }

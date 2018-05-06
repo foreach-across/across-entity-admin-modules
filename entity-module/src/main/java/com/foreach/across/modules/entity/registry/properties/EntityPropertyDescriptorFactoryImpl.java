@@ -83,10 +83,10 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 		GenericEntityPropertyController<Object, Object> controller = new GenericEntityPropertyController<>();
 
 		if ( property.getReadMethod() != null ) {
-			controller.setValueReader( new MethodValueFetcher<>( property.getReadMethod() ) );
+			controller.setValueFetcher( new MethodValueFetcher<>( property.getReadMethod() ) );
 		}
 		if ( property.getWriteMethod() != null ) {
-			controller.setValueWriterFunction( new MethodValueWriter<>( property.getWriteMethod() ) );
+			controller.setApplyValueFunction( new MethodValueWriter<>( property.getWriteMethod() ) );
 		}
 
 		return controller;

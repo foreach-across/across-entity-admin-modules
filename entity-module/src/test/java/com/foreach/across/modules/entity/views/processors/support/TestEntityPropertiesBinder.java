@@ -34,6 +34,9 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.support.DefaultConversionService;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
@@ -49,10 +52,14 @@ public class TestEntityPropertiesBinder
 
 	private ConversionService conversionService = new DefaultConversionService();
 
-	private MutableEntityPropertyDescriptor descriptor;
+	private MutableEntityPropertyDescriptor singleValue;
+	private MutableEntityPropertyDescriptor multiValue;
 
 	@Mock
 	private EntityPropertyController<String, Long> controller;
+
+	@Mock
+	private EntityPropertyController<String, Long[]> multiValueController;
 
 	@Mock
 	private EntityPropertyRegistry registry;
@@ -65,11 +72,18 @@ public class TestEntityPropertiesBinder
 		binder.setConversionService( conversionService );
 		binder.setEntity( ENTITY );
 
-		descriptor = EntityPropertyDescriptor.builder( "id" )
-		                                     .propertyType( Long.class )
+		singleValue = EntityPropertyDescriptor.builder( "id" )
+		                                      .propertyType( Long.class )
+		                                      .build();
+		singleValue.setAttribute( EntityPropertyController.class, controller );
+		when( registry.getProperty( "id" ) ).thenReturn( singleValue );
+
+		multiValue = EntityPropertyDescriptor.builder( "members" )
+		                                     .propertyType( Long[].class )
 		                                     .build();
-		when( registry.getProperty( "id" ) ).thenReturn( descriptor );
-		descriptor.setAttribute( EntityPropertyController.class, controller );
+		multiValue.setAttribute( EntityPropertyController.class, multiValueController );
+		when( registry.getProperty( "members" ) ).thenReturn( multiValue );
+		when( registry.getProperty( "members[]" ) ).thenReturn( singleValue );
 	}
 
 	@Test
@@ -99,8 +113,33 @@ public class TestEntityPropertiesBinder
 	}
 
 	@Test
+	public void multiValueHolderReturnedForExistingProperty() {
+		when( controller.fetchValue( ENTITY ) ).thenReturn( 444L );
+
+		val holder = multi( "members" );
+		assertThat( holder ).isNotNull();
+		assertThat( binder.containsKey( "members" ) ).isTrue();
+		assertThat( binder.get( "members" ) ).isSameAs( holder );
+
+		assertThat( holder.getTemplate() )
+				.isNotNull()
+				.matches( e -> e.getValue().equals( 444L ) );
+	}
+
+	@Test
+	public void singleValueHolderReturnedIfMemberDescriptorMissing() {
+		when( registry.getProperty( "members[]" ) ).thenReturn( null );
+
+		val holder = single( "members" );
+		assertThat( holder ).isNotNull();
+		assertThat( holder ).isNotInstanceOf( EntityPropertiesBinder.MultiValue.class );
+		assertThat( binder.containsKey( "members" ) ).isTrue();
+		assertThat( binder.get( "members" ) ).isSameAs( holder );
+	}
+
+	@Test
 	public void singleValueLoadsExisting() {
-		when( controller.getValue( ENTITY ) ).thenReturn( 456L );
+		when( controller.fetchValue( ENTITY ) ).thenReturn( 456L );
 
 		val holder = single( "id" );
 		assertThat( holder.getValue() ).isEqualTo( 456L );
@@ -121,47 +160,164 @@ public class TestEntityPropertiesBinder
 	}
 
 	@Test
+	public void setGetEntireCollectionOnMultiValue() {
+		val holder = multi( "members" );
+		assertThat( holder.getValue() )
+				.isNotNull()
+				.isInstanceOf( Long[].class );
+		assertThat( (Long[]) holder.getValue() ).isEmpty();
+		assertThat( holder.getItems() ).isEmpty();
+
+		holder.setValue( new Long[] { 123L, 456L } );
+		assertThat( holder.getValue() )
+				.isEqualTo( new Long[] { 123L, 456L } );
+
+		assertThat( holder.getItems() )
+				.hasSize( 2 )
+				.containsKeys( "0", "1" );
+		assertThat( holder.getItems().get( "0" ) )
+				.matches( item -> item.getValue().equals( 123L ) )
+				.matches( item -> item.getSortIndex() == 0 );
+		assertThat( holder.getItems().get( "1" ) )
+				.matches( item -> item.getValue().equals( 456L ) )
+				.matches( item -> item.getSortIndex() == 1 );
+	}
+
+	@Test
+	public void updateItemOnMultiValue() {
+		val holder = multi( "members" );
+		holder.setValue( new Long[] { 123L, 456L } );
+
+		holder.getItems().get( "0" ).setValue( 777L );
+		holder.getItems().get( "1" ).setSortIndex( -1 );
+		assertThat( holder.getValue() )
+				.isEqualTo( new Long[] { 456L, 777L } );
+	}
+
+	@Test
+	public void multiValueSettingSupportsTypeConversion() {
+		val holder = multi( "members" );
+		holder.setValue( new LinkedHashSet<>( Arrays.asList( "456", "123" ) ) );
+		assertThat( holder.getValue() )
+				.isEqualTo( new Long[] { 456L, 123L } );
+
+		holder.getItems().get( "0" ).setValue( "777" );
+		assertThat( holder.getItems().get( "0" ).getValue() ).isEqualTo( 777L );
+		assertThat( holder.getValue() )
+				.isEqualTo( new Long[] { 777L, 123L } );
+	}
+
+	@Test
+	public void multiValueItemGetsCreatedWhenKeyIsRequested() {
+		when( controller.fetchValue( ENTITY ) ).thenReturn( 444L );
+
+		val holder = multi( "members" );
+		assertThat( holder.getItems().get( "some-item" ) )
+				.isNotNull()
+				.matches( e -> e.getValue().equals( 444L ) );
+
+		holder.getItems().get( "some-item" ).setValue( 555L );
+		assertThat( holder.getValue() ).isEqualTo( new Long[] { 555L } );
+	}
+
+	@Test
 	public void rawExceptionsIfNoBinderPrefix() {
-		val holder = single( "id" );
+		val singleValueHolder = single( "id" );
+		assertThatExceptionOfType( ConversionFailedException.class )
+				.isThrownBy( () -> singleValueHolder.setValue( "abc" ) );
+		assertThatExceptionOfType( ConverterNotFoundException.class )
+				.isThrownBy( () -> singleValueHolder.setValue( singleValueHolder ) );
+
+		val multiValueHolder = multi( "members" );
+		assertThatExceptionOfType( ConversionFailedException.class )
+				.isThrownBy( () -> multiValueHolder.setValue( "abc" ) );
+		assertThatExceptionOfType( ConverterNotFoundException.class )
+				.isThrownBy( () -> multiValueHolder.setValue( singleValueHolder ) );
 
 		assertThatExceptionOfType( ConversionFailedException.class )
-				.isThrownBy( () -> holder.setValue( "abc" ) );
-
+				.isThrownBy( () -> multiValueHolder.getItems().get( "0" ).setValue( "abc" ) );
 		assertThatExceptionOfType( ConverterNotFoundException.class )
-				.isThrownBy( () -> holder.setValue( holder ) );
+				.isThrownBy( () -> multiValueHolder.getItems().get( "0" ).setValue( singleValueHolder ) );
 
 		binder.setConversionService( null );
 		assertThatExceptionOfType( ClassCastException.class )
-				.isThrownBy( () -> holder.setValue( 123 ) );
+				.isThrownBy( () -> singleValueHolder.setValue( 123 ) );
+		assertThatExceptionOfType( ClassCastException.class )
+				.isThrownBy( () -> multiValueHolder.setValue( 123 ) );
+		assertThatExceptionOfType( ClassCastException.class )
+				.isThrownBy( () -> multiValueHolder.getItems().get( "0" ).setValue( 123 ) );
 	}
 
 	@Test
 	public void wrappedExceptionsIfBinderPrefix() {
 		binder.setBinderPrefix( "properties" );
 
-		val holder = single( "id" );
-
+		val singleValueHolder = single( "id" );
 		assertThatExceptionOfType( ConversionNotSupportedException.class )
-				.isThrownBy( () -> holder.setValue( "abc" ) )
+				.isThrownBy( () -> singleValueHolder.setValue( "abc" ) )
 				.satisfies( e -> {
 					assertThat( e.getPropertyName() ).isEqualTo( "properties[id].value" );
 					assertThat( e.getRequiredType() ).isEqualTo( Long.class );
 					assertThat( e.getValue() ).isEqualTo( "abc" );
 				} );
-
 		assertThatExceptionOfType( ConversionNotSupportedException.class )
-				.isThrownBy( () -> holder.setValue( holder ) )
+				.isThrownBy( () -> singleValueHolder.setValue( singleValueHolder ) )
 				.satisfies( e -> {
 					assertThat( e.getPropertyName() ).isEqualTo( "properties[id].value" );
 					assertThat( e.getRequiredType() ).isEqualTo( Long.class );
-					assertThat( e.getValue() ).isSameAs( holder );
+					assertThat( e.getValue() ).isSameAs( singleValueHolder );
+				} );
+
+		val multiValueHolder = multi( "members" );
+		assertThatExceptionOfType( ConversionNotSupportedException.class )
+				.isThrownBy( () -> multiValueHolder.setValue( "abc" ) )
+				.satisfies( e -> {
+					assertThat( e.getPropertyName() ).isEqualTo( "properties[members].value" );
+					assertThat( e.getRequiredType() ).isEqualTo( Long[].class );
+					assertThat( e.getValue() ).isEqualTo( "abc" );
+				} );
+		assertThatExceptionOfType( ConversionNotSupportedException.class )
+				.isThrownBy( () -> multiValueHolder.setValue( singleValueHolder ) )
+				.satisfies( e -> {
+					assertThat( e.getPropertyName() ).isEqualTo( "properties[members].value" );
+					assertThat( e.getRequiredType() ).isEqualTo( Long[].class );
+					assertThat( e.getValue() ).isSameAs( singleValueHolder );
+				} );
+
+		assertThatExceptionOfType( ConversionNotSupportedException.class )
+				.isThrownBy( () -> multiValueHolder.getItems().get( "0" ).setValue( "abc" ) )
+				.satisfies( e -> {
+					assertThat( e.getPropertyName() ).isEqualTo( "properties[members].items[0].value" );
+					assertThat( e.getRequiredType() ).isEqualTo( Long.class );
+					assertThat( e.getValue() ).isEqualTo( "abc" );
+				} );
+		assertThatExceptionOfType( ConversionNotSupportedException.class )
+				.isThrownBy( () -> multiValueHolder.getItems().get( "item-2" ).setValue( singleValueHolder ) )
+				.satisfies( e -> {
+					assertThat( e.getPropertyName() ).isEqualTo( "properties[members].items[item-2].value" );
+					assertThat( e.getRequiredType() ).isEqualTo( Long.class );
+					assertThat( e.getValue() ).isSameAs( singleValueHolder );
 				} );
 
 		binder.setConversionService( null );
 		assertThatExceptionOfType( ConversionNotSupportedException.class )
-				.isThrownBy( () -> holder.setValue( 123 ) )
+				.isThrownBy( () -> singleValueHolder.setValue( 123 ) )
 				.satisfies( e -> {
 					assertThat( e.getPropertyName() ).isEqualTo( "properties[id].value" );
+					assertThat( e.getRequiredType() ).isEqualTo( Long.class );
+					assertThat( e.getValue() ).isEqualTo( 123 );
+				} );
+		assertThatExceptionOfType( ConversionNotSupportedException.class )
+				.isThrownBy( () -> multiValueHolder.setValue( 123 ) )
+				.satisfies( e -> {
+					assertThat( e.getPropertyName() ).isEqualTo( "properties[members].value" );
+					assertThat( e.getRequiredType() ).isEqualTo( Long[].class );
+					assertThat( e.getValue() ).isEqualTo( 123 );
+				} );
+		assertThatExceptionOfType( ConversionNotSupportedException.class )
+				.isThrownBy( () -> multiValueHolder.getItems().get( "0" ).setValue( 123 ) )
+				.satisfies( e -> {
+					assertThat( e.getPropertyName() ).isEqualTo( "properties[members].items[0].value" );
 					assertThat( e.getRequiredType() ).isEqualTo( Long.class );
 					assertThat( e.getValue() ).isEqualTo( 123 );
 				} );
@@ -171,16 +327,16 @@ public class TestEntityPropertiesBinder
 	@Test
 	public void singleValueBind() {
 		val holder = single( "id" );
-		holder.bind();
-		verify( controller ).setValue( ENTITY, null );
+		holder.applyValue();
+		verify( controller ).applyValue( ENTITY, null );
 
 		reset( controller );
 
 		holder.setValue( 678L );
 		verifyZeroInteractions( controller );
 
-		holder.bind();
-		verify( controller ).setValue( ENTITY, 678L );
+		holder.applyValue();
+		verify( controller ).applyValue( ENTITY, 678L );
 	}
 
 	@Test
@@ -190,14 +346,18 @@ public class TestEntityPropertiesBinder
 		assertThat( holder.isModified() ).isFalse();
 
 		binder.bind();
-		verify( controller, never() ).setValue( any(), any() );
+		verify( controller, never() ).applyValue( any(), any() );
 
 		holder.setValue( 444L );
 		binder.bind();
-		verify( controller ).setValue( ENTITY, 444L );
+		verify( controller ).applyValue( ENTITY, 444L );
 	}
 
-	EntityPropertiesBinder.SingleValue single( String propertyName ) {
+	private EntityPropertiesBinder.SingleValue single( String propertyName ) {
 		return (EntityPropertiesBinder.SingleValue) binder.get( propertyName );
+	}
+
+	private EntityPropertiesBinder.MultiValue multi( String propertyName ) {
+		return (EntityPropertiesBinder.MultiValue) binder.get( propertyName );
 	}
 }

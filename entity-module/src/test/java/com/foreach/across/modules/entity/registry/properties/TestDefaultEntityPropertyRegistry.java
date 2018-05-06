@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
@@ -157,6 +158,9 @@ public class TestDefaultEntityPropertyRegistry
 		SimpleEntityPropertyDescriptor descriptor
 				= (SimpleEntityPropertyDescriptor) registry.getProperty( "created.timestamp" );
 		assertNotNull( descriptor );
+		assertTrue( descriptor.isNestedProperty() );
+		assertSame( registry.getProperty( "created" ), descriptor.getParentDescriptor() );
+		assertSame( timestamp, descriptor.getAttribute( EntityAttributes.TARGET_DESCRIPTOR, EntityPropertyDescriptor.class ) );
 		assertEquals( "Nested display name", descriptor.getDisplayName() );
 
 		assertSame( descriptor, registry.getProperty( "created.timestamp" ) );

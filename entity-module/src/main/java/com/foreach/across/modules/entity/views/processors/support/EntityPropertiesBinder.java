@@ -23,6 +23,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.MethodInvocationException;
+import org.springframework.core.Ordered;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
@@ -30,8 +31,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.Errors;
 
 import java.beans.PropertyChangeEvent;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -163,11 +163,25 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 	}
 
 	private EntityPropertyValueHolder createValueHolder( EntityPropertyDescriptor descriptor ) {
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+
+		if ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) {
+			val memberDescriptor = propertyRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.INDEXER );
+
+			if ( memberDescriptor != null ) {
+				return new MultiValue( descriptor, memberDescriptor );
+			}
+		}
+
 		return new SingleValue( descriptor );
 	}
 
 	private Object convertIfNecessary( Object source, TypeDescriptor targetType, String path ) {
-		if ( source == null ) {
+		return convertIfNecessary( source, targetType, targetType.getObjectType(), path );
+	}
+
+	private Object convertIfNecessary( Object source, TypeDescriptor targetType, Class<?> typeToReport, String path ) {
+		if ( source == null || source.getClass().equals( Object.class ) ) {
 			return null;
 		}
 
@@ -181,7 +195,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		catch ( ClassCastException | ConversionFailedException | ConverterNotFoundException cce ) {
 			if ( !StringUtils.isEmpty( binderPrefix ) ) {
 				PropertyChangeEvent pce = new PropertyChangeEvent( this, binderPrefix + path, null, source );
-				throw new ConversionNotSupportedException( pce, targetType.getObjectType(), cce );
+				throw new ConversionNotSupportedException( pce, typeToReport, cce );
 			}
 			throw cce;
 		}
@@ -200,7 +214,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 			if ( v instanceof SingleValue ) {
 				val holder = ( (SingleValue) v );
 				if ( holder.isModified() ) {
-					holder.bind();
+					holder.applyValue();
 				}
 			}
 		} );
@@ -235,7 +249,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 			controller = descriptor.getAttribute( EntityPropertyController.class );
 
 			if ( controller != null ) {
-				value = controller.getValue( getEntity() );
+				value = controller.fetchValue( getEntity() );
 			}
 		}
 
@@ -257,10 +271,13 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		/**
 		 * Apply the property value to the target entity, can only be done if there is a controller.
 		 */
-		public void bind() {
+		@Override
+		public boolean applyValue() {
+			// modified? mark as applied.
 			if ( controller != null ) {
-				controller.setValue( getEntity(), value );
+				return controller.applyValue( getEntity(), value );
 			}
+			return false;
 		}
 
 		@Override
@@ -279,11 +296,145 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 				controller.validate( getEntity(), value, errors, validationHints );
 			}
 			errors.popNestedPath();
-			return beforeValidate < errors.getErrorCount();
+			return beforeValidate >= errors.getErrorCount();
 		}
 
 		private String binderPath() {
 			return "[" + descriptor.getName() + "].value";
+		}
+
+		@Override
+		public int getControllerOrder() {
+			return controller != null ? controller.getOrder() : Ordered.LOWEST_PRECEDENCE;
+		}
+	}
+
+	/**
+	 * Represents a multi value property. Any collection type is actually bound as a map.
+	 */
+	public class MultiValue implements EntityPropertyValueHolder<Object>
+	{
+		private final EntityPropertyDescriptor collectionDescriptor;
+		private final EntityPropertyDescriptor memberDescriptor;
+		private final EntityPropertyController<Object, Object> collectionController;
+		private final EntityPropertyController<Object, Object> memberController;
+
+		@Getter
+		private final Map<String, Item> items = new Items();
+
+		@Getter
+		private final Item template;
+
+		private MultiValue( EntityPropertyDescriptor collectionDescriptor, EntityPropertyDescriptor memberDescriptor ) {
+			this.collectionDescriptor = collectionDescriptor;
+			this.memberDescriptor = memberDescriptor;
+
+			collectionController = collectionDescriptor.getAttribute( EntityPropertyController.class );
+			memberController = memberDescriptor.getAttribute( EntityPropertyController.class );
+
+			template = createItem( "" );
+		}
+
+		@Override
+		public Object getValue() {
+			return convertIfNecessary(
+					items.values()
+					     .stream()
+					     .sorted( Comparator.comparingInt( Item::getSortIndex ) )
+					     .map( Item::getValue )
+					     .toArray(),
+					collectionDescriptor.getPropertyTypeDescriptor(),
+					""
+			);
+		}
+
+		@Override
+		public void setValue( Object value ) {
+			items.clear();
+
+			List values = (List) convertIfNecessary( value,
+			                                         TypeDescriptor.collection( ArrayList.class, memberDescriptor.getPropertyTypeDescriptor() ),
+			                                         collectionDescriptor.getPropertyType(),
+			                                         collectionBinderPath() + ".value" );
+
+			int index = 0;
+			for ( Object v : values ) {
+				Item item = new Item( "" + index );
+				item.setValue( v );
+				item.setSortIndex( index++ );
+				items.put( item.key, item );
+			}
+		}
+
+		@Override
+		public boolean save() {
+			return false;
+		}
+
+		@Override
+		public boolean validate( Errors errors, Object... validationHints ) {
+			return false;
+		}
+
+		@Override
+		public boolean applyValue() {
+			return false;
+		}
+
+		@Override
+		public int getControllerOrder() {
+			return collectionController != null ? collectionController.getOrder() : Ordered.LOWEST_PRECEDENCE;
+		}
+
+		private Item createItem( String key ) {
+			Item item = new Item( key );
+			item.setValue( memberController.fetchValue( getEntity() ) );
+			return item;
+		}
+
+		private String collectionBinderPath() {
+			return "[" + collectionDescriptor.getName() + "]";
+		}
+
+		/**
+		 * Creates a new item for every key requested.
+		 */
+		class Items extends TreeMap<String, Item>
+		{
+			@Override
+			public Item get( Object key ) {
+				String itemKey = (String) key;
+				Item item = super.get( itemKey );
+
+				if ( item == null ) {
+					item = createItem( itemKey );
+					super.put( itemKey, item );
+				}
+
+				return item;
+			}
+		}
+
+		/**
+		 * Single item.
+		 */
+		@Getter
+		@Setter
+		@RequiredArgsConstructor
+		public class Item
+		{
+			private final String key;
+
+			private Object value;
+			private int sortIndex;
+
+			public void setValue( Object value ) {
+				this.value = convertIfNecessary( value, memberDescriptor.getPropertyTypeDescriptor(), memberBinderPath() );
+			}
+
+			private String memberBinderPath() {
+				return this == template ? collectionBinderPath() + ".template" : collectionBinderPath() + ".items[" + key + "].value";
+			}
 		}
 	}
 }

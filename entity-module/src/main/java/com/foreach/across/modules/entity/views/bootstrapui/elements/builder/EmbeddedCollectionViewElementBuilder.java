@@ -16,8 +16,14 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
+import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
+import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinder;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -32,8 +38,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Collection;
 
 /**
  * @author Arne Vandamme
@@ -55,8 +59,9 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		val descriptor = EntityViewElementUtils.currentPropertyDescriptor( builderContext );
 		val collectionsBinder = builderContext.getAttribute( EmbeddedCollectionsBinder.class );
 
-		val binderPrefix = buildBinderPrefix( collectionsBinder, descriptor );
+		val memberDescriptor = descriptor.getPropertyRegistry().getProperty( descriptor.getName() + EntityPropertyRegistry.INDEXER );
 
+		val binderPrefix = buildBinderPrefix( collectionsBinder, descriptor );
 
 		NodeViewElement node = super.createElement( builderContext );
 		node.addCssClass( "js-embedded-collection-form-group" );
@@ -73,7 +78,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		node.addChild(
 				BootstrapUiBuilders.fieldset()
 				                   .attribute( "data-role", "items" )
-				                   .add(
+				                   /*.add(
 						                   BootstrapUiBuilders.generator( Object.class, ContainerViewElement.class )
 						                                      .creationCallback( ( item, container ) -> {
 
@@ -97,7 +102,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 						                                      } )
 						                                      .items( (Collection<Object>) collection )
 						                                      .itemBuilder( itemTemplate )
-				                   )
+				                   )*/
 				                   .build( builderContext )
 		);
 
@@ -105,11 +110,15 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		EntityViewElementUtils.setCurrentEntity( bc, null );
 		bc.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
 
+		String baseControlName = EntityAttributes.controlName( memberDescriptor );
+		String templateControlName = StringUtils.removeEnd( baseControlName, "items[].value" ) + "template";
+
 		node.addChild(
 				BootstrapUiBuilders.node( "script" )
 				                   .attribute( "type", "text/html" )
 				                   .attribute( "data-role", "edit-item-template" )
 				                   .add( itemTemplate )
+				                   .postProcessor( BootstrapElementUtils.replaceControlNamesPrefix( baseControlName, templateControlName ) )
 				                   .build( bc )
 
 		);

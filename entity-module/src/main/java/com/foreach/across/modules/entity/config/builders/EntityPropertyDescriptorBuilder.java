@@ -49,9 +49,12 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	private String displayName;
 	private ValueFetcher valueFetcher;
 	private Boolean hidden, writable, readable;
+	private EntityPropertyDescriptor original;
 	private EntityPropertyDescriptor parent;
 	private Class<?> propertyType;
 	private TypeDescriptor propertyTypeDescriptor;
+
+	private boolean parentDescriptorSet;
 
 	/**
 	 * Create a new builder for the entity property with the given name.
@@ -64,13 +67,29 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	}
 
 	/**
-	 * Set the parent descriptor.  If set, all properties from the parent will be inherited
-	 * unless explicitly configured.
+	 * Set the original descriptor that the new one is shadowing.
+	 * If set, all properties from the original will be inherited unless explicitly configured.
+	 *
+	 * @param original descriptor
+	 * @return current builder
+	 */
+	public EntityPropertyDescriptorBuilder original( EntityPropertyDescriptor original ) {
+		this.original = original;
+		return this;
+	}
+
+	/**
+	 * Set a parent descriptor for this property. This turns the new descriptor into a nested property,
+	 * expected to be a child of the object that the parent property represents.
+	 * <p/>
+	 * When settings a parent descriptor, u often want to set a {@link com.foreach.across.modules.entity.EntityAttributes#TARGET_DESCRIPTOR}
+	 * value as well, to ensure control names get built correctly.
 	 *
 	 * @param parent descriptor
 	 * @return current builder
 	 */
 	public EntityPropertyDescriptorBuilder parent( EntityPropertyDescriptor parent ) {
+		parentDescriptorSet = true;
 		this.parent = parent;
 		return this;
 	}
@@ -224,9 +243,9 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	 * @return descriptor
 	 */
 	public MutableEntityPropertyDescriptor build() {
-		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name, parent );
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name, original );
 
-		if ( parent == null ) {
+		if ( original == null ) {
 			descriptor.setDisplayName( name );
 			descriptor.setValueFetcher( new SpelValueFetcher( name ) );
 			descriptor.setReadable( true );
@@ -246,6 +265,10 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 		if ( name != null && !name.equals( descriptor.getName() ) ) {
 			LOG.error( "Unable to change the name of an existing EntityPropertyDescriptor: {} to {}",
 			           descriptor.getName(), name );
+		}
+
+		if ( parentDescriptorSet ) {
+			descriptor.setParentDescriptor( parent );
 		}
 
 		// Update configured properties

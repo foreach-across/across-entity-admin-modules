@@ -63,14 +63,14 @@ public class TestEntityPropertyDescriptorFactory
 
 		Instance instance = new Instance();
 		assertNull( instance.getName() );
-		assertNull( controller.getValue( instance ) );
+		assertNull( controller.fetchValue( instance ) );
 		instance.setName( "original" );
-		assertEquals( "original", controller.getValue( instance ) );
-		assertTrue( controller.setValue( instance, "my name" ) );
+		assertEquals( "original", controller.fetchValue( instance ) );
+		assertTrue( controller.applyValue( instance, "my name" ) );
 		assertEquals( "my name", instance.getName() );
-		assertEquals( "my name", controller.getValue( instance ) );
+		assertEquals( "my name", controller.fetchValue( instance ) );
 
-		assertFalse( controller.setValue( null, "any" ) );
+		assertFalse( controller.applyValue( null, "any" ) );
 	}
 
 	@Test
@@ -88,12 +88,12 @@ public class TestEntityPropertyDescriptorFactory
 
 		Instance instance = new Instance();
 		assertEquals( 0, instance.readonly );
-		assertEquals( Integer.valueOf( 0 ), controller.getValue( instance ) );
-		assertFalse( controller.setValue( instance, 123 ) );
+		assertEquals( Integer.valueOf( 0 ), controller.fetchValue( instance ) );
+		assertFalse( controller.applyValue( instance, 123 ) );
 		assertEquals( 0, instance.readonly );
 
 		instance.readonly = 456;
-		assertEquals( Integer.valueOf( 456 ), controller.getValue( instance ) );
+		assertEquals( Integer.valueOf( 456 ), controller.fetchValue( instance ) );
 	}
 
 	@Test
@@ -113,9 +113,9 @@ public class TestEntityPropertyDescriptorFactory
 
 		Instance instance = new Instance();
 		assertNull( instance.writeonly );
-		assertNull( controller.getValue( instance ) );
-		assertTrue( controller.setValue( instance, now ) );
-		assertNull( controller.getValue( instance ) );
+		assertNull( controller.fetchValue( instance ) );
+		assertTrue( controller.applyValue( instance, now ) );
+		assertNull( controller.fetchValue( instance ) );
 		assertSame( now, instance.writeonly );
 	}
 

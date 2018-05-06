@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,12 +17,23 @@ package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.core.support.AttributeOverridingSupport;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import lombok.Setter;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
 
 public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport implements MutableEntityPropertyDescriptor
 {
-	private final EntityPropertyDescriptor parent;
+	/**
+	 * Original descriptor that the current descriptor is shadowing.
+	 */
+	private final EntityPropertyDescriptor original;
+
+	/**
+	 * Parent descriptor that this one represents a nested property of.
+	 * Will make this a nested property descriptor.
+	 */
+	@Setter
+	private EntityPropertyDescriptor parentDescriptor;
 
 	private String name, displayName;
 	private Boolean readable, writable, hidden;
@@ -36,12 +47,12 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 		this( name, null );
 	}
 
-	public SimpleEntityPropertyDescriptor( String name, EntityPropertyDescriptor parent ) {
+	public SimpleEntityPropertyDescriptor( String name, EntityPropertyDescriptor original ) {
 		Assert.notNull( name, "name is required" );
 		this.name = name;
-		this.parent = parent;
+		this.original = original;
 
-		setParent( parent );
+		super.setParent( original );
 	}
 
 	/**
@@ -54,7 +65,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 
 	@Override
 	public String getDisplayName() {
-		return displayName != null ? displayName : ( parent != null ? parent.getDisplayName() : null );
+		return displayName != null ? displayName : ( original != null ? original.getDisplayName() : null );
 	}
 
 	@Override
@@ -64,7 +75,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 
 	@Override
 	public boolean isReadable() {
-		return readable != null ? readable : ( parent != null && parent.isReadable() );
+		return readable != null ? readable : ( original != null && original.isReadable() );
 	}
 
 	@Override
@@ -74,7 +85,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 
 	@Override
 	public boolean isWritable() {
-		return writable != null ? writable : ( parent != null && parent.isWritable() );
+		return writable != null ? writable : ( original != null && original.isWritable() );
 	}
 
 	@Override
@@ -84,7 +95,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 
 	@Override
 	public boolean isHidden() {
-		return hidden != null ? hidden : ( parent != null && parent.isHidden() );
+		return hidden != null ? hidden : ( original != null && original.isHidden() );
 	}
 
 	@Override
@@ -94,7 +105,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 
 	@Override
 	public Class<?> getPropertyType() {
-		return propertyType != null ? propertyType : ( parent != null ? parent.getPropertyType() : null );
+		return propertyType != null ? propertyType : ( original != null ? original.getPropertyType() : null );
 	}
 
 	@Override
@@ -107,7 +118,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 
 	public TypeDescriptor getPropertyTypeDescriptor() {
 		return propertyTypeDescriptor != null
-				? propertyTypeDescriptor : ( parent != null ? parent.getPropertyTypeDescriptor() : null );
+				? propertyTypeDescriptor : ( original != null ? original.getPropertyTypeDescriptor() : null );
 	}
 
 	public void setPropertyTypeDescriptor( TypeDescriptor propertyTypeDescriptor ) {
@@ -132,14 +143,14 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 
 	@Override
 	public ValueFetcher getValueFetcher() {
-		return valueFetcher != null ? valueFetcher : ( parent != null ? parent.getValueFetcher() : null );
+		return valueFetcher != null ? valueFetcher : ( original != null ? original.getValueFetcher() : null );
 	}
 
 	@Override
 	public void setValueFetcher( ValueFetcher<?> valueFetcher ) {
 		this.valueFetcher = valueFetcher;
 
-		if ( readable == null && parent == null && valueFetcher != null ) {
+		if ( readable == null && original == null && valueFetcher != null ) {
 			readable = true;
 		}
 	}
@@ -152,6 +163,16 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	@Override
 	public void setPropertyRegistry( EntityPropertyRegistry propertyRegistry ) {
 		this.propertyRegistry = propertyRegistry;
+	}
+
+	@Override
+	public boolean isNestedProperty() {
+		return parentDescriptor != null || ( original != null && original.isNestedProperty() );
+	}
+
+	@Override
+	public EntityPropertyDescriptor getParentDescriptor() {
+		return parentDescriptor != null ? parentDescriptor : ( original != null ? original.getParentDescriptor() : null );
 	}
 
 	@Override

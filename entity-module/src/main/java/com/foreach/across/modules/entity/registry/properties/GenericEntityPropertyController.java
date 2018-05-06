@@ -45,14 +45,21 @@ import java.util.function.Function;
 public class GenericEntityPropertyController<T, U> implements EntityPropertyController<T, U>
 {
 	/**
+	 * Processing order for this controller.
+	 */
+	@Getter
+	@Setter
+	private int order = AFTER_ENTITY;
+
+	/**
 	 * Function to call when getting the property value.
 	 */
 	@Setter
 	@Getter
-	private Function<T, U> valueReader;
+	private Function<T, U> valueFetcher;
 
 	@Getter
-	private BiFunction<T, U, Boolean> valueWriter;
+	private BiFunction<T, U, Boolean> applyValueFunction;
 
 	@Getter
 	private BiFunction<T, U, Boolean> saveFunction;
@@ -67,16 +74,16 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	private List<Validator> validators = new ArrayList<>();
 
 	/**
-	 * Set the consumer that should be called when setting the property value using {@link #setValue(Object, Object)}.
-	 * The return value of calling {@link #setValue(Object, Object)} will always be {@code true}
-	 * if you specify a {@link BiConsumer}. See {@link #setValueWriterFunction(BiFunction)} if you
+	 * Set the consumer that should be called when applying the property value using {@link #applyValue(Object, Object)}.
+	 * The return value of calling {@link #applyValue(Object, Object)} will always be {@code true}
+	 * if you specify a {@link BiConsumer}. See {@link #setApplyValueFunction(BiFunction)} if you
 	 * want to control the return value.
 	 *
 	 * @param valueWriter consumer for setting the value
 	 * @return self
 	 */
-	public GenericEntityPropertyController<T, U> setValueWriterConsumer( @NonNull BiConsumer<T, U> valueWriter ) {
-		this.valueWriter = ( entity, value ) -> {
+	public GenericEntityPropertyController<T, U> setApplyValueConsumer( @NonNull BiConsumer<T, U> valueWriter ) {
+		this.applyValueFunction = ( entity, value ) -> {
 			valueWriter.accept( entity, value );
 			return true;
 		};
@@ -84,14 +91,14 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	}
 
 	/**
-	 * The function that should be called when setting the property value using {@link #setValue(Object, Object)}.
+	 * The function that should be called when setting the property value using {@link #applyValue(Object, Object)}.
 	 * If the {@link BiFunction} returns {@code null}, this will be converted to {@code false}.
 	 *
 	 * @param valueWriter function for setting the value
 	 * @return self
 	 */
-	public GenericEntityPropertyController<T, U> setValueWriterFunction( BiFunction<T, U, Boolean> valueWriter ) {
-		this.valueWriter = valueWriter;
+	public GenericEntityPropertyController<T, U> setApplyValueFunction( BiFunction<T, U, Boolean> valueWriter ) {
+		this.applyValueFunction = valueWriter;
 		return this;
 	}
 
@@ -198,9 +205,9 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	}
 
 	@Override
-	public U getValue( T owner ) {
-		if ( valueReader != null ) {
-			return valueReader.apply( owner );
+	public U fetchValue( T owner ) {
+		if ( valueFetcher != null ) {
+			return valueFetcher.apply( owner );
 		}
 		return null;
 	}
@@ -224,8 +231,8 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	}
 
 	@Override
-	public boolean setValue( T owner, U propertyValue ) {
-		return valueWriter != null && Boolean.TRUE.equals( valueWriter.apply( owner, propertyValue ) );
+	public boolean applyValue( T owner, U propertyValue ) {
+		return applyValueFunction != null && Boolean.TRUE.equals( applyValueFunction.apply( owner, propertyValue ) );
 	}
 
 	@Override

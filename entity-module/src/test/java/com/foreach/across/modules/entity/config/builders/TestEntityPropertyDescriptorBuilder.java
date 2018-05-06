@@ -77,19 +77,32 @@ public class TestEntityPropertyDescriptorBuilder
 		assertTrue( descriptor.isReadable() );
 		assertEquals( 1, descriptor.attributeMap().size() );
 		assertTrue( descriptor.hasAttribute( ViewElementLookupRegistry.class ) );
+		assertFalse( descriptor.isNestedProperty() );
+		assertNull( descriptor.getParentDescriptor() );
 	}
 
 	@Test
-	public void descriptorWithParent() {
+	public void descriptorWithOriginal() {
+		EntityPropertyDescriptor original = mock( EntityPropertyDescriptor.class );
+		builder.original( original );
+
+		build();
+
+		when( original.getDisplayName() ).thenReturn( "parentDisplayName" );
+
+		assertEquals( "myprop", descriptor.getName() );
+		assertEquals( "parentDisplayName", descriptor.getDisplayName() );
+	}
+
+	@Test
+	public void nestedDescriptor() {
 		EntityPropertyDescriptor parent = mock( EntityPropertyDescriptor.class );
 		builder.parent( parent );
 
 		build();
 
-		when( parent.getDisplayName() ).thenReturn( "parentDisplayName" );
-
-		assertEquals( "myprop", descriptor.getName() );
-		assertEquals( "parentDisplayName", descriptor.getDisplayName() );
+		assertTrue( descriptor.isNestedProperty() );
+		assertSame( parent, descriptor.getParentDescriptor() );
 	}
 
 	@Test

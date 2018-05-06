@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import com.foreach.across.modules.entity.views.support.NestedValueFetcher;
@@ -138,10 +139,9 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		return descriptor;
 	}
 
-	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name,
-	                                                               EntityPropertyDescriptor parent,
-	                                                               EntityPropertyDescriptor child ) {
+	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name, EntityPropertyDescriptor parent, EntityPropertyDescriptor child ) {
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name );
+		descriptor.setParentDescriptor( parent );
 		descriptor.setDisplayName( child.getDisplayName() );
 		descriptor.setPropertyType( child.getPropertyType() );
 		descriptor.setPropertyTypeDescriptor( child.getPropertyTypeDescriptor() );
@@ -181,6 +181,8 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 			descriptor.setAttribute( Sort.Order.class, nestedOrder );
 		}
+
+		descriptor.setAttribute( EntityAttributes.TARGET_DESCRIPTOR, child );
 
 		register( descriptor );
 

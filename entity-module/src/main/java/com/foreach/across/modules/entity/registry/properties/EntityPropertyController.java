@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
  * Generic controller for a single property on an entity.
  * Allows reading and writing a property value, as well as validating a value.
  * <p/>
- * The difference between a {@link #save(Object, Object)} and a {@link #setValue(Object, Object)}
+ * The difference between a {@link #save(Object, Object)} and a {@link #applyValue(Object, Object)}
  * method, is that setting the value is usually done on the entity before the entity itself is saved.
  * The {@link #save(Object, Object)} method is useful for properties that are not actually present
  * on the entity instance itself.
@@ -53,33 +53,21 @@ public interface EntityPropertyController<T, U> extends Ordered
 	int AFTER_ENTITY = Ordered.LOWEST_PRECEDENCE - 1000;
 
 	/**
-	 * Get the current value of the property for the owning entity.
+	 * Fetches the current value of the property for the owning entity.
+	 * Depending on the type of property this might be a simple getter being called,
+	 * or something like a database retrieval happening.
 	 *
 	 * @param owner entity
 	 * @return property value
 	 */
-	default U getValue( T owner ) {
+	default U fetchValue( T owner ) {
 		return null;
 	}
 
 	/**
-	 * Set the current value of the property on the owning entity.
-	 * Usually relevant for properties that modify the entity itself,
-	 * but do not persist any data outside of the entity.
-	 *
-	 * @param owner         entity
-	 * @param propertyValue to set
-	 * @return true if value has been set
-	 * @see #save(Object, Object)
-	 */
-	default boolean setValue( T owner, U propertyValue ) {
-		return false;
-	}
-
-	/**
-	 * Validate the property value for the given owner entity.
+	 * Validate a property value for the given owner entity.
 	 * Validation errors should be registered on the {@link Errors} argument.
-	 * Validating should happen before {@link #setValue(Object, Object)} or {@link #save(Object, Object)}
+	 * Validating should happen before {@link #applyValue(Object, Object)} or {@link #save(Object, Object)}
 	 * calls, to check that a property value can in fact be set.
 	 *
 	 * @param owner           entity
@@ -89,6 +77,45 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @see org.springframework.validation.SmartValidator
 	 */
 	default void validate( T owner, U propertyValue, Errors errors, Object... validationHints ) {
+	}
+
+	/**
+	 * Apply the current value of the property to the owning entity.
+	 * Usually relevant for properties that modify the entity itself,
+	 * but do not persist any data outside of the entity.
+	 * <p/>
+	 * Applying the property value has different semantics than {@link #save(Object, Object)}.
+	 * The latter is meant for storing the actual property value whereas applying the value
+	 * implies that the final store will happened transitively through the context (entity)
+	 * to which the property value is applied.
+	 * <p/>
+	 * Applying a property value usually happens immediately after successful validation,
+	 * before the next property is validated.
+	 * <p/>
+	 * A single controller implements usually either {@code applyValue(Object, Object)} or {@link #save(Object, Object)}.
+	 *
+	 * @param owner         entity
+	 * @param propertyValue to set
+	 * @return true if value has been set
+	 * @see #save(Object, Object)
+	 */
+	default boolean applyValue( T owner, U propertyValue ) {
+		return false;
+	}
+
+	/**
+	 * Rollback a value that has previously been applied to the owning entity.
+	 * This method should only be called after the equivalent {@link #applyValue(Object, Object)}.
+	 * The return value is the new value for the property, afeter the rollback.
+	 * <p/>
+	 * The default implementation does nothing and returns the same property value.
+	 *
+	 * @param owner         entity
+	 * @param propertyValue that was previously applied
+	 * @return new property value
+	 */
+	default U rollbackValue( T owner, U propertyValue ) {
+		return propertyValue;
 	}
 
 	/**

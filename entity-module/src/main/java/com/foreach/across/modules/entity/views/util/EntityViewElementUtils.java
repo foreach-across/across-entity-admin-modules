@@ -115,17 +115,27 @@ public class EntityViewElementUtils
 
 		EntityPropertiesBinder properties = builderContext.getAttribute( EntityPropertiesBinder.class );
 
-		Object propertyValue;
+		Object propertyValue = resolveValue( properties, descriptor, currentEntity( builderContext ) );
+		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
+	}
 
+	private static Object resolveValue( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor, Object root ) {
 		if ( properties != null && EntityAttributes.handlingType( descriptor ) == EntityPropertyHandlingType.EXTENSION ) {
 			val valueHolder = properties.get( descriptor.getName() );
-			propertyValue = valueHolder.getValue();
+			return valueHolder.getValue();
 		}
 		else {
-			propertyValue = descriptor.getPropertyValue( currentEntity( builderContext ) );
-		}
+			if ( descriptor.isNestedProperty() ) {
+				EntityPropertyDescriptor target = descriptor.getAttribute( EntityAttributes.TARGET_DESCRIPTOR, EntityPropertyDescriptor.class );
 
-		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
+				if ( target != null ) {
+					Object owner = resolveValue( properties, descriptor.getParentDescriptor(), root );
+					return target.getPropertyValue( owner );
+				}
+			}
+
+			return descriptor.getPropertyValue( root );
+		}
 	}
 
 	/**

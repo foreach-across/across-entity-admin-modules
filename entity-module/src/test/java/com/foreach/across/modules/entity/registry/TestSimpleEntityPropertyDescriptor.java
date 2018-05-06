@@ -29,21 +29,40 @@ import static org.mockito.Mockito.*;
 public class TestSimpleEntityPropertyDescriptor
 {
 	@Test
-	public void inheritedDescriptor() {
+	public void nestedDescriptor() {
+		SimpleEntityPropertyDescriptor parent = new SimpleEntityPropertyDescriptor( "parent" );
+		assertFalse( parent.isNestedProperty() );
+		assertNull( parent.getParentDescriptor() );
+
+		SimpleEntityPropertyDescriptor child = new SimpleEntityPropertyDescriptor( "child", parent );
+		assertFalse( child.isNestedProperty() );
+		assertNull( child.getParentDescriptor() );
+
+		child.setParentDescriptor( parent );
+		assertTrue( child.isNestedProperty() );
+		assertSame( parent, child.getParentDescriptor() );
+
+		SimpleEntityPropertyDescriptor other = new SimpleEntityPropertyDescriptor( "other", child );
+		assertTrue( other.isNestedProperty() );
+		assertSame( parent, other.getParentDescriptor() );
+	}
+
+	@Test
+	public void shadowingDescriptor() {
 		ValueFetcher parentValueFetcher = mock( ValueFetcher.class );
 		ValueFetcher childValueFetcher = mock( ValueFetcher.class );
 
-		SimpleEntityPropertyDescriptor parent = new SimpleEntityPropertyDescriptor( "name" );
-		parent.setDisplayName( "Name" );
-		parent.setHidden( true );
-		parent.setReadable( true );
-		parent.setWritable( true );
-		parent.setPropertyType( String.class );
-		parent.setPropertyTypeDescriptor( TypeDescriptor.valueOf( Long.class ) );
-		parent.setValueFetcher( parentValueFetcher );
-		parent.setAttribute( "test", 123L );
+		SimpleEntityPropertyDescriptor original = new SimpleEntityPropertyDescriptor( "name" );
+		original.setDisplayName( "Name" );
+		original.setHidden( true );
+		original.setReadable( true );
+		original.setWritable( true );
+		original.setPropertyType( String.class );
+		original.setPropertyTypeDescriptor( TypeDescriptor.valueOf( Long.class ) );
+		original.setValueFetcher( parentValueFetcher );
+		original.setAttribute( "test", 123L );
 
-		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( "newName", parent );
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( "newName", original );
 		assertEquals( "newName", descriptor.getName() );
 		assertEquals( "Name", descriptor.getDisplayName() );
 		assertTrue( descriptor.isHidden() );
@@ -62,15 +81,15 @@ public class TestSimpleEntityPropertyDescriptor
 		descriptor.setValueFetcher( childValueFetcher );
 		descriptor.setAttribute( "test", 999L );
 
-		assertEquals( "name", parent.getName() );
-		assertEquals( "Name", parent.getDisplayName() );
-		assertTrue( parent.isHidden() );
-		assertTrue( parent.isReadable() );
-		assertTrue( parent.isWritable() );
-		assertEquals( Long.class, parent.getPropertyType() );
-		assertEquals( TypeDescriptor.valueOf( Long.class ), parent.getPropertyTypeDescriptor() );
-		assertSame( parentValueFetcher, parent.getValueFetcher() );
-		assertEquals( 123L, parent.getAttribute( "test" ) );
+		assertEquals( "name", original.getName() );
+		assertEquals( "Name", original.getDisplayName() );
+		assertTrue( original.isHidden() );
+		assertTrue( original.isReadable() );
+		assertTrue( original.isWritable() );
+		assertEquals( Long.class, original.getPropertyType() );
+		assertEquals( TypeDescriptor.valueOf( Long.class ), original.getPropertyTypeDescriptor() );
+		assertSame( parentValueFetcher, original.getValueFetcher() );
+		assertEquals( 123L, original.getAttribute( "test" ) );
 
 		assertEquals( "newName", descriptor.getName() );
 		assertEquals( "New name", descriptor.getDisplayName() );

@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -43,7 +43,7 @@ public class EntityPropertyRegistryBuilder
 {
 	private final static Logger LOG = LoggerFactory.getLogger( EntityPropertyRegistryBuilder.class );
 
-	private final Map<String, PropertyDescriptorBuilder> builders = new HashMap<>();
+	private final Map<String, PropertyDescriptorBuilder> builders = new LinkedHashMap<>();
 	private String labelBaseProperty;
 
 	/**
@@ -149,13 +149,13 @@ public class EntityPropertyRegistryBuilder
 	 */
 	public static class PropertyDescriptorBuilder extends EntityPropertyDescriptorBuilder
 	{
-		private final EntityPropertyRegistryBuilder parent;
+		private final EntityPropertyRegistryBuilder registryBuilder;
 
 		private Integer order;
 
-		PropertyDescriptorBuilder( EntityPropertyRegistryBuilder parent, String propertyName ) {
+		PropertyDescriptorBuilder( EntityPropertyRegistryBuilder registryBuilder, String propertyName ) {
 			super( propertyName );
-			this.parent = parent;
+			this.registryBuilder = registryBuilder;
 		}
 
 		/**
@@ -167,6 +167,11 @@ public class EntityPropertyRegistryBuilder
 		public PropertyDescriptorBuilder order( int order ) {
 			this.order = order;
 			return this;
+		}
+
+		@Override
+		public PropertyDescriptorBuilder original( EntityPropertyDescriptor original ) {
+			return (PropertyDescriptorBuilder) super.original( original );
 		}
 
 		@Override
@@ -256,7 +261,7 @@ public class EntityPropertyRegistryBuilder
 		 * @return parent registry builder
 		 */
 		public EntityPropertyRegistryBuilder and() {
-			return parent;
+			return registryBuilder;
 		}
 
 		/**
@@ -265,7 +270,7 @@ public class EntityPropertyRegistryBuilder
 		 * @return parent registry builder
 		 */
 		public EntityPropertyRegistryBuilder and( Consumer<EntityPropertyRegistryBuilder> consumer ) {
-			return parent.and( consumer );
+			return registryBuilder.and( consumer );
 		}
 	}
 }
