@@ -20,12 +20,12 @@ import com.foreach.across.modules.bootstrapui.elements.Style;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor.addFeedbackMessage;
-import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor.decodeFeedbackMessages;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Arne Vandamme
@@ -35,26 +35,22 @@ public class TestGlobalPageFeedbackViewProcessor
 {
 	@Test
 	public void addFeedbackMessages() {
-		assertEquals( "alert-danger:my.message", addFeedbackMessage( null, Style.DANGER, "my.message" ) );
-		assertEquals( "alert-info:some.other.message", addFeedbackMessage( "", Style.INFO, "some.other.message" ) );
-		assertEquals(
-				"danger:my.message,somestyle:some.other.message",
-				addFeedbackMessage( "danger:my.message", new Style( "somestyle" ), "some.other.message" )
-		);
+		Map<String, Style> feedback = addFeedbackMessage( null, Style.DANGER, "my message" );
+		assertMapContainsPair( feedback, "my message", Style.DANGER );
+		feedback = addFeedbackMessage( null, Style.DANGER, "my message" );
+		assertMapContainsPair( feedback, "my message", Style.DANGER );
+		feedback = addFeedbackMessage( new HashMap<>(), Style.INFO, "some other message" );
+		assertMapContainsPair( feedback, "some other message", Style.INFO );
+		Style somestyle = new Style( "somestyle" );
+		feedback = addFeedbackMessage( Collections.singletonMap( "my message", Style.DANGER ), somestyle,
+		                               "some other message" );
+		assertMapContainsPair( feedback, "my message", Style.DANGER );
+		assertMapContainsPair( feedback, "some other message", somestyle );
 	}
 
-	@Test
-	public void decodingFeedback() {
-		assertEquals( Collections.emptyMap(), decodeFeedbackMessages( null ) );
-		assertEquals( Collections.emptyMap(), decodeFeedbackMessages( "" ) );
-		assertEquals(
-				Collections.singletonMap( "my.message", new Style( "danger" ) ),
-				decodeFeedbackMessages( "danger:my.message" )
-		);
-
-		Map<String, Style> feedback = new LinkedHashMap<>();
-		feedback.put( "my.message", new Style( "danger" ) );
-		feedback.put( "some.other.message", new Style( "info" ) );
-		assertEquals( feedback, decodeFeedbackMessages( "danger:my.message,info:some.other.message" ) );
+	private void assertMapContainsPair( Map<String, Style> map, String key, Style value ) {
+		assertTrue( map.containsKey( key ) );
+		assertEquals( value, map.get( key ) );
 	}
+
 }
