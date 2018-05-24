@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.atteo.evo.inflector.English;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -204,11 +205,7 @@ public class EntityMessageCodeResolver implements MessageSourceAware, MessageCod
 	}
 
 	private String generatePlural( String name ) {
-		if ( name.endsWith( "y" ) ) {
-			return StringUtils.removeEnd( name, "y" ) + "ies";
-		}
-
-		return name + "s";
+		return English.plural( name );
 	}
 
 	public String getNamePluralInline( Locale locale ) {
