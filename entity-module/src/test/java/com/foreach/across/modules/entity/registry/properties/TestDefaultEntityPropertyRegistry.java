@@ -167,6 +167,11 @@ public class TestDefaultEntityPropertyRegistry
 	}
 
 	@Test
+	public void nestedIndexedPropertyUsesTargetValueFetcher() {
+
+	}
+
+	@Test
 	public void nestedPropertyImpossibleIfNoRegistryProvider() {
 		registry = new DefaultEntityPropertyRegistry();
 

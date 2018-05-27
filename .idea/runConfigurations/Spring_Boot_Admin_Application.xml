@@ -1,12 +1,11 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Spring Boot Admin Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+    <module name="entity-module-test-application" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.foreach.across.samples.entity.EntityModuleTestApplication" />
     <option name="ACTIVE_PROFILES" value="dev" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH" />
-    <module name="entity-module-test-application" />
-    <envs />
+    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndTriggerFile" />
     <method />
   </configuration>
 </component>

@@ -30,6 +30,8 @@ import java.util.*;
  * will be bound and validated as well.
  * <p/>
  * Apart from the extension data itself, a list of custom validators for that extension can be added.
+ * <p/>
+ * This is the central object exchanged between the view and allows for form-binding.
  *
  * @author Arne Vandamme
  * @since 2.0.0

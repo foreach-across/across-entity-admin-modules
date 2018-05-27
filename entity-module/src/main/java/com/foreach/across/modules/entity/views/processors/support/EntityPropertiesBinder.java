@@ -33,6 +33,7 @@ import org.springframework.validation.Errors;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Wrapper for binding values to custom properties. Much like a {@link org.springframework.beans.BeanWrapper}
@@ -320,10 +321,17 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		private final EntityPropertyController<Object, Object> memberController;
 
 		@Getter
-		private final Map<String, Item> items = new Items();
-
-		@Getter
 		private final Item template;
+
+		/**
+		 * When {@code true} this indicates that the property was expected to be bound (usually
+		 * visible in a form) and if no specific values have been bound the value should be reset.
+		 */
+		@Getter
+		@Setter
+		private boolean bound;
+
+		private Map<String, Item> items;
 
 		private MultiValue( EntityPropertyDescriptor collectionDescriptor, EntityPropertyDescriptor memberDescriptor ) {
 			this.collectionDescriptor = collectionDescriptor;
@@ -335,14 +343,33 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 			template = createItem( "" );
 		}
 
+		public Map<String, Item> getItems() {
+			if ( items == null ) {
+				items = new Items();
+				if ( !isBound() && collectionController != null ) {
+					setValue( collectionController.fetchValue( getEntity() ) );
+				}
+			}
+			return items;
+		}
+
+		public Collection<Item> getItemList() {
+			return getItems()
+					.values()
+					.stream()
+					.sorted( Comparator.comparingInt( Item::getSortIndex ) )
+					.collect( Collectors.toList() );
+		}
+
 		@Override
 		public Object getValue() {
 			return convertIfNecessary(
-					items.values()
-					     .stream()
-					     .sorted( Comparator.comparingInt( Item::getSortIndex ) )
-					     .map( Item::getValue )
-					     .toArray(),
+					getItems()
+							.values()
+							.stream()
+							.sorted( Comparator.comparingInt( Item::getSortIndex ) )
+							.map( Item::getValue )
+							.toArray(),
 					collectionDescriptor.getPropertyTypeDescriptor(),
 					""
 			);
@@ -350,6 +377,9 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 
 		@Override
 		public void setValue( Object value ) {
+			if ( items == null ) {
+				items = new Items();
+			}
 			items.clear();
 
 			List values = (List) convertIfNecessary( value,
@@ -368,16 +398,31 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 
 		@Override
 		public boolean save() {
+			if ( collectionController != null ) {
+				return collectionController.save( getEntity(), getValue() );
+			}
 			return false;
 		}
 
 		@Override
 		public boolean validate( Errors errors, Object... validationHints ) {
-			return false;
+			int beforeValidate = errors.getErrorCount();
+			if ( memberController != null ) {
+				getItems()
+						.forEach( ( key, item ) -> {
+							errors.pushNestedPath( "items[" + key + "].value" );
+							memberController.validate( getEntity(), item.getValue(), errors, validationHints );
+							errors.popNestedPath();
+						} );
+			}
+			return beforeValidate >= errors.getErrorCount();
 		}
 
 		@Override
 		public boolean applyValue() {
+			if ( collectionController != null ) {
+				return collectionController.applyValue( getEntity(), getValue() );
+			}
 			return false;
 		}
 

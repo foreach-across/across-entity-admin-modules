@@ -16,12 +16,20 @@
 
 package com.foreach.across.modules.entity.views.processors.support;
 
-import org.springframework.validation.Errors; /**
- * Marker interface representing the value of a property described by
- * an {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor} for an entity.
+import org.springframework.validation.Errors;
+
+/**
+ * Helper class representing a single property of an entity, allowing
+ * access to the property value, updating the value, validating it and saving it.
+ * <p/>
+ * Dispatches to the {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyController}
+ * for the property
+ * <p/>
+ * Mainly for internal use in EntityModule.
  *
  * @author Arne Vandamme
  * @since 3.1.0
+ * @see EntityPropertiesBinder
  */
 public interface EntityPropertyValueHolder<T>
 {
@@ -31,7 +39,7 @@ public interface EntityPropertyValueHolder<T>
 	T getValue();
 
 	/**
-	 * Update the value.
+0	 * Update the value.
 	 *
 	 * @param value to set
 	 */
@@ -49,5 +57,8 @@ public interface EntityPropertyValueHolder<T>
 
 	boolean applyValue();
 
+	/**
+	 * @return the order in which controller methods of this property should be executed relative to all other properties (and the base entity itself)
+	 */
 	int getControllerOrder();
 }

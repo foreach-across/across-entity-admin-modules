@@ -18,7 +18,9 @@ package com.foreach.across.modules.entity.views.util;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertyValueHolder;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -70,6 +72,10 @@ public class EntityViewElementUtils
 			value = builderContext.getAttribute( EntityViewModel.ENTITY );
 		}
 
+		if ( value instanceof EntityPropertiesBinder.MultiValue.Item ) {
+			value = ( (EntityPropertiesBinder.MultiValue.Item) value ).getValue();
+		}
+
 		return expectedType.isInstance( value ) ? expectedType.cast( value ) : null;
 	}
 
@@ -119,13 +125,38 @@ public class EntityViewElementUtils
 		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
 	}
 
+	// todo: more and more to clean up
+	public static EntityPropertyValueHolder<Object> currentPropertyValueHolder( ViewElementBuilderContext builderContext ) {
+		if ( builderContext == null ) {
+			return null;
+		}
+
+		EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
+
+		if ( descriptor == null ) {
+			return null;
+		}
+
+		EntityPropertiesBinder properties = builderContext.getAttribute( EntityPropertiesBinder.class );
+
+		return resolveValueHolder( properties, descriptor );
+	}
+
+	private static EntityPropertyValueHolder<Object> resolveValueHolder( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor ) {
+		if ( properties != null ) {
+			return properties.get( descriptor.getName() );
+		}
+
+		return null;
+	}
+
 	private static Object resolveValue( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor, Object root ) {
 		if ( properties != null && EntityAttributes.handlingType( descriptor ) == EntityPropertyHandlingType.EXTENSION ) {
 			val valueHolder = properties.get( descriptor.getName() );
 			return valueHolder.getValue();
 		}
 		else {
-			if ( descriptor.isNestedProperty() ) {
+			if ( descriptor.isNestedProperty() && !descriptor.getParentDescriptor().getName().endsWith( EntityPropertyRegistry.INDEXER ) ) {
 				EntityPropertyDescriptor target = descriptor.getAttribute( EntityAttributes.TARGET_DESCRIPTOR, EntityPropertyDescriptor.class );
 
 				if ( target != null ) {

@@ -32,7 +32,9 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionElementBuilderFactory;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.samples.entity.EntityModuleTestApplication;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Email;
@@ -43,6 +45,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.repository.core.EntityInformation;
+import org.springframework.format.Printer;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -68,6 +71,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 
 	private final Map<Object, Integer> stockCounts = new HashMap<>();
 	private final Map<Object, Manager> categoryManagers = new HashMap<>();
+	private final Map<Object, List<Brand>> brands = new HashMap<>();
 
 	@EntityValidator
 	private Validator validator;
@@ -81,6 +85,10 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 		tv.put( "name", "Televisions" );
 
 		categoryRepository.add( tv );
+
+		stockCounts.put( "tv", 5 );
+		categoryManagers.put( "tv", new Manager( "John Doe", "john@doe.com" ) );
+		brands.put( "tv", Arrays.asList( new Brand( "SAM", "Samsung" ), new Brand( "PH", "Philips" ) ) );
 	}
 
 	@Override
@@ -177,9 +185,8 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	}
 
 	/**
-	 * Add a custom checkbox, that when checked will generate an id based on the name.
-	 * If checked it will first validate that name is not empty but id is empty,
-	 * and when the applyapplyValue method is called, will lowercase the name and replace all whitespace.
+	 * Add a custom checkbox, that when checked will generate an id.
+	 * If checked it will first validate that id is empty, and when applied will generate a UUID as id.
 	 * <p>
 	 * If there is a validation error and the checkbox is checked, it should still be checked on the re-render.
 	 */
@@ -231,6 +238,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .hidden( false )
 			     .valueFetcher( controller::fetchValue )
 			     .attribute( EntityPropertyController.class, controller )
+			     .attribute( Printer.class, (Printer<Manager>) ( manager, locale ) -> manager.getName() )
 			     .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
 			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "manager.*" ) )
 			     .and()
@@ -248,9 +256,12 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	private Consumer<EntityPropertyRegistryBuilder> registerBrandsProperty() {
 		return props -> {
 			val controller = new GenericEntityPropertyController<Map<String, Object>, List<Brand>>();
+			controller.setValueFetcher( category -> brands.getOrDefault( category.get( "id" ), Collections.emptyList() ) );
+			controller.setSaveConsumer( ( category, list ) -> brands.put( category.get( "id" ), list ) );
 
 			val memberController = new GenericEntityPropertyController<Map<String, Object>, Brand>();
 			memberController.setValueFetcher( category -> new Brand() );
+			memberController.addValidator( validator );
 
 			props.property( "brands" )
 			     .displayName( "Brands" )
@@ -275,6 +286,8 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	}
 
 	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class Manager
 	{
 		@Length(max = 100)
@@ -287,6 +300,8 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	}
 
 	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class Brand
 	{
 		@Length(max = 5)

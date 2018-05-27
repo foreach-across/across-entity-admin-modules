@@ -16,16 +16,15 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
-import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinder;
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.views.processors.support.EntityPropertyValueHolder;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -55,7 +54,13 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 	@Override
 	protected NodeViewElement createElement( ViewElementBuilderContext builderContext ) {
-		Object collection = EntityViewElementUtils.currentPropertyValue( builderContext );
+		//Object collection = EntityViewElementUtils.currentPropertyValue( builderContext );
+
+		EntityPropertyValueHolder holder = EntityViewElementUtils.currentPropertyValueHolder( builderContext );
+
+		EntityPropertiesBinder.MultiValue multiValue = (EntityPropertiesBinder.MultiValue) holder;
+		val collection = multiValue.getItemList();
+
 		val descriptor = EntityViewElementUtils.currentPropertyDescriptor( builderContext );
 		val collectionsBinder = builderContext.getAttribute( EmbeddedCollectionsBinder.class );
 
@@ -65,9 +70,10 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 		NodeViewElement node = super.createElement( builderContext );
 		node.addCssClass( "js-embedded-collection-form-group" );
-		node.setAttribute( "data-source-property", descriptor.getName() + "[]" );
-		node.setAttribute( "data-target-property", binderPrefix );
+		node.setAttribute( "data-source-property", EntityAttributes.controlName( descriptor ) );
+		node.setAttribute( "data-target-property", EntityAttributes.controlName( memberDescriptor ) );
 
+		String controlPrefix = StringUtils.removeEnd( EntityAttributes.controlName( descriptor ), ".value" );
 
 		/*
 		   class="form-group js-embedded-collection-form-group"
@@ -78,31 +84,33 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		node.addChild(
 				BootstrapUiBuilders.fieldset()
 				                   .attribute( "data-role", "items" )
-				                   /*.add(
-						                   BootstrapUiBuilders.generator( Object.class, ContainerViewElement.class )
+				                   .add(
+						                   BootstrapUiBuilders.generator( EntityPropertiesBinder.MultiValue.Item.class, ContainerViewElement.class )
 						                                      .creationCallback( ( item, container ) -> {
 
 							                                      NodeViewElement itemWrapper = new NodeViewElement( "div" );
 							                                      itemWrapper.setAttribute( "data-role", "item" );
-							                                      itemWrapper.setAttribute( "data-item-id", "item-" + item.getIndex() );
-							                                      itemWrapper.addChild( TextViewElement.html( "<a data-action=\"remove-item\" role=\"button\" class=\"btn btn-link\" title=\"Remove\" href=\"#\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a>" ) );
+							                                      itemWrapper.setAttribute( "data-item-id", item.getItem().getKey() );
+							                                      itemWrapper.addChild( TextViewElement
+									                                                            .html( "<a data-action=\"remove-item\" role=\"button\" class=\"btn btn-link\" title=\"Remove\" href=\"#\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a>" ) );
 
 							                                      container.findAll( FormGroupElement.class )
 							                                               .forEach( groupElement -> {
-								                                               updateControlName( descriptor, item.getIndex(), groupElement, binderPrefix );
+								                                               updateControlName( descriptor, item.getItem(), groupElement, controlPrefix );
 							                                               } );
 
 							                                      HiddenFormElement sortIndex = new HiddenFormElement();
-							                                      sortIndex.setControlName( binderPrefix + ".item[item-" + item.getIndex() + "].sortIndex" );
-							                                      sortIndex.setValue( item.getIndex() );
+							                                      sortIndex.setControlName(
+									                                      controlPrefix + ".items[" + item.getItem().getKey() + "].sortIndex" );
+							                                      sortIndex.setValue( item.getItem().getSortIndex() );
 							                                      container.addChild( sortIndex );
 
 							                                      itemWrapper.addChild( container );
 							                                      return itemWrapper;
 						                                      } )
-						                                      .items( (Collection<Object>) collection )
+						                                      .items( collection )
 						                                      .itemBuilder( itemTemplate )
-				                   )*/
+				                   )
 				                   .build( builderContext )
 		);
 
@@ -113,6 +121,12 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		String baseControlName = EntityAttributes.controlName( memberDescriptor );
 		String templateControlName = StringUtils.removeEnd( baseControlName, "items[].value" ) + "template";
 
+		node.addChild(
+				BootstrapUiBuilders.hidden()
+				                   .controlName( StringUtils.removeEnd( baseControlName, "items[].value" ) + "bound" )
+				                   .value( "1" )
+				                   .build( bc )
+		);
 		node.addChild(
 				BootstrapUiBuilders.node( "script" )
 				                   .attribute( "type", "text/html" )
@@ -131,11 +145,14 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 	}
 
 	// todo use correct prefixing approach
-	private void updateControlName( EntityPropertyDescriptor descriptor, int itemIndex, FormGroupElement groupElement, String binderPrefix ) {
+	private void updateControlName( EntityPropertyDescriptor descriptor,
+	                                EntityPropertiesBinder.MultiValue.Item item,
+	                                FormGroupElement groupElement,
+	                                String binderPrefix ) {
 		val ctl = groupElement.getControl( FormControlElement.class );
 		if ( ctl != null ) {
-			ctl.setControlName( StringUtils.replaceOnce( ctl.getControlName(), descriptor.getName() + "[]",
-			                                             binderPrefix + ".item[item-" + itemIndex + "].data" ) );
+			ctl.setControlName( StringUtils.replaceOnce( ctl.getControlName(), binderPrefix + ".items[].value",
+			                                             binderPrefix + ".items[" + item.getKey() + "].value" ) );
 		}
 		else if ( groupElement.getControl() instanceof ContainerViewElement ) {
 			( (ContainerViewElement) groupElement.getControl() )

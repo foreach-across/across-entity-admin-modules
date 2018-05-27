@@ -123,7 +123,6 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 			try {
 				val properties = command.getProperties();
 
-
 				EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 				EntityModel<Object, ?> entityModel = entityViewContext.getEntityModel();
 

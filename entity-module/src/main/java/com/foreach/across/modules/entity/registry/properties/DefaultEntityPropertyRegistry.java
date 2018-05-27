@@ -140,8 +140,11 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	}
 
 	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name, EntityPropertyDescriptor parent, EntityPropertyDescriptor child ) {
+		boolean isIndexerChild = parent.getName().endsWith( INDEXER );
+
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name );
 		descriptor.setParentDescriptor( parent );
+
 		descriptor.setDisplayName( child.getDisplayName() );
 		descriptor.setPropertyType( child.getPropertyType() );
 		descriptor.setPropertyTypeDescriptor( child.getPropertyTypeDescriptor() );
@@ -151,7 +154,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 		if ( descriptor.isReadable() ) {
 			val parentValueFetcher = parent.getValueFetcher();
-			if ( parentValueFetcher != null ) {
+			if ( parentValueFetcher != null && !isIndexerChild ) {
 				descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
 			}
 			else {

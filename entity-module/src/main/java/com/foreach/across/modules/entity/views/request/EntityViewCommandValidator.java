@@ -95,7 +95,6 @@ public class EntityViewCommandValidator implements SmartValidator
 								valueHolder.applyValue();
 							}
 							errors.popNestedPath();
-
 						}
 				) );
 			} );

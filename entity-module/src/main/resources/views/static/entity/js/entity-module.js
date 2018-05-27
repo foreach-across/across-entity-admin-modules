@@ -20,42 +20,42 @@ var EmbeddedCollection = function( element ) {
     var items = wrapper.find( '[data-role=items]' );
     var editItemTemplate = wrapper.find( '[data-role=edit-item-template]' );
 
-    console.log( editItemTemplate.html() );
     /*
     var tmpl = editItemTemplate[0].innerHTML.trim();
     tmpl = tmpl.substr( 4, tmpl.length - 7 ).trim();
     console.log(tmpl);
 */
     var sourcePrefix = wrapper.attr( 'data-source-property' );
-    var targetPrefix = wrapper.attr( 'data-target-property' );
 
-    index = items.find('.form-group').length;
+    var targetPrefix = sourcePrefix.substr( 0, sourcePrefix.length - ".value".length );
+    var templatePrefix = targetPrefix + ".template";
 
-    items.find( '[data-action=remove-item]' ).click( function(e) {
+    index = items.find( '.form-group' ).length;
+
+    items.find( '[data-action=remove-item]' ).click( function( e ) {
         e.preventDefault();
         $( this ).closest( '[data-role=item]' ).remove();
     } );
 
     wrapper.find( '[data-action=add-item]' ).click( function() {
         var id = 'item-' + index++;
-        var target = targetPrefix + '.item[' + id + ']';
+        var target = targetPrefix + '.items[' + id + ']';
 
         var template = $( '<div>' + editItemTemplate.html() + '</div>' );
         template.attr( 'data-role', 'item' );
         template.attr( 'data-item-id', id );
 
-        console.log( sourcePrefix );
-        template.find( '[name^="' + sourcePrefix + '"]' ).each( function( node ) {
-            $( this ).attr( 'name', $( this ).attr( 'name' ).replace( sourcePrefix, target + '.data' ) );
+        template.find( '[name^="' + templatePrefix + '"]' ).each( function( node ) {
+            $( this ).attr( 'name', $( this ).attr( 'name' ).replace( templatePrefix, target + '.value' ) );
         } );
-        template.find( '[for^="' + sourcePrefix + '"]' ).each( function( node ) {
-            $( this ).attr( 'for', $( this ).attr( 'for' ).replace( sourcePrefix, target + '.data' ) );
+        template.find( '[for^="' + templatePrefix + '"]' ).each( function( node ) {
+            $( this ).attr( 'for', $( this ).attr( 'for' ).replace( templatePrefix, target + '.value' ) );
         } );
-        template.find( '[id^="' + sourcePrefix + '"]' ).each( function( node ) {
-            $( this ).attr( 'id', $( this ).attr( 'id' ).replace( sourcePrefix, target + '.data' ) );
+        template.find( '[id^="' + templatePrefix + '"]' ).each( function( node ) {
+            $( this ).attr( 'id', $( this ).attr( 'id' ).replace( templatePrefix, target + '.value' ) );
         } );
 
-        template.find( '[data-action=remove-item]' ).click( function(e) {
+        template.find( '[data-action=remove-item]' ).click( function( e ) {
             e.preventDefault();
             $( this ).closest( '[data-role=item]' ).remove();
         } );
