@@ -162,26 +162,24 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	 * Add a custom integer property: the stock count.
 	 */
 	private Consumer<EntityPropertyRegistryBuilder> registerStockCountProperty() {
-		return props -> {
-			val controller = new GenericEntityPropertyController<Map<String, Object>, Integer>();
-			controller.setValueFetcher( category -> stockCounts.get( category.get( "id" ) ) );
-			controller.addValidator( ( category, stockCount, errors, validationHints ) -> {
-				// stock count must be positive number`
-				if ( stockCount == null || stockCount < 0 ) {
-					errors.rejectValue( "", "must-be-positive", "Must be a positive number" );
-				}
-			} );
-			controller.setSaveConsumer( ( category, stockCount ) -> stockCounts.put( category.get( "id" ), stockCount ) );
+		return props ->
+				props.property( "stockCount" )
+				     .displayName( "Stock count" )
+				     .propertyType( Integer.class )
+				     .readable( true )
+				     .writable( true )
+				     .hidden( false )
+						.<Map<String, Object>, Integer>controller(
+								c -> c.valueFetcher( category -> stockCounts.get( category.get( "id" ) ) )
+								      .addValidator( ( category, stockCount, errors, validationHints ) -> {
+									      // stock count must be positive number`
+									      if ( stockCount == null || stockCount < 0 ) {
+										      errors.rejectValue( "", "must-be-positive", "Must be a positive number" );
+									      }
+								      } )
+								      .saveConsumer( ( category, stockCount ) -> stockCounts.put( category.get( "id" ), stockCount ) )
 
-			props.property( "stockCount" )
-			     .displayName( "Stock count" )
-			     .propertyType( Integer.class )
-			     .readable( true )
-			     .writable( true )
-			     .hidden( false )
-			     .valueFetcher( controller::fetchValue )
-			     .attribute( EntityPropertyController.class, controller );
-		};
+						);
 	}
 
 	/**
@@ -191,31 +189,30 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	 * If there is a validation error and the checkbox is checked, it should still be checked on the re-render.
 	 */
 	private Consumer<EntityPropertyRegistryBuilder> registerGenerateIdProperty() {
-		return props -> {
-			val controller = new GenericEntityPropertyController<Map<String, Object>, Boolean>();
-			controller.setOrder( EntityPropertyController.BEFORE_ENTITY );
-			controller.setValueFetcher( category -> false );
-			controller.addValidator( ( category, shouldGenerate, errors, validationHints ) -> {
-				// category name must not yet be filled in
-				if ( Boolean.TRUE.equals( shouldGenerate ) && !StringUtils.isEmpty( (String) category.get( "id" ) ) ) {
-					errors.rejectValue( "", "id-not-empty", "Unable to generate identity when already set." );
-				}
-			} );
-			controller.setApplyValueConsumer( ( category, shouldGenerate ) -> {
-				if ( Boolean.TRUE.equals( shouldGenerate ) ) {
-					category.put( "id", UUID.randomUUID().toString() );
-				}
-			} );
+		return props ->
+				props.property( "generateId" )
+				     .displayName( "Generate Identity" )
+				     .propertyType( Boolean.class )
+				     .readable( false )
+				     .writable( true )
+				     .hidden( false )
+						.<Map<String, Object>, Boolean>controller(
+								c -> c.order( EntityPropertyController.BEFORE_ENTITY )
+								      .valueFetcher( category -> false )
+								      .addValidator( ( category, shouldGenerate, errors, validationHints ) -> {
+									      // category name must not yet be filled in
+									      if ( Boolean.TRUE.equals( shouldGenerate ) && !StringUtils.isEmpty( (String) category.get( "id" ) ) ) {
+										      errors.rejectValue( "", "id-not-empty", "Unable to generate identity when already set." );
+									      }
+								      } )
+								      .applyValueConsumer( ( category, shouldGenerate ) -> {
+									      if ( Boolean.TRUE.equals( shouldGenerate ) ) {
+										      category.put( "id", UUID.randomUUID().toString() );
+									      }
+								      } )
 
-			props.property( "generateId" )
-			     .displayName( "Generate Identity" )
-			     .propertyType( Boolean.class )
-			     .readable( false )
-			     .writable( true )
-			     .hidden( false )
-			     .valueFetcher( controller::fetchValue )
-			     .attribute( EntityPropertyController.class, controller );
-		};
+						);
+
 	}
 
 	/**
@@ -226,9 +223,9 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	private Consumer<EntityPropertyRegistryBuilder> registerManagerProperty() {
 		return props -> {
 			val controller = new GenericEntityPropertyController<Map<String, Object>, Manager>();
-			controller.setValueFetcher( category -> categoryManagers.getOrDefault( category.get( "id" ), new Manager() ) );
+			controller.valueFetcher( category -> categoryManagers.getOrDefault( category.get( "id" ), new Manager() ) );
 			controller.addValidator( validator );
-			controller.setSaveConsumer( ( category, manager ) -> categoryManagers.put( category.get( "id" ), manager ) );
+			controller.saveConsumer( ( category, manager ) -> categoryManagers.put( category.get( "id" ), manager ) );
 
 			props.property( "manager" )
 			     .displayName( "Manager" )
@@ -236,8 +233,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .readable( true )
 			     .writable( true )
 			     .hidden( false )
-			     .valueFetcher( controller::fetchValue )
-			     .attribute( EntityPropertyController.class, controller )
+			     .controller( controller )
 			     .attribute( Printer.class, (Printer<Manager>) ( manager, locale ) -> manager.getName() )
 			     .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
 			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "manager.*" ) )
@@ -256,11 +252,11 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	private Consumer<EntityPropertyRegistryBuilder> registerBrandsProperty() {
 		return props -> {
 			val controller = new GenericEntityPropertyController<Map<String, Object>, List<Brand>>();
-			controller.setValueFetcher( category -> brands.getOrDefault( category.get( "id" ), Collections.emptyList() ) );
-			controller.setSaveConsumer( ( category, list ) -> brands.put( category.get( "id" ), list ) );
+			controller.valueFetcher( category -> brands.getOrDefault( category.get( "id" ), Collections.emptyList() ) );
+			controller.saveConsumer( ( category, list ) -> brands.put( category.get( "id" ), list ) );
 
 			val memberController = new GenericEntityPropertyController<Map<String, Object>, Brand>();
-			memberController.setValueFetcher( category -> new Brand() );
+			memberController.valueFetcher( category -> new Brand() );
 			memberController.addValidator( validator );
 
 			props.property( "brands" )
@@ -269,14 +265,12 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .readable( true )
 			     .writable( true )
 			     .hidden( false )
-			     .valueFetcher( controller::fetchValue )
-			     .attribute( EntityPropertyController.class, controller )
+			     .controller( controller )
 			     .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
 			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) )
 			     .and()
 			     .property( "brands[]" )
-			     .valueFetcher( memberController::fetchValue )
-			     .attribute( EntityPropertyController.class, memberController );
+			     .controller( memberController );
 		};
 	}
 

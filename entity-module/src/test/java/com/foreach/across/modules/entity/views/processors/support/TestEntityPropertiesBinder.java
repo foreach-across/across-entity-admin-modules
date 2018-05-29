@@ -74,14 +74,14 @@ public class TestEntityPropertiesBinder
 
 		singleValue = EntityPropertyDescriptor.builder( "id" )
 		                                      .propertyType( Long.class )
+		                                      .controller( controller )
 		                                      .build();
-		singleValue.setAttribute( EntityPropertyController.class, controller );
 		when( registry.getProperty( "id" ) ).thenReturn( singleValue );
 
 		multiValue = EntityPropertyDescriptor.builder( "members" )
 		                                     .propertyType( Long[].class )
+		                                     .controller( multiValueController )
 		                                     .build();
-		multiValue.setAttribute( EntityPropertyController.class, multiValueController );
 		when( registry.getProperty( "members" ) ).thenReturn( multiValue );
 		when( registry.getProperty( "members[]" ) ).thenReturn( singleValue );
 	}

@@ -70,7 +70,7 @@ public class TestSimpleEntityPropertyDescriptor
 		assertTrue( descriptor.isWritable() );
 		assertEquals( Long.class, descriptor.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( Long.class ), descriptor.getPropertyTypeDescriptor() );
-		assertSame( parentValueFetcher, descriptor.getValueFetcher() );
+		assertNotNull( descriptor.getValueFetcher() );
 		assertEquals( 123L, descriptor.getAttribute( "test" ) );
 
 		descriptor.setDisplayName( "New name" );
@@ -88,7 +88,7 @@ public class TestSimpleEntityPropertyDescriptor
 		assertTrue( original.isWritable() );
 		assertEquals( Long.class, original.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( Long.class ), original.getPropertyTypeDescriptor() );
-		assertSame( parentValueFetcher, original.getValueFetcher() );
+		assertNotNull( original.getValueFetcher() );
 		assertEquals( 123L, original.getAttribute( "test" ) );
 
 		assertEquals( "newName", descriptor.getName() );
@@ -98,7 +98,7 @@ public class TestSimpleEntityPropertyDescriptor
 		assertFalse( descriptor.isWritable() );
 		assertEquals( String.class, descriptor.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( String.class ), descriptor.getPropertyTypeDescriptor() );
-		assertSame( childValueFetcher, descriptor.getValueFetcher() );
+		assertNotNull( descriptor.getValueFetcher() );
 		assertEquals( 999L, descriptor.getAttribute( "test" ) );
 	}
 

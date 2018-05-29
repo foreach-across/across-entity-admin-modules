@@ -226,6 +226,14 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 	}
 
 	/**
+	 * Reset the different binding related properties (eg. was a property expected to be bound).
+	 * Useful if you want to bind multiple times on the same entity using the same binder instance.
+	 */
+	public void resetForBinding() {
+
+	}
+
+	/**
 	 * Represents a single value property.
 	 */
 	public class SingleValue implements EntityPropertyValueHolder<Object>
@@ -245,9 +253,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		@Getter
 		private Object value;
 
+		@SuppressWarnings("unchecked")
 		private SingleValue( EntityPropertyDescriptor descriptor ) {
 			this.descriptor = descriptor;
-			controller = descriptor.getAttribute( EntityPropertyController.class );
+			controller = descriptor.getController();
 
 			if ( controller != null ) {
 				value = controller.fetchValue( getEntity() );
@@ -267,6 +276,14 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 				modified = true;
 			}
 			this.value = newValue;
+		}
+
+		@Override
+		public Object initializeValue() {
+			if ( controller != null ) {
+				return controller.createValue( getEntity() );
+			}
+			return null;
 		}
 
 		/**
@@ -337,10 +354,15 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 			this.collectionDescriptor = collectionDescriptor;
 			this.memberDescriptor = memberDescriptor;
 
-			collectionController = collectionDescriptor.getAttribute( EntityPropertyController.class );
-			memberController = memberDescriptor.getAttribute( EntityPropertyController.class );
+			collectionController = collectionDescriptor.getController();
+			memberController = memberDescriptor.getController();
 
 			template = createItem( "" );
+		}
+
+		@Override
+		public Object initializeValue() {
+			return null;
 		}
 
 		public Map<String, Item> getItems() {
@@ -382,17 +404,19 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 			}
 			items.clear();
 
-			List values = (List) convertIfNecessary( value,
-			                                         TypeDescriptor.collection( ArrayList.class, memberDescriptor.getPropertyTypeDescriptor() ),
-			                                         collectionDescriptor.getPropertyType(),
-			                                         collectionBinderPath() + ".value" );
+			if ( value != null ) {
+				List values = (List) convertIfNecessary( value,
+				                                         TypeDescriptor.collection( ArrayList.class, memberDescriptor.getPropertyTypeDescriptor() ),
+				                                         collectionDescriptor.getPropertyType(),
+				                                         collectionBinderPath() + ".value" );
 
-			int index = 0;
-			for ( Object v : values ) {
-				Item item = new Item( "" + index );
-				item.setValue( v );
-				item.setSortIndex( index++ );
-				items.put( item.key, item );
+				int index = 0;
+				for ( Object v : values ) {
+					Item item = new Item( "" + index );
+					item.setValue( v );
+					item.setSortIndex( index++ );
+					items.put( item.key, item );
+				}
 			}
 		}
 

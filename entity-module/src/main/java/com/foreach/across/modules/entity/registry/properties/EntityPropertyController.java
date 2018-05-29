@@ -65,6 +65,18 @@ public interface EntityPropertyController<T, U> extends Ordered
 	}
 
 	/**
+	 * Create a new value for the property on the owning entity.
+	 * This *only* creates a value instance but does not necessary assign the value to that property.
+	 * Useful for initializing complex object values.
+	 *
+	 * @param owner entity
+	 * @return valid property value
+	 */
+	default U createValue( T owner ) {
+		return null;
+	}
+
+	/**
 	 * Validate a property value for the given owner entity.
 	 * Validation errors should be registered on the {@link Errors} argument.
 	 * Validating should happen before {@link #applyValue(Object, Object)} or {@link #save(Object, Object)}

@@ -39,11 +39,40 @@ public interface EntityPropertyValueHolder<T>
 	T getValue();
 
 	/**
-0	 * Update the value.
+	 * Get the current value or initialize a new value if has not been set.
+	 * What initializing entails is context dependent but this method is useful
+	 * for intermediate bean paths where you want to ensure that the intermediate property value is set.
+	 *
+	 * @return the value and initialize a new value if necessary
+	 */
+	default T getInitializedValue() {
+		T currentValue = getValue();
+
+		if ( currentValue == null ) {
+			T newValue = initializeValue();
+			if ( newValue != null ) {
+				setValue( newValue );
+				return newValue;
+			}
+		}
+
+		return currentValue;
+	}
+
+	/**
+	 * Update the value.
 	 *
 	 * @param value to set
 	 */
 	void setValue( T value );
+
+	/**
+	 * Initialize a new value for this property.
+	 * Will not actually update the property value itself but will attempt to return a new instance that can be set as the value.
+	 *
+	 * @return new value, can be {@code null}
+	 */
+	T initializeValue();
 
 	/**
 	 * Calls the {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyController#save(Object, Object)} method

@@ -38,6 +38,13 @@ public interface MutableEntityPropertyDescriptor extends EntityPropertyDescripto
 	 */
 	void setPropertyRegistry( EntityPropertyRegistry propertyRegistry );
 
+	/**
+	 * Set the controller that should be used for managing this property in the context of an entity.
+	 *
+	 * @param controller to use
+	 */
+	void setController( EntityPropertyController controller );
+
 	void setDisplayName( String displayName );
 
 	void setReadable( boolean readable );

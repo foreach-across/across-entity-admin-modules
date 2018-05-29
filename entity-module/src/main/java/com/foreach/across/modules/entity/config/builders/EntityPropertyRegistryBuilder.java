@@ -235,6 +235,16 @@ public class EntityPropertyRegistryBuilder
 		}
 
 		@Override
+		public <U, V> PropertyDescriptorBuilder controller( Consumer<ConfigurableEntityPropertyController<U, V>> consumer ) {
+			return (PropertyDescriptorBuilder) super.controller( consumer );
+		}
+
+		@Override
+		public PropertyDescriptorBuilder controller( EntityPropertyController controller ) {
+			return (PropertyDescriptorBuilder) super.controller( controller );
+		}
+
+		@Override
 		public PropertyDescriptorBuilder viewElementModeCaching( ViewElementMode mode, boolean cacheable ) {
 			return (PropertyDescriptorBuilder) super.viewElementModeCaching( mode, cacheable );
 		}

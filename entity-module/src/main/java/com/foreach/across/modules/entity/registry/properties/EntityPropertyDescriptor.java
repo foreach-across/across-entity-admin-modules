@@ -43,6 +43,11 @@ public interface EntityPropertyDescriptor extends ReadableAttributes
 	TypeDescriptor getPropertyTypeDescriptor();
 
 	/**
+	 * @return controller for handling this property
+	 */
+	<U,V> EntityPropertyController<U,V> getController();
+
+	/**
 	 * @return Associated instance that can fetch the property value from an instance.
 	 */
 	ValueFetcher getValueFetcher();

@@ -17,6 +17,8 @@ package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.core.support.AttributeOverridingSupport;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
+import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
@@ -38,21 +40,30 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	private String name, displayName;
 	private Boolean readable, writable, hidden;
 
-	private ValueFetcher valueFetcher;
 	private Class<?> propertyType;
 	private TypeDescriptor propertyTypeDescriptor;
 	private EntityPropertyRegistry propertyRegistry;
+
+	@Getter
+	@Setter
+	@NonNull
+	private EntityPropertyController controller = new GenericEntityPropertyController();
 
 	public SimpleEntityPropertyDescriptor( String name ) {
 		this( name, null );
 	}
 
+	@SuppressWarnings("unchecked")
 	public SimpleEntityPropertyDescriptor( String name, EntityPropertyDescriptor original ) {
 		Assert.notNull( name, "name is required" );
 		this.name = name;
 		this.original = original;
 
 		super.setParent( original );
+
+		if ( original != null ) {
+			controller = new GenericEntityPropertyController( original.getController() );
+		}
 	}
 
 	/**
@@ -132,23 +143,26 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	@SuppressWarnings("unchecked")
 	public Object getPropertyValue( Object entity ) {
 		if ( entity != null ) {
-			ValueFetcher valueFetcher = getValueFetcher();
-
-			if ( valueFetcher != null ) {
-				return valueFetcher.getValue( entity );
-			}
+			return controller.fetchValue( entity );
 		}
 		return null;
 	}
 
 	@Override
 	public ValueFetcher getValueFetcher() {
-		return valueFetcher != null ? valueFetcher : ( original != null ? original.getValueFetcher() : null );
+		return controller::fetchValue;
 	}
 
 	@Override
+	@Deprecated
+	@SuppressWarnings( "all" )
 	public void setValueFetcher( ValueFetcher<?> valueFetcher ) {
-		this.valueFetcher = valueFetcher;
+		if ( controller instanceof GenericEntityPropertyController ) {
+			( (GenericEntityPropertyController) controller ).valueFetcher( ( (ValueFetcher) valueFetcher )::getValue );
+		}
+		else {
+			throw new IllegalStateException( "Unable to set value fetcher on a non-GenericEntityPropertyController" );
+		}
 
 		if ( readable == null && original == null && valueFetcher != null ) {
 			readable = true;

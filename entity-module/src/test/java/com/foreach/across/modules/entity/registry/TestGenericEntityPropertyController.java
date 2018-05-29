@@ -26,10 +26,7 @@ import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
 import java.util.Date;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -49,10 +46,25 @@ public class TestGenericEntityPropertyController
 
 		val vf = mock( Function.class );
 		when( vf.apply( "any-string" ) ).thenReturn( 123L );
-		assertThat( controller.setValueFetcher( vf ) ).isSameAs( controller );
+		assertThat( controller.valueFetcher( vf ) ).isSameAs( controller );
 
 		assertThat( controller.fetchValue( "any-string" ) ).isEqualTo( 123L );
 		assertThat( controller.fetchValue( "other" ) ).isNull();
+	}
+
+	@Test
+	public void createValue() {
+		assertThat( controller.createValue( "any-string" ) ).isNull();
+
+		val s = mock( Supplier.class );
+		controller.createValueSupplier( s );
+		when( s.get() ).thenReturn( 123L );
+		assertThat( controller.createValue( "any-string" ) ).isEqualTo( 123L );
+
+		val f = mock( Function.class );
+		controller.createValueFunction( f );
+		when( f.apply( "my-string" ) ).thenReturn( 5L );
+		assertThat( controller.createValue( "my-string" ) ).isEqualTo( 5L );
 	}
 
 	@Test
@@ -60,13 +72,13 @@ public class TestGenericEntityPropertyController
 		assertThat( controller.applyValue( "any-string", 123L ) ).isFalse();
 
 		val consumer = mock( BiConsumer.class );
-		assertThat( controller.setApplyValueConsumer( consumer ) ).isSameAs( controller );
+		assertThat( controller.applyValueConsumer( consumer ) ).isSameAs( controller );
 		assertThat( controller.applyValue( "some-string", 555L ) ).isTrue();
 		verify( consumer ).accept( "some-string", 555L );
 
 		val vw = mock( BiFunction.class );
 		when( vw.apply( "any-string", 123L ) ).thenReturn( true );
-		assertThat( controller.setApplyValueFunction( vw ) ).isSameAs( controller );
+		assertThat( controller.applyValueFunction( vw ) ).isSameAs( controller );
 
 		assertThat( controller.applyValue( "any-string", 123L ) ).isTrue();
 		assertThat( controller.applyValue( "any-string", 0L ) ).isFalse();
@@ -77,13 +89,13 @@ public class TestGenericEntityPropertyController
 		assertThat( controller.save( "any-string", 123L ) ).isFalse();
 
 		val consumer = mock( BiConsumer.class );
-		assertThat( controller.setSaveConsumer( consumer ) ).isSameAs( controller );
+		assertThat( controller.saveConsumer( consumer ) ).isSameAs( controller );
 		assertThat( controller.save( "some-string", 555L ) ).isTrue();
 		verify( consumer ).accept( "some-string", 555L );
 
 		val vw = mock( BiFunction.class );
 		when( vw.apply( "any-string", 123L ) ).thenReturn( true );
-		assertThat( controller.setSaveFunction( vw ) ).isSameAs( controller );
+		assertThat( controller.saveFunction( vw ) ).isSameAs( controller );
 
 		assertThat( controller.save( "any-string", 123L ) ).isTrue();
 		assertThat( controller.save( "any-string", 0L ) ).isFalse();
@@ -93,14 +105,20 @@ public class TestGenericEntityPropertyController
 	public void delete() {
 		assertThat( controller.delete( "any-string" ) ).isFalse();
 
+		val saveConsumer = mock( BiConsumer.class );
+		controller.saveConsumer( saveConsumer );
+		assertThat( controller.delete( "some-string" ) ).isTrue();
+		verify( saveConsumer ).accept( "some-string", null );
+
 		val consumer = mock( Consumer.class );
-		assertThat( controller.setDeleteConsumer( consumer ) ).isSameAs( controller );
+		assertThat( controller.deleteConsumer( consumer ) ).isSameAs( controller );
 		assertThat( controller.delete( "some-string" ) ).isTrue();
 		verify( consumer ).accept( "some-string" );
+		verifyNoMoreInteractions( saveConsumer );
 
 		val vw = mock( Function.class );
 		when( vw.apply( "any-string" ) ).thenReturn( true );
-		assertThat( controller.setDeleteFunction( vw ) ).isSameAs( controller );
+		assertThat( controller.deleteFunction( vw ) ).isSameAs( controller );
 
 		assertThat( controller.delete( "any-string" ) ).isTrue();
 		assertThat( controller.delete( "other-string" ) ).isFalse();
@@ -112,7 +130,7 @@ public class TestGenericEntityPropertyController
 
 		val vw = mock( Function.class );
 		when( vw.apply( "any-string" ) ).thenReturn( true );
-		assertThat( controller.setExistsFunction( vw ) ).isSameAs( controller );
+		assertThat( controller.existsFunction( vw ) ).isSameAs( controller );
 
 		assertThat( controller.exists( "any-string" ) ).isTrue();
 		assertThat( controller.exists( "other-string" ) ).isFalse();
@@ -133,5 +151,14 @@ public class TestGenericEntityPropertyController
 		inOrder.verify( validator ).validate( 123L, errors );
 		inOrder.verify( smartValidator ).validate( 123L, errors, Date.class );
 		inOrder.verify( contextualValidator ).validate( "context", 123L, errors, Date.class );
+	}
+
+	@Test
+	public void overridingParentController() {
+		GenericEntityPropertyController<String, Long> child = new GenericEntityPropertyController<>( controller );
+		val vf = mock( Function.class );
+		when( vf.apply( "any-string" ) ).thenReturn( 123L );
+		assertThat( controller.valueFetcher( vf ) ).isSameAs( controller );
+		assertThat( child.fetchValue( "any-string" ) ).isEqualTo( 123L );
 	}
 }
