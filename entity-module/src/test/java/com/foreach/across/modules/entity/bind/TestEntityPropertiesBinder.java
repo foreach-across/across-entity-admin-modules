@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.views.processors.support;
+package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -132,7 +132,7 @@ public class TestEntityPropertiesBinder
 
 		val holder = single( "members" );
 		assertThat( holder ).isNotNull();
-		assertThat( holder ).isNotInstanceOf( EntityPropertiesBinder.MultiValue.class );
+		assertThat( holder ).isNotInstanceOf( MultiEntityPropertyValue.class );
 		assertThat( binder.containsKey( "members" ) ).isTrue();
 		assertThat( binder.get( "members" ) ).isSameAs( holder );
 	}
@@ -353,11 +353,11 @@ public class TestEntityPropertiesBinder
 		verify( controller ).applyValue( ENTITY, 444L );
 	}
 
-	private EntityPropertiesBinder.SingleValue single( String propertyName ) {
-		return (EntityPropertiesBinder.SingleValue) binder.get( propertyName );
+	private SingleEntityPropertyValue single( String propertyName ) {
+		return (SingleEntityPropertyValue) binder.get( propertyName );
 	}
 
-	private EntityPropertiesBinder.MultiValue multi( String propertyName ) {
-		return (EntityPropertiesBinder.MultiValue) binder.get( propertyName );
+	private MultiEntityPropertyValue multi( String propertyName ) {
+		return (MultiEntityPropertyValue) binder.get( propertyName );
 	}
 }

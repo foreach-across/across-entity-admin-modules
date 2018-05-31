@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.views.processors.support;
+package com.foreach.across.modules.entity.bind;
 
 import org.springframework.validation.Errors;
 
@@ -31,7 +31,7 @@ import org.springframework.validation.Errors;
  * @see EntityPropertiesBinder
  * @since 3.1.0
  */
-public interface EntityPropertyValueHolder<T>
+public interface EntityPropertyValueController<T>
 {
 	/**
 	 * Set the value of this property as bound using a data binder.

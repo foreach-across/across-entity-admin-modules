@@ -26,7 +26,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinder;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinderValidator;
-import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;

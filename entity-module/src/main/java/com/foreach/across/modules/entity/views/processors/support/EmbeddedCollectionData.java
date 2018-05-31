@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
  * @see EmbeddedCollectionsBinder
  * @since 3.1.0
  */
+@Deprecated
 @RequiredArgsConstructor
 public class EmbeddedCollectionData extends HashMap<String, EmbeddedCollectionData.Member>
 {

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package test.binding;
+package test.bind;
 
 import com.foreach.across.modules.entity.config.builders.EntityPropertyDescriptorBuilder;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

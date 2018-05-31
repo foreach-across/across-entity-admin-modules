@@ -19,12 +19,12 @@ package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.bind.MultiEntityPropertyValue;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinder;
-import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.views.processors.support.EntityPropertyValueHolder;
+import com.foreach.across.modules.entity.bind.EntityPropertyValueController;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -56,9 +56,9 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 	protected NodeViewElement createElement( ViewElementBuilderContext builderContext ) {
 		//Object collection = EntityViewElementUtils.currentPropertyValue( builderContext );
 
-		EntityPropertyValueHolder holder = EntityViewElementUtils.currentPropertyValueHolder( builderContext );
+		EntityPropertyValueController holder = EntityViewElementUtils.currentPropertyValueHolder( builderContext );
 
-		EntityPropertiesBinder.MultiValue multiValue = (EntityPropertiesBinder.MultiValue) holder;
+		MultiEntityPropertyValue multiValue = (MultiEntityPropertyValue) holder;
 		val collection = multiValue.getItemList();
 
 		val descriptor = EntityViewElementUtils.currentPropertyDescriptor( builderContext );
@@ -85,7 +85,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 				BootstrapUiBuilders.fieldset()
 				                   .attribute( "data-role", "items" )
 				                   .add(
-						                   BootstrapUiBuilders.generator( EntityPropertiesBinder.MultiValue.Item.class, ContainerViewElement.class )
+						                   BootstrapUiBuilders.generator( MultiEntityPropertyValue.Item.class, ContainerViewElement.class )
 						                                      .creationCallback( ( item, container ) -> {
 
 							                                      NodeViewElement itemWrapper = new NodeViewElement( "div" );
@@ -146,7 +146,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 	// todo use correct prefixing approach
 	private void updateControlName( EntityPropertyDescriptor descriptor,
-	                                EntityPropertiesBinder.MultiValue.Item item,
+	                                MultiEntityPropertyValue.Item item,
 	                                FormGroupElement groupElement,
 	                                String binderPrefix ) {
 		val ctl = groupElement.getControl( FormControlElement.class );

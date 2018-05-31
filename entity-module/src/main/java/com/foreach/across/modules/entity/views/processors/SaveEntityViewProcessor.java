@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
-import com.foreach.across.modules.entity.views.processors.support.EntityPropertyValueHolder;
+import com.foreach.across.modules.entity.bind.EntityPropertyValueController;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -132,7 +132,7 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 
 				if ( properties != null ) {
 					properties.values()
-					          .forEach( EntityPropertyValueHolder::save );
+					          .forEach( EntityPropertyValueController::save );
 				}
 
 				entityViewPageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.SUCCESS,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.entity.views.processors.support;
+package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -30,7 +30,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
  *
  * @author Arne Vandamme
  * @see EntityPropertiesBinder
- * @see EntityPropertyValueHolder
+ * @see EntityPropertyValueController
  * @since 3.1.0
  */
 public interface EntityPropertyValues

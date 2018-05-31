@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.entity.views.request;
 
-import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.Validator;

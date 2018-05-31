@@ -21,8 +21,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandl
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
-import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.views.processors.support.EntityPropertyValueHolder;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyValueController;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -95,7 +95,7 @@ public interface EntityAttributes
 	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.
 	 * Which control name gets generated depends on the value of {@link #handlingType(EntityPropertyDescriptor)}.
-	 * An extension property will return a path to a {@link EntityPropertyValueHolder} on the {@link EntityPropertiesBinder}.
+	 * An extension property will return a path to a {@link EntityPropertyValueController} on the {@link EntityPropertiesBinder}.
 	 * A direct or manual property will generate a control name based on the property name or attribute.
 	 * If an attribute {@link #CONTROL_NAME} is present, it will be used, else the regular name will be used.
 	 *

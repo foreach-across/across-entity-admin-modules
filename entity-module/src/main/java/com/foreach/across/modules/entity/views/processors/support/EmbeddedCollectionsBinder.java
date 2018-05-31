@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.processors.support;
 
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import lombok.Getter;
 import lombok.NonNull;

@@ -16,11 +16,13 @@
 package com.foreach.across.modules.entity.views.util;
 
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.bind.EntityPropertyValues;
+import com.foreach.across.modules.entity.bind.MultiEntityPropertyValue;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.processors.support.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.views.processors.support.EntityPropertyValueHolder;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyValueController;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -72,8 +74,8 @@ public class EntityViewElementUtils
 			value = builderContext.getAttribute( EntityViewModel.ENTITY );
 		}
 
-		if ( value instanceof EntityPropertiesBinder.MultiValue.Item ) {
-			value = ( (EntityPropertiesBinder.MultiValue.Item) value ).getValue();
+		if ( value instanceof MultiEntityPropertyValue.Item ) {
+			value = ( (MultiEntityPropertyValue.Item) value ).getValue();
 		}
 
 		return expectedType.isInstance( value ) ? expectedType.cast( value ) : null;
@@ -99,7 +101,7 @@ public class EntityViewElementUtils
 	/**
 	 * Retrieve the current property value being rendered, if it is of the expected type.
 	 * Depending on the type of property, this will fetch the property directly from the entity,
-	 * or from the {@link com.foreach.across.modules.entity.views.processors.support.EntityPropertyValues} that
+	 * or from the {@link EntityPropertyValues} that
 	 * is present on the {@link ViewElementBuilderContext}.
 	 *
 	 * @param builderContext current builder context
@@ -126,7 +128,7 @@ public class EntityViewElementUtils
 	}
 
 	// todo: more and more to clean up
-	public static EntityPropertyValueHolder<Object> currentPropertyValueHolder( ViewElementBuilderContext builderContext ) {
+	public static EntityPropertyValueController<Object> currentPropertyValueHolder( ViewElementBuilderContext builderContext ) {
 		if ( builderContext == null ) {
 			return null;
 		}
@@ -142,7 +144,7 @@ public class EntityViewElementUtils
 		return resolveValueHolder( properties, descriptor );
 	}
 
-	private static EntityPropertyValueHolder<Object> resolveValueHolder( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor ) {
+	private static EntityPropertyValueController<Object> resolveValueHolder( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor ) {
 		if ( properties != null ) {
 			return properties.get( descriptor.getName() );
 		}
