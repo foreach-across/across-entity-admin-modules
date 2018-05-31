@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.menu;
 
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
+import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -61,17 +62,30 @@ public class EntityAdminMenuAttributeRegistrar
 			attributes.setAttribute( ADMIN_MENU, (Consumer<EntityAdminMenuEvent>) ( menuEvent ) -> {
 				if ( menuEvent.isForUpdate() && isAllowed( entityViewFactory, menuEvent.getViewContext() ) ) {
 					String viewName = entityViewFactory.getAttribute( EntityViewFactoryAttributes.VIEW_NAME, String.class );
-					PathBasedMenuBuilder.PathBasedMenuItemBuilder builder = menuEvent.builder().item(
-							menuPath,
-							"#{adminMenu.views[" + viewName + "]=" + viewName + "}",
-							menuEvent.getLinkBuilder().forInstance( menuEvent.getEntity() ).updateView().withViewName( viewName ).toString()
-					);
-					if ( itemCustomizer != null ) {
-						itemCustomizer.accept( builder );
+					if ( isConfiguredForContextViewRegistry( viewName, menuEvent.getViewContext() ) ) {
+						PathBasedMenuBuilder.PathBasedMenuItemBuilder builder = menuEvent.builder().item(
+								menuPath,
+								"#{adminMenu.views[" + viewName + "]=" + viewName + "}",
+								menuEvent.getLinkBuilder().forInstance( menuEvent.getEntity() ).updateView().withViewName( viewName ).toString()
+						);
+						if ( itemCustomizer != null ) {
+							itemCustomizer.accept( builder );
+						}
 					}
 				}
 			} );
 		};
+	}
+
+	/**
+	 * Checks if a given view is registered on the {@link EntityViewRegistry} of the current {@link EntityViewContext}.
+	 *
+	 * @param viewName    of the view for which a menu item should be added
+	 * @param viewContext that is present
+	 */
+	private static boolean isConfiguredForContextViewRegistry( String viewName, EntityViewContext viewContext ) {
+		EntityViewRegistry registry = viewContext.isForAssociation() ? viewContext.getEntityAssociation() : viewContext.getEntityConfiguration();
+		return registry.hasView( viewName );
 	}
 
 	private static boolean isAllowed( EntityViewFactory viewFactory, EntityViewContext viewContext ) {

@@ -132,6 +132,7 @@ public class TestEntityAdminMenuAttributeRegistrar
 		when( entityConfiguration.getEntityType() ).thenReturn( String.class );
 		when( entityConfiguration.getName() ).thenReturn( "entityName" );
 		when( entityViewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
+		when( entityConfiguration.hasView( anyString() ) ).thenReturn( true );
 
 		EntityViewLinkBuilder linkBuilder = mock( EntityViewLinkBuilder.class, RETURNS_DEEP_STUBS );
 		when( linkBuilder.forInstance( any() ).updateView().withViewName( any() ).toString() ).thenReturn( "/my-entity" );
