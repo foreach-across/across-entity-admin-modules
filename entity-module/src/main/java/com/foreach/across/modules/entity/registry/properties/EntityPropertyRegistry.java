@@ -30,10 +30,22 @@ import java.util.function.Predicate;
 public interface EntityPropertyRegistry
 {
 	/**
-	 * Indicator that a property descriptor represents the specific member of a
+	 * Suffix indicator that a property descriptor represents the specific member of a
 	 * the collection property (having the same name but without the indexer).
 	 */
 	String INDEXER = "[]";
+
+	/**
+	 * Suffix indicator that a property descriptor represents the key of a map property
+	 * (having the same name but without this suffix).
+	 */
+	String MAP_KEY = "[k]";
+
+	/**
+	 * Suffix indicator that a property descriptor represents the value of a map property
+	 * (having the same name but without this suffix).
+	 */
+	String MAP_VALUE = "[v]";
 
 	/**
 	 * Name of the label property.

@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.MethodInvocationException;
 import org.springframework.core.Ordered;
@@ -31,6 +32,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.Errors;
 
 import java.beans.PropertyChangeEvent;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -166,15 +168,39 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 	private EntityPropertyValueHolder createValueHolder( EntityPropertyDescriptor descriptor ) {
 		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
 
-		if ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) {
+		if ( typeDescriptor.isMap() ) {
+			val keyDescriptor = propertyRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.MAP_KEY );
+			val valueDescriptor = propertyRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.MAP_VALUE );
+
+			return new MultiValue( descriptor, valueDescriptor, keyDescriptor );
+		}
+		else if ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) {
 			val memberDescriptor = propertyRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.INDEXER );
 
 			if ( memberDescriptor != null ) {
-				return new MultiValue( descriptor, memberDescriptor );
+				return new MultiValue( descriptor, memberDescriptor, null );
 			}
 		}
 
 		return new SingleValue( descriptor );
+	}
+
+	private Object createValue( EntityPropertyController<Object,Object> controller, Object entity, TypeDescriptor descriptor ) {
+		if ( controller != null ) {
+			return controller.createValue( entity );
+		}
+
+		if ( descriptor != null ) {
+			val constructor = ConstructorUtils.getAccessibleConstructor( descriptor.getObjectType() );
+			if ( constructor != null ) {
+				try {
+					return constructor.newInstance();
+				}
+				catch ( Exception ignore ) { /* ignore instantiation exceptions */ }
+			}
+		}
+
+		return null;
 	}
 
 	private Object convertIfNecessary( Object source, TypeDescriptor targetType, String path ) {
@@ -230,7 +256,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 	 * Useful if you want to bind multiple times on the same entity using the same binder instance.
 	 */
 	public void resetForBinding() {
-
+		values().forEach( EntityPropertyValueHolder::resetBindStatus );
 	}
 
 	/**
@@ -241,6 +267,12 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		private final EntityPropertyDescriptor descriptor;
 		private final EntityPropertyController<Object, Object> controller;
 
+		private boolean valueHasBeenSet;
+
+		@Getter
+		@Setter
+		private boolean bound;
+
 		/**
 		 * Has {@link #setValue(Object)} been called with a new value.
 		 */
@@ -250,7 +282,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		/**
 		 * The actual value held for that property.
 		 */
-		@Getter
 		private Object value;
 
 		@SuppressWarnings("unchecked")
@@ -263,6 +294,14 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 			}
 		}
 
+		@Override
+		public Object getValue() {
+			if ( isDeleted() ) {
+				return null;
+			}
+			return value;
+		}
+
 		/**
 		 * Set the value for this property, can be {@code null}.
 		 * The source value will be converted to the expected type defined by the descriptor.
@@ -271,6 +310,8 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		 */
 		@Override
 		public void setValue( Object value ) {
+			valueHasBeenSet = true;
+
 			Object newValue = convertIfNecessary( value, descriptor.getPropertyTypeDescriptor(), binderPath() );
 			if ( !Objects.equals( this.value, newValue ) ) {
 				modified = true;
@@ -280,10 +321,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 
 		@Override
 		public Object initializeValue() {
-			if ( controller != null ) {
-				return controller.createValue( getEntity() );
-			}
-			return null;
+			return createValue( controller, getEntity(), descriptor.getPropertyTypeDescriptor() );
 		}
 
 		/**
@@ -317,6 +355,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 			return beforeValidate >= errors.getErrorCount();
 		}
 
+		private boolean isDeleted() {
+			return isBound() && !valueHasBeenSet;
+		}
+
 		private String binderPath() {
 			return "[" + descriptor.getName() + "].value";
 		}
@@ -324,6 +366,11 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		@Override
 		public int getControllerOrder() {
 			return controller != null ? controller.getOrder() : Ordered.LOWEST_PRECEDENCE;
+		}
+
+		public void resetBindStatus() {
+			setBound( false );
+			valueHasBeenSet = false;
 		}
 	}
 
@@ -333,29 +380,48 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 	public class MultiValue implements EntityPropertyValueHolder<Object>
 	{
 		private final EntityPropertyDescriptor collectionDescriptor;
-		private final EntityPropertyDescriptor memberDescriptor;
+		private final TypeDescriptor collectionTypeDescriptor;
 		private final EntityPropertyController<Object, Object> collectionController;
-		private final EntityPropertyController<Object, Object> memberController;
+
+		private final EntityPropertyDescriptor valueDescriptor;
+		private final TypeDescriptor valueTypeDescriptor;
+		private final EntityPropertyController<Object, Object> valueController;
+
+		private final EntityPropertyDescriptor keyDescriptor;
+		private final TypeDescriptor keyTypeDescriptor;
+		private final EntityPropertyController<Object, Object> keyController;
+
+		private final boolean isMap;
+
+		private boolean itemsInitialized;
 
 		@Getter
 		private final Item template;
 
-		/**
-		 * When {@code true} this indicates that the property was expected to be bound (usually
-		 * visible in a form) and if no specific values have been bound the value should be reset.
-		 */
 		@Getter
 		@Setter
 		private boolean bound;
 
 		private Map<String, Item> items;
 
-		private MultiValue( EntityPropertyDescriptor collectionDescriptor, EntityPropertyDescriptor memberDescriptor ) {
+		private MultiValue( EntityPropertyDescriptor collectionDescriptor, EntityPropertyDescriptor valueDescriptor, EntityPropertyDescriptor keyDescriptor ) {
 			this.collectionDescriptor = collectionDescriptor;
-			this.memberDescriptor = memberDescriptor;
+			this.valueDescriptor = valueDescriptor;
+			this.keyDescriptor = keyDescriptor;
+
+			isMap = collectionDescriptor.getPropertyTypeDescriptor().isMap();
+
+			collectionTypeDescriptor = collectionDescriptor.getPropertyTypeDescriptor();
+			valueTypeDescriptor = valueDescriptor != null
+					? valueDescriptor.getPropertyTypeDescriptor()
+					: ( isMap ? collectionTypeDescriptor.getMapValueTypeDescriptor() : null );
+			keyTypeDescriptor = keyDescriptor != null
+					? keyDescriptor.getPropertyTypeDescriptor()
+					: ( isMap ? collectionTypeDescriptor.getMapKeyTypeDescriptor() : null );
 
 			collectionController = collectionDescriptor.getController();
-			memberController = memberDescriptor.getController();
+			valueController = valueDescriptor != null ? valueDescriptor.getController() : null;
+			keyController = keyDescriptor != null ? keyDescriptor.getController() : null;
 
 			template = createItem( "" );
 		}
@@ -371,7 +437,13 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 				if ( !isBound() && collectionController != null ) {
 					setValue( collectionController.fetchValue( getEntity() ) );
 				}
+				itemsInitialized = true;
 			}
+			else if ( !itemsInitialized && isBound() ) {
+				itemsInitialized = true;
+				items.clear();
+			}
+
 			return items;
 		}
 
@@ -385,20 +457,35 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 
 		@Override
 		public Object getValue() {
+			if ( isMap ) {
+				LinkedHashMap<Object, Object> map = new LinkedHashMap<>();
+
+				// not using Collectors.toMap() here as that one does not allow null values
+				getItems()
+						.values()
+						.stream()
+						.sorted( Comparator.comparingInt( Item::getSortIndex ) )
+						.forEach( item -> map.put( item.getKey(), item.getValue() ) );
+
+				return convertIfNecessary( map, collectionTypeDescriptor, "" );
+			}
+
 			return convertIfNecessary(
 					getItems()
 							.values()
 							.stream()
 							.sorted( Comparator.comparingInt( Item::getSortIndex ) )
 							.map( Item::getValue )
-							.toArray(),
-					collectionDescriptor.getPropertyTypeDescriptor(),
+							.toArray( size -> (Object[]) Array.newInstance( valueTypeDescriptor.getObjectType(), size ) ),
+					collectionTypeDescriptor,
 					""
 			);
 		}
 
 		@Override
 		public void setValue( Object value ) {
+			itemsInitialized = true;
+
 			if ( items == null ) {
 				items = new Items();
 			}
@@ -406,16 +493,18 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 
 			if ( value != null ) {
 				List values = (List) convertIfNecessary( value,
-				                                         TypeDescriptor.collection( ArrayList.class, memberDescriptor.getPropertyTypeDescriptor() ),
-				                                         collectionDescriptor.getPropertyType(),
+				                                         TypeDescriptor.collection( ArrayList.class, valueTypeDescriptor ),
+				                                         collectionTypeDescriptor.getObjectType(),
 				                                         collectionBinderPath() + ".value" );
 
 				int index = 0;
 				for ( Object v : values ) {
-					Item item = new Item( "" + index );
+					String key = "" + index;
+					Item item = new Item();
+					item.setKey( key );
 					item.setValue( v );
 					item.setSortIndex( index++ );
-					items.put( item.key, item );
+					items.put( key, item );
 				}
 			}
 		}
@@ -431,11 +520,11 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		@Override
 		public boolean validate( Errors errors, Object... validationHints ) {
 			int beforeValidate = errors.getErrorCount();
-			if ( memberController != null ) {
+			if ( valueController != null ) {
 				getItems()
 						.forEach( ( key, item ) -> {
 							errors.pushNestedPath( "items[" + key + "].value" );
-							memberController.validate( getEntity(), item.getValue(), errors, validationHints );
+							valueController.validate( getEntity(), item.getValue(), errors, validationHints );
 							errors.popNestedPath();
 						} );
 			}
@@ -451,13 +540,28 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		}
 
 		@Override
+		public void resetBindStatus() {
+			bound = false;
+			itemsInitialized = false;
+		}
+
+		@Override
 		public int getControllerOrder() {
 			return collectionController != null ? collectionController.getOrder() : Ordered.LOWEST_PRECEDENCE;
 		}
 
 		private Item createItem( String key ) {
-			Item item = new Item( key );
-			item.setValue( memberController.fetchValue( getEntity() ) );
+			Item item = new Item();
+
+			if ( !isMap || String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
+				item.setKey( key );
+			}
+			else {
+				item.setKey( createValue( keyController, getEntity(), keyTypeDescriptor ) );
+			}
+
+			item.setValue( createValue( valueController, getEntity(), valueTypeDescriptor ) );
+
 			return item;
 		}
 
@@ -492,13 +596,32 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueH
 		@RequiredArgsConstructor
 		public class Item
 		{
-			private final String key;
+			private Object key;
 
 			private Object value;
 			private int sortIndex;
 
+			public void setKey( Object key ) {
+				if ( keyTypeDescriptor != null ) {
+					if ( "".equals( key ) && !String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
+						this.key = null;
+					}
+					else {
+						this.key = convertIfNecessary( key, keyTypeDescriptor, memberBinderPath() );
+					}
+				}
+				else {
+					this.key = key;
+				}
+			}
+
 			public void setValue( Object value ) {
-				this.value = convertIfNecessary( value, memberDescriptor.getPropertyTypeDescriptor(), memberBinderPath() );
+				if ( "".equals( value ) && !String.class.equals( valueTypeDescriptor.getObjectType() ) ) {
+					this.value = null;
+				}
+				else {
+					this.value = convertIfNecessary( value, valueTypeDescriptor, memberBinderPath() );
+				}
 			}
 
 			private String memberBinderPath() {

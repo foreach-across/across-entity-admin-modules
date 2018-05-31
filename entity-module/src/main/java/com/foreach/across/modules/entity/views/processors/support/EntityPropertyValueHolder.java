@@ -28,11 +28,18 @@ import org.springframework.validation.Errors;
  * Mainly for internal use in EntityModule.
  *
  * @author Arne Vandamme
- * @since 3.1.0
  * @see EntityPropertiesBinder
+ * @since 3.1.0
  */
 public interface EntityPropertyValueHolder<T>
 {
+	/**
+	 * Set the value of this property as bound using a data binder.
+	 * Usually setting this to {@code true} means that the property value should be deleted
+	 * if no actual value has been set.
+	 */
+	void setBound( boolean bound );
+
 	/**
 	 * @return the value
 	 */
@@ -90,4 +97,10 @@ public interface EntityPropertyValueHolder<T>
 	 * @return the order in which controller methods of this property should be executed relative to all other properties (and the base entity itself)
 	 */
 	int getControllerOrder();
+
+	/**
+	 * Reset bind status for this property. This will reset tracking properties related
+	 * to detecting if a property value has been removed.
+	 */
+	void resetBindStatus();
 }
