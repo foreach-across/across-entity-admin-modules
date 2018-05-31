@@ -39,6 +39,8 @@ public final class SingleEntityPropertyValue implements EntityPropertyValueContr
 
 	private boolean valueHasBeenSet;
 
+	private EntityPropertiesBinder properties;
+
 	@Getter
 	@Setter
 	private boolean bound;
@@ -65,11 +67,24 @@ public final class SingleEntityPropertyValue implements EntityPropertyValueContr
 		}
 	}
 
+	public EntityPropertiesBinder getProperties() {
+		if ( properties == null ) {
+			properties = binder.createChildBinder( descriptor, getInitializedValue() );
+		}
+
+		return properties;
+	}
+
 	@Override
 	public Object getValue() {
 		if ( isDeleted() ) {
 			return null;
 		}
+
+		if ( properties != null ) {
+			properties.values().forEach( EntityPropertyValueController::applyValue );
+		}
+
 		return value;
 	}
 
@@ -88,6 +103,7 @@ public final class SingleEntityPropertyValue implements EntityPropertyValueContr
 			modified = true;
 		}
 		this.value = newValue;
+		properties = null;
 	}
 
 	@Override
@@ -102,7 +118,7 @@ public final class SingleEntityPropertyValue implements EntityPropertyValueContr
 	public boolean applyValue() {
 		// modified? mark as applied.
 		if ( controller != null ) {
-			return controller.applyValue( binder.getEntity(), value );
+			return controller.applyValue( binder.getEntity(), getValue() );
 		}
 		return false;
 	}
@@ -110,7 +126,7 @@ public final class SingleEntityPropertyValue implements EntityPropertyValueContr
 	@Override
 	public boolean save() {
 		if ( controller != null ) {
-			return controller.save( binder.getEntity(), value );
+			return controller.save( binder.getEntity(), getValue() );
 		}
 		return false;
 	}

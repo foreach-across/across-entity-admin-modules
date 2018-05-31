@@ -264,6 +264,9 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 		private Object value;
 		private int sortIndex;
 
+		private EntityPropertiesBinder valueProperties;
+		private EntityPropertiesBinder keyProperties;
+
 		public void setKey( Object key ) {
 			if ( keyTypeDescriptor != null ) {
 				if ( "".equals( key ) && !String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
@@ -276,6 +279,32 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 			else {
 				this.key = key;
 			}
+
+			keyProperties = null;
+		}
+
+		public Object getKey() {
+			if ( keyProperties != null ) {
+				keyProperties.values().forEach( EntityPropertyValueController::applyValue );
+			}
+
+			return key;
+		}
+
+		public EntityPropertiesBinder getKeyProperties() {
+			if ( keyProperties == null ) {
+				keyProperties = binder.createChildBinder( keyDescriptor, key );
+			}
+
+			return keyProperties;
+		}
+
+		public Object getValue() {
+			if ( valueProperties != null ) {
+				valueProperties.values().forEach( EntityPropertyValueController::applyValue );
+			}
+
+			return value;
 		}
 
 		public void setValue( Object value ) {
@@ -285,6 +314,16 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 			else {
 				this.value = binder.convertIfNecessary( value, valueTypeDescriptor, memberBinderPath() );
 			}
+
+			valueProperties = null;
+		}
+
+		public EntityPropertiesBinder getValueProperties() {
+			if ( valueProperties == null ) {
+				valueProperties = binder.createChildBinder( valueDescriptor, value );
+			}
+
+			return valueProperties;
 		}
 
 		private String memberBinderPath() {

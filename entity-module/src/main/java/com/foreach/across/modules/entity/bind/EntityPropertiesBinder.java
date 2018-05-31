@@ -19,7 +19,10 @@ package com.foreach.across.modules.entity.bind;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import lombok.*;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.springframework.beans.ConversionNotSupportedException;
@@ -30,7 +33,7 @@ import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.beans.PropertyChangeEvent;
-import java.util.*;
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 /**
@@ -59,6 +62,8 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 {
 	@NonNull
 	private final EntityPropertyRegistry propertyRegistry;
+
+	private EntityPropertyDescriptor parentProperty;
 
 	/**
 	 * Prefix when the map is being used for data binding.
@@ -141,9 +146,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 
 		if ( valueHolder == null ) {
 			try {
-				val descriptor = propertyRegistry.getProperty( propertyName );
+				String fqPropertyName = parentProperty != null ? parentProperty.getName() + "." + propertyName : propertyName;
+				val descriptor = propertyRegistry.getProperty( fqPropertyName );
 				if ( descriptor == null ) {
-					throw new IllegalArgumentException( "No such property descriptor: '" + propertyName + "'" );
+					throw new IllegalArgumentException( "No such property descriptor: '" + fqPropertyName + "'" );
 				}
 
 				valueHolder = createValueHolder( descriptor );
@@ -212,8 +218,16 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 		values().forEach( EntityPropertyValueController::resetBindStatus );
 	}
 
+	EntityPropertiesBinder createChildBinder( EntityPropertyDescriptor parent, Object propertyValue ) {
+		EntityPropertiesBinder childBinder = new EntityPropertiesBinder( propertyRegistry );
+		childBinder.parentProperty = parent;
+		childBinder.setEntity( propertyValue );
+		childBinder.setConversionService( conversionService );
 
-	Object createValue( EntityPropertyController<Object,Object> controller, Object entity, TypeDescriptor descriptor ) {
+		return childBinder;
+	}
+
+	Object createValue( EntityPropertyController<Object, Object> controller, Object entity, TypeDescriptor descriptor ) {
 		if ( controller != null ) {
 			return controller.createValue( entity );
 		}
