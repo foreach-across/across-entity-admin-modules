@@ -19,16 +19,12 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.*;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
@@ -145,6 +141,23 @@ public class TestDateTimeFormElementConfiguration
 		DateTimeFormElementConfiguration localized = configuration.localize( Locale.forLanguageTag( "nl-BE" ) );
 		assertEquals( "10:31", configuration.createDateFormat().format( PRINT_DATE ) );
 		assertEquals( "10:31", localized.createDateFormat().format( PRINT_DATE ) );
+	}
+
+	@Test
+	public void nullValuesDoNotBreak() {
+		DateTimeFormElementConfiguration configuration = new DateTimeFormElementConfiguration();
+
+		configuration.setDefaultDate( (LocalDateTime) null );
+		assertNull( configuration.get( "defaultDate" ) );
+
+		configuration.setDefaultDate( (LocalDate) null );
+		assertNull( configuration.get( "defaultDate" ) );
+
+		configuration.setDefaultDate( (LocalTime) null );
+		assertNull( configuration.get( "defaultDate" ) );
+
+		configuration.setDefaultDate( (Date) null );
+		assertNull( configuration.get( "defaultDate" ) );
 	}
 
 	@Test
