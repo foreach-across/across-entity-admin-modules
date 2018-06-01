@@ -207,11 +207,11 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 	@Test
 	public void listWithCustomTypeUsingChildBinder() {
 		bind( "properties[dummyList].bound=1",
-		      "properties[dummyList].items[1].valueProperties[id].value=10",
-		      "properties[dummyList].items[1].valueProperties[name].value=Hello",
+		      "properties[dummyList].items[1].properties[id].value=10",
+		      "properties[dummyList].items[1].properties[name].value=Hello",
 		      "properties[dummyList].items[1].sortIndex=2000",
-		      "properties[dummyList].items[2].valueProperties[id].value=20",
-		      "properties[dummyList].items[2].valueProperties[name].value=Olleh",
+		      "properties[dummyList].items[2].properties[id].value=20",
+		      "properties[dummyList].items[2].properties[name].value=Olleh",
 		      "properties[dummyList].items[2].sortIndex=1000" );
 
 		assertCollection( "dummyList" )
@@ -221,12 +221,12 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 
 	@Test
 	public void mapWithSimpleKeyAndSimpleValueType() {
-		bind( "properties[stringLongMap].items[x].value=1",
-		      "properties[stringLongMap].items[y].key=hello",
-		      "properties[stringLongMap].items[y].value=2",
-		      "properties[stringLongMap].items[z].key=olleh",
-		      "properties[stringLongMap].items[z].value=",
-		      "properties[stringLongMap].items[z].sortIndex=-1" );
+		bind( "properties[stringLongMap].entries[x].entryValue=1",
+		      "properties[stringLongMap].entries[y].entryKey=hello",
+		      "properties[stringLongMap].entries[y].entryValue=2",
+		      "properties[stringLongMap].entries[z].entryKey=olleh",
+		      "properties[stringLongMap].entries[z].entryValue=",
+		      "properties[stringLongMap].entries[z].sortIndex=-1" );
 
 		assertMap( "stringLongMap" )
 				.hasSize( 3 )
@@ -239,13 +239,13 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 
 	@Test
 	public void mapWithSimpleKeyAndCustomValueType() {
-		bind( "properties[longDummyMap].items[x].key=1",
-		      "properties[longDummyMap].items[x].value=1",
-		      "properties[longDummyMap].items[y].key=-1",
-		      "properties[longDummyMap].items[y].value=",
-		      "properties[longDummyMap].items[z].key=2",
-		      "properties[longDummyMap].items[z].value.id=5",
-		      "properties[longDummyMap].items[z].value.name=Hello" );
+		bind( "properties[longDummyMap].entries[x].entryKey=1",
+		      "properties[longDummyMap].entries[x].entryValue=1",
+		      "properties[longDummyMap].entries[y].entryKey=-1",
+		      "properties[longDummyMap].entries[y].entryValue=",
+		      "properties[longDummyMap].entries[z].entryKey=2",
+		      "properties[longDummyMap].entries[z].entryValue.id=5",
+		      "properties[longDummyMap].entries[z].entryValue.name=Hello" );
 
 		assertMap( "longDummyMap" )
 				.hasSize( 3 )
@@ -258,14 +258,14 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 
 	@Test
 	public void mapWithCustomKeyAndCustomValueType() {
-		bind( "properties[dummyDummyMap].items[x].key=1",
-		      "properties[dummyDummyMap].items[x].value=1",
-		      "properties[dummyDummyMap].items[y].key.id=55",
-		      "properties[dummyDummyMap].items[y].value=",
-		      "properties[dummyDummyMap].items[z].key.id=33",
-		      "properties[dummyDummyMap].items[z].key.name=Olleh",
-		      "properties[dummyDummyMap].items[z].value.id=5",
-		      "properties[dummyDummyMap].items[z].value.name=Hello" );
+		bind( "properties[dummyDummyMap].entries[x].key.value=1",
+		      "properties[dummyDummyMap].entries[x].value.value=1",
+		      "properties[dummyDummyMap].entries[y].key.value.id=55",
+		      "properties[dummyDummyMap].entries[y].value.value=",
+		      "properties[dummyDummyMap].entries[z].key.value.id=33",
+		      "properties[dummyDummyMap].entries[z].key.value.name=Olleh",
+		      "properties[dummyDummyMap].entries[z].value.value.id=5",
+		      "properties[dummyDummyMap].entries[z].value.value.name=Hello" );
 
 		assertMap( "dummyDummyMap" )
 				.hasSize( 3 )
@@ -281,12 +281,12 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 
 	@Test
 	public void mapWithCustomKeyAndCustomValueTypeUsingChildBinder() {
-		bind( "properties[dummyDummyMap].items[y].keyProperties[id].value=55",
-		      "properties[dummyDummyMap].items[y].value=",
-		      "properties[dummyDummyMap].items[z].keyProperties[id].value=33",
-		      "properties[dummyDummyMap].items[z].keyProperties[name].value=Olleh",
-		      "properties[dummyDummyMap].items[z].valueProperties[id].value=5",
-		      "properties[dummyDummyMap].items[z].valueProperties[name].value=Hello" );
+		bind( "properties[dummyDummyMap].entries[y].key.properties[id].value=55",
+		      "properties[dummyDummyMap].entries[y].value.value=",
+		      "properties[dummyDummyMap].entries[z].key.properties[id].value=33",
+		      "properties[dummyDummyMap].entries[z].key.properties[name].value=Olleh",
+		      "properties[dummyDummyMap].entries[z].value.properties[id].value=5",
+		      "properties[dummyDummyMap].entries[z].value.properties[name].value=Hello" );
 
 		assertMap( "dummyDummyMap" )
 				.hasSize( 2 )

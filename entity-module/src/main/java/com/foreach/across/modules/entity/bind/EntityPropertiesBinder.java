@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.bind;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -167,24 +168,35 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 		return valueHolder;
 	}
 
-	private EntityPropertyValueController createValueHolder( EntityPropertyDescriptor descriptor ) {
+	EntityPropertyValueController<Object> createValueHolder( EntityPropertyDescriptor descriptor ) {
 		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
 
 		if ( typeDescriptor.isMap() ) {
-			val keyDescriptor = propertyRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.MAP_KEY );
-			val valueDescriptor = propertyRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.MAP_VALUE );
+			val keyDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_KEY, typeDescriptor.getMapKeyTypeDescriptor() );
+			val valueDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_VALUE, typeDescriptor.getMapValueTypeDescriptor() );
 
-			return new MultiEntityPropertyValue( this, descriptor, valueDescriptor, keyDescriptor );
+			return new MapEntityPropertyValue( this, descriptor, valueDescriptor, keyDescriptor );
 		}
 		else if ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) {
-			val memberDescriptor = propertyRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.INDEXER );
+			val memberDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.INDEXER, typeDescriptor.getElementTypeDescriptor() );
 
-			if ( memberDescriptor != null ) {
-				return new MultiEntityPropertyValue( this, descriptor, memberDescriptor, null );
-			}
+			return new ListEntityPropertyValue( this, descriptor, memberDescriptor );
 		}
 
 		return new SingleEntityPropertyValue( this, descriptor );
+	}
+
+	private EntityPropertyDescriptor getOrCreateDescriptor( String name, TypeDescriptor expectedType ) {
+		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( name );
+
+		if ( descriptor == null ) {
+			SimpleEntityPropertyDescriptor dummy = new SimpleEntityPropertyDescriptor( name );
+			dummy.setPropertyTypeDescriptor( expectedType );
+			dummy.setPropertyRegistry( propertyRegistry );
+			descriptor = dummy;
+		}
+
+		return descriptor;
 	}
 
 	public void validate( Object... validationHints ) {

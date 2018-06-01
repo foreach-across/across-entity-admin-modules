@@ -25,18 +25,17 @@ import org.springframework.core.Ordered;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.Errors;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Represents a multi value property. Any collection type is actually bound as a map.
+ * Represents a property value backed by a {@link java.util.Map}.
  *
  * @author Arne Vandamme
+ * @see SingleEntityPropertyValue
  * @since 3.1.0
  */
-@Deprecated
-public final class MultiEntityPropertyValue implements EntityPropertyValueController<Object>
+public class MapEntityPropertyValue implements EntityPropertyValueController<Object>
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor collectionDescriptor;
@@ -51,8 +50,6 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 	private final TypeDescriptor keyTypeDescriptor;
 	private final EntityPropertyController<Object, Object> keyController;
 
-	private final boolean isMap;
-
 	private boolean itemsInitialized;
 
 	@Getter
@@ -62,26 +59,28 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 	@Setter
 	private boolean bound;
 
-	private Map<String, Item> items;
+	@Getter
+	@Setter
+	private int sortIndex;
 
-	MultiEntityPropertyValue( EntityPropertiesBinder binder,
-	                          EntityPropertyDescriptor collectionDescriptor,
-	                          EntityPropertyDescriptor valueDescriptor,
-	                          EntityPropertyDescriptor keyDescriptor ) {
+	private Map<String, Item> entries;
+
+	MapEntityPropertyValue( EntityPropertiesBinder binder,
+	                        EntityPropertyDescriptor collectionDescriptor,
+	                        EntityPropertyDescriptor valueDescriptor,
+	                        EntityPropertyDescriptor keyDescriptor ) {
 		this.binder = binder;
 		this.collectionDescriptor = collectionDescriptor;
 		this.valueDescriptor = valueDescriptor;
 		this.keyDescriptor = keyDescriptor;
 
-		isMap = collectionDescriptor.getPropertyTypeDescriptor().isMap();
-
 		collectionTypeDescriptor = collectionDescriptor.getPropertyTypeDescriptor();
 		valueTypeDescriptor = valueDescriptor != null
 				? valueDescriptor.getPropertyTypeDescriptor()
-				: ( isMap ? collectionTypeDescriptor.getMapValueTypeDescriptor() : null );
+				: collectionTypeDescriptor.getMapValueTypeDescriptor();
 		keyTypeDescriptor = keyDescriptor != null
 				? keyDescriptor.getPropertyTypeDescriptor()
-				: ( isMap ? collectionTypeDescriptor.getMapKeyTypeDescriptor() : null );
+				: collectionTypeDescriptor.getMapKeyTypeDescriptor();
 
 		collectionController = collectionDescriptor.getController();
 		valueController = valueDescriptor != null ? valueDescriptor.getController() : null;
@@ -95,9 +94,9 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 		return null;
 	}
 
-	public Map<String, Item> getItems() {
-		if ( items == null ) {
-			items = new Items();
+	public Map<String, Item> getEntries() {
+		if ( entries == null ) {
+			entries = new Items();
 			if ( !isBound() && collectionController != null ) {
 				setValue( collectionController.fetchValue( binder.getEntity() ) );
 			}
@@ -105,14 +104,14 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 		}
 		else if ( !itemsInitialized && isBound() ) {
 			itemsInitialized = true;
-			items.clear();
+			entries.clear();
 		}
 
-		return items;
+		return entries;
 	}
 
 	public Collection<Item> getItemList() {
-		return getItems()
+		return getEntries()
 				.values()
 				.stream()
 				.sorted( Comparator.comparingInt( Item::getSortIndex ) )
@@ -121,39 +120,26 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 
 	@Override
 	public Object getValue() {
-		if ( isMap ) {
-			LinkedHashMap<Object, Object> map = new LinkedHashMap<>();
+		LinkedHashMap<Object, Object> map = new LinkedHashMap<>();
 
-			// not using Collectors.toMap() here as that one does not allow null values
-			getItems()
-					.values()
-					.stream()
-					.sorted( Comparator.comparingInt( Item::getSortIndex ) )
-					.forEach( item -> map.put( item.getKey(), item.getValue() ) );
+		// not using Collectors.toMap() here as that one does not allow null values
+		getEntries()
+				.values()
+				.stream()
+				.sorted( Comparator.comparingInt( Item::getSortIndex ) )
+				.forEach( item -> map.put( item.getEntryKey(), item.getEntryValue() ) );
 
-			return binder.convertIfNecessary( map, collectionTypeDescriptor, "" );
-		}
-
-		return binder.convertIfNecessary(
-				getItems()
-						.values()
-						.stream()
-						.sorted( Comparator.comparingInt( Item::getSortIndex ) )
-						.map( Item::getValue )
-						.toArray( size -> (Object[]) Array.newInstance( valueTypeDescriptor.getObjectType(), size ) ),
-				collectionTypeDescriptor,
-				""
-		);
+		return binder.convertIfNecessary( map, collectionTypeDescriptor, "" );
 	}
 
 	@Override
 	public void setValue( Object value ) {
 		itemsInitialized = true;
 
-		if ( items == null ) {
-			items = new Items();
+		if ( entries == null ) {
+			entries = new Items();
 		}
-		items.clear();
+		entries.clear();
 
 		if ( value != null ) {
 			List values = (List) binder.convertIfNecessary( value,
@@ -164,11 +150,11 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 			int index = 0;
 			for ( Object v : values ) {
 				String key = "" + index;
-				Item item = new Item();
-				item.setKey( key );
-				item.setValue( v );
+				Item item = new Item( binder.createValueHolder( keyDescriptor ), binder.createValueHolder( valueDescriptor ) );
+				item.setEntryKey( key );
+				item.setEntryValue( v );
 				item.setSortIndex( index++ );
-				items.put( key, item );
+				entries.put( key, item );
 			}
 		}
 	}
@@ -185,9 +171,9 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 	public boolean validate( Errors errors, Object... validationHints ) {
 		int beforeValidate = errors.getErrorCount();
 		if ( valueController != null ) {
-			getItems()
+			getEntries()
 					.forEach( ( key, item ) -> {
-						errors.pushNestedPath( "items[" + key + "].value" );
+						errors.pushNestedPath( "entries[" + key + "].value" );
 						valueController.validate( binder.getEntity(), item.getValue(), errors, validationHints );
 						errors.popNestedPath();
 					} );
@@ -215,16 +201,16 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 	}
 
 	private Item createItem( String key ) {
-		Item item = new Item();
+		Item item = new Item( binder.createValueHolder( keyDescriptor ), binder.createValueHolder( valueDescriptor ) );
 
-		if ( !isMap || String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
-			item.setKey( key );
+		if ( String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
+			item.setEntryKey( key );
 		}
 		else {
-			item.setKey( binder.createValue( keyController, binder.getEntity(), keyTypeDescriptor ) );
+			item.setEntryKey( binder.createValue( keyController, binder.getEntity(), keyTypeDescriptor ) );
 		}
 
-		item.setValue( binder.createValue( valueController, binder.getEntity(), valueTypeDescriptor ) );
+		item.setEntryValue( binder.createValue( valueController, binder.getEntity(), valueTypeDescriptor ) );
 
 		return item;
 	}
@@ -255,112 +241,37 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 	/**
 	 * Single item.
 	 */
-	@Getter
-	@Setter
 	@RequiredArgsConstructor
 	public class Item
 	{
-		private Object key;
-		private Object value;
+		@Getter
+		@Setter
 		private int sortIndex;
 
-		private EntityPropertiesBinder valueProperties;
-		private EntityPropertiesBinder keyProperties;
+		@Getter
+		private final EntityPropertyValueController<Object> key;
 
-		private EntityPropertyValueController<Object> valueHolder;
-		private EntityPropertyValueController<Object> keyHolder;
+		@Getter
+		private final EntityPropertyValueController<Object> value;
 
-		public void setKey( Object key ) {
-			if ( keyTypeDescriptor != null ) {
-				if ( "".equals( key ) && !String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
-					this.key = null;
-				}
-				else {
-					this.key = binder.convertIfNecessary( key, keyTypeDescriptor, memberBinderPath() );
-				}
-			}
-			else {
-				this.key = key;
-			}
-
-			keyProperties = null;
+		public void setEntryKey( Object key ) {
+			this.key.setValue( key );
 		}
 
-		public Object getKey() {
-			if ( keyHolder != null ) {
-				return keyHolder.getValue();
-			}
-			if ( keyProperties != null ) {
-				keyProperties.values().forEach( EntityPropertyValueController::applyValue );
-			}
-
-			return key;
+		public void setEntryValue( Object value ) {
+			this.value.setValue( value );
 		}
 
-		public EntityPropertyValueController<Object> getKeyHolder() {
-			if ( keyHolder == null ) {
-
-			}
-			return keyHolder;
+		public Object getEntryKey() {
+			return key.getValue();
 		}
 
-		public EntityPropertiesBinder getKeyProperties() {
-			if ( keyProperties == null ) {
-				keyProperties = binder.createChildBinder( keyDescriptor, key );
-			}
-
-			return keyProperties;
+		public Object getEntryValue() {
+			return value.getValue();
 		}
 
-		public Object getValue() {
-			if ( valueHolder != null ) {
-				return valueHolder.getValue();
-			}
-			if ( valueProperties != null ) {
-				valueProperties.values().forEach( EntityPropertyValueController::applyValue );
-			}
-
-			return value;
-		}
-
-		public EntityPropertyValueController<Object> getValueHolder() {
-			if ( valueHolder == null ) {
-
-			}
-			return valueHolder;
-		}
-
-		public void setValue( Object value ) {
-			if ( "".equals( value ) && !String.class.equals( valueTypeDescriptor.getObjectType() ) ) {
-				this.value = null;
-			}
-			else {
-				this.value = binder.convertIfNecessary( value, valueTypeDescriptor, memberBinderPath() );
-			}
-
-			valueProperties = null;
-		}
-
-		public EntityPropertiesBinder getValueProperties() {
-			if ( valueProperties == null ) {
-				valueProperties = binder.createChildBinder( valueDescriptor, value );
-			}
-
-			return valueProperties;
-		}
-
-		private String memberBinderPath() {
-			return this == template ? collectionBinderPath() + ".template" : collectionBinderPath() + ".items[" + key + "].value";
-		}
-	}
-
-	@Override
-	public int getSortIndex() {
-		return 0;
-	}
-
-	@Override
-	public void setSortIndex( int sortIndex ) {
-
+		/*private String memberBinderPath() {
+			return this == template ? collectionBinderPath() + ".template" : collectionBinderPath() + ".entries[" + key + "].value";
+		}*/
 	}
 }

@@ -17,6 +17,7 @@
 package test.bind;
 
 import com.foreach.across.modules.entity.config.builders.EntityPropertyDescriptorBuilder;
+import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -82,13 +83,24 @@ public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPrope
 
 				// list of list
 				builder( "listOfList" ).propertyType( List.class ),
-				builder( "listOfList[]" ).propertyType( List.class ).<List, List>controller( c -> c.createValueSupplier( ArrayList::new ) ),
-				builder( "listOfList[][]" ).propertyType( String.class )
+				builder( "listOfList[]" ).propertyType( List.class ),
+				builder( "listOfList[][]" ).propertyType( String.class ),
 
 				// list of map
+				builder( "listOfMap" ).propertyType( List.class ),
+				builder( "listOfMap[]" ).propertyType( Map.class ),
+				builder( "listOfMap[][k]" ).propertyType( Integer.class ),
+				builder( "listOfMap[][v]" ).propertyType( Long.class ),
 
 				// map with list of list of key and map value
-
+				builder( "complexMap" ).propertyType( Map.class ),
+				builder( "complexMap[k]" ).propertyType( List.class ),
+				builder( "complexMap[k][]" ).propertyType( List.class ),
+				builder( "complexMap[k][][]" ).propertyType( String.class ),
+				builder( "complexMap[v]" ).propertyType( Map.class ),
+				builder( "complexMap[v][k]" ).propertyType( String.class ),
+				builder( "complexMap[v][v]" ).propertyType( List.class ),
+				builder( "complexMap[v][v][]" ).propertyType( String.class )
 		);
 	}
 
@@ -96,11 +108,11 @@ public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPrope
 	public void bindingMapPropertyOnCustomTypeProperty() {
 		bind(
 				"properties[holder].properties[id].value=10",
-				"properties[holder].properties[dummies].items[1].key=x",
-				"properties[holder].properties[dummies].items[1].value=1",
-				"properties[holder].properties[dummies].items[2].key=y",
-				"properties[holder].properties[dummies].items[2].valueProperties[id].value=5",
-				"properties[holder].properties[dummies].items[2].valueProperties[name].value=Hello"
+				"properties[holder].properties[dummies].entries[1].entryKey=x",
+				"properties[holder].properties[dummies].entries[1].value.value=1",
+				"properties[holder].properties[dummies].entries[2].key.value=y",
+				"properties[holder].properties[dummies].entries[2].value.properties[id].value=5",
+				"properties[holder].properties[dummies].entries[2].value.properties[name].value=Hello"
 		);
 
 		DummiesHolder holder = (DummiesHolder) propertyValues.get( "holder" ).getValue();
@@ -116,11 +128,11 @@ public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPrope
 	public void bindingMapPropertyOfCustomListPropertyOnCustomType() {
 		bind( "properties[holder].properties[id].value=5",
 		      "properties[holder].properties[holders].items[1].value.id=10",
-		      "properties[holder].properties[holders].items[1].valueProperties[dummies].items[1].key=Test",
-		      "properties[holder].properties[holders].items[1].valueProperties[dummies].items[1].valueProperties[id].value=33",
-		      "properties[holder].properties[holders].items[1].valueProperties[dummies].items[1].valueProperties[name].value=Test dummy",
+		      "properties[holder].properties[holders].items[1].properties[dummies].entries[1].key.value=Test",
+		      "properties[holder].properties[holders].items[1].properties[dummies].entries[1].value.properties[id].value=33",
+		      "properties[holder].properties[holders].items[1].properties[dummies].entries[1].value.properties[name].value=Test dummy",
 		      "properties[holder].properties[holders].items[2].value.id=15",
-		      "properties[holder].properties[holders].items[2].valueProperties[holders].items[1].value.id=20"
+		      "properties[holder].properties[holders].items[2].properties[holders].items[1].value.id=20"
 		);
 
 		DummiesHolder holder = (DummiesHolder) propertyValues.get( "holder" ).getValue();
@@ -147,9 +159,9 @@ public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPrope
 	@Test
 	public void bindingListOfListStructure() {
 		bind( "properties[listOfList].items[x].items[x].value=list-1-item-1",
-		      "properties[listOfList].items[x].valueItems[y].value=list-1-item-2",
-		      "properties[listOfList].items[x].valueItems[y].sortIndex=-1",
-		      "properties[listOfList].items[y].valueItems[x].value=list-2-item-1",
+		      "properties[listOfList].items[x].items[y].value=list-1-item-2",
+		      "properties[listOfList].items[x].items[y].sortIndex=-1",
+		      "properties[listOfList].items[y].items[x].value=list-2-item-1",
 		      "properties[listOfList].items[y].sortIndex=-1" );
 
 		assertProperty( "listOfList" )
@@ -160,12 +172,30 @@ public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPrope
 
 	@Test
 	public void bindingListOfMapStructure() {
+		bind( "properties[listOfMap].items[x].entries[x].key.value=366",
+		      "properties[listOfMap].items[x].entries[x].value.value=663",
+		      "properties[listOfMap].items[x].entries[y].key.value=1",
+		      "properties[listOfMap].items[x].entries[y].value.value=46",
+		      "properties[listOfMap].items[x].entries[y].sortIndex=-1",
+		      "properties[listOfMap].items[y].entries[x].key.value=5",
+		      "properties[listOfMap].items[y].entries[x].value.value=33",
+		      "properties[listOfMap].items[y].sortIndex=-1" );
 
+		Map<Integer, Long> one = Collections.singletonMap( 5, 33L );
+		Map<Integer, Long> two = ImmutableMap.<Integer, Long>builder().put( 1, 46L ).put( 366, 663L ).build();
+
+		assertProperty( "listOfMap" ).isEqualTo( Arrays.asList( one, two ) );
 	}
 
 	@Test
 	public void bindingMapStructureWithListOfListKeyAndMapOfMapValue() {
+		bind( "properties[complexMap].entries[x].key.items[1].items[A].value=key-item-1",
+		      "properties[complexMap].entries[x].value.entries[1].key.value=value-1",
+		      "properties[complexMap].entries[x].value.entries[1].value.items[A].value=value-item-1" );
 
+		assertProperty( "complexMap" )
+				.isEqualTo( Collections.singletonMap( Collections.singletonList( Collections.singletonList( "key-item-1" ) ),
+				                                      Collections.singletonMap( "value-1", Collections.singletonList( "value-item-1" ) ) ) );
 	}
 
 	@Data

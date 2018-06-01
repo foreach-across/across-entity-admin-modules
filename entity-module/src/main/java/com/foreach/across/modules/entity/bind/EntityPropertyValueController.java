@@ -103,4 +103,8 @@ public interface EntityPropertyValueController<T>
 	 * to detecting if a property value has been removed.
 	 */
 	void resetBindStatus();
+
+	int getSortIndex();
+
+	void setSortIndex( int sortIndex );
 }

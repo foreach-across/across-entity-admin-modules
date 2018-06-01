@@ -31,7 +31,7 @@ import java.util.Objects;
  * @author Arne Vandamme
  * @since 3.1.0
  */
-public final class SingleEntityPropertyValue implements EntityPropertyValueController<Object>
+public class SingleEntityPropertyValue implements EntityPropertyValueController<Object>
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor descriptor;
@@ -55,6 +55,13 @@ public final class SingleEntityPropertyValue implements EntityPropertyValueContr
 	 * The actual value held for that property.
 	 */
 	private Object value;
+
+	/**
+	 * Sort index value, only relevant when the property value is part of a (sorted) collection.
+	 */
+	@Getter
+	@Setter
+	private int sortIndex;
 
 	@SuppressWarnings("unchecked")
 	SingleEntityPropertyValue( EntityPropertiesBinder binder, EntityPropertyDescriptor descriptor ) {
@@ -98,7 +105,13 @@ public final class SingleEntityPropertyValue implements EntityPropertyValueContr
 	public void setValue( Object value ) {
 		valueHasBeenSet = true;
 
-		Object newValue = binder.convertIfNecessary( value, descriptor.getPropertyTypeDescriptor(), binderPath() );
+		Object newValue = value;
+
+		if ( "".equals( value ) && !String.class.equals( descriptor.getPropertyType() )) {
+			newValue = null;
+		}
+
+		newValue = binder.convertIfNecessary( newValue, descriptor.getPropertyTypeDescriptor(), binderPath() );
 		if ( !Objects.equals( this.value, newValue ) ) {
 			modified = true;
 		}
