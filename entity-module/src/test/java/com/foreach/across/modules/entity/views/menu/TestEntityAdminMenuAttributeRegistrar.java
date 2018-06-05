@@ -20,6 +20,7 @@ import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -132,7 +133,7 @@ public class TestEntityAdminMenuAttributeRegistrar
 		when( entityConfiguration.getEntityType() ).thenReturn( String.class );
 		when( entityConfiguration.getName() ).thenReturn( "entityName" );
 		when( entityViewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
-		when( entityConfiguration.hasView( anyString() ) ).thenReturn( true );
+		when( viewFactory.getAttribute( EntityViewRegistry.class ) ).thenReturn( entityConfiguration );
 
 		EntityViewLinkBuilder linkBuilder = mock( EntityViewLinkBuilder.class, RETURNS_DEEP_STUBS );
 		when( linkBuilder.forInstance( any() ).updateView().withViewName( any() ).toString() ).thenReturn( "/my-entity" );
