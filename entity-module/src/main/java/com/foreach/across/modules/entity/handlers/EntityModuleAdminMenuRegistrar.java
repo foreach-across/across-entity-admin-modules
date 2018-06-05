@@ -26,6 +26,7 @@ import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewCont
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
@@ -108,6 +109,7 @@ class EntityModuleAdminMenuRegistrar
 	public void entityMenu( EntityAdminMenuEvent menu ) {
 		PathBasedMenuBuilder builder = menu.builder();
 
+		boolean isAssociation = menu.getViewContext().isForAssociation();
 		EntityConfiguration<Object> entityConfiguration = entityRegistry.getEntityConfiguration( menu.getEntityType() );
 		EntityMessageCodeResolver messageCodeResolver = entityConfiguration.getEntityMessageCodeResolver();
 
@@ -118,17 +120,19 @@ class EntityModuleAdminMenuRegistrar
 			              messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
 
-			// Get associations
-			for ( EntityAssociation association : entityConfiguration.getAssociations() ) {
-				if ( !association.isHidden() ) {
-					EntityConfiguration associated = association.getTargetEntityConfiguration();
+			if ( !isAssociation ) {
+				// Get associations
+				for ( EntityAssociation association : entityConfiguration.getAssociations() ) {
+					if ( !association.isHidden() ) {
+						EntityConfiguration associated = association.getTargetEntityConfiguration();
 
-					String itemTitle = messageCodeResolver.getMessageWithFallback(
-							"adminMenu." + association.getName(),
-							associated.getEntityMessageCodeResolver().getNamePlural()
-					);
+						String itemTitle = messageCodeResolver.getMessageWithFallback(
+								"adminMenu." + association.getName(),
+								associated.getEntityMessageCodeResolver().getNamePlural()
+						);
 
-					builder.item( association.getName(), itemTitle, currentEntityLink.association( association.getName() ).listView().toString() );
+						builder.item( association.getName(), itemTitle, currentEntityLink.association( association.getName() ).listView().toString() );
+					}
 				}
 			}
 
@@ -160,9 +164,10 @@ class EntityModuleAdminMenuRegistrar
 		}
 
 		// Register the view menu items
-		for ( String viewName : entityConfiguration.getViewNames() ) {
-			Consumer<EntityAdminMenuEvent> viewMenuBuilder = entityConfiguration.getViewFactory( viewName )
-			                                                                    .getAttribute( EntityViewFactoryAttributes.ADMIN_MENU, Consumer.class );
+		EntityViewRegistry viewRegistry = isAssociation ? menu.getViewContext().getEntityAssociation() : entityConfiguration;
+		for ( String viewName : viewRegistry.getViewNames() ) {
+			Consumer<EntityAdminMenuEvent> viewMenuBuilder = viewRegistry.getViewFactory( viewName )
+			                                                             .getAttribute( EntityViewFactoryAttributes.ADMIN_MENU, Consumer.class );
 			if ( viewMenuBuilder != null ) {
 				viewMenuBuilder.accept( menu );
 			}
