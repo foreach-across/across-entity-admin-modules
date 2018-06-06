@@ -50,25 +50,30 @@ public class EntityQueryParserConfiguration implements EntityConfigurer
 					   entityQueryParser.setQueryTranslator( entityQueryTranslator( propertyRegistry ) );
 
 					   entityConfiguration.setAttribute( EntityQueryParser.class, entityQueryParser );
+
+					   entityConfiguration.setAttribute(
+							   EntityQueryFacade.class,
+							   new SimpleEntityQueryFacade<>( entityQueryParser, entityConfiguration.getAttribute( EntityQueryExecutor.class ) )
+					   );
 				   }
 		   );
 	}
 
 	@Bean
 	@Scope("prototype")
-	protected EntityQueryParser entityQueryParser() {
+	public EntityQueryParser entityQueryParser() {
 		return new EntityQueryParser();
 	}
 
 	@Bean
 	@Scope("prototype")
-	protected EntityQueryMetadataProvider entityQueryMetadataProvider( EntityPropertyRegistry propertyRegistry ) {
+	public EntityQueryMetadataProvider entityQueryMetadataProvider( EntityPropertyRegistry propertyRegistry ) {
 		return new DefaultEntityQueryMetadataProvider( propertyRegistry );
 	}
 
 	@Bean
 	@Scope("prototype")
-	protected EntityQueryTranslator entityQueryTranslator( EntityPropertyRegistry propertyRegistry ) {
+	public EntityQueryTranslator entityQueryTranslator( EntityPropertyRegistry propertyRegistry ) {
 		DefaultEntityQueryTranslator translator = new DefaultEntityQueryTranslator();
 		translator.setPropertyRegistry( propertyRegistry );
 		translator.setTypeConverter( defaultEntityQueryTypeConverter() );

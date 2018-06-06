@@ -127,7 +127,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        )
 						        .deleteMethod( categoryRepository::remove )
 		        )
-		        .listView( lvb -> lvb.entityQueryFilter( true ).defaultSort( "name" ) )
+		        .listView( lvb -> lvb.defaultSort( "name" ) )
 		        .createFormView( fvb -> fvb.showProperties( "id", "name" ) )
 		        .updateFormView( fvb -> fvb.showProperties( "name" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
