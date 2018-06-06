@@ -54,24 +54,32 @@ public class TestEqualsPredicate
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void equals() {
-		Predicate<CollectionEntityQueryItem<Object>> predicate = CollectionEntityQueryPredicates.createPredicate(
+	public void equalsString() {
+		Predicate predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "name", EQ, "Jane" ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
 
 		predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "name", EQ, "John" ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
+	}
 
-		predicate = CollectionEntityQueryPredicates.createPredicate(
+	@Test
+	@SuppressWarnings("unchecked")
+	public void equalsObject() {
+		Predicate predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "color", EQ, Color.RED ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
 
 		predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "color", EQ, Color.BLUE ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
+	}
 
-		predicate = CollectionEntityQueryPredicates.createPredicate(
+	@Test
+	@SuppressWarnings("unchecked")
+	public void equalsNumber() {
+		Predicate predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "number", EQ, 15 ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
 
@@ -82,7 +90,7 @@ public class TestEqualsPredicate
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void notEquals() {
+	public void notEqualsString() {
 		Predicate<CollectionEntityQueryItem<Object>> predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "name", NEQ, "Jane" ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
@@ -90,16 +98,24 @@ public class TestEqualsPredicate
 		predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "name", NEQ, "John" ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
+	}
 
-		predicate = CollectionEntityQueryPredicates.createPredicate(
+	@Test
+	@SuppressWarnings("unchecked")
+	public void notEqualsObject() {
+		Predicate predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "color", NEQ, Color.RED ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
 
 		predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "color", NEQ, Color.BLUE ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
+	}
 
-		predicate = CollectionEntityQueryPredicates.createPredicate(
+	@Test
+	@SuppressWarnings("unchecked")
+	public void notEqualsNumber() {
+		Predicate predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "number", NEQ, 15 ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
 

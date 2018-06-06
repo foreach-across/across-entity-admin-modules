@@ -34,7 +34,6 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.CONTAINS;
 import static com.foreach.across.modules.entity.query.EntityQueryOps.NOT_CONTAINS;
 import static com.foreach.across.modules.entity.query.collections.CollectionEntityQueryPredicates.createPredicate;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 /**
@@ -52,35 +51,8 @@ public class TestContainsPredicate
 
 	@Before
 	public void setUp() {
-		when( item.getPropertyValue( "name" ) ).thenReturn( "Jane" );
 		when( item.getPropertyValue( "colors" ) ).thenReturn( Arrays.asList( Color.RED, Color.CYAN ) );
 		when( item.getPropertyValue( "sports" ) ).thenReturn( new String[] { "swimming", "running" } );
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void stringContains() {
-		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
-		doReturn( String.class ).when( descriptor ).getPropertyType();
-
-		Predicate predicate = createPredicate( new EntityQueryCondition( "name", CONTAINS, "on" ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		predicate = createPredicate( new EntityQueryCondition( "name", CONTAINS, "an" ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void stringNotContains() {
-		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
-		doReturn( String.class ).when( descriptor ).getPropertyType();
-
-		Predicate predicate = createPredicate( new EntityQueryCondition( "name", NOT_CONTAINS, "on" ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		predicate = createPredicate( new EntityQueryCondition( "name", NOT_CONTAINS, "an" ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
 	}
 
 	@Test

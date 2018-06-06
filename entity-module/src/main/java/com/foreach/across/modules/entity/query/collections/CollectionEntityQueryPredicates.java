@@ -20,13 +20,17 @@ import com.foreach.across.modules.entity.query.EntityQueryCondition;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * Contains common {@link java.util.function.Predicate} implementations for {@link com.foreach.across.modules.entity.query.EntityQueryCondition}
@@ -36,6 +40,7 @@ import java.util.function.Predicate;
  * @since 3.1.0
  */
 @UtilityClass
+@Slf4j
 class CollectionEntityQueryPredicates
 {
 	static Predicate<CollectionEntityQueryItem<Object>> createPredicate( EntityQueryCondition condition, @NonNull EntityPropertyDescriptor descriptor ) {
@@ -49,11 +54,17 @@ class CollectionEntityQueryPredicates
 			case NOT_CONTAINS:
 				return contains( condition.getProperty(), condition.getFirstArgument(), descriptor ).negate();
 			case IN:
-				return in( condition.getProperty(), condition.getArguments() );
+				return in( condition.getProperty(), Arrays.asList( condition.getArguments() ) );
 			case NOT_IN:
-				return in( condition.getProperty(), condition.getArguments() ).negate();
+				return in( condition.getProperty(), Arrays.asList( condition.getArguments() ) ).negate();
 			case LIKE:
-				return like( condition.getProperty(), condition.getFirstArgument(), descriptor );
+				return like( condition.getProperty(), condition.getFirstArgument(), false );
+			case LIKE_IC:
+				return like( condition.getProperty(), condition.getFirstArgument(), true );
+			case NOT_LIKE:
+				return like( condition.getProperty(), condition.getFirstArgument(), false ).negate();
+			case NOT_LIKE_IC:
+				return like( condition.getProperty(), condition.getFirstArgument(), true ).negate();
 		}
 
 		throw new IllegalArgumentException( "Unsupported operand for collections query: " + condition.getOperand() );
@@ -73,51 +84,34 @@ class CollectionEntityQueryPredicates
 			else if ( descriptor.getPropertyTypeDescriptor().isArray() ) {
 				return ArrayUtils.contains( (Object[]) propertyValue, value );
 			}
-			else if ( String.class.equals( descriptor.getPropertyType() ) || CharSequence.class.equals( descriptor.getPropertyType() ) ) {
-				return StringUtils.contains( (String) propertyValue, (String) value );
-			}
 			throw new IllegalArgumentException(
-					"'contains' operand only supports collections, arrays and strings. Property is an instance of: " + propertyValue.getClass() );
+					"'contains' operand is only supported for collections and arrays. Property is an instance of: " + propertyValue.getClass() );
 		};
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	private static <T> Predicate<CollectionEntityQueryItem<T>> in( String property, Object[] values ) {
-		return item -> {
-			Object propertyValue = item.getPropertyValue( property );
-			Object value = values.length == 1 ? values[0] : values;
-			if ( Collection.class.isAssignableFrom( value.getClass() ) ) {
-				return CollectionUtils.contains( ( (Collection) value ).iterator(), propertyValue );
-			}
-			else if ( value.getClass().isArray() ) {
-				return ArrayUtils.contains( (Object[]) value, propertyValue );
-			}
-			else if ( values.length == 1 ) {
-				return Objects.equals( propertyValue, value );
-			}
-
-			throw new IllegalArgumentException( "'in' operand only supports collections and arrays. Given type is: " + values.getClass() );
-		};
+	private static <T> Predicate<CollectionEntityQueryItem<T>> in( String property, List values ) {
+		return item -> values.contains( item.getPropertyValue( property ) );
 	}
 
-	//TODO both String and CharSequence?
 	@SuppressWarnings("unchecked")
-	private static <T> Predicate<CollectionEntityQueryItem<T>> like( String property, Object value, EntityPropertyDescriptor descriptor ) {
+	private static <T> Predicate<CollectionEntityQueryItem<T>> like( String property, Object value, boolean caseInsensitive ) {
 		return item -> {
-//			if(descriptor.getPropertyType())
-			String propertyValue = item.getPropertyValue( property );
-			String arg = (String) value;
-			String actualArgument = arg.replaceAll( "%", "" );
-			if ( arg.startsWith( "%" ) && arg.endsWith( "%" ) ) {
-				return contains( property, actualArgument, descriptor ).test( (CollectionEntityQueryItem<Object>) item );
-			}
-			else if ( arg.startsWith( "%" ) ) {
-				return propertyValue.endsWith( actualArgument );
-			}
-			else if ( arg.endsWith( "%" ) ) {
-				return propertyValue.startsWith( actualArgument );
-			}
-			return equals( property, actualArgument ).test( (CollectionEntityQueryItem<Object>) item );
+			String argument = (String) value;
+			String replacedWildCards = getPattern( "(?<!\\\\)%", true ).matcher( argument ).replaceAll( ".*" );
+			String regex = getPattern( "[?!\\\\]%", true ).matcher( replacedWildCards ).replaceAll( "%" );
+			regex = StringUtils.replace( regex, "\\", "\\\\" );
+			return getPattern( regex, caseInsensitive ).matcher( item.getPropertyValue( property ) ).matches();
 		};
 	}
+
+	private Pattern getPattern( String regex, boolean caseInsensitive ) {
+		if ( caseInsensitive ) {
+			return Pattern.compile( regex, Pattern.CASE_INSENSITIVE );
+		}
+		else {
+			return Pattern.compile( regex );
+		}
+	}
+
 }

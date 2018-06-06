@@ -56,16 +56,6 @@ public class TestInPredicate
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void inCollection() {
-		Predicate predicate = createPredicate( new EntityQueryCondition( "color", IN, Arrays.asList( Color.RED, Color.CYAN ) ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		predicate = createPredicate( new EntityQueryCondition( "color", IN, Arrays.asList( Color.BLUE, Color.CYAN ) ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
 	public void inArray() {
 		Predicate predicate = createPredicate( new EntityQueryCondition( "sport", IN, (Object[]) new String[] { "swimming", "cycling" } ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
@@ -77,19 +67,7 @@ public class TestInPredicate
 	@Test
 	@SuppressWarnings("unchecked")
 	public void inWithSingleItem() {
-		Predicate predicate = createPredicate( new EntityQueryCondition( "sport", IN, (Object[]) new String[] { "swimming" } ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		predicate = createPredicate( new EntityQueryCondition( "sport", IN, (Object[]) new String[] { "running" } ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		predicate = createPredicate( new EntityQueryCondition( "sport", IN, Collections.singletonList( "swimming" ) ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		predicate = createPredicate( new EntityQueryCondition( "sport", IN, Collections.singletonList( "running" ) ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		predicate = createPredicate( new EntityQueryCondition( "sport", IN, "swimming" ), descriptor );
+		Predicate predicate = createPredicate( new EntityQueryCondition( "sport", IN, "swimming" ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
 
 		predicate = createPredicate( new EntityQueryCondition( "sport", IN, "running" ), descriptor );
@@ -118,15 +96,7 @@ public class TestInPredicate
 		List<Object> value = createList( Color.RED, Color.GREEN );
 		when( item.getPropertyValue( "list" ) ).thenReturn( value );
 
-		List<Object> listOfLists = createList( value, createList( Color.GREEN, Color.CYAN ), createList( Color.BLACK, Color.BLUE ) );
-		Predicate predicate = createPredicate( new EntityQueryCondition( "list", IN, listOfLists ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		listOfLists = createList( createList( Color.GREEN, Color.CYAN ), createList( Color.BLACK, Color.BLUE ) );
-		predicate = createPredicate( new EntityQueryCondition( "list", IN, listOfLists ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		predicate = createPredicate(
+		Predicate predicate = createPredicate(
 				new EntityQueryCondition( "list", IN, value, createList( Color.GREEN, Color.CYAN ), createList( Color.BLACK, Color.BLUE ) ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
 
@@ -139,13 +109,7 @@ public class TestInPredicate
 	@SuppressWarnings("unchecked")
 	public void listInByValues() {
 		when( item.getPropertyValue( "list" ) ).thenReturn( createList( Color.RED, Color.GREEN ) );
-
-		List<Object> listOfLists = createList( createList( Color.RED, Color.GREEN ), createList( Color.GREEN, Color.CYAN ),
-		                                       createList( Color.BLACK, Color.BLUE ) );
-		Predicate predicate = createPredicate( new EntityQueryCondition( "list", IN, listOfLists ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		predicate = createPredicate(
+		Predicate predicate = createPredicate(
 				new EntityQueryCondition( "list", IN, createList( Color.RED, Color.GREEN ), createList( Color.GREEN, Color.CYAN ),
 				                          createList( Color.BLACK, Color.BLUE ) ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
@@ -156,17 +120,9 @@ public class TestInPredicate
 	public void mapIn() {
 		Map<String, Object> value = createMap( Color.RED, Color.GREEN );
 		when( item.getPropertyValue( "map" ) ).thenReturn( value );
-
-		List<Object> listOfMaps = createList( value, createMap( Color.GREEN, Color.CYAN ), createMap( Color.BLACK, Color.BLUE ) );
-		Predicate predicate = createPredicate( new EntityQueryCondition( "map", IN, listOfMaps ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		listOfMaps = createList( createMap( Color.GREEN, Color.CYAN ), createMap( Color.BLACK, Color.BLUE ) );
-		predicate = createPredicate( new EntityQueryCondition( "map", IN, listOfMaps ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		predicate = createPredicate( new EntityQueryCondition( "map", IN, value, createMap( Color.GREEN, Color.CYAN ), createMap( Color.BLACK, Color.BLUE ) ),
-		                             descriptor );
+		Predicate predicate = createPredicate(
+				new EntityQueryCondition( "map", IN, value, createMap( Color.GREEN, Color.CYAN ), createMap( Color.BLACK, Color.BLUE ) ),
+				descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
 
 		predicate = createPredicate( new EntityQueryCondition( "map", IN, createMap( Color.GREEN, Color.CYAN ), createMap( Color.BLACK, Color.BLUE ) ),
@@ -178,23 +134,8 @@ public class TestInPredicate
 	@SuppressWarnings("unchecked")
 	public void mapInByValues() {
 		when( item.getPropertyValue( "map" ) ).thenReturn( createMap( Color.RED, Color.GREEN ) );
-
-		List<Object> listOfMaps = createList( createMap( Color.RED, Color.GREEN ), createMap( Color.GREEN, Color.CYAN ), createMap( Color.BLACK, Color.BLUE ) );
-		Predicate predicate = createPredicate( new EntityQueryCondition( "map", IN, listOfMaps ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		predicate = createPredicate( new EntityQueryCondition( "map", IN, createMap( Color.RED, Color.GREEN ), createMap( Color.GREEN, Color.CYAN ),
-		                                                       createMap( Color.BLACK, Color.BLUE ) ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void notInCollection() {
-		Predicate predicate = createPredicate( new EntityQueryCondition( "color", NOT_IN, Arrays.asList( Color.RED, Color.CYAN ) ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		predicate = createPredicate( new EntityQueryCondition( "color", NOT_IN, Arrays.asList( Color.BLUE, Color.CYAN ) ), descriptor );
+		Predicate predicate = createPredicate( new EntityQueryCondition( "map", IN, createMap( Color.RED, Color.GREEN ), createMap( Color.GREEN, Color.CYAN ),
+		                                                                 createMap( Color.BLACK, Color.BLUE ) ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
 	}
 
@@ -215,12 +156,6 @@ public class TestInPredicate
 		assertThat( predicate.test( item ) ).isFalse();
 
 		predicate = createPredicate( new EntityQueryCondition( "sport", NOT_IN, (Object[]) new String[] { "running" } ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		predicate = createPredicate( new EntityQueryCondition( "sport", NOT_IN, Collections.singletonList( "swimming" ) ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		predicate = createPredicate( new EntityQueryCondition( "sport", NOT_IN, Collections.singletonList( "running" ) ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
 
 		predicate = createPredicate( new EntityQueryCondition( "sport", NOT_IN, "swimming" ), descriptor );
@@ -252,15 +187,7 @@ public class TestInPredicate
 		List<Object> value = createList( Color.RED, Color.GREEN );
 		when( item.getPropertyValue( "list" ) ).thenReturn( value );
 
-		List<Object> listOfLists = createList( value, createList( Color.GREEN, Color.CYAN ), createList( Color.BLACK, Color.BLUE ) );
-		Predicate predicate = createPredicate( new EntityQueryCondition( "list", NOT_IN, listOfLists ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		listOfLists = createList( createList( Color.GREEN, Color.CYAN ), createList( Color.BLACK, Color.BLUE ) );
-		predicate = createPredicate( new EntityQueryCondition( "list", NOT_IN, listOfLists ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		predicate = createPredicate(
+		Predicate predicate = createPredicate(
 				new EntityQueryCondition( "list", NOT_IN, value, createList( Color.GREEN, Color.CYAN ), createList( Color.BLACK, Color.BLUE ) ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
 
@@ -274,12 +201,7 @@ public class TestInPredicate
 	public void listNotInByValues() {
 		when( item.getPropertyValue( "list" ) ).thenReturn( createList( Color.RED, Color.GREEN ) );
 
-		List<Object> listOfLists = createList( createList( Color.RED, Color.GREEN ), createList( Color.GREEN, Color.CYAN ),
-		                                       createList( Color.BLACK, Color.BLUE ) );
-		Predicate predicate = createPredicate( new EntityQueryCondition( "list", NOT_IN, listOfLists ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		predicate = createPredicate(
+		Predicate predicate = createPredicate(
 				new EntityQueryCondition( "list", NOT_IN, createList( Color.RED, Color.GREEN ), createList( Color.GREEN, Color.CYAN ),
 				                          createList( Color.BLACK, Color.BLUE ) ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
@@ -291,15 +213,7 @@ public class TestInPredicate
 		Map<String, Object> value = createMap( Color.RED, Color.GREEN );
 		when( item.getPropertyValue( "map" ) ).thenReturn( value );
 
-		List<Object> listOfMaps = createList( value, createMap( Color.GREEN, Color.CYAN ), createMap( Color.BLACK, Color.BLUE ) );
-		Predicate predicate = createPredicate( new EntityQueryCondition( "map", NOT_IN, listOfMaps ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		listOfMaps = createList( createMap( Color.GREEN, Color.CYAN ), createMap( Color.BLACK, Color.BLUE ) );
-		predicate = createPredicate( new EntityQueryCondition( "map", NOT_IN, listOfMaps ), descriptor );
-		assertThat( predicate.test( item ) ).isTrue();
-
-		predicate = createPredicate(
+		Predicate predicate = createPredicate(
 				new EntityQueryCondition( "map", NOT_IN, value, createMap( Color.GREEN, Color.CYAN ), createMap( Color.BLACK, Color.BLUE ) ),
 				descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
@@ -313,13 +227,9 @@ public class TestInPredicate
 	@SuppressWarnings("unchecked")
 	public void mapNotInByValues() {
 		when( item.getPropertyValue( "map" ) ).thenReturn( createMap( Color.RED, Color.GREEN ) );
-
-		List<Object> listOfMaps = createList( createMap( Color.RED, Color.GREEN ), createMap( Color.GREEN, Color.CYAN ), createMap( Color.BLACK, Color.BLUE ) );
-		Predicate predicate = createPredicate( new EntityQueryCondition( "map", NOT_IN, listOfMaps ), descriptor );
-		assertThat( predicate.test( item ) ).isFalse();
-
-		predicate = createPredicate( new EntityQueryCondition( "map", NOT_IN, createMap( Color.RED, Color.GREEN ), createMap( Color.GREEN, Color.CYAN ),
-		                                                       createMap( Color.BLACK, Color.BLUE ) ), descriptor );
+		Predicate predicate = createPredicate(
+				new EntityQueryCondition( "map", NOT_IN, createMap( Color.RED, Color.GREEN ), createMap( Color.GREEN, Color.CYAN ),
+				                          createMap( Color.BLACK, Color.BLUE ) ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
 	}
 
