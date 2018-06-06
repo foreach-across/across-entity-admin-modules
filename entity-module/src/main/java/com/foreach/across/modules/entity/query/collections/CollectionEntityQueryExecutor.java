@@ -100,8 +100,9 @@ public class CollectionEntityQueryExecutor<T> extends AbstractEntityQueryExecuto
 		return predicate != null ? predicate : e -> true;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Predicate<CollectionEntityQueryItem<T>> buildPredicate( EntityQueryCondition condition ) {
-		return CollectionEntityQueryPredicates.createPredicate( condition, propertyRegistry.getProperty( condition.getProperty() ) );
+		return (Predicate) CollectionEntityQueryPredicates.createPredicate( condition, propertyRegistry.getProperty( condition.getProperty() ) );
 	}
 
 	private Page<T> buildPage( List<T> allItems, Pageable pageable ) {
