@@ -110,8 +110,7 @@ class CollectionEntityQueryPredicates
 	@SuppressWarnings("unchecked")
 	private static <T> Predicate<CollectionEntityQueryItem<T>> like( String property, Object value, boolean caseInsensitive ) {
 		return item -> {
-			String argument = (String) value;
-			String replacedWildCards = getPattern( "(?<!\\\\)%", true ).matcher( argument ).replaceAll( ".*" );
+			String replacedWildCards = getPattern( "(?<!\\\\)%", true ).matcher( (String) value ).replaceAll( ".*" );
 			String regex = getPattern( "[?!\\\\]%", true ).matcher( replacedWildCards ).replaceAll( "%" );
 			regex = StringUtils.replace( regex, "\\", "\\\\" );
 			return getPattern( regex, caseInsensitive ).matcher( item.getPropertyValue( property ) ).matches();
