@@ -129,8 +129,6 @@ public class TestCollectionEntityQueryComparators
 	@Test
 	public void notComparable() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( NotComparable.class ) );
-		when( itemOne.getPropertyValue( "notComparable" ) ).thenReturn( new NotComparable() );
-		when( itemTwo.getPropertyValue( "notComparable" ) ).thenReturn( new NotComparable() );
 
 		assertThatIllegalArgumentException()
 				.isThrownBy( () -> createComparator( new Sort.Order( Sort.Direction.ASC, "notComparable" ), descriptor ) );
