@@ -70,18 +70,19 @@ class CollectionEntityQueryComparators
 		if ( String.class.equals( simpleType ) ) {
 			return stringComparator( order.isIgnoreCase() );
 		}
-		if ( Integer.class.equals( simpleType ) ) {
-			return integerComparator();
+		else if ( Comparable.class.isAssignableFrom( descriptor.getPropertyTypeDescriptor().getObjectType() ) ) {
+			return defaultComparator();
 		}
 
 		return null;
 	}
 
-	static Comparator<String> stringComparator( boolean ignoreCase ) {
+	private static Comparator<String> stringComparator( boolean ignoreCase ) {
 		return ignoreCase ? String::compareToIgnoreCase : String::compareTo;
 	}
 
-	static Comparator<Integer> integerComparator() {
-		return Integer::compareTo;
+	@SuppressWarnings("unchecked")
+	private static Comparator defaultComparator() {
+		return ( o1, o2 ) -> ( (Comparable) o1 ).compareTo( o2 );
 	}
 }

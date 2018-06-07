@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Steven Gentens
- * @since 0.0.1
+ * @since 3.1.0
  */
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
