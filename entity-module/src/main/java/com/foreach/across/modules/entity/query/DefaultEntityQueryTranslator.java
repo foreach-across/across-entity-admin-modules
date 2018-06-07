@@ -25,6 +25,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
@@ -44,6 +45,11 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
  */
 public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 {
+	/**
+	 * Maximum translations nesting level that can occur on a single condition.
+	 */
+	private final static int TRANSLATION_RECURSION_LIMIT = 50;
+
 	private EQTypeConverter typeConverter;
 	private EntityPropertyRegistry propertyRegistry;
 
@@ -72,25 +78,33 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 		EntityQuery translated = new EntityQuery();
 		translated.setOperand( rawQuery.getOperand() );
 
-		for ( EntityQueryExpression expression : rawQuery.getExpressions() ) {
-			if ( expression instanceof EntityQueryCondition ) {
-				EntityQueryExpression translatedCondition = translateSingleCondition( (EntityQueryCondition) expression );
-				if ( translatedCondition != null ) {
-					if ( translatedCondition instanceof EntityQuery ) {
-						translated.add( translate( (EntityQuery) translatedCondition ) );
-					}
-					else {
-						translated.add( translatedCondition );
-					}
-				}
-			}
-			else if ( expression instanceof EntityQuery ) {
-				translated.add( translate( (EntityQuery) expression ) );
-			}
-		}
-
 		if ( rawQuery.hasSort() ) {
 			translated.setSort( EntityUtils.translateSort( rawQuery.getSort(), propertyRegistry ) );
+		}
+
+		rawQuery.getExpressions()
+		        .forEach( e -> translated.add( translateExpression( e, 0 ) ) );
+
+		return translated;
+	}
+
+	private EntityQueryExpression translateExpression( EntityQueryExpression expression, int recursionLevel ) {
+		EntityQueryExpression translated;
+
+		if ( recursionLevel >= TRANSLATION_RECURSION_LIMIT ) {
+			throw new IllegalStateException( "Unable to translate EntityQuery expression, maximum nested recursion level reached: " + expression );
+		}
+
+		if ( expression instanceof EntityQueryCondition ) {
+			translated = translateSingleCondition( (EntityQueryCondition) expression );
+
+			if ( translated != null && !Objects.equals( expression, translated ) ) {
+				// recursive translation of individual properties
+				translated = translateExpression( translated, recursionLevel + 1 );
+			}
+		}
+		else {
+			translated = translate( (EntityQuery) expression );
 		}
 
 		return translated;

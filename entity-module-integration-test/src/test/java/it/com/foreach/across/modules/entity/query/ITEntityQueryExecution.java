@@ -273,6 +273,7 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 			findRepresentatives( "name like 'peter \\\\\\\\ surname'", peter );
 			findRepresentatives( "name like '% surname'", john, joe, peter );
 			findRepresentatives( "name like '%\\\\% surname'", john );
+			findRepresentatives( "name contains 'SURNAME'", john, joe, peter );
 		}
 		finally {
 			descriptor.removeAttribute( EntityQueryConditionTranslator.class );
