@@ -58,6 +58,8 @@ public class TestGreaterThanLessThanPredicate
 		when( item.getPropertyValue( "integer" ) ).thenReturn( 15 );
 		when( item.getPropertyValue( "long" ) ).thenReturn( 15L );
 		when( item.getPropertyValue( "double" ) ).thenReturn( 22.7 );
+		when( item.getPropertyValue( "byte" ) ).thenReturn( (byte) 2 );
+		when( item.getPropertyValue( "short" ) ).thenReturn( (short) 16000 );
 	}
 
 	@Test
@@ -126,6 +128,18 @@ public class TestGreaterThanLessThanPredicate
 
 		predicate = createPredicate( new EntityQueryCondition( "double", GT, 123.234 ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
+
+		predicate = createPredicate( new EntityQueryCondition( "byte", GT, (byte) -67 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "byte", GT, (byte) 67 ), descriptor );
+		assertThat( predicate.test( item ) ).isFalse();
+
+		predicate = createPredicate( new EntityQueryCondition( "short", GT, (short) -32000 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "short", GT, (short) 32000 ), descriptor );
+		assertThat( predicate.test( item ) ).isFalse();
 	}
 
 	@Test
@@ -155,6 +169,24 @@ public class TestGreaterThanLessThanPredicate
 		assertThat( predicate.test( item ) ).isTrue();
 
 		predicate = createPredicate( new EntityQueryCondition( "double", GE, 22.72 ), descriptor );
+		assertThat( predicate.test( item ) ).isFalse();
+
+		predicate = createPredicate( new EntityQueryCondition( "byte", GE, (byte) -67 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "byte", GE, (byte) 2 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "byte", GE, (byte) 67 ), descriptor );
+		assertThat( predicate.test( item ) ).isFalse();
+
+		predicate = createPredicate( new EntityQueryCondition( "short", GE, (short) -32000 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "short", GE, (short) 16000 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "short", GE, (short) 32000 ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
 	}
 
@@ -235,6 +267,18 @@ public class TestGreaterThanLessThanPredicate
 
 		predicate = createPredicate( new EntityQueryCondition( "double", LT, 123.234 ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "byte", LT, (byte) -67 ), descriptor );
+		assertThat( predicate.test( item ) ).isFalse();
+
+		predicate = createPredicate( new EntityQueryCondition( "byte", LT, (byte) 67 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "short", LT, (short) -32000 ), descriptor );
+		assertThat( predicate.test( item ) ).isFalse();
+
+		predicate = createPredicate( new EntityQueryCondition( "short", LT, (short) 32000 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
 	}
 
 	@Test
@@ -264,6 +308,24 @@ public class TestGreaterThanLessThanPredicate
 		assertThat( predicate.test( item ) ).isTrue();
 
 		predicate = createPredicate( new EntityQueryCondition( "double", LE, 22.7 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "byte", LE, (byte) -67 ), descriptor );
+		assertThat( predicate.test( item ) ).isFalse();
+
+		predicate = createPredicate( new EntityQueryCondition( "byte", LE, (byte) 2 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "byte", LE, (byte) 67 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "short", LE, (short) -32000 ), descriptor );
+		assertThat( predicate.test( item ) ).isFalse();
+
+		predicate = createPredicate( new EntityQueryCondition( "short", LE, (short) 16000 ), descriptor );
+		assertThat( predicate.test( item ) ).isTrue();
+
+		predicate = createPredicate( new EntityQueryCondition( "short", LE, (short) 32000 ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
 	}
 
