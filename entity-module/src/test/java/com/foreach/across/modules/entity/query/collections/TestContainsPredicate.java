@@ -41,6 +41,7 @@ import static org.mockito.Mockito.when;
  * @since 0.0.1
  */
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("unchecked")
 public class TestContainsPredicate
 {
 	@Mock
@@ -56,7 +57,6 @@ public class TestContainsPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void collectionContains() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.collection( Collection.class, TypeDescriptor.valueOf( Color.class ) ) );
 		Predicate predicate = createPredicate( new EntityQueryCondition( "colors", CONTAINS, Color.BLUE ), descriptor );
@@ -67,7 +67,6 @@ public class TestContainsPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void collectionNotContains() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.collection( Collection.class, TypeDescriptor.valueOf( Color.class ) ) );
 		Predicate predicate = createPredicate( new EntityQueryCondition( "colors", NOT_CONTAINS, Color.BLUE ), descriptor );
@@ -78,7 +77,6 @@ public class TestContainsPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void arrayContains() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.array( TypeDescriptor.valueOf( String.class ) ) );
 		Predicate predicate = createPredicate( new EntityQueryCondition( "sports", CONTAINS, "cycling" ), descriptor );
@@ -89,7 +87,6 @@ public class TestContainsPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void arrayNotContains() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.array( TypeDescriptor.valueOf( String.class ) ) );
 		Predicate predicate = createPredicate( new EntityQueryCondition( "sports", NOT_CONTAINS, "cycling" ), descriptor );

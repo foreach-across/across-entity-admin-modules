@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
  * @since 0.0.1
  */
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("unchecked")
 public class TestInPredicate
 {
 	@Mock
@@ -55,7 +56,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void inArray() {
 		Predicate predicate = createPredicate( new EntityQueryCondition( "sport", IN, (Object[]) new String[] { "swimming", "cycling" } ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
@@ -65,7 +65,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void inWithSingleItem() {
 		Predicate predicate = createPredicate( new EntityQueryCondition( "sport", IN, "swimming" ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
@@ -75,7 +74,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void in() {
 		Predicate predicate = createPredicate( new EntityQueryCondition( "color", IN, Color.RED, Color.BLUE ), descriptor );
 		assertThat( predicate.test( item ) ).isTrue();
@@ -91,7 +89,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void listIn() {
 		List<Object> value = createList( Color.RED, Color.GREEN );
 		when( item.getPropertyValue( "list" ) ).thenReturn( value );
@@ -106,7 +103,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void listInByValues() {
 		when( item.getPropertyValue( "list" ) ).thenReturn( createList( Color.RED, Color.GREEN ) );
 		Predicate predicate = createPredicate(
@@ -116,7 +112,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void mapIn() {
 		Map<String, Object> value = createMap( Color.RED, Color.GREEN );
 		when( item.getPropertyValue( "map" ) ).thenReturn( value );
@@ -131,7 +126,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void mapInByValues() {
 		when( item.getPropertyValue( "map" ) ).thenReturn( createMap( Color.RED, Color.GREEN ) );
 		Predicate predicate = createPredicate( new EntityQueryCondition( "map", IN, createMap( Color.RED, Color.GREEN ), createMap( Color.GREEN, Color.CYAN ),
@@ -140,7 +134,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void notInArray() {
 		Predicate predicate = createPredicate( new EntityQueryCondition( "sport", NOT_IN, (Object[]) new String[] { "swimming", "cycling" } ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
@@ -150,7 +143,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void notInWithSingleItem() {
 		Predicate predicate = createPredicate( new EntityQueryCondition( "sport", NOT_IN, (Object[]) new String[] { "swimming" } ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
@@ -166,7 +158,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void notIn() {
 		Predicate predicate = createPredicate( new EntityQueryCondition( "color", NOT_IN, Color.RED, Color.BLUE ), descriptor );
 		assertThat( predicate.test( item ) ).isFalse();
@@ -182,7 +173,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void listNotIn() {
 		List<Object> value = createList( Color.RED, Color.GREEN );
 		when( item.getPropertyValue( "list" ) ).thenReturn( value );
@@ -197,7 +187,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void listNotInByValues() {
 		when( item.getPropertyValue( "list" ) ).thenReturn( createList( Color.RED, Color.GREEN ) );
 
@@ -208,7 +197,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void mapNotIn() {
 		Map<String, Object> value = createMap( Color.RED, Color.GREEN );
 		when( item.getPropertyValue( "map" ) ).thenReturn( value );
@@ -224,7 +212,6 @@ public class TestInPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void mapNotInByValues() {
 		when( item.getPropertyValue( "map" ) ).thenReturn( createMap( Color.RED, Color.GREEN ) );
 		Predicate predicate = createPredicate(

@@ -37,6 +37,7 @@ import static org.mockito.Mockito.when;
  * @since 0.0.1
  */
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("unchecked")
 public class TestEqualsPredicate
 {
 	@Mock
@@ -53,7 +54,6 @@ public class TestEqualsPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void equalsString() {
 		Predicate predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "name", EQ, "Jane" ), descriptor );
@@ -65,7 +65,6 @@ public class TestEqualsPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void equalsObject() {
 		Predicate predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "color", EQ, Color.RED ), descriptor );
@@ -77,7 +76,6 @@ public class TestEqualsPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void equalsNumber() {
 		Predicate predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "number", EQ, 15 ), descriptor );
@@ -89,7 +87,6 @@ public class TestEqualsPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void notEqualsString() {
 		Predicate<CollectionEntityQueryItem<Object>> predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "name", NEQ, "Jane" ), descriptor );
@@ -101,7 +98,6 @@ public class TestEqualsPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void notEqualsObject() {
 		Predicate predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "color", NEQ, Color.RED ), descriptor );
@@ -113,7 +109,6 @@ public class TestEqualsPredicate
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void notEqualsNumber() {
 		Predicate predicate = CollectionEntityQueryPredicates.createPredicate(
 				new EntityQueryCondition( "number", NEQ, 15 ), descriptor );

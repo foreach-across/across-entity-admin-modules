@@ -25,10 +25,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -65,6 +62,22 @@ class CollectionEntityQueryPredicates
 				return like( condition.getProperty(), condition.getFirstArgument(), false ).negate();
 			case NOT_LIKE_IC:
 				return like( condition.getProperty(), condition.getFirstArgument(), true ).negate();
+			case GT:
+				return greaterThan( condition.getProperty(), condition.getFirstArgument(), false );
+			case GE:
+				return greaterThan( condition.getProperty(), condition.getFirstArgument(), true );
+			case LT:
+				return lessThan( condition.getProperty(), condition.getFirstArgument(), false );
+			case LE:
+				return lessThan( condition.getProperty(), condition.getFirstArgument(), true );
+			case IS_NULL:
+				return isNull( condition.getProperty() );
+			case IS_NOT_NULL:
+				return isNull( condition.getProperty() ).negate();
+			case IS_EMPTY:
+				return isEmpty( condition.getProperty(), descriptor );
+			case IS_NOT_EMPTY:
+				return isEmpty( condition.getProperty(), descriptor ).negate();
 		}
 
 		throw new IllegalArgumentException( "Unsupported operand for collections query: " + condition.getOperand() );
@@ -102,6 +115,42 @@ class CollectionEntityQueryPredicates
 			String regex = getPattern( "[?!\\\\]%", true ).matcher( replacedWildCards ).replaceAll( "%" );
 			regex = StringUtils.replace( regex, "\\", "\\\\" );
 			return getPattern( regex, caseInsensitive ).matcher( item.getPropertyValue( property ) ).matches();
+		};
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> Predicate<CollectionEntityQueryItem<T>> greaterThan( String property, Object value, boolean orEqual ) {
+		return item -> {
+			int comparison = ( (Comparable) item.getPropertyValue( property ) ).compareTo( value );
+			return orEqual ? comparison >= 0 : comparison > 0;
+		};
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> Predicate<CollectionEntityQueryItem<T>> lessThan( String property, Object value, boolean orEqual ) {
+		return item -> {
+			int comparison = ( (Comparable) item.getPropertyValue( property ) ).compareTo( value );
+			return orEqual ? comparison <= 0 : comparison < 0;
+		};
+	}
+
+	private static <T> Predicate<CollectionEntityQueryItem<T>> isNull( String property ) {
+		return item -> Objects.isNull( item.getPropertyValue( property ) );
+	}
+
+	private static <T> Predicate<CollectionEntityQueryItem<T>> isEmpty( String property, EntityPropertyDescriptor descriptor ) {
+		return item -> {
+			Object propertyValue = item.getPropertyValue( property );
+			if ( descriptor.getPropertyTypeDescriptor().isCollection() ) {
+				return CollectionUtils.isEmpty( (Collection<?>) propertyValue );
+			}
+			else if ( descriptor.getPropertyTypeDescriptor().isMap() ) {
+				return CollectionUtils.isEmpty( (Map<?, ?>) propertyValue );
+			}
+			else if ( descriptor.getPropertyTypeDescriptor().isArray() ) {
+				return ArrayUtils.isEmpty( (Object[]) propertyValue );
+			}
+			throw new IllegalArgumentException( "'is empty' operand is only applicable to collections, arrays and maps." );
 		};
 	}
 
