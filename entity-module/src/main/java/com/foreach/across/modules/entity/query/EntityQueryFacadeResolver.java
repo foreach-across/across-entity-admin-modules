@@ -18,35 +18,128 @@ package com.foreach.across.modules.entity.query;
 
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * Resolver interface to determine the best suited {@link EntityQueryFacade} to use, based on a specific context.
- * Usually entity query infrastructure is created based on the specific entity configuration being
- * queried. All methods except one delegate to this implementation.
+ * Resolver service to find the most appropriate {@link EntityQueryFacade} to use for a given context.
  * <p/>
- * Purposely designed as a functional interface for simple cases.
+ * Will inspect the {@link EntityConfiguration}, {@link EntityAssociation} or {@link EntityViewFactory} attributes
+ * for the presence of an {@link EntityQueryFacadeFactory}. If there is one, it will always use that instance to
+ * create an {@link EntityQueryFacade}.
+ * <p/>
+ * If no {@link EntityQueryFacadeFactory} is found, an attribute of type {@link EntityQueryFacade} will be used instead.
+ * <p/>
+ * If no {@link EntityQueryFacadeFactory} or {@link EntityQueryFacade} is available, a default instance will be created using
+ * the {@link EntityPropertyRegistry} of the root {@link EntityConfiguration} that is being requested.
+ * In order to automatically create an instance, a {@link EntityQueryExecutor} attribute must be present in one of the collections.
+ * <p/>
+ * The attribute collections will always be inspected in order of specificity, where the most specific collection having
+ * one of the expected values will end up being used. The order of specificity is
+ * {@link EntityViewFactory} > {@link EntityAssociation} > {@link EntityConfiguration}.
  *
  * @author Arne Vandamme
- * @see EntityQueryFacade
  * @since 3.1.0
  */
-@FunctionalInterface
-public interface EntityQueryFacadeResolver
+@SuppressWarnings("unchecked")
+@Service
+@RequiredArgsConstructor
+public class EntityQueryFacadeResolver
 {
-	default EntityQueryFacade forEntityViewRequest( EntityViewRequest viewRequest ) {
-		return forEntityViewContext( viewRequest.getEntityViewContext() );
+	private final EntityQueryParserFactory entityQueryParserFactory;
+
+	public EntityQueryFacade forEntityViewRequest( EntityViewRequest viewRequest ) {
+		EntityViewContext viewContext = viewRequest.getEntityViewContext();
+		Map[] attributes = { viewRequest.getConfigurationAttributes(),
+		                     viewContext.isForAssociation() ? viewContext.getEntityAssociation().attributeMap() : Collections.emptyMap(),
+		                     viewContext.getEntityConfiguration().attributeMap() };
+		val factory = findFactory( attributes );
+
+		if ( factory != null ) {
+			return factory.createForEntityViewRequest( viewRequest );
+		}
+
+		return resolve( viewContext.getEntityConfiguration().getPropertyRegistry(), attributes );
 	}
 
-	default EntityQueryFacade forEntityViewContext( EntityViewContext viewContext ) {
-		return viewContext.isForAssociation()
-				? forEntityAssociation( viewContext.getEntityAssociation() ) : forEntityConfiguration( viewContext.getEntityConfiguration() );
+	public EntityQueryFacade forEntityViewContext( EntityViewContext viewContext ) {
+		Map[] attributes = { viewContext.isForAssociation() ? viewContext.getEntityAssociation().attributeMap() : Collections.emptyMap(),
+		                     viewContext.getEntityConfiguration().attributeMap() };
+		val factory = findFactory( attributes );
+
+		if ( factory != null ) {
+			return factory.createForEntityViewContext( viewContext );
+		}
+
+		return resolve( viewContext.getEntityConfiguration().getPropertyRegistry(), attributes );
 	}
 
-	default EntityQueryFacade forEntityAssociation( EntityAssociation association ) {
-		return forEntityConfiguration( association.getTargetEntityConfiguration() );
+	public EntityQueryFacade forEntityAssociation( EntityAssociation association ) {
+		Map[] attributes = { association.attributeMap(), association.getTargetEntityConfiguration().attributeMap() };
+		val factory = findFactory( attributes );
+
+		if ( factory != null ) {
+			return factory.createForEntityAssociation( association );
+		}
+
+		return resolve( association.getTargetEntityConfiguration().getPropertyRegistry(), attributes );
 	}
 
-	EntityQueryFacade forEntityConfiguration( EntityConfiguration entityConfiguration );
+	public EntityQueryFacade forEntityConfiguration( EntityConfiguration entityConfiguration ) {
+		val factory = findFactory( entityConfiguration.attributeMap() );
+
+		if ( factory != null ) {
+			return factory.createForEntityConfiguration( entityConfiguration );
+		}
+
+		return resolve( entityConfiguration.getPropertyRegistry(), entityConfiguration.attributeMap() );
+	}
+
+	private EntityQueryFacadeFactory findFactory( Map<String, Object>... attributesList ) {
+		for ( val attributes : attributesList ) {
+			EntityQueryFacadeFactory resolver = (EntityQueryFacadeFactory) attributes.get( EntityQueryFacadeFactory.class.getName() );
+			if ( resolver != null ) {
+				return resolver;
+			}
+		}
+
+		return null;
+	}
+
+	private EntityQueryFacade resolve( EntityPropertyRegistry propertyRegistry, Map<String, Object>... attributesList ) {
+		for ( val attributes : attributesList ) {
+			EntityQueryFacade facade = (EntityQueryFacade) attributes.get( EntityQueryFacade.class.getName() );
+			if ( facade != null ) {
+				return facade;
+			}
+		}
+
+		return createIfPossible( propertyRegistry, attributesList );
+	}
+
+	private EntityQueryFacade createIfPossible( EntityPropertyRegistry propertyRegistry, Map<String, Object>... attributesList ) {
+		for ( val attributes : attributesList ) {
+			EntityQueryExecutor executor = (EntityQueryExecutor) attributes.get( EntityQueryExecutor.class.getName() );
+
+			if ( executor != null ) {
+				EntityQueryParser parser = (EntityQueryParser) attributes.get( EntityQueryParser.class.getName() );
+
+				if ( parser == null ) {
+					parser = entityQueryParserFactory.createParser( propertyRegistry );
+				}
+
+				return new SimpleEntityQueryFacade( parser, executor );
+			}
+		}
+
+		return null;
+	}
 }

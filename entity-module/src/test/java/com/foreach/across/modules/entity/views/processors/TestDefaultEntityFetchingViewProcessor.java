@@ -18,7 +18,8 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.EntityQueryFacade;
+import com.foreach.across.modules.entity.query.EntityQueryFacadeResolver;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -49,6 +50,9 @@ public class TestDefaultEntityFetchingViewProcessor
 	private static final String PARENT = "parentEntity";
 
 	@Mock
+	private EntityQueryFacadeResolver entityQueryFacadeResolver;
+
+	@Mock
 	private EntityViewRequest viewRequest;
 
 	@Mock
@@ -70,7 +74,7 @@ public class TestDefaultEntityFetchingViewProcessor
 
 	@Before
 	public void setUp() throws Exception {
-		processor = new DefaultEntityFetchingViewProcessor();
+		processor = new DefaultEntityFetchingViewProcessor( entityQueryFacadeResolver );
 
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
 
@@ -93,8 +97,8 @@ public class TestDefaultEntityFetchingViewProcessor
 
 	@Test
 	public void entityQueryExecutorIsUsedIfNoPagingAndSortingRepository() {
-		EntityQueryExecutor queryExecutor = mock( EntityQueryExecutor.class );
-		when( entityConfiguration.getAttribute( EntityQueryExecutor.class ) ).thenReturn( queryExecutor );
+		EntityQueryFacade queryExecutor = mock( EntityQueryFacade.class );
+		when( entityQueryFacadeResolver.forEntityViewRequest( viewRequest ) ).thenReturn( queryExecutor );
 		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( mock( CrudRepository.class ) );
 		when( queryExecutor.findAll( EntityQuery.all(), pageable ) ).thenReturn( items );
 

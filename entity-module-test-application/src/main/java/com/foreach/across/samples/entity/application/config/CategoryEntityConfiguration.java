@@ -151,7 +151,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 		}
 
 		@Override
-		protected void postValidation( Map<String, Object> entity, Errors errors ) {
+		protected void postValidation( Map<String, Object> entity, Errors errors, Object... validationHints ) {
 			String prefix = StringUtils.removeEnd( errors.getNestedPath(), "." );
 			errors.setNestedPath( "" );
 
