@@ -20,6 +20,8 @@ import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
@@ -27,8 +29,7 @@ import com.foreach.across.samples.entity.EntityModuleTestApplication;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -60,7 +61,12 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 		tv.put( "id", "tv" );
 		tv.put( "name", "Televisions" );
 
+		Map<String, Object> smartphone = new HashMap<>();
+		smartphone.put( "id", "smartphone" );
+		smartphone.put( "name", "Smartphones" );
+
 		categoryRepository.add( tv );
+		categoryRepository.add( smartphone );
 	}
 
 	@Override
@@ -78,6 +84,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .propertyType( String.class )
 						        .attribute( EntityAttributes.CONTROL_NAME, "entity[id]" )
 						        .attribute( TextboxFormElement.Type.class, TextboxFormElement.Type.TEXT )
+						        .attribute( Sort.Order.class, new Sort.Order( "id" ) )
 						        .writable( true )
 						        .spelValueFetcher( "get('id')" )
 						        .order( 1 )
@@ -87,6 +94,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .propertyType( String.class )
 						        .attribute( EntityAttributes.CONTROL_NAME, "entity[name]" )
 						        .attribute( TextboxFormElement.Type.class, TextboxFormElement.Type.TEXT )
+						        .attribute( Sort.Order.class, new Sort.Order( "name" ) )
 						        .writable( true )
 						        .<Map>valueFetcher( map -> map.get( "name" ) )
 						        .order( 2 )
@@ -119,11 +127,15 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        )
 						        .deleteMethod( categoryRepository::remove )
 		        )
-		        .listView( lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( categoryRepository ) ) )
+		        .listView( lvb -> lvb.defaultSort( "name" ) )
 		        .createFormView( fvb -> fvb.showProperties( "id", "name" ) )
 		        .updateFormView( fvb -> fvb.showProperties( "name" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
-		        .show();
+		        .show()
+		        .attribute( ( configuration, attributes ) ->
+				                    attributes.setAttribute( EntityQueryExecutor.class,
+				                                             new CollectionEntityQueryExecutor<>( categoryRepository, configuration.getPropertyRegistry() ) )
+		        );
 	}
 
 	@Bean
@@ -139,7 +151,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 		}
 
 		@Override
-		protected void postValidation( Map<String, Object> entity, Errors errors ) {
+		protected void postValidation( Map<String, Object> entity, Errors errors, Object... validationHints ) {
 			String prefix = StringUtils.removeEnd( errors.getNestedPath(), "." );
 			errors.setNestedPath( "" );
 

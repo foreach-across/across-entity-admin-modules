@@ -50,6 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.WebDataBinder;
 
 import java.util.*;
@@ -86,6 +87,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 	private EntityPropertyRegistryProvider propertyRegistryProvider;
 	private EntityViewElementBuilderService viewElementBuilderService;
+	private EntityQueryFacadeResolver entityQueryFacadeResolver;
 	private EntityRegistry entityRegistry;  // todo check if different way to resolve the EntityTypeDescriptor ?
 
 	/**
@@ -124,30 +126,30 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		EntityQueryRequest entityQueryRequest = command.getExtension( ENTITY_QUERY_REQUEST );
 
 		try {
+			EntityQueryFacade queryFacade = resolveEntityQueryFacade( entityViewRequest );
+			Assert.notNull( queryFacade, "No EntityQueryExecutor or EntityQueryFacade is available" );
+
 			EntityConfiguration entityConfiguration = viewContext.getEntityConfiguration();
-			EntityQueryParser parser = entityConfiguration.getAttribute( EntityQueryParser.class );
 
 			EntityQuery query = EntityQueryParser.parseRawQuery( filter );
 			entityQueryRequest.setRawQuery( query );
-			entityQueryRequest.setTranslatedRawQuery( parser.prepare( query ) );
+			entityQueryRequest.setTranslatedRawQuery( queryFacade.convertToExecutableQuery( query ) );
 
 			EntityQuery combinedPredicate = EntityQuery.all();
 			combinedPredicate = EntityQueryUtils.and( combinedPredicate, filterConfiguration.getBasePredicate() );
 			combinedPredicate = EntityQueryUtils.and( combinedPredicate, entityView.getAttribute( EQL_PREDICATE_ATTRIBUTE_NAME ) );
 
-			query = EntityQueryUtils.and( entityQueryRequest.getTranslatedRawQuery(), parser.prepare( combinedPredicate ) );
+			query = EntityQueryUtils.and( entityQueryRequest.getTranslatedRawQuery(), queryFacade.convertToExecutableQuery( combinedPredicate ) );
 
 			entityQueryRequest.setExecutableQuery( query );
 
-			EntityQueryExecutor executor = entityConfiguration.getAttribute( EntityQueryExecutor.class );
-
 			if ( viewContext.isForAssociation() ) {
 				EntityAssociation association = viewContext.getEntityAssociation();
-				AssociatedEntityQueryExecutor associatedExecutor = new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), executor );
+				AssociatedEntityQueryExecutor associatedExecutor = new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), queryFacade );
 				return associatedExecutor.findAll( viewContext.getParentContext().getEntity( Object.class ), query, pageable );
 			}
 			else {
-				return executor.findAll( query, pageable );
+				return queryFacade.findAll( query, pageable );
 			}
 		}
 		catch ( EntityQueryParsingException pe ) {
@@ -216,12 +218,10 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	}
 
 	private List<ViewElement> buildFilterControls( EntityViewRequest entityViewRequest, ViewElementBuilderContext builderContext ) {
-		EntityConfiguration entityConfiguration = entityViewRequest.getEntityViewContext().getEntityConfiguration();
-
 		EntityViewElementUtils.setCurrentEntity( builderContext, entityViewRequest.getCommand().getExtension( ENTITY_QUERY_REQUEST ) );
 
 		if ( propertyRegistry == null ) {
-			initializePropertyRegistry( entityConfiguration.getPropertyRegistry() );
+			initializePropertyRegistry( entityViewRequest.getEntityViewContext().getPropertyRegistry() );
 		}
 
 		List<EntityPropertyDescriptor> properties = Collections.emptyList();
@@ -274,6 +274,10 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		return filterConfiguration.isMultiValue( property.getName() ) ? ViewElementMode.FILTER_CONTROL.forMultiple() : ViewElementMode.FILTER_CONTROL;
 	}
 
+	protected EntityQueryFacade resolveEntityQueryFacade( EntityViewRequest viewRequest ) {
+		return entityQueryFacadeResolver.forEntityViewRequest( viewRequest );
+	}
+
 	private void initializePropertyRegistry( EntityPropertyRegistry parent ) {
 		propertyRegistry = propertyRegistryProvider.createForParentRegistry( parent );
 		propertyRegistry.getRegisteredDescriptors()
@@ -304,5 +308,10 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	@Autowired
 	void setEntityRegistry( EntityRegistry entityRegistry ) {
 		this.entityRegistry = entityRegistry;
+	}
+
+	@Autowired
+	void setEntityQueryFacadeResolver( EntityQueryFacadeResolver entityQueryFacadeResolver ) {
+		this.entityQueryFacadeResolver = entityQueryFacadeResolver;
 	}
 }
