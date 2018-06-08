@@ -16,10 +16,6 @@
 
 package com.foreach.across.modules.entity.query;
 
-import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.views.context.EntityViewContext;
-import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
