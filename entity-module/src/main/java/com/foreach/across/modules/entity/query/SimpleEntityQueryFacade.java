@@ -25,7 +25,7 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 
 /**
- * Basic implementation of {@link EntityQueryFacade} that wraps around a
+ * Basic implementation of {@link EntityQueryFacade} that wraps around an
  * {@link EntityQueryParser} and {@link EntityQueryExecutor}.
  *
  * @author Arne Vandamme
