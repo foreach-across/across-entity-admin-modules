@@ -28,7 +28,7 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
-import com.foreach.across.modules.entity.views.processors.query.EntityQueryValueEnhancer;
+import com.foreach.across.modules.entity.views.processors.query.EQLStringValueOptionEnhancer;
 import com.foreach.across.modules.entity.views.processors.support.EntityPageStructureRenderedEvent;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -134,13 +134,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                                                .properties( props -> props
 				                                                                .property( "group" )
 				                                                                .attribute( EntityAttributes.OPTIONS_ENHANCER,
-				                                                                            new EntityQueryValueEnhancer<Group>()
-				                                                                            {
-					                                                                            @Override
-					                                                                            public Object retrieveValue( String label, Group rawValue ) {
-						                                                                            return "'" + rawValue.getName() + "'";
-					                                                                            }
-				                                                                            } )
+				                                                                            EQLStringValueOptionEnhancer.create( Group::getName ) )
 		                                                                )
 		                                  )
 		             )

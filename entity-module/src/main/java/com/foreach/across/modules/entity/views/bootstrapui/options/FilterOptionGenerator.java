@@ -77,7 +77,7 @@ public class FilterOptionGenerator extends OptionGenerator
 
 		if ( valueNotSetOption != null && !optionsBuilder.isRequired() ) {
 			MutableViewElement option = valueNotSetOption.build( builderContext );
-			select( option, selectedValues.contains( null ) );
+			select( option, selectedValues != null && selectedValues.contains( null ) );
 
 			if ( option instanceof SelectFormElement.Option ) {
 				SelectFormElement.OptionGroup group = new SelectFormElement.OptionGroup();
