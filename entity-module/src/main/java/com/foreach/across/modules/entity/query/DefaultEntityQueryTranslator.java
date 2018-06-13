@@ -25,6 +25,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -117,7 +118,7 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 			throw new EntityQueryParsingException.IllegalField( condition.getProperty() );
 		}
 
-		if ( ( IN.equals( condition.getOperand() ) || EntityQueryOps.NOT_IN.equals( condition.getOperand() ) )
+		if ( ( IN.equals( condition.getOperand() ) || NOT_IN.equals( condition.getOperand() ) )
 				&& collectionContainsNullValue( condition.getArguments() ) ) {
 			return expandCollectionExpressionWithNullValue( condition );
 		}
@@ -144,6 +145,17 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 			else {
 				return expression;
 			}
+		}
+
+		if ( ( CONTAINS.equals( condition.getOperand() ) || NOT_CONTAINS.equals( condition.getOperand() ) )
+				&& EQGroup.class.isAssignableFrom( condition.getFirstArgument().getClass() ) ) {
+			EntityQuery expression = EntityQuery.or();
+
+			Arrays.stream( ( (EQGroup) condition.getFirstArgument() ).getValues() )
+			      .map( arg -> new EntityQueryCondition( condition.getProperty(), condition.getOperand(), arg ) )
+			      .forEach( expression::add );
+
+			return expression;
 		}
 
 		convertTextContainsToLike( translated, expectedType );
@@ -194,12 +206,12 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 
 	private void convertTextContainsToLike( EntityQueryCondition condition, TypeDescriptor expectedType ) {
 		if ( String.class.equals( expectedType.getType() ) ) {
-			if ( EntityQueryOps.CONTAINS.equals( condition.getOperand() ) ) {
-				condition.setOperand( EntityQueryOps.LIKE );
+			if ( CONTAINS.equals( condition.getOperand() ) ) {
+				condition.setOperand( LIKE );
 				condition.setArguments( new Object[] { "%" + escape( (String) condition.getFirstArgument() ) + "%" } );
 			}
-			else if ( EntityQueryOps.NOT_CONTAINS.equals( condition.getOperand() ) ) {
-				condition.setOperand( EntityQueryOps.NOT_LIKE );
+			else if ( NOT_CONTAINS.equals( condition.getOperand() ) ) {
+				condition.setOperand( NOT_LIKE );
 				condition.setArguments( new Object[] { "%" + escape( (String) condition.getFirstArgument() ) + "%" } );
 			}
 		}

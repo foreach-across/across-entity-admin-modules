@@ -288,4 +288,48 @@ public class TestDefaultEntityQueryTranslator
 
 		assertEquals( translated, translator.translate( rawQuery ) );
 	}
+
+	@Test
+	public void containsOperandForCollectionIsExpanded() {
+		EntityPropertyDescriptor cities = mock( EntityPropertyDescriptor.class );
+		when( cities.getName() ).thenReturn( "translatedCities" );
+		when( cities.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( String.class ) ) );
+		when( propertyRegistry.getProperty( "cities" ) ).thenReturn( cities );
+		when( propertyRegistry.getProperty( "translatedCities" ) ).thenReturn( cities );
+
+		when( typeConverter.convertAll( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( String.class ) ), true, new EQString( "brussel" ) ) )
+				.thenReturn( new Object[] { "brussel" } );
+		when( typeConverter.convertAll( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( String.class ) ), true, new EQString( "amsterdam" ) ) )
+				.thenReturn( new Object[] { "amsterdam" } );
+		when( typeConverter.convertAll( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( String.class ) ), true, "brussel" ) )
+				.thenReturn( new Object[] { "brussel" } );
+		when( typeConverter.convertAll( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( String.class ) ), true, "amsterdam" ) )
+				.thenReturn( new Object[] { "amsterdam" } );
+		when( typeConverter.convertAll( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( String.class ) ), true,
+		                                new EQGroup( new EQString( "brussel" ), new EQString( "amsterdam" ) ) ) )
+				.thenReturn( new Object[] { "brussel", "amsterdam" } );
+
+		EntityQuery query = EntityQuery.and(
+				new EntityQueryCondition( "cities", EntityQueryOps.CONTAINS,
+				                          new EQGroup( new EQString( "brussel" ), new EQString( "amsterdam" ) ) )
+		);
+		EntityQuery translated = EntityQuery.and(
+				EntityQuery.or(
+						new EntityQueryCondition( "translatedCities", EntityQueryOps.CONTAINS, "brussel" ),
+						new EntityQueryCondition( "translatedCities", EntityQueryOps.CONTAINS, "amsterdam" )
+				)
+		);
+		assertEquals( translated, translator.translate( query ) );
+
+		query = EntityQuery.and(
+				new EntityQueryCondition( "cities", EntityQueryOps.NOT_CONTAINS, new EQGroup( new EQString( "brussel" ), new EQString( "amsterdam" ) ) )
+		);
+		translated = EntityQuery.and(
+				EntityQuery.or(
+						new EntityQueryCondition( "translatedCities", EntityQueryOps.NOT_CONTAINS, "brussel" ),
+						new EntityQueryCondition( "translatedCities", EntityQueryOps.NOT_CONTAINS, "amsterdam" )
+				)
+		);
+		assertEquals( translated, translator.translate( query ) );
+	}
 }
