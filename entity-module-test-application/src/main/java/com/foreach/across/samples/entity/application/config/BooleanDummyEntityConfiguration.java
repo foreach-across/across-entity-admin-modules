@@ -19,11 +19,12 @@ package com.foreach.across.samples.entity.application.config;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.samples.entity.application.business.BooleanDummy;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.PageImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,6 +119,11 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 						        )
 						        .deleteMethod( booleanDummyRepository::remove )
 		        )
+		        .attribute(
+				        ( config, attributes ) ->
+						        attributes.setAttribute( EntityQueryExecutor.class,
+						                                 new CollectionEntityQueryExecutor<>( booleanDummyRepository, config.getPropertyRegistry() ) )
+		        )
 		        .properties( props -> props
 				        .property( "primitiveBooleanCheckbox" )
 				        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.CHECKBOX )
@@ -136,9 +142,7 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 				        .and().property( "booleanSelectNonNull" )
 				        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.RADIO )
 		        )
-		        .listView( lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( booleanDummyRepository ) )
-		                             .entityQueryFilter( cfg -> cfg.showProperties( "booleanRadio" ) )
-		                             .viewProcessor( new BooleanDummyListViewConfiguration() ) )
+		        .listView( lvb -> lvb.entityQueryFilter( cfg -> cfg.showProperties( "booleanRadio" ) ) )
 		        .createFormView( fvb -> fvb.showProperties( "booleanSelectNonNull", "primitiveBooleanSelectNonNull" ) )
 		        .updateFormView( fvb -> fvb.showProperties( "*" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )

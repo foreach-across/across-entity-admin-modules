@@ -21,7 +21,6 @@ import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementB
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.util.EntityTypeDescriptor;
@@ -128,8 +127,6 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		try {
 			EntityQueryFacade queryFacade = resolveEntityQueryFacade( entityViewRequest );
 			Assert.notNull( queryFacade, "No EntityQueryExecutor or EntityQueryFacade is available" );
-
-			EntityConfiguration entityConfiguration = viewContext.getEntityConfiguration();
 
 			EntityQuery query = EntityQueryParser.parseRawQuery( filter );
 			entityQueryRequest.setRawQuery( query );
