@@ -16,7 +16,9 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
@@ -24,6 +26,8 @@ import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
+import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.samples.entity.EntityModuleTestApplication;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +39,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Configures a dummy <strong>category</strong> entity.
@@ -85,6 +90,16 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        .attribute( EntityAttributes.CONTROL_NAME, "entity[id]" )
 						        .attribute( TextboxFormElement.Type.class, TextboxFormElement.Type.TEXT )
 						        .attribute( Sort.Order.class, new Sort.Order( "id" ) )
+						        .attribute(
+								        OptionIterableBuilder.class,
+								        builderContext -> categoryRepository.stream()
+								                                            .map( c -> (String) c.get( "id" ) )
+								                                            .map( id -> new OptionFormElementBuilder().label( id )
+								                                                                                      .value( id )
+								                                                                                      .rawValue( id ) )
+								                                            .collect( Collectors.toList() )
+						        )
+						        .viewElementType( ViewElementMode.FILTER_CONTROL.forMultiple(), BootstrapUiElements.SELECT )
 						        .writable( true )
 						        .spelValueFetcher( "get('id')" )
 						        .order( 1 )
@@ -127,7 +142,10 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						        )
 						        .deleteMethod( categoryRepository::remove )
 		        )
-		        .listView( lvb -> lvb.defaultSort( "name" ) )
+		        .listView(
+				        lvb -> lvb.defaultSort( "name" )
+				                  .entityQueryFilter( cfg -> cfg.showProperties( "id", "name" ).multiValue( "id" ) )
+		        )
 		        .createFormView( fvb -> fvb.showProperties( "id", "name" ) )
 		        .updateFormView( fvb -> fvb.showProperties( "name" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
