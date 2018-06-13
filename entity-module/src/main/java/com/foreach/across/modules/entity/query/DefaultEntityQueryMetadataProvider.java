@@ -36,13 +36,16 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataProvider
 {
 	public static final EntityQueryOps[] STRING_OPS =
-			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY, CONTAINS, NOT_CONTAINS };
+			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY, CONTAINS,
+			                       NOT_CONTAINS };
 	public static final EntityQueryOps[] NUMBER_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
 	public static final EntityQueryOps[] COLLECTION_OPS =
 			new EntityQueryOps[] { CONTAINS, NOT_CONTAINS, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
 	public static final EntityQueryOps[] ENTITY_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
+	public static final EntityQueryOps[] EQ_GROUP_OPS =
+			new EntityQueryOps[] { IN, NOT_IN, CONTAINS, NOT_CONTAINS };
 
 	private static final TypeDescriptor EQ_GROUP_TYPE = TypeDescriptor.valueOf( EQGroup.class );
 	private static final TypeDescriptor EQ_FUNCTION_TYPE = TypeDescriptor.valueOf( EQFunction.class );
@@ -76,7 +79,7 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 
 	private boolean isValidGroupOrNonGroupOperation( TypeDescriptor valueType, EntityQueryOps operator ) {
 		if ( EQType.class.isAssignableFrom( valueType.getType() ) ) {
-			if ( operator == IN || operator == NOT_IN ) {
+			if ( ArrayUtils.contains( EQ_GROUP_OPS, operator ) ) {
 				return EQ_GROUP_TYPE.equals( valueType ) || EQ_FUNCTION_TYPE.equals( valueType );
 			}
 
