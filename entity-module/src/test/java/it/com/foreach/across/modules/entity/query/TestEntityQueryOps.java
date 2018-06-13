@@ -19,7 +19,9 @@ package it.com.foreach.across.modules.entity.query;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import org.junit.Test;
 
+import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Arne Vandamme
@@ -35,7 +37,21 @@ public class TestEntityQueryOps
 
 	@Test
 	public void characterEscaping() {
-		assertEquals( "name = 'my \\' name'", EntityQueryOps.EQ.toString( "name", "my ' name" ) );
+		assertEquals( "name = 'my \\' name'", EQ.toString( "name", "my ' name" ) );
 		assertEquals( "name != 'my \\\\ name'", EntityQueryOps.NEQ.toString( "name", "my \\ name" ) );
+	}
+
+	@Test
+	public void multiValueEquivalents() {
+		assertEquals( IN, EntityQueryOps.resolveMultiValueOperand( EQ ) );
+		assertEquals( NOT_IN, EntityQueryOps.resolveMultiValueOperand( NEQ ) );
+		assertEquals( CONTAINS, EntityQueryOps.resolveMultiValueOperand( CONTAINS ) );
+		assertEquals( NOT_CONTAINS, EntityQueryOps.resolveMultiValueOperand( NOT_CONTAINS ) );
+		assertEquals( IN, EntityQueryOps.resolveMultiValueOperand( IN ) );
+		assertEquals( NOT_IN, EntityQueryOps.resolveMultiValueOperand( NOT_IN ) );
+
+		assertNull( EntityQueryOps.resolveMultiValueOperand( LIKE ) );
+		assertNull( EntityQueryOps.resolveMultiValueOperand( AND ) );
+		assertNull( EntityQueryOps.resolveMultiValueOperand( GE ) );
 	}
 }

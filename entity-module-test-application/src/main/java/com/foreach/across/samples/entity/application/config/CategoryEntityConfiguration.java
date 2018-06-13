@@ -23,11 +23,13 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.samples.entity.EntityModuleTestApplication;
 import org.apache.commons.lang3.StringUtils;
@@ -99,6 +101,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 								                                                                                      .rawValue( id ) )
 								                                            .collect( Collectors.toList() )
 						        )
+						        .attribute( EntityQueryFilterProcessor.ENTITY_QUERY_OPERAND, EntityQueryOps.EQ )
 						        .viewElementType( ViewElementMode.FILTER_CONTROL.forMultiple(), BootstrapUiElements.SELECT )
 						        .writable( true )
 						        .spelValueFetcher( "get('id')" )
