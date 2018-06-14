@@ -61,10 +61,10 @@ public class FilterOptionGenerator extends OptionGenerator
 	}
 
 	@Override
-	Collection retrieveSelected( Object entity ) {
+	Collection retrieveSelectedValues( Object entity ) {
 		if ( entity != null && getValueFetcher() != null ) {
 			Object selected = getValueFetcher().getValue( entity );
-			return selected != null ? super.retrieveSelected( entity ) : null;
+			return selected != null ? super.retrieveSelectedValues( entity ) : null;
 		}
 
 		return Collections.emptyList();

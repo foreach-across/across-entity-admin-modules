@@ -226,7 +226,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		}
 	}
 
-	private Collection retrieveSelectedValues( Object entity ) {
+	Collection retrieveSelectedValues( Object entity ) {
 		if ( entity != null && valueFetcher != null ) {
 			Object selected = valueFetcher.getValue( entity );
 
