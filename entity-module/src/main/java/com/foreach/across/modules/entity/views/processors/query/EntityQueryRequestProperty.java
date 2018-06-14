@@ -113,4 +113,13 @@ public class EntityQueryRequestProperty
 	public boolean hasTranslatedValues() {
 		return !translatedValues.isEmpty();
 	}
+
+	public boolean isSingleConditionWithConvertibleOperand( EntityQueryOps operand ) {
+		if ( rawConditions.size() == 1 ) {
+			EQTranslationRule rule = EQTranslationRule.getTranslationRuleFor( rawConditions.get( 0 ).getOperand(), operand );
+			return rule != null && rule.canConvert( rawValues );
+		}
+		return false;
+	}
+
 }

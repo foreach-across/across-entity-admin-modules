@@ -51,7 +51,7 @@ public class EntityQueryRequestValueFetcher implements ValueFetcher<EntityQueryR
 		EntityQueryRequestProperty selectedProperty = entityQueryRequest.getSelectedProperty( propertyDescriptor.getName() );
 
 		if ( selectedProperty != null ) {
-			if ( selectedProperty.isSingleConditionWithOperand( operand ) ) {
+			if ( selectedProperty.isSingleConditionWithOperand( operand ) || selectedProperty.isSingleConditionWithConvertibleOperand( operand ) ) {
 				if ( multiple && selectedProperty.hasTranslatedValues() ) {
 					List<Object> result = new ArrayList<>( selectedProperty.getTranslatedValues() );
 					if ( selectedProperty.hasNullValue() ) {
