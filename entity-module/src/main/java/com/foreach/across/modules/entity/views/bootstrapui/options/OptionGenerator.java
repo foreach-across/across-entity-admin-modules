@@ -138,7 +138,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 	public ContainerViewElement build( ViewElementBuilderContext builderContext ) {
 		ContainerViewElement container = new ContainerViewElement();
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		Collection selectedValues = valueFetcher != null ? retrieveSelected( entity ) : null;
+		Collection selectedValues = hasValueFetcher() ? retrieveSelectedValues( entity ) : null;
 
 		OptionsFormElementBuilder optionsBuilder = builderContext.getAttribute( OptionsFormElementBuilder.class );
 		Assert.notNull( optionsBuilder, "no optionsBuilder was found" );
@@ -226,7 +226,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		}
 	}
 
-	Collection retrieveSelected( Object entity ) {
+	private Collection retrieveSelectedValues( Object entity ) {
 		if ( entity != null && valueFetcher != null ) {
 			Object selected = valueFetcher.getValue( entity );
 
@@ -246,7 +246,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		return Collections.emptyList();
 	}
 
-	@SuppressWarnings( "unused" )
+	@SuppressWarnings("unused")
 	public static class OptionGeneratorBuilder
 	{
 		private OptionFormElementBuilder emptyOption = new OptionFormElementBuilder().label( "" ).value( "" );
