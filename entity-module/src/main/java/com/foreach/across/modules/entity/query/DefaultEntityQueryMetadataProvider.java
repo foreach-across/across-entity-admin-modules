@@ -44,8 +44,6 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 			new EntityQueryOps[] { CONTAINS, NOT_CONTAINS, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
 	public static final EntityQueryOps[] ENTITY_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
-	public static final EntityQueryOps[] EQ_GROUP_OPS =
-			new EntityQueryOps[] { IN, NOT_IN, CONTAINS, NOT_CONTAINS };
 
 	private static final TypeDescriptor EQ_GROUP_TYPE = TypeDescriptor.valueOf( EQGroup.class );
 	private static final TypeDescriptor EQ_FUNCTION_TYPE = TypeDescriptor.valueOf( EQFunction.class );
@@ -74,12 +72,16 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 //		Class<?> objectType = type.getObjectType();
 		TypeDescriptor valueType = TypeDescriptor.forObject( value );
 
+		if ( operator == CONTAINS || operator == NOT_CONTAINS ) {
+			return true;
+		}
+
 		return isValidGroupOrNonGroupOperation( valueType, operator );
 	}
 
 	private boolean isValidGroupOrNonGroupOperation( TypeDescriptor valueType, EntityQueryOps operator ) {
 		if ( EQType.class.isAssignableFrom( valueType.getType() ) ) {
-			if ( ArrayUtils.contains( EQ_GROUP_OPS, operator ) ) {
+			if ( operator == IN || operator == NOT_IN ) {
 				return EQ_GROUP_TYPE.equals( valueType ) || EQ_FUNCTION_TYPE.equals( valueType );
 			}
 
