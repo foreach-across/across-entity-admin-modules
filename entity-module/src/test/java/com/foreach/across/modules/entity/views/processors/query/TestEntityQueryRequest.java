@@ -195,7 +195,7 @@ public class TestEntityQueryRequest
 
 	@Test
 	public void isSingleConditionWithOperand() {
-		entityQueryRequest.setRawQuery( EntityQuery.parse( "id = 10 and (name like 'test' and id < 5)" ) );
+		entityQueryRequest.setRawQuery( EntityQuery.parse( "id = 10 and (name like '%test' and id < 5)" ) );
 		assertFalse( entityQueryRequest.getSelectedProperty( "id" ).isSingleConditionWithOperand( EntityQueryOps.EQ ) );
 		assertFalse( entityQueryRequest.getSelectedProperty( "id" ).isSingleConditionWithOperand( EntityQueryOps.LT ) );
 		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( EntityQueryOps.EQ ) );
@@ -251,149 +251,149 @@ public class TestEntityQueryRequest
 	@Test
 	public void eqCanConvertToIn() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name = 'john'" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( IN ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( IN ) );
 	}
 
 	@Test
 	public void isNullCanConvertToIn() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name is null" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( IN ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( IN ) );
 	}
 
 	@Test
 	public void likeCanConvertToIn() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name like 'john'" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( IN ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( IN ) );
 
 		entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name like 'john%'" ) );
-		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( IN ) );
+		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( IN ) );
 	}
 
 	@Test
 	public void isEmptyCanConvertToIn() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name is empty" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( IN ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( IN ) );
 	}
 
 	@Test
 	public void isNotNullCanConvertToNotIn() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name is not null" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NOT_IN ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NOT_IN ) );
 	}
 
 	@Test
 	public void isNotEmptyCanConvertToNotIn() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name is not empty" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NOT_IN ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NOT_IN ) );
 	}
 
 	@Test
 	public void neqCanConvertToNotIn() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name != 'john'" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NOT_IN ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NOT_IN ) );
 	}
 
 	@Test
 	public void notLikeCanConvertToNotIn() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name not like 'john'" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NOT_IN ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NOT_IN ) );
 
 		entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name not like 'john%'" ) );
-		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NOT_IN ) );
+		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NOT_IN ) );
 	}
 
 	@Test
 	public void likeCanConvertToContains() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name like 'john%'" ) );
-		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( CONTAINS ) );
+		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( CONTAINS ) );
 
 		entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name like '%john%'" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( CONTAINS ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( CONTAINS ) );
 	}
 
 	@Test
 	public void notLikeCanConvertToNotContains() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name not like 'john%'" ) );
-		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NOT_CONTAINS ) );
+		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NOT_CONTAINS ) );
 
 		entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name not like '%john%'" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NOT_CONTAINS ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NOT_CONTAINS ) );
 	}
 
 	@Test
 	public void likeCanConvertToEq() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name like 'john%'" ) );
-		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( EQ ) );
+		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( EQ ) );
 
 		entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name like 'john'" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( EQ ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( EQ ) );
 	}
 
 	@Test
 	public void isNullCanConvertToEq() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name is null" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( EQ ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( EQ ) );
 	}
 
 	@Test
 	public void notLikeCanConvertToNeq() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name not like 'john%'" ) );
-		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NEQ ) );
+		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NEQ ) );
 
 		entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name not like 'john'" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NEQ ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NEQ ) );
 	}
 
 	@Test
 	public void isNotNullCanConvertToNeq() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name is not null" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NEQ ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NEQ ) );
 	}
 
 	@Test
 	public void eqCanConvertToLike() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name = 5" ) );
-		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( LIKE ) );
+		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( LIKE ) );
 
 		entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name = 'jo%hn'" ) );
-		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( LIKE ) );
+		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( LIKE ) );
 
 		entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name = 'john'" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( LIKE ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( LIKE ) );
 	}
 
 	@Test
 	public void neqCanConvertToNotLike() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name != 5" ) );
-		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NOT_LIKE ) );
+		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NOT_LIKE ) );
 
 		entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name != 'jo%hn'" ) );
-		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NOT_LIKE ) );
+		assertFalse( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NOT_LIKE ) );
 
 		entityQueryRequest = new EntityQueryRequest();
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "name != 'john'" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithConvertibleOperand( NOT_LIKE ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "name" ).isSingleConditionWithOperand( NOT_LIKE ) );
 	}
 
 	@Test
 	public void eqCanConvertToGe() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "number = 5" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "number" ).isSingleConditionWithConvertibleOperand( GE ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "number" ).isSingleConditionWithOperand( GE ) );
 	}
 
 	@Test
 	public void eqCanConvertToLe() {
 		entityQueryRequest.setRawQuery( EntityQuery.parse( "number = 5" ) );
-		assertTrue( entityQueryRequest.getSelectedProperty( "number" ).isSingleConditionWithConvertibleOperand( LE ) );
+		assertTrue( entityQueryRequest.getSelectedProperty( "number" ).isSingleConditionWithOperand( LE ) );
 	}
 
 }
