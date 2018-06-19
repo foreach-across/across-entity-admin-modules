@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.query;
 
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -54,9 +55,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EntityQueryFacadeResolver
 {
+	private final EntityRegistry entityRegistry;
 	private final EntityQueryParserFactory entityQueryParserFactory;
 
-	public EntityQueryFacade forEntityViewRequest( EntityViewRequest viewRequest ) {
+	public <U> EntityQueryFacade<U> forEntityType( Class<U> entityType ) {
+		return forEntityConfiguration( entityRegistry.getEntityConfiguration( entityType ) );
+	}
+
+	public <U> EntityQueryFacade<U> forEntityViewRequest( EntityViewRequest viewRequest ) {
 		EntityViewContext viewContext = viewRequest.getEntityViewContext();
 		Map[] attributes = { viewRequest.getConfigurationAttributes(),
 		                     viewContext.isForAssociation() ? viewContext.getEntityAssociation().attributeMap() : Collections.emptyMap(),
@@ -70,7 +76,7 @@ public class EntityQueryFacadeResolver
 		return resolve( viewContext.getEntityConfiguration().getPropertyRegistry(), attributes );
 	}
 
-	public EntityQueryFacade forEntityViewContext( EntityViewContext viewContext ) {
+	public <U> EntityQueryFacade<U> forEntityViewContext( EntityViewContext viewContext ) {
 		Map[] attributes = { viewContext.isForAssociation() ? viewContext.getEntityAssociation().attributeMap() : Collections.emptyMap(),
 		                     viewContext.getEntityConfiguration().attributeMap() };
 		val factory = findFactory( attributes );
@@ -82,7 +88,7 @@ public class EntityQueryFacadeResolver
 		return resolve( viewContext.getEntityConfiguration().getPropertyRegistry(), attributes );
 	}
 
-	public EntityQueryFacade forEntityAssociation( EntityAssociation association ) {
+	public <U> EntityQueryFacade<U> forEntityAssociation( EntityAssociation association ) {
 		Map[] attributes = { association.attributeMap(), association.getTargetEntityConfiguration().attributeMap() };
 		val factory = findFactory( attributes );
 
@@ -93,7 +99,7 @@ public class EntityQueryFacadeResolver
 		return resolve( association.getTargetEntityConfiguration().getPropertyRegistry(), attributes );
 	}
 
-	public EntityQueryFacade forEntityConfiguration( EntityConfiguration entityConfiguration ) {
+	public <U> EntityQueryFacade<U> forEntityConfiguration( EntityConfiguration entityConfiguration ) {
 		val factory = findFactory( entityConfiguration.attributeMap() );
 
 		if ( factory != null ) {
