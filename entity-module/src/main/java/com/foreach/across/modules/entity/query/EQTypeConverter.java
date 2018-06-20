@@ -90,6 +90,10 @@ public class EQTypeConverter
 	 * @return converted value
 	 */
 	public Object convert( TypeDescriptor expectedType, Object value ) {
+		if ( value == null ) {
+			return null;
+		}
+
 		TypeDescriptor sourceType = TypeDescriptor.forObject( value );
 
 		if ( sourceType.isAssignableTo( expectedType ) ) {

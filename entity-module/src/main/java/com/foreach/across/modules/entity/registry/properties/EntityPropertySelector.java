@@ -104,7 +104,7 @@ public class EntityPropertySelector
 	/**
 	 * @return map of property names with boolean indicated if they should be selected or not
 	 */
-	Map<String, Boolean> propertiesToSelect() {
+	public Map<String, Boolean> propertiesToSelect() {
 		return propertiesToSelect;
 	}
 
