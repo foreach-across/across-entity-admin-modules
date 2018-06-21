@@ -61,4 +61,7 @@ public class Note extends SettableIdAuditableEntity<Note>
 	@NotNull
 	@Length(max = 255)
 	private String content;
+
+	@ManyToOne
+	private Note parent;
 }

@@ -104,7 +104,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                        .hidden( true )
 
 		             )
-		             .listView( lvb -> lvb.showProperties( "*" )
+		             .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
 		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text" )
 		                                                                .basicMode( true )
 		                                                                .advancedMode( true ) ) )
