@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
+
 /**
  * An {@link com.foreach.across.modules.entity.query.EntityQueryExecutor} implementation that executes
  * queries on a collection of custom objects, where a {@link EntityPropertyRegistry} is used to determine
@@ -90,7 +92,7 @@ public class CollectionEntityQueryExecutor<T> extends AbstractEntityQueryExecuto
 					= e instanceof EntityQuery ? buildPredicate( (EntityQuery) e ) : buildPredicate( (EntityQueryCondition) e );
 
 			if ( predicate != null ) {
-				predicate = EntityQueryOps.AND.equals( query.getOperand() ) ? predicate.and( expressionPredicate ) : predicate.or( expressionPredicate );
+				predicate = AND.equals( query.getOperand() ) ? predicate.and( expressionPredicate ) : predicate.or( expressionPredicate );
 			}
 			else {
 				predicate = expressionPredicate;
@@ -102,7 +104,13 @@ public class CollectionEntityQueryExecutor<T> extends AbstractEntityQueryExecuto
 
 	@SuppressWarnings("unchecked")
 	private Predicate<CollectionEntityQueryItem<T>> buildPredicate( EntityQueryCondition condition ) {
-		return (Predicate) CollectionEntityQueryPredicates.createPredicate( condition, propertyRegistry.getProperty( condition.getProperty() ) );
+		EntityQueryOps operand = condition.getOperand();
+		Predicate predicate = CollectionEntityQueryPredicates.createPredicate( condition, propertyRegistry.getProperty( condition.getProperty() ) );
+		if ( operand != IS_NULL && operand != IS_NOT_NULL ) {
+			Predicate<CollectionEntityQueryItem<T>> nullPredicate = item -> item.getPropertyValue( condition.getProperty() ) != null;
+			return nullPredicate.and( predicate );
+		}
+		return predicate;
 	}
 
 	private Page<T> buildPage( List<T> allItems, Pageable pageable ) {

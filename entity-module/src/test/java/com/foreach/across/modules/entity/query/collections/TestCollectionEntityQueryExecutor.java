@@ -33,10 +33,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -169,6 +166,33 @@ public class TestCollectionEntityQueryExecutor
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
 		assertThat( page.getTotalElements() ).isEqualTo( 2 );
 		assertThat( page.getContent() ).containsExactly( george );
+	}
+
+	@Test
+	public void nullReturnsFalseByDefaultUnlessIsNullOrIsNotNull() {
+		DefaultEntityPropertyRegistry propertyRegistry = new DefaultEntityPropertyRegistry();
+		new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() ).accept( Entry.class, propertyRegistry );
+		List<Entry> entries = Collections.singletonList( new Entry( -1, null ) );
+		EntityQueryExecutor<Entry> executor = new CollectionEntityQueryExecutor<>( entries, propertyRegistry );
+
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.EQ, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.NEQ, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.CONTAINS, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.NOT_CONTAINS, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE_IC, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.NOT_LIKE, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.NOT_LIKE_IC, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.IN, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.NOT_IN, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.IS_EMPTY ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.IS_NOT_EMPTY ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.IS_NULL ) ) ) ).hasSize( 1 );
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.IS_NOT_NULL ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.GT, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LT, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.GE, "Jane" ) ) ) ).isEmpty();
+		assertThat( executor.findAll( EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LE, "Jane" ) ) ) ).isEmpty();
 	}
 
 	@SuppressWarnings("WeakerAccess")
