@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TestControlNamePrefixAdjuster
 {
-	private ControlNamePrefixAdjuster prefixer = new ControlNamePrefixAdjuster();
+	private ControlNamePrefixAdjuster<?> prefixer = new ControlNamePrefixAdjuster<>();
 
 	private HiddenFormElement control;
 	private ContainerViewElement containerWithControl;
@@ -185,5 +185,21 @@ public class TestControlNamePrefixAdjuster
 		prefixer.prefixToAdd( "my" ).controlNamePredicate( controlName -> !controlName.equals( "text" ) ).accept( textboxWithControl );
 		assertThat( control.getControlName() ).isEqualTo( "my.ctl" );
 		assertThat( textboxWithControl.getControlName() ).isEqualTo( "text" );
+	}
+
+	@Test
+	public void controlNamePredicateGetsControlNameWithoutUnderscoreIfIgnoreIsTrue() {
+		control.setControlName( "_ctl" );
+		prefixer.prefixToAdd( "my" ).controlNamePredicate( s -> s.startsWith( "ctl" ) ).accept( control );
+
+		assertThat( control.getControlName() ).isEqualTo( "_my.ctl" );
+	}
+
+	@Test
+	public void controlNamePredicateGetsOriginalControlNameIfUnderscoreIgnoreIsFalse() {
+		control.setControlName( "_ctl" );
+		prefixer.prefixToAdd( "my" ).ignoreUnderscore( false ).controlNamePredicate( s -> s.startsWith( "ctl" ) ).accept( control );
+
+		assertThat( control.getControlName() ).isEqualTo( "_ctl" );
 	}
 }

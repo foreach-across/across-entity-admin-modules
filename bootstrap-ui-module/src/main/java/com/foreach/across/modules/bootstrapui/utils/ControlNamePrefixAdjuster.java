@@ -86,7 +86,9 @@ public class ControlNamePrefixAdjuster<T extends ViewElement> implements Consume
 
 	/**
 	 * Set to {@code false} if you want to treat any control name starting with an underscore as an
-	 * exact control name. If not,
+	 * exact control name. If not, a starting _ will be ignored for the control name predicate
+	 * and prefixing will be done after the _. A control starting with underscore is usually a special
+	 * element for Spring data-binding.
 	 */
 	@Setter
 	private boolean ignoreUnderscore = true;
@@ -140,7 +142,7 @@ public class ControlNamePrefixAdjuster<T extends ViewElement> implements Consume
 		String currentControlName = control.getControlName();
 
 		if ( currentControlName != null && !currentControlName.isEmpty() ) {
-			if ( controlNamePredicate != null && !controlNamePredicate.test( currentControlName ) ) {
+			if ( controlNamePredicate != null && !controlNamePredicate.test( removeUnderscore( currentControlName ) ) ) {
 				return;
 			}
 
@@ -168,6 +170,10 @@ public class ControlNamePrefixAdjuster<T extends ViewElement> implements Consume
 				}
 			}
 		}
+	}
+
+	private String removeUnderscore( String controlName ) {
+		return ignoreUnderscore && controlName.charAt( 0 ) == '_' ? controlName.substring( 1 ) : controlName;
 	}
 
 	private boolean shouldSkipUnderscore( String controlName ) {

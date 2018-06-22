@@ -395,7 +395,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		return null;
 	}
 
-	// Temporary workaround for what appears to be a bug when Thymeleaf which does not allow map indexed properties
+	// Temporary workaround for what appears to be a bug with Thymeleaf which does not allow map indexed properties
 	// even though they are allowed by Spring (see https://github.com/thymeleaf/thymeleaf-spring/issues/176)
 	private BindStatus retrieveBindStatus( ITemplateContext templateContext, String propertyName ) {
 		if ( propertyName.indexOf( '[' ) >= 0 ) {
