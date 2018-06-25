@@ -118,7 +118,10 @@ export const EntityQueryOps = {
         }
       }
       return null;
-    }
+    },
 
+  isGroupOperand( operand ) {
+    return operand.equals( EntityQueryOps.IN ) || operand.equals( EntityQueryOps.NOT_IN );
+  }
   }
 ;

@@ -39,7 +39,7 @@ function setCondition( controlItem, control, filterControl, reset = true ) {
       }
       values.push( convertToTypedValue( value ) );
     }
-    const eqlArgument = values.length > 1 ? new EQGroup( values ) : values;
+    const eqlArgument = values.length > 1 && !EntityQueryOps.isGroupOperand( operand ) ? new EQGroup( values ) : values;
     condition = new EntityQueryCondition( property, operand, eqlArgument );
   }
 
