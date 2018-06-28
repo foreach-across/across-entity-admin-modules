@@ -90,7 +90,7 @@ public class EQTypeConverter
 	 * @return converted value
 	 */
 	public Object convert( TypeDescriptor expectedType, Object value ) {
-		if ( value == null ) {
+		if ( value == null || EQValue.NULL.equals( value ) ) {
 			return null;
 		}
 

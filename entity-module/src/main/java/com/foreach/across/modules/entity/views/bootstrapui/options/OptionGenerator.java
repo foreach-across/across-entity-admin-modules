@@ -153,6 +153,9 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 				if ( firstOption == null ) {
 					firstOption = option;
 				}
+				if ( hasEnhancer() ) {
+					enhancer.accept( option );
+				}
 				selectOption( option, selectedValues );
 				if ( isAllowed( option, entity ) ) {
 					actual.add( option );
@@ -170,10 +173,6 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 			if ( shouldSort( options ) ) {
 				Collections.sort( actual );
 			}
-		}
-
-		if ( hasEnhancer() ) {
-			actual.forEach( enhancer );
 		}
 
 		createInitialFixedOptions( builderContext, container, optionsBuilder, selectedValues, hasSelected );
