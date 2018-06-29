@@ -22,61 +22,24 @@ import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.query.support.EntityQueryAuthenticationFunctions;
 import com.foreach.across.modules.entity.query.support.EntityQueryDateFunctions;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.stereotype.Component;
 
 /**
- * Configures default {@link com.foreach.across.modules.entity.query.EntityQueryParser} on all entities
- * having a {@link com.foreach.across.modules.entity.query.EntityQueryExecutor}.
+ * Configures {@link EntityQuery} related components.
  *
  * @author Arne Vandamme
  * @since 2.0.0
  */
 @Configuration
-public class EntityQueryParserConfiguration implements EntityConfigurer
+class EntityQueryConfiguration
 {
-	@Override
-	public void configure( EntitiesConfigurationBuilder all ) {
-		all.matching( e -> e.hasAttribute( EntityQueryExecutor.class ) && !e.hasAttribute( EntityQueryParser.class ) )
-		   .postProcessor(
-				   entityConfiguration -> {
-					   EntityPropertyRegistry propertyRegistry = entityConfiguration.getPropertyRegistry();
-
-					   EntityQueryParser entityQueryParser = entityQueryParser();
-					   entityQueryParser.setMetadataProvider( entityQueryMetadataProvider( propertyRegistry ) );
-					   entityQueryParser.setQueryTranslator( entityQueryTranslator( propertyRegistry ) );
-
-					   entityConfiguration.setAttribute( EntityQueryParser.class, entityQueryParser );
-				   }
-		   );
-	}
-
 	@Bean
-	@Scope("prototype")
-	protected EntityQueryParser entityQueryParser() {
-		return new EntityQueryParser();
-	}
-
-	@Bean
-	@Scope("prototype")
-	protected EntityQueryMetadataProvider entityQueryMetadataProvider( EntityPropertyRegistry propertyRegistry ) {
-		return new DefaultEntityQueryMetadataProvider( propertyRegistry );
-	}
-
-	@Bean
-	@Scope("prototype")
-	protected EntityQueryTranslator entityQueryTranslator( EntityPropertyRegistry propertyRegistry ) {
-		DefaultEntityQueryTranslator translator = new DefaultEntityQueryTranslator();
-		translator.setPropertyRegistry( propertyRegistry );
-		translator.setTypeConverter( defaultEntityQueryTypeConverter() );
-		return translator;
-	}
-
-	@Bean
-	protected EQTypeConverter defaultEntityQueryTypeConverter() {
+	public EQTypeConverter defaultEntityQueryTypeConverter() {
 		return new EQTypeConverter();
 	}
 
@@ -89,5 +52,39 @@ public class EntityQueryParserConfiguration implements EntityConfigurer
 	@ConditionalOnClass(SecurityContext.class)
 	public EntityQueryAuthenticationFunctions entityQueryAuthenticationFunctions() {
 		return new EntityQueryAuthenticationFunctions();
+	}
+
+	/**
+	 * Configures  default {@link com.foreach.across.modules.entity.query.EntityQueryParser} and {@link EntityQueryFacade}
+	 * on all entities having a {@link com.foreach.across.modules.entity.query.EntityQueryExecutor}.
+	 *
+	 * @author Arne Vandamme
+	 * @see EntityQueryParserFactory
+	 * @since 2.0.0
+	 */
+	@Component
+	@RequiredArgsConstructor
+	static class EntityQueryFacadeRegistrar implements EntityConfigurer
+	{
+		private final EntityQueryParserFactory entityQueryParserFactory;
+
+		@Override
+		public void configure( EntitiesConfigurationBuilder all ) {
+			all.matching( e -> e.hasAttribute( EntityQueryExecutor.class ) && !e.hasAttribute( EntityQueryParser.class ) && !e
+					.hasAttribute( EntityQueryFacade.class ) )
+			   .postProcessor(
+					   entityConfiguration -> {
+						   EntityPropertyRegistry propertyRegistry = entityConfiguration.getPropertyRegistry();
+
+						   EntityQueryParser entityQueryParser = entityQueryParserFactory.createParser( propertyRegistry );
+						   entityConfiguration.setAttribute( EntityQueryParser.class, entityQueryParser );
+
+						   entityConfiguration.setAttribute(
+								   EntityQueryFacade.class,
+								   new SimpleEntityQueryFacade<>( entityQueryParser, entityConfiguration.getAttribute( EntityQueryExecutor.class ) )
+						   );
+					   }
+			   );
+		}
 	}
 }

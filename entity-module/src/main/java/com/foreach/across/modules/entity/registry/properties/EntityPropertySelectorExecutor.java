@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author Arne Vandamme
@@ -69,6 +70,9 @@ public class EntityPropertySelectorExecutor
 				}
 				else if ( propertyName.endsWith( "." + EntityPropertySelector.ALL ) ) {
 					properties.addAll(
+							selectPropertiesStartingWith( StringUtils.removeEnd( propertyName, EntityPropertySelector.ALL ), current.getProperties() )
+					);
+					properties.addAll(
 							selectNestedProperties(
 									StringUtils.removeEnd( propertyName, "." + EntityPropertySelector.ALL ),
 									EntityPropertySelector.ALL
@@ -77,14 +81,29 @@ public class EntityPropertySelectorExecutor
 				}
 				else if ( propertyName.endsWith( "." + EntityPropertySelector.ALL_REGISTERED ) ) {
 					properties.addAll(
+							selectPropertiesStartingWith( StringUtils.removeEnd( propertyName, EntityPropertySelector.ALL_REGISTERED ),
+							                              current.getRegisteredDescriptors() )
+					);
+					properties.addAll(
 							selectNestedProperties(
 									StringUtils.removeEnd( propertyName, "." + EntityPropertySelector.ALL_REGISTERED ),
 									EntityPropertySelector.ALL_REGISTERED
 							)
 					);
 				}
+				else if ( propertyName.endsWith( EntityPropertySelector.ALL_REGISTERED ) ) {
+					properties.addAll(
+							selectPropertiesStartingWith( StringUtils.removeEnd( propertyName, EntityPropertySelector.ALL_REGISTERED ),
+							                              current.getRegisteredDescriptors() )
+					);
+				}
+				else if ( propertyName.endsWith( EntityPropertySelector.ALL ) ) {
+					properties.addAll(
+							selectPropertiesStartingWith( StringUtils.removeEnd( propertyName, EntityPropertySelector.ALL ), current.getProperties() )
+					);
+				}
 				else {
-					properties.add( current.getProperty( propertyName ) );
+					properties.add( retrieveCurrentProperty( propertyName ) );
 				}
 			}
 			else {
@@ -95,6 +114,12 @@ public class EntityPropertySelectorExecutor
 		properties.removeIf( candidate -> excluded.contains( candidate.getName() ) || !predicate.test( candidate ) );
 
 		return new ArrayList<>( properties );
+	}
+
+	private List<EntityPropertyDescriptor> selectPropertiesStartingWith( String prefix, Collection<EntityPropertyDescriptor> descriptors ) {
+		return descriptors.stream()
+		                  .filter( d -> StringUtils.startsWith( d.getName(), prefix ) )
+		                  .collect( Collectors.toList() );
 	}
 
 	private List<EntityPropertyDescriptor> selectNestedProperties( String propertyName, String selectorString ) {
@@ -110,12 +135,20 @@ public class EntityPropertySelectorExecutor
 			List<EntityPropertyDescriptor> properties = new ArrayList<>( subProperties.size() );
 
 			for ( EntityPropertyDescriptor subProperty : subProperties ) {
-				properties.add( current.getProperty( propertyName + "." + subProperty.getName() ) );
+				properties.add( retrieveCurrentProperty( propertyName + "." + subProperty.getName() ) );
 			}
 
 			return properties;
 		}
 
 		return Collections.emptyList();
+	}
+
+	private EntityPropertyDescriptor retrieveCurrentProperty( String propertyName ) {
+		EntityPropertyDescriptor property = current.getProperty( propertyName );
+		if ( property == null ) {
+			throw new IllegalArgumentException( "No such entity property registered: " + propertyName );
+		}
+		return property;
 	}
 }

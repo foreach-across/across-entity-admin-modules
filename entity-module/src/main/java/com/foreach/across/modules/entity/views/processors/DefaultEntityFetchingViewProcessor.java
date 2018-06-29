@@ -16,21 +16,22 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
-import com.foreach.across.modules.entity.query.AssociatedEntityQueryExecutor;
-import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.query.EntityQueryExecutor;
-import com.foreach.across.modules.entity.query.EntityQueryParser;
+import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
+import org.springframework.stereotype.Component;
 
 /**
  * Default implementation that attempts to fetch the items based on the {@link com.foreach.across.modules.entity.views.context.EntityViewContext}.
@@ -40,6 +41,10 @@ import org.springframework.data.repository.Repository;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Exposed
+@Component
+@Scope("prototype")
+@RequiredArgsConstructor
 public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetchingViewProcessor
 {
 	/**
@@ -51,6 +56,8 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 	 * Default order that this processor will have if it has been added through the {@link com.foreach.across.modules.entity.views.builders.ListViewInitializer}.
 	 */
 	public static final int DEFAULT_ORDER = Ordered.LOWEST_PRECEDENCE;
+
+	private final EntityQueryFacadeResolver entityQueryFacadeResolver;
 
 	/**
 	 * The basic filter that should always be applied.
@@ -64,12 +71,19 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 
 		String additionalPredicate = entityView.getAttribute( EQL_PREDICATE_ATTRIBUTE_NAME, String.class );
+		EntityQueryFacade entityQueryFacade = entityQueryFacadeResolver.forEntityViewRequest( entityViewRequest );
 
 		// set to null so we would favour regular repository if no specific query necessary
 		EntityQuery entityQuery = null;
 
 		if ( baseEqlPredicate != null || additionalPredicate != null ) {
-			entityQuery = buildEntityQuery( entityViewContext.getEntityConfiguration(), additionalPredicate );
+			if ( entityQueryFacade == null ) {
+				throw new IllegalStateException(
+						"An EntityQuery predicate was specified but the EntityConfiguration does not have a valid EntityQueryExecutor setup: "
+								+ entityViewContext.getEntityConfiguration().getName() );
+			}
+
+			entityQuery = buildEntityQuery( entityQueryFacade, additionalPredicate );
 		}
 
 		if ( entityViewContext.isForAssociation() ) {
@@ -81,11 +95,14 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 			);
 		}
 
-		return fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), entityQuery, pageable );
+		return fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), entityQueryFacade, entityQuery, pageable );
 	}
 
 	@SuppressWarnings("unchecked")
-	private Iterable<Object> fetchItemsForEntityConfiguration( EntityConfiguration entityConfiguration, EntityQuery entityQuery, Pageable pageable ) {
+	private Iterable<Object> fetchItemsForEntityConfiguration( EntityConfiguration entityConfiguration,
+	                                                           EntityQueryFacade entityQueryFacade,
+	                                                           EntityQuery entityQuery,
+	                                                           Pageable pageable ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );
 
 		if ( entityQuery == null ) {
@@ -94,15 +111,13 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 			}
 		}
 
-		EntityQueryExecutor entityQueryExecutor = entityConfiguration.getAttribute( EntityQueryExecutor.class );
-
-		if ( entityQueryExecutor != null ) {
-			return entityQueryExecutor.findAll( entityQuery != null ? entityQuery : EntityQuery.all(), pageable );
+		if ( entityQueryFacade != null ) {
+			return entityQueryFacade.findAll( entityQuery != null ? entityQuery : EntityQuery.all(), pageable );
 		}
 
 		if ( entityQuery != null ) {
 			throw new IllegalStateException(
-					"An EntityQuery predicate was specified but the EntityConfiguration does not have a valid EntityQueryParser setup: " + entityConfiguration
+					"An EntityQuery predicate was specified but the EntityConfiguration does not have a valid EntityQueryExecutor setup: " + entityConfiguration
 							.getName() );
 		}
 
@@ -131,16 +146,15 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 		);
 	}
 
-	private EntityQuery buildEntityQuery( EntityConfiguration entityConfiguration, String additionalPredicate ) {
+	private EntityQuery buildEntityQuery( EntityQueryFacade entityQueryFacade, String additionalPredicate ) {
 		EntityQuery query = EntityQuery.all();
-		EntityQueryParser parser = entityConfiguration.getAttribute( EntityQueryParser.class );
 
 		if ( baseEqlPredicate != null ) {
-			query = EntityQuery.and( query, parser.parse( baseEqlPredicate ) );
+			query = EntityQuery.and( query, entityQueryFacade.convertToExecutableQuery( baseEqlPredicate ) );
 		}
 
 		if ( additionalPredicate != null ) {
-			query = EntityQuery.and( query, parser.parse( additionalPredicate ) );
+			query = EntityQuery.and( query, entityQueryFacade.convertToExecutableQuery( additionalPredicate ) );
 		}
 
 		return query;

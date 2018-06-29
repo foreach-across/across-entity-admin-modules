@@ -36,6 +36,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -542,7 +543,7 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 	private void configurePropertyRegistryProcessor( EntityViewProcessorRegistry processorRegistry ) {
 		if ( propertyRegistry != null ) {
 			processorRegistry.remove( EntityPropertyRegistryViewProcessor.class.getName() );
-			processorRegistry.addProcessor( new EntityPropertyRegistryViewProcessor( propertyRegistry ) );
+			processorRegistry.addProcessor( new EntityPropertyRegistryViewProcessor( propertyRegistry ), Ordered.HIGHEST_PRECEDENCE );
 		}
 
 		if ( !registryConsumers.isEmpty() ) {

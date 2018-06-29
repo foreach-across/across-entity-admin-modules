@@ -17,6 +17,7 @@ package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.entity.config.entities.AuditableEntityUiConfiguration;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.hibernate.business.Auditable;
 import com.foreach.across.modules.spring.security.infrastructure.services.SecurityPrincipalLabelResolverStrategy;
@@ -26,6 +27,8 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.ConversionService;
 
 import java.util.Date;
@@ -39,11 +42,13 @@ import java.util.Date;
  * @author Arne Vandamme
  * @see AuditableEntityUiConfiguration
  */
-public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
+public class AuditablePropertyViewElementBuilder implements ViewElementBuilder, ValueFetcher<Auditable>
 {
 	private boolean forLastModifiedProperty;
 	private ConversionService conversionService;
 	private SecurityPrincipalLabelResolverStrategy securityPrincipalLabelResolverStrategy;
+
+	private MessageSource messageSource;
 
 	/**
 	 * Configure the builder for the last modified property instead of the creation property.
@@ -65,6 +70,17 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 	}
 
 	/**
+	 * Set the message source that should be used for creating the value.
+	 * If none set, a default string will be generated.
+	 *
+	 * @param messageSource to use
+	 */
+	@Autowired
+	public void setMessageSource( MessageSource messageSource ) {
+		this.messageSource = messageSource;
+	}
+
+	/**
 	 * Implementation to use for resolving a display label for a principal object.
 	 *
 	 * @param securityPrincipalLabelResolverStrategy to use for looking up security principal label
@@ -77,7 +93,13 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 	@Override
 	public ViewElement build( ViewElementBuilderContext builderContext ) {
 		Auditable auditable = EntityViewElementUtils.currentEntity( builderContext, Auditable.class );
+		String text = getValue( auditable );
 
+		return text != null ? new TextViewElement( text ) : null;
+	}
+
+	@Override
+	public String getValue( Auditable auditable ) {
 		if ( auditable != null ) {
 			Object principal = auditable.getCreatedBy();
 			Date date = auditable.getCreatedDate();
@@ -89,10 +111,31 @@ public class AuditablePropertyViewElementBuilder implements ViewElementBuilder
 
 			String principalString = getPrincipalString( principal );
 
-			return new TextViewElement( convertToString( date ) + ( !StringUtils.isBlank( principalString ) ? " by " + principalString : "" ) );
+			return buildMessage( date, principalString );
 		}
 
 		return null;
+	}
+
+	private String buildMessage( Date date, String principal ) {
+		if ( messageSource != null ) {
+			String message = messageSource.getMessage( determineMessageCode( principal ), new Object[] { date, principal }, "",
+			                                           LocaleContextHolder.getLocale() );
+
+			if ( StringUtils.isNotEmpty( message ) ) {
+				return message;
+			}
+		}
+
+		return convertToString( date ) + ( !StringUtils.isBlank( principal ) ? " by " + principal : "" );
+	}
+
+	private String determineMessageCode( String principal ) {
+		if ( StringUtils.isEmpty( principal ) ) {
+			return forLastModifiedProperty ? "Auditable.lastModifiedDate" : "Auditable.createdDate";
+		}
+
+		return forLastModifiedProperty ? "Auditable.lastModified" : "Auditable.created";
 	}
 
 	private String getPrincipalString( Object principal ) {

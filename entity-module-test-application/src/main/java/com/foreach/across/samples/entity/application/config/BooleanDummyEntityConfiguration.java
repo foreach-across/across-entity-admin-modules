@@ -17,17 +17,21 @@
 package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.samples.entity.application.business.BooleanDummy;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.PageImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Steven Gentens
@@ -40,27 +44,27 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 
 	public BooleanDummyEntityConfiguration() {
 		booleanDummyRepository.add(
-				BooleanDummy.builder().id( "-1" )
+				BooleanDummy.builder().id( -1 )
 				            .booleanCheckbox( true ).booleanRadio( true ).booleanSelect( true ).booleanSelectNonNull( true )
 				            .primitiveBooleanCheckbox( true ).primitiveBooleanRadio( true ).primitiveBooleanSelect( true ).primitiveBooleanSelectNonNull( true )
 				            .build()
 		);
 		booleanDummyRepository.add(
-				BooleanDummy.builder().id( "-2" )
+				BooleanDummy.builder().id( -2 )
 				            .booleanCheckbox( false ).booleanRadio( false ).booleanSelect( false ).booleanSelectNonNull( false )
 				            .primitiveBooleanCheckbox( false ).primitiveBooleanRadio( false ).primitiveBooleanSelect( false )
 				            .primitiveBooleanSelectNonNull( false )
 				            .build()
 		);
 		booleanDummyRepository.add(
-				BooleanDummy.builder().id( "-3" )
+				BooleanDummy.builder().id( -3 )
 				            .booleanCheckbox( true ).booleanRadio( false ).booleanSelect( true ).booleanSelectNonNull( false )
 				            .primitiveBooleanCheckbox( false ).primitiveBooleanRadio( true ).primitiveBooleanSelect( false )
 				            .primitiveBooleanSelectNonNull( true )
 				            .build()
 		);
 		booleanDummyRepository.add(
-				BooleanDummy.builder().id( "-4" )
+				BooleanDummy.builder().id( -4 )
 				            .booleanSelectNonNull( false ).primitiveBooleanSelectNonNull( true )
 				            .build()
 		);
@@ -76,11 +80,10 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 				        model -> model
 						        .entityFactory( new BooleanDummyEntityConfiguration.BooleanDummyEntityFactory() )
 						        .entityInformation( new BooleanDummyEntityConfiguration.BooleanDummyEntityInformation() )
-						        .labelPrinter( ( o, locale ) -> o.getId().toString() )
+						        .labelPrinter( ( o, locale ) -> "" + o.getId() )
 						        .findOneMethod( id ->
 								                        booleanDummyRepository.stream()
-								                                              .filter( m -> id.equals(
-										                                              m.getId() ) )
+								                                              .filter( m -> id.equals( m.getId() ) )
 								                                              .findFirst().orElse( null ) )
 						        .saveMethod(
 								        booleanDummy -> {
@@ -106,11 +109,11 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 										        );
 									        }
 									        else {
-										        Long nextId = booleanDummyRepository.stream()
-										                                            .mapToLong( e -> Long.parseLong( e.getId() ) )
-										                                            .min().orElse( 0L ) - 1;
+										        Integer nextId = booleanDummyRepository.stream()
+										                                               .mapToInt( BooleanDummy::getId )
+										                                               .min().orElse( 0 ) - 1;
 
-										        booleanDummy.setId( nextId.toString() );
+										        booleanDummy.setId( nextId );
 										        booleanDummyRepository.add( booleanDummy );
 									        }
 									        return booleanDummy;
@@ -118,7 +121,26 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 						        )
 						        .deleteMethod( booleanDummyRepository::remove )
 		        )
+		        .attribute(
+				        ( config, attributes ) ->
+						        attributes.setAttribute( EntityQueryExecutor.class,
+						                                 new CollectionEntityQueryExecutor<>( booleanDummyRepository, config.getPropertyRegistry() ) )
+		        )
 		        .properties( props -> props
+				        .property( "id" )
+				        .viewElementType( ViewElementMode.FILTER_CONTROL, OptionsFormElementBuilderFactory.OPTIONS )
+				        .attribute(
+						        OptionIterableBuilder.class,
+						        builderContext -> booleanDummyRepository.stream()
+						                                                .map( dummy ->
+								                                                      new OptionFormElementBuilder().label( "" + dummy.getId() )
+								                                                                                    .value( dummy.getId() )
+								                                                                                    .rawValue( dummy.getId() )
+						                                                )
+						                                                .collect( Collectors.toList() )
+				        )
+				        //.attribute( EntityAttributes.PROPERTY_REQUIRED, true )
+				        .and()
 				        .property( "primitiveBooleanCheckbox" )
 				        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.CHECKBOX )
 				        .and().property( "primitiveBooleanRadio" )
@@ -136,9 +158,7 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 				        .and().property( "booleanSelectNonNull" )
 				        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.RADIO )
 		        )
-		        .listView( lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( booleanDummyRepository ) )
-		                             .entityQueryFilter( cfg -> cfg.showProperties( "booleanRadio" ) )
-		                             .viewProcessor( new BooleanDummyListViewConfiguration() ) )
+		        .listView( lvb -> lvb.entityQueryFilter( cfg -> cfg.showProperties( "id", "booleanRadio", "booleanSelect" ).multiValue( "booleanSelect" ) ) )
 		        .createFormView( fvb -> fvb.showProperties( "booleanSelectNonNull", "primitiveBooleanSelectNonNull" ) )
 		        .updateFormView( fvb -> fvb.showProperties( "*" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
@@ -158,21 +178,21 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 		}
 	}
 
-	public class BooleanDummyEntityInformation implements org.springframework.data.repository.core.EntityInformation<BooleanDummy, String>
+	public class BooleanDummyEntityInformation implements org.springframework.data.repository.core.EntityInformation<BooleanDummy, Integer>
 	{
 		@Override
 		public boolean isNew( BooleanDummy entity ) {
-			return StringUtils.isEmpty( entity.getId() );
+			return entity.getId() == null;
 		}
 
 		@Override
-		public String getId( BooleanDummy entity ) {
+		public Integer getId( BooleanDummy entity ) {
 			return entity.getId();
 		}
 
 		@Override
-		public Class<String> getIdType() {
-			return String.class;
+		public Class<Integer> getIdType() {
+			return Integer.class;
 		}
 
 		@Override

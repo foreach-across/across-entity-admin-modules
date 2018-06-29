@@ -76,6 +76,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 							     .displayName( "Created" )
 							     .propertyType( String.class )
 							     .writable( false ).readable( true ).hidden( true ).order( 1005 )
+							     .valueFetcher( createdValueBuilder() )
 							     .attribute( Sort.Order.class, new Sort.Order( "createdDate" ) )
 							     .viewElementBuilder( ViewElementMode.VALUE, createdValueBuilder() )
 							     .viewElementBuilder( ViewElementMode.LIST_VALUE, createdValueBuilder() );
@@ -84,6 +85,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 							     .displayName( "Last modified" )
 							     .propertyType( String.class )
 							     .writable( false ).readable( true ).hidden( true ).order( 1006 )
+							     .valueFetcher( lastModifiedValueBuilder() )
 							     .attribute( Sort.Order.class, new Sort.Order( "lastModifiedDate" ) )
 							     .viewElementBuilder( ViewElementMode.VALUE, lastModifiedValueBuilder() )
 							     .viewElementBuilder( ViewElementMode.LIST_VALUE, lastModifiedValueBuilder() );
@@ -110,7 +112,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 	}
 
 	@Bean
-	public ViewElementBuilder createdValueBuilder() {
+	public AuditablePropertyViewElementBuilder createdValueBuilder() {
 		AuditablePropertyViewElementBuilder builder = new AuditablePropertyViewElementBuilder();
 		builder.setConversionService( mvcConversionService );
 
@@ -125,7 +127,7 @@ public class AuditableEntityUiConfiguration implements EntityConfigurer
 	}
 
 	@Bean
-	public ViewElementBuilder lastModifiedValueBuilder() {
+	public AuditablePropertyViewElementBuilder lastModifiedValueBuilder() {
 		AuditablePropertyViewElementBuilder builder = new AuditablePropertyViewElementBuilder();
 		builder.setConversionService( mvcConversionService );
 		builder.setForLastModifiedProperty( true );

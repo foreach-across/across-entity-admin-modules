@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.query;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -118,6 +119,29 @@ public enum EntityQueryOps
 			if ( ArrayUtils.contains( ops.tokens, lookup ) ) {
 				return ops;
 			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Retrieve the multi-value equivalent operand for a single-value operand.
+	 * Eg. the multi-value of {@code EQ} is {@code IN}.
+	 *
+	 * @param single value operand
+	 * @return multi-value operand or {@code null} if there is none
+	 */
+	public static EntityQueryOps resolveMultiValueOperand( @NonNull EntityQueryOps single ) {
+		switch ( single ) {
+			case EQ:
+				return IN;
+			case NEQ:
+				return NOT_IN;
+			case CONTAINS:
+			case NOT_CONTAINS:
+			case IN:
+			case NOT_IN:
+				return single;
 		}
 
 		return null;

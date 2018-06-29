@@ -118,6 +118,19 @@ public class TestOptionsFormElementBuilderFactory extends ViewElementBuilderFact
 	}
 
 	@Test
+	public void filterControlsAreSingleByDefault() {
+		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
+
+		SelectFormElement select = assemble( "multiValue", ViewElementMode.FILTER_CONTROL, BootstrapUiElements.SELECT );
+		assertFalse( select.isMultiple() );
+		assertNotNull( select.getConfiguration() );
+
+		select = assemble( "multiValue", ViewElementMode.FILTER_CONTROL.forMultiple(), BootstrapUiElements.SELECT );
+		assertTrue( select.isMultiple() );
+		assertNotNull( select.getConfiguration() );
+	}
+
+	@Test
 	public void fixedTypeTakesPrecedenceOverSelectFormElementConfiguration() {
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
 

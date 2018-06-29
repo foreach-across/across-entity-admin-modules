@@ -25,7 +25,6 @@ import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.convert.TypeDescriptor;
@@ -177,7 +176,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 		if ( typeDescriptor.isTargetTypeResolved()
 				&& ( entityRegistry.contains( typeDescriptor.getSimpleTargetType() ) || typeDescriptor.getSimpleTargetType().isEnum()
-				|| ArrayUtils.contains( new Object[] { Boolean.class, boolean.class }, typeDescriptor.getSimpleTargetType() ) ) ) {
+				|| Boolean.class.equals( typeDescriptor.getTargetTypeDescriptor().getObjectType() ) ) ) {
 			return BootstrapUiElements.SELECT;
 		}
 

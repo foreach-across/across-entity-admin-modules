@@ -138,7 +138,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 	public ContainerViewElement build( ViewElementBuilderContext builderContext ) {
 		ContainerViewElement container = new ContainerViewElement();
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		Collection selectedValues = valueFetcher != null ? retrieveSelected( entity ) : null;
+		Collection selectedValues = hasValueFetcher() ? retrieveSelectedValues( entity ) : null;
 
 		OptionsFormElementBuilder optionsBuilder = builderContext.getAttribute( OptionsFormElementBuilder.class );
 		Assert.notNull( optionsBuilder, "no optionsBuilder was found" );
@@ -152,6 +152,9 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 			for ( OptionFormElementBuilder option : options.buildOptions( builderContext ) ) {
 				if ( firstOption == null ) {
 					firstOption = option;
+				}
+				if ( hasEnhancer() ) {
+					enhancer.accept( option );
 				}
 				selectOption( option, selectedValues );
 				if ( isAllowed( option, entity ) ) {
@@ -170,10 +173,6 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 			if ( shouldSort( options ) ) {
 				Collections.sort( actual );
 			}
-		}
-
-		if ( hasEnhancer() ) {
-			actual.forEach( enhancer );
 		}
 
 		createInitialFixedOptions( builderContext, container, optionsBuilder, selectedValues, hasSelected );
@@ -226,7 +225,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		}
 	}
 
-	private Collection retrieveSelected( Object entity ) {
+	protected Collection retrieveSelectedValues( Object entity ) {
 		if ( entity != null && valueFetcher != null ) {
 			Object selected = valueFetcher.getValue( entity );
 
@@ -246,7 +245,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		return Collections.emptyList();
 	}
 
-	@SuppressWarnings( "unused" )
+	@SuppressWarnings("unused")
 	public static class OptionGeneratorBuilder
 	{
 		private OptionFormElementBuilder emptyOption = new OptionFormElementBuilder().label( "" ).value( "" );

@@ -29,7 +29,7 @@ import java.util.Locale;
  * @author Arne Vandamme
  * @see EntityConfiguration
  */
-public interface EntityModel<T, U extends Serializable> extends EntityInformation<T, U>
+public interface EntityModel<T, U extends Serializable> extends EntityInformation<T, U>, EntityFactory<T>
 {
 	/**
 	 * Generates a label for the entity and the default locale attached to the thread.

@@ -107,10 +107,20 @@ public class EntityQueryRequestProperty
 	}
 
 	public boolean isSingleConditionWithOperand( EntityQueryOps operand ) {
-		return rawConditions.size() == 1 && operand.equals( rawConditions.get( 0 ).getOperand() );
+		if ( rawConditions.size() == 1 ) {
+			EntityQueryOps conditionOperand = rawConditions.get( 0 ).getOperand();
+			return operand.equals( conditionOperand ) || canConvertOperand( conditionOperand, operand );
+		}
+		return false;
 	}
 
 	public boolean hasTranslatedValues() {
 		return !translatedValues.isEmpty();
 	}
+
+	private boolean canConvertOperand( EntityQueryOps from, EntityQueryOps to ) {
+		EQTranslationRule rule = EQTranslationRule.getTranslationRuleFor( from, to );
+		return rule != null && rule.canConvert( rawValues );
+	}
+
 }

@@ -31,18 +31,22 @@ import com.foreach.across.test.AcrossWebAppConfiguration;
 import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
 import com.foreach.across.testmodules.springdata.business.Client;
 import com.foreach.across.testmodules.springdata.business.Company;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.function.Function;
 
 import static com.foreach.across.core.context.bootstrap.AcrossBootstrapConfigurer.CONTEXT_POSTPROCESSOR_MODULE;
@@ -59,6 +63,11 @@ import static org.mockito.Mockito.verify;
 @TestPropertySource(properties = "adminWebModule.root-path=/hidden")
 public class ITWebBootstrap
 {
+	// Declared for conversion test
+	@SuppressWarnings("unused")
+	@NotNull
+	private Client clientProperty;
+
 	@Autowired
 	private AcrossContextBeanRegistry beanRegistry;
 
@@ -89,6 +98,15 @@ public class ITWebBootstrap
 	public void conversionServiceShouldUseTheEntityConverter() {
 		assertNull( mvcConversionService.convert( "123", Client.class ) );
 		verify( mockClientFinder ).apply( 123L );
+	}
+
+	@Test
+	public void entityConverterShouldNotConvertActualEntities() {
+		Client client = new Client();
+		Field fld = FieldUtils.getDeclaredField( ITWebBootstrap.class, "clientProperty", true );
+		TypeDescriptor target = new TypeDescriptor( fld );
+
+		assertSame( client, mvcConversionService.convert( client, TypeDescriptor.valueOf( Client.class ), target ) );
 	}
 
 	@Test

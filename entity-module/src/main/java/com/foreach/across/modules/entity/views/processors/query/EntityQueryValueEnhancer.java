@@ -22,7 +22,8 @@ import java.util.function.Consumer;
 
 /**
  * Base class to register an {@link com.foreach.across.modules.entity.EntityAttributes#OPTIONS_ENHANCER}.
- * Registers the value to be used in option form elements (instead of the default value that is used, which is usually the id).
+ * Registers the value to be used in option form elements for a basic entity query filter
+ * (instead of the default value that is used, which is usually the id).
  *
  * @author Steven Gentens
  * @since 2.2.0

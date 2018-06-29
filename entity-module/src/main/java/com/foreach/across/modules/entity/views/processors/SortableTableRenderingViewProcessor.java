@@ -107,7 +107,7 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 
 	/**
 	 * Collection of properties that should be sortable in the UI.
-	 * If {@code null} default sorting will be enabled on the table pased on the properties being rendered.
+	 * If {@code null} default sorting will be enabled on the table passed on the properties being rendered.
 	 *
 	 * @see SortableTableBuilder#defaultSorting()
 	 */

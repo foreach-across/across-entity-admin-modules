@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.menu;
 
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
+import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -59,7 +60,8 @@ public class EntityAdminMenuAttributeRegistrar
 	public static AttributeRegistrar<EntityViewFactory> adminMenu( String menuPath, Consumer<PathBasedMenuBuilder.PathBasedMenuItemBuilder> itemCustomizer ) {
 		return ( entityViewFactory, attributes ) -> {
 			attributes.setAttribute( ADMIN_MENU, (Consumer<EntityAdminMenuEvent>) ( menuEvent ) -> {
-				if ( menuEvent.isForUpdate() && isAllowed( entityViewFactory, menuEvent.getViewContext() ) ) {
+				if ( menuEvent.isForUpdate() && isConfiguredForContextViewRegistry( entityViewFactory, menuEvent.getViewContext() )
+						&& isAllowed( entityViewFactory, menuEvent.getViewContext() ) ) {
 					String viewName = entityViewFactory.getAttribute( EntityViewFactoryAttributes.VIEW_NAME, String.class );
 					PathBasedMenuBuilder.PathBasedMenuItemBuilder builder = menuEvent.builder().item(
 							menuPath,
@@ -72,6 +74,18 @@ public class EntityAdminMenuAttributeRegistrar
 				}
 			} );
 		};
+	}
+
+	/**
+	 * Checks if the given {@link EntityViewFactory} is for the same {@link EntityViewRegistry} as the current {@link EntityViewContext}.
+	 *
+	 * @param viewFactory on which the view is registered
+	 * @param viewContext that is present
+	 */
+	private static boolean isConfiguredForContextViewRegistry( EntityViewFactory viewFactory, EntityViewContext viewContext ) {
+		EntityViewRegistry factoryViewRegistry = viewFactory.getAttribute( EntityViewRegistry.class );
+		EntityViewRegistry contextViewRegistry = viewContext.isForAssociation() ? viewContext.getEntityAssociation() : viewContext.getEntityConfiguration();
+		return factoryViewRegistry.equals( contextViewRegistry );
 	}
 
 	private static boolean isAllowed( EntityViewFactory viewFactory, EntityViewContext viewContext ) {

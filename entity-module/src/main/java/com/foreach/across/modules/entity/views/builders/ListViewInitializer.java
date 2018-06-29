@@ -132,12 +132,12 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 	}
 
 	private void configureDefaultFallbackFetcher( EntityListViewFactoryBuilder builder ) {
-		builder.postProcess( ( factory, registry ) -> {
-			registry.addProcessor(
-					DefaultEntityFetchingViewProcessor.class.getName(),
-					new DefaultEntityFetchingViewProcessor(),
-					DefaultEntityFetchingViewProcessor.DEFAULT_ORDER
-			);
-		} );
+		builder.postProcess( ( factory, registry ) ->
+				                     registry.addProcessor(
+						                     DefaultEntityFetchingViewProcessor.class.getName(),
+						                     beanFactory.createBean( DefaultEntityFetchingViewProcessor.class ),
+						                     DefaultEntityFetchingViewProcessor.DEFAULT_ORDER
+				                     )
+		);
 	}
 }

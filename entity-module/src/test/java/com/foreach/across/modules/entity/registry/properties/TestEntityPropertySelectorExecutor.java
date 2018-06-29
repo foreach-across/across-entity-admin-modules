@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -40,6 +41,10 @@ public class TestEntityPropertySelectorExecutor
 	private EntityPropertyDescriptor id;
 	private EntityPropertyDescriptor displayName;
 	private EntityPropertyDescriptor name;
+	private EntityPropertyDescriptor productId;
+	private EntityPropertyDescriptor productTitle;
+	private EntityPropertyDescriptor productDate;
+	private EntityPropertyDescriptor productCatalog;
 
 	@Before
 	public void setUp() throws Exception {
@@ -58,9 +63,10 @@ public class TestEntityPropertySelectorExecutor
 		Mockito.<Class<?>>when( product.getPropertyType() ).thenReturn( Long.class );
 		when( registryProvider.get( Long.class ) ).thenReturn( productRegistry );
 
-		property( "product.id" );
-		property( "product.title" );
-		property( "product.date" );
+		productId = property( "product.id" );
+		productTitle = property( "product.title" );
+		productDate = property( "product.date" );
+		productCatalog = property( "productCatalog" );
 	}
 
 	private EntityPropertyDescriptor property( String name ) {
@@ -70,6 +76,14 @@ public class TestEntityPropertySelectorExecutor
 		when( propertyRegistry.getProperty( name ) ).thenReturn( property );
 
 		return property;
+	}
+
+	@Test
+	public void propertyNotFound() {
+		selector = EntityPropertySelector.of( "not-existing" );
+
+		Assertions.assertThatExceptionOfType( IllegalArgumentException.class )
+		          .isThrownBy( this::select );
 	}
 
 	@Test
@@ -155,6 +169,27 @@ public class TestEntityPropertySelectorExecutor
 		select();
 
 		assertResult( "id", "product.id", "product.title" );
+	}
+
+	@Test
+	public void allPropertiesStartingWith() {
+		when( propertyRegistry.getProperties() ).thenReturn( Arrays.asList( displayName, productId, productTitle, productDate, productCatalog ) );
+
+		selector = EntityPropertySelector.of( "product*" );
+		select();
+
+		assertResult( "product.id", "product.title", "product.date", "productCatalog" );
+	}
+
+	@Test
+	public void allRegisteredPropertiesStartingWith() {
+		when( propertyRegistry.getProperties() ).thenReturn( Arrays.asList( displayName, productId ) );
+		when( propertyRegistry.getRegisteredDescriptors() ).thenReturn( Arrays.asList( productDate, productCatalog, id) );
+
+		selector = EntityPropertySelector.of( "product**", "product*" );
+		select();
+
+		assertResult( "product.date", "productCatalog", "product.id" );
 	}
 
 	private EntityPropertyDescriptor nestedProperty( String name ) {

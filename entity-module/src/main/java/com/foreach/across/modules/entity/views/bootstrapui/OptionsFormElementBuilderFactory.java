@@ -148,7 +148,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			}
 		}
 
-		options.multiple( typeDescriptor.isCollection() || viewElementMode.isForMultiple() )
+		options.multiple( ( !isFilterControl && typeDescriptor.isCollection() ) || viewElementMode.isForMultiple() )
 		       .add( optionGenerator );
 
 		return options;
