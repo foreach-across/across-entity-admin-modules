@@ -16,14 +16,8 @@
 
 package com.foreach.across.modules.entity.bind;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.val;
+import com.foreach.across.modules.entity.registry.properties.*;
+import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.springframework.beans.ConversionNotSupportedException;
@@ -43,7 +37,7 @@ import java.util.function.Supplier;
  * Each existing descriptor should have a {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyController}
  * with a value reader/writer for correct use.
  * <p/>
- * Implemented as a {@code Map} for data binder puposes, but expects every key to correspond with a registered property
+ * Implemented as a {@code Map} for data binder purposes, but expects every key to correspond with a registered property
  * in the {@link EntityPropertyRegistry}. When fetched, will create an intermediate target
  * for that property and apply type conversion based on the registered property type.
  * Should not be used as a regular {@link java.util.Map} implementation.
@@ -94,6 +88,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 	 * Note that the supplier will be called for every property that needs the entity.
 	 */
 	@Setter
+	@Deprecated
 	private Supplier<Object> entitySupplier;
 
 	/**
@@ -105,6 +100,13 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 	public final EntityPropertiesBinder getProperties() {
 		return this;
 	}
+
+	/**
+	 * Set the binding context for this binder.
+	 */
+	@Setter
+	@Getter
+	private EntityPropertyBindingContext<Object, Object> bindingContext;
 
 	/**
 	 * Set a fixed entity to which the properties should be bound.
@@ -153,7 +155,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 					throw new IllegalArgumentException( "No such property descriptor: '" + fqPropertyName + "'" );
 				}
 
-				valueHolder = createValueHolder( descriptor );
+				valueHolder = createValueController( descriptor );
 				put( propertyName, valueHolder );
 			}
 			catch ( IllegalArgumentException iae ) {
@@ -168,7 +170,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 		return valueHolder;
 	}
 
-	EntityPropertyValueController<Object> createValueHolder( EntityPropertyDescriptor descriptor ) {
+	EntityPropertyValueController<Object> createValueController( EntityPropertyDescriptor descriptor ) {
 		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
 
 		if ( typeDescriptor.isMap() ) {
@@ -205,7 +207,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 
 	/**
 	 * Bind the registered properties to the target entity.
-	 * This will only be done for all properties that have been modified.
 	 */
 	public void bind() {
 		values().forEach( v -> {
@@ -239,9 +240,14 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 		return childBinder;
 	}
 
+	@Deprecated
 	Object createValue( EntityPropertyController<Object, Object> controller, Object entity, TypeDescriptor descriptor ) {
+		return null;
+	}
+
+	Object createValue( EntityPropertyController<Object, Object> controller, TypeDescriptor descriptor ) {
 		if ( controller != null ) {
-			return controller.createValue( entity );
+			return controller.createValue( getBindingContext() );
 		}
 
 		if ( descriptor != null ) {

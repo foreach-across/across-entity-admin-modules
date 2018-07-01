@@ -209,11 +209,11 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	}
 
 	@Override
-	public boolean applyValue( T owner, U propertyValue ) {
+	public boolean applyValue( T owner, U oldPropertyValue, U newPropertyValue ) {
 		if ( applyValueFunction == null && parent != null ) {
-			return parent.applyValue( owner, propertyValue );
+			return parent.applyValue( owner, oldPropertyValue, newPropertyValue );
 		}
-		return applyValueFunction != null && Boolean.TRUE.equals( applyValueFunction.apply( owner, propertyValue ) );
+		return applyValueFunction != null && Boolean.TRUE.equals( applyValueFunction.apply( owner, newPropertyValue ) );
 	}
 
 	@Override
@@ -222,24 +222,5 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 			return parent.save( owner, propertyValue );
 		}
 		return saveFunction != null && Boolean.TRUE.equals( saveFunction.apply( owner, propertyValue ) );
-	}
-
-	@Override
-	public boolean delete( T owner ) {
-		if ( deleteFunction == null && parent != null ) {
-			return parent.delete( owner );
-		}
-		if ( deleteFunction == null ) {
-			return save( owner, null );
-		}
-		return Boolean.TRUE.equals( deleteFunction.apply( owner ) );
-	}
-
-	@Override
-	public boolean exists( T owner ) {
-		if ( existsFunction == null && parent != null ) {
-			return parent.exists( owner );
-		}
-		return existsFunction == null || Boolean.TRUE.equals( existsFunction.apply( owner ) );
 	}
 }

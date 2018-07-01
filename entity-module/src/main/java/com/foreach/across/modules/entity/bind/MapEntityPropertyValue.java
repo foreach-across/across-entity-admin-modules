@@ -90,7 +90,7 @@ public class MapEntityPropertyValue implements EntityPropertyValueController<Obj
 	}
 
 	@Override
-	public Object initializeValue() {
+	public Object createNewValue() {
 		return null;
 	}
 
@@ -150,7 +150,7 @@ public class MapEntityPropertyValue implements EntityPropertyValueController<Obj
 			int index = 0;
 			for ( Object v : values ) {
 				String key = "" + index;
-				Item item = new Item( binder.createValueHolder( keyDescriptor ), binder.createValueHolder( valueDescriptor ) );
+				Item item = new Item( binder.createValueController( keyDescriptor ), binder.createValueController( valueDescriptor ) );
 				item.setEntryKey( key );
 				item.setEntryValue( v );
 				item.setSortIndex( index++ );
@@ -184,7 +184,7 @@ public class MapEntityPropertyValue implements EntityPropertyValueController<Obj
 	@Override
 	public boolean applyValue() {
 		if ( collectionController != null ) {
-			return collectionController.applyValue( binder.getEntity(), getValue() );
+			return collectionController.applyValue( binder.getEntity(), null, getValue() );
 		}
 		return false;
 	}
@@ -201,7 +201,7 @@ public class MapEntityPropertyValue implements EntityPropertyValueController<Obj
 	}
 
 	private Item createItem( String key ) {
-		Item item = new Item( binder.createValueHolder( keyDescriptor ), binder.createValueHolder( valueDescriptor ) );
+		Item item = new Item( binder.createValueController( keyDescriptor ), binder.createValueController( valueDescriptor ) );
 
 		if ( String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
 			item.setEntryKey( key );

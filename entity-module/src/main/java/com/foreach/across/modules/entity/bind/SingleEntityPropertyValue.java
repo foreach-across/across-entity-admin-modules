@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.core.Ordered;
@@ -48,7 +49,6 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 	/**
 	 * Has {@link #setValue(Object)} been called with a new value.
 	 */
-	@Getter
 	private boolean modified;
 
 	/**
@@ -57,8 +57,10 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 	private Object value;
 
 	/**
-	 * Sort index value, only relevant when the property value is part of a (sorted) collection.
+	 * The original value that was fetched when the property was initialized.
 	 */
+	private Object originalValue;
+
 	@Getter
 	@Setter
 	private int sortIndex;
@@ -70,12 +72,18 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 		controller = descriptor.getController();
 
 		if ( controller != null ) {
-			value = controller.fetchValue( binder.getEntity() );
+			value = controller.fetchValue( binder.getBindingContext() );
+			originalValue = value;
 		}
+	}
+
+	public boolean isModified() {
+		return modified || isDeleted();
 	}
 
 	public EntityPropertiesBinder getProperties() {
 		if ( properties == null ) {
+			valueHasBeenSet = true;
 			properties = binder.createChildBinder( descriptor, getInitializedValue() );
 		}
 
@@ -95,43 +103,34 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 		return value;
 	}
 
-	/**
-	 * Set the value for this property, can be {@code null}.
-	 * The source value will be converted to the expected type defined by the descriptor.
-	 *
-	 * @param value to set
-	 */
 	@Override
 	public void setValue( Object value ) {
 		valueHasBeenSet = true;
 
 		Object newValue = value;
 
-		if ( "".equals( value ) && !String.class.equals( descriptor.getPropertyType() )) {
+		if ( "".equals( value ) && !String.class.equals( descriptor.getPropertyType() ) ) {
 			newValue = null;
 		}
 
 		newValue = binder.convertIfNecessary( newValue, descriptor.getPropertyTypeDescriptor(), binderPath() );
+
 		if ( !Objects.equals( this.value, newValue ) ) {
 			modified = true;
+			this.value = newValue;
+			properties = null;
 		}
-		this.value = newValue;
-		properties = null;
 	}
 
 	@Override
-	public Object initializeValue() {
-		return binder.createValue( controller, binder.getEntity(), descriptor.getPropertyTypeDescriptor() );
+	public Object createNewValue() {
+		return binder.createValue( controller, descriptor.getPropertyTypeDescriptor() );
 	}
 
-	/**
-	 * Apply the property value to the target entity, can only be done if there is a controller.
-	 */
 	@Override
 	public boolean applyValue() {
-		// modified? mark as applied.
 		if ( controller != null ) {
-			return controller.applyValue( binder.getEntity(), getValue() );
+			return controller.applyValue( binder.getBindingContext(), new EntityPropertyValue<>( originalValue, getValue(), isDeleted() ) );
 		}
 		return false;
 	}
@@ -139,7 +138,7 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 	@Override
 	public boolean save() {
 		if ( controller != null ) {
-			return controller.save( binder.getEntity(), getValue() );
+			return controller.save( binder.getBindingContext(), new EntityPropertyValue<>( originalValue, getValue(), isDeleted() ) );
 		}
 		return false;
 	}
@@ -155,7 +154,7 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 		return beforeValidate >= errors.getErrorCount();
 	}
 
-	private boolean isDeleted() {
+	public boolean isDeleted() {
 		return isBound() && !valueHasBeenSet;
 	}
 
@@ -168,8 +167,10 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 		return controller != null ? controller.getOrder() : Ordered.LOWEST_PRECEDENCE;
 	}
 
+	@Override
 	public void resetBindStatus() {
 		setBound( false );
 		valueHasBeenSet = false;
+		modified = false;
 	}
 }

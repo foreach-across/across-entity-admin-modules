@@ -26,7 +26,10 @@ import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
 import java.util.Date;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -69,19 +72,19 @@ public class TestGenericEntityPropertyController
 
 	@Test
 	public void setValue() {
-		assertThat( controller.applyValue( "any-string", 123L ) ).isFalse();
+		assertThat( controller.applyValue( "any-string", null, 123L ) ).isFalse();
 
 		val consumer = mock( BiConsumer.class );
 		assertThat( controller.applyValueConsumer( consumer ) ).isSameAs( controller );
-		assertThat( controller.applyValue( "some-string", 555L ) ).isTrue();
+		assertThat( controller.applyValue( "some-string", null, 555L ) ).isTrue();
 		verify( consumer ).accept( "some-string", 555L );
 
 		val vw = mock( BiFunction.class );
 		when( vw.apply( "any-string", 123L ) ).thenReturn( true );
 		assertThat( controller.applyValueFunction( vw ) ).isSameAs( controller );
 
-		assertThat( controller.applyValue( "any-string", 123L ) ).isTrue();
-		assertThat( controller.applyValue( "any-string", 0L ) ).isFalse();
+		assertThat( controller.applyValue( "any-string", null, 123L ) ).isTrue();
+		assertThat( controller.applyValue( "any-string", null, 0L ) ).isFalse();
 	}
 
 	@Test
@@ -99,41 +102,6 @@ public class TestGenericEntityPropertyController
 
 		assertThat( controller.save( "any-string", 123L ) ).isTrue();
 		assertThat( controller.save( "any-string", 0L ) ).isFalse();
-	}
-
-	@Test
-	public void delete() {
-		assertThat( controller.delete( "any-string" ) ).isFalse();
-
-		val saveConsumer = mock( BiConsumer.class );
-		controller.saveConsumer( saveConsumer );
-		assertThat( controller.delete( "some-string" ) ).isTrue();
-		verify( saveConsumer ).accept( "some-string", null );
-
-		val consumer = mock( Consumer.class );
-		assertThat( controller.deleteConsumer( consumer ) ).isSameAs( controller );
-		assertThat( controller.delete( "some-string" ) ).isTrue();
-		verify( consumer ).accept( "some-string" );
-		verifyNoMoreInteractions( saveConsumer );
-
-		val vw = mock( Function.class );
-		when( vw.apply( "any-string" ) ).thenReturn( true );
-		assertThat( controller.deleteFunction( vw ) ).isSameAs( controller );
-
-		assertThat( controller.delete( "any-string" ) ).isTrue();
-		assertThat( controller.delete( "other-string" ) ).isFalse();
-	}
-
-	@Test
-	public void exists() {
-		assertThat( controller.exists( "any-string" ) ).isTrue();
-
-		val vw = mock( Function.class );
-		when( vw.apply( "any-string" ) ).thenReturn( true );
-		assertThat( controller.existsFunction( vw ) ).isSameAs( controller );
-
-		assertThat( controller.exists( "any-string" ) ).isTrue();
-		assertThat( controller.exists( "other-string" ) ).isFalse();
 	}
 
 	@Test

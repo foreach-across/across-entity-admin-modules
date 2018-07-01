@@ -91,7 +91,7 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 	}
 
 	@Override
-	public Object initializeValue() {
+	public Object createNewValue() {
 		return null;
 	}
 
@@ -198,7 +198,7 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 	@Override
 	public boolean applyValue() {
 		if ( collectionController != null ) {
-			return collectionController.applyValue( binder.getEntity(), getValue() );
+			return collectionController.applyValue( binder.getEntity(), null, getValue() );
 		}
 		return false;
 	}

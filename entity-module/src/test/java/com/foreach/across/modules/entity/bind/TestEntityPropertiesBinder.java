@@ -328,7 +328,7 @@ public class TestEntityPropertiesBinder
 	public void singleValueBind() {
 		val holder = single( "id" );
 		holder.applyValue();
-		verify( controller ).applyValue( ENTITY, null );
+		verify( controller ).applyValue( ENTITY, null, null );
 
 		reset( controller );
 
@@ -336,7 +336,7 @@ public class TestEntityPropertiesBinder
 		verifyZeroInteractions( controller );
 
 		holder.applyValue();
-		verify( controller ).applyValue( ENTITY, 678L );
+		verify( controller ).applyValue( ENTITY, null, 678L );
 	}
 
 	@Test
@@ -346,18 +346,18 @@ public class TestEntityPropertiesBinder
 		assertThat( holder.isModified() ).isFalse();
 
 		binder.bind();
-		verify( controller, never() ).applyValue( any(), any() );
+		verify( controller, never() ).applyValue( any(), null, any() );
 
 		holder.setValue( 444L );
 		binder.bind();
-		verify( controller ).applyValue( ENTITY, 444L );
+		verify( controller ).applyValue( ENTITY, null, 444L );
 	}
 
 	private SingleEntityPropertyValue single( String propertyName ) {
 		return (SingleEntityPropertyValue) binder.get( propertyName );
 	}
 
-	private MultiEntityPropertyValue multi( String propertyName ) {
-		return (MultiEntityPropertyValue) binder.get( propertyName );
+	private ListEntityPropertyValue multi( String propertyName ) {
+		return (ListEntityPropertyValue) binder.get( propertyName );
 	}
 }

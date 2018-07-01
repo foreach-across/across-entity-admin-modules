@@ -16,14 +16,16 @@
 
 package com.foreach.across.modules.entity.bind;
 
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import org.springframework.validation.Errors;
 
 /**
  * Helper class representing a single property of an entity, allowing
  * access to the property value, updating the value, validating it and saving it.
  * <p/>
- * Dispatches to the {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyController}
- * for the property
+ * Dispatches to the {@link EntityPropertyController} for the actual handling.
  * <p/>
  * Mainly for internal use in EntityModule.
  *
@@ -46,17 +48,18 @@ public interface EntityPropertyValueController<T>
 	T getValue();
 
 	/**
-	 * Get the current value or initialize a new value if has not been set.
+	 * Get the current value or initialize a new value if it has not been set.
 	 * What initializing entails is context dependent but this method is useful
 	 * for intermediate bean paths where you want to ensure that the intermediate property value is set.
 	 *
 	 * @return the value and initialize a new value if necessary
+	 * @see #createNewValue()
 	 */
 	default T getInitializedValue() {
 		T currentValue = getValue();
 
 		if ( currentValue == null ) {
-			T newValue = initializeValue();
+			T newValue = createNewValue();
 			if ( newValue != null ) {
 				setValue( newValue );
 				return newValue;
@@ -74,24 +77,29 @@ public interface EntityPropertyValueController<T>
 	void setValue( T value );
 
 	/**
+	 * Apply the current property value to the owning entity by calling {@link EntityPropertyController#applyValue(Object, Object, Object)}.
+	 * If the property is considered deleted, a {@code null} will usually be applied.
+	 *
+	 * @return true if value has been applied
+	 */
+	boolean applyValue();
+
+	/**
 	 * Initialize a new value for this property.
 	 * Will not actually update the property value itself but will attempt to return a new instance that can be set as the value.
 	 *
 	 * @return new value, can be {@code null}
 	 */
-	T initializeValue();
+	T createNewValue();
 
 	/**
-	 * Calls the {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyController#save(Object, Object)} method
-	 * for the given property.
+	 * Calls the {@link EntityPropertyController#save(EntityPropertyBindingContext, EntityPropertyValue)} for the given property.
 	 *
 	 * @return true if save has been executed
 	 */
 	boolean save();
 
 	boolean validate( Errors errors, Object... validationHints );
-
-	boolean applyValue();
 
 	/**
 	 * @return the order in which controller methods of this property should be executed relative to all other properties (and the base entity itself)
@@ -104,6 +112,9 @@ public interface EntityPropertyValueController<T>
 	 */
 	void resetBindStatus();
 
+	/**
+	 * Sort index value, only relevant when the property value is part of a (sorted) collection.
+	 */
 	int getSortIndex();
 
 	void setSortIndex( int sortIndex );

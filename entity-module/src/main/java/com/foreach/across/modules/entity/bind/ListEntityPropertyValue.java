@@ -77,13 +77,13 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 	}
 
 	private EntityPropertyValueController<Object> createItem() {
-		EntityPropertyValueController<Object> holder = binder.createValueHolder( memberDescriptor );
+		EntityPropertyValueController<Object> holder = binder.createValueController( memberDescriptor );
 		holder.setValue( binder.createValue( memberController, binder.getEntity(), memberTypeDescriptor ) );
 		return holder;
 	}
 
 	@Override
-	public Object initializeValue() {
+	public Object createNewValue() {
 		return null;
 	}
 
@@ -143,7 +143,7 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 			int index = 0;
 			for ( Object v : values ) {
 				String key = "" + index;
-				EntityPropertyValueController<Object> item = binder.createValueHolder( memberDescriptor );
+				EntityPropertyValueController<Object> item = binder.createValueController( memberDescriptor );
 				item.setValue( v );
 				item.setSortIndex( index++ );
 				items.put( key, item );
@@ -180,7 +180,7 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 	@Override
 	public boolean applyValue() {
 		if ( collectionController != null ) {
-			return collectionController.applyValue( binder.getEntity(), getValue() );
+			return collectionController.applyValue( binder.getEntity(), null, getValue() );
 		}
 		return false;
 	}

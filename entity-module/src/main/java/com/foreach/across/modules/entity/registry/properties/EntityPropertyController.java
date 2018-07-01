@@ -23,7 +23,7 @@ import org.springframework.validation.Errors;
  * Generic controller for a single property on an entity.
  * Allows reading and writing a property value, as well as validating a value.
  * <p/>
- * The difference between a {@link #save(Object, Object)} and a {@link #applyValue(Object, Object)}
+ * The difference between a {@link #save(Object, Object)} and a {@link #applyValue(Object, Object, Object)}
  * method, is that setting the value is usually done on the entity before the entity itself is saved.
  * The {@link #save(Object, Object)} method is useful for properties that are not actually present
  * on the entity instance itself.
@@ -61,6 +61,10 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @return property value
 	 */
 	default U fetchValue( T owner ) {
+		return fetchValue( new EntityPropertyBindingContext<>( owner ) );
+	}
+
+	default U fetchValue( EntityPropertyBindingContext<T, ?> context ) {
 		return null;
 	}
 
@@ -73,13 +77,17 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @return valid property value
 	 */
 	default U createValue( T owner ) {
+		return createValue( new EntityPropertyBindingContext<>( owner ) );
+	}
+
+	default U createValue( EntityPropertyBindingContext<T, ?> context ) {
 		return null;
 	}
 
 	/**
 	 * Validate a property value for the given owner entity.
 	 * Validation errors should be registered on the {@link Errors} argument.
-	 * Validating should happen before {@link #applyValue(Object, Object)} or {@link #save(Object, Object)}
+	 * Validating should happen before {@link #applyValue(Object, Object, Object)} or {@link #save(Object, Object)}
 	 * calls, to check that a property value can in fact be set.
 	 *
 	 * @param owner           entity
@@ -106,28 +114,19 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * <p/>
 	 * A single controller implements usually either {@code applyValue(Object, Object)} or {@link #save(Object, Object)}.
 	 *
-	 * @param owner         entity
-	 * @param propertyValue to set
+	 * @param owner            entity
+	 * @param oldPropertyValue the original value that (can be {@code null} if unknown)
+	 * @param newPropertyValue to set
 	 * @return true if value has been set
 	 * @see #save(Object, Object)
 	 */
-	default boolean applyValue( T owner, U propertyValue ) {
+	@Deprecated
+	default boolean applyValue( T owner, U oldPropertyValue, U newPropertyValue ) {
 		return false;
 	}
 
-	/**
-	 * Rollback a value that has previously been applied to the owning entity.
-	 * This method should only be called after the equivalent {@link #applyValue(Object, Object)}.
-	 * The return value is the new value for the property, afeter the rollback.
-	 * <p/>
-	 * The default implementation does nothing and returns the same property value.
-	 *
-	 * @param owner         entity
-	 * @param propertyValue that was previously applied
-	 * @return new property value
-	 */
-	default U rollbackValue( T owner, U propertyValue ) {
-		return propertyValue;
+	default boolean applyValue( EntityPropertyBindingContext<T, ?> context, EntityPropertyValue<U> propertyValue ) {
+		return false;
 	}
 
 	/**
@@ -138,36 +137,13 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param propertyValue to save
 	 * @return true if the property value has been saved
 	 */
+	@Deprecated
 	default boolean save( T owner, U propertyValue ) {
 		return false;
 	}
 
-	/**
-	 * Remove the property altogether from the owning entity.
-	 * Depending on the actual implementation this might simply reset to a default value,
-	 * set {@code null} or remove the "property" (for example delete database records).
-	 *
-	 * @param owner entity
-	 * @return true if property has been deleted
-	 */
-	default boolean delete( T owner ) {
+	default boolean save( EntityPropertyBindingContext<T, ?> context, EntityPropertyValue<U> propertyValue ) {
 		return false;
-	}
-
-	/**
-	 * Check if the property is present on the given entity.
-	 * This is relevant only in cases where the property itself might not be set;
-	 * which is different than being set with a {@code null} value.
-	 * <p/>
-	 * This method can be used to introduce some kind of optional property presence
-	 * semantics, for example in case of a map key: to distinguish between the presence
-	 * of the key and the {@code null} value.
-	 *
-	 * @param owner entity
-	 * @return true if the property is supposed to exist
-	 */
-	default boolean exists( T owner ) {
-		return true;
 	}
 
 	/**

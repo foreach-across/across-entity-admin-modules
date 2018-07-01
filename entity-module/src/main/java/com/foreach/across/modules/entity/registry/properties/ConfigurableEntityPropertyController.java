@@ -65,8 +65,8 @@ public interface ConfigurableEntityPropertyController<T, U>
 	ConfigurableEntityPropertyController<T, U> createValueFunction( Function<T, U> function );
 
 	/**
-	 * Set the consumer that should be called when applying the property value using {@link EntityPropertyController#applyValue(Object, Object)}.
-	 * The return value of calling {@link EntityPropertyController#applyValue(Object, Object)} will always be {@code true}
+	 * Set the consumer that should be called when applying the property value using {@link EntityPropertyController#applyValue(Object, Object, Object)}.
+	 * The return value of calling {@link EntityPropertyController#applyValue(Object, Object, Object)} will always be {@code true}
 	 * if you specify a {@link BiConsumer}. See {@link #applyValueFunction(BiFunction)} if you
 	 * want to control the return value.
 	 *
@@ -76,7 +76,7 @@ public interface ConfigurableEntityPropertyController<T, U>
 	ConfigurableEntityPropertyController<T, U> applyValueConsumer( BiConsumer<T, U> valueWriter );
 
 	/**
-	 * The function that should be called when setting the property value using {@link EntityPropertyController#applyValue(Object, Object)}.
+	 * The function that should be called when setting the property value using {@link EntityPropertyController#applyValue(Object, Object, Object)}.
 	 * If the {@link BiFunction} returns {@code null}, this will be converted to {@code false}.
 	 *
 	 * @param valueWriter function for setting the value
