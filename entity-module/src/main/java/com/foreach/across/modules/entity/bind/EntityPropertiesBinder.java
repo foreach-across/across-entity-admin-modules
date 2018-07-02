@@ -182,10 +182,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 		else if ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) {
 			val memberDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.INDEXER, typeDescriptor.getElementTypeDescriptor() );
 
-			return new ListEntityPropertyValue( this, descriptor, memberDescriptor );
+			return new ListEntityPropertyValueController( this, descriptor, memberDescriptor );
 		}
 
-		return new SingleEntityPropertyValue( this, descriptor );
+		return new SingleEntityPropertyValueController( this, descriptor );
 	}
 
 	private EntityPropertyDescriptor getOrCreateDescriptor( String name, TypeDescriptor expectedType ) {
@@ -210,8 +210,8 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 	 */
 	public void bind() {
 		values().forEach( v -> {
-			if ( v instanceof SingleEntityPropertyValue ) {
-				val holder = ( (SingleEntityPropertyValue) v );
+			if ( v instanceof SingleEntityPropertyValueController ) {
+				val holder = ( (SingleEntityPropertyValueController) v );
 				if ( holder.isModified() ) {
 					holder.applyValue();
 				}

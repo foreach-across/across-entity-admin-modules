@@ -37,8 +37,9 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.1.0
  */
+@SuppressWarnings( "Duplicates" )
 @RunWith(MockitoJUnitRunner.class)
-public class TestSingleEntityPropertyValue
+public class TestSingleEntityPropertyValueController
 {
 	private static final EntityPropertyBindingContext<Object, Object> BINDING_CONTEXT = new EntityPropertyBindingContext<>( "entity" );
 
@@ -49,7 +50,7 @@ public class TestSingleEntityPropertyValue
 	private EntityPropertyController<Object, Object> controller;
 
 	private EntityPropertyDescriptor descriptor;
-	private SingleEntityPropertyValue property;
+	private SingleEntityPropertyValueController property;
 
 	@Before
 	@SuppressWarnings("unchecked")
@@ -71,8 +72,7 @@ public class TestSingleEntityPropertyValue
 						.build()
 		);
 
-		property = new SingleEntityPropertyValue( binder, descriptor );
-		reset( controller );
+		property = new SingleEntityPropertyValueController( binder, descriptor );
 	}
 
 	@Test
@@ -89,19 +89,21 @@ public class TestSingleEntityPropertyValue
 	}
 
 	@Test
-	public void initialValueGetsLoadedFromTheController() {
+	public void initialValueGetsLazyLoadedFromTheController() {
+		verify( controller, never() ).fetchValue( any() );
 		assertThat( property.getValue() ).isEqualTo( 1 );
-		verifyZeroInteractions( controller );
 	}
 
 	@Test
 	public void updatingTheValueDoesNotUseTheController() {
 		property.setValue( 123 );
+		verify( controller ).fetchValue( BINDING_CONTEXT );
+
 		assertThat( property.getValue() ).isEqualTo( 123 );
-		verifyZeroInteractions( controller );
+		verifyNoMoreInteractions( controller );
 		property.setValue( 567 );
 		assertThat( property.getValue() ).isEqualTo( 567 );
-		verifyZeroInteractions( controller );
+		verifyNoMoreInteractions( controller );
 	}
 
 	@Test
@@ -154,7 +156,8 @@ public class TestSingleEntityPropertyValue
 	public void settingEmptyStringOnNonStringPropertyResultsInNullValue() {
 		property.setValue( "" );
 		assertThat( property.getValue() ).isNull();
-		verifyZeroInteractions( controller );
+		verify( controller ).fetchValue( BINDING_CONTEXT );
+		verifyNoMoreInteractions( controller );
 	}
 
 	@Test
@@ -169,7 +172,9 @@ public class TestSingleEntityPropertyValue
 
 		property.setValue( "" );
 		assertThat( property.getValue() ).isEqualTo( "" );
-		verifyZeroInteractions( controller );
+
+		verify( controller ).fetchValue( BINDING_CONTEXT );
+		verifyNoMoreInteractions( controller );
 	}
 
 	@Test

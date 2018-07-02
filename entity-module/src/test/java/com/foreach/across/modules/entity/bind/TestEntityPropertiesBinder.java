@@ -353,11 +353,11 @@ public class TestEntityPropertiesBinder
 		verify( controller ).applyValue( ENTITY, null, 444L );
 	}
 
-	private SingleEntityPropertyValue single( String propertyName ) {
-		return (SingleEntityPropertyValue) binder.get( propertyName );
+	private SingleEntityPropertyValueController single( String propertyName ) {
+		return (SingleEntityPropertyValueController) binder.get( propertyName );
 	}
 
-	private ListEntityPropertyValue multi( String propertyName ) {
-		return (ListEntityPropertyValue) binder.get( propertyName );
+	private ListEntityPropertyValueController multi( String propertyName ) {
+		return (ListEntityPropertyValueController) binder.get( propertyName );
 	}
 }

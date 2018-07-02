@@ -77,6 +77,11 @@ public interface EntityPropertyValueController<T>
 	void setValue( T value );
 
 	/**
+	 * @return true if the property has been modified, a deleted property is usually also considered modified
+	 */
+	boolean isModified();
+
+	/**
 	 * Apply the current property value to the owning entity by calling {@link EntityPropertyController#applyValue(Object, Object, Object)}.
 	 * If the property is considered deleted, a {@code null} will usually be applied.
 	 *
@@ -113,9 +118,14 @@ public interface EntityPropertyValueController<T>
 	void resetBindStatus();
 
 	/**
-	 * Sort index value, only relevant when the property value is part of a (sorted) collection.
+	 * @return Sort index value, only relevant when the property value is part of a (sorted) collection.
 	 */
 	int getSortIndex();
 
+	/**
+	 * Set the sort index of a property, only relevant when part of a sorted collection.
+	 *
+	 * @param sortIndex of this property
+	 */
 	void setSortIndex( int sortIndex );
 }

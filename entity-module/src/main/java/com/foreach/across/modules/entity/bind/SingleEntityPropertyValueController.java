@@ -25,14 +25,16 @@ import org.springframework.core.Ordered;
 import org.springframework.validation.Errors;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Represents a single value property, always attached to a {@link EntityPropertiesBinder}.
+ * The original property value will be loaded as soon as any value-related action is attempted.
  *
  * @author Arne Vandamme
  * @since 3.1.0
  */
-public class SingleEntityPropertyValue implements EntityPropertyValueController<Object>
+public class SingleEntityPropertyValueController implements EntityPropertyValueController<Object>
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor descriptor;
@@ -58,31 +60,38 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 
 	/**
 	 * The original value that was fetched when the property was initialized.
+	 * If {@code null} the original value has never been fetched.
 	 */
-	private Object originalValue;
+	private Optional<Object> originalValue;
 
 	@Getter
 	@Setter
 	private int sortIndex;
 
 	@SuppressWarnings("unchecked")
-	SingleEntityPropertyValue( EntityPropertiesBinder binder, EntityPropertyDescriptor descriptor ) {
+	SingleEntityPropertyValueController( EntityPropertiesBinder binder, EntityPropertyDescriptor descriptor ) {
 		this.binder = binder;
 		this.descriptor = descriptor;
 		controller = descriptor.getController();
-
-		if ( controller != null ) {
-			value = controller.fetchValue( binder.getBindingContext() );
-			originalValue = value;
-		}
 	}
 
+	private Object loadOriginalValue() {
+		if ( originalValue == null ) {
+			value = controller.fetchValue( binder.getBindingContext() );
+			originalValue = Optional.ofNullable( value );
+		}
+		return originalValue.orElse( null );
+	}
+
+	@Override
 	public boolean isModified() {
 		return modified || isDeleted();
 	}
 
 	public EntityPropertiesBinder getProperties() {
 		if ( properties == null ) {
+			loadOriginalValue();
+
 			valueHasBeenSet = true;
 			properties = binder.createChildBinder( descriptor, getInitializedValue() );
 		}
@@ -92,6 +101,8 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 
 	@Override
 	public Object getValue() {
+		loadOriginalValue();
+
 		if ( isDeleted() ) {
 			return null;
 		}
@@ -105,6 +116,8 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 
 	@Override
 	public void setValue( Object value ) {
+		loadOriginalValue();
+
 		valueHasBeenSet = true;
 
 		Object newValue = value;
@@ -130,7 +143,7 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 	@Override
 	public boolean applyValue() {
 		if ( controller != null ) {
-			return controller.applyValue( binder.getBindingContext(), new EntityPropertyValue<>( originalValue, getValue(), isDeleted() ) );
+			return controller.applyValue( binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
 		}
 		return false;
 	}
@@ -138,7 +151,7 @@ public class SingleEntityPropertyValue implements EntityPropertyValueController<
 	@Override
 	public boolean save() {
 		if ( controller != null ) {
-			return controller.save( binder.getBindingContext(), new EntityPropertyValue<>( originalValue, getValue(), isDeleted() ) );
+			return controller.save( binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
 		}
 		return false;
 	}

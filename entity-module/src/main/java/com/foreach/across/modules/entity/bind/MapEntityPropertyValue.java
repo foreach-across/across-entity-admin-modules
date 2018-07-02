@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * Represents a property value backed by a {@link java.util.Map}.
  *
  * @author Arne Vandamme
- * @see SingleEntityPropertyValue
+ * @see SingleEntityPropertyValueController
  * @since 3.1.0
  */
 public class MapEntityPropertyValue implements EntityPropertyValueController<Object>
@@ -87,6 +87,11 @@ public class MapEntityPropertyValue implements EntityPropertyValueController<Obj
 		keyController = keyDescriptor != null ? keyDescriptor.getController() : null;
 
 		template = createItem( "" );
+	}
+
+	@Override
+	public boolean isModified() {
+		return false;
 	}
 
 	@Override

@@ -91,6 +91,11 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 	}
 
 	@Override
+	public boolean isModified() {
+		return false;
+	}
+
+	@Override
 	public Object createNewValue() {
 		return null;
 	}

@@ -20,6 +20,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyContr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.Errors;
@@ -32,9 +34,11 @@ import java.util.stream.Collectors;
  * Represents a property value backed by a {@link java.util.Collection} that is not a map.
  *
  * @author Arne Vandamme
+ * @see SingleEntityPropertyValueController
+ * @see MapEntityPropertyValue
  * @since 3.1.0
  */
-public class ListEntityPropertyValue implements EntityPropertyValueController<Object>
+public class ListEntityPropertyValueController implements EntityPropertyValueController<Object>
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor collectionDescriptor;
@@ -47,12 +51,24 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 
 	private boolean itemsInitialized;
 
-	@Getter
-	private final EntityPropertyValueController<Object> template;
+	private EntityPropertyValueController<Object> template;
 
 	@Getter
 	@Setter
 	private boolean bound;
+
+	/**
+	 * If set to {@code true}, the existing items will always be returned when performing data binding,
+	 * and every item separately can be removed/modified. If {@code false}, then it is expected that all
+	 * items are passed when data binding. This is the default mode.
+	 * <p/>
+	 * This means that when {@link #getValue()} and {@link #getItems()} is called, an empty result will
+	 * be returned if {@link #isBound()} is {@code true}. With incremental {@code true}, the original
+	 * items will still be returned, except if they are removed.
+	 */
+	@Getter
+	@Setter
+	private boolean incrementalBinding;
 
 	@Getter
 	@Setter
@@ -60,9 +76,11 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 
 	private Map<String, EntityPropertyValueController<Object>> items;
 
-	ListEntityPropertyValue( EntityPropertiesBinder binder,
-	                         EntityPropertyDescriptor collectionDescriptor,
-	                         EntityPropertyDescriptor memberDescriptor ) {
+	private Optional<Object> originalValue;
+
+	ListEntityPropertyValueController( EntityPropertiesBinder binder,
+	                                   EntityPropertyDescriptor collectionDescriptor,
+	                                   EntityPropertyDescriptor memberDescriptor ) {
 		this.binder = binder;
 		this.collectionDescriptor = collectionDescriptor;
 		this.memberDescriptor = memberDescriptor;
@@ -72,14 +90,30 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 
 		collectionController = collectionDescriptor.getController();
 		memberController = memberDescriptor.getController();
+	}
 
-		template = createItem();
+	/**
+	 * Initialized template item for a single member of this list.
+	 * Not meant to be modified but can be used to create blank values for a new member.
+	 *
+	 * @return template item controller
+	 */
+	public EntityPropertyValueController<Object> getTemplate() {
+		if ( template == null ) {
+			template = createItem();
+		}
+		return template;
+	}
+
+	@Override
+	public boolean isModified() {
+		return ( isBound() && !itemsInitialized ) || ( itemsInitialized && !Objects.equals( loadOriginalValue(), getValue() ) );
 	}
 
 	private EntityPropertyValueController<Object> createItem() {
-		EntityPropertyValueController<Object> holder = binder.createValueController( memberDescriptor );
-		holder.setValue( binder.createValue( memberController, binder.getEntity(), memberTypeDescriptor ) );
-		return holder;
+		EntityPropertyValueController<Object> controller = binder.createValueController( memberDescriptor );
+		controller.setValue( binder.createValue( memberController, memberTypeDescriptor ) );
+		return controller;
 	}
 
 	@Override
@@ -89,39 +123,54 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 
 	public Map<String, EntityPropertyValueController<Object>> getItems() {
 		if ( items == null ) {
+			val originalValue = loadOriginalValue();
+
 			items = new Items();
-			if ( !isBound() && collectionController != null ) {
-				setValue( collectionController.fetchValue( binder.getEntity() ) );
+			if ( collectionController != null ) {
+				setValue( originalValue );
 			}
-			itemsInitialized = true;
 		}
-		else if ( !itemsInitialized && isBound() ) {
+
+		itemsInitialized = true;
+		/*else if ( !itemsInitialized && isBound() ) {
 			itemsInitialized = true;
 			items.clear();
-		}
+		}*/
 
 		return items;
 	}
 
 	public Collection<EntityPropertyValueController<Object>> getItemList() {
-		return getItems()
-				.values()
-				.stream()
-				.sorted( Comparator.comparingInt( EntityPropertyValueController::getSortIndex ) )
-				.collect( Collectors.toList() );
-	}
-
-	@Override
-	public Object getValue() {
-		return binder.convertIfNecessary(
+		return Collections.unmodifiableList(
 				getItems()
 						.values()
 						.stream()
 						.sorted( Comparator.comparingInt( EntityPropertyValueController::getSortIndex ) )
-						.map( EntityPropertyValueController::getValue )
-						.toArray( size -> (Object[]) Array.newInstance( memberTypeDescriptor.getObjectType(), size ) ),
+						.collect( Collectors.toList() )
+		);
+	}
+
+	@Override
+	public Object getValue() {
+		Object[] items = new Object[0];
+
+		if ( !isDeleted() ) {
+			items = getItems()
+					.values()
+					.stream()
+					.sorted( Comparator.comparingInt( EntityPropertyValueController::getSortIndex ) )
+					.map( EntityPropertyValueController::getValue )
+					.toArray( size -> (Object[]) Array.newInstance( memberTypeDescriptor.getObjectType(), size ) );
+		}
+		else {
+			loadOriginalValue();
+			this.items = new Items();
+		}
+
+		return binder.convertIfNecessary(
+				items,
 				collectionTypeDescriptor,
-				""
+				binderPath( "items" )
 		);
 	}
 
@@ -130,6 +179,7 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 		itemsInitialized = true;
 
 		if ( items == null ) {
+			loadOriginalValue();
 			items = new Items();
 		}
 		items.clear();
@@ -138,7 +188,7 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 			List values = (List) binder.convertIfNecessary( value,
 			                                                TypeDescriptor.collection( ArrayList.class, memberTypeDescriptor ),
 			                                                collectionTypeDescriptor.getObjectType(),
-			                                                collectionBinderPath() + ".value" );
+			                                                binderPath( "value" ) );
 
 			int index = 0;
 			for ( Object v : values ) {
@@ -149,6 +199,17 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 				items.put( key, item );
 			}
 		}
+	}
+
+	private Object loadOriginalValue() {
+		if ( originalValue == null ) {
+			originalValue = Optional.ofNullable( collectionController.fetchValue( binder.getBindingContext() ) );
+		}
+		return originalValue.orElse( null );
+	}
+
+	public boolean isDeleted() {
+		return isBound() && !itemsInitialized;
 	}
 
 	private String collectionBinderPath() {
@@ -175,6 +236,10 @@ public class ListEntityPropertyValue implements EntityPropertyValueController<Ob
 					} );
 		}*/
 		return beforeValidate >= errors.getErrorCount();
+	}
+
+	private String binderPath( String property ) {
+		return "[" + collectionDescriptor.getName() + "]" + ( StringUtils.isNotEmpty( property ) ? "." + property : "" );
 	}
 
 	@Override
