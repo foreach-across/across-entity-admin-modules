@@ -24,7 +24,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinder;
-import com.foreach.across.modules.entity.bind.EntityPropertyValueController;
+import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -56,7 +56,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 	protected NodeViewElement createElement( ViewElementBuilderContext builderContext ) {
 		//Object collection = EntityViewElementUtils.currentPropertyValue( builderContext );
 
-		EntityPropertyValueController holder = EntityViewElementUtils.currentPropertyValueHolder( builderContext );
+		EntityPropertyBinder holder = EntityViewElementUtils.currentPropertyValueHolder( builderContext );
 
 		MultiEntityPropertyValue multiValue = (MultiEntityPropertyValue) holder;
 		val collection = multiValue.getItemList();

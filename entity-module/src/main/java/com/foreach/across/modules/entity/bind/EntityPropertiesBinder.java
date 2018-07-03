@@ -53,7 +53,7 @@ import java.util.function.Supplier;
  * @since 3.1.0
  */
 @RequiredArgsConstructor
-public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueController> implements EntityPropertyValues
+public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder> implements EntityPropertyValues
 {
 	@NonNull
 	private final EntityPropertyRegistry propertyRegistry;
@@ -130,7 +130,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 	}
 
 	@Override
-	public EntityPropertyValueController getOrDefault( Object key, EntityPropertyValueController defaultValue ) {
+	public EntityPropertyBinder getOrDefault( Object key, EntityPropertyBinder defaultValue ) {
 		return get( key );
 	}
 
@@ -143,8 +143,8 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 	 * @return value holder
 	 */
 	@Override
-	public EntityPropertyValueController get( Object key ) {
-		EntityPropertyValueController valueHolder = super.get( key );
+	public EntityPropertyBinder get( Object key ) {
+		EntityPropertyBinder valueHolder = super.get( key );
 		String propertyName = (String) key;
 
 		if ( valueHolder == null ) {
@@ -155,7 +155,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 					throw new IllegalArgumentException( "No such property descriptor: '" + fqPropertyName + "'" );
 				}
 
-				valueHolder = createValueController( descriptor );
+				valueHolder = createPropertyBinder( descriptor );
 				put( propertyName, valueHolder );
 			}
 			catch ( IllegalArgumentException iae ) {
@@ -170,22 +170,22 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 		return valueHolder;
 	}
 
-	EntityPropertyValueController<Object> createValueController( EntityPropertyDescriptor descriptor ) {
+	EntityPropertyBinder<Object> createPropertyBinder( EntityPropertyDescriptor descriptor ) {
 		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
 
 		if ( typeDescriptor.isMap() ) {
 			val keyDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_KEY, typeDescriptor.getMapKeyTypeDescriptor() );
 			val valueDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_VALUE, typeDescriptor.getMapValueTypeDescriptor() );
 
-			return new MapEntityPropertyValue( this, descriptor, valueDescriptor, keyDescriptor );
+			return new MapEntityPropertyBinder( this, descriptor, valueDescriptor, keyDescriptor );
 		}
 		else if ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) {
 			val memberDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.INDEXER, typeDescriptor.getElementTypeDescriptor() );
 
-			return new ListEntityPropertyValueController( this, descriptor, memberDescriptor );
+			return new ListEntityPropertyBinder( this, descriptor, memberDescriptor );
 		}
 
-		return new SingleEntityPropertyValueController( this, descriptor );
+		return new SingleEntityPropertyBinder( this, descriptor );
 	}
 
 	private EntityPropertyDescriptor getOrCreateDescriptor( String name, TypeDescriptor expectedType ) {
@@ -210,8 +210,8 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 	 */
 	public void bind() {
 		values().forEach( v -> {
-			if ( v instanceof SingleEntityPropertyValueController ) {
-				val holder = ( (SingleEntityPropertyValueController) v );
+			if ( v instanceof SingleEntityPropertyBinder ) {
+				val holder = ( (SingleEntityPropertyBinder) v );
 				if ( holder.isModified() ) {
 					holder.applyValue();
 				}
@@ -227,8 +227,9 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyValueC
 	 * Reset the different binding related properties (eg. was a property expected to be bound).
 	 * Useful if you want to bind multiple times on the same entity using the same binder instance.
 	 */
+	@Deprecated
 	public void resetForBinding() {
-		values().forEach( EntityPropertyValueController::resetBindStatus );
+		values().forEach( EntityPropertyBinder::resetBindStatus );
 	}
 
 	EntityPropertiesBinder createChildBinder( EntityPropertyDescriptor parent, Object propertyValue ) {

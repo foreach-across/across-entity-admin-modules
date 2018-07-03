@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.bind.EntityPropertyValueController;
+import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -128,7 +128,7 @@ public class EntityViewElementUtils
 	}
 
 	// todo: more and more to clean up
-	public static EntityPropertyValueController<Object> currentPropertyValueHolder( ViewElementBuilderContext builderContext ) {
+	public static EntityPropertyBinder<Object> currentPropertyValueHolder( ViewElementBuilderContext builderContext ) {
 		if ( builderContext == null ) {
 			return null;
 		}
@@ -144,7 +144,7 @@ public class EntityViewElementUtils
 		return resolveValueHolder( properties, descriptor );
 	}
 
-	private static EntityPropertyValueController<Object> resolveValueHolder( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor ) {
+	private static EntityPropertyBinder<Object> resolveValueHolder( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor ) {
 		if ( properties != null ) {
 			return properties.get( descriptor.getName() );
 		}

@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  */
 @SuppressWarnings( "Duplicates" )
 @RunWith(MockitoJUnitRunner.class)
-public class TestSingleEntityPropertyValueController
+public class TestSingleEntityPropertyBinder
 {
 	private static final EntityPropertyBindingContext<Object, Object> BINDING_CONTEXT = new EntityPropertyBindingContext<>( "entity" );
 
@@ -50,7 +50,7 @@ public class TestSingleEntityPropertyValueController
 	private EntityPropertyController<Object, Object> controller;
 
 	private EntityPropertyDescriptor descriptor;
-	private SingleEntityPropertyValueController property;
+	private SingleEntityPropertyBinder property;
 
 	@Before
 	@SuppressWarnings("unchecked")
@@ -72,7 +72,7 @@ public class TestSingleEntityPropertyValueController
 						.build()
 		);
 
-		property = new SingleEntityPropertyValueController( binder, descriptor );
+		property = new SingleEntityPropertyBinder( binder, descriptor );
 	}
 
 	@Test
@@ -104,6 +104,15 @@ public class TestSingleEntityPropertyValueController
 		property.setValue( 567 );
 		assertThat( property.getValue() ).isEqualTo( 567 );
 		verifyNoMoreInteractions( controller );
+	}
+
+	@Test
+	public void originalValueVsCurrentValue() {
+		assertThat( property.getOriginalValue() ).isEqualTo( 1 );
+		assertThat( property.getValue() ).isEqualTo( 1 );
+		property.setValue( 123 );
+		assertThat( property.getOriginalValue() ).isEqualTo( 1 );
+		assertThat( property.getValue() ).isEqualTo( 123 );
 	}
 
 	@Test
@@ -143,6 +152,14 @@ public class TestSingleEntityPropertyValueController
 	public void boundButNotSetIsConsideredDeleted() {
 		property.setBound( true );
 		assertThat( property.getValue() ).isNull();
+		assertThat( property.isDeleted() ).isTrue();
+	}
+
+	@Test
+	public void notBoundButExplicitlyDeleted() {
+		assertThat( property.isDeleted() ).isFalse();
+		property.setDeleted( true );
+		assertThat( property.isDeleted() ).isTrue();
 	}
 
 	@Test
@@ -189,7 +206,7 @@ public class TestSingleEntityPropertyValueController
 
 	@Test
 	public void getInitializedValueDoesNotModifyCurrentValue() {
-		assertThat( property.getInitializedValue() ).isEqualTo( 1 );
+		assertThat( property.getOrInitializeValue() ).isEqualTo( 1 );
 		verify( binder, never() ).createValue( any(), any() );
 	}
 
@@ -198,7 +215,7 @@ public class TestSingleEntityPropertyValueController
 		property.setValue( null );
 		when( binder.createValue( controller, TypeDescriptor.valueOf( Integer.class ) ) )
 				.thenReturn( 123 );
-		assertThat( property.getInitializedValue() ).isEqualTo( 123 );
+		assertThat( property.getOrInitializeValue() ).isEqualTo( 123 );
 		assertThat( property.getValue() ).isEqualTo( 123 );
 	}
 
@@ -277,7 +294,7 @@ public class TestSingleEntityPropertyValueController
 	@Test
 	public void propertiesAreAppliedBeforeReturningValue() {
 		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		EntityPropertyValueController childValue = mock( EntityPropertyValueController.class );
+		EntityPropertyBinder childValue = mock( EntityPropertyBinder.class );
 		when( childBinder.values() ).thenReturn( Collections.singleton( childValue ) );
 		when( binder.createChildBinder( descriptor, 1 ) ).thenReturn( childBinder );
 

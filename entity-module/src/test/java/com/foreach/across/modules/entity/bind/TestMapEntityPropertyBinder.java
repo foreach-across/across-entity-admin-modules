@@ -20,6 +20,6 @@ package com.foreach.across.modules.entity.bind;
  * @author Arne Vandamme
  * @since 3.1.0
  */
-public class TestMapEntityPropertyValue
+public class TestMapEntityPropertyBinder
 {
 }

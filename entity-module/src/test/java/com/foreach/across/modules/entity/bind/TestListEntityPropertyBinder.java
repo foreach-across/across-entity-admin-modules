@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.bind;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +31,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -39,12 +41,13 @@ import static org.mockito.Mockito.*;
  * @since 3.1.0
  */
 @RunWith(MockitoJUnitRunner.class)
-@SuppressWarnings("Duplicates")
-public class TestListEntityPropertyValueController
+@SuppressWarnings({ "Duplicates", "unchecked" })
+public class TestListEntityPropertyBinder
 {
 	private static final EntityPropertyBindingContext<Object, Object> BINDING_CONTEXT = new EntityPropertyBindingContext<>( "entity" );
 	private static final TypeDescriptor COLLECTION = TypeDescriptor.collection( ArrayList.class, TypeDescriptor.valueOf( Integer.class ) );
 	private static final TypeDescriptor MEMBER = TypeDescriptor.valueOf( Integer.class );
+	private static final List<Integer> ORIGINAL_VALUE = Arrays.asList( 1, 2 );
 
 	@Mock
 	private EntityPropertiesBinder binder;
@@ -56,22 +59,21 @@ public class TestListEntityPropertyValueController
 	private EntityPropertyController<Object, Object> memberController;
 
 	@Mock
-	private EntityPropertyValueController<Object> itemOne;
+	private EntityPropertyBinder<Object> itemOne;
 
 	@Mock
-	private EntityPropertyValueController<Object> itemTwo;
+	private EntityPropertyBinder<Object> itemTwo;
 
 	private EntityPropertyDescriptor collectionDescriptor;
 	private EntityPropertyDescriptor memberDescriptor;
-	private ListEntityPropertyValueController property;
+	private ListEntityPropertyBinder property;
 
 	@Before
-	@SuppressWarnings("unchecked")
 	public void resetMocks() {
 		reset( binder, collectionController, memberController );
 
 		when( binder.getBindingContext() ).thenReturn( BINDING_CONTEXT );
-		when( collectionController.fetchValue( BINDING_CONTEXT ) ).thenReturn( Arrays.asList( 1, 2 ) );
+		when( collectionController.fetchValue( BINDING_CONTEXT ) ).thenReturn( ORIGINAL_VALUE );
 
 		doAnswer( i -> Arrays.asList( (Object[]) i.getArgument( 0 ) ) )
 				.when( binder )
@@ -96,9 +98,9 @@ public class TestListEntityPropertyValueController
 						.build()
 		);
 
-		property = new ListEntityPropertyValueController( binder, collectionDescriptor, memberDescriptor );
+		property = new ListEntityPropertyBinder( binder, collectionDescriptor, memberDescriptor );
 
-		when( binder.createValueController( memberDescriptor ) )
+		when( binder.createPropertyBinder( memberDescriptor ) )
 				.thenReturn( itemOne )
 				.thenReturn( itemTwo );
 		when( itemOne.getValue() ).thenReturn( 1 );
@@ -113,6 +115,7 @@ public class TestListEntityPropertyValueController
 
 		assertThat( property.isBound() ).isFalse();
 		assertThat( property.isModified() ).isFalse();
+		assertThat( property.isDeleted() ).isFalse();
 		assertThat( property.getControllerOrder() ).isEqualTo( 33 );
 
 		assertThat( property.getSortIndex() ).isEqualTo( 0 );
@@ -121,23 +124,94 @@ public class TestListEntityPropertyValueController
 	}
 
 	@Test
+	public void originalValueVsValue() {
+		assertThat( property.getOriginalValue() ).isEqualTo( ORIGINAL_VALUE );
+		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
+
+		val one = mock( EntityPropertyBinder.class );
+		val two = mock( EntityPropertyBinder.class );
+		when( binder.createPropertyBinder( memberDescriptor ) ).thenReturn( one )
+		                                                       .thenReturn( two );
+		property.setValue( Arrays.asList( 3, 4 ) );
+
+		when( one.getValue() ).thenReturn( 3 );
+		when( two.getValue() ).thenReturn( 4 );
+
+		assertThat( property.getOriginalValue() ).isEqualTo( ORIGINAL_VALUE );
+		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 3, 4 ) );
+	}
+
+	@Test
+	public void itemCanBeAddedByKey() {
+		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
+
+		val random = mock( EntityPropertyBinder.class );
+		when( binder.createPropertyBinder( memberDescriptor ) ).thenReturn( random );
+
+		property.getItems().get( "random" ).setValue( 33 );
+		verify( random ).setValue( 33 );
+		when( random.getValue() ).thenReturn( 33 );
+
+		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 33, 1, 2 ) );
+	}
+
+	@Test
+	public void valueIsInitializedEmptyIfNotIncrementalBindingAndBindingBusy() {
+		property.enableBinding( true );
+
+		assertThat( property.getItemList() ).isEmpty();
+		assertThat( property.getItems() ).isEmpty();
+		assertThat( property.getValue() ).isEqualTo( Collections.emptyList() );
+	}
+
+	@Test
+	public void valueIsInitializedWithOriginalValueWithIncrementalBinding() {
+		property.enableBinding( true );
+		property.setUpdateItemsOnBinding( true );
+
+		assertThat( property.getItemList() ).hasSize( 2 );
+		assertThat( property.getItems() ).hasSize( 2 );
+		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
+	}
+
+	@Test
+	public void deletedItemsArePresentInTheItemsButNotInTheValueWhileBindingIsBusy() {
+		when( itemTwo.isDeleted() ).thenReturn( true );
+
+		assertThat( property.getItemList() ).hasSize( 2 );
+		assertThat( property.getItems() ).hasSize( 2 );
+		assertThat( property.getValue() ).isEqualTo( Collections.singletonList( 1 ) );
+	}
+
+	@Test
+	public void deletedItemsAreRemovedWhenBindingIsDisabled() {
+		when( itemTwo.isDeleted() ).thenReturn( true );
+		assertThat( property.getItems() ).hasSize( 2 );
+		property.enableBinding( false );
+
+		assertThat( property.getItemList() ).hasSize( 1 );
+		assertThat( property.getItems() ).hasSize( 1 );
+		assertThat( property.getValue() ).isEqualTo( Collections.singletonList( 1 ) );
+	}
+
+	@Test
 	@SuppressWarnings("unchecked")
 	public void templateGetsLazilyCreatedOnce() {
-		EntityPropertyValueController<Object> template = mock( EntityPropertyValueController.class );
+		EntityPropertyBinder<Object> template = mock( EntityPropertyBinder.class );
 
-		when( binder.createValueController( memberDescriptor ) ).thenReturn( template );
+		when( binder.createPropertyBinder( memberDescriptor ) ).thenReturn( template );
 		when( binder.createValue( memberController, TypeDescriptor.valueOf( Integer.class ) ) ).thenReturn( 123 );
 
 		assertThat( property.getTemplate() ).isSameAs( template );
 		assertThat( property.getTemplate() ).isSameAs( template );
-		verify( binder, times( 1 ) ).createValueController( any() );
+		verify( binder, times( 1 ) ).createPropertyBinder( any() );
 		verify( template, times( 1 ) ).setValue( 123 );
 	}
 
 	@Test
 	public void initialValueGetsLazyLoadedFromTheController() {
 		verify( collectionController, never() ).fetchValue( any() );
-		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 1, 2 ) );
+		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 	}
 
 	@Test
@@ -158,7 +232,7 @@ public class TestListEntityPropertyValueController
 
 	@Test
 	public void valueSortsTheItems() {
-		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 1, 2 ) );
+		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 
 		when( itemTwo.getSortIndex() ).thenReturn( -1 );
 		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 2, 1 ) );
@@ -196,7 +270,7 @@ public class TestListEntityPropertyValueController
 	public void modifiedIfTheNewValueCollectionIsDifferentFromTheOriginal() {
 		assertThat( property.isModified() ).isFalse();
 
-		val original = Arrays.asList( 1, 2 );
+		val original = ORIGINAL_VALUE;
 		assertThat( property.getValue() ).isEqualTo( original );
 		assertThat( property.isModified() ).isFalse();
 
@@ -206,42 +280,67 @@ public class TestListEntityPropertyValueController
 
 	@Test
 	public void boundButNotSetValueModifies() {
+		property.enableBinding( true );
 		property.setBound( true );
 		assertThat( property.isModified() ).isTrue();
+
+		property.enableBinding( false );
+		assertThat( property.isModified() ).isTrue();
+		assertThat( property.getValue() ).isEqualTo( Collections.emptyList() );
 	}
 
 	@Test
 	public void boundButItemsFetchedDoesNotModify() {
 		property.setBound( true );
 		assertThat( property.getItems() ).hasSize( 2 );
-		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 1, 2 ) );
+		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 		assertThat( property.isModified() ).isFalse();
 	}
 
 	@Test
-	public void boundButNotSetIsConsideredDeleted() {
+	public void boundDuringBindingButValueNotSetIsEmptyButNotDeleted() {
+		property.enableBinding( true );
 		property.setBound( true );
+		assertThat( property.isDeleted() ).isFalse();
+		assertThat( property.getValue() ).isEqualTo( Collections.emptyList() );
+		assertThat( property.getItems() ).isEmpty();
+
+	}
+
+	@Test
+	public void boundDuringBindingButUpdatingDoesNotClearItems() {
+		property.enableBinding( true );
+		property.setBound( true );
+		property.setUpdateItemsOnBinding( true );
+		assertThat( property.isDeleted() ).isFalse();
+		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
+		assertThat( property.getItems() ).hasSize( 2 );
+	}
+
+	@Test
+	public void explicitlyDeletedDoesNotClearTheItemsImmediately() {
+		property.setDeleted( true );
 		assertThat( property.isDeleted() ).isTrue();
 		assertThat( property.getValue() ).isEqualTo( Collections.emptyList() );
-		assertThat( property.isDeleted() ).isTrue();
+		assertThat( property.getItemList() ).hasSize( 2 );
+		assertThat( property.getItems() ).hasSize( 2 );
+	}
 
-		// items should be cleared, after accessing the value
+	@Test
+	public void itemsAreClearedOnDeletedPropertyWhenBindingDisabled() {
+		property.setDeleted( true );
+		property.enableBinding( false );
+		assertThat( property.isDeleted() ).isTrue();
+		assertThat( property.getValue() ).isEqualTo( Collections.emptyList() );
+		assertThat( property.getItemList() ).isEmpty();
 		assertThat( property.getItems() ).isEmpty();
 	}
 
 	@Test
-	public void propertyNoLongerDeletedIfItemsAccessed() {
-		property.setBound( true );
-		assertThat( property.isDeleted() ).isTrue();
-		assertThat( property.getItems() ).isNotEmpty();
-		assertThat( property.isDeleted() ).isFalse();
-	}
-
-	@Test
 	public void boundButValueAssignedIsNotDeleted() {
+		property.enableBinding( true );
 		property.setBound( true );
-		assertThat( property.isDeleted() ).isTrue();
-		property.setValue( Arrays.asList( 1, 2 ) );
+		property.setValue( ORIGINAL_VALUE );
 		assertThat( property.isDeleted() ).isFalse();
 		assertThat( property.isModified() ).isFalse();
 		assertThat( property.getItems() ).hasSize( 2 );
@@ -260,88 +359,79 @@ public class TestListEntityPropertyValueController
 	}
 
 	@Test
-	public void deletedItemsAreFilteredOutInTheFinalValueButPresentInTheItemList() {
-
-	}
-
-	/*
-	@Test
-	public void initializeValueCreatesNewValueButDoesNotUpdatePropertyItself() {
-		when( binder.createValue( controller, TypeDescriptor.valueOf( Integer.class ) ) )
-				.thenReturn( "hello" );
+	public void createNewValueCreatesNewValueButDoesNotUpdatePropertyItself() {
+		when( binder.createValue( collectionController, COLLECTION ) )
+				.thenReturn( Arrays.asList( 55, 66 ) );
 		Object value = property.createNewValue();
-		assertThat( value ).isEqualTo( "hello" );
+		assertThat( value ).isEqualTo( Arrays.asList( 55, 66 ) );
 
-		assertThat( property.getValue() ).isEqualTo( 1 );
+		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 	}
 
 	@Test
 	public void getInitializedValueDoesNotModifyCurrentValue() {
-		assertThat( property.getInitializedValue() ).isEqualTo( 1 );
+		assertThat( property.getOrInitializeValue() ).isEqualTo( ORIGINAL_VALUE );
 		verify( binder, never() ).createValue( any(), any() );
 	}
 
 	@Test
-	public void getInitializedValueInitializesNewValueIfNull() {
-		property.setValue( null );
-		when( binder.createValue( controller, TypeDescriptor.valueOf( Integer.class ) ) )
-				.thenReturn( 123 );
-		assertThat( property.getInitializedValue() ).isEqualTo( 123 );
-		assertThat( property.getValue() ).isEqualTo( 123 );
+	public void getInitializedValueInitializesNewValueIfNullFetched() {
+		reset( collectionController );
+		when( binder.createValue( collectionController, COLLECTION ) )
+				.thenReturn( Arrays.asList( 55, 66 ) );
+
+		when( itemOne.getValue() ).thenReturn( 55 );
+		when( itemTwo.getValue() ).thenReturn( 66 );
+		assertThat( property.getOrInitializeValue() ).isEqualTo( Arrays.asList( 55, 66 ) );
+		verify( binder ).createValue( collectionController, COLLECTION );
+		verify( itemOne ).setValue( 55 );
+		verify( itemTwo ).setValue( 66 );
+
+		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 55, 66 ) );
+		assertThat( property.getOriginalValue() ).isNull();
 	}
 
 	@Test
 	public void applyValueFlushesToTheControllerWithTheOriginalValue() {
-		when( controller.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
+		when( collectionController.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( true );
 		assertThat( property.applyValue() ).isTrue();
 
-		property.setValue( 123 );
+		when( itemOne.getValue() ).thenReturn( 3 );
 		assertThat( property.applyValue() ).isFalse();
-		verify( controller ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 123, false ) );
+		verify( collectionController ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Arrays.asList( 3, 2 ), false ) );
 	}
 
 	@Test
-	public void applyValueAppliesNullIfDeleted() {
-		when( controller.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
-		property.setBound( true );
+	public void applyValueFlagsDelete() {
+		when( collectionController.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) ) )
+				.thenReturn( true );
+		property.setDeleted( true );
 		assertThat( property.applyValue() ).isTrue();
-		verify( controller ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) );
+		verify( collectionController ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) );
 	}
 
 	@Test
 	public void saveFlushesToTheControllerWithTheOriginalValue() {
-		when( controller.save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
+		when( collectionController.save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( true );
 		assertThat( property.save() ).isTrue();
 
-		property.setValue( 123 );
+		when( itemOne.getValue() ).thenReturn( 3 );
 		assertThat( property.save() ).isFalse();
-		verify( controller ).save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 123, false ) );
+		verify( collectionController ).save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Arrays.asList( 3, 2 ), false ) );
 	}
 
 	@Test
 	public void saveWithNullIfDeleted() {
-		when( controller.save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
-		property.setBound( true );
+		when( collectionController.save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) ) )
+				.thenReturn( true );
+		property.setDeleted( true );
 		assertThat( property.save() ).isTrue();
-		verify( controller ).save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) );
+		verify( collectionController ).save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) );
 	}
-
+/*
 	@Test
 	public void validate() {
 		// todo: implement validation test
-	}
-
-
-@Test
-	public void propertyNoLongerDeletedIfPropertiesAccessed() {
-		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		when( binder.createChildBinder( descriptor, 1 ) ).thenReturn( childBinder );
-
-		property.setBound( true );
-		assertThat( property.isDeleted() ).isTrue();
-
-		assertThat( property.getProperties() ).isSameAs( childBinder );
-		assertThat( property.isDeleted() ).isFalse();
 	}
 
 	@Test

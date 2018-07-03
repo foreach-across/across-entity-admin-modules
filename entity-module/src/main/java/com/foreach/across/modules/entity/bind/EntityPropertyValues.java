@@ -30,7 +30,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
  *
  * @author Arne Vandamme
  * @see EntityPropertiesBinder
- * @see EntityPropertyValueController
+ * @see EntityPropertyBinder
  * @since 3.1.0
  */
 public interface EntityPropertyValues

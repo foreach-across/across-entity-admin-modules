@@ -29,13 +29,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Represents a property value backed by a {@link java.util.Map}.
+ * Represents a property value that is a {@link java.util.Map} implementation.
  *
  * @author Arne Vandamme
- * @see SingleEntityPropertyValueController
+ * @see SingleEntityPropertyBinder
+ * @see ListEntityPropertyBinder
  * @since 3.1.0
  */
-public class MapEntityPropertyValue implements EntityPropertyValueController<Object>
+public class MapEntityPropertyBinder implements EntityPropertyBinder<Object>
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor collectionDescriptor;
@@ -65,10 +66,10 @@ public class MapEntityPropertyValue implements EntityPropertyValueController<Obj
 
 	private Map<String, Item> entries;
 
-	MapEntityPropertyValue( EntityPropertiesBinder binder,
-	                        EntityPropertyDescriptor collectionDescriptor,
-	                        EntityPropertyDescriptor valueDescriptor,
-	                        EntityPropertyDescriptor keyDescriptor ) {
+	MapEntityPropertyBinder( EntityPropertiesBinder binder,
+	                         EntityPropertyDescriptor collectionDescriptor,
+	                         EntityPropertyDescriptor valueDescriptor,
+	                         EntityPropertyDescriptor keyDescriptor ) {
 		this.binder = binder;
 		this.collectionDescriptor = collectionDescriptor;
 		this.valueDescriptor = valueDescriptor;
@@ -87,6 +88,21 @@ public class MapEntityPropertyValue implements EntityPropertyValueController<Obj
 		keyController = keyDescriptor != null ? keyDescriptor.getController() : null;
 
 		template = createItem( "" );
+	}
+
+	@Override
+	public Object getOriginalValue() {
+		return null;
+	}
+
+	@Override
+	public void setDeleted( boolean deleted ) {
+
+	}
+
+	@Override
+	public boolean isDeleted() {
+		return false;
 	}
 
 	@Override
@@ -155,7 +171,7 @@ public class MapEntityPropertyValue implements EntityPropertyValueController<Obj
 			int index = 0;
 			for ( Object v : values ) {
 				String key = "" + index;
-				Item item = new Item( binder.createValueController( keyDescriptor ), binder.createValueController( valueDescriptor ) );
+				Item item = new Item( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
 				item.setEntryKey( key );
 				item.setEntryValue( v );
 				item.setSortIndex( index++ );
@@ -206,7 +222,7 @@ public class MapEntityPropertyValue implements EntityPropertyValueController<Obj
 	}
 
 	private Item createItem( String key ) {
-		Item item = new Item( binder.createValueController( keyDescriptor ), binder.createValueController( valueDescriptor ) );
+		Item item = new Item( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
 
 		if ( String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
 			item.setEntryKey( key );
@@ -254,10 +270,10 @@ public class MapEntityPropertyValue implements EntityPropertyValueController<Obj
 		private int sortIndex;
 
 		@Getter
-		private final EntityPropertyValueController<Object> key;
+		private final EntityPropertyBinder<Object> key;
 
 		@Getter
-		private final EntityPropertyValueController<Object> value;
+		private final EntityPropertyBinder<Object> value;
 
 		public void setEntryKey( Object key ) {
 			this.key.setValue( key );

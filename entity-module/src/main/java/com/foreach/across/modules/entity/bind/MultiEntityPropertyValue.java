@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @since 3.1.0
  */
 @Deprecated
-public final class MultiEntityPropertyValue implements EntityPropertyValueController<Object>
+public final class MultiEntityPropertyValue implements EntityPropertyBinder<Object>
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor collectionDescriptor;
@@ -238,6 +238,21 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 		return "[" + collectionDescriptor.getName() + "]";
 	}
 
+	@Override
+	public Object getOriginalValue() {
+		return null;
+	}
+
+	@Override
+	public void setDeleted( boolean deleted ) {
+
+	}
+
+	@Override
+	public boolean isDeleted() {
+		return false;
+	}
+
 	/**
 	 * Creates a new item for every key requested.
 	 */
@@ -272,8 +287,8 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 		private EntityPropertiesBinder valueProperties;
 		private EntityPropertiesBinder keyProperties;
 
-		private EntityPropertyValueController<Object> valueHolder;
-		private EntityPropertyValueController<Object> keyHolder;
+		private EntityPropertyBinder<Object> valueHolder;
+		private EntityPropertyBinder<Object> keyHolder;
 
 		public void setKey( Object key ) {
 			if ( keyTypeDescriptor != null ) {
@@ -296,13 +311,13 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 				return keyHolder.getValue();
 			}
 			if ( keyProperties != null ) {
-				keyProperties.values().forEach( EntityPropertyValueController::applyValue );
+				keyProperties.values().forEach( EntityPropertyBinder::applyValue );
 			}
 
 			return key;
 		}
 
-		public EntityPropertyValueController<Object> getKeyHolder() {
+		public EntityPropertyBinder<Object> getKeyHolder() {
 			if ( keyHolder == null ) {
 
 			}
@@ -322,13 +337,13 @@ public final class MultiEntityPropertyValue implements EntityPropertyValueContro
 				return valueHolder.getValue();
 			}
 			if ( valueProperties != null ) {
-				valueProperties.values().forEach( EntityPropertyValueController::applyValue );
+				valueProperties.values().forEach( EntityPropertyBinder::applyValue );
 			}
 
 			return value;
 		}
 
-		public EntityPropertyValueController<Object> getValueHolder() {
+		public EntityPropertyBinder<Object> getValueHolder() {
 			if ( valueHolder == null ) {
 
 			}

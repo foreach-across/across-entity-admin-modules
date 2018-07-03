@@ -34,7 +34,7 @@ import java.util.Optional;
  * @author Arne Vandamme
  * @since 3.1.0
  */
-public class SingleEntityPropertyValueController implements EntityPropertyValueController<Object>
+public class SingleEntityPropertyBinder implements EntityPropertyBinder<Object>
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor descriptor;
@@ -47,6 +47,9 @@ public class SingleEntityPropertyValueController implements EntityPropertyValueC
 	@Getter
 	@Setter
 	private boolean bound;
+
+	@Setter
+	private boolean deleted;
 
 	/**
 	 * Has {@link #setValue(Object)} been called with a new value.
@@ -62,6 +65,7 @@ public class SingleEntityPropertyValueController implements EntityPropertyValueC
 	 * The original value that was fetched when the property was initialized.
 	 * If {@code null} the original value has never been fetched.
 	 */
+	@SuppressWarnings( "all" )
 	private Optional<Object> originalValue;
 
 	@Getter
@@ -69,7 +73,7 @@ public class SingleEntityPropertyValueController implements EntityPropertyValueC
 	private int sortIndex;
 
 	@SuppressWarnings("unchecked")
-	SingleEntityPropertyValueController( EntityPropertiesBinder binder, EntityPropertyDescriptor descriptor ) {
+	SingleEntityPropertyBinder( EntityPropertiesBinder binder, EntityPropertyDescriptor descriptor ) {
 		this.binder = binder;
 		this.descriptor = descriptor;
 		controller = descriptor.getController();
@@ -93,10 +97,15 @@ public class SingleEntityPropertyValueController implements EntityPropertyValueC
 			loadOriginalValue();
 
 			valueHasBeenSet = true;
-			properties = binder.createChildBinder( descriptor, getInitializedValue() );
+			properties = binder.createChildBinder( descriptor, getOrInitializeValue() );
 		}
 
 		return properties;
+	}
+
+	@Override
+	public Object getOriginalValue() {
+		return loadOriginalValue();
 	}
 
 	@Override
@@ -108,7 +117,7 @@ public class SingleEntityPropertyValueController implements EntityPropertyValueC
 		}
 
 		if ( properties != null ) {
-			properties.values().forEach( EntityPropertyValueController::applyValue );
+			properties.values().forEach( EntityPropertyBinder::applyValue );
 		}
 
 		return value;
@@ -168,7 +177,7 @@ public class SingleEntityPropertyValueController implements EntityPropertyValueC
 	}
 
 	public boolean isDeleted() {
-		return isBound() && !valueHasBeenSet;
+		return deleted || ( isBound() && !valueHasBeenSet );
 	}
 
 	private String binderPath() {

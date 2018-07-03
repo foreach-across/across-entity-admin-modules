@@ -33,17 +33,46 @@ import org.springframework.validation.Errors;
  * @see EntityPropertiesBinder
  * @since 3.1.0
  */
-public interface EntityPropertyValueController<T>
+public interface EntityPropertyBinder<T>
 {
 	/**
+	 * @return Sort index value, only relevant when the property value is part of a (sorted) collection.
+	 */
+	int getSortIndex();
+
+	/**
+	 * Set the sort index of a property, only relevant when part of a sorted collection.
+	 *
+	 * @param sortIndex of this property
+	 */
+	void setSortIndex( int sortIndex );
+
+	/**
 	 * Set the value of this property as bound using a data binder.
-	 * Usually setting this to {@code true} means that the property value should be deleted
-	 * if no actual value has been set.
+	 * This usually signals that a property was present in a web form.
+	 * Usually setting this to {@code true} means that the property value should be deleted if no actual value has been set.
 	 */
 	void setBound( boolean bound );
 
 	/**
-	 * @return the value
+	 * @return has this property been bound
+	 */
+	boolean isBound();
+
+	/**
+	 * @return the order in which controller methods of this property should be executed relative to all other properties (and the base entity itself)
+	 */
+	int getControllerOrder();
+
+	/**
+	 * Get the original value which was present before binding changes.
+	 *
+	 * @return the original value that was present before
+	 */
+	T getOriginalValue();
+
+	/**
+	 * @return the current value
 	 */
 	T getValue();
 
@@ -55,7 +84,7 @@ public interface EntityPropertyValueController<T>
 	 * @return the value and initialize a new value if necessary
 	 * @see #createNewValue()
 	 */
-	default T getInitializedValue() {
+	default T getOrInitializeValue() {
 		T currentValue = getValue();
 
 		if ( currentValue == null ) {
@@ -77,17 +106,21 @@ public interface EntityPropertyValueController<T>
 	void setValue( T value );
 
 	/**
+	 * Explicitly set this property as deleted. The value returned will usually be {@code null}.
+	 *
+	 * @param deleted true if property should be considered deleted
+	 */
+	void setDeleted( boolean deleted );
+
+	/**
+	 * @return true if the property is considered deleted
+	 */
+	boolean isDeleted();
+
+	/**
 	 * @return true if the property has been modified, a deleted property is usually also considered modified
 	 */
 	boolean isModified();
-
-	/**
-	 * Apply the current property value to the owning entity by calling {@link EntityPropertyController#applyValue(Object, Object, Object)}.
-	 * If the property is considered deleted, a {@code null} will usually be applied.
-	 *
-	 * @return true if value has been applied
-	 */
-	boolean applyValue();
 
 	/**
 	 * Initialize a new value for this property.
@@ -98,18 +131,28 @@ public interface EntityPropertyValueController<T>
 	T createNewValue();
 
 	/**
+	 * Apply the current property value to the owning entity by calling {@link EntityPropertyController#applyValue(Object, Object, Object)}.
+	 * If the property is considered deleted, a {@code null} will usually be applied.
+	 *
+	 * @return true if value has been applied
+	 */
+	boolean applyValue();
+
+	/**
 	 * Calls the {@link EntityPropertyController#save(EntityPropertyBindingContext, EntityPropertyValue)} for the given property.
 	 *
 	 * @return true if save has been executed
 	 */
 	boolean save();
 
-	boolean validate( Errors errors, Object... validationHints );
-
 	/**
-	 * @return the order in which controller methods of this property should be executed relative to all other properties (and the base entity itself)
+	 * Validate this property value.
+	 *
+	 * @param errors          object in which to register the errors
+	 * @param validationHints to customize validation rules
+	 * @return true if validation errors have been added for this property
 	 */
-	int getControllerOrder();
+	boolean validate( Errors errors, Object... validationHints );
 
 	/**
 	 * Reset bind status for this property. This will reset tracking properties related
@@ -118,14 +161,14 @@ public interface EntityPropertyValueController<T>
 	void resetBindStatus();
 
 	/**
-	 * @return Sort index value, only relevant when the property value is part of a (sorted) collection.
+	 * Enable binding for this property. This signals that property binding is in progress, which allows
+	 * implementations (like {@link ListEntityPropertyBinder} and {@link MapEntityPropertyBinder}) to make decisions
+	 * on how to consider the current state of its property value.
+	 * <p/>
+	 * For example when accessing {@link ListEntityPropertyBinder#getItems()} while binding is active, the item list might be empty
+	 * as it should be reset. When binding is no longer active but no calls have been made to the property,
+	 * the items collection will not have modified and the original value will be returned.
 	 */
-	int getSortIndex();
-
-	/**
-	 * Set the sort index of a property, only relevant when part of a sorted collection.
-	 *
-	 * @param sortIndex of this property
-	 */
-	void setSortIndex( int sortIndex );
+	default void enableBinding( boolean enabled ) {
+	}
 }
