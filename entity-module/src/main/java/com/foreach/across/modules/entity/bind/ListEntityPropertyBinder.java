@@ -18,12 +18,10 @@ package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.Ordered;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.Errors;
 
@@ -49,7 +47,8 @@ import java.util.stream.Collectors;
  * @see MapEntityPropertyBinder
  * @since 3.1.0
  */
-public class ListEntityPropertyBinder implements EntityPropertyBinder<Object>
+@SuppressWarnings( "Duplicates" )
+public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor collectionDescriptor;
@@ -60,14 +59,11 @@ public class ListEntityPropertyBinder implements EntityPropertyBinder<Object>
 	private final TypeDescriptor memberTypeDescriptor;
 	private final EntityPropertyController<Object, Object> memberController;
 
+	private boolean bindingBusy;
 	private boolean itemsInitialized;
 
 	private EntityPropertyBinder<Object> template;
-	private boolean bindingBusy;
-
-	@Getter
-	@Setter
-	private boolean bound;
+	private Map<String, EntityPropertyBinder<Object>> items;
 
 	/**
 	 * If set to {@code true}, the existing items will always be returned when performing data binding,
@@ -78,22 +74,12 @@ public class ListEntityPropertyBinder implements EntityPropertyBinder<Object>
 	@Setter
 	private boolean updateItemsOnBinding;
 
-	@Getter
-	@Setter
-	private int sortIndex;
-
-	@Getter
-	@Setter
-	private boolean deleted;
-
-	private Map<String, EntityPropertyBinder<Object>> items;
-
-	@SuppressWarnings( "all" )
-	private Optional<Object> originalValue;
 
 	ListEntityPropertyBinder( EntityPropertiesBinder binder,
 	                          EntityPropertyDescriptor collectionDescriptor,
 	                          EntityPropertyDescriptor memberDescriptor ) {
+		super( binder, collectionDescriptor, collectionDescriptor.getController() );
+
 		this.binder = binder;
 		this.collectionDescriptor = collectionDescriptor;
 		this.memberDescriptor = memberDescriptor;
@@ -103,11 +89,6 @@ public class ListEntityPropertyBinder implements EntityPropertyBinder<Object>
 
 		collectionController = collectionDescriptor.getController();
 		memberController = memberDescriptor.getController();
-	}
-
-	@Override
-	public Object getOriginalValue() {
-		return loadOriginalValue();
 	}
 
 	/**
@@ -132,11 +113,6 @@ public class ListEntityPropertyBinder implements EntityPropertyBinder<Object>
 		EntityPropertyBinder<Object> controller = binder.createPropertyBinder( memberDescriptor );
 		controller.setValue( binder.createValue( memberController, memberTypeDescriptor ) );
 		return controller;
-	}
-
-	@Override
-	public Object createNewValue() {
-		return binder.createValue( collectionController, collectionDescriptor.getPropertyTypeDescriptor() );
 	}
 
 	public Map<String, EntityPropertyBinder<Object>> getItems() {
@@ -181,8 +157,6 @@ public class ListEntityPropertyBinder implements EntityPropertyBinder<Object>
 		Object[] items = new Object[0];
 
 		if ( !isDeleted() ) {
-			loadOriginalValue();
-
 			items = getItems()
 					.values()
 					.stream()
@@ -223,21 +197,6 @@ public class ListEntityPropertyBinder implements EntityPropertyBinder<Object>
 		}
 	}
 
-	private Object loadOriginalValue() {
-		if ( originalValue == null ) {
-			originalValue = Optional.ofNullable( collectionController.fetchValue( binder.getBindingContext() ) );
-		}
-		return originalValue.orElse( null );
-	}
-
-	@Override
-	public boolean save() {
-		if ( collectionController != null ) {
-			return collectionController.save( binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
-		}
-		return false;
-	}
-
 	@Override
 	public boolean validate( Errors errors, Object... validationHints ) {
 		int beforeValidate = errors.getErrorCount();
@@ -257,22 +216,9 @@ public class ListEntityPropertyBinder implements EntityPropertyBinder<Object>
 	}
 
 	@Override
-	public boolean applyValue() {
-		if ( collectionController != null ) {
-			return collectionController.applyValue( binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
-		}
-		return false;
-	}
-
-	@Override
 	public void resetBindStatus() {
-		bound = false;
+		setBound( false );
 		itemsInitialized = false;
-	}
-
-	@Override
-	public int getControllerOrder() {
-		return collectionController != null ? collectionController.getOrder() : Ordered.LOWEST_PRECEDENCE;
 	}
 
 	/**

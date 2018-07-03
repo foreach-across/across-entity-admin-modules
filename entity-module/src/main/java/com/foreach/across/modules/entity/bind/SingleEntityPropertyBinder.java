@@ -18,14 +18,9 @@ package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.core.Ordered;
 import org.springframework.validation.Errors;
 
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Represents a single value property, always attached to a {@link EntityPropertiesBinder}.
@@ -34,7 +29,7 @@ import java.util.Optional;
  * @author Arne Vandamme
  * @since 3.1.0
  */
-public class SingleEntityPropertyBinder implements EntityPropertyBinder<Object>
+public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBinder
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor descriptor;
@@ -43,13 +38,6 @@ public class SingleEntityPropertyBinder implements EntityPropertyBinder<Object>
 	private boolean valueHasBeenSet;
 
 	private EntityPropertiesBinder properties;
-
-	@Getter
-	@Setter
-	private boolean bound;
-
-	@Setter
-	private boolean deleted;
 
 	/**
 	 * Has {@link #setValue(Object)} been called with a new value.
@@ -61,30 +49,12 @@ public class SingleEntityPropertyBinder implements EntityPropertyBinder<Object>
 	 */
 	private Object value;
 
-	/**
-	 * The original value that was fetched when the property was initialized.
-	 * If {@code null} the original value has never been fetched.
-	 */
-	@SuppressWarnings( "all" )
-	private Optional<Object> originalValue;
-
-	@Getter
-	@Setter
-	private int sortIndex;
-
 	@SuppressWarnings("unchecked")
 	SingleEntityPropertyBinder( EntityPropertiesBinder binder, EntityPropertyDescriptor descriptor ) {
+		super( binder, descriptor, descriptor.getController() );
 		this.binder = binder;
 		this.descriptor = descriptor;
 		controller = descriptor.getController();
-	}
-
-	private Object loadOriginalValue() {
-		if ( originalValue == null ) {
-			value = controller.fetchValue( binder.getBindingContext() );
-			originalValue = Optional.ofNullable( value );
-		}
-		return originalValue.orElse( null );
 	}
 
 	@Override
@@ -104,8 +74,9 @@ public class SingleEntityPropertyBinder implements EntityPropertyBinder<Object>
 	}
 
 	@Override
-	public Object getOriginalValue() {
-		return loadOriginalValue();
+	protected Object fetchOriginalValue() {
+		value = super.fetchOriginalValue();
+		return value;
 	}
 
 	@Override
@@ -144,25 +115,8 @@ public class SingleEntityPropertyBinder implements EntityPropertyBinder<Object>
 		}
 	}
 
-	@Override
-	public Object createNewValue() {
-		return binder.createValue( controller, descriptor.getPropertyTypeDescriptor() );
-	}
-
-	@Override
-	public boolean applyValue() {
-		if ( controller != null ) {
-			return controller.applyValue( binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
-		}
-		return false;
-	}
-
-	@Override
-	public boolean save() {
-		if ( controller != null ) {
-			return controller.save( binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
-		}
-		return false;
+	public boolean isDeleted() {
+		return super.isDeleted() || ( isBound() && !valueHasBeenSet );
 	}
 
 	@Override
@@ -176,17 +130,8 @@ public class SingleEntityPropertyBinder implements EntityPropertyBinder<Object>
 		return beforeValidate >= errors.getErrorCount();
 	}
 
-	public boolean isDeleted() {
-		return deleted || ( isBound() && !valueHasBeenSet );
-	}
-
 	private String binderPath() {
 		return "[" + descriptor.getName() + "].value";
-	}
-
-	@Override
-	public int getControllerOrder() {
-		return controller != null ? controller.getOrder() : Ordered.LOWEST_PRECEDENCE;
 	}
 
 	@Override

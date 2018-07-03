@@ -16,13 +16,12 @@
 package com.foreach.across.modules.entity.views.util;
 
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyValues;
-import com.foreach.across.modules.entity.bind.MultiEntityPropertyValue;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -73,11 +72,12 @@ public class EntityViewElementUtils
 		else {
 			value = builderContext.getAttribute( EntityViewModel.ENTITY );
 		}
-
+/*
+TODO
 		if ( value instanceof MultiEntityPropertyValue.Item ) {
 			value = ( (MultiEntityPropertyValue.Item) value ).getValue();
 		}
-
+*/
 		return expectedType.isInstance( value ) ? expectedType.cast( value ) : null;
 	}
 

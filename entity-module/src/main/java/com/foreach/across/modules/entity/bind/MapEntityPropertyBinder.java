@@ -21,12 +21,12 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.core.Ordered;
+import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.Errors;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Represents a property value that is a {@link java.util.Map} implementation.
@@ -36,7 +36,8 @@ import java.util.stream.Collectors;
  * @see ListEntityPropertyBinder
  * @since 3.1.0
  */
-public class MapEntityPropertyBinder implements EntityPropertyBinder<Object>
+@SuppressWarnings("Duplicates")
+public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor collectionDescriptor;
@@ -51,25 +52,26 @@ public class MapEntityPropertyBinder implements EntityPropertyBinder<Object>
 	private final TypeDescriptor keyTypeDescriptor;
 	private final EntityPropertyController<Object, Object> keyController;
 
+	private boolean bindingBusy;
 	private boolean itemsInitialized;
 
-	@Getter
-	private final Item template;
-
-	@Getter
-	@Setter
-	private boolean bound;
-
-	@Getter
-	@Setter
-	private int sortIndex;
-
+	private Item template;
 	private Map<String, Item> entries;
+
+	/**
+	 * If set to {@code true}, the existing items will always be returned when performing data binding,
+	 * and every item separately can be removed/modified. If {@code false}, then it is expected that all
+	 * items are passed when data binding (replacing them). This is the default mode.
+	 */
+	@Getter
+	@Setter
+	private boolean updateItemsOnBinding;
 
 	MapEntityPropertyBinder( EntityPropertiesBinder binder,
 	                         EntityPropertyDescriptor collectionDescriptor,
-	                         EntityPropertyDescriptor valueDescriptor,
-	                         EntityPropertyDescriptor keyDescriptor ) {
+	                         EntityPropertyDescriptor keyDescriptor,
+	                         EntityPropertyDescriptor valueDescriptor ) {
+		super( binder, collectionDescriptor, collectionDescriptor.getController() );
 		this.binder = binder;
 		this.collectionDescriptor = collectionDescriptor;
 		this.valueDescriptor = valueDescriptor;
@@ -86,71 +88,68 @@ public class MapEntityPropertyBinder implements EntityPropertyBinder<Object>
 		collectionController = collectionDescriptor.getController();
 		valueController = valueDescriptor != null ? valueDescriptor.getController() : null;
 		keyController = keyDescriptor != null ? keyDescriptor.getController() : null;
+	}
 
-		template = createItem( "" );
+	/**
+	 * Initialized template item for a single member of this map.
+	 * Not meant to be modified but can be used to create blank values for a new member.
+	 *
+	 * @return template item controller
+	 */
+	public Item getTemplate() {
+		if ( template == null ) {
+			template = createItem( "" );
+		}
+		return template;
 	}
 
 	@Override
-	public Object getOriginalValue() {
-		return null;
-	}
+	public Object getOrInitializeValue() {
+		Object originalValue = loadOriginalValue();
 
-	@Override
-	public void setDeleted( boolean deleted ) {
+		if ( !itemsInitialized && originalValue == null ) {
+			setValue( createNewValue() );
+		}
 
-	}
-
-	@Override
-	public boolean isDeleted() {
-		return false;
+		return getValue();
 	}
 
 	@Override
 	public boolean isModified() {
-		return false;
-	}
-
-	@Override
-	public Object createNewValue() {
-		return null;
+		return isDeleted() || ( ( isBound() || itemsInitialized ) && !Objects.equals( loadOriginalValue(), getValue() ) );
 	}
 
 	public Map<String, Item> getEntries() {
 		if ( entries == null ) {
+			val originalValue = loadOriginalValue();
+
 			entries = new Items();
-			if ( !isBound() && collectionController != null ) {
-				setValue( collectionController.fetchValue( binder.getEntity() ) );
+
+			if ( ( !bindingBusy || updateItemsOnBinding ) && collectionController != null ) {
+				setValue( originalValue );
 			}
-			itemsInitialized = true;
 		}
-		else if ( !itemsInitialized && isBound() ) {
-			itemsInitialized = true;
-			entries.clear();
-		}
+
+		itemsInitialized = true;
 
 		return entries;
-	}
-
-	public Collection<Item> getItemList() {
-		return getEntries()
-				.values()
-				.stream()
-				.sorted( Comparator.comparingInt( Item::getSortIndex ) )
-				.collect( Collectors.toList() );
 	}
 
 	@Override
 	public Object getValue() {
 		LinkedHashMap<Object, Object> map = new LinkedHashMap<>();
 
-		// not using Collectors.toMap() here as that one does not allow null values
-		getEntries()
-				.values()
-				.stream()
-				.sorted( Comparator.comparingInt( Item::getSortIndex ) )
-				.forEach( item -> map.put( item.getEntryKey(), item.getEntryValue() ) );
+		if ( !isDeleted() ) {
+			// not using Collectors.toMap() here as that one does not allow null values
+			getEntries()
+					.values()
+					.stream()
+					.filter( e -> !e.isDeleted() )
+					.sorted( Comparator.comparingInt( Item::getSortIndex ) )
+					.forEach( item -> map.put( item.getEntryKey(), item.getEntryValue() ) );
+		}
 
-		return binder.convertIfNecessary( map, collectionTypeDescriptor, "" );
+		return binder.convertIfNecessary( map, collectionTypeDescriptor, binderPath( "entries" ) );
 	}
 
 	@Override
@@ -158,34 +157,27 @@ public class MapEntityPropertyBinder implements EntityPropertyBinder<Object>
 		itemsInitialized = true;
 
 		if ( entries == null ) {
+			loadOriginalValue();
 			entries = new Items();
 		}
 		entries.clear();
 
 		if ( value != null ) {
-			List values = (List) binder.convertIfNecessary( value,
-			                                                TypeDescriptor.collection( ArrayList.class, valueTypeDescriptor ),
-			                                                collectionTypeDescriptor.getObjectType(),
-			                                                collectionBinderPath() + ".value" );
+			Map<?, ?> values = (Map) binder.convertIfNecessary( value,
+			                                                    TypeDescriptor.map( LinkedHashMap.class, keyTypeDescriptor, valueTypeDescriptor ),
+			                                                    LinkedHashMap.class,
+			                                                    binderPath( "value" ) );
 
 			int index = 0;
-			for ( Object v : values ) {
+			for ( val entry : values.entrySet() ) {
 				String key = "" + index;
 				Item item = new Item( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
-				item.setEntryKey( key );
-				item.setEntryValue( v );
+				item.setEntryKey( entry.getKey() );
+				item.setEntryValue( entry.getValue() );
 				item.setSortIndex( index++ );
 				entries.put( key, item );
 			}
 		}
-	}
-
-	@Override
-	public boolean save() {
-		if ( collectionController != null ) {
-			return collectionController.save( binder.getEntity(), getValue() );
-		}
-		return false;
 	}
 
 	@Override
@@ -203,22 +195,33 @@ public class MapEntityPropertyBinder implements EntityPropertyBinder<Object>
 	}
 
 	@Override
-	public boolean applyValue() {
-		if ( collectionController != null ) {
-			return collectionController.applyValue( binder.getEntity(), null, getValue() );
-		}
-		return false;
-	}
-
-	@Override
 	public void resetBindStatus() {
-		bound = false;
+		setBound( false );
 		itemsInitialized = false;
 	}
 
+	/**
+	 * While binding is enabled, the items collection will not remove any (possibly) deleted items.
+	 * When explicitly disabling binding, the items will be cleared of any deleted items and will be
+	 * fully cleared if the property itself is deleted.
+	 *
+	 * @param enabled true if in binding mode, false if not expecting any more changes
+	 */
 	@Override
-	public int getControllerOrder() {
-		return collectionController != null ? collectionController.getOrder() : Ordered.LOWEST_PRECEDENCE;
+	public void enableBinding( boolean enabled ) {
+		bindingBusy = enabled;
+
+		if ( !enabled ) {
+			if ( isDeleted() ) {
+				if ( entries == null ) {
+					getEntries();
+				}
+				entries.clear();
+			}
+			else if ( entries != null ) {
+				entries.entrySet().removeIf( e -> e.getValue().isDeleted() );
+			}
+		}
 	}
 
 	private Item createItem( String key ) {
@@ -228,16 +231,20 @@ public class MapEntityPropertyBinder implements EntityPropertyBinder<Object>
 			item.setEntryKey( key );
 		}
 		else {
-			item.setEntryKey( binder.createValue( keyController, binder.getEntity(), keyTypeDescriptor ) );
+			item.setEntryKey( binder.createValue( keyController, keyTypeDescriptor ) );
 		}
 
-		item.setEntryValue( binder.createValue( valueController, binder.getEntity(), valueTypeDescriptor ) );
+		item.setEntryValue( binder.createValue( valueController, valueTypeDescriptor ) );
 
 		return item;
 	}
 
 	private String collectionBinderPath() {
 		return "[" + collectionDescriptor.getName() + "]";
+	}
+
+	private String binderPath( String property ) {
+		return "[" + collectionDescriptor.getName() + "]" + ( StringUtils.isNotEmpty( property ) ? "." + property : "" );
 	}
 
 	/**
@@ -267,6 +274,10 @@ public class MapEntityPropertyBinder implements EntityPropertyBinder<Object>
 	{
 		@Getter
 		@Setter
+		private boolean deleted;
+
+		@Getter
+		@Setter
 		private int sortIndex;
 
 		@Getter
@@ -275,19 +286,19 @@ public class MapEntityPropertyBinder implements EntityPropertyBinder<Object>
 		@Getter
 		private final EntityPropertyBinder<Object> value;
 
-		public void setEntryKey( Object key ) {
+		void setEntryKey( Object key ) {
 			this.key.setValue( key );
 		}
 
-		public void setEntryValue( Object value ) {
+		void setEntryValue( Object value ) {
 			this.value.setValue( value );
 		}
 
-		public Object getEntryKey() {
+		Object getEntryKey() {
 			return key.getValue();
 		}
 
-		public Object getEntryValue() {
+		Object getEntryValue() {
 			return value.getValue();
 		}
 

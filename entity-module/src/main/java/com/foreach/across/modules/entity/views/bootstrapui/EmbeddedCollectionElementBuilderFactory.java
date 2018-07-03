@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
  * @author Arne Vandamme
  * @since 3.1.0
  */
+@Deprecated
 @ConditionalOnBootstrapUI
 @Component
 @RequiredArgsConstructor

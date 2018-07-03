@@ -177,7 +177,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 			val keyDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_KEY, typeDescriptor.getMapKeyTypeDescriptor() );
 			val valueDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_VALUE, typeDescriptor.getMapValueTypeDescriptor() );
 
-			return new MapEntityPropertyBinder( this, descriptor, valueDescriptor, keyDescriptor );
+			return new MapEntityPropertyBinder( this, descriptor, keyDescriptor, valueDescriptor );
 		}
 		else if ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) {
 			val memberDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.INDEXER, typeDescriptor.getElementTypeDescriptor() );
