@@ -30,6 +30,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertySelec
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -472,11 +473,20 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 		ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( parentBuilderContext );
 
 		if ( getEntityConfiguration() != null ) {
-			// set the message code resolver of the specific entity type being rendered
-			builderContext.setAttribute(
-					EntityMessageCodeResolver.class,
-					getEntityConfiguration().getEntityMessageCodeResolver()
-			);
+			// todo: setting the message code this way is not optimal - find better approach
+			EntityViewRequest viewRequest = builderContext.getAttribute( EntityViewRequest.class );
+			boolean replaceMessageCodeResolver
+					= viewRequest == null
+					|| !builderContext.hasAttribute( EntityMessageCodeResolver.class )
+					|| !Objects.equals( getEntityConfiguration(), viewRequest.getEntityViewContext().getEntityConfiguration() );
+
+			if ( replaceMessageCodeResolver ) {
+				// set the message code resolver of the specific entity type being rendered
+				builderContext.setAttribute(
+						EntityMessageCodeResolver.class,
+						getEntityConfiguration().getEntityMessageCodeResolver()
+				);
+			}
 		}
 
 		if ( page == null ) {
