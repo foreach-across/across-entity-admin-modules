@@ -16,7 +16,6 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElement;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
@@ -39,6 +38,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.datetime;
 
 /**
  * @author Steven Gentens
@@ -63,6 +64,10 @@ public class BootstrapDatepickerController
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
+		generatedElements.put( "Null value LocalDateTime", datetime().value( (LocalDateTime) null ).build() );
+		generatedElements.put( "Null value LocalDate", datetime().value( (LocalDate) null ).build() );
+		generatedElements.put( "Null value LocalTime", datetime().value( (LocalTime) null ).build() );
+		generatedElements.put( "Null value Date", datetime().value( (Date) null ).build() );
 		generatedElements.put( "Simple datepicker (Date)", simpleDatepicker_Date() );
 		generatedElements.put( "Simple datepicker (LocalDate)", simpleDatepicker_LocalDate() );
 		generatedElements.put( "Simple datepicker (LocalTime)", simpleDatepicker_LocalTime() );
@@ -80,45 +85,45 @@ public class BootstrapDatepickerController
 	}
 
 	private DateTimeFormElement simpleDatepicker_Date() {
-		return BootstrapUiBuilders.datetime()
-		                          .value( new Date() )
-		                          .build();
+		return datetime()
+				.value( new Date() )
+				.build();
 	}
 
 	private DateTimeFormElement simpleDatepicker_LocalDate() {
-		return BootstrapUiBuilders.datetime()
-		                          .value( LocalDate.now() )
-		                          .build();
+		return datetime()
+				.value( LocalDate.now() )
+				.build();
 	}
 
 	private DateTimeFormElement simpleDatepicker_LocalTime() {
-		return BootstrapUiBuilders.datetime()
-		                          .value( LocalTime.now() )
-		                          .build();
+		return datetime()
+				.value( LocalTime.now() )
+				.build();
 	}
 
 	private DateTimeFormElement simpleDatepicker_LocalDateTime() {
-		return BootstrapUiBuilders.datetime()
-		                          .value( LocalDateTime.now() )
-		                          .build();
+		return datetime()
+				.value( LocalDateTime.now() )
+				.build();
 	}
 
 	private DateTimeFormElement datepickerWithTimeFormat() {
-		return BootstrapUiBuilders.datetime()
-		                          .value( LocalDateTime.now() )
-		                          .format( DateTimeFormElementConfiguration.Format.TIME )
-		                          .build();
+		return datetime()
+				.value( LocalDateTime.now() )
+				.format( DateTimeFormElementConfiguration.Format.TIME )
+				.build();
 	}
 
 	private DateTimeFormElement datepickerWithDateFormat() {
-		return BootstrapUiBuilders.datetime()
-		                          .value( LocalDateTime.now() )
-		                          .format( DateTimeFormElementConfiguration.Format.DATE )
-		                          .build();
+		return datetime()
+				.value( LocalDateTime.now() )
+				.format( DateTimeFormElementConfiguration.Format.DATE )
+				.build();
 	}
 
 	private DateTimeFormElement datepickerLocalizedfrFR_Date() {
-		DateTimeFormElementBuilder builder = BootstrapUiBuilders.datetime();
+		DateTimeFormElementBuilder builder = datetime();
 		DateTimeFormElementConfiguration config = builder.getConfiguration();
 		config.setLocale( Locale.forLanguageTag( "fr-FR" ) );
 		config.setFormat( DateTimeFormElementConfiguration.Format.DATETIME_FULL );
@@ -130,7 +135,7 @@ public class BootstrapDatepickerController
 	}
 
 	private DateTimeFormElement datepickerLocalizedfrFR_LocalDateTime() {
-		DateTimeFormElementBuilder builder = BootstrapUiBuilders.datetime();
+		DateTimeFormElementBuilder builder = datetime();
 		DateTimeFormElementConfiguration config = builder.getConfiguration();
 		config.setLocale( Locale.forLanguageTag( "fr-FR" ) );
 		config.setFormat( DateTimeFormElementConfiguration.Format.DATETIME_FULL );
@@ -142,7 +147,7 @@ public class BootstrapDatepickerController
 	}
 
 	private DateTimeFormElement datepickerLocalizedjaJP_Date() {
-		DateTimeFormElementBuilder builder = BootstrapUiBuilders.datetime();
+		DateTimeFormElementBuilder builder = datetime();
 		DateTimeFormElementConfiguration config = builder.getConfiguration();
 		config.setLocale( Locale.forLanguageTag( "ja-JP" ) );
 		config.setFormat( DateTimeFormElementConfiguration.Format.DATETIME_FULL );
@@ -154,7 +159,7 @@ public class BootstrapDatepickerController
 	}
 
 	private DateTimeFormElement datepickerLocalizedjaJP_LocalDateTime() {
-		DateTimeFormElementBuilder builder = BootstrapUiBuilders.datetime();
+		DateTimeFormElementBuilder builder = datetime();
 		DateTimeFormElementConfiguration config = builder.getConfiguration();
 		config.setLocale( Locale.forLanguageTag( "ja-JP" ) );
 		config.setFormat( DateTimeFormElementConfiguration.Format.DATETIME_FULL );

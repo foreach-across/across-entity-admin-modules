@@ -15,7 +15,11 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Arne Vandamme
@@ -94,6 +98,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 		SelectFormElement.Option three = new SelectFormElement.Option();
 		three.setValue( 123 );
 		three.setLabel( "Label only" );
+		three.addCssClass( "one", "two" );
 
 		box.addChild( one );
 		box.addChild( two );
@@ -104,7 +109,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 				"<select class='form-control'>" +
 						"<option value='one'>Inner text</option>" +
 						"<option label='Short two' selected='selected' disabled='disabled'>Some text</option>" +
-						"<option value='123'>Label only</option>" +
+						"<option class='one two' value='123'>Label only</option>" +
 						"</select>"
 		);
 	}
@@ -152,5 +157,37 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 						"<option value='one'>Inner text</option>" +
 						"</select>"
 		);
+	}
+
+	@Test
+	public void updateControlName() {
+		SelectFormElement control = new SelectFormElement();
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<select name='two' id='two' class='form-control' />"
+		);
+
+		assertEquals( "two", control.getControlName() );
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = new SelectFormElement();
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<select name='prefix.one' id='prefix.one' class='form-control' />"
+		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

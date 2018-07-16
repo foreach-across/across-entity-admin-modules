@@ -17,9 +17,10 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import liquibase.util.StringUtils;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,6 +37,7 @@ public class NumericFormElement extends FormControlElementSupport implements For
 	public static final String CSS_NUMERIC = "numeric";
 
 	private Number value;
+	private boolean htmlIdSpecified = false;
 
 	private final TextboxFormElement textbox = new TextboxFormElement();
 	private final HiddenFormElement hidden = new HiddenFormElement();
@@ -44,7 +46,6 @@ public class NumericFormElement extends FormControlElementSupport implements For
 		super( "input" );
 		setElementType( ContainerViewElement.ELEMENT_TYPE );
 		addCssClass( CSS_NUMERIC );
-
 		addChild( textbox );
 	}
 
@@ -93,11 +94,12 @@ public class NumericFormElement extends FormControlElementSupport implements For
 
 	@Override
 	public String getControlName() {
-		return textbox.getControlName();
+		return hasConfiguration() ? hidden.getControlName() : textbox.getControlName();
 	}
 
 	@Override
 	public void setControlName( String controlName ) {
+		hidden.setControlName( controlName );
 		textbox.setControlName( controlName );
 	}
 
@@ -133,6 +135,7 @@ public class NumericFormElement extends FormControlElementSupport implements For
 
 	@Override
 	public void setHtmlId( String id ) {
+		htmlIdSpecified = StringUtils.isNotEmpty( id );
 		textbox.setHtmlId( id );
 	}
 
@@ -193,26 +196,30 @@ public class NumericFormElement extends FormControlElementSupport implements For
 
 	@Override
 	public List<ViewElement> getChildren() {
-		List<ViewElement> children = super.getChildren();
+		List<ViewElement> children = new ArrayList<>( super.getChildren() );
 
-		if ( getConfiguration() != null ) {
-			String controlName = textbox.getControlName();
+		String controlName = getControlName();
 
-			if ( controlName != null && !StringUtils.equals( "_" + hidden.getControlName(), controlName ) ) {
-				hidden.setControlName( controlName );
-				hidden.setValue( textbox.getText() );
-				textbox.setHtmlId( textbox.getHtmlId() );
-				textbox.setControlName( "_" + controlName );
+		if ( hasConfiguration() && controlName != null ) {
+			if ( !htmlIdSpecified ) {
+				textbox.setHtmlId( hidden.getControlName() );
 			}
+			textbox.setControlName( "_" + hidden.getControlName() );
+			hidden.setValue( textbox.getText() );
 
-			if ( controlName != null ) {
-				children.add( hidden );
+			children.add( hidden );
+		}
+		else {
+			if ( !htmlIdSpecified ) {
+				textbox.setHtmlId( getControlName() );
 			}
-			else {
-				children.remove( hidden );
-			}
+			textbox.setControlName( getControlName() );
 		}
 
 		return children;
+	}
+
+	private boolean hasConfiguration() {
+		return getConfiguration() != null;
 	}
 }

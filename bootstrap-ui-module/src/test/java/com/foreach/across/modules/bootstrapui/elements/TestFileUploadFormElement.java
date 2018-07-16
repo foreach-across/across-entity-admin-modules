@@ -16,7 +16,11 @@
 
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Arne Vandamme
@@ -83,5 +87,37 @@ public class TestFileUploadFormElement extends AbstractBootstrapViewElementTest
 				upload,
 				"<input type='file' />"
 		);
+	}
+
+	@Test
+	public void updateControlName() {
+		FileUploadFormElement control = new FileUploadFormElement();
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<input type='file' id='two' name='two' />"
+		);
+
+		assertEquals( "two", control.getControlName() );
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = new FileUploadFormElement();
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<input type='file' id='prefix.one' name='prefix.one' />"
+		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

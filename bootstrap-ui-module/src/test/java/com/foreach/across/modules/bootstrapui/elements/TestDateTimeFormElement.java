@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -182,5 +184,49 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 		assertEquals( localDateTime.toLocalDate(), datetime.getLocalDate() );
 		assertEquals( localDateTime.toLocalTime(), datetime.getLocalTime() );
 		assertEquals( localDateTime, datetime.getLocalDateTime() );
+	}
+
+	@Test
+	public void updateControlName() {
+		DateTimeFormElement control = datetime;
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
+						"<input class='form-control' type='text' name='_two' id='two' />" +
+						"<span class='input-group-addon'>" +
+						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
+						"</span>" +
+						"<input name='two' type='hidden' />" +
+						"</div>"
+		);
+
+		assertEquals( "two", control.getControlName() );
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = datetime;
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
+						"<input class='form-control' type='text' name='_prefix.one' id='prefix.one' />" +
+						"<span class='input-group-addon'>" +
+						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
+						"</span>" +
+						"<input name='prefix.one' type='hidden' />" +
+						"</div>"
+		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

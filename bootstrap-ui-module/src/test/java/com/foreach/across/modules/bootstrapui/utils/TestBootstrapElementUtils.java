@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.utils;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 /**
@@ -27,6 +28,18 @@ public class TestBootstrapElementUtils
 {
 	private final TextboxFormElement textbox = new TextboxFormElement();
 	private final CheckboxFormElement child = new CheckboxFormElement();
+
+	@Test
+	public void updateControlNames() {
+		TextboxFormElement control = new TextboxFormElement();
+		control.setControlName( "ctl" );
+
+		BootstrapElementUtils.prefixControlNames( "my", control );
+		assertEquals( "my.ctl", control.getControlName() );
+
+		BootstrapElementUtils.replaceControlNamesPrefix( "my.", "yours.", control );
+		assertEquals( "yours.ctl", control.getControlName() );
+	}
 
 	@Test
 	public void directFormControl() {

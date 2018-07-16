@@ -20,9 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.builder.*;
 import com.foreach.across.modules.web.ui.StandardViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
-import org.springframework.stereotype.Service;
 
-@Service
 public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory implements BootstrapUiFactory
 {
 	@Override

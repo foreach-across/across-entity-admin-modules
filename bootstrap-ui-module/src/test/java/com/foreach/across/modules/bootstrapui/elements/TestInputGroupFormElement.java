@@ -15,9 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -133,5 +136,41 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 						+ "</span>"
 						+ "</div>"
 		);
+	}
+
+	@Test
+	public void updateControlName() {
+		InputGroupFormElement control = inputGroup;
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<div class='input-group'>"
+						+ "<input type='text' class='form-control' name='two' id='two' />"
+						+ "</div>"
+		);
+
+		assertEquals( "two", control.getControlName() );
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = inputGroup;
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<div class='input-group'>"
+						+ "<input type='text' class='form-control' name='prefix.one' id='prefix.one' />"
+						+ "</div>"
+		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

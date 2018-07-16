@@ -17,9 +17,12 @@
 package com.foreach.across.modules.bootstrapui.elements.autosuggest;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import lombok.NonNull;
+
+import java.util.stream.Stream;
 
 /**
  * Represents an autosuggest textbox field, created only through an {@link AutoSuggestFormElementBuilder}.
@@ -137,5 +140,11 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 
 	public void setConfiguration( @NonNull AutoSuggestFormElementConfiguration configuration ) {
 		setAttribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration );
+	}
+
+	@Override
+	public Stream<ViewElement> elementStream() {
+		// filter out the textbox and value control from container finding
+		return super.elementStream().filter( e -> e != textbox && e != valueControl );
 	}
 }

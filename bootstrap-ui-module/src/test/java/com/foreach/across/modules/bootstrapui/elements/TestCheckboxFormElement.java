@@ -16,8 +16,12 @@
 
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Arne Vandamme
@@ -129,5 +133,96 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
 		);
+	}
+
+	@Test
+	public void attributesAreAddedToTheWrapperIfPresent() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setText( "label text" );
+		box.setAttribute( "data-role", "item" );
+		box.addCssClass( "one", "two" );
+
+		renderAndExpect(
+				box,
+				"<div class='one two checkbox' data-role='item'><label for='boxName'>" +
+						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text" +
+						"</label>" +
+						"<input type='hidden' name='_boxName' value='on' />" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void attributesAreAddedToTheLabelIfNotWrapped() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setText( "label text" );
+		box.setAttribute( "data-role", "item" );
+		box.addCssClass( "one", "two" );
+		box.setWrapped( false );
+
+		renderAndExpect(
+				box,
+				"<label for='boxName' class='one two' data-role='item'>" +
+						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text</label>" +
+						"<input type='hidden' name='_boxName' value='on' />"
+		);
+	}
+
+	@Test
+	public void attributesAreAddedToTheInputIfNotWrappedAndNoLabel() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setAttribute( "data-role", "item" );
+		box.addCssClass( "one", "two" );
+		box.setWrapped( false );
+
+		renderAndExpect(
+				box,
+				"<input type='checkbox' id='boxName' name='boxName' class='one two' data-role='item' value='123' />" +
+						"<input type='hidden' name='_boxName' value='on' />"
+		);
+	}
+
+	@Test
+	public void updateControlName() {
+		CheckboxFormElement control = new CheckboxFormElement();
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<div class='checkbox'>"
+						+ "<input type='checkbox' id='two' name='two' />"
+						+ "<input type='hidden' name='_two' value='on' />"
+						+ "</div>"
+		);
+
+		assertEquals( "two", control.getControlName() );
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = new CheckboxFormElement();
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<div class='checkbox'>"
+						+ "<input type='checkbox' id='prefix.one' name='prefix.one' />"
+						+ "<input type='hidden' name='_prefix.one' value='on' />"
+						+ "</div>"
+		);
+
+		assertEquals( "prefix.one", control.getControlName() );
 	}
 }

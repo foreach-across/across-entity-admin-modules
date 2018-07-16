@@ -15,10 +15,14 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Arne Vandamme
@@ -46,6 +50,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 	public void simpleNumericWithControlNameAndValue() {
 		numeric.setControlName( "number" );
 		numeric.setValue( 123L );
+		assertEquals( "number", numeric.getControlName() );
 
 		renderAndExpect(
 				numeric,
@@ -59,6 +64,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 		numeric.setConfiguration( new NumericFormElementConfiguration() );
 		numeric.setControlName( "number" );
 		numeric.setValue( number );
+		assertEquals( "number", numeric.getControlName() );
 
 		renderAndExpect(
 				numeric,
@@ -88,5 +94,63 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 						"<input id='number' name='number' class='numeric form-control' type='text' />" +
 						"</div>"
 		);
+	}
+
+	@Test
+	public void updateControlName() {
+		NumericFormElement control = new NumericFormElement();
+		control.setControlName( "one" );
+		render( control );
+		control.setControlName( "two" );
+		renderAndExpect(
+				control,
+				"<input type='text' class='numeric form-control' id='two' name='two' />"
+		);
+
+		assertEquals( "two", control.getControlName() );
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = new NumericFormElement();
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<input type='text' class='numeric form-control' id='prefix.one' name='prefix.one' />"
+		);
+
+		assertEquals( "prefix.one", control.getControlName() );
+	}
+
+	@Test
+	public void updateControlNameThroughContainerWithElementConfiguration() {
+		ContainerViewElement container = new ContainerViewElement();
+		NumericFormElement control = new NumericFormElement();
+		control.setConfiguration( new NumericFormElementConfiguration() );
+		control.setControlName( "number" );
+		control.setValue( 1433 );
+		control.setHtmlId( "my-specific-id" );
+
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+		control.setControlName( "two" );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				control,
+				"<input id='my-specific-id' name='_prefix.two' class='numeric form-control' " +
+						"type='text' " + DATA_ATTRIBUTE + " value='1433' />" +
+						"<input type='hidden' name='prefix.two' value='1433' />"
+		);
+
+		assertEquals( "prefix.two", control.getControlName() );
 	}
 }

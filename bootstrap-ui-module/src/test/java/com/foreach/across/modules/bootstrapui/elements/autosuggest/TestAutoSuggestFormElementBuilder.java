@@ -16,12 +16,11 @@
 
 package com.foreach.across.modules.bootstrapui.elements.autosuggest;
 
-import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
-import com.foreach.across.modules.bootstrapui.elements.AlertViewElement;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryImpl;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.builder.AlertViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
@@ -33,6 +32,7 @@ import org.junit.Test;
 
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Sander Van Loock, Arne Vandamme
@@ -83,6 +83,36 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 	}
 
 	@Test
+	public void updateControlName() {
+		AutoSuggestFormElement control = builder.controlName( "one" ).build( context );
+		render( control );
+		control.setControlName( "two" );
+
+		Element markup = parse( render( control ) );
+		Element value = single( markup.getElementsByClass( CSS_TYPEAHEAD_VALUE ) );
+		assertThat( value.attr( "name" ) ).isEqualTo( "two" );
+
+		assertEquals( "two", control.getControlName() );
+	}
+
+	@Test
+	public void updateControlNameThroughContainer() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = builder.controlName( "one" ).build( context );
+		control.setControlName( "one" );
+		render( control );
+		container.addChild( control );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		Element markup = parse( render( control ) );
+		Element value = single( markup.getElementsByClass( CSS_TYPEAHEAD_VALUE ) );
+		assertThat( value.attr( "name" ) ).isEqualTo( "prefix.one" );
+
+		assertEquals( "prefix.one", control.getControlName() );
+	}
+
+	@Test
 	public void customTextboxAsInput() {
 
 	}
@@ -93,7 +123,11 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 	}
 
 	private Element parse( AutoSuggestFormElementBuilder builder ) {
-		return Jsoup.parseBodyFragment( render( builder.build( context ) ) )
+		return parse( render( builder.build( context ) ) );
+	}
+
+	private Element parse( String html ) {
+		return Jsoup.parseBodyFragment( html )
 		            .getElementsByAttribute( AutoSuggestFormElement.ATTRIBUTE_DATA_AUTOSUGGEST )
 		            .get( 0 );
 	}

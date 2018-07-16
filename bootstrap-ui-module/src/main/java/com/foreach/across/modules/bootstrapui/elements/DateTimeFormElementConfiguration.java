@@ -465,14 +465,14 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Converts a {@link Date} to a {@link LocalDateTime} using the configured {@link ZoneId}
 	 */
 	public LocalDateTime dateToLocalDateTime( Date date ) {
-		return LocalDateTime.ofInstant( Instant.ofEpochMilli( date.getTime() ), getZoneId() );
+		return date == null ? null : LocalDateTime.ofInstant( Instant.ofEpochMilli( date.getTime() ), getZoneId() );
 	}
 
 	/**
 	 * Converts a {@link LocalDateTime} to a {@link Date} using the configured {@link ZoneId}
 	 */
 	public Date localDateTimeToDate( LocalDateTime date ) {
-		return Date.from( date.atZone( getZoneId() ).toInstant() );
+		return date == null ? null : Date.from( date.atZone( getZoneId() ).toInstant() );
 	}
 
 	/**
@@ -489,7 +489,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Converts a {@link LocalDate} to a {@link LocalDateTime} with time equal to the start of the day.
 	 */
 	public static LocalDateTime localDateToLocalDateTime( LocalDate date ) {
-		return date.atStartOfDay();
+		return date == null ? null : date.atStartOfDay();
 	}
 
 	/**
@@ -506,7 +506,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * Converts a {@link LocalTime} to a {@link LocalDateTime} with the day equal to today.
 	 */
 	public static LocalDateTime localTimeToLocalDateTime( LocalTime time ) {
-		return time.atDate( LocalDate.now() );
+		return time == null ? null : time.atDate( LocalDate.now() );
 	}
 
 	/**
