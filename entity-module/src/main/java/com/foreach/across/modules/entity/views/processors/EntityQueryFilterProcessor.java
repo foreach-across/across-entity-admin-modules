@@ -43,6 +43,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,8 +147,15 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 			if ( viewContext.isForAssociation() ) {
 				EntityAssociation association = viewContext.getEntityAssociation();
-				AssociatedEntityQueryExecutor associatedExecutor = new AssociatedEntityQueryExecutor<>( association.getTargetProperty(), queryFacade );
-				return associatedExecutor.findAll( viewContext.getParentContext().getEntity( Object.class ), query, pageable );
+				val property = association.getTargetProperty();
+				EntityQueryCondition propertyCondition = new EntityQueryCondition(
+						property.getName(),
+						property.getPropertyTypeDescriptor().isCollection() ? EntityQueryOps.CONTAINS : EntityQueryOps.EQ,
+						viewContext.getParentContext().getEntity()
+				);
+
+				EntityQuery propertyPredicate = queryFacade.convertToExecutableQuery( EntityQuery.and( propertyCondition ) );
+				return queryFacade.findAll( EntityQuery.and( query, propertyPredicate ), pageable );
 			}
 			else {
 				return queryFacade.findAll( query, pageable );
