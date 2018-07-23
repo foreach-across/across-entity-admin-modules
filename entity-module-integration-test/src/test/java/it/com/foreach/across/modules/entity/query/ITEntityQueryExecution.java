@@ -168,11 +168,15 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 	@Test
 	public void contains() {
 		findCompanies( "representatives contains " + john.getId(), one, two );
+		findCompanies( "representatives contains (" + john.getId() + "," + joe.getId() + ")", one, two );
+		findCompanies( "representatives contains (" + joe.getId() + "," + peter.getId() + ")", two );
 	}
 
 	@Test
 	public void notContains() {
 		findCompanies( "representatives not contains " + john.getId(), three );
+		findCompanies( "representatives not contains (" + john.getId() + "," + joe.getId() + ")", one, three );
+		findCompanies( "representatives not contains (" + joe.getId() + "," + peter.getId() + ")", one, three );
 	}
 
 	@Test
@@ -273,6 +277,7 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 			findRepresentatives( "name like 'peter \\\\\\\\ surname'", peter );
 			findRepresentatives( "name like '% surname'", john, joe, peter );
 			findRepresentatives( "name like '%\\\\% surname'", john );
+			findRepresentatives( "name contains 'SURNAME'", john, joe, peter );
 		}
 		finally {
 			descriptor.removeAttribute( EntityQueryConditionTranslator.class );

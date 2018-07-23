@@ -65,13 +65,13 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
 		// Set the dto of the entity on the command object
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
-		EntityModel<Object, ?> entityModel = entityViewContext.getEntityModel();
+		EntityFactory entityFactory = resolveEntityFactory( entityViewContext );
 
 		if ( entityViewContext.holdsEntity() ) {
-			command.setEntity( entityModel.createDto( entityViewContext.getEntity( Object.class ) ) );
+			command.setEntity( entityFactory.createDto( entityViewContext.getEntity( Object.class ) ) );
 		}
 		else {
-			Object newDto = createNewDto( entityViewContext, entityModel );
+			Object newDto = createNewDto( entityViewContext, entityFactory );
 			command.setEntity( newDto );
 		}
 
@@ -79,7 +79,7 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 		entityViewRequest.getModel().addAttribute( EntityViewModel.ENTITY, command.getEntity() );
 	}
 
-	private Object createNewDto( EntityViewContext entityViewContext, EntityModel<Object, ?> entityModel ) {
+	private Object createNewDto( EntityViewContext entityViewContext, EntityFactory entityFactory ) {
 		if ( entityViewContext.isForAssociation() ) {
 			EntityAssociation entityAssociation = entityViewContext.getEntityAssociation();
 			EntityFactory associatedEntityFactory = entityAssociation.getAttribute( EntityFactory.class );
@@ -88,7 +88,7 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 				return associatedEntityFactory.createNew( entityViewContext.getParentContext().getEntity() );
 			}
 			else {
-				Object newDto = entityModel.createNew();
+				Object newDto = entityFactory.createNew();
 
 				BeanWrapper beanWrapper = new BeanWrapperImpl( newDto );
 				EntityPropertyDescriptor propertyDescriptor = entityViewContext.getEntityAssociation().getTargetProperty();
@@ -106,7 +106,19 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 			}
 		}
 
-		return entityModel.createNew();
+		return entityFactory.createNew();
+	}
+
+	private EntityFactory resolveEntityFactory( EntityViewContext entityViewContext ) {
+		if ( entityViewContext.isForAssociation() ) {
+			EntityFactory associatedEntityFactory = entityViewContext.getEntityAssociation().getAttribute( EntityFactory.class );
+
+			if ( associatedEntityFactory != null ) {
+				return associatedEntityFactory;
+			}
+		}
+
+		return entityViewContext.getEntityModel();
 	}
 
 	@Override

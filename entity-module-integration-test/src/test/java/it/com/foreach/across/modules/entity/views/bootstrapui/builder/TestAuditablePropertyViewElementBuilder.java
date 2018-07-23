@@ -27,7 +27,9 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -97,6 +99,31 @@ public class TestAuditablePropertyViewElementBuilder extends AbstractViewElement
 		builder.setForLastModifiedProperty( true );
 		entity.setLastModifiedBy( null );
 		expect( "modificationDate" );
+	}
+
+	@Test
+	public void messageSourceIsUsed() {
+		MessageSource messageSource = mock( MessageSource.class );
+		when( messageSource.getMessage( "Auditable.created", new Object[] { dateCreated, "Administrator" }, "", LocaleContextHolder.getLocale() ) )
+				.thenReturn( "created" );
+		when( messageSource.getMessage( "Auditable.createdDate", new Object[] { dateCreated, null }, "", LocaleContextHolder.getLocale() ) )
+				.thenReturn( "created-date" );
+		when( messageSource.getMessage( "Auditable.lastModified", new Object[] { dateLastModified, "System Machine" }, "", LocaleContextHolder.getLocale() ) )
+				.thenReturn( "last-modified" );
+		when( messageSource.getMessage( "Auditable.lastModifiedDate", new Object[] { dateLastModified, null }, "", LocaleContextHolder.getLocale() ) )
+				.thenReturn( "last-modified-date" );
+
+		builder.setMessageSource( messageSource );
+		expect( "created" );
+
+		entity.setCreatedBy( null );
+		expect( "created-date" );
+
+		builder.setForLastModifiedProperty( true );
+		expect( "last-modified" );
+
+		entity.setLastModifiedBy( null );
+		expect( "last-modified-date" );
 	}
 
 	private void expect( String output ) {

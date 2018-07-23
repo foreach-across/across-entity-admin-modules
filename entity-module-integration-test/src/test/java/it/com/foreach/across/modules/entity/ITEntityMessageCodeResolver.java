@@ -163,6 +163,21 @@ public class ITEntityMessageCodeResolver
 	}
 
 	@Test
+	public void customPluralizationTest() {
+		EntityMessageCodeResolver prefixed = messages.prefixedResolver( "views[pluralizationOne]" );
+		assertEquals( "Message key", prefixed.getNameSingular() );
+		assertEquals( "message key", prefixed.getNameSingularInline() );
+		assertEquals( "Message keys", prefixed.getNamePlural() );
+		assertEquals( "message keys", prefixed.getNamePluralInline() );
+
+		prefixed = messages.prefixedResolver( "views[pluralizationTwo]" );
+		assertEquals( "Entry", prefixed.getNameSingular() );
+		assertEquals( "entry", prefixed.getNameSingularInline() );
+		assertEquals( "Entries", prefixed.getNamePlural() );
+		assertEquals( "entries", prefixed.getNamePluralInline() );
+	}
+
+	@Test
 	public void propertyDescriptors() {
 		EntityPropertyDescriptor nameProperty = entityConfiguration.getPropertyRegistry().getProperty( "name" );
 		EntityPropertyDescriptor idProperty = entityConfiguration.getPropertyRegistry().getProperty( "id" );

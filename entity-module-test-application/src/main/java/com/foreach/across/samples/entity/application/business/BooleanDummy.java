@@ -32,7 +32,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class BooleanDummy
 {
-	private String id;
+	private Integer id;
 
 	private boolean primitiveBooleanCheckbox;
 

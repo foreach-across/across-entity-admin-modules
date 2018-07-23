@@ -96,6 +96,9 @@ public class EntityQueryRequestValueFetcher implements ValueFetcher<EntityQueryR
 		if ( singleValue instanceof EQString ) {
 			return ( (EQString) singleValue ).getValue();
 		}
+		else if ( EQValue.NULL.equals( singleValue ) ) {
+			return null;
+		}
 		else if ( singleValue instanceof EQValue ) {
 			return ( (EQValue) singleValue ).getValue();
 		}

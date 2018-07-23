@@ -271,6 +271,29 @@ describe( "EntityQueryOps", function() {
     expect( EntityQueryOps.forToken( "is not" ) ).toEqual( EntityQueryOps.IS_NOT_NULL );
 
   } );
+
+  it( "isGroupOperand", function() {
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.AND ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.OR ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.EQ ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.NEQ ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.NEQ ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.CONTAINS ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.NOT_CONTAINS ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.IN ) ).toBeTruthy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.NOT_IN ) ).toBeTruthy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.LIKE ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.LIKE_IC ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.NOT_LIKE ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.NOT_LIKE_IC ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.GT ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.GE ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.LT ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.LE ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.IS_NULL ) ).toBeFalsy();
+    expect( EntityQueryOps.isGroupOperand( EntityQueryOps.IS_NOT_NULL ) ).toBeFalsy();
+
+  } );
 } );
 
 

@@ -21,6 +21,7 @@ import $ from "jquery";
 import {EntityQueryOps} from "../../entity-query/entity-query-ops";
 import EntityQueryCondition from "../../entity-query/entity-query-condition";
 import {convertToTypedValue, isEmptyArray, isNullOrUndefined} from "../../utilities";
+import EQGroup from "../../entity-query/eq-group";
 
 function setCondition( controlItem, control, filterControl, reset = true ) {
   const property = $( controlItem ).data( "entity-query-property" );
@@ -38,7 +39,8 @@ function setCondition( controlItem, control, filterControl, reset = true ) {
       }
       values.push( convertToTypedValue( value ) );
     }
-    condition = new EntityQueryCondition( property, operand, values );
+    const eqlArgument = values.length > 1 && !EntityQueryOps.isGroupOperand( operand ) ? new EQGroup( values ) : values;
+    condition = new EntityQueryCondition( property, operand, eqlArgument );
   }
 
   filterControl.setPropertyCondition( property, condition, reset );

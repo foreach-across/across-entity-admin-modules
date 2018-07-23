@@ -36,7 +36,8 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataProvider
 {
 	public static final EntityQueryOps[] STRING_OPS =
-			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY, CONTAINS, NOT_CONTAINS };
+			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY, CONTAINS,
+			                       NOT_CONTAINS };
 	public static final EntityQueryOps[] NUMBER_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
 	public static final EntityQueryOps[] COLLECTION_OPS =
@@ -70,6 +71,10 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 		TypeDescriptor type = descriptor.getPropertyTypeDescriptor();
 //		Class<?> objectType = type.getObjectType();
 		TypeDescriptor valueType = TypeDescriptor.forObject( value );
+
+		if ( operator == CONTAINS || operator == NOT_CONTAINS ) {
+			return true;
+		}
 
 		return isValidGroupOrNonGroupOperation( valueType, operator );
 	}

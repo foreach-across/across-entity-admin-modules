@@ -88,10 +88,9 @@ public class TestDefaultEntityQueryMetadataProvider
 	}
 
 	@Test
-	public void groupRequiresAnInOperator() {
+	public void groupOperatorIsAllowedForInAndContains() {
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( mock( TypeDescriptor.class ) );
-		expectedInvalidValue( new EQGroup( Collections.emptyList() ), EQ, NEQ, GT, GE, LT, LE, LIKE, NOT_CONTAINS,
-		                      CONTAINS );
+		expectedInvalidValue( new EQGroup( Collections.emptyList() ), EQ, NEQ, GT, GE, LT, LE, LIKE );
 	}
 
 	@Test

@@ -26,6 +26,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.function.Consumer;
 
 /**
@@ -60,6 +61,16 @@ public class FilterOptionGenerator extends OptionGenerator
 	}
 
 	@Override
+	protected Collection retrieveSelectedValues( Object entity ) {
+		if ( entity != null && getValueFetcher() != null ) {
+			Object selected = getValueFetcher().getValue( entity );
+			return selected != null ? super.retrieveSelectedValues( entity ) : null;
+		}
+
+		return Collections.emptyList();
+	}
+
+	@Override
 	protected void createInitialFixedOptions( ViewElementBuilderContext builderContext,
 	                                          ContainerViewElement container,
 	                                          OptionsFormElementBuilder optionsBuilder,
@@ -77,7 +88,7 @@ public class FilterOptionGenerator extends OptionGenerator
 
 		if ( valueNotSetOption != null && !optionsBuilder.isRequired() ) {
 			MutableViewElement option = valueNotSetOption.build( builderContext );
-			select( option, selectedValues.contains( null ) );
+			select( option, selectedValues == null || selectedValues.contains( null ) );
 
 			if ( option instanceof SelectFormElement.Option ) {
 				SelectFormElement.OptionGroup group = new SelectFormElement.OptionGroup();

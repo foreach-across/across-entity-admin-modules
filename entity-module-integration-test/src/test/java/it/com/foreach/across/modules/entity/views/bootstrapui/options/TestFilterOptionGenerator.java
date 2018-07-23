@@ -106,6 +106,23 @@ public class TestFilterOptionGenerator
 		assertEquals( "bbb", ( (SelectFormElement.Option) generated.get( 3 ) ).getLabel() );
 	}
 
+	@Test
+	public void notSetOptionSelectedIfSelectedValueIsNull() {
+		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
+		generator.setValueNotSetOption( new OptionFormElementBuilder().label( "ccc" ).rawValue( "123" ) );
+		when( valueFetcher.getValue( "entity" ) ).thenReturn( null );
+
+		List<AbstractNodeViewElement> generated = build();
+		assertEquals( 4, generated.size() );
+		assertEquals( "", ( (SelectFormElement.Option) generated.get( 0 ) ).getLabel() );
+		assertTrue( generated.get( 1 ) instanceof SelectFormElement.OptionGroup );
+		assertEquals( 1, generated.get( 1 ).getChildren().size() );
+		assertEquals( "ccc", ( (SelectFormElement.Option) generated.get( 1 ).getChildren().get( 0 ) ).getLabel() );
+		assertTrue( ( (SelectFormElement.Option) generated.get( 1 ).getChildren().get( 0 ) ).isSelected() );
+		assertEquals( "aaa", ( (SelectFormElement.Option) generated.get( 2 ) ).getLabel() );
+		assertEquals( "bbb", ( (SelectFormElement.Option) generated.get( 3 ) ).getLabel() );
+	}
+
 	@SuppressWarnings("unchecked")
 	private <U> List<U> build() {
 		ContainerViewElement container = generator.build( builderContext );

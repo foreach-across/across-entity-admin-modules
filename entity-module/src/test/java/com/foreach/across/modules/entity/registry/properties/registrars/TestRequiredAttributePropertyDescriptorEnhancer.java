@@ -21,18 +21,26 @@ import com.foreach.across.modules.entity.registry.properties.DefaultEntityProper
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
+import com.querydsl.core.util.ReflectionUtils;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.hibernate.validator.internal.engine.ValidatorFactoryImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
+import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -56,6 +64,24 @@ public class TestRequiredAttributePropertyDescriptorEnhancer
 		ValidationMetadataPropertiesRegistrar metadataPropertiesRegistrar = new ValidationMetadataPropertiesRegistrar( factoryBean );
 		propertiesRegistrar.accept( SomeProps.class, propertyRegistry );
 		metadataPropertiesRegistrar.accept( SomeProps.class, propertyRegistry );
+
+		// Register PersistentProperty information
+		for ( Field field : ReflectionUtils.getFields( SomeProps.class ) ) {
+			MutableEntityPropertyDescriptor propertyDescriptor = propertyRegistry.getProperty( field.getName() );
+
+			if ( propertyDescriptor != null ) {
+				PersistentProperty persistentProperty = mock( PersistentProperty.class );
+
+				for ( Annotation annotation : field.getAnnotations() ) {
+					when( persistentProperty.isAnnotationPresent( annotation.annotationType() ) ).thenReturn( true );
+					when( persistentProperty.findAnnotation( annotation.annotationType() ) ).thenReturn( annotation );
+
+					if ( annotation.annotationType().getName().startsWith( "javax.persistence" ) ) {
+						propertyDescriptor.setAttribute( PersistentProperty.class, persistentProperty );
+					}
+				}
+			}
+		}
 	}
 
 	@Test
@@ -73,6 +99,12 @@ public class TestRequiredAttributePropertyDescriptorEnhancer
 		assertThat( isRequired( "notNull" ) ).isTrue();
 		assertThat( isRequired( "notBlank" ) ).isTrue();
 		assertThat( isRequired( "notEmpty" ) ).isTrue();
+		assertThat( isRequired( "nullableColumn" ) ).isNull();
+		assertThat( isRequired( "nonNullableColumn" ) ).isTrue();
+		assertThat( isRequired( "optionalManyToOne" ) ).isNull();
+		assertThat( isRequired( "nonOptionalManyToOne" ) ).isTrue();
+		assertThat( isRequired( "optionalOneToOne" ) ).isNull();
+		assertThat( isRequired( "nonOptionalOneToOne" ) ).isTrue();
 	}
 
 	private Boolean isRequired( String propertyName ) {
@@ -98,6 +130,24 @@ public class TestRequiredAttributePropertyDescriptorEnhancer
 
 		@NotEmpty
 		public String notEmpty;
+
+		@Column
+		public Object nullableColumn;
+
+		@Column(nullable = false)
+		public Object nonNullableColumn;
+
+		@ManyToOne
+		public Object optionalManyToOne;
+
+		@ManyToOne(optional = false)
+		public Object nonOptionalManyToOne;
+
+		@OneToOne
+		public Object optionalOneToOne;
+
+		@OneToOne(optional = false)
+		public Object nonOptionalOneToOne;
 	}
 }
 

@@ -66,17 +66,18 @@ public class EntityConverter<T extends ConversionService & ConverterRegistry> im
 	 * @see org.springframework.core.convert.converter.ConditionalGenericConverter#matches(org.springframework.core.convert.TypeDescriptor, org.springframework.core.convert.TypeDescriptor)
 	 */
 	public boolean matches( TypeDescriptor sourceType, TypeDescriptor targetType ) {
+		if ( sourceType.isAssignableTo( targetType ) ) {
+			return false;
+		}
+
 		EntityModel<Object, Serializable> entityModel = findEntityModel( targetType.getType() );
 
 		if ( entityModel == null ) {
 			return false;
 		}
 
-		if ( sourceType.equals( targetType ) ) {
-			return true;
-		}
-
-		return conversionService.canConvert( sourceType.getType(), entityModel.getIdType() );
+		return sourceType.equals( TypeDescriptor.valueOf( entityModel.getIdType() ) )
+				|| conversionService.canConvert( sourceType.getType(), entityModel.getIdType() );
 	}
 
 	@SuppressWarnings("unchecked")
