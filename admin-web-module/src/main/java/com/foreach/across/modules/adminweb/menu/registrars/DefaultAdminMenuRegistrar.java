@@ -74,6 +74,7 @@ public final class DefaultAdminMenuRegistrar
 	 * Registers a {@link UserContextAdminMenuItem} on the {@link AdminMenu}.
 	 * If a {@link UserContextAdminMenuItem#displayName} is registered, it will be displayed in the user context menu.
 	 * If a {@link UserContextAdminMenuItem#thumbnailUrl}
+	 *
 	 * @param adminMenuEvent
 	 */
 	@EventListener
@@ -92,12 +93,11 @@ public final class DefaultAdminMenuRegistrar
 		}
 
 		if ( StringUtils.isNotBlank( userContextMenuItem.getThumbnailUrl() ) ) {
-			group.attribute( NavComponentBuilder.ATTR_ICON_ONLY, false )
-			     .attribute( NavComponentBuilder.ATTR_ICON, new VoidNodeViewElementBuilder( "userContextThumbnail" )
-					     .tagName( "image" )
-					     .css( "user-context-thumbnail" )
-					     .attribute( "src", userContextMenuItem.getThumbnailUrl() )
-					     .build() );
+			group.attribute( NavComponentBuilder.ATTR_ICON, new VoidNodeViewElementBuilder( "userContextThumbnail" )
+					.tagName( "image" )
+					.css( "user-context-thumbnail" )
+					.attribute( "src", userContextMenuItem.getThumbnailUrl() )
+					.build() );
 		}
 		adminMenuEvent.getMenu().setAttribute( USER_CONTEXT_MENU_ITEM, userContextMenuItem );
 	}
