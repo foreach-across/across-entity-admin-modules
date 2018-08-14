@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
 import com.foreach.across.modules.entity.views.context.DefaultEntityViewContext;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.context.EntityViewContextLoader;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -36,11 +37,13 @@ import com.foreach.across.modules.web.context.WebAppPathResolver;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.template.WebTemplateInterceptor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -63,6 +66,7 @@ import static com.foreach.across.modules.entity.controllers.admin.GenericEntityV
  */
 @AdminWebController
 @RequestMapping(PATH_ENTITY_TYPE)
+@SuppressWarnings("unused")
 public class GenericEntityViewController
 {
 	public static final String ROOT_PATH = "/entities";
@@ -148,7 +152,7 @@ public class GenericEntityViewController
 	public void initViewCommandBinder( WebDataBinder dataBinder ) {
 		entityViewRequest.setDataBinder( dataBinder );
 
-		dataBinder.setMessageCodesResolver( entityViewContext.getMessageCodeResolver() );
+		dataBinder.setMessageCodesResolver( new EntityViewMessageCodesResolverProxy( entityViewContext ) );
 
 		EntityViewFactory viewFactory = entityViewRequest.getViewFactory();
 		viewFactory.initializeCommandObject( entityViewRequest, entityViewRequest.getCommand(), dataBinder );
@@ -263,5 +267,24 @@ public class GenericEntityViewController
 	@Autowired
 	void setEntityViewLinks( EntityViewLinks entityViewLinks ) {
 		this.entityViewLinks = entityViewLinks;
+	}
+
+	/**
+	 * Proxy wrapping around the current message code resolver attached to the view context, which should never be {@code null}.
+	 */
+	@RequiredArgsConstructor
+	private static class EntityViewMessageCodesResolverProxy implements MessageCodesResolver
+	{
+		private final EntityViewContext viewContext;
+
+		@Override
+		public String[] resolveMessageCodes( String errorCode, String objectName ) {
+			return viewContext.getMessageCodeResolver().resolveMessageCodes( errorCode, objectName );
+		}
+
+		@Override
+		public String[] resolveMessageCodes( String errorCode, String objectName, String field, Class<?> fieldType ) {
+			return viewContext.getMessageCodeResolver().resolveMessageCodes( errorCode, objectName, field, fieldType );
+		}
 	}
 }
