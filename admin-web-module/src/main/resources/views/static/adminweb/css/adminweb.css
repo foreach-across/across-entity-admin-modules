@@ -32,12 +32,15 @@ label.control-label > sup.required {
 .pager-form {
     color: black;
 }
+
 .pager-form label {
     font-weight: normal;
 }
+
 .pager-form .btn {
     padding: 0 10px;
 }
+
 .pager-form .form-control {
     width: 34px;
     padding: 2px;
@@ -77,6 +80,7 @@ th.result-number {
     width: 40px;
     text-align: center;
 }
+
 td.result-number {
     text-align: center;
 }
@@ -84,6 +88,7 @@ td.result-number {
 th[data-tbl-field='day'] {
     text-align: right;
 }
+
 td[data-tbl-field='day'] {
     width: 110px;
     text-align: right;
@@ -95,4 +100,15 @@ td[data-tbl-field='day'] {
 
 .toast-message button.close {
     display: none;
+}
+
+li.admin-nav-user-context.with-thumbnail > a {
+    padding-bottom: 8px;
+    padding-top: 12px;
+}
+
+.admin-nav-user-context .admin-nav-user-context-thumbnail {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
 }

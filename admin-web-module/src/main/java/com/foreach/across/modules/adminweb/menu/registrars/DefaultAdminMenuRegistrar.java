@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.adminweb.menu.registrars;
 
+import com.foreach.across.modules.adminweb.events.UserContextAdminMenuGroup;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate;
@@ -23,8 +24,12 @@ import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBui
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
@@ -39,25 +44,56 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public final class DefaultAdminMenuRegistrar
 {
-	public static final String PATH = "/user-context";
+	public static final String PATH = UserContextAdminMenuGroup.MENU_PATH;
 
+	private final ApplicationEventPublisher eventPublisher;
 	private final CurrentSecurityPrincipalProxy securityPrincipalProxy;
 
 	@EventListener
-	void registerDefaultItems( AdminMenuEvent menuEvent ) {
+	public void registerDefaultItems( AdminMenuEvent menuEvent ) {
 		menuEvent.builder()
 		         .root( "/" )
 		         .title( "Administration" )
 		         .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.HOME ) )
 		         .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
 		         .and()
-		         .group( PATH, StringUtils.defaultString( securityPrincipalProxy.getPrincipalName(), "User" ) )
-		         .attribute( AdminMenu.ATTR_NAV_POSITION, AdminWebLayoutTemplate.NAVBAR_RIGHT )
-		         .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.USER ) )
-		         .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
-		         .attribute( PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL, false )
-		         .order( Ordered.LOWEST_PRECEDENCE )
-		         .and()
-		         .item( PATH + "/logout", "Logout", "@adminWeb:/logout" );
+		         .andThen( this::registerUserContextAdminMenuGroup );
+	}
+
+	private void registerUserContextAdminMenuGroup( PathBasedMenuBuilder menu ) {
+		UserContextAdminMenuGroup userContextAdminMenuGroup = new UserContextAdminMenuGroup();
+		userContextAdminMenuGroup.setDisplayName( securityPrincipalProxy.getPrincipalName() );
+		userContextAdminMenuGroup.setThumbnailUrl( "" );
+
+		eventPublisher.publishEvent( userContextAdminMenuGroup );
+
+		val group = menu.group( PATH, userContextAdminMenuGroup.getDisplayName() )
+		                .attribute( AdminMenu.ATTR_NAV_POSITION, AdminWebLayoutTemplate.NAVBAR_RIGHT )
+		                .attribute( PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL, false )
+		                .attribute( UserContextAdminMenuGroup.ATTRIBUTE, userContextAdminMenuGroup )
+		                .attribute( "html:class", "admin-nav-user-context" )
+		                .order( Ordered.LOWEST_PRECEDENCE );
+
+		if ( StringUtils.isNotEmpty( userContextAdminMenuGroup.getDisplayName() ) ) {
+			if ( StringUtils.isNotEmpty( userContextAdminMenuGroup.getThumbnailUrl() ) ) {
+				group.title( " " + userContextAdminMenuGroup.getDisplayName() );
+			}
+			else {
+				group.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.USER ) );
+			}
+		}
+		else {
+			group.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );
+		}
+
+		if ( StringUtils.isNotEmpty( userContextAdminMenuGroup.getThumbnailUrl() ) ) {
+			NodeViewElement image = new NodeViewElement( "img" );
+			image.addCssClass( "admin-nav-user-context-thumbnail" );
+			image.setAttribute( "src", userContextAdminMenuGroup.getThumbnailUrl() );
+			group.attribute( "html:class", "admin-nav-user-context with-thumbnail" )
+			     .attribute( NavComponentBuilder.ATTR_ICON, image );
+		}
+
+		menu.item( PATH + "/logout", "Logout", "@adminWeb:/logout" );
 	}
 }
