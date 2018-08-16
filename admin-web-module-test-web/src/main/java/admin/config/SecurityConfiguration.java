@@ -34,6 +34,8 @@ public class SecurityConfiguration
 		auth.inMemoryAuthentication()
 		    .withUser( "admin" ).password( "admin" )
 		    .authorities( "access administration" ).and()
+		    .withUser( "admin2" ).password( "admin" )
+		    .authorities( "access administration" ).and()
 		    .withUser( "user" ).password( "user" )
 		    .authorities( Collections.emptyList() );
 	}

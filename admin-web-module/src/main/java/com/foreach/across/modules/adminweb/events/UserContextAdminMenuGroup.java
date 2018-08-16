@@ -16,15 +16,22 @@
 
 package com.foreach.across.modules.adminweb.events;
 
-import com.foreach.across.core.events.AcrossEvent;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Event published when the admin web layout builds its menu.
+ * Users can listen for this event and configure the name and optional thumbnail that should be rendered.
+ *
+ * @author Steven Gentens
+ * @since 3.1.0
+ */
 @Getter
 @Setter
-public class UserContextAdminMenuItem implements AcrossEvent
+public class UserContextAdminMenuGroup
 {
-	public final static String USER_CONTEXT_MENU_ITEM = "userContextMenuItem";
+	public final static String MENU_PATH = "/user-context";
+	public final static String ATTRIBUTE = "UserContextAdminMenuGroup";
 
 	private String displayName;
 	private String thumbnailUrl;

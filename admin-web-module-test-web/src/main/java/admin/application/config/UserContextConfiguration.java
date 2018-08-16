@@ -16,7 +16,7 @@
 
 package admin.application.config;
 
-import com.foreach.across.modules.adminweb.events.UserContextAdminMenuItem;
+import com.foreach.across.modules.adminweb.events.UserContextAdminMenuGroup;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 
@@ -24,7 +24,10 @@ import org.springframework.context.event.EventListener;
 public class UserContextConfiguration
 {
 	@EventListener
-	void registerDefaultUserContextAdminMenuItem( UserContextAdminMenuItem userContextAdminMenuItem ) {
-		userContextAdminMenuItem.setThumbnailUrl( "http://www.gravatar.com/avatar/73543542128f5a067ffc34305eefe48a" );
+	public void registerDefaultUserContextAdminMenuItem( UserContextAdminMenuGroup userContextAdminMenuGroup ) {
+		if ( "admin".equals( userContextAdminMenuGroup.getDisplayName() ) ) {
+			userContextAdminMenuGroup.setDisplayName( "Administrator" );
+			userContextAdminMenuGroup.setThumbnailUrl( "http://www.gravatar.com/avatar/73543542128f5a067ffc34305eefe48a" );
+		}
 	}
 }

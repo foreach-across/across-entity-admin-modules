@@ -102,8 +102,13 @@ td[data-tbl-field='day'] {
     display: none;
 }
 
-.user-context-thumbnail {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+li.admin-nav-user-context.with-thumbnail > a {
+    padding-bottom: 8px;
+    padding-top: 12px;
+}
+
+.admin-nav-user-context .admin-nav-user-context-thumbnail {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
 }
