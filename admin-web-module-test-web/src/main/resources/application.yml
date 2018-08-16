@@ -8,6 +8,11 @@ adminWebModule:
     rememberMe:
       key: remember-me
   title: Hello application...
+  locale:
+    options:
+      - 'en_GB'
+      - 'nl_BE'
+    default-locale: 'nl_BE'
 
 acrossModule:
   AdminWebModule:
