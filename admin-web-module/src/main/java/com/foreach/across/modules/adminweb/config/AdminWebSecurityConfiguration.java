@@ -140,9 +140,9 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	 * This configuration is ordered at the default (0) position, and will come before any default ordered module
 	 * configurations.
 	 */
-	@ConditionalOnProperty(prefix = "adminWebModule", name = "root-path", havingValue = "/")
-	@Order(0)
+	@ConditionalOnProperty(prefix = "admin-web-module", name = "root-path", havingValue = "/")
 	@Configuration
+	@Order(0)
 	public static class AllowStaticResourcesSecurityConfiguration extends SpringSecurityWebConfigurerAdapter
 	{
 		@Autowired

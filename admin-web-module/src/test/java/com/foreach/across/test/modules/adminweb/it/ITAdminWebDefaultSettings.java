@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 @AcrossWebAppConfiguration
-@TestPropertySource(properties = "acrossWebModule.resources.path=/static")
+@TestPropertySource(properties = "across.web.resources.path=/static")
 public class ITAdminWebDefaultSettings
 {
 	@Autowired

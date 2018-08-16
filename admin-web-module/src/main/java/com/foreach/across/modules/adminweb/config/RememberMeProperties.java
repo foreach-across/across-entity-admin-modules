@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
  * @since 1.1.1
  */
 @Component
-@ConfigurationProperties(prefix = "adminWebModule.login.rememberMe")
+@ConfigurationProperties(prefix = "admin-web-module.login.remember-me")
 public class RememberMeProperties
 {
 	public static final String DEFAULT_COOKIE = "rm-admin-web";

@@ -29,9 +29,11 @@ import com.foreach.across.modules.web.template.WebTemplateRegistry;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.support.SecurityWebApplicationContextUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
-import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -97,6 +99,7 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 
 	@Override
 	protected void buildMenus( MenuFactory menuFactory ) {
+		// todo only build the menu if a user is authenticated
 		menuFactory.buildMenu( AdminMenu.NAME, AdminMenu.class );
 	}
 
