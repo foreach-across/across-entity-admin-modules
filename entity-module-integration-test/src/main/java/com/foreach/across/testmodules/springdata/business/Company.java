@@ -40,7 +40,7 @@ public class Company implements Persistable<String>
 	@Id
 	@NotBlank
 	@Length(max = 20)
-	@Column(name = "company_id", length = 20)
+	@Column(name = "comp_id", length = 20)
 	private String id;
 
 	@Column

@@ -35,7 +35,7 @@ public class Representative implements Persistable<String>
 	@Id
 	@NotBlank
 	@Length(max = 20)
-	@Column(name = "representative_id", length = 20)
+	@Column(name = "repr_id", length = 20)
 	private String id;
 
 	@Length(max = 200)
