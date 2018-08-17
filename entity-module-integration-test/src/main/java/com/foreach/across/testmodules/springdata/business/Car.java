@@ -18,15 +18,13 @@ package com.foreach.across.testmodules.springdata.business;
 
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 /**
  * @author Arne Vandamme
  */
 @Entity
+@Table
 public class Car implements Persistable<String>
 {
 	@Id

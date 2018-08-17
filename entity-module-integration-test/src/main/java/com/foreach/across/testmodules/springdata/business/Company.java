@@ -31,6 +31,7 @@ import java.util.Set;
  * @author Arne Vandamme
  */
 @Entity
+@Table
 public class Company implements Persistable<String>
 {
 	@Transient
@@ -39,7 +40,7 @@ public class Company implements Persistable<String>
 	@Id
 	@NotBlank
 	@Length(max = 20)
-	@Column(name = "company_id")
+	@Column(name = "company_id", length = 20)
 	private String id;
 
 	@Column
@@ -54,6 +55,7 @@ public class Company implements Persistable<String>
 	private Date created;
 
 	@ManyToMany
+	@JoinTable(name = "company_representatives")
 	private Set<Representative> representatives = new HashSet<>();
 
 	@ManyToOne

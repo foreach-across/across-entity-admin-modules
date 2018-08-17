@@ -20,14 +20,13 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 /**
  * @author Andy Somers
  */
 @Entity
+@Table
 public class Representative implements Persistable<String>
 {
 	@Transient
@@ -35,6 +34,8 @@ public class Representative implements Persistable<String>
 
 	@Id
 	@NotBlank
+	@Length(max = 20)
+	@Column(name = "representative_id", length = 20)
 	private String id;
 
 	@Length(max = 200)
