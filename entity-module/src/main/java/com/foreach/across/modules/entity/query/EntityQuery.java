@@ -16,7 +16,9 @@
 package com.foreach.across.modules.entity.query;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.foreach.across.modules.entity.query.support.SortDeserializer;
+import com.foreach.across.modules.entity.query.support.SortSerializer;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +49,7 @@ public class EntityQuery implements EntityQueryExpression
 	 * Ordering of the results.
 	 */
 	@JsonDeserialize(using = SortDeserializer.class)
+	@JsonSerialize(using = SortSerializer.class)
 	@Getter
 	@Setter
 	private Sort sort;
@@ -153,10 +156,10 @@ public class EntityQuery implements EntityQueryExpression
 	}
 
 	/**
-	 * @return true if a sort has been set on this query
+	 * @return true if a sort has been set on this query and it contains orders
 	 */
 	public boolean hasSort() {
-		return sort != null;
+		return sort != null && sort.isSorted();
 	}
 
 	/**

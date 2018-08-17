@@ -41,7 +41,7 @@ public class TestPartnersInstaller
 
 	@InstallerMethod
 	public void installPartners() {
-		partnerRepository.save(
+		partnerRepository.saveAll(
 				Arrays.asList(
 						partner( -1, "Google", "http://www.google.com" ),
 						partner( -2, "Microsoft", "http://www.microsoft.com" ),

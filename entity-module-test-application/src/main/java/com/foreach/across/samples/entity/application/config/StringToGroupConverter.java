@@ -35,7 +35,7 @@ public class StringToGroupConverter implements Converter<String, Group>
 	@Override
 	public Group convert( String name ) {
 		try {
-			return groupRepository.findOne( Long.parseLong( name ) );
+			return groupRepository.findById( Long.parseLong( name ) ).orElse( null );
 		}
 		catch ( NumberFormatException nfe ) {
 			return groupRepository.findByName( name );

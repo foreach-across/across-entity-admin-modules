@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package it.com.foreach.across.modules.entity.query;
+package com.foreach.across.modules.entity.query;
 
-import com.foreach.across.modules.entity.query.EntityQueryOps;
 import org.junit.Test;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;

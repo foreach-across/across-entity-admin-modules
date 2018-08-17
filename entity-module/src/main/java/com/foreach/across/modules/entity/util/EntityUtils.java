@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.*;
+import org.springframework.lang.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -152,6 +153,7 @@ public class EntityUtils
 	 * @param propertyRegistry to be used for looking up matching properties
 	 * @return modified or possibly same instance if unmodified
 	 */
+	@NonNull
 	public static Sort translateSort( Sort sort, EntityPropertyRegistry propertyRegistry ) {
 		List<Sort.Order> translated = new ArrayList<>();
 
@@ -179,7 +181,7 @@ public class EntityUtils
 			}
 		}
 
-		return translated.isEmpty() ? null : new Sort( translated );
+		return translated.isEmpty() ? Sort.unsorted() :  Sort.by( translated );
 	}
 
 	/**
@@ -203,7 +205,7 @@ public class EntityUtils
 		                } )
 		      );
 
-		return orders.isEmpty() ? null : new Sort( orders );
+		return orders.isEmpty() ? Sort.unsorted() : Sort.by( orders );
 	}
 
 	/**

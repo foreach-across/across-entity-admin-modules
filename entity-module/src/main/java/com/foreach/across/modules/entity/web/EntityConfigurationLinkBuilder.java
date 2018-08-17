@@ -19,7 +19,6 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.web.context.WebAppPathResolver;
 import org.springframework.core.convert.ConversionService;
 
-import java.io.Serializable;
 import java.text.MessageFormat;
 
 /**
@@ -166,7 +165,7 @@ public class EntityConfigurationLinkBuilder implements EntityLinkBuilder
 
 	@SuppressWarnings("unchecked")
 	protected String getIdAsString( EntityConfiguration cfg, Object entity ) {
-		Serializable id = cfg.getEntityModel().getId( entity );
+		Object id = cfg.getEntityModel().getId( entity );
 		return conversionService.convert( id, String.class );
 	}
 

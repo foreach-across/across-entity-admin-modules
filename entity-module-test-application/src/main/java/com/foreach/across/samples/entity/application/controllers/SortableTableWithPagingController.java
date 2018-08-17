@@ -116,7 +116,7 @@ public class SortableTableWithPagingController
 	                                       ViewElementBuilderContext builderContext ) {
 		// selected partners that should be checked
 		Collection<Partner> selectedPartners
-				= Arrays.asList( partnerRepository.findOne( -1L ), partnerRepository.findOne( -3L ) );
+				= Arrays.asList( partnerRepository.findById( -1L ).orElse( null ), partnerRepository.findById( -3L ).orElse( null ) );
 
 		return builderHelper.createSortableTableBuilder( Partner.class )
 		                    .items( partners )

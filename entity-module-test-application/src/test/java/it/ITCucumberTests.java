@@ -22,7 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 
 import java.util.Properties;
 
@@ -34,40 +34,40 @@ import static org.junit.Assert.assertEquals;
 public class ITCucumberTests
 {
 
-    private static Integer webServerPort;
+	private static Integer webServerPort;
 
-    @BeforeClass
-    public static void bootApplicationIfRequired() {
-        if (webServerPort == null) {
-            System.out.println("Booting application for integration tests");
+	@BeforeClass
+	public static void bootApplicationIfRequired() {
+		if ( webServerPort == null ) {
+			System.out.println( "Booting application for integration tests" );
 
-            SpringApplication application = new SpringApplication( EntityModuleTestApplication.class);
-            application.setAdditionalProfiles("dev", "cucumber");
-            EmbeddedWebApplicationContext webApplicationContext = (EmbeddedWebApplicationContext) application.run();
+			SpringApplication application = new SpringApplication( EntityModuleTestApplication.class );
+			application.setAdditionalProfiles( "dev", "cucumber" );
+			WebServerApplicationContext webApplicationContext = (WebServerApplicationContext) application.run();
 
-            // retrieve the actual webserver port
-            webServerPort = webApplicationContext.getEmbeddedServletContainer().getPort();
+			// retrieve the actual webserver port
+			webServerPort = webApplicationContext.getWebServer().getPort();
 
-            System.out.println("Application bootstrapped on webserver port " + webServerPort);
-        }
-    }
+			System.out.println( "Application bootstrapped on webserver port " + webServerPort );
+		}
+	}
 
-    @Test
-    @Ignore("not working on buildserver, fix this")
-    public void runFeatures() throws Exception {
-        Properties systemProperties = new Properties();
-        systemProperties.setProperty("webServerPort", webServerPort.toString());
-        systemProperties.setProperty("browser", "chrome");
+	@Test
+	@Ignore("not working on buildserver, fix this")
+	public void runFeatures() throws Exception {
+		Properties systemProperties = new Properties();
+		systemProperties.setProperty( "webServerPort", webServerPort.toString() );
+		systemProperties.setProperty( "browser", "chrome" );
 
-        ConsoleRunner consoleRunner = new ConsoleRunner("target/cucumber/desktop", "src/test/resources/features");
-        consoleRunner.setProperties(systemProperties);
-        consoleRunner.setTags(new String[]{"~@ignore"});
-        consoleRunner.setNumberOfThreads(5);
-        consoleRunner.setNumberOfRetries(3);
+		ConsoleRunner consoleRunner = new ConsoleRunner( "target/cucumber/desktop", "src/test/resources/features" );
+		consoleRunner.setProperties( systemProperties );
+		consoleRunner.setTags( new String[] { "~@ignore" } );
+		consoleRunner.setNumberOfThreads( 5 );
+		consoleRunner.setNumberOfRetries( 3 );
 
-        consoleRunner.setGenerateHtmlReports(true);
+		consoleRunner.setGenerateHtmlReports( true );
 
-        assertEquals(0, consoleRunner.start());
-    }
+		assertEquals( 0, consoleRunner.start() );
+	}
 
 }

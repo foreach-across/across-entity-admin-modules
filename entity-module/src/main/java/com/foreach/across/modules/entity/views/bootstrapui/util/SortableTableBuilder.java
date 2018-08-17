@@ -539,7 +539,7 @@ public class SortableTableBuilder extends GlobalContextSupportingViewElementBuil
 	}
 
 	protected List<OrderPair> convertSortAttribute( Sort sort ) {
-		if ( sort == null ) {
+		if ( sort == null || sort.isUnsorted() ) {
 			return null;
 		}
 

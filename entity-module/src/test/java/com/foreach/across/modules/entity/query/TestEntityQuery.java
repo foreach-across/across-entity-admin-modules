@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
 
+import java.util.Collections;
+
 import static org.junit.Assert.*;
 
 /**
@@ -26,6 +28,17 @@ import static org.junit.Assert.*;
  */
 public class TestEntityQuery
 {
+	@Test
+	public void hasSortIsOnlyTrueIfASortWithOrdersHasBeenSet() {
+		EntityQuery query = EntityQuery.all();
+		assertFalse( query.hasSort() );
+
+		query.setSort( Sort.by( Collections.emptyList() ) );
+		assertFalse( query.hasSort() );
+
+		query.setSort( Sort.by( "one" ) );
+		assertTrue( query.hasSort() );
+	}
 	@Test
 	public void nullExpressionsInAnEntityQueryAreSimplyIgnored() {
 		EntityQuery query = EntityQuery.and();

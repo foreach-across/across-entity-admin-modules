@@ -19,11 +19,11 @@ package com.foreach.across.testmodules.springdata.repositories;
 import com.foreach.across.testmodules.springdata.business.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /**
  * @author Arne Vandamme
  */
-public interface CompanyRepository extends JpaRepository<Company, String>, JpaSpecificationExecutor<Company>, QueryDslPredicateExecutor<Company>
+public interface CompanyRepository extends JpaRepository<Company, String>, JpaSpecificationExecutor<Company>, QuerydslPredicateExecutor<Company>
 {
 }

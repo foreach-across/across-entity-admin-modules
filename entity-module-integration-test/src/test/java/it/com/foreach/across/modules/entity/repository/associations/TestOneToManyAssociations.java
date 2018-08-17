@@ -21,12 +21,12 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.testmodules.springdata.business.*;
 import com.foreach.across.testmodules.springdata.repositories.ClientGroupRepository;
 import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.testmodules.springdata.repositories.CompanyRepository;
 import com.foreach.across.testmodules.springdata.repositories.GroupRepository;
-import com.foreach.across.modules.entity.views.EntityView;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,19 +83,19 @@ public class TestOneToManyAssociations
 
 			groupOne = new Group( "groupOne" );
 			groupTwo = new Group( "groupTwo" );
-			groupRepository.save( Arrays.asList( groupOne, groupTwo ) );
+			groupRepository.saveAll( Arrays.asList( groupOne, groupTwo ) );
 
 			one = new Company( "one", 1 );
 			two = new Company( "two", 2 );
 			three = new Company( "three", 3 );
 
-			companyRepository.save( Arrays.asList( one, two, three ) );
+			companyRepository.saveAll( Arrays.asList( one, two, three ) );
 
 			john = new Client( "john", one );
 			joe = new Client( "joe", two );
 			peter = new Client( "peter", two );
 
-			clientRepository.save( Arrays.asList( john, joe, peter ) );
+			clientRepository.saveAll( Arrays.asList( john, joe, peter ) );
 
 			ClientGroupId clientGroupId = new ClientGroupId();
 			clientGroupId.setGroup( groupOne );
