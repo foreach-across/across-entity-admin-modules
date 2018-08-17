@@ -25,7 +25,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table
+@Table(name = "cl")
 public class Client extends SettableIdBasedEntity<Client>
 {
 	@Id

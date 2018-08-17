@@ -31,7 +31,7 @@ import java.util.Set;
  * @author Arne Vandamme
  */
 @Entity
-@Table
+@Table(name = "comp")
 public class Company implements Persistable<String>
 {
 	@Transient
@@ -55,7 +55,7 @@ public class Company implements Persistable<String>
 	private Date created;
 
 	@ManyToMany
-	@JoinTable(name = "company_representatives")
+	@JoinTable(name = "comprs")
 	private Set<Representative> representatives = new HashSet<>();
 
 	@ManyToOne

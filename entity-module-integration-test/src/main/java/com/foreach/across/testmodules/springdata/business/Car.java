@@ -24,7 +24,7 @@ import javax.persistence.*;
  * @author Arne Vandamme
  */
 @Entity
-@Table
+@Table(name = "car")
 public class Car implements Persistable<String>
 {
 	@Id

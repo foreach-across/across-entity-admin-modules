@@ -26,7 +26,7 @@ import javax.persistence.*;
  * @author Andy Somers
  */
 @Entity
-@Table
+@Table(name = "repr")
 public class Representative implements Persistable<String>
 {
 	@Transient

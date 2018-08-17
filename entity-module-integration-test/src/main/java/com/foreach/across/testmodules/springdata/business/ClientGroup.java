@@ -31,7 +31,7 @@ import javax.persistence.Table;
  * @author Arne Vandamme
  */
 @Entity
-@Table
+@Table(name = "clg")
 public class ClientGroup implements Persistable<ClientGroupId>
 {
 	@EmbeddedId
