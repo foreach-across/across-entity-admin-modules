@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -135,12 +134,9 @@ public class AdminWebSecurityConfiguration extends SpringSecurityWebConfigurerAd
 	}
 
 	/**
-	 * If the admin web is linked to the root path of the web context, it will also secure all static resources.
-	 * Add an additional configuration before admin web that ensures that static resources are served without security.
-	 * This configuration is ordered at the default (0) position, and will come before any default ordered module
-	 * configurations.
+	 * AdminWeb requires the static resources to be available, so it permits all of them by default.
+	 * Registered with a global 0 order so it would be before all default security configuration of regular modules.
 	 */
-	@ConditionalOnProperty(prefix = "admin-web-module", name = "root-path", havingValue = "/")
 	@Configuration
 	@Order(0)
 	public static class AllowStaticResourcesSecurityConfiguration extends SpringSecurityWebConfigurerAdapter
