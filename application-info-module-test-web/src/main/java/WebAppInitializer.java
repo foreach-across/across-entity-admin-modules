@@ -17,6 +17,7 @@
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.config.EnableAcrossContext;
 import com.foreach.across.core.AcrossContext;
+import com.foreach.across.core.context.web.AcrossWebApplicationContext;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
@@ -24,7 +25,6 @@ import com.foreach.across.modules.applicationinfo.ApplicationInfoModuleSettings;
 import com.foreach.across.modules.debugweb.DebugWebModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.AcrossWebModule;
-import com.foreach.across.modules.web.context.AcrossWebApplicationContext;
 import com.foreach.across.modules.web.servlet.AbstractAcrossServletInitializer;
 import org.springframework.context.annotation.Configuration;
 

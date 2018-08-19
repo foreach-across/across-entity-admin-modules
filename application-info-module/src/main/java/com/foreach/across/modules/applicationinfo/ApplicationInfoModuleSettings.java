@@ -23,19 +23,19 @@ import java.util.Date;
  * @author Arne Vandamme
  */
 @SuppressWarnings("all")
-@ConfigurationProperties(prefix = "applicationInfo")
+@ConfigurationProperties(prefix = "application-info")
 public class ApplicationInfoModuleSettings
 {
 	public static final String UNKNOWN_VALUE = "unknown";
 
-	public static final String ENVIRONMENT_ID = "applicationInfo.environmentId";
-	public static final String ENVIRONMENT_NAME = "applicationInfo.environmentName";
-	public static final String APPLICATION_ID = "applicationInfo.applicationId";
-	public static final String APPLICATION_NAME = "applicationInfo.applicationName";
-	public static final String BUILD_ID = "applicationInfo.buildId";
-	public static final String BUILD_DATE = "applicationInfo.buildDate";
-	public static final String HOSTNAME = "applicationInfo.hostName";
-	public static final String STARTUP_DATE = "applicationInfo.startupDate";
+	public static final String ENVIRONMENT_ID = "application-info.environment-id";
+	public static final String ENVIRONMENT_NAME = "application-info.environment-name";
+	public static final String APPLICATION_ID = "application-info.application-id";
+	public static final String APPLICATION_NAME = "application-info.application-name";
+	public static final String BUILD_ID = "application-info.build-id";
+	public static final String BUILD_DATE = "application-info.build-date";
+	public static final String HOSTNAME = "application-info.host-name";
+	public static final String STARTUP_DATE = "application-info.startup-date";
 
 	/**
 	 * Internal id of the application
