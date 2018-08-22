@@ -18,6 +18,8 @@ package com.foreach.across.samples.entity.application.business;
 
 import com.foreach.across.modules.hibernate.business.SettableIdBasedEntity;
 import com.foreach.across.modules.hibernate.id.AcrossSequenceGenerator;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
@@ -32,6 +34,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "test_user")
+@Getter
+@Setter
 public class User extends SettableIdBasedEntity<User>
 {
 	@Id
@@ -57,6 +61,10 @@ public class User extends SettableIdBasedEntity<User>
 
 	@Column
 	private Date registrationDate;
+
+
+	@Column
+	private String profilePicture;
 
 	private boolean active;
 

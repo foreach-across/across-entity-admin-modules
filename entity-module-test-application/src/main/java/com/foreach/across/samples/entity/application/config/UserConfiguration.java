@@ -16,9 +16,12 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.FormViewElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.samples.entity.application.business.User;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,9 +35,13 @@ public class UserConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( User.class )
-		        .properties( props ->
-				                     // display name as not required
-				                     props.property( "name" ).attribute( EntityAttributes.PROPERTY_REQUIRED, false )
+		        .properties(
+				        props ->
+						        // display name as not required
+						        props.property( "name" ).attribute( EntityAttributes.PROPERTY_REQUIRED, false ).and()
+						             .property( "profilePicture" )
+						             .viewElementBuilder( ViewElementMode.CONTROL, BootstrapUiBuilders.file().controlName( "entity.profilePicture" ) )
+						             .attribute( EntityAttributes.FORM_ENCTYPE, FormViewElement.ENCTYPE_MULTIPART )
 		        );
 	}
 }

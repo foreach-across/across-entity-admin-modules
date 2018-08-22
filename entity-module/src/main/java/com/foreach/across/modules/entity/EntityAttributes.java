@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
+import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -81,6 +82,14 @@ public interface EntityAttributes
 	 * Used to apply changes to an {@link com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder}.
 	 */
 	String OPTIONS_ENHANCER = OptionGenerator.class.getName() + ".enhancer";
+
+	/**
+	 * Can be set on either {@link com.foreach.across.modules.entity.views.EntityViewFactory} or {@link EntityPropertyDescriptor}.
+	 * Holds the suggested form enctype to submit a form holding a control for that property.
+	 *
+	 * @see SingleEntityFormViewProcessor
+	 */
+	String FORM_ENCTYPE = SingleEntityFormViewProcessor.ATTR_ENCTYPE;
 
 	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.
