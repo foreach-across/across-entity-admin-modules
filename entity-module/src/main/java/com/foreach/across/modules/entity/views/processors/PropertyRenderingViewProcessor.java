@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -26,7 +27,6 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinder;
 import com.foreach.across.modules.entity.views.processors.support.EmbeddedCollectionsBinderValidator;
-import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -41,11 +41,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.WebDataBinder;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Renders one or more registered properties from the {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry}
@@ -138,6 +134,11 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 				                               "extensions[" + EmbeddedCollectionsBinder.class.getSimpleName() + "]" ),
 				collectionsBinderValidator
 		);
+
+		List<EntityPropertyDescriptor> properties = entityViewRequest.getEntityViewContext().getPropertyRegistry().select( selector );
+		Map<String, EntityPropertyDescriptor> descriptorMap = new LinkedHashMap<>();
+		properties.forEach( p -> descriptorMap.put( p.getName(), p ) );
+		entityViewRequest.getModel().put( ATTRIBUTE_PROPERTY_DESCRIPTORS, descriptorMap );
 	}
 
 	@Override
@@ -150,14 +151,6 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	protected void prepareViewElementBuilderContext( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderContext builderContext ) {
 		builderContext.setAttribute( EmbeddedCollectionsBinder.class,
 		                             entityViewRequest.getCommand().getExtension( EmbeddedCollectionsBinder.class.getSimpleName() ) );
-	}
-
-	@Override
-	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
-		List<EntityPropertyDescriptor> properties = entityViewRequest.getEntityViewContext().getPropertyRegistry().select( selector );
-		Map<String, EntityPropertyDescriptor> descriptorMap = new LinkedHashMap<>();
-		properties.forEach( p -> descriptorMap.put( p.getName(), p ) );
-		entityViewRequest.getModel().put( ATTRIBUTE_PROPERTY_DESCRIPTORS, descriptorMap );
 	}
 
 	@Override
