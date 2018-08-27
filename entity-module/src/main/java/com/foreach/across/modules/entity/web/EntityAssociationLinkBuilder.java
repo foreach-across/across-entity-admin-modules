@@ -77,7 +77,7 @@ public class EntityAssociationLinkBuilder extends EntityConfigurationLinkBuilder
 				);
 			}
 
-			return uri.queryParam( "from", overview() ).toUriString();
+			return uri.queryParam( "from", "{from}" ).build( overview() ).toString();
 		}
 
 		@Override
@@ -86,7 +86,7 @@ public class EntityAssociationLinkBuilder extends EntityConfigurationLinkBuilder
 					association.getTargetEntityConfiguration().getAttribute( EntityLinkBuilder.class ).update( entity )
 			);
 
-			return uri.queryParam( "from", overview() ).toUriString();
+			return uri.queryParam( "from", "{from}" ).build( overview() ).toString();
 		}
 
 		@Override
@@ -95,7 +95,7 @@ public class EntityAssociationLinkBuilder extends EntityConfigurationLinkBuilder
 					association.getTargetEntityConfiguration().getAttribute( EntityLinkBuilder.class ).view( entity )
 			);
 
-			return uri.queryParam( "from", overview() ).toUriString();
+			return uri.queryParam( "from", "{from}" ).build( overview() ).toString();
 		}
 	}
 }

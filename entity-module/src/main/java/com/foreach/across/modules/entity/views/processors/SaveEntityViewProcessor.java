@@ -144,8 +144,9 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 				if ( entityViewRequest.hasPartialFragment() ) {
 					entityView.setRedirectUrl(
 							UriComponentsBuilder.fromUriString( entityViewContext.getLinkBuilder().update( savedEntity ) )
-							                    .queryParam( WebTemplateInterceptor.PARTIAL_PARAMETER, entityViewRequest.getPartialFragment() )
-							                    .toUriString()
+							                    .queryParam( WebTemplateInterceptor.PARTIAL_PARAMETER, "{partial}" )
+							                    .build( entityViewRequest.getPartialFragment() )
+							                    .toString()
 					);
 				}
 				else {

@@ -236,15 +236,15 @@ public class TestEntityLinkBuilder
 
 		assertEquals( "/test/entities/basicPrincipal/10001/associations/company.user", scoped.overview() );
 		assertEquals(
-				"/test/entities/user/create?entity.sourceName=10001&from=/test/entities/basicPrincipal/10001/associations/company.user",
+				"/test/entities/user/create?entity.sourceName=10001&from=%2Ftest%2Fentities%2FbasicPrincipal%2F10001%2Fassociations%2Fcompany.user",
 				scoped.create()
 		);
 		assertEquals(
-				"/test/entities/user/123?from=/test/entities/basicPrincipal/10001/associations/company.user",
+				"/test/entities/user/123?from=%2Ftest%2Fentities%2FbasicPrincipal%2F10001%2Fassociations%2Fcompany.user",
 				scoped.view( "assoc" )
 		);
 		assertEquals(
-				"/test/entities/user/123/update?from=/test/entities/basicPrincipal/10001/associations/company.user",
+				"/test/entities/user/123/update?from=%2Ftest%2Fentities%2FbasicPrincipal%2F10001%2Fassociations%2Fcompany.user",
 				scoped.update( "assoc" )
 		);
 		assertEquals(

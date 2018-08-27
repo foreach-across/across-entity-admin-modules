@@ -36,6 +36,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -128,12 +129,48 @@ public class TestEntityViewLinks
 
 	@Test
 	public void queryParameters() {
-		assertThat( links.linkTo( SecurityPrincipal.class ).withQueryParam( "test", "one", "two" ).toString() )
-				.isEqualTo( "/test/entities/principal?test=one&test=two" );
+		assertThat( links.linkTo( SecurityPrincipal.class ).withQueryParam( "me", "there+" ).toUriComponentsBuilder().queryParam( "foo", "{foo}" )
+		                 .build( "bar" )
+		                 .toString() )
+				.isEqualTo( "/test/entities/principal?foo=bar&me=there%2B" );
+		assertThat( links.linkTo( SecurityPrincipal.class ).withQueryParam( "me", "there+" ).toUriComponentsBuilder().queryParam( "foo", "{foo}" )
+		                 .encode().buildAndExpand( "bar" )
+		                 .toString() )
+				.isEqualTo( "/test/entities/principal?foo=bar&me=there%2B" );
+		assertThat( links.linkTo( SecurityPrincipal.class ).withQueryParam( "me", "there+" ).toUriComponentsBuilder().queryParam( "foo", "{foo}" )
+		                 .buildAndExpand( "bar" )
+		                 .toString() )
+				.isEqualTo( "/test/entities/principal?foo=bar&me=there+" );
+
+		assertThat( links.linkTo( SecurityPrincipal.class ).withQueryParam( "me", "there+" ).toUriComponentsBuilder().queryParam( "foo", "{foo}" )
+		                 .build( new HashMap<String, String>()
+		                 {{
+			                 put( "foo", "bear" );
+		                 }} )
+		                 .toString() )
+				.isEqualTo( "/test/entities/principal?foo=bear&me=there%2B" );
+		assertThat( links.linkTo( SecurityPrincipal.class ).withQueryParam( "me", "there+" ).toUriComponentsBuilder().queryParam( "foo", "{foo}" )
+		                 .buildAndExpand( new HashMap<String, String>()
+		                 {{
+			                 put( "foo", "bear" );
+		                 }} )
+		                 .toString() )
+				.isEqualTo( "/test/entities/principal?foo=bear&me=there+" );
+		assertThat( links.linkTo( SecurityPrincipal.class ).withQueryParam( "me", "there+" ).toUriComponentsBuilder().queryParam( "foo", "{foo}" )
+		                 .encode().buildAndExpand( new HashMap<String, String>()
+				{{
+					put( "foo", "bear" );
+				}} )
+		                 .toString() )
+				.isEqualTo( "/test/entities/principal?foo=bear&me=there%2B" );
+		assertThat( links.linkTo( SecurityPrincipal.class ).toUriComponentsBuilder().queryParam( "test", "one+", "two+" ).build().toString() )
+				.isEqualTo( "/test/entities/principal?test=one+&test=two+" );
+		assertThat( links.linkTo( SecurityPrincipal.class ).withQueryParam( "test", "one+", "two+" ).toString() )
+				.isEqualTo( "/test/entities/principal?test=one%2B&test=two%2B" );
 		assertThat( links.linkTo( SecurityPrincipal.class ).withPartial( "test" ).toString() )
 				.isEqualTo( "/test/entities/principal?_partial=test" );
-		assertThat( links.linkTo( principal ).withFromUrl( "coming-from" ).toString() )
-				.isEqualTo( "/test/entities/principal/10?from=coming-from" );
+		assertThat( links.linkTo( principal ).withFromUrl( "coming-from+" ).toString() )
+				.isEqualTo( "/test/entities/principal/10?from=coming-from%2B" );
 		assertThat( links.linkTo( principal ).withViewName( "myCustomView" ).toString() )
 				.isEqualTo( "/test/entities/principal/10?view=myCustomView" );
 		assertThat( links.linkTo( SecurityPrincipal.class ).withFromUrl( "original" ).withPartial( "hello" ).withViewName( "myView" ).toString() )
@@ -212,17 +249,18 @@ public class TestEntityViewLinks
 				.isEqualTo( "/test/entities/principal/66/associations/idBasedEntity" );
 
 		assertThat( links.linkTo( principal ).association( IdBasedEntity.class ).createView().toString() )
-				.isEqualTo( "/test/entities/targetEntity/create?from=/ctx/test/entities/principal/10/associations/idBasedEntity&entity.backRef=10" );
+				.isEqualTo(
+						"/test/entities/targetEntity/create?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10%2Fassociations%2FidBasedEntity&entity.backRef=10" );
 		assertThat( links.linkTo( principal ).association( IdBasedEntity.class ).withId( 33 ).toString() )
-				.isEqualTo( "/test/entities/targetEntity/33?from=/ctx/test/entities/principal/10/associations/idBasedEntity" );
+				.isEqualTo( "/test/entities/targetEntity/33?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10%2Fassociations%2FidBasedEntity" );
 		assertThat( links.linkTo( principal ).association( IdBasedEntity.class ).forInstance( idBasedEntity ).toString() )
-				.isEqualTo( "/test/entities/targetEntity/20?from=/ctx/test/entities/principal/10/associations/idBasedEntity" );
+				.isEqualTo( "/test/entities/targetEntity/20?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10%2Fassociations%2FidBasedEntity" );
 		assertThat( links.linkTo( principal ).association( idBasedEntity ).toString() )
-				.isEqualTo( "/test/entities/targetEntity/20?from=/ctx/test/entities/principal/10/associations/idBasedEntity" );
+				.isEqualTo( "/test/entities/targetEntity/20?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10%2Fassociations%2FidBasedEntity" );
 		assertThat( links.linkTo( principal ).association( idBasedEntity ).updateView().toString() )
-				.isEqualTo( "/test/entities/targetEntity/20/update?from=/ctx/test/entities/principal/10/associations/idBasedEntity" );
+				.isEqualTo( "/test/entities/targetEntity/20/update?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10%2Fassociations%2FidBasedEntity" );
 		assertThat( links.linkTo( principal ).association( idBasedEntity ).deleteView().toString() )
-				.isEqualTo( "/test/entities/targetEntity/20/delete?from=/ctx/test/entities/principal/10/associations/idBasedEntity" );
+				.isEqualTo( "/test/entities/targetEntity/20/delete?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10%2Fassociations%2FidBasedEntity" );
 	}
 
 	@Test
@@ -230,22 +268,22 @@ public class TestEntityViewLinks
 		when( entityConfiguration.getAssociations() ).thenReturn( Collections.emptyList() );
 
 		assertThat( links.linkTo( SecurityPrincipal.class ).withId( 66 ).association( "targetEntity" ).toString() )
-				.isEqualTo( "/test/entities/targetEntity?from=/ctx/test/entities/principal/66" );
+				.isEqualTo( "/test/entities/targetEntity?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F66" );
 		assertThat( links.linkTo( SecurityPrincipal.class ).withId( 66 ).association( IdBasedEntity.class ).toString() )
-				.isEqualTo( "/test/entities/targetEntity?from=/ctx/test/entities/principal/66" );
+				.isEqualTo( "/test/entities/targetEntity?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F66" );
 
 		assertThat( links.linkTo( principal ).association( IdBasedEntity.class ).createView().toString() )
-				.isEqualTo( "/test/entities/targetEntity/create?from=/ctx/test/entities/principal/10" );
+				.isEqualTo( "/test/entities/targetEntity/create?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10" );
 		assertThat( links.linkTo( principal ).association( IdBasedEntity.class ).withId( 33 ).toString() )
-				.isEqualTo( "/test/entities/targetEntity/33?from=/ctx/test/entities/principal/10" );
+				.isEqualTo( "/test/entities/targetEntity/33?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10" );
 		assertThat( links.linkTo( principal ).association( IdBasedEntity.class ).forInstance( idBasedEntity ).toString() )
-				.isEqualTo( "/test/entities/targetEntity/20?from=/ctx/test/entities/principal/10" );
+				.isEqualTo( "/test/entities/targetEntity/20?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10" );
 		assertThat( links.linkTo( principal ).association( idBasedEntity ).toString() )
-				.isEqualTo( "/test/entities/targetEntity/20?from=/ctx/test/entities/principal/10" );
+				.isEqualTo( "/test/entities/targetEntity/20?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10" );
 		assertThat( links.linkTo( principal ).association( idBasedEntity ).updateView().toString() )
-				.isEqualTo( "/test/entities/targetEntity/20/update?from=/ctx/test/entities/principal/10" );
+				.isEqualTo( "/test/entities/targetEntity/20/update?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10" );
 		assertThat( links.linkTo( principal ).association( idBasedEntity ).deleteView().toString() )
-				.isEqualTo( "/test/entities/targetEntity/20/delete?from=/ctx/test/entities/principal/10" );
+				.isEqualTo( "/test/entities/targetEntity/20/delete?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10" );
 	}
 
 	@Test
@@ -253,9 +291,9 @@ public class TestEntityViewLinks
 		SingleEntityViewLinkBuilder base = links.linkTo( principal ).association( idBasedEntity );
 
 		assertThat( base.association( SecurityPrincipal.class ).toString() )
-				.isEqualTo( "/test/entities/principal?from=/ctx/test/entities/principal/10/associations/idBasedEntity/20" );
+				.isEqualTo( "/test/entities/principal?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10%2Fassociations%2FidBasedEntity%2F20" );
 		assertThat( base.updateView().association( principal ).updateView().toString() )
-				.isEqualTo( "/test/entities/principal/10/update?from=/ctx/test/entities/principal/10/associations/idBasedEntity/20/update" );
+				.isEqualTo( "/test/entities/principal/10/update?from=%2Fctx%2Ftest%2Fentities%2Fprincipal%2F10%2Fassociations%2FidBasedEntity%2F20%2Fupdate" );
 	}
 
 	@Test
