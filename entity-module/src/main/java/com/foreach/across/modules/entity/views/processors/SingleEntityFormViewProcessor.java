@@ -40,6 +40,7 @@ import org.springframework.validation.BindingResult;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -53,6 +54,12 @@ import java.util.Optional;
  * If {@link #setAddGlobalBindingErrors(boolean)} is {@code true} (default), any global errors on the {@link org.springframework.validation.BindingResult}
  * will be added above the two form columns.
  * <p/>
+ * If the current view attributes ({@link EntityViewRequest#getConfigurationAttributes()} contains a {@link #ATTR_ENCTYPE}, its value
+ * will be used as the enctype for the form. If no value is set but a collection of property descriptors
+ * is available ({@link PropertyRenderingViewProcessor#ATTRIBUTE_PROPERTY_DESCRIPTORS} on the view, the descriptors will be inspected for the same attribute.
+ * This is especially useful to automatically change the form enctype to multipart when a property requiring it (usually a file) is present.
+ * <p>
+ * <p/>
  * The form will also contain a hidden form element named <strong>from</strong> if it was passed in originally as request parameter.
  * It is expected to contain the original url that should be redirected back to in case of cancellation.
  *
@@ -65,6 +72,13 @@ import java.util.Optional;
 @Accessors(chain = true)
 public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 {
+	/**
+	 * Holds the form {@code enctype} value that should be used, either present on the
+	 * {@link com.foreach.across.modules.entity.views.EntityViewFactory} attributes or
+	 * on a {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor}.
+	 */
+	public static final String ATTR_ENCTYPE = "FormViewElement.encType";
+
 	/**
 	 * Name of the root form container that contains the rows.
 	 */
@@ -118,6 +132,12 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 				.post()
 				.noValidate();
 
+		String encType = determineFormEncType( entityViewRequest );
+
+		if ( encType != null ) {
+			form.postProcessor( ( ( builderContext, f ) -> f.setEncType( encType ) ) );
+		}
+
 		if ( addGlobalBindingErrors ) {
 			addGlobalBindingErrors( entityViewRequest, form );
 		}
@@ -141,6 +161,23 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 			form.add( buttonsContainer );
 			builderMap.put( FORM_BUTTONS, buttonsContainer );
 		}
+	}
+
+	@SuppressWarnings("all")
+	private String determineFormEncType( EntityViewRequest entityViewRequest ) {
+		String encType = (String) entityViewRequest.getConfigurationAttributes().get( ATTR_ENCTYPE );
+
+		if ( encType == null && entityViewRequest.getModel().containsAttribute( PropertyRenderingViewProcessor.ATTRIBUTE_PROPERTY_DESCRIPTORS ) ) {
+			encType = PropertyRenderingViewProcessor.propertyDescriptors( entityViewRequest )
+			                                        .values()
+			                                        .stream()
+			                                        .map( d -> d.<String, String>getAttribute( ATTR_ENCTYPE, String.class ) )
+			                                        .filter( Objects::nonNull )
+			                                        .findFirst()
+			                                        .orElse( null );
+		}
+
+		return encType;
 	}
 
 	@Override

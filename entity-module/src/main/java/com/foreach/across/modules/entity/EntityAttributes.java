@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerat
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
+import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -91,6 +92,14 @@ public interface EntityAttributes
 	 * that was used, in combination with the parent descriptor, to build the nested property descriptor.
 	 */
 	String TARGET_DESCRIPTOR = EntityPropertyDescriptor.class.getName() + ".target";
+
+	/**
+	 * Can be set on either {@link com.foreach.across.modules.entity.views.EntityViewFactory} or {@link EntityPropertyDescriptor}.
+	 * Holds the suggested form enctype to submit a form holding a control for that property.
+	 *
+	 * @see SingleEntityFormViewProcessor
+	 */
+	String FORM_ENCTYPE = SingleEntityFormViewProcessor.ATTR_ENCTYPE;
 
 	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.

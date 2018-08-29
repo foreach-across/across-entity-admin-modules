@@ -37,6 +37,8 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "test_user")
+@Getter
+@Setter
 public class User extends SettableIdBasedEntity<User>
 {
 	@Id
@@ -75,6 +77,10 @@ public class User extends SettableIdBasedEntity<User>
 	@Getter
 	@Setter
 	private Set<Address> address = new HashSet<>();
+
+
+	@Column
+	private String profilePicture;
 
 	private boolean active;
 
