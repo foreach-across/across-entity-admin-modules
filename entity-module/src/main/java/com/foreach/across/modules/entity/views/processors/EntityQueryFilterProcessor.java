@@ -240,6 +240,16 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 		List<ViewElement> controls = new ArrayList<>();
 		properties.stream()
+		          .map( MutableEntityPropertyDescriptor.class::cast )
+		          .peek( prop -> {
+			          if ( prop.getPropertyTypeDescriptor() != null ) {
+				          prop.setAttribute( EntityAttributes.CONTROL_NAME, "extensions[" + PARAM_PROPERTIES + "][" + prop.getName() + "]" );
+				          EntityQueryRequestValueFetcher valueFetcher = new EntityQueryRequestValueFetcher(
+						          prop, retrieveEntityQueryOperand( prop ), filterConfiguration.isMultiValue( prop.getName() )
+				          );
+				          prop.setValueFetcher( valueFetcher );
+			          }
+		          } )
 		          .map( property -> {
 			          ViewElementBuilder control = createFilterControl( property );
 			          ViewElementBuilder labelText = viewElementBuilderService.getElementBuilder(
@@ -289,18 +299,6 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 	private void initializePropertyRegistry( EntityPropertyRegistry parent ) {
 		propertyRegistry = propertyRegistryProvider.createForParentRegistry( parent );
-		propertyRegistry.getRegisteredDescriptors()
-		                .stream()
-		                .map( MutableEntityPropertyDescriptor.class::cast )
-		                .forEach( prop -> {
-			                if ( prop.getPropertyTypeDescriptor() != null ) {
-				                prop.setAttribute( EntityAttributes.CONTROL_NAME, "extensions[" + PARAM_PROPERTIES + "][" + prop.getName() + "]" );
-				                EntityQueryRequestValueFetcher valueFetcher = new EntityQueryRequestValueFetcher(
-						                prop, retrieveEntityQueryOperand( prop ), filterConfiguration.isMultiValue( prop.getName() )
-				                );
-				                prop.setValueFetcher( valueFetcher );
-			                }
-		                } );
 		filterConfiguration.getPropertyRegistryBuilder().apply( propertyRegistry );
 	}
 
