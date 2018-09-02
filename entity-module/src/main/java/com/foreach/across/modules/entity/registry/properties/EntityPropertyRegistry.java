@@ -39,13 +39,13 @@ public interface EntityPropertyRegistry
 	 * Suffix indicator that a property descriptor represents the key of a map property
 	 * (having the same name but without this suffix).
 	 */
-	String MAP_KEY = "[k]";
+	String MAP_KEY = "[key]";
 
 	/**
 	 * Suffix indicator that a property descriptor represents the value of a map property
 	 * (having the same name but without this suffix).
 	 */
-	String MAP_VALUE = "[v]";
+	String MAP_VALUE = "[value]";
 
 	/**
 	 * Name of the label property.

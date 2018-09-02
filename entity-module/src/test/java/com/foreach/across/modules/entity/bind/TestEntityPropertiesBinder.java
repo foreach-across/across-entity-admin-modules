@@ -32,10 +32,13 @@ import org.springframework.beans.MethodInvocationException;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -52,14 +55,14 @@ public class TestEntityPropertiesBinder
 
 	private ConversionService conversionService = new DefaultConversionService();
 
-	private MutableEntityPropertyDescriptor singleValue;
-	private MutableEntityPropertyDescriptor multiValue;
+	@Mock
+	private EntityPropertyController<String, Long> singleValueController;
 
 	@Mock
-	private EntityPropertyController<String, Long> controller;
+	private EntityPropertyController<String, Long[]> listValueController;
 
 	@Mock
-	private EntityPropertyController<String, Long[]> multiValueController;
+	private EntityPropertyController<String, Map<Long, Long>> mapValueController;
 
 	@Mock
 	private EntityPropertyRegistry registry;
@@ -72,18 +75,32 @@ public class TestEntityPropertiesBinder
 		binder.setConversionService( conversionService );
 		binder.setEntity( ENTITY );
 
-		singleValue = EntityPropertyDescriptor.builder( "id" )
-		                                      .propertyType( Long.class )
-		                                      .controller( controller )
-		                                      .build();
+		MutableEntityPropertyDescriptor singleValue = EntityPropertyDescriptor.builder( "id" )
+		                                                                      .propertyType( Long.class )
+		                                                                      .controller( singleValueController )
+		                                                                      .build();
 		when( registry.getProperty( "id" ) ).thenReturn( singleValue );
 
-		multiValue = EntityPropertyDescriptor.builder( "members" )
-		                                     .propertyType( Long[].class )
-		                                     .controller( multiValueController )
-		                                     .build();
-		when( registry.getProperty( "members" ) ).thenReturn( multiValue );
+		MutableEntityPropertyDescriptor listValue = EntityPropertyDescriptor.builder( "members" )
+		                                                                    .propertyType( Long[].class )
+		                                                                    .controller( listValueController )
+		                                                                    .build();
+		when( registry.getProperty( "members" ) ).thenReturn( listValue );
 		when( registry.getProperty( "members[]" ) ).thenReturn( singleValue );
+
+		MutableEntityPropertyDescriptor mapValue = EntityPropertyDescriptor.builder( "memberMap" )
+		                                                                   .propertyType(
+				                                                                   TypeDescriptor
+						                                                                   .map( LinkedHashMap.class,
+						                                                                         TypeDescriptor.valueOf( Long.class ),
+						                                                                         TypeDescriptor.valueOf( Long.class )
+						                                                                   )
+		                                                                   )
+		                                                                   .controller( mapValueController )
+		                                                                   .build();
+		when( registry.getProperty( "memberMap" ) ).thenReturn( mapValue );
+		when( registry.getProperty( "memberMap[key]" ) ).thenReturn( singleValue );
+		when( registry.getProperty( "memberMap[value]" ) ).thenReturn( singleValue );
 	}
 
 	@Test
@@ -106,22 +123,22 @@ public class TestEntityPropertiesBinder
 
 	@Test
 	public void singleValueHolderReturnedForExistingProperty() {
-		val holder = single( "id" );
+		SingleEntityPropertyBinder holder = single( "id" );
 		assertThat( holder ).isNotNull();
 		assertThat( binder.containsKey( "id" ) ).isTrue();
 		assertThat( binder.get( "id" ) ).isSameAs( holder );
 	}
 
 	@Test
-	public void multiValueHolderReturnedForExistingProperty() {
-		when( controller.fetchValue( ENTITY ) ).thenReturn( 444L );
+	public void listValueHolderReturnedForExistingProperty() {
+		when( singleValueController.fetchValue( ENTITY ) ).thenReturn( 444L );
 
-		val holder = multi( "members" );
+		ListEntityPropertyBinder holder = list( "members" );
 		assertThat( holder ).isNotNull();
 		assertThat( binder.containsKey( "members" ) ).isTrue();
 		assertThat( binder.get( "members" ) ).isSameAs( holder );
 
-		assertThat( holder.getTemplate() )
+		assertThat( holder.getItemTemplate() )
 				.isNotNull()
 				.matches( e -> e.getValue().equals( 444L ) );
 	}
@@ -139,7 +156,7 @@ public class TestEntityPropertiesBinder
 
 	@Test
 	public void singleValueLoadsExisting() {
-		when( controller.fetchValue( ENTITY ) ).thenReturn( 456L );
+		when( singleValueController.fetchValue( ENTITY ) ).thenReturn( 456L );
 
 		val holder = single( "id" );
 		assertThat( holder.getValue() ).isEqualTo( 456L );
@@ -161,7 +178,7 @@ public class TestEntityPropertiesBinder
 
 	@Test
 	public void setGetEntireCollectionOnMultiValue() {
-		val holder = multi( "members" );
+		val holder = list( "members" );
 		assertThat( holder.getValue() )
 				.isNotNull()
 				.isInstanceOf( Long[].class );
@@ -185,7 +202,7 @@ public class TestEntityPropertiesBinder
 
 	@Test
 	public void updateItemOnMultiValue() {
-		val holder = multi( "members" );
+		val holder = list( "members" );
 		holder.setValue( new Long[] { 123L, 456L } );
 
 		holder.getItems().get( "0" ).setValue( 777L );
@@ -196,7 +213,7 @@ public class TestEntityPropertiesBinder
 
 	@Test
 	public void multiValueSettingSupportsTypeConversion() {
-		val holder = multi( "members" );
+		val holder = list( "members" );
 		holder.setValue( new LinkedHashSet<>( Arrays.asList( "456", "123" ) ) );
 		assertThat( holder.getValue() )
 				.isEqualTo( new Long[] { 456L, 123L } );
@@ -209,9 +226,9 @@ public class TestEntityPropertiesBinder
 
 	@Test
 	public void multiValueItemGetsCreatedWhenKeyIsRequested() {
-		when( controller.fetchValue( ENTITY ) ).thenReturn( 444L );
+		when( singleValueController.fetchValue( ENTITY ) ).thenReturn( 444L );
 
-		val holder = multi( "members" );
+		val holder = list( "members" );
 		assertThat( holder.getItems().get( "some-item" ) )
 				.isNotNull()
 				.matches( e -> e.getValue().equals( 444L ) );
@@ -228,7 +245,7 @@ public class TestEntityPropertiesBinder
 		assertThatExceptionOfType( ConverterNotFoundException.class )
 				.isThrownBy( () -> singleValueHolder.setValue( singleValueHolder ) );
 
-		val multiValueHolder = multi( "members" );
+		val multiValueHolder = list( "members" );
 		assertThatExceptionOfType( ConversionFailedException.class )
 				.isThrownBy( () -> multiValueHolder.setValue( "abc" ) );
 		assertThatExceptionOfType( ConverterNotFoundException.class )
@@ -268,7 +285,7 @@ public class TestEntityPropertiesBinder
 					assertThat( e.getValue() ).isSameAs( singleValueHolder );
 				} );
 
-		val multiValueHolder = multi( "members" );
+		val multiValueHolder = list( "members" );
 		assertThatExceptionOfType( ConversionNotSupportedException.class )
 				.isThrownBy( () -> multiValueHolder.setValue( "abc" ) )
 				.satisfies( e -> {
@@ -328,15 +345,15 @@ public class TestEntityPropertiesBinder
 	public void singleValueBind() {
 		val holder = single( "id" );
 		holder.applyValue();
-		verify( controller ).applyValue( ENTITY, null, null );
+		verify( singleValueController ).applyValue( ENTITY, null, null );
 
-		reset( controller );
+		reset( singleValueController );
 
 		holder.setValue( 678L );
-		verifyZeroInteractions( controller );
+		verifyZeroInteractions( singleValueController );
 
 		holder.applyValue();
-		verify( controller ).applyValue( ENTITY, null, 678L );
+		verify( singleValueController ).applyValue( ENTITY, null, 678L );
 	}
 
 	@Test
@@ -346,18 +363,18 @@ public class TestEntityPropertiesBinder
 		assertThat( holder.isModified() ).isFalse();
 
 		binder.bind();
-		verify( controller, never() ).applyValue( any(), null, any() );
+		verify( singleValueController, never() ).applyValue( any(), null, any() );
 
 		holder.setValue( 444L );
 		binder.bind();
-		verify( controller ).applyValue( ENTITY, null, 444L );
+		verify( singleValueController ).applyValue( ENTITY, null, 444L );
 	}
 
 	private SingleEntityPropertyBinder single( String propertyName ) {
 		return (SingleEntityPropertyBinder) binder.get( propertyName );
 	}
 
-	private ListEntityPropertyBinder multi( String propertyName ) {
+	private ListEntityPropertyBinder list( String propertyName ) {
 		return (ListEntityPropertyBinder) binder.get( propertyName );
 	}
 }

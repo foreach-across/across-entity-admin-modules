@@ -27,7 +27,7 @@ import lombok.Getter;
  * @author Arne Vandamme
  * @see EntityPropertyController
  * @see com.foreach.across.modules.entity.bind.EntityPropertiesBinder
- * @since 3.1.0
+ * @since 3.2.0
  */
 @EqualsAndHashCode
 @Getter

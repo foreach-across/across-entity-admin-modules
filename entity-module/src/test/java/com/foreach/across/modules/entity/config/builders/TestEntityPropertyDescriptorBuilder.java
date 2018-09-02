@@ -21,7 +21,6 @@ import com.foreach.across.modules.entity.registry.properties.GenericEntityProper
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.junit.Before;
@@ -125,7 +124,7 @@ public class TestEntityPropertyDescriptorBuilder
 		       .viewElementBuilder( ViewElementMode.FORM_READ, veb )
 		       .viewElementModeCaching( ViewElementMode.FORM_READ, false )
 		       .attribute( "someAttribute", "someAttributeValue" )
-		       .controller( c -> c.order( 5 ) )
+		       // todo: .controller( c -> c.order( 5 ) )
 		;
 
 		build();

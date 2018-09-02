@@ -34,7 +34,7 @@ import org.springframework.validation.Errors;
  * @param <T> entity type that the property belongs to
  * @param <U> property type
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
 public interface EntityPropertyController<T, U> extends Ordered
 {
@@ -60,13 +60,12 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param owner entity
 	 * @return property value
 	 */
+	@Deprecated
 	default U fetchValue( T owner ) {
 		return fetchValue( new EntityPropertyBindingContext<>( owner ) );
 	}
 
-	default U fetchValue( EntityPropertyBindingContext<T, ?> context ) {
-		return null;
-	}
+	U fetchValue( EntityPropertyBindingContext<T, ?> context );
 
 	/**
 	 * Create a new value for the property on the owning entity.
@@ -76,6 +75,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param owner entity
 	 * @return valid property value
 	 */
+	@Deprecated
 	default U createValue( T owner ) {
 		return createValue( new EntityPropertyBindingContext<>( owner ) );
 	}
@@ -96,6 +96,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param validationHints optional hints for validation (eg. validation groups)
 	 * @see org.springframework.validation.SmartValidator
 	 */
+	@Deprecated
 	default void validate( T owner, U propertyValue, Errors errors, Object... validationHints ) {
 	}
 
@@ -106,7 +107,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * <p/>
 	 * Applying the property value has different semantics than {@link #save(Object, Object)}.
 	 * The latter is meant for storing the actual property value whereas applying the value
-	 * implies that the final store will happened transitively through the context (entity)
+	 * implies that the final store will happen transitively through the context (entity)
 	 * to which the property value is applied.
 	 * <p/>
 	 * Applying a property value usually happens immediately after successful validation,

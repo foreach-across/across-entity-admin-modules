@@ -157,4 +157,60 @@ public interface ConfigurableEntityPropertyController<T, U>
 	 * @return self
 	 */
 	ConfigurableEntityPropertyController<T, U> addValidators( Validator... validators );
+
+	@SuppressWarnings("unchecked")
+	default <X, V> ConfigurableEntityPropertyController<X, V> as() {
+		return (ConfigurableEntityPropertyController<X, V>) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	default <X, V> ConfigurableEntityPropertyController<X, V> as( Class<X> entityType, Class<V> propertyType ) {
+		return (ConfigurableEntityPropertyController<X, V>) this;
+	}
+
+	/**
+	 * Return a scoped instance that works directly on the original entity.
+	 *
+	 * @param entityType   type of the original entity
+	 * @param propertyType type of the property
+	 * @param <X>          type of the original entity
+	 * @param <V>          type of the property
+	 * @return configurable controller
+	 * @see ScopedConfigurableEntityPropertyController
+	 */
+	default <X, V> ConfigurableEntityPropertyController<X, V> withEntity( Class<X> entityType, Class<V> propertyType ) {
+		return null;
+	}
+
+	/**
+	 * Return a scoped instance that works directly on the target.
+	 *
+	 * @param targetType   type of the target for binding
+	 * @param propertyType type of the property
+	 * @param <X>          type of the target for binding
+	 * @param <V>          type of the property
+	 * @return configurable controller
+	 * @see ScopedConfigurableEntityPropertyController
+	 */
+	default <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<X> targetType, Class<V> propertyType ) {
+		return null;
+	}
+
+	/**
+	 * Return a scoped instance that types the binding context.
+	 *
+	 * @param entityType   type of the original entity
+	 * @param targetType   type of the target for binding
+	 * @param propertyType type of the property
+	 * @param <X>          type of the original entity
+	 * @param <W>          type of the target for binding
+	 * @param <V>          type of the property
+	 * @return configurable controller
+	 * @see ScopedConfigurableEntityPropertyController
+	 */
+	default <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext<X, W>, V> withBindingContext( Class<X> entityType,
+	                                                                                                                  Class<W> targetType,
+	                                                                                                                  Class<V> propertyType ) {
+		return null;
+	}
 }

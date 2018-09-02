@@ -37,10 +37,11 @@ import java.util.function.*;
  * with the value being {@code null}.
  *
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
 @RequiredArgsConstructor
 @Accessors(chain = true)
+@Deprecated
 public class GenericEntityPropertyController<T, U> implements EntityPropertyController<T, U>, ConfigurableEntityPropertyController<T, U>
 {
 	private final EntityPropertyController<T, U> parent;
@@ -59,7 +60,7 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	 * Function to call when getting the property value.
 	 */
 	@Getter
-	private Function<T, U> valueFetcher;
+	private Function<EntityPropertyBindingContext, U> valueFetcher;
 
 	@Getter
 	private BiFunction<T, U, Boolean> applyValueFunction;
@@ -87,7 +88,7 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 
 	@Override
 	public GenericEntityPropertyController<T, U> valueFetcher( Function<T, U> valueFetcher ) {
-		this.valueFetcher = valueFetcher;
+		//this.valueFetcher = valueFetcher;
 		return this;
 	}
 
@@ -170,9 +171,17 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	}
 
 	@Override
+	public U fetchValue( EntityPropertyBindingContext<T, ?> context ) {
+		if ( valueFetcher != null ) {
+			return valueFetcher.apply( context );
+		}
+		return parent != null ? parent.fetchValue( context ) : null;
+	}
+
+	@Override
 	public U fetchValue( T owner ) {
 		if ( valueFetcher != null ) {
-			return valueFetcher.apply( owner );
+			return valueFetcher.apply( null );
 		}
 		return parent != null ? parent.fetchValue( owner ) : null;
 	}

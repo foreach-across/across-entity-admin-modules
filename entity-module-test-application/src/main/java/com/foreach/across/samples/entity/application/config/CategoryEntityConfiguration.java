@@ -210,7 +210,6 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 									      }
 								      } )
 								      .saveConsumer( ( category, stockCount ) -> stockCounts.put( category.get( "id" ), stockCount ) )
-
 						);
 	}
 

@@ -50,7 +50,7 @@ import java.util.function.Supplier;
  * whereas in the former {@code name} is a direct bean path.
  *
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
 @RequiredArgsConstructor
 public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder> implements EntityPropertyValues

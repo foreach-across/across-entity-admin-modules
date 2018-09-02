@@ -32,11 +32,12 @@ import java.util.stream.Collectors;
 /**
  * Represents a property value backed by a {@link java.util.Collection} that is not a map.
  * The {@link #getValue()} will always return the current value of the collection. The {@link #getItems()}
- * returns the collection items as {@link EntityPropertyBinder} in a map structure.
+ * returns the collection items wrapped as {@link EntityPropertyBinder} in a map structure.
  * The key of the map structure does not matter, it simply provides a unique identification for an
  * item in the collection, without relying on the actual index.
  * <p/>
- * The {@link EntityPropertyBinder#getSortIndex()} will determine the actual order of the resulting collection.
+ * The {@link EntityPropertyBinder#getSortIndex()} or every single item
+ * will determine the actual order of the resulting collection.
  * <p/>
  * By default when {@link #enableBinding(boolean)} is {@code true}, the list of items will be reset as it is
  * expected that binding will replace all the items (eg. all of them are submitted by form). This behaviour
@@ -62,7 +63,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	private boolean bindingBusy;
 	private boolean itemsInitialized;
 
-	private EntityPropertyBinder<Object> template;
+	private EntityPropertyBinder<Object> itemTemplate;
 	private Map<String, EntityPropertyBinder<Object>> items;
 
 	/**
@@ -97,11 +98,11 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	 *
 	 * @return template item controller
 	 */
-	public EntityPropertyBinder<Object> getTemplate() {
-		if ( template == null ) {
-			template = createItem();
+	public EntityPropertyBinder<Object> getItemTemplate() {
+		if ( itemTemplate == null ) {
+			itemTemplate = createItem();
 		}
-		return template;
+		return itemTemplate;
 	}
 
 	@Override

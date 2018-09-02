@@ -36,9 +36,10 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
 @SuppressWarnings("unchecked")
+@Deprecated
 public class TestGenericEntityPropertyController
 {
 	private GenericEntityPropertyController<String, Long> controller = new GenericEntityPropertyController<>();
