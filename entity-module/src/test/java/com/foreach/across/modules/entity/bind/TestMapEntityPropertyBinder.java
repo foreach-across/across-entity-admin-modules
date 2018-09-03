@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings({ "Duplicates", "unchecked" })

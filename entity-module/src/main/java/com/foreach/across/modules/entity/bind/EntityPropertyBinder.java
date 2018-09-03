@@ -131,8 +131,8 @@ public interface EntityPropertyBinder<T>
 	T createNewValue();
 
 	/**
-	 * Apply the current property value to the owning entity by calling {@link EntityPropertyController#applyValue(Object, Object, Object)}.
-	 * If the property is considered deleted, a {@code null} will usually be applied.
+	 * Apply the current property value to the owning entity by calling {@link EntityPropertyController#applyValue(EntityPropertyBindingContext, EntityPropertyValue)}.
+	 * If the property is considered deleted, the value of {@link EntityPropertyValue#isDeleted()} will be {@code true}.
 	 *
 	 * @return true if value has been applied
 	 */

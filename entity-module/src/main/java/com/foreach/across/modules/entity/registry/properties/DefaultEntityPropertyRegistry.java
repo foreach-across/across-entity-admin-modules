@@ -152,7 +152,9 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		descriptor.setWritable( child.isWritable() );
 		descriptor.setHidden( child.isHidden() );
 
-		if ( descriptor.isReadable() ) {
+		descriptor.setController( new NestedEntityPropertyController( name, parent.getController(), child.getController() ) );
+
+		/*if ( descriptor.isReadable() ) {
 			val parentValueFetcher = parent.getValueFetcher();
 			if ( parentValueFetcher != null && !isIndexerChild ) {
 				descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
@@ -161,7 +163,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				descriptor.setValueFetcher( child.getValueFetcher() );
 			}
 		}
-
+*/
 		// todo: fixme decently
 		ViewElementLookupRegistryImpl existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 		ViewElementLookupRegistry lookupRegistry = new ViewElementLookupRegistryImpl();
@@ -198,5 +200,15 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 	private String findRootProperty( String propertyName ) {
 		return StringUtils.defaultIfEmpty( StringUtils.substringBefore( propertyName, "." ), null );
+	}
+
+	/**
+	 * Create a simple new registry based on property reflection of the class.
+	 *
+	 * @param type class
+	 * @return registry
+	 */
+	public static MutableEntityPropertyRegistry forClass( Class<?> type ) {
+		return DefaultEntityPropertyRegistryProvider.INSTANCE.create( type );
 	}
 }

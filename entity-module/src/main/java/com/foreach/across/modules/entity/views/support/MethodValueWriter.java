@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.support;
 
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 
@@ -24,9 +25,9 @@ import java.util.function.BiFunction;
 
 /**
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
-public class MethodValueWriter<T, U> implements BiFunction<T, U, Boolean>
+public class MethodValueWriter<T, U extends EntityPropertyValue<?>> implements BiFunction<T, U, Boolean>
 {
 	private final Method method;
 
@@ -41,7 +42,7 @@ public class MethodValueWriter<T, U> implements BiFunction<T, U, Boolean>
 		if ( entity == null ) {
 			return false;
 		}
-		method.invoke( entity, value );
+		method.invoke( entity, value.getNewValue() );
 		return true;
 	}
 

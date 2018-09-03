@@ -41,6 +41,16 @@ import java.util.function.BiConsumer;
 @Service
 public class DefaultEntityPropertyRegistryProvider implements EntityPropertyRegistryProvider
 {
+	/**
+	 * A shared global instance, supporting only simple class introspection.
+	 */
+	static final EntityPropertyRegistryProvider INSTANCE = new DefaultEntityPropertyRegistryProvider( new EntityPropertyDescriptorFactoryImpl() );
+
+	static {
+		DefaultEntityPropertyRegistryProvider provider = (DefaultEntityPropertyRegistryProvider) INSTANCE;
+		provider.setPropertiesRegistrars( Collections.singleton( new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() ) ) );
+	}
+
 	private final EntityPropertyDescriptorFactory descriptorFactory;
 	private final Map<Class<?>, MutableEntityPropertyRegistry> registries = new HashMap<>();
 

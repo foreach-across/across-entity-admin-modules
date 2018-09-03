@@ -139,6 +139,8 @@ public class TestEntityPropertyDescriptorBuilder
 		assertFalse( descriptor.isReadable() );
 		assertEquals( "someAttributeValue", descriptor.getAttribute( "someAttribute" ) );
 
+		EntityPropertyDescriptor d;
+
 		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 		assertEquals( "testControl", lookupRegistry.getViewElementType( ViewElementMode.CONTROL ) );
 		assertSame( veb, lookupRegistry.getViewElementBuilder( ViewElementMode.FORM_READ ) );

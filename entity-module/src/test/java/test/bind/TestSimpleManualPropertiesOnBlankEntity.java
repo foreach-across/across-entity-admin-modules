@@ -46,14 +46,14 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 				builder( "number" ).propertyType( Long.class ),
 				builder( "dummyNonEmbedded" ).propertyType( Dummy.class ),
 				builder( "dummyEmbedded" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
-				builder( "dummyEmbedded.id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
-				builder( "dummyEmbedded.name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
+				//builder( "dummyEmbedded.id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
+				//builder( "dummyEmbedded.name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
 				builder( "longArray" ).propertyType( long[].class ),
 				builder( "longCollection" ).propertyType( TypeDescriptor.collection( Collection.class, TypeDescriptor.valueOf( Long.class ) ) ),
 				builder( "dummyList" ).propertyType( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( Dummy.class ) ) ),
 				builder( "dummyList[]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
-				builder( "dummyList[].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
-				builder( "dummyList[].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
+				//builder( "dummyList[].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
+				//builder( "dummyList[].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
 				builder( "stringLongMap" )
 						.propertyType( TypeDescriptor.map( Map.class, TypeDescriptor.valueOf( String.class ), TypeDescriptor.valueOf( Long.class ) ) ),
 				builder( "longDummyMap" )
@@ -63,11 +63,11 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 						.propertyType(
 								TypeDescriptor.map( LinkedHashMap.class, TypeDescriptor.valueOf( Dummy.class ), TypeDescriptor.valueOf( Dummy.class ) ) ),
 				builder( "dummyDummyMap[k]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
-				builder( "dummyDummyMap[k].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
-				builder( "dummyDummyMap[k].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
-				builder( "dummyDummyMap[v]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
-				builder( "dummyDummyMap[v].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
-				builder( "dummyDummyMap[v].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) )
+				//builder( "dummyDummyMap[k].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
+				//builder( "dummyDummyMap[k].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
+				builder( "dummyDummyMap[v]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) )
+				//builder( "dummyDummyMap[v].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
+				//builder( "dummyDummyMap[v].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) )
 		);
 	}
 

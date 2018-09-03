@@ -18,20 +18,27 @@ package com.foreach.across.modules.entity.registry;
 
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
+import lombok.val;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  * @since 3.2.0
  */
+@SuppressWarnings("unchecked")
 public class TestDefaultEntityPropertyController
 {
 	private DefaultEntityPropertyController controller = new DefaultEntityPropertyController();
 	private EntityPropertyBindingContext<String, BigDecimal> context = new EntityPropertyBindingContext<>( "123", BigDecimal.TEN );
+	private EntityPropertyValue<Long> propertyValue = new EntityPropertyValue<>( 123L, 456L, false );
 
 	@Test
 	public void order() {
@@ -106,24 +113,103 @@ public class TestDefaultEntityPropertyController
 
 	@Test
 	public void applyValue() {
+		assertThat( controller.applyValue( context, propertyValue ) ).isFalse();
 
+		// function
+		val vw = mock( BiFunction.class );
+		when( vw.apply( context, propertyValue ) ).thenReturn( true );
+		assertThat( controller.applyValueFunction( vw ) ).isSameAs( controller );
+		assertThat( controller.applyValue( context, propertyValue ) ).isTrue();
+
+		controller.withEntity( String.class, Long.class )
+		          .applyValueFunction( ( entity, value ) -> entity.equals( "123" ) && value.getNewValue().equals( 456L ) );
+		assertThat( controller.applyValue( context, propertyValue ) ).isTrue();
+		assertThat( controller.applyValue( context, new EntityPropertyValue<>( 123L, 123L, false ) ) ).isFalse();
+
+		controller.withTarget( BigDecimal.class, Long.class )
+		          .applyValueFunction( ( target, value ) -> target.equals( BigDecimal.TEN ) && value.getOldValue().equals( 123L ) );
+		assertThat( controller.applyValue( context, propertyValue ) ).isTrue();
+		assertThat( controller.applyValue( context, new EntityPropertyValue<>( 456L, 456L, false ) ) ).isFalse();
+
+		// consumer
+		val consumer = mock( BiConsumer.class );
+		controller.applyValueConsumer( consumer );
+		assertThat( controller.applyValue( context, propertyValue ) ).isTrue();
+		verify( consumer ).accept( context, propertyValue );
+
+		controller.withEntity( String.class, Long.class )
+		          .applyValueConsumer( consumer );
+		assertThat( controller.applyValue( context, propertyValue ) ).isTrue();
+		verify( consumer ).accept( context.getEntity(), propertyValue );
+
+		controller.withTarget( BigDecimal.class, Long.class )
+		          .applyValueConsumer( consumer );
+		assertThat( controller.applyValue( context, propertyValue ) ).isTrue();
+		verify( consumer ).accept( context.getTarget(), propertyValue );
 	}
+
+	@Test
+	public void save() {
+		assertThat( controller.save( context, propertyValue ) ).isFalse();
+
+		// function
+		val vw = mock( BiFunction.class );
+		when( vw.apply( context, propertyValue ) ).thenReturn( true );
+		assertThat( controller.saveFunction( vw ) ).isSameAs( controller );
+		assertThat( controller.save( context, propertyValue ) ).isTrue();
+
+		controller.withEntity( String.class, Long.class )
+		          .saveFunction( ( entity, value ) -> entity.equals( "123" ) && value.getNewValue().equals( 456L ) );
+		assertThat( controller.save( context, propertyValue ) ).isTrue();
+		assertThat( controller.save( context, new EntityPropertyValue<>( 123L, 123L, false ) ) ).isFalse();
+
+		controller.withTarget( BigDecimal.class, Long.class )
+		          .saveFunction( ( target, value ) -> target.equals( BigDecimal.TEN ) && value.getOldValue().equals( 123L ) );
+		assertThat( controller.save( context, propertyValue ) ).isTrue();
+		assertThat( controller.save( context, new EntityPropertyValue<>( 456L, 456L, false ) ) ).isFalse();
+
+		// consumer
+		val consumer = mock( BiConsumer.class );
+		controller.saveConsumer( consumer );
+		assertThat( controller.save( context, propertyValue ) ).isTrue();
+		verify( consumer ).accept( context, propertyValue );
+
+		controller.withEntity( String.class, Long.class )
+		          .saveConsumer( consumer );
+		assertThat( controller.save( context, propertyValue ) ).isTrue();
+		verify( consumer ).accept( context.getEntity(), propertyValue );
+
+		controller.withTarget( BigDecimal.class, Long.class )
+		          .saveConsumer( consumer );
+		assertThat( controller.save( context, propertyValue ) ).isTrue();
+		verify( consumer ).accept( context.getTarget(), propertyValue );
+	}
+
 	/*
 	@Test
-	public void setValue() {
-		assertThat( controller.applyValue( "any-string", null, 123L ) ).isFalse();
+	public void validate() {
+		Validator validator = mock( Validator.class );
+		SmartValidator smartValidator = mock( SmartValidator.class );
+		ContextualValidator contextualValidator = mock( ContextualValidator.class );
+		assertThat( controller.addValidator( validator ) ).isSameAs( controller );
+		assertThat( controller.addValidators( smartValidator, contextualValidator ) ).isSameAs( controller );
 
-		val consumer = mock( BiConsumer.class );
-		assertThat( controller.applyValueConsumer( consumer ) ).isSameAs( controller );
-		assertThat( controller.applyValue( "some-string", null, 555L ) ).isTrue();
-		verify( consumer ).accept( "some-string", 555L );
+		val errors = mock( Errors.class );
+		controller.validate( "context", 123L, errors, Date.class );
 
-		val vw = mock( BiFunction.class );
-		when( vw.apply( "any-string", 123L ) ).thenReturn( true );
-		assertThat( controller.applyValueFunction( vw ) ).isSameAs( controller );
+		val inOrder = Mockito.inOrder( validator, smartValidator, contextualValidator );
+		inOrder.verify( validator ).validate( 123L, errors );
+		inOrder.verify( smartValidator ).validate( 123L, errors, Date.class );
+		inOrder.verify( contextualValidator ).validate( "context", 123L, errors, Date.class );
+	}
 
-		assertThat( controller.applyValue( "any-string", null, 123L ) ).isTrue();
-		assertThat( controller.applyValue( "any-string", null, 0L ) ).isFalse();
+	@Test
+	public void overridingParentController() {
+		GenericEntityPropertyController<String, Long> child = new GenericEntityPropertyController<>( controller );
+		val vf = mock( Function.class );
+		when( vf.apply( "any-string" ) ).thenReturn( 123L );
+		assertThat( controller.valueFetcher( vf ) ).isSameAs( controller );
+		assertThat( child.fetchValue( "any-string" ) ).isEqualTo( 123L );
 	}
 	 */
 }

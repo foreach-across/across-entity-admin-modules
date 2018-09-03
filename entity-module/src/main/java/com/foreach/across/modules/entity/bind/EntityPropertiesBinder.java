@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.*;
+import com.sun.xml.internal.ws.spi.db.BindingContext;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -116,6 +117,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	 * @param entity to use
 	 * @see #setEntitySupplier(Supplier)
 	 */
+	@Deprecated
 	public void setEntity( Object entity ) {
 		setEntitySupplier( () -> entity );
 	}
@@ -125,6 +127,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	 *
 	 * @return entity (can be {@code null})
 	 */
+	@Deprecated
 	public Object getEntity() {
 		return entitySupplier != null ? entitySupplier.get() : null;
 	}
@@ -235,6 +238,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	EntityPropertiesBinder createChildBinder( EntityPropertyDescriptor parent, Object propertyValue ) {
 		EntityPropertiesBinder childBinder = new EntityPropertiesBinder( propertyRegistry );
 		childBinder.parentProperty = parent;
+		childBinder.setBindingContext( EntityPropertyBindingContext.of( propertyValue ) );
 		childBinder.setEntity( propertyValue );
 		childBinder.setConversionService( conversionService );
 

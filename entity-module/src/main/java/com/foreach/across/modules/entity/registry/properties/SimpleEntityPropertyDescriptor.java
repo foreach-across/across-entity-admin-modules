@@ -47,7 +47,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	@Getter
 	@Setter
 	@NonNull
-	private EntityPropertyController controller = new GenericEntityPropertyController();
+	private EntityPropertyController controller = new DefaultEntityPropertyController();
 
 	public SimpleEntityPropertyDescriptor( String name ) {
 		this( name, null );
@@ -62,7 +62,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 		super.setParent( original );
 
 		if ( original != null ) {
-			controller = new GenericEntityPropertyController( original.getController() );
+			controller = new DefaultEntityPropertyController( original.getController() );
 		}
 	}
 
@@ -143,25 +143,26 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	@SuppressWarnings("unchecked")
 	public Object getPropertyValue( Object entity ) {
 		if ( entity != null ) {
-			return controller.fetchValue( entity );
+			return controller.fetchValue( EntityPropertyBindingContext.of( entity ) );
 		}
 		return null;
 	}
 
 	@Override
 	public ValueFetcher getValueFetcher() {
-		return controller::fetchValue;
+		return this::getPropertyValue;
 	}
 
 	@Override
 	@Deprecated
-	@SuppressWarnings( "all" )
+	@SuppressWarnings("all")
 	public void setValueFetcher( ValueFetcher<?> valueFetcher ) {
-		if ( controller instanceof GenericEntityPropertyController ) {
-			( (GenericEntityPropertyController) controller ).valueFetcher( ( (ValueFetcher) valueFetcher )::getValue );
+		if ( controller instanceof ConfigurableEntityPropertyController ) {
+			( (ConfigurableEntityPropertyController) controller ).withTarget( Object.class, Object.class )
+			                                                     .valueFetcher( ( (ValueFetcher) valueFetcher )::getValue );
 		}
 		else {
-			throw new IllegalStateException( "Unable to set value fetcher on a non-GenericEntityPropertyController" );
+			throw new IllegalStateException( "Unable to set value fetcher on a non-ConfigurableEntityPropertyController" );
 		}
 
 		if ( readable == null && original == null && valueFetcher != null ) {

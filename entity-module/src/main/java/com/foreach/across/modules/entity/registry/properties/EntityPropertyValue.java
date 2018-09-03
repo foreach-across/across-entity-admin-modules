@@ -16,21 +16,25 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents a property value that should be applied.
+ * Both the new value that should be applied, as well as the {@link #deleted} value can be modified
+ * by controller methods.
  *
  * @param <T> property type
  * @author Arne Vandamme
  * @see EntityPropertyController
- * @since 3.1.0
+ * @since 3.2.0
  */
+@Setter
 @Getter
 @EqualsAndHashCode
-@RequiredArgsConstructor
+@AllArgsConstructor
 public final class EntityPropertyValue<T>
 {
 	/**
@@ -43,12 +47,12 @@ public final class EntityPropertyValue<T>
 	 * -- GETTER --
 	 * New value for the property.
 	 */
-	private final T newValue;
+	private T newValue;
 
 	/**
 	 * -- GETTER --
 	 * Should the property value be deleted.
 	 * If {@code true} then the value of {@link #getNewValue()} should be {@code null}.
 	 */
-	private final boolean deleted;
+	private boolean deleted;
 }

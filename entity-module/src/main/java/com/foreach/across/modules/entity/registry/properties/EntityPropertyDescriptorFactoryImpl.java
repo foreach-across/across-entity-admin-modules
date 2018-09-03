@@ -69,24 +69,22 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 		descriptor.setPropertyType( property.getType() );
 		descriptor.setPropertyTypeDescriptor( new TypeDescriptor( property ) );
 
-		if ( descriptor.isReadable() ) {
-			descriptor.setValueFetcher( new MethodValueFetcher( property.getReadMethod() ) );
-		}
-
+		descriptor.setController( createPropertyController( property ) );
 		descriptor.setAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR, property );
-		descriptor.setAttribute( EntityPropertyController.class, createPropertyController( property ) );
 
 		return descriptor;
 	}
 
 	private EntityPropertyController<?, ?> createPropertyController( Property property ) {
-		GenericEntityPropertyController<Object, Object> controller = new GenericEntityPropertyController<>();
+		DefaultEntityPropertyController controller = new DefaultEntityPropertyController();
 
 		if ( property.getReadMethod() != null ) {
-			controller.valueFetcher( new MethodValueFetcher<>( property.getReadMethod() ) );
+			controller.withTarget( Object.class, Object.class )
+			          .valueFetcher( new MethodValueFetcher<>( property.getReadMethod() ) );
 		}
 		if ( property.getWriteMethod() != null ) {
-			controller.applyValueFunction( new MethodValueWriter<>( property.getWriteMethod() ) );
+			controller.withTarget( Object.class, Object.class )
+			          .applyValueFunction( new MethodValueWriter<>( property.getWriteMethod() ) );
 		}
 
 		return controller;

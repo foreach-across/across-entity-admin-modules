@@ -21,7 +21,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.Validator;
 
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author Arne Vandamme
@@ -64,53 +67,53 @@ class ScopedConfigurableEntityPropertyController<T, U> implements ConfigurableEn
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<T, U> applyValueConsumer( BiConsumer<T, U> valueWriter ) {
-		return null;
+	public ConfigurableEntityPropertyController<T, U> applyValueConsumer( BiConsumer<T, EntityPropertyValue<U>> valueWriter ) {
+		BiConsumer<EntityPropertyBindingContext, EntityPropertyValue<Object>> wrapper =
+				( ctx, value ) -> valueWriter.accept( (T) bindingContextTranslator.apply( ctx ), (EntityPropertyValue<U>) value );
+		parent.applyValueConsumer( wrapper );
+		return this;
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<T, U> applyValueFunction( BiFunction<T, U, Boolean> valueWriter ) {
-		return null;
+	public ConfigurableEntityPropertyController<T, U> applyValueFunction( BiFunction<T, EntityPropertyValue<U>, Boolean> valueWriter ) {
+		BiFunction<EntityPropertyBindingContext, EntityPropertyValue<Object>, Boolean> wrapper =
+				( ctx, value ) -> valueWriter.apply( (T) bindingContextTranslator.apply( ctx ), (EntityPropertyValue<U>) value );
+		parent.applyValueFunction( wrapper );
+		return this;
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<T, U> saveConsumer( BiConsumer<T, U> saveFunction ) {
-		return null;
+	public ConfigurableEntityPropertyController<T, U> saveConsumer( BiConsumer<T, EntityPropertyValue<U>> saveFunction ) {
+		BiConsumer<EntityPropertyBindingContext, EntityPropertyValue<Object>> wrapper =
+				( ctx, value ) -> saveFunction.accept( (T) bindingContextTranslator.apply( ctx ), (EntityPropertyValue<U>) value );
+		parent.saveConsumer( wrapper );
+		return this;
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<T, U> saveFunction( BiFunction<T, U, Boolean> saveFunction ) {
-		return null;
-	}
-
-	@Override
-	public ConfigurableEntityPropertyController<T, U> deleteConsumer( Consumer<T> deleteFunction ) {
-		return null;
-	}
-
-	@Override
-	public ConfigurableEntityPropertyController<T, U> deleteFunction( Function<T, Boolean> deleteFunction ) {
-		return null;
-	}
-
-	@Override
-	public ConfigurableEntityPropertyController<T, U> existsFunction( Function<T, Boolean> existsFunction ) {
-		return null;
+	public ConfigurableEntityPropertyController<T, U> saveFunction( BiFunction<T, EntityPropertyValue<U>, Boolean> saveFunction ) {
+		BiFunction<EntityPropertyBindingContext, EntityPropertyValue<Object>, Boolean> wrapper =
+				( ctx, value ) -> saveFunction.apply( (T) bindingContextTranslator.apply( ctx ), (EntityPropertyValue<U>) value );
+		parent.saveFunction( wrapper );
+		return this;
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<T, U> addValidator( ContextualValidator<T, U> contextualValidator ) {
-		return null;
+		parent.addValidator( contextualValidator );
+		return this;
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<T, U> addValidator( Validator validator ) {
-		return null;
+		parent.addValidator( validator );
+		return this;
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<T, U> addValidators( Validator... validators ) {
-		return null;
+		parent.addValidators( validators );
+		return this;
 	}
 
 	@Override

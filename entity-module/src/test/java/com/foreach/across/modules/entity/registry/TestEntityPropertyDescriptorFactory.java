@@ -62,15 +62,17 @@ public class TestEntityPropertyDescriptorFactory
 		assertNotNull( controller );
 
 		Instance instance = new Instance();
-		assertNull( instance.getName() );
-		assertNull( controller.fetchValue( instance ) );
-		instance.setName( "original" );
-		assertEquals( "original", controller.fetchValue( instance ) );
-		assertTrue( controller.applyValue( instance, null, "my name" ) );
-		assertEquals( "my name", instance.getName() );
-		assertEquals( "my name", controller.fetchValue( instance ) );
+		EntityPropertyBindingContext<Instance, Instance> context = EntityPropertyBindingContext.of( instance );
 
-		assertFalse( controller.applyValue( null, null, "any" ) );
+		assertNull( instance.getName() );
+		assertNull( controller.fetchValue( context ) );
+		instance.setName( "original" );
+		assertEquals( "original", controller.fetchValue( context ) );
+		assertTrue( controller.applyValue( context, new EntityPropertyValue<>( null, "my name", false ) ) );
+		assertEquals( "my name", instance.getName() );
+		assertEquals( "my name", controller.fetchValue( context ) );
+
+		assertFalse( controller.applyValue( EntityPropertyBindingContext.of( null ), new EntityPropertyValue<>( null, "my name", false ) ) );
 	}
 
 	@Test
@@ -87,13 +89,15 @@ public class TestEntityPropertyDescriptorFactory
 		assertNotNull( controller );
 
 		Instance instance = new Instance();
+		EntityPropertyBindingContext<Instance, Instance> context = EntityPropertyBindingContext.of( instance );
+
 		assertEquals( 0, instance.readonly );
-		assertEquals( Integer.valueOf( 0 ), controller.fetchValue( instance ) );
-		assertFalse( controller.applyValue( instance, null, 123 ) );
+		assertEquals( Integer.valueOf( 0 ), controller.fetchValue( context ) );
+		assertFalse( controller.applyValue( context, new EntityPropertyValue<>( null, 123, false ) ) );
 		assertEquals( 0, instance.readonly );
 
 		instance.readonly = 456;
-		assertEquals( Integer.valueOf( 456 ), controller.fetchValue( instance ) );
+		assertEquals( Integer.valueOf( 456 ), controller.fetchValue( context ) );
 	}
 
 	@Test
@@ -112,10 +116,12 @@ public class TestEntityPropertyDescriptorFactory
 		Date now = new Date();
 
 		Instance instance = new Instance();
+		EntityPropertyBindingContext<Instance, Instance> context = EntityPropertyBindingContext.of( instance );
+
 		assertNull( instance.writeonly );
-		assertNull( controller.fetchValue( instance ) );
-		assertTrue( controller.applyValue( instance, null, now ) );
-		assertNull( controller.fetchValue( instance ) );
+		assertNull( controller.fetchValue( context ) );
+		assertTrue( controller.applyValue( context, new EntityPropertyValue<>( null, now, false ) ) );
+		assertNull( controller.fetchValue( context ) );
 		assertSame( now, instance.writeonly );
 	}
 

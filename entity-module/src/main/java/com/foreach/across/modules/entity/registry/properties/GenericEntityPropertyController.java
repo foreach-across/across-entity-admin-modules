@@ -25,11 +25,13 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Generic implementation of {@link EntityPropertyController} where every controller
@@ -93,17 +95,17 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	}
 
 	@Override
-	public GenericEntityPropertyController<T, U> applyValueConsumer( @NonNull BiConsumer<T, U> valueWriter ) {
+	public GenericEntityPropertyController<T, U> applyValueConsumer( @NonNull BiConsumer<T, EntityPropertyValue<U>> valueWriter ) {
 		this.applyValueFunction = ( entity, value ) -> {
-			valueWriter.accept( entity, value );
+			//valueWriter.accept( entity, value );
 			return true;
 		};
 		return this;
 	}
 
 	@Override
-	public GenericEntityPropertyController<T, U> applyValueFunction( BiFunction<T, U, Boolean> valueWriter ) {
-		this.applyValueFunction = valueWriter;
+	public GenericEntityPropertyController<T, U> applyValueFunction( BiFunction<T, EntityPropertyValue<U>, Boolean> valueWriter ) {
+		//this.applyValueFunction = valueWriter;
 		return this;
 	}
 
@@ -119,39 +121,13 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	}
 
 	@Override
-	public GenericEntityPropertyController<T, U> saveConsumer( @NotNull BiConsumer<T, U> saveFunction ) {
-		this.saveFunction = ( entity, value ) -> {
-			saveFunction.accept( entity, value );
-			return true;
-		};
-		return this;
+	public ConfigurableEntityPropertyController<T, U> saveConsumer( BiConsumer<T, EntityPropertyValue<U>> saveFunction ) {
+		return null;
 	}
 
 	@Override
-	public GenericEntityPropertyController<T, U> saveFunction( BiFunction<T, U, Boolean> saveFunction ) {
-		this.saveFunction = saveFunction;
-		return this;
-	}
-
-	@Override
-	public GenericEntityPropertyController<T, U> deleteConsumer( @NonNull Consumer<T> deleteFunction ) {
-		this.deleteFunction = entity -> {
-			deleteFunction.accept( entity );
-			return true;
-		};
-		return this;
-	}
-
-	@Override
-	public GenericEntityPropertyController<T, U> deleteFunction( Function<T, Boolean> deleteFunction ) {
-		this.deleteFunction = deleteFunction;
-		return this;
-	}
-
-	@Override
-	public GenericEntityPropertyController<T, U> existsFunction( Function<T, Boolean> existsFunction ) {
-		this.existsFunction = existsFunction;
-		return this;
+	public ConfigurableEntityPropertyController<T, U> saveFunction( BiFunction<T, EntityPropertyValue<U>, Boolean> saveFunction ) {
+		return null;
 	}
 
 	@Override
@@ -186,7 +162,6 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 		return parent != null ? parent.fetchValue( owner ) : null;
 	}
 
-	@Override
 	public U createValue( T owner ) {
 		if ( createValueFunction != null ) {
 			return createValueFunction.apply( owner );
@@ -217,19 +192,39 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 		}
 	}
 
-	@Override
 	public boolean applyValue( T owner, U oldPropertyValue, U newPropertyValue ) {
-		if ( applyValueFunction == null && parent != null ) {
-			return parent.applyValue( owner, oldPropertyValue, newPropertyValue );
-		}
+//		if ( applyValueFunction == null && parent != null ) {
+//			return parent.applyValue( owner, oldPropertyValue, newPropertyValue );
+//		}
 		return applyValueFunction != null && Boolean.TRUE.equals( applyValueFunction.apply( owner, newPropertyValue ) );
 	}
 
-	@Override
 	public boolean save( T owner, U propertyValue ) {
-		if ( saveFunction == null && parent != null ) {
-			return parent.save( owner, propertyValue );
-		}
+//		if ( saveFunction == null && parent != null ) {
+//			return parent.save( owner, propertyValue );
+//		}
 		return saveFunction != null && Boolean.TRUE.equals( saveFunction.apply( owner, propertyValue ) );
+	}
+
+	@Override
+	public U createValue( EntityPropertyBindingContext<T, ?> context ) {
+		return null;
+	}
+
+	@Override
+	public <X, V> ConfigurableEntityPropertyController<X, V> withEntity( Class<X> entityType, Class<V> propertyType ) {
+		return null;
+	}
+
+	@Override
+	public <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<X> targetType, Class<V> propertyType ) {
+		return null;
+	}
+
+	@Override
+	public <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext<X, W>, V> withBindingContext( Class<X> entityType,
+	                                                                                                                 Class<W> targetType,
+	                                                                                                                 Class<V> propertyType ) {
+		return null;
 	}
 }

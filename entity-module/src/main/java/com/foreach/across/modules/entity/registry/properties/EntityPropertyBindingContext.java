@@ -16,8 +16,10 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
+import com.foreach.across.core.support.AttributeSupport;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 
 /**
  * Holds the binding context information for an entity.
@@ -29,20 +31,50 @@ import lombok.Getter;
  * @see com.foreach.across.modules.entity.bind.EntityPropertiesBinder
  * @since 3.2.0
  */
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Getter
-public class EntityPropertyBindingContext<T, U>
+public class EntityPropertyBindingContext<T, U> extends AttributeSupport
 {
 	private final T entity;
 	private final U target;
+	private final EntityPropertyBindingContext<?, ?> parent;
 
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public EntityPropertyBindingContext( T entity ) {
 		this( entity, (U) entity );
 	}
 
+	@Deprecated
 	public EntityPropertyBindingContext( T entity, U target ) {
 		this.entity = entity;
 		this.target = target;
+		this.parent = null;
+	}
+
+	private EntityPropertyBindingContext( T entity, U target, EntityPropertyBindingContext<?, ?> parent ) {
+		this.entity = entity;
+		this.target = target;
+		this.parent = parent;
+	}
+
+	public boolean hasParent() {
+		return parent != null;
+	}
+
+	public EntityPropertyBindingContext<T, U> withParent( @NonNull EntityPropertyBindingContext<?, ?> parentContext ) {
+		return new EntityPropertyBindingContext<>( entity, target, parentContext );
+	}
+
+	/**
+	 * Create a simple binding context for an entity.
+	 * Both the target and the entity will refer to the same instance.
+	 *
+	 * @param entity for the context
+	 * @param <T>    entity type
+	 * @return binding context
+	 */
+	public static <T> EntityPropertyBindingContext<T, T> of( T entity ) {
+		return new EntityPropertyBindingContext<>( entity );
 	}
 }
