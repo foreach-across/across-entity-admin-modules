@@ -16,10 +16,11 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.core.support.AttributeSupport;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Holds the binding context information for an entity.
@@ -31,13 +32,18 @@ import lombok.NonNull;
  * @see com.foreach.across.modules.entity.bind.EntityPropertiesBinder
  * @since 3.2.0
  */
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(exclude = "childContexts")
 @Getter
-public class EntityPropertyBindingContext<T, U> extends AttributeSupport
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
+public class EntityPropertyBindingContext<T, U>
 {
 	private final T entity;
 	private final U target;
 	private final EntityPropertyBindingContext<?, ?> parent;
+	private EntityPropertyController controller;
+
+	private final Map<String, EntityPropertyBindingContext<?, ?>> childContexts = new LinkedHashMap<>();
 
 	@SuppressWarnings("unchecked")
 	@Deprecated
@@ -52,18 +58,33 @@ public class EntityPropertyBindingContext<T, U> extends AttributeSupport
 		this.parent = null;
 	}
 
-	private EntityPropertyBindingContext( T entity, U target, EntityPropertyBindingContext<?, ?> parent ) {
-		this.entity = entity;
-		this.target = target;
-		this.parent = parent;
-	}
-
 	public boolean hasParent() {
 		return parent != null;
 	}
 
+	public boolean isReadonly() {
+		return false;
+	}
+
+	public EntityPropertyValue toPropertyValue() {
+		return new EntityPropertyValue( entity, target, target == null && entity != null );
+	}
+
+	@SuppressWarnings("unchecked")
+	public EntityPropertyBindingContext retrieveNamedChildContext(
+			@NonNull String name,
+			@NonNull Function<EntityPropertyBindingContext, EntityPropertyBindingContext> factory ) {
+		return childContexts.computeIfAbsent( name, contextName -> factory.apply( this ).withParent( this ) );
+	}
+
+	@Deprecated
 	public EntityPropertyBindingContext<T, U> withParent( @NonNull EntityPropertyBindingContext<?, ?> parentContext ) {
-		return new EntityPropertyBindingContext<>( entity, target, parentContext );
+		return new EntityPropertyBindingContext<>( entity, target, parentContext, controller );
+	}
+
+	@Deprecated
+	public EntityPropertyBindingContext<T, U> withController( @NonNull EntityPropertyController controller ) {
+		return new EntityPropertyBindingContext<>( entity, target, parent, controller );
 	}
 
 	/**

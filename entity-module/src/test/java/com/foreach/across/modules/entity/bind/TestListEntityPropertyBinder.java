@@ -370,7 +370,7 @@ public class TestListEntityPropertyBinder
 
 	@Test
 	public void getInitializedValueDoesNotModifyCurrentValue() {
-		assertThat( property.getOrInitializeValue() ).isEqualTo( ORIGINAL_VALUE );
+		assertThat( property.getInitializedValue() ).isEqualTo( ORIGINAL_VALUE );
 		verify( binder, never() ).createValue( any(), any() );
 	}
 
@@ -382,7 +382,7 @@ public class TestListEntityPropertyBinder
 
 		when( itemOne.getValue() ).thenReturn( 55 );
 		when( itemTwo.getValue() ).thenReturn( 66 );
-		assertThat( property.getOrInitializeValue() ).isEqualTo( Arrays.asList( 55, 66 ) );
+		assertThat( property.getInitializedValue() ).isEqualTo( Arrays.asList( 55, 66 ) );
 		verify( binder ).createValue( collectionController, COLLECTION );
 		verify( itemOne ).setValue( 55 );
 		verify( itemTwo ).setValue( 66 );

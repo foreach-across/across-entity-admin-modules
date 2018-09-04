@@ -16,10 +16,7 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Represents a property value that should be applied.
@@ -35,6 +32,7 @@ import lombok.Setter;
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor
+@ToString
 public final class EntityPropertyValue<T>
 {
 	/**

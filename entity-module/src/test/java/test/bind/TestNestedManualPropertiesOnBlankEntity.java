@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
 public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPropertiesBinderTest
 {
@@ -43,14 +43,14 @@ public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPrope
 				//builder( "holder.id" ).propertyType( int.class ).<DummiesHolder, Integer>controller( c -> c.applyValueConsumer( DummiesHolder::setId ) ),
 
 				// map property
-				builder( "holder.dummies" )
-						.propertyType(
-								TypeDescriptor.map( LinkedHashMap.class, TypeDescriptor.valueOf( String.class ), TypeDescriptor.valueOf( Dummy.class ) )
-						)
+				//builder( "holder.dummies" )
+				//		.propertyType(
+				//				TypeDescriptor.map( LinkedHashMap.class, TypeDescriptor.valueOf( String.class ), TypeDescriptor.valueOf( Dummy.class ) )
+				//		)
 						//.<DummiesHolder, Map<String, Dummy>>controller( c -> c.applyValueConsumer( DummiesHolder::setDummies ) )
-				,
-				builder( "holder.dummies[k]" ).propertyType( String.class ),
-				builder( "holder.dummies[v]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
+				//,
+				builder( "holder.dummies[key]" ).propertyType( String.class ),
+				builder( "holder.dummies[value]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
 				//builder( "holder.dummies[v].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
 
 				//builder( "holder.dummies[v].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
@@ -69,15 +69,15 @@ public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPrope
 						)
 						//.<DummiesHolder, Map<String, Dummy>>controller( c -> c.applyValueConsumer( DummiesHolder::setDummies ) )
 				,
-				builder( "holder.holders[].dummies[k]" ).propertyType( String.class ),
-				builder( "holder.holders[].dummies[v]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
+				builder( "holder.holders[].dummies[key]" ).propertyType( String.class ),
+				builder( "holder.holders[].dummies[value]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
 //				builder( "holder.holders[].dummies[v].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
 //				builder( "holder.holders[].dummies[v].name" ).propertyType( String.class ).<Dummy, String>controller(
 //						c -> c.applyValueConsumer( Dummy::setName ) ),
 //
 //				builder( "holder.holders[].holders" ).propertyType( List.class ).<DummiesHolder, List<DummiesHolder>>controller(
 //						c -> c.applyValueConsumer( DummiesHolder::setHolders ) ),
-//				builder( "holder.holders[].holders[]" ).propertyType( DummiesHolder.class ).controller( c -> c.createValueSupplier( DummiesHolder::new ) ),
+				builder( "holder.holders[].holders[]" ).propertyType( DummiesHolder.class ).controller( c -> c.createValueSupplier( DummiesHolder::new ) ),
 //				builder( "holder.holders[].holders[].id" ).propertyType( int.class ).<DummiesHolder, Integer>controller(
 //						c -> c.applyValueConsumer( DummiesHolder::setId ) ),
 
@@ -89,18 +89,18 @@ public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPrope
 				// list of map
 				builder( "listOfMap" ).propertyType( List.class ),
 				builder( "listOfMap[]" ).propertyType( Map.class ),
-				builder( "listOfMap[][k]" ).propertyType( Integer.class ),
-				builder( "listOfMap[][v]" ).propertyType( Long.class ),
+				builder( "listOfMap[][key]" ).propertyType( Integer.class ),
+				builder( "listOfMap[][value]" ).propertyType( Long.class ),
 
 				// map with list of list of key and map value
 				builder( "complexMap" ).propertyType( Map.class ),
-				builder( "complexMap[k]" ).propertyType( List.class ),
-				builder( "complexMap[k][]" ).propertyType( List.class ),
-				builder( "complexMap[k][][]" ).propertyType( String.class ),
-				builder( "complexMap[v]" ).propertyType( Map.class ),
-				builder( "complexMap[v][k]" ).propertyType( String.class ),
-				builder( "complexMap[v][v]" ).propertyType( List.class ),
-				builder( "complexMap[v][v][]" ).propertyType( String.class )
+				builder( "complexMap[key]" ).propertyType( List.class ),
+				builder( "complexMap[key][]" ).propertyType( List.class ),
+				builder( "complexMap[key][][]" ).propertyType( String.class ),
+				builder( "complexMap[value]" ).propertyType( Map.class ),
+				builder( "complexMap[value][key]" ).propertyType( String.class ),
+				builder( "complexMap[value][value]" ).propertyType( List.class ),
+				builder( "complexMap[value][value][]" ).propertyType( String.class )
 		);
 	}
 

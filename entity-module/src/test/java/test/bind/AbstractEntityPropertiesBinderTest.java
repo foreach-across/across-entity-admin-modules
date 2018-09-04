@@ -17,8 +17,11 @@
 package test.bind;
 
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.SingleEntityPropertyBinder;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyDescriptorBuilder;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.MapAssert;
@@ -53,14 +56,14 @@ public abstract class AbstractEntityPropertiesBinderTest
 	protected EntityPropertiesBinder propertyValues;
 
 	@Before
-	public void before() {
-		propertyRegistry = new DefaultEntityPropertyRegistry();
+	public void resetForBinding() {
+		propertyRegistry = new DefaultEntityPropertyRegistry( DefaultEntityPropertyRegistryProvider.INSTANCE );
 		registeredProperties().forEach( b -> propertyRegistry.register( b.build() ) );
 
 		propertyValues = new EntityPropertiesBinder( propertyRegistry );
 		propertyValues.setBinderPrefix( "properties" );
 		propertyValues.setConversionService( conversionService );
-		propertyValues.setEntity( ENTITY );
+		propertyValues.setBindingContext( EntityPropertyBindingContext.of( ENTITY ) );
 
 		dataBinder = new DataBinder( propertyValues );
 		dataBinder.setConversionService( conversionService );

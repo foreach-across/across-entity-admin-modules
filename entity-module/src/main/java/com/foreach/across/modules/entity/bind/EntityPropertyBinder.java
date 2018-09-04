@@ -84,7 +84,7 @@ public interface EntityPropertyBinder<T>
 	 * @return the value and initialize a new value if necessary
 	 * @see #createNewValue()
 	 */
-	default T getOrInitializeValue() {
+	default T getInitializedValue() {
 		T currentValue = getValue();
 
 		if ( currentValue == null ) {

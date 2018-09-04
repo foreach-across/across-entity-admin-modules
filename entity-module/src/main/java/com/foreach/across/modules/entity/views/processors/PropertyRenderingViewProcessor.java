@@ -124,7 +124,7 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 		EntityPropertiesBinder propertiesBinder = new EntityPropertiesBinder( entityViewRequest.getEntityViewContext().getPropertyRegistry() );
 		propertiesBinder.setConversionService( conversionService );
 		propertiesBinder.setBinderPrefix( "properties" );
-		propertiesBinder.setEntitySupplier( () -> Optional.ofNullable( command.getEntity() ).orElseGet( entityViewRequest.getEntityViewContext()::getEntity ) );
+		//propertiesBinder.setEntitySupplier( () -> Optional.ofNullable( command.getEntity() ).orElseGet( entityViewRequest.getEntityViewContext()::getEntity ) );
 
 		command.setProperties( propertiesBinder );
 

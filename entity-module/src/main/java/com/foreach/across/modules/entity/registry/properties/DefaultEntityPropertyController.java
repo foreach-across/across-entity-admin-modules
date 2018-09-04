@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class DefaultEntityPropertyController implements EntityPropertyController, ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object>
 {
-	private final EntityPropertyController<EntityPropertyBindingContext, Object> parent;
+	private final EntityPropertyController<EntityPropertyBindingContext, Object> original;
 
 	/**
 	 * Processing order for this controller.
@@ -61,7 +61,7 @@ public class DefaultEntityPropertyController implements EntityPropertyController
 	private List<Validator> validators = new ArrayList<>();
 
 	public DefaultEntityPropertyController() {
-		this.parent = null;
+		this.original = null;
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class DefaultEntityPropertyController implements EntityPropertyController
 		if ( valueFetcher != null ) {
 			return valueFetcher.apply( context );
 		}
-		return parent != null ? parent.fetchValue( context ) : null;
+		return original != null ? original.fetchValue( context ) : null;
 	}
 
 	@Override
@@ -156,7 +156,7 @@ public class DefaultEntityPropertyController implements EntityPropertyController
 		if ( createValueFunction != null ) {
 			return createValueFunction.apply( context );
 		}
-		return null;
+		return original != null ? original.createValue( context ) : null;
 	}
 
 	@Override
@@ -166,7 +166,7 @@ public class DefaultEntityPropertyController implements EntityPropertyController
 			return applyValueFunction.apply( context, propertyValue );
 		}
 
-		return false;
+		return original != null ? original.applyValue( context, propertyValue ) : false;
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class DefaultEntityPropertyController implements EntityPropertyController
 			return saveFunction.apply( context, propertyValue );
 		}
 
-		return false;
+		return original != null ? original.save( context, propertyValue ) : false;
 	}
 
 	@Override

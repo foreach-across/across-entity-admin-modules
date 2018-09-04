@@ -143,7 +143,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	}
 
 	@Override
-	public Object getOrInitializeValue() {
+	public Object getInitializedValue() {
 		Object originalValue = loadOriginalValue();
 
 		if ( !itemsInitialized && originalValue == null ) {

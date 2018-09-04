@@ -16,10 +16,7 @@
 
 package com.foreach.across.modules.entity.bind;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.*;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,13 +64,17 @@ public class TestEntityPropertiesBinder
 	@Mock
 	private EntityPropertyRegistry registry;
 
+	private EntityPropertyBindingContext bindingContext;
+
 	@InjectMocks
 	private EntityPropertiesBinder binder;
 
 	@Before
 	public void before() {
+		bindingContext = EntityPropertyBindingContext.of( ENTITY );
+
 		binder.setConversionService( conversionService );
-		binder.setEntity( ENTITY );
+		binder.setBindingContext( bindingContext );
 
 		MutableEntityPropertyDescriptor singleValue = EntityPropertyDescriptor.builder( "id" )
 		                                                                      .propertyType( Long.class )
@@ -141,17 +142,6 @@ public class TestEntityPropertiesBinder
 		assertThat( holder.getItemTemplate() )
 				.isNotNull()
 				.matches( e -> e.getValue().equals( 444L ) );
-	}
-
-	@Test
-	public void singleValueHolderReturnedIfMemberDescriptorMissing() {
-		when( registry.getProperty( "members[]" ) ).thenReturn( null );
-
-		val holder = single( "members" );
-		assertThat( holder ).isNotNull();
-		//assertThat( holder ).isNotInstanceOf( MultiEntityPropertyValue.class );
-		assertThat( binder.containsKey( "members" ) ).isTrue();
-		assertThat( binder.get( "members" ) ).isSameAs( holder );
 	}
 
 	@Test
@@ -342,32 +332,31 @@ public class TestEntityPropertiesBinder
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void singleValueBind() {
+	public void onlyModifiedPropertiesAndChildContextsAreBound() {
 		val holder = single( "id" );
-		holder.applyValue();
-		//verify( singleValueController ).applyValue( ENTITY, null, null );
+		holder.setValue( 123L );
+		val listValue = list( "members" );
+		assertThat( listValue.isModified() ).isFalse();
 
-		reset( singleValueController );
+		val parentController = mock( EntityPropertyController.class );
 
-		holder.setValue( 678L );
-		verifyZeroInteractions( singleValueController );
-
-		holder.applyValue();
-		//verify( singleValueController ).applyValue( ENTITY, null, 678L );
-	}
-
-	@Test
-	public void onlyModifiedPropertiesAreBound() {
-		val holder = single( "id" );
-		holder.setValue( null );
-		assertThat( holder.isModified() ).isFalse();
+		bindingContext.retrieveNamedChildContext( "test", parent -> {
+			EntityPropertyBindingContext<Object, Object> childContext = EntityPropertyBindingContext
+					.builder()
+					.parent( (EntityPropertyBindingContext<?, ?>) parent )
+					.entity( "original" )
+					.target( "dto" )
+					.controller( parentController )
+					.build();
+			return childContext;
+		} );
 
 		binder.bind();
-		//verify( singleValueController, never() ).applyValue( any(), null, any() );
 
-		holder.setValue( 444L );
-		binder.bind();
-		//verify( singleValueController ).applyValue( ENTITY, null, 444L );
+		verify( singleValueController ).applyValue( any(), eq( new EntityPropertyValue<>( null, 123L, false ) ) );
+		verifyZeroInteractions( listValueController, mapValueController );
+
+		verify( parentController ).applyValue( bindingContext, new EntityPropertyValue( "original", "dto", false ) );
 	}
 
 	private SingleEntityPropertyBinder single( String propertyName ) {

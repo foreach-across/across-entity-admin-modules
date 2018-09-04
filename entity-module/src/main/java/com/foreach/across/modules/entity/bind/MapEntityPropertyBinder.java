@@ -104,7 +104,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	}
 
 	@Override
-	public Object getOrInitializeValue() {
+	public Object getInitializedValue() {
 		Object originalValue = loadOriginalValue();
 
 		if ( !itemsInitialized && originalValue == null ) {
@@ -187,7 +187,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 			getEntries()
 					.forEach( ( key, item ) -> {
 						errors.pushNestedPath( "entries[" + key + "].value" );
-						valueController.validate( binder.getEntity(), item.getValue(), errors, validationHints );
+						valueController.validate( binder.getBindingContext().getEntity(), item.getValue(), errors, validationHints );
 						errors.popNestedPath();
 					} );
 		}
@@ -286,19 +286,19 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		@Getter
 		private final EntityPropertyBinder<Object> value;
 
-		void setEntryKey( Object key ) {
+		public void setEntryKey( Object key ) {
 			this.key.setValue( key );
 		}
 
-		void setEntryValue( Object value ) {
+		public void setEntryValue( Object value ) {
 			this.value.setValue( value );
 		}
 
-		Object getEntryKey() {
+		public Object getEntryKey() {
 			return key.getValue();
 		}
 
-		Object getEntryValue() {
+		public Object getEntryValue() {
 			return value.getValue();
 		}
 

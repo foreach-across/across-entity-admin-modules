@@ -18,7 +18,9 @@ package com.foreach.across.modules.entity.registry;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import com.foreach.across.modules.entity.registry.properties.NestedEntityPropertyController;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -40,25 +42,52 @@ public class TestNestedEntityPropertyController
 	@Mock
 	private EntityPropertyController address;
 
-	@Mock
-	private EntityPropertyController street;
+	private EntityPropertyController userAddress;
+
+	private EntityPropertyBindingContext<String, String> originalContext;
+	private EntityPropertyBindingContext<Long, Long> childContext;
+	private EntityPropertyBindingContext<String, String> finalContext;
+
+	@Before
+	public void before() {
+		userAddress = new NestedEntityPropertyController( "user", user, address );
+
+		originalContext = EntityPropertyBindingContext.of( "page" );
+		when( user.fetchValue( originalContext ) ).thenReturn( 123L );
+
+		finalContext = EntityPropertyBindingContext.of( "page" );
+		childContext = finalContext.retrieveNamedChildContext( "user", p -> EntityPropertyBindingContext.of( 123L ).withController( user ) );
+	}
 
 	@Test
-	public void fetchValueOnSingleNestedController() {
-		NestedEntityPropertyController controller = new NestedEntityPropertyController( "user", user, address );
-
-		EntityPropertyBindingContext<String, String> context = EntityPropertyBindingContext.of( "page" );
-		when( user.fetchValue( context ) ).thenReturn( 123L );
-
-		EntityPropertyBindingContext<Long, Long> childContext = EntityPropertyBindingContext.of( 123L ).withParent( context );
-		EntityPropertyBindingContext<String, String> expected = EntityPropertyBindingContext.of( "page" );
-		expected.setAttribute( NestedEntityPropertyController.class.getName() + ".user", childContext );
-
+	public void fetchValue() {
 		when( address.fetchValue( childContext ) ).thenReturn( "address value" );
-		assertThat( controller.fetchValue( context ) ).isEqualTo( "address value" );
-		verify( user ).fetchValue( context );
+		assertThat( userAddress.fetchValue( originalContext ) ).isEqualTo( "address value" );
+		verify( user ).fetchValue( originalContext );
 
-		assertThat( controller.fetchValue( context ) ).isEqualTo( "address value" );
-		verify( user, times( 1 ) ).fetchValue( context );
+		assertThat( userAddress.fetchValue( originalContext ) ).isEqualTo( "address value" );
+		verify( user, times( 1 ) ).fetchValue( originalContext );
+
+		assertThat( originalContext ).isEqualTo( finalContext );
+	}
+
+	@Test
+	public void applyValue() {
+		EntityPropertyValue value = new EntityPropertyValue<>( "old", "new", false );
+		userAddress.applyValue( originalContext, value );
+		verify( address ).applyValue( childContext, value );
+	}
+
+	@Test
+	public void createValue() {
+		userAddress.createValue( originalContext );
+		verify( address ).createValue( childContext );
+	}
+
+	@Test
+	public void save() {
+		EntityPropertyValue value = new EntityPropertyValue<>( "old", "new", false );
+		userAddress.save( originalContext, value );
+		verify( address ).save( childContext, value );
 	}
 }

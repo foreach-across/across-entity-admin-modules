@@ -407,7 +407,7 @@ public class TestMapEntityPropertyBinder
 
 	@Test
 	public void getInitializedValueDoesNotModifyCurrentValue() {
-		assertThat( property.getOrInitializeValue() ).isEqualTo( ORIGINAL_VALUE );
+		assertThat( property.getInitializedValue() ).isEqualTo( ORIGINAL_VALUE );
 		verify( binder, never() ).createValue( any(), any() );
 	}
 
@@ -418,7 +418,7 @@ public class TestMapEntityPropertyBinder
 
 		when( key.getValue() ).thenReturn( "two" );
 		when( value.getValue() ).thenReturn( 2 );
-		assertThat( property.getOrInitializeValue() ).isEqualTo( Collections.singletonMap( "two", 2 ) );
+		assertThat( property.getInitializedValue() ).isEqualTo( Collections.singletonMap( "two", 2 ) );
 		verify( binder ).createValue( collectionController, COLLECTION );
 		verify( key ).setValue( "two" );
 		verify( value ).setValue( 2 );

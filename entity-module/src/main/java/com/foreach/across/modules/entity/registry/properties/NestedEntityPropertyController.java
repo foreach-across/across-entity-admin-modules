@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.modules.entity.views.support.ContextualValidator;
 import lombok.NonNull;
+import lombok.val;
 import org.springframework.validation.Validator;
 
 import java.util.function.BiConsumer;
@@ -35,8 +36,10 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	private final EntityPropertyController parent;
 	private final EntityPropertyController child;
 
-	public NestedEntityPropertyController( @NonNull String contextName, @NonNull EntityPropertyController parent, @NonNull EntityPropertyController child ) {
-		this.contextName = contextName;
+	public NestedEntityPropertyController( @NonNull String requiredChildContextName,
+	                                       @NonNull EntityPropertyController parent,
+	                                       @NonNull EntityPropertyController child ) {
+		this.contextName = requiredChildContextName;
 		this.parent = parent;
 		this.child = new DefaultEntityPropertyController( child );
 	}
@@ -115,36 +118,45 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 
 	@Override
 	public Object fetchValue( EntityPropertyBindingContext context ) {
-		EntityPropertyBindingContext<Object, Object> childContext = context.getAttribute( NestedEntityPropertyController.class.getName() + "." + contextName,
-		                                                                                  EntityPropertyBindingContext.class );
-
-		if ( childContext == null ) {
-			Object parentValue = parent.fetchValue( context );
-
-			childContext = EntityPropertyBindingContext.of( parentValue ).withParent( context );
-			context.setAttribute( NestedEntityPropertyController.class.getName() + "." + contextName, childContext );
-		}
-
-		return child.fetchValue( childContext );
+		return child.fetchValue( childContext( context ) );
 	}
 
 	@Override
 	public Object createValue( EntityPropertyBindingContext context ) {
-		return null;
+		return child.createValue( childContext( context ) );
 	}
 
 	@Override
 	public boolean applyValue( EntityPropertyBindingContext context, EntityPropertyValue propertyValue ) {
-		return false;
+		return child.applyValue( childContext( context ), propertyValue );
 	}
 
 	@Override
 	public boolean save( EntityPropertyBindingContext context, EntityPropertyValue propertyValue ) {
-		return false;
+		return child.save( childContext( context ), propertyValue );
+	}
+
+	private EntityPropertyBindingContext childContext( EntityPropertyBindingContext context ) {
+		return context.retrieveNamedChildContext( contextName, c -> childContextFactory( (EntityPropertyBindingContext) c ) );
 	}
 
 	@Override
 	public int getOrder() {
 		return 0;
+	}
+
+	private EntityPropertyBindingContext childContextFactory( EntityPropertyBindingContext parentContext ) {
+		Object parentValue = parent.fetchValue( parentContext );
+
+		val builder = EntityPropertyBindingContext.builder()
+		                                          .controller( parent )
+		                                          .entity( parentValue )
+		                                          .target( parentValue )
+				//.target( parent.createBinderTarget( parentContext, parentValue ) )
+				;
+
+		// todo: customize the binding context builder
+
+		return builder.build();
 	}
 }

@@ -67,7 +67,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 			loadOriginalValue();
 
 			valueHasBeenSet = true;
-			properties = binder.createChildBinder( descriptor, getOrInitializeValue() );
+			properties = binder.createChildBinder( descriptor, controller, getInitializedValue() );
 		}
 
 		return properties;
@@ -77,6 +77,12 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 	protected Object fetchOriginalValue() {
 		value = super.fetchOriginalValue();
 		return value;
+	}
+
+	@Override
+	protected void setOriginalValue( Object value ) {
+		super.setOriginalValue( value );
+		this.value = value;
 	}
 
 	@Override
@@ -124,7 +130,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 		int beforeValidate = errors.getErrorCount();
 		errors.pushNestedPath( "value" );
 		if ( controller != null ) {
-			controller.validate( binder.getEntity(), value, errors, validationHints );
+			controller.validate( binder.getBindingContext().getEntity(), value, errors, validationHints );
 		}
 		errors.popNestedPath();
 		return beforeValidate >= errors.getErrorCount();

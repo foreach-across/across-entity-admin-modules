@@ -37,16 +37,6 @@ import static org.mockito.Mockito.verify;
 public class TestDirectUseOfEntityPropertiesBinder
 {
 	@Test
-	public void simpleBinderForType() {
-		//EntityPropertiesBinder.forPropertyRegistry( new)
-	}
-
-	@Test
-	public void simpleBinderForInstance() {
-
-	}
-
-	@Test
 	public void simpleBinderWithEntityPropertyRegistry() {
 		MutableEntityPropertyRegistry propertyRegistry = DefaultEntityPropertyRegistry.forClass( User.class );
 
@@ -90,8 +80,10 @@ public class TestDirectUseOfEntityPropertiesBinder
 		binder.setBindingContext( EntityPropertyBindingContext.of( user ) );
 
 		binder.get( "name" ).setValue( "jane.doe" );
+		assertThat( binder.get( "properties.id" ).getValue() ).isEqualTo( 1 );
+		assertThat( binder.get( "properties.email" ).getValue() ).isEqualTo( "john.doe@localhost" );
+		assertThat( counter.get() ).isEqualTo( 1 );
 		assertThat( binder.get( "properties" ).getValue() ).isEqualTo( new UserProperties( 1, user, "john.doe@localhost" ) );
-		//assertThat( binder.get( "properties.id" ).getValue() ).isEqualTo( 1 );
 
 		EntityPropertiesBinder child = ( (SingleEntityPropertyBinder) binder.get( "properties" ) ).getProperties();
 		assertThat( child ).isNotNull();

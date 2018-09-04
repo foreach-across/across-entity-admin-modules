@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * on the first and on the second level.
  *
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
 public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPropertiesBinderTest
 {
@@ -45,29 +45,22 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 				builder( "text" ).propertyType( String.class ),
 				builder( "number" ).propertyType( Long.class ),
 				builder( "dummyNonEmbedded" ).propertyType( Dummy.class ),
-				builder( "dummyEmbedded" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
-				//builder( "dummyEmbedded.id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
-				//builder( "dummyEmbedded.name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
+				builder( "dummyEmbedded" ).propertyType( Dummy.class )
+				                          .controller( c -> c.withTarget( String.class, Dummy.class ).createValueSupplier( Dummy::new ) ),
 				builder( "longArray" ).propertyType( long[].class ),
 				builder( "longCollection" ).propertyType( TypeDescriptor.collection( Collection.class, TypeDescriptor.valueOf( Long.class ) ) ),
 				builder( "dummyList" ).propertyType( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( Dummy.class ) ) ),
 				builder( "dummyList[]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
-				//builder( "dummyList[].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
-				//builder( "dummyList[].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
 				builder( "stringLongMap" )
 						.propertyType( TypeDescriptor.map( Map.class, TypeDescriptor.valueOf( String.class ), TypeDescriptor.valueOf( Long.class ) ) ),
 				builder( "longDummyMap" )
 						.propertyType( TypeDescriptor.map( TreeMap.class, TypeDescriptor.valueOf( Long.class ), TypeDescriptor.valueOf( Dummy.class ) ) ),
-				builder( "longDummyMap[v]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
+				builder( "longDummyMap[value]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
 				builder( "dummyDummyMap" )
 						.propertyType(
 								TypeDescriptor.map( LinkedHashMap.class, TypeDescriptor.valueOf( Dummy.class ), TypeDescriptor.valueOf( Dummy.class ) ) ),
-				builder( "dummyDummyMap[k]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
-				//builder( "dummyDummyMap[k].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
-				//builder( "dummyDummyMap[k].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
-				builder( "dummyDummyMap[v]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) )
-				//builder( "dummyDummyMap[v].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
-				//builder( "dummyDummyMap[v].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) )
+				builder( "dummyDummyMap[key]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
+				builder( "dummyDummyMap[value]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) )
 		);
 	}
 
@@ -93,7 +86,7 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 		assertProperty( "dummyNonEmbedded" ).isEqualTo( new Dummy( 4, "Updated name" ) );
 
 		// if a property has been bound, but no values set, it should be reset to null
-		propertyValues.resetForBinding();
+		resetForBinding();
 
 		bind( "properties[dummyNonEmbedded].bound=1" );
 		assertProperty( "dummyNonEmbedded" ).isNull();
@@ -161,7 +154,7 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 				.containsExactly( 4L, 3L, null )
 				.isInstanceOf( LinkedHashSet.class );
 
-		propertyValues.resetForBinding();
+		resetForBinding();
 		bind( "properties[longCollection].bound=1" );
 
 		assertCollection( "longCollection" )
@@ -169,7 +162,7 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 				.isEmpty();
 
 		// explicit sorting
-		propertyValues.resetForBinding();
+		resetForBinding();
 		bind( "properties[longCollection].bound=1",
 		      "properties[longCollection].items[2].value=3",
 		      "properties[longCollection].items[2].sortIndex=1000",

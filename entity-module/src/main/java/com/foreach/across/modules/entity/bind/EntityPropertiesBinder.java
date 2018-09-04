@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.*;
-import com.sun.xml.internal.ws.spi.db.BindingContext;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -30,7 +29,7 @@ import org.springframework.core.convert.TypeDescriptor;
 
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
-import java.util.function.Supplier;
+import java.util.Optional;
 
 /**
  * Wrapper for binding values to custom properties. Much like a {@link org.springframework.beans.BeanWrapper}
@@ -85,14 +84,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	private ConversionService conversionService;
 
 	/**
-	 * Set the supplier for fetching the entity to which the properties should be bound.
-	 * Note that the supplier will be called for every property that needs the entity.
-	 */
-	@Setter
-	@Deprecated
-	private Supplier<Object> entitySupplier;
-
-	/**
 	 * Returns self so that this binder could be used as direct {@link org.springframework.validation.DataBinder} target.
 	 * The {@link #setBinderPrefix(String)} is usually set to {@code properties} in this case.
 	 *
@@ -108,29 +99,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	@Setter
 	@Getter
 	private EntityPropertyBindingContext<Object, Object> bindingContext;
-
-	/**
-	 * Set a fixed entity to which the properties should be bound.
-	 * If the actual entity might depend on outside configuration (for example use a DTO
-	 * if there is one and else use the original entity), use {@link #setEntitySupplier(Supplier)} instead.
-	 *
-	 * @param entity to use
-	 * @see #setEntitySupplier(Supplier)
-	 */
-	@Deprecated
-	public void setEntity( Object entity ) {
-		setEntitySupplier( () -> entity );
-	}
-
-	/**
-	 * Get the entity this binder is attached to.
-	 *
-	 * @return entity (can be {@code null})
-	 */
-	@Deprecated
-	public Object getEntity() {
-		return entitySupplier != null ? entitySupplier.get() : null;
-	}
 
 	@Override
 	public EntityPropertyBinder getOrDefault( Object key, EntityPropertyBinder defaultValue ) {
@@ -158,7 +126,17 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 					throw new IllegalArgumentException( "No such property descriptor: '" + fqPropertyName + "'" );
 				}
 
-				valueHolder = createPropertyBinder( descriptor );
+				AbstractEntityPropertyBinder binder = (AbstractEntityPropertyBinder) createPropertyBinder( descriptor );
+
+				// if there is a child binding context with the same name, assume it represents the same property and
+				// use the pre-loaded binding context for property values
+				Optional.ofNullable( bindingContext.getChildContexts().get( descriptor.getName() ) )
+				        .ifPresent( bindingContext -> {
+					        binder.setOriginalValue( bindingContext.getEntity() );
+					        binder.setValue( bindingContext.getTarget() );
+				        } );
+
+				valueHolder = binder;
 				put( propertyName, valueHolder );
 			}
 			catch ( IllegalArgumentException iae ) {
@@ -213,34 +191,48 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	 */
 	public void bind() {
 		values().forEach( v -> {
-			if ( v instanceof SingleEntityPropertyBinder ) {
-				val holder = ( (SingleEntityPropertyBinder) v );
-				if ( holder.isModified() ) {
-					holder.applyValue();
-				}
+			if ( v.isModified() ) {
+				v.applyValue();
 			}
 		} );
+
+		// todo forward *bind* events so it cascades down
+		bindingContext.getChildContexts()
+		              .values()
+		              .stream()
+		              .filter( c -> c.getController() != null )
+		              .forEach( child -> child.getController().applyValue( child.getParent(), child.toPropertyValue() ) );
 	}
 
 	public void save() {
 
 	}
 
-	/**
-	 * Reset the different binding related properties (eg. was a property expected to be bound).
-	 * Useful if you want to bind multiple times on the same entity using the same binder instance.
-	 */
-	@Deprecated
-	public void resetForBinding() {
-		values().forEach( EntityPropertyBinder::resetBindStatus );
-	}
-
-	EntityPropertiesBinder createChildBinder( EntityPropertyDescriptor parent, Object propertyValue ) {
+	EntityPropertiesBinder createChildBinder( EntityPropertyDescriptor parent, EntityPropertyController controller, Object propertyValue ) {
 		EntityPropertiesBinder childBinder = new EntityPropertiesBinder( propertyRegistry );
 		childBinder.parentProperty = parent;
-		childBinder.setBindingContext( EntityPropertyBindingContext.of( propertyValue ) );
-		childBinder.setEntity( propertyValue );
 		childBinder.setConversionService( conversionService );
+
+		if ( EntityPropertyRegistry.isMemberPropertyDescriptor( parent ) ) {
+			childBinder.setBindingContext( EntityPropertyBindingContext.of( propertyValue ) );
+		}
+		else {
+			// nested property
+			childBinder.setBindingContext( bindingContext );
+			if ( !bindingContext.getChildContexts().containsKey( parent.getName() ) ) {
+				val builder = EntityPropertyBindingContext.builder()
+				                                          .controller( controller )
+				                                          .entity( propertyValue )
+				                                          .target( propertyValue )
+						//.target( parent.createBinderTarget( parentContext, parentValue ) )
+						;
+
+				// todo: customize the binding context builder
+
+				bindingContext.retrieveNamedChildContext( parent.getName(), p -> builder.parent( p ).build() );
+
+			}
+		}
 
 		return childBinder;
 	}

@@ -18,11 +18,11 @@ package com.foreach.across.modules.entity.registry.properties;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
-import com.foreach.across.modules.entity.views.support.NestedValueFetcher;
-import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
+
+import java.util.function.Function;
 
 /**
  * Default implementation of a {@link MutableEntityPropertyRegistry}.
@@ -93,20 +93,70 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	private MutableEntityPropertyDescriptor resolveProperty( String propertyName ) {
 		MutableEntityPropertyDescriptor descriptor = super.getProperty( propertyName );
 
-		if ( descriptor == null && propertyName.endsWith( INDEXER ) ) {
-			String nonIndexedProperty = propertyName.substring( 0, propertyName.length() - 2 );
-			MutableEntityPropertyDescriptor parent = resolveProperty( nonIndexedProperty );
-
-			if ( parent != null ) {
-				TypeDescriptor memberTypeDescriptor = resolveMemberType( parent );
-
-				if ( memberTypeDescriptor != null ) {
-					return buildIndexedDescriptor( parent, memberTypeDescriptor );
-				}
+		if ( descriptor == null ) {
+			if ( propertyName.endsWith( INDEXER ) ) {
+				return buildMemberDescriptor( propertyName, INDEXER, this::resolveMemberType );
+			}
+			else if ( propertyName.endsWith( MAP_KEY ) ) {
+				return buildMemberDescriptor( propertyName, MAP_KEY, this::resolveMapKeyType );
+			}
+			else if ( propertyName.endsWith( MAP_VALUE ) ) {
+				return buildMemberDescriptor( propertyName, MAP_VALUE, this::resolveMapValueType );
 			}
 		}
 
 		return descriptor;
+	}
+
+	/**
+	 * Create an indexed property descriptor. This descriptor represents the member type of the corresponding
+	 * parent descriptor. An indexed property descriptor does not have a wrapping value fetcher, as it has no
+	 * way to access a specific member. As such, when building a nested descriptor, the target value fetcher
+	 * of the member type will be used, meaning that it is up to the outer code to set the correct instance
+	 * of the specific member as the entity.
+	 */
+	private MutableEntityPropertyDescriptor buildMemberDescriptor( String propertyName,
+	                                                               String suffix,
+	                                                               Function<EntityPropertyDescriptor, TypeDescriptor> typeResolver ) {
+		String nonIndexedProperty = propertyName.substring( 0, propertyName.length() - suffix.length() );
+		MutableEntityPropertyDescriptor parent = resolveProperty( nonIndexedProperty );
+
+		if ( parent != null ) {
+			TypeDescriptor memberTypeDescriptor = typeResolver.apply( parent );
+
+			if ( memberTypeDescriptor != null ) {
+				SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( parent.getName() + suffix );
+				descriptor.setDisplayName( parent.getDisplayName() );
+				descriptor.setPropertyTypeDescriptor( memberTypeDescriptor );
+				descriptor.setReadable( false );
+				descriptor.setWritable( false );
+				descriptor.setHidden( true );
+
+				register( descriptor );
+
+				return descriptor;
+			}
+		}
+
+		return null;
+	}
+
+	private TypeDescriptor resolveMapKeyType( EntityPropertyDescriptor descriptor ) {
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		if ( typeDescriptor != null && typeDescriptor.isMap() ) {
+			TypeDescriptor keyType = typeDescriptor.getMapKeyTypeDescriptor();
+			return keyType != null ? keyType : TypeDescriptor.valueOf( Object.class );
+		}
+		return null;
+	}
+
+	private TypeDescriptor resolveMapValueType( EntityPropertyDescriptor descriptor ) {
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		if ( typeDescriptor != null && typeDescriptor.isMap() ) {
+			TypeDescriptor keyType = typeDescriptor.getMapValueTypeDescriptor();
+			return keyType != null ? keyType : TypeDescriptor.valueOf( Object.class );
+		}
+		return null;
 	}
 
 	private TypeDescriptor resolveMemberType( EntityPropertyDescriptor descriptor ) {
@@ -119,28 +169,8 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		return null;
 	}
 
-	/**
-	 * Create an indexed property descriptor. This descriptor represents the member type of the corresponding
-	 * parent descriptor. An indexed property descriptor does not have a wrapping value fetcher, as it has no
-	 * way to access a specific member. As such, when building a nested descriptor, the target value fetcher
-	 * of the member type will be used, meaning that it is up to the outer code to set the correct instance
-	 * of the specific member as the entity.
-	 */
-	private MutableEntityPropertyDescriptor buildIndexedDescriptor( EntityPropertyDescriptor parent, TypeDescriptor typeDescriptor ) {
-		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( parent.getName() + INDEXER );
-		descriptor.setDisplayName( parent.getDisplayName() );
-		descriptor.setPropertyTypeDescriptor( typeDescriptor );
-		descriptor.setReadable( false );
-		descriptor.setWritable( false );
-		descriptor.setHidden( true );
-
-		register( descriptor );
-
-		return descriptor;
-	}
-
 	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name, EntityPropertyDescriptor parent, EntityPropertyDescriptor child ) {
-		boolean isIndexerChild = parent.getName().endsWith( INDEXER );
+		boolean isMemberDescriptor = EntityPropertyRegistry.isMemberPropertyDescriptor( parent );
 
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name );
 		descriptor.setParentDescriptor( parent );
@@ -152,7 +182,12 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		descriptor.setWritable( child.isWritable() );
 		descriptor.setHidden( child.isHidden() );
 
-		descriptor.setController( new NestedEntityPropertyController( name, parent.getController(), child.getController() ) );
+		if ( !isMemberDescriptor ) {
+			descriptor.setController( new NestedEntityPropertyController( parent.getName(), parent.getController(), child.getController() ) );
+		}
+		else {
+			descriptor.setController( new DefaultEntityPropertyController( child.getController() ) );
+		}
 
 		/*if ( descriptor.isReadable() ) {
 			val parentValueFetcher = parent.getValueFetcher();

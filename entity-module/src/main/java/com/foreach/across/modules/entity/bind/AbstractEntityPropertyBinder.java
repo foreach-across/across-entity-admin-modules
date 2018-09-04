@@ -76,6 +76,15 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder<Obje
 		return controller.fetchValue( binder.getBindingContext() );
 	}
 
+	/**
+	 * Pre-set the original value, this will avoid that {@link #loadOriginalValue()} will  be called.
+	 *
+	 * @param value to use instead
+	 */
+	protected void setOriginalValue( Object value ) {
+		originalValue = Optional.ofNullable( value );
+	}
+
 	@Override
 	public Object createNewValue() {
 		return binder.createValue( controller, descriptor.getPropertyTypeDescriptor() );
