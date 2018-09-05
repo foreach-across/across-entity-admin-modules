@@ -16,8 +16,6 @@
 
 package com.foreach.across.modules.entity.query;
 
-import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
-import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
@@ -34,6 +32,7 @@ import org.springframework.data.domain.Sort;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,7 +43,7 @@ import static org.mockito.Mockito.*;
  * @since 3.1.1-SNAPSHOT
  */
 @RunWith(MockitoJUnitRunner.class)
-public class TestAllowableActionsEntityQueryExecutor
+public class TestAllowableActionFilteringEntityQueryExecutor
 {
 	private Entry john = new Entry( 1L, "John" );
 	private Entry jane = new Entry( 2L, "Jane" );
@@ -52,21 +51,28 @@ public class TestAllowableActionsEntityQueryExecutor
 	private List<Entry> entries = new ArrayList<>( Arrays.asList( john, joe, jane ) );
 
 	private EntityQueryExecutor<Entry> parentExecutor;
-	private AllowableActionsEntityQueryExecutor<Entry> executor;
+	private AllowableActionFilteringEntityQueryExecutor<Entry> executor;
 
 	@Before
 	public void setUp() {
-		MutableEntityRegistry entityRegistry = new EntityRegistryImpl();
-		MutableEntityConfiguration<Entry> entityConfiguration = new EntityConfigurationImpl<>( Entry.class );
-		entityConfiguration.setAllowableActionsBuilder( new EntryAllowableActionsBuilder() );
-		entityRegistry.register( entityConfiguration );
 		parentExecutor = mock( EntityQueryExecutor.class );
 
 		when( parentExecutor.findAll( any( EntityQuery.class ) ) ).thenReturn( entries );
 		when( parentExecutor.findAll( any( EntityQuery.class ), any( Sort.class ) ) ).thenReturn( entries );
 		when( parentExecutor.findAll( any( EntityQuery.class ), (Sort) eq( null ) ) ).thenReturn( entries );
 
-		executor = new AllowableActionsEntityQueryExecutor<>( entityRegistry, parentExecutor, AllowableAction.READ );
+		Function<Entry, AllowableActions> resolver = ( entry ) -> {
+			AllowableActionSet allowableActions = new AllowableActionSet();
+			if ( entry.getName().startsWith( "Ja" ) ) {
+				allowableActions.add( AllowableAction.UPDATE );
+			}
+			if ( entry.getName().startsWith( "Jo" ) ) {
+				allowableActions.add( AllowableAction.READ );
+			}
+			return allowableActions;
+		};
+
+		executor = new AllowableActionFilteringEntityQueryExecutor<>( resolver, parentExecutor, AllowableAction.READ );
 	}
 
 	@Test
@@ -113,27 +119,5 @@ public class TestAllowableActionsEntityQueryExecutor
 	{
 		private final Long id;
 		private final String name;
-	}
-
-	public class EntryAllowableActionsBuilder implements EntityConfigurationAllowableActionsBuilder
-	{
-
-		@Override
-		public AllowableActions getAllowableActions( EntityConfiguration<?> entityConfiguration ) {
-			return null;
-		}
-
-		@Override
-		public <V> AllowableActions getAllowableActions( EntityConfiguration<V> entityConfiguration, V entity ) {
-			Entry entry = (Entry) entity;
-			AllowableActionSet allowableActions = new AllowableActionSet();
-			if ( entry.getName().startsWith( "Ja" ) ) {
-				allowableActions.add( AllowableAction.UPDATE );
-			}
-			if ( entry.getName().startsWith( "Jo" ) ) {
-				allowableActions.add( AllowableAction.READ );
-			}
-			return allowableActions;
-		}
 	}
 }

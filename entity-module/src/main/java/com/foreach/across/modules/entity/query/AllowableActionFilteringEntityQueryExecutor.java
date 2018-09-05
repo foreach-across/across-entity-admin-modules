@@ -16,8 +16,6 @@
 
 package com.foreach.across.modules.entity.query;
 
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
-import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import lombok.RequiredArgsConstructor;
@@ -27,18 +25,21 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.support.PageableExecutionUtils;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * Wrapping {@link EntityQueryExecutor} that filters the result set on whether the {@link AllowableActionFilteringEntityQueryExecutor#requestedAction} is present.
+ *
  * @author Steven Gentens
  * @since 3.1.1-SNAPSHOT
  */
 @RequiredArgsConstructor
-public class AllowableActionsEntityQueryExecutor<T> implements EntityQueryExecutor<T>
+public class AllowableActionFilteringEntityQueryExecutor<T> implements EntityQueryExecutor<T>
 {
-	private final EntityRegistry entityRegistry;
+	private final Function<T, AllowableActions> allowableActionsResolver;
 	private final EntityQueryExecutor<T> parentExecutor;
-	private final AllowableAction action;
+	private final AllowableAction requestedAction;
 
 	@Override
 	public List<T> findAll( EntityQuery query ) {
@@ -58,12 +59,8 @@ public class AllowableActionsEntityQueryExecutor<T> implements EntityQueryExecut
 
 	private List<T> filter( List<T> elements ) {
 		return elements.stream()
-		               .filter( entity -> {
-			                        EntityConfiguration<T> entityConfiguration = entityRegistry.getEntityConfiguration( entity );
-			                        AllowableActions instanceActions = entityConfiguration.getAllowableActions( entity );
-			                        return instanceActions.contains( action );
-		                        }
-		               ).collect( Collectors.toList() );
+		               .filter( entity -> allowableActionsResolver.apply( entity ).contains( requestedAction ) )
+		               .collect( Collectors.toList() );
 	}
 
 	private Page<T> buildPage( List<T> allItems, Pageable pageable ) {
