@@ -20,9 +20,6 @@ import com.foreach.across.modules.entity.views.support.ContextualValidator;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
-import org.springframework.validation.Errors;
-import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
 
 import java.util.ArrayList;
@@ -34,23 +31,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Generic implementation of {@link EntityPropertyController} where every controller
- * action is delegated to an optionally present function. Implements delete as a {@link #save(Object, Object)}
- * with the value being {@code null}.
- *
  * @author Arne Vandamme
  * @since 3.2.0
  */
 @RequiredArgsConstructor
-@Accessors(chain = true)
-@Deprecated
-public class GenericEntityPropertyController<T, U> implements EntityPropertyController<T, U>, ConfigurableEntityPropertyController<T, U>
+public class GenericEntityPropertyController implements EntityPropertyController, ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object>
 {
-	private final EntityPropertyController<T, U> parent;
-
-	public GenericEntityPropertyController() {
-		this.parent = null;
-	}
+	private final EntityPropertyController<EntityPropertyBindingContext, Object> original;
 
 	/**
 	 * Processing order for this controller.
@@ -58,173 +45,153 @@ public class GenericEntityPropertyController<T, U> implements EntityPropertyCont
 	@Getter
 	private int order = AFTER_ENTITY;
 
-	/**
-	 * Function to call when getting the property value.
-	 */
 	@Getter
-	private Function<EntityPropertyBindingContext, U> valueFetcher;
+	private Function<EntityPropertyBindingContext, Object> valueFetcher;
 
 	@Getter
-	private BiFunction<T, U, Boolean> applyValueFunction;
+	private Function<EntityPropertyBindingContext, Object> createValueFunction;
 
 	@Getter
-	private BiFunction<T, U, Boolean> saveFunction;
+	private BiFunction<EntityPropertyBindingContext, EntityPropertyValue<Object>, Boolean> applyValueFunction;
 
 	@Getter
-	private Function<T, Boolean> deleteFunction;
-
-	@Getter
-	private Function<T, Boolean> existsFunction;
-
-	@Getter
-	private Function<T, U> createValueFunction;
+	private BiFunction<EntityPropertyBindingContext, EntityPropertyValue<Object>, Boolean> saveFunction;
 
 	@Getter
 	private List<Validator> validators = new ArrayList<>();
 
+	public GenericEntityPropertyController() {
+		this.original = null;
+	}
+
 	@Override
-	public GenericEntityPropertyController<T, U> order( int order ) {
+	public GenericEntityPropertyController order( int order ) {
 		this.order = order;
 		return this;
 	}
 
 	@Override
-	public GenericEntityPropertyController<T, U> valueFetcher( Function<T, U> valueFetcher ) {
-		//this.valueFetcher = valueFetcher;
+	public GenericEntityPropertyController valueFetcher( Function<EntityPropertyBindingContext, Object> valueFetcher ) {
+		this.valueFetcher = valueFetcher;
 		return this;
 	}
 
 	@Override
-	public GenericEntityPropertyController<T, U> applyValueConsumer( @NonNull BiConsumer<T, EntityPropertyValue<U>> valueWriter ) {
-		this.applyValueFunction = ( entity, value ) -> {
-			//valueWriter.accept( entity, value );
-			return true;
-		};
-		return this;
-	}
-
-	@Override
-	public GenericEntityPropertyController<T, U> applyValueFunction( BiFunction<T, EntityPropertyValue<U>, Boolean> valueWriter ) {
-		//this.applyValueFunction = valueWriter;
-		return this;
-	}
-
-	@Override
-	public ConfigurableEntityPropertyController<T, U> createValueSupplier( Supplier<U> supplier ) {
+	public GenericEntityPropertyController createValueSupplier( Supplier<Object> supplier ) {
 		return createValueFunction( e -> supplier.get() );
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<T, U> createValueFunction( Function<T, U> function ) {
+	public GenericEntityPropertyController createValueFunction( Function<EntityPropertyBindingContext, Object> function ) {
 		this.createValueFunction = function;
 		return this;
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<T, U> saveConsumer( BiConsumer<T, EntityPropertyValue<U>> saveFunction ) {
-		return null;
+	public GenericEntityPropertyController applyValueConsumer( BiConsumer<EntityPropertyBindingContext, EntityPropertyValue<Object>> valueWriter ) {
+		if ( valueWriter == null ) {
+			this.applyValueFunction = null;
+		}
+		else {
+			this.applyValueFunction = ( context, value ) -> {
+				valueWriter.accept( context, value );
+				return true;
+			};
+		}
+		return this;
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<T, U> saveFunction( BiFunction<T, EntityPropertyValue<U>, Boolean> saveFunction ) {
-		return null;
+	public GenericEntityPropertyController applyValueFunction( BiFunction<EntityPropertyBindingContext, EntityPropertyValue<Object>, Boolean> valueWriter ) {
+		this.applyValueFunction = valueWriter;
+		return this;
 	}
 
 	@Override
-	public GenericEntityPropertyController<T, U> addValidator( @NonNull ContextualValidator<T, U> contextualValidator ) {
+	public GenericEntityPropertyController saveConsumer( BiConsumer<EntityPropertyBindingContext, EntityPropertyValue<Object>> saveFunction ) {
+		if ( saveFunction == null ) {
+			this.saveFunction = null;
+		}
+		else {
+			this.saveFunction = ( context, value ) -> {
+				saveFunction.accept( context, value );
+				return true;
+			};
+		}
+		return this;
+	}
+
+	@Override
+	public GenericEntityPropertyController saveFunction( BiFunction<EntityPropertyBindingContext, EntityPropertyValue<Object>, Boolean> saveFunction ) {
+		this.saveFunction = saveFunction;
+		return this;
+	}
+
+	@Override
+	public GenericEntityPropertyController addValidator( ContextualValidator<EntityPropertyBindingContext, Object> contextualValidator ) {
 		return addValidators( contextualValidator );
 	}
 
 	@Override
-	public GenericEntityPropertyController<T, U> addValidator( @NonNull Validator validator ) {
+	public GenericEntityPropertyController addValidator( Validator validator ) {
 		return addValidators( validator );
 	}
 
 	@Override
-	public GenericEntityPropertyController<T, U> addValidators( Validator... validators ) {
+	public GenericEntityPropertyController addValidators( Validator... validators ) {
 		this.validators.addAll( Arrays.asList( validators ) );
 		return this;
 	}
 
 	@Override
-	public U fetchValue( EntityPropertyBindingContext<T, ?> context ) {
+	public Object fetchValue( EntityPropertyBindingContext context ) {
 		if ( valueFetcher != null ) {
 			return valueFetcher.apply( context );
 		}
-		return parent != null ? parent.fetchValue( context ) : null;
+		return original != null ? original.fetchValue( context ) : null;
 	}
 
 	@Override
-	public U fetchValue( T owner ) {
-		if ( valueFetcher != null ) {
-			return valueFetcher.apply( null );
-		}
-		return parent != null ? parent.fetchValue( owner ) : null;
-	}
-
-	public U createValue( T owner ) {
+	public Object createValue( EntityPropertyBindingContext context ) {
 		if ( createValueFunction != null ) {
-			return createValueFunction.apply( owner );
+			return createValueFunction.apply( context );
 		}
-		return null;
+		return original != null ? original.createValue( context ) : null;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	@Override
-	public void validate( T owner, U propertyValue, Errors errors, Object... validationHints ) {
-		if ( validators.isEmpty() && parent != null ) {
-			parent.validate( owner, propertyValue, errors, validationHints );
+	public boolean applyValue( @NonNull EntityPropertyBindingContext context, @NonNull EntityPropertyValue propertyValue ) {
+		if ( applyValueFunction != null ) {
+			return applyValueFunction.apply( context, propertyValue );
 		}
-		else {
-			validators.forEach(
-					validator -> {
-						if ( validator instanceof ContextualValidator ) {
-							( (ContextualValidator) validator ).validate( owner, propertyValue, errors, validationHints );
-						}
-						else if ( validator instanceof SmartValidator ) {
-							( (SmartValidator) validator ).validate( propertyValue, errors, validationHints );
-						}
-						else {
-							validator.validate( propertyValue, errors );
-						}
-					}
-			);
-		}
-	}
 
-	public boolean applyValue( T owner, U oldPropertyValue, U newPropertyValue ) {
-//		if ( applyValueFunction == null && parent != null ) {
-//			return parent.applyValue( owner, oldPropertyValue, newPropertyValue );
-//		}
-		return applyValueFunction != null && Boolean.TRUE.equals( applyValueFunction.apply( owner, newPropertyValue ) );
-	}
-
-	public boolean save( T owner, U propertyValue ) {
-//		if ( saveFunction == null && parent != null ) {
-//			return parent.save( owner, propertyValue );
-//		}
-		return saveFunction != null && Boolean.TRUE.equals( saveFunction.apply( owner, propertyValue ) );
+		return original != null ? original.applyValue( context, propertyValue ) : false;
 	}
 
 	@Override
-	public U createValue( EntityPropertyBindingContext<T, ?> context ) {
-		return null;
+	@SuppressWarnings("unchecked")
+	public boolean save( EntityPropertyBindingContext context, EntityPropertyValue propertyValue ) {
+		if ( saveFunction != null ) {
+			return saveFunction.apply( context, propertyValue );
+		}
+
+		return original != null ? original.save( context, propertyValue ) : false;
 	}
 
 	@Override
 	public <X, V> ConfigurableEntityPropertyController<X, V> withEntity( Class<X> entityType, Class<V> propertyType ) {
-		return null;
+		return new ScopedConfigurableEntityPropertyController<>( this, EntityPropertyBindingContext::getEntity );
 	}
 
 	@Override
-	public <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<X> targetType, Class<V> propertyType ) {
-		return null;
+	public <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<X> entityType, Class<V> propertyType ) {
+		return new ScopedConfigurableEntityPropertyController<>( this, EntityPropertyBindingContext::getTarget );
 	}
 
 	@Override
-	public <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext<X, W>, V> withBindingContext( Class<X> entityType,
-	                                                                                                                 Class<W> targetType,
-	                                                                                                                 Class<V> propertyType ) {
-		return null;
+	public <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext<X, W>, V> withBindingContext(
+			Class<X> entityType, Class<W> targetType, Class<V> propertyType ) {
+		return new ScopedConfigurableEntityPropertyController<>( this, ctx -> ctx );
 	}
 }

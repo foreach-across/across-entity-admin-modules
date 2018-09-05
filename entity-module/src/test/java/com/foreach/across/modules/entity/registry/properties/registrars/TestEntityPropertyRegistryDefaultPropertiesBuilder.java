@@ -16,10 +16,7 @@
 
 package com.foreach.across.modules.entity.registry.properties.registrars;
 
-import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptorFactoryImpl;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
+import com.foreach.across.modules.entity.registry.properties.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -111,7 +108,7 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 	}
 
 	@Test
-	public void collectionMemberPropertiesCanBeRetrievedButOnlyFetchedFrom() {
+	public void collectionMemberPropertiesCanBeRetrievedButControllerShouldNotBeNested() {
 		DefaultEntityPropertyRegistry addressRegistry = new DefaultEntityPropertyRegistry( registryProvider );
 		new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() )
 				.accept( Address.class, addressRegistry );
@@ -124,13 +121,16 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 		assertEquals( "stays[]", member.getName() );
 		assertEquals( "Stays", member.getDisplayName() );
 		assertEquals( Address.class, member.getPropertyType() );
-		assertNull( member.getValueFetcher() );
 		assertFalse( member.isReadable() );
 		assertFalse( member.isWritable() );
 		assertTrue( member.isHidden() );
 
+		// should not be a nested
+		assertTrue( member.getController() instanceof GenericEntityPropertyController );
+
 		val street = propertyRegistry.getProperty( "stays[].street" );
 		assertNotNull( street );
+		assertTrue( street.getController() instanceof GenericEntityPropertyController );
 
 		Address address = new Address();
 		address.setStreet( "my street" );

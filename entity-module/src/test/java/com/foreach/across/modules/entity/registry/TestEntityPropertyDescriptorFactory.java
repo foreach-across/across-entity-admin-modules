@@ -58,7 +58,7 @@ public class TestEntityPropertyDescriptorFactory
 		assertFalse( descriptor.isHidden() );
 		assertSame( nativeDescriptor, descriptor.getAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) );
 
-		EntityPropertyController<Instance, String> controller = descriptor.getAttribute( EntityPropertyController.class );
+		EntityPropertyController<Instance, String> controller = descriptor.getController();
 		assertNotNull( controller );
 
 		Instance instance = new Instance();
@@ -85,7 +85,7 @@ public class TestEntityPropertyDescriptorFactory
 		assertFalse( descriptor.isWritable() );
 		assertTrue( descriptor.isHidden() );
 
-		EntityPropertyController<Instance, Integer> controller = descriptor.getAttribute( EntityPropertyController.class );
+		EntityPropertyController<Instance, Integer> controller = descriptor.getController();
 		assertNotNull( controller );
 
 		Instance instance = new Instance();
@@ -110,7 +110,7 @@ public class TestEntityPropertyDescriptorFactory
 		assertTrue( descriptor.isWritable() );
 		assertTrue( descriptor.isHidden() );
 
-		EntityPropertyController<Instance, Date> controller = descriptor.getAttribute( EntityPropertyController.class );
+		EntityPropertyController<Instance, Date> controller = descriptor.getController();
 		assertNotNull( controller );
 
 		Date now = new Date();

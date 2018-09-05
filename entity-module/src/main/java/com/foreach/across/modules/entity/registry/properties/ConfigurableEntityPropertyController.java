@@ -25,7 +25,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Builder-like interface for customizing a {@link DefaultEntityPropertyController}.
+ * Builder-like interface for customizing a {@link GenericEntityPropertyController}.
  *
  * @author Arne Vandamme
  * @see EntityPropertyController

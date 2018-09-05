@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.entity.registry;
 
-import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.val;
@@ -34,9 +34,9 @@ import static org.mockito.Mockito.*;
  * @since 3.2.0
  */
 @SuppressWarnings("unchecked")
-public class TestDefaultEntityPropertyController
+public class TestGenericEntityPropertyController
 {
-	private DefaultEntityPropertyController controller = new DefaultEntityPropertyController();
+	private GenericEntityPropertyController controller = new GenericEntityPropertyController();
 	private EntityPropertyBindingContext<String, BigDecimal> context = new EntityPropertyBindingContext<>( "123", BigDecimal.TEN );
 	private EntityPropertyValue<Long> propertyValue = new EntityPropertyValue<>( 123L, 456L, false );
 

@@ -18,12 +18,10 @@ package com.foreach.across.modules.entity.registry.properties.registrars;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
@@ -41,23 +39,18 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 {
 	private static final MutableEntityPropertyDescriptor EXISTING;
 
-	private static final Answer<Void> EXISTING_ANSWER = new Answer()
-	{
-		@Override
-		public Void answer( InvocationOnMock invocation ) throws Throwable {
-			MutableEntityPropertyDescriptor label = (MutableEntityPropertyDescriptor) invocation.getArguments()[0];
-			assertNotNull( label );
-			assertEquals( "Label", label.getDisplayName() );
-			assertEquals( new Sort.Order( "test" ), label.getAttribute( Sort.Order.class ) );
-			assertSame( EXISTING.getValueFetcher(), label.getValueFetcher() );
-			assertNull( label.getPropertyType() );
-			assertNull( label.getPropertyTypeDescriptor() );
-			assertTrue( label.isReadable() );
-			assertFalse( label.isWritable() );
-			assertTrue( label.isHidden() );
+	private static final Answer<Void> EXISTING_ANSWER = invocation -> {
+		MutableEntityPropertyDescriptor label = (MutableEntityPropertyDescriptor) invocation.getArguments()[0];
+		assertNotNull( label );
+		assertEquals( "Label", label.getDisplayName() );
+		assertEquals( new Sort.Order( "test" ), label.getAttribute( Sort.Order.class ) );
+		assertNull( label.getPropertyType() );
+		assertNull( label.getPropertyTypeDescriptor() );
+		assertTrue( label.isReadable() );
+		assertFalse( label.isWritable() );
+		assertTrue( label.isHidden() );
 
-			return null;
-		}
+		return null;
 	};
 
 	static {
@@ -83,22 +76,17 @@ public class TestEntityPropertyRegistryLabelPropertyBuilder
 
 	@Test
 	public void defaultLabelIsToString() {
-		doAnswer( new Answer()
-		{
-			@Override
-			public Void answer( InvocationOnMock invocation ) throws Throwable {
-				MutableEntityPropertyDescriptor label = (MutableEntityPropertyDescriptor) invocation.getArguments()[0];
-				assertNotNull( label );
-				assertEquals( "Label", label.getDisplayName() );
-				assertTrue( label.getValueFetcher() instanceof SpelValueFetcher );
-				assertNull( label.getPropertyType() );
-				assertNull( label.getPropertyTypeDescriptor() );
-				assertTrue( label.isReadable() );
-				assertFalse( label.isWritable() );
-				assertTrue( label.isHidden() );
+		doAnswer( invocation -> {
+			MutableEntityPropertyDescriptor label = (MutableEntityPropertyDescriptor) invocation.getArguments()[0];
+			assertNotNull( label );
+			assertEquals( "Label", label.getDisplayName() );
+			assertNull( label.getPropertyType() );
+			assertNull( label.getPropertyTypeDescriptor() );
+			assertTrue( label.isReadable() );
+			assertFalse( label.isWritable() );
+			assertTrue( label.isHidden() );
 
-				return null;
-			}
+			return null;
 		} ).when( propertyRegistry ).register( any( MutableEntityPropertyDescriptor.class ) );
 
 		builder.accept( Object.class, propertyRegistry );

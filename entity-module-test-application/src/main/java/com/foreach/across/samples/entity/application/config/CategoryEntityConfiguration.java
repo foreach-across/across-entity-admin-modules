@@ -28,9 +28,9 @@ import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityFactory;
+import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
-import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionElementBuilderFactory;
@@ -201,16 +201,17 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 				     .readable( true )
 				     .writable( true )
 				     .hidden( false )
-						.<Map<String, Object>, Integer>controller(
-								c -> c.valueFetcher( category -> stockCounts.get( category.get( "id" ) ) )
-								      .addValidator( ( category, stockCount, errors, validationHints ) -> {
-									      // stock count must be positive number`
-									      if ( stockCount == null || stockCount < 0 ) {
-										      errors.rejectValue( "", "must-be-positive", "Must be a positive number" );
-									      }
-								      } )
-								      .saveConsumer( ( category, stockCount ) -> stockCounts.put( category.get( "id" ), stockCount ) )
-						);
+				     .controller(
+						     c -> c.withTarget( Map.class, Integer.class )
+						           .valueFetcher( category -> stockCounts.get( category.get( "id" ) ) )
+						           .addValidator( ( category, stockCount, errors, validationHints ) -> {
+							           // stock count must be positive number`
+							           if ( stockCount == null || stockCount < 0 ) {
+								           errors.rejectValue( "", "must-be-positive", "Must be a positive number" );
+							           }
+						           } )
+						           .saveConsumer( ( category, holder ) -> stockCounts.put( category.get( "id" ), holder.getNewValue() ) )
+				     );
 	}
 
 	/**
@@ -253,10 +254,11 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	 */
 	private Consumer<EntityPropertyRegistryBuilder> registerManagerProperty() {
 		return props -> {
-			val controller = new GenericEntityPropertyController<Map<String, Object>, Manager>();
-			controller.valueFetcher( category -> categoryManagers.getOrDefault( category.get( "id" ), new Manager() ) );
-			controller.addValidator( validator );
-			controller.saveConsumer( ( category, manager ) -> categoryManagers.put( category.get( "id" ), manager ) );
+			val controller = new GenericEntityPropertyController();
+			controller.withTarget( Map.class, Manager.class )
+			          .valueFetcher( category -> categoryManagers.getOrDefault( category.get( "id" ), new Manager() ) )
+			          .addValidator( validator )
+			          .saveConsumer( ( category, holder ) -> categoryManagers.put( category.get( "id" ), holder.getNewValue() ) );
 
 			props.property( "manager" )
 			     .displayName( "Manager" )
@@ -282,13 +284,16 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 	 */
 	private Consumer<EntityPropertyRegistryBuilder> registerBrandsProperty() {
 		return props -> {
-			val controller = new GenericEntityPropertyController<Map<String, Object>, List<Brand>>();
-			controller.valueFetcher( category -> brands.getOrDefault( category.get( "id" ), Collections.emptyList() ) );
-			controller.saveConsumer( ( category, list ) -> brands.put( category.get( "id" ), list ) );
+			val controller = new GenericEntityPropertyController();
+			controller.withTarget( Map.class, List.class )
+			          .valueFetcher( category -> brands.getOrDefault( category.get( "id" ), Collections.emptyList() ) )
+			          .saveConsumer( ( category, holder ) -> brands.put( category.get( "id" ), holder.getNewValue() ) );
 
-			val memberController = new GenericEntityPropertyController<Map<String, Object>, Brand>();
-			memberController.valueFetcher( category -> new Brand() );
-			memberController.addValidator( validator );
+			val memberController = new GenericEntityPropertyController();
+			memberController
+					.withTarget( Map.class, Brand.class )
+					.valueFetcher( category -> new Brand() )
+					.addValidator( validator );
 
 			props.property( "brands" )
 			     .displayName( "Brands" )

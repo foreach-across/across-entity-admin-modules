@@ -41,7 +41,7 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	                                       @NonNull EntityPropertyController child ) {
 		this.contextName = requiredChildContextName;
 		this.parent = parent;
-		this.child = new DefaultEntityPropertyController( child );
+		this.child = new GenericEntityPropertyController( child );
 	}
 
 	@Override

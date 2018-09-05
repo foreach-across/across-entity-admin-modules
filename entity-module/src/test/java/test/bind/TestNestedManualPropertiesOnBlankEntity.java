@@ -40,46 +40,24 @@ public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPrope
 	protected Collection<EntityPropertyDescriptorBuilder> registeredProperties() {
 		return Arrays.asList(
 				builder( "holder" ).propertyType( DummiesHolder.class ).controller( c -> c.createValueSupplier( DummiesHolder::new ) ),
-				//builder( "holder.id" ).propertyType( int.class ).<DummiesHolder, Integer>controller( c -> c.applyValueConsumer( DummiesHolder::setId ) ),
-
-				// map property
-				//builder( "holder.dummies" )
-				//		.propertyType(
-				//				TypeDescriptor.map( LinkedHashMap.class, TypeDescriptor.valueOf( String.class ), TypeDescriptor.valueOf( Dummy.class ) )
-				//		)
-						//.<DummiesHolder, Map<String, Dummy>>controller( c -> c.applyValueConsumer( DummiesHolder::setDummies ) )
-				//,
 				builder( "holder.dummies[key]" ).propertyType( String.class ),
 				builder( "holder.dummies[value]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
-				//builder( "holder.dummies[v].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
-
-				//builder( "holder.dummies[v].name" ).propertyType( String.class ).<Dummy, String>controller( c -> c.applyValueConsumer( Dummy::setName ) ),
 
 				// list
-//				builder( "holder.holders" ).propertyType( List.class ).<DummiesHolder, List<DummiesHolder>>controller(
-//						c -> c.applyValueConsumer( DummiesHolder::setHolders ) ),
 				builder( "holder.holders[]" ).propertyType( DummiesHolder.class ).controller( c -> c.createValueSupplier( DummiesHolder::new ) ),
-//				builder( "holder.holders[].id" ).propertyType( int.class ).<DummiesHolder, Integer>controller(
-//						c -> c.applyValueConsumer( DummiesHolder::setId ) ),
 
 				// map property on list item
 				builder( "holder.holders[].dummies" )
 						.propertyType(
 								TypeDescriptor.map( LinkedHashMap.class, TypeDescriptor.valueOf( String.class ), TypeDescriptor.valueOf( Dummy.class ) )
 						)
-						//.<DummiesHolder, Map<String, Dummy>>controller( c -> c.applyValueConsumer( DummiesHolder::setDummies ) )
-				,
+						.controller(
+								c -> c.withTarget( DummiesHolder.class, Map.class )
+								      .applyValueConsumer( ( holder, v ) -> holder.setDummies( v.getNewValue() ) )
+						),
 				builder( "holder.holders[].dummies[key]" ).propertyType( String.class ),
 				builder( "holder.holders[].dummies[value]" ).propertyType( Dummy.class ).controller( c -> c.createValueSupplier( Dummy::new ) ),
-//				builder( "holder.holders[].dummies[v].id" ).propertyType( int.class ).<Dummy, Integer>controller( c -> c.applyValueConsumer( Dummy::setId ) ),
-//				builder( "holder.holders[].dummies[v].name" ).propertyType( String.class ).<Dummy, String>controller(
-//						c -> c.applyValueConsumer( Dummy::setName ) ),
-//
-//				builder( "holder.holders[].holders" ).propertyType( List.class ).<DummiesHolder, List<DummiesHolder>>controller(
-//						c -> c.applyValueConsumer( DummiesHolder::setHolders ) ),
 				builder( "holder.holders[].holders[]" ).propertyType( DummiesHolder.class ).controller( c -> c.createValueSupplier( DummiesHolder::new ) ),
-//				builder( "holder.holders[].holders[].id" ).propertyType( int.class ).<DummiesHolder, Integer>controller(
-//						c -> c.applyValueConsumer( DummiesHolder::setId ) ),
 
 				// list of list
 				builder( "listOfList" ).propertyType( List.class ),

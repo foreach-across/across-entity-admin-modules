@@ -170,7 +170,8 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	}
 
 	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name, EntityPropertyDescriptor parent, EntityPropertyDescriptor child ) {
-		boolean isMemberDescriptor = EntityPropertyRegistry.isMemberPropertyDescriptor( parent );
+		// todo: member descriptors should be registered differently (?)
+		boolean isMemberDescriptor = EntityPropertyRegistry.isMemberPropertyDescriptor( parent ) || StringUtils.contains( name, "[" );
 
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name );
 		descriptor.setParentDescriptor( parent );
@@ -186,7 +187,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			descriptor.setController( new NestedEntityPropertyController( parent.getName(), parent.getController(), child.getController() ) );
 		}
 		else {
-			descriptor.setController( new DefaultEntityPropertyController( child.getController() ) );
+			descriptor.setController( new GenericEntityPropertyController( child.getController() ) );
 		}
 
 		/*if ( descriptor.isReadable() ) {

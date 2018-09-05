@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.2.0
  */
-@SuppressWarnings( "Duplicates" )
+@SuppressWarnings("Duplicates")
 @RunWith(MockitoJUnitRunner.class)
 public class TestSingleEntityPropertyBinder
 {
@@ -267,17 +267,17 @@ public class TestSingleEntityPropertyBinder
 		when( binder.createValue( controller, TypeDescriptor.valueOf( Integer.class ) ) )
 				.thenReturn( "hello" );
 		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		when( binder.createChildBinder( descriptor, any(),"hello" ) ).thenReturn( childBinder );
+		when( binder.createChildBinder( eq( descriptor ), any(), eq( "hello" ) ) ).thenReturn( childBinder );
 
 		assertThat( property.getProperties() ).isSameAs( childBinder );
 		assertThat( property.getProperties() ).isSameAs( childBinder );
-		verify( binder, times( 1 ) ).createChildBinder( any(), any(),any() );
+		verify( binder, times( 1 ) ).createChildBinder( any(), any(), any() );
 	}
 
 	@Test
 	public void propertiesGetRecreatedIfValueHasChanged() {
-		when( binder.createChildBinder( descriptor, any(),1 ) ).thenReturn( mock( EntityPropertiesBinder.class ) );
-		when( binder.createChildBinder( descriptor, any(),123 ) ).thenReturn( mock( EntityPropertiesBinder.class ) );
+		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( mock( EntityPropertiesBinder.class ) );
+		when( binder.createChildBinder( eq( descriptor ), any(), eq( 123 ) ) ).thenReturn( mock( EntityPropertiesBinder.class ) );
 
 		val first = property.getProperties();
 		assertThat( property.getProperties() ).isNotNull().isSameAs( first );
@@ -285,7 +285,7 @@ public class TestSingleEntityPropertyBinder
 		property.setValue( 1 );
 		assertThat( property.getProperties() ).isSameAs( first );
 
-		verify( binder, times( 1 ) ).createChildBinder( any(), any(),any() );
+		verify( binder, times( 1 ) ).createChildBinder( any(), any(), any() );
 
 		property.setValue( 123 );
 		assertThat( property.getProperties() ).isNotNull().isNotSameAs( first );
@@ -296,7 +296,7 @@ public class TestSingleEntityPropertyBinder
 		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
 		EntityPropertyBinder childValue = mock( EntityPropertyBinder.class );
 		when( childBinder.values() ).thenReturn( Collections.singleton( childValue ) );
-		when( binder.createChildBinder( descriptor, any(),1 ) ).thenReturn( childBinder );
+		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
 
 		assertThat( property.getValue() ).isEqualTo( 1 );
 		verifyZeroInteractions( childBinder );
@@ -309,7 +309,7 @@ public class TestSingleEntityPropertyBinder
 	@Test
 	public void propertyNoLongerDeletedIfPropertiesAccessed() {
 		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		when( binder.createChildBinder( descriptor, any(),1 ) ).thenReturn( childBinder );
+		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
 
 		property.setBound( true );
 		assertThat( property.isDeleted() ).isTrue();

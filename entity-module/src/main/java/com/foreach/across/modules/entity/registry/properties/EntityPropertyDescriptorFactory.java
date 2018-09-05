@@ -41,5 +41,6 @@ public interface EntityPropertyDescriptorFactory
 	 * @param parent descriptor
 	 * @return descriptor instance
 	 */
+	// todo: parent has been renamed to original, stream line names
 	MutableEntityPropertyDescriptor createWithParent( String name, EntityPropertyDescriptor parent );
 }

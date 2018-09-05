@@ -16,8 +16,9 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -124,8 +125,7 @@ public class TestEntityPropertyDescriptorBuilder
 		       .viewElementBuilder( ViewElementMode.FORM_READ, veb )
 		       .viewElementModeCaching( ViewElementMode.FORM_READ, false )
 		       .attribute( "someAttribute", "someAttributeValue" )
-		       // todo: .controller( c -> c.order( 5 ) )
-		;
+		       .controller( c -> c.order( 5 ) );
 
 		build();
 
@@ -139,20 +139,18 @@ public class TestEntityPropertyDescriptorBuilder
 		assertFalse( descriptor.isReadable() );
 		assertEquals( "someAttributeValue", descriptor.getAttribute( "someAttribute" ) );
 
-		EntityPropertyDescriptor d;
-
 		ViewElementLookupRegistry lookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 		assertEquals( "testControl", lookupRegistry.getViewElementType( ViewElementMode.CONTROL ) );
 		assertSame( veb, lookupRegistry.getViewElementBuilder( ViewElementMode.FORM_READ ) );
 		assertFalse( lookupRegistry.isCacheable( ViewElementMode.FORM_READ ) );
 
 		assertEquals( 5, descriptor.getController().getOrder() );
-		descriptor.getController().fetchValue( "x" );
+		descriptor.getController().fetchValue( EntityPropertyBindingContext.of( "x" ) );
 		verify( vf ).getValue( "x" );
 	}
 
 	@Test
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings("unchecked")
 	public void updateExistingDescriptor() {
 		SimpleEntityPropertyDescriptor existing = new SimpleEntityPropertyDescriptor( "otherprop" );
 		existing.setAttribute( "originalAttribute", "originalAttributeValue" );

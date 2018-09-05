@@ -76,7 +76,7 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 	}
 
 	private EntityPropertyController<?, ?> createPropertyController( Property property ) {
-		DefaultEntityPropertyController controller = new DefaultEntityPropertyController();
+		GenericEntityPropertyController controller = new GenericEntityPropertyController();
 
 		if ( property.getReadMethod() != null ) {
 			controller.withTarget( Object.class, Object.class )

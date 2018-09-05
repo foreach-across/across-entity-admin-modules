@@ -47,7 +47,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	@Getter
 	@Setter
 	@NonNull
-	private EntityPropertyController controller = new DefaultEntityPropertyController();
+	private EntityPropertyController controller = new GenericEntityPropertyController();
 
 	public SimpleEntityPropertyDescriptor( String name ) {
 		this( name, null );
@@ -62,7 +62,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 		super.setParent( original );
 
 		if ( original != null ) {
-			controller = new DefaultEntityPropertyController( original.getController() );
+			controller = new GenericEntityPropertyController( original.getController() );
 		}
 	}
 

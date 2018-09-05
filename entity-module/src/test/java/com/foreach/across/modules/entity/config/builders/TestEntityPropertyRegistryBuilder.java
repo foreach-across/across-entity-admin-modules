@@ -113,7 +113,10 @@ public class TestEntityPropertyRegistryBuilder
 			assertEquals( Long.class, descriptor.getPropertyType() );
 			assertEquals( TypeDescriptor.valueOf( Long.class ), descriptor.getPropertyTypeDescriptor() );
 			assertNull( descriptor.getPropertyRegistry() );
-			assertSame( vf, descriptor.getValueFetcher() );
+
+			descriptor.getValueFetcher().getValue( "x" );
+			verify( vf ).getValue( "x" );
+
 			assertTrue( descriptor.isHidden() );
 			assertTrue( descriptor.isWritable() );
 			assertFalse( descriptor.isReadable() );

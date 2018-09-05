@@ -93,14 +93,6 @@ public class TestDirectUseOfEntityPropertiesBinder
 		child.get( "email" ).setValue( "jane.doe@localhost" );
 
 		binder.bind();
-
-		EntityPropertyValue<UserProperties> value = new EntityPropertyValue<>(
-				new UserProperties( 1, user, "john.doe@localhost" ),
-				new UserProperties( 1, user, "jane.doe@localhost" ),
-				false
-		);
-
-		verify( consumer ).accept( user, value );
 	}
 
 	@Data

@@ -17,6 +17,9 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.modules.entity.EntityAttributes;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
@@ -153,10 +156,10 @@ public class TestDefaultEntityPropertyRegistry
 
 		MutableEntityPropertyDescriptor timestamp = mock( MutableEntityPropertyDescriptor.class );
 		when( timestamp.getDisplayName() ).thenReturn( "Nested display name" );
+		when( timestamp.getController() ).thenReturn( mock( EntityPropertyController.class ) );
 		when( nested.getProperty( "timestamp" ) ).thenReturn( timestamp );
 
-		SimpleEntityPropertyDescriptor descriptor
-				= (SimpleEntityPropertyDescriptor) registry.getProperty( "created.timestamp" );
+		SimpleEntityPropertyDescriptor descriptor = (SimpleEntityPropertyDescriptor) registry.getProperty( "created.timestamp" );
 		assertNotNull( descriptor );
 		assertTrue( descriptor.isNestedProperty() );
 		assertSame( registry.getProperty( "created" ), descriptor.getParentDescriptor() );
@@ -164,11 +167,6 @@ public class TestDefaultEntityPropertyRegistry
 		assertEquals( "Nested display name", descriptor.getDisplayName() );
 
 		assertSame( descriptor, registry.getProperty( "created.timestamp" ) );
-	}
-
-	@Test
-	public void nestedIndexedPropertyUsesTargetValueFetcher() {
-
 	}
 
 	@Test
@@ -181,6 +179,43 @@ public class TestDefaultEntityPropertyRegistry
 
 		assertNull( registry.getProperty( "created.timestamp" ) );
 		assertSame( l, registry.getProperty( "name.length" ) );
+	}
+
+	@Test
+	public void defaultSharedRegistryProviderCreatesSampleControllers() {
+		MutableEntityPropertyRegistry registry = DefaultEntityPropertyRegistry.forClass( Scanned.class );
+		EntityPropertyDescriptor read = registry.getProperty( "read" );
+		assertNotNull( read );
+		assertTrue( read.isReadable() );
+		assertFalse( read.isWritable() );
+		assertTrue( read.isHidden() );
+
+		EntityPropertyDescriptor write = registry.getProperty( "write" );
+		assertNotNull( write );
+		assertFalse( write.isReadable() );
+		assertTrue( write.isWritable() );
+		assertTrue( write.isHidden() );
+
+		EntityPropertyDescriptor readWrite = registry.getProperty( "readWrite" );
+		assertNotNull( readWrite );
+		assertTrue( readWrite.isReadable() );
+		assertTrue( readWrite.isWritable() );
+		assertFalse( readWrite.isHidden() );
+
+		Scanned instance = new Scanned( "read-write", "read-only", "write-only" );
+
+		EntityPropertyBindingContext ctx = EntityPropertyBindingContext.of( instance );
+		assertEquals( "read-only", read.getController().fetchValue( ctx ) );
+		assertNull( write.getController().fetchValue( ctx ) );
+		assertEquals( "read-write", readWrite.getController().fetchValue( ctx ) );
+
+		assertFalse( read.getController().applyValue( ctx, new EntityPropertyValue<>( null, "updated-read", false ) ) );
+		assertTrue( write.getController().applyValue( ctx, new EntityPropertyValue<>( null, "updated-write", false ) ) );
+		assertTrue( readWrite.getController().applyValue( ctx, new EntityPropertyValue<>( null, "updated-read-write", false ) ) );
+
+		assertEquals( "read-only", instance.read );
+		assertEquals( "updated-write", instance.write );
+		assertEquals( "updated-read-write", instance.readWrite );
 	}
 
 	private SimpleEntityPropertyDescriptor register( String name, Class type ) {
@@ -201,5 +236,19 @@ public class TestDefaultEntityPropertyRegistry
 		registry.register( descriptor );
 
 		return descriptor;
+	}
+
+	@AllArgsConstructor
+	private static class Scanned
+	{
+		@Getter
+		@Setter
+		private String readWrite;
+
+		@Getter
+		private String read;
+
+		@Setter
+		private String write;
 	}
 }

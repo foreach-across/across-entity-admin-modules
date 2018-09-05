@@ -25,15 +25,9 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.testmodules.springdata.business.Car;
-import com.foreach.across.testmodules.springdata.business.Client;
-import com.foreach.across.testmodules.springdata.business.Group;
-import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.entity.views.*;
 import com.foreach.across.modules.entity.views.processors.TemplateViewProcessor;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
-import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.across.modules.entity.web.EntityConfigurationLinkBuilder;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
@@ -41,6 +35,11 @@ import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossWebAppConfiguration;
+import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
+import com.foreach.across.testmodules.springdata.business.Car;
+import com.foreach.across.testmodules.springdata.business.Client;
+import com.foreach.across.testmodules.springdata.business.Group;
+import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -113,7 +112,6 @@ public class TestCustomizingEntityConfiguration
 		assertNotNull( descriptor );
 		assertEquals( "someprop", descriptor.getName() );
 		assertEquals( "Some property", descriptor.getDisplayName() );
-		assertTrue( descriptor.getValueFetcher() instanceof SpelValueFetcher );
 	}
 
 	@Test
