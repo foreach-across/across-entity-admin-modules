@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.views.EntityView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.repository.CrudRepository;
@@ -93,6 +94,9 @@ final class DefaultEntityViewsRegistrar implements EntityConfigurer
 			                                .listView()
 			                                .createFormView()
 			                                .updateFormView()
+			                                //TODO: readonlyFormView()
+			                                .view( EntityView.READONLY_UPDATE_VIEW_NAME, ( x ) -> {
+			                                } )
 			                                .deleteFormView();
 		                        }
 		              );

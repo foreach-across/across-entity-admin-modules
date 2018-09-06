@@ -47,6 +47,8 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 			= new LinkedHashMap<>();
 	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> customViewConsumers
 			= new LinkedHashMap<>();
+	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> readonlyViewConsumers
+			= new LinkedHashMap<>();
 
 	/**
 	 * Configure a default list view builder for the entity being configured.
@@ -190,6 +192,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 	protected void applyViews( ConfigurableEntityViewRegistry viewRegistry ) {
 		registerViews( EntityListViewFactoryBuilder.class, EntityView.LIST_VIEW_NAME, listViewConsumers, viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityView.UPDATE_VIEW_NAME, formViewConsumers, viewRegistry );
+		registerViews( EntityViewFactoryBuilder.class, EntityView.READONLY_UPDATE_VIEW_NAME, readonlyViewConsumers, viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityView.DELETE_VIEW_NAME, deleteViewConsumers, viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityView.GENERIC_VIEW_NAME, customViewConsumers, viewRegistry );
 	}
