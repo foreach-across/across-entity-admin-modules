@@ -16,9 +16,9 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
-import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -49,7 +49,7 @@ public class TestEntityPropertyDescriptorBuilder
 		descriptor = null;
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void nameIsRequired() {
 		builder = new EntityPropertyDescriptorBuilder( null );
 	}

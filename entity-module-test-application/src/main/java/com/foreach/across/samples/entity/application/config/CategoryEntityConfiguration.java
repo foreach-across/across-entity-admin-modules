@@ -28,9 +28,9 @@ import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityFactory;
-import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
+import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionElementBuilderFactory;
@@ -228,22 +228,23 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 				     .readable( false )
 				     .writable( true )
 				     .hidden( false )
-						.<Map<String, Object>, Boolean>controller(
-								c -> c.order( EntityPropertyController.BEFORE_ENTITY )
-								      .valueFetcher( category -> false )
-								      .addValidator( ( category, shouldGenerate, errors, validationHints ) -> {
-									      // category name must not yet be filled in
-									      if ( Boolean.TRUE.equals( shouldGenerate ) && !StringUtils.isEmpty( (String) category.get( "id" ) ) ) {
-										      errors.rejectValue( "", "id-not-empty", "Unable to generate identity when already set." );
-									      }
-								      } )
-								      .applyValueConsumer( ( category, shouldGenerate ) -> {
-									      if ( Boolean.TRUE.equals( shouldGenerate ) ) {
-										      category.put( "id", UUID.randomUUID().toString() );
-									      }
-								      } )
+				     .controller(
+						     c -> c.withTarget( Map.class, Boolean.class )
+						           .order( EntityPropertyController.BEFORE_ENTITY )
+						           .valueFetcher( category -> false )
+						           .addValidator( ( category, shouldGenerate, errors, validationHints ) -> {
+							           // category name must not yet be filled in
+							           if ( Boolean.TRUE.equals( shouldGenerate ) && !StringUtils.isEmpty( (String) category.get( "id" ) ) ) {
+								           errors.rejectValue( "", "id-not-empty", "Unable to generate identity when already set." );
+							           }
+						           } )
+						           .applyValueConsumer( ( category, shouldGenerate ) -> {
+							           if ( Boolean.TRUE.equals( shouldGenerate.getNewValue() ) ) {
+								           category.put( "id", UUID.randomUUID().toString() );
+							           }
+						           } )
 
-						);
+				     );
 
 	}
 
@@ -293,6 +294,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			memberController
 					.withTarget( Map.class, Brand.class )
 					.valueFetcher( category -> new Brand() )
+					.createValueSupplier( Brand::new )
 					.addValidator( validator );
 
 			props.property( "brands" )

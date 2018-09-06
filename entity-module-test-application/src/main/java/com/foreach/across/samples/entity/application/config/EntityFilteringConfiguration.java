@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.query.EntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionElementBuilderFactory;
@@ -82,7 +83,7 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
 public class EntityFilteringConfiguration implements EntityConfigurer
 {
 	@EventListener
-	void modifyGroupPageTitle( EntityPageStructureRenderedEvent<Group> page ) {
+	public void modifyGroupPageTitle( EntityPageStructureRenderedEvent<Group> page ) {
 		if ( page.isListView() ) {
 			page.getPageContentStructure().setPageTitle( "List view" );
 		}
@@ -113,11 +114,13 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		;
 		configuration.withType( Client.class )
 		             .properties( props -> props.property( "phones" )
+		                                        .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION )
 		                                        .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE ) );
 
 		configuration.withType( User.class )
 		             .properties(
 				             props -> props.property( "address" )
+				                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION )
 				                           .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
 				                           .viewElementType( ViewElementMode.FORM_READ, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
 		             )

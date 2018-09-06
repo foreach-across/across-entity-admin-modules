@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.request;
 
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.Validator;
@@ -46,6 +47,8 @@ public class EntityViewCommand
 
 	/**
 	 * A binder object for custom property binding through {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyController}.
+	 * Usually attached with an {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext} that holds the same
+	 * {@link #getEntity()} value as {@link EntityPropertyBindingContext#getTarget()}.
 	 */
 	@Getter
 	@Setter
@@ -85,8 +88,8 @@ public class EntityViewCommand
 	 * Shorthand for adding an extension with custom validators.
 	 *
 	 * @param extensionName name of the extension
-	 * @param extension object
-	 * @param validators for the extension
+	 * @param extension     object
+	 * @param validators    for the extension
 	 */
 	public void addExtensionWithValidator( String extensionName, Object extension, Validator... validators ) {
 		addExtension( extensionName, extension );

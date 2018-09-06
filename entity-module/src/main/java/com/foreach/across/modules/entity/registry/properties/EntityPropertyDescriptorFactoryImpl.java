@@ -78,14 +78,22 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 	private EntityPropertyController<?, ?> createPropertyController( Property property ) {
 		GenericEntityPropertyController controller = new GenericEntityPropertyController();
 
+		ConfigurableEntityPropertyController<Object, Object> configurable = controller.withTarget( Object.class, Object.class );
 		if ( property.getReadMethod() != null ) {
-			controller.withTarget( Object.class, Object.class )
-			          .valueFetcher( new MethodValueFetcher<>( property.getReadMethod() ) );
+			configurable.valueFetcher( new MethodValueFetcher<>( property.getReadMethod() ) );
 		}
 		if ( property.getWriteMethod() != null ) {
-			controller.withTarget( Object.class, Object.class )
-			          .applyValueFunction( new MethodValueWriter<>( property.getWriteMethod() ) );
+			configurable.applyValueFunction( new MethodValueWriter<>( property.getWriteMethod() ) );
 		}
+
+		configurable.createValueSupplier( () -> {
+			try {
+				return property.getObjectType().newInstance();
+			}
+			catch ( Exception e ) {
+				throw new IllegalStateException( "Unable to create value for: " + property.getObjectType() );
+			}
+		} );
 
 		return controller;
 	}

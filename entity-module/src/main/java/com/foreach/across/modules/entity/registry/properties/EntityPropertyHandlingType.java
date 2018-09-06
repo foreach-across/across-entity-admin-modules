@@ -26,7 +26,7 @@ import lombok.NonNull;
  * but might be determined automatically based on the presence of other attributes.
  *
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
 public enum EntityPropertyHandlingType
 {

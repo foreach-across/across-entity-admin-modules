@@ -25,10 +25,12 @@ var EmbeddedCollection = function( element ) {
     tmpl = tmpl.substr( 4, tmpl.length - 7 ).trim();
     console.log(tmpl);
 */
-    var sourcePrefix = wrapper.attr( 'data-source-property' );
 
-    var targetPrefix = sourcePrefix.substr( 0, sourcePrefix.length - ".value".length );
-    var templatePrefix = targetPrefix + ".template";
+    var templatePrefix = editItemTemplate.attr('data-template-prefix');
+    console.log("template prefix: " + templatePrefix);
+
+    var targetPrefix = wrapper.attr( 'data-item-format' );
+    console.log("target prefix: " + targetPrefix );
 
     index = items.find( '.form-group' ).length;
 
@@ -39,20 +41,21 @@ var EmbeddedCollection = function( element ) {
 
     wrapper.find( '[data-action=add-item]' ).click( function() {
         var id = 'item-' + index++;
-        var target = targetPrefix + '.items[' + id + ']';
+        var target = targetPrefix.replace('{{key}}', id);
+        console.log("target: " + target);
 
         var template = $( '<div>' + editItemTemplate.html() + '</div>' );
         template.attr( 'data-role', 'item' );
         template.attr( 'data-item-id', id );
 
         template.find( '[name^="' + templatePrefix + '"]' ).each( function( node ) {
-            $( this ).attr( 'name', $( this ).attr( 'name' ).replace( templatePrefix, target + '.value' ) );
+            $( this ).attr( 'name', $( this ).attr( 'name' ).replace( templatePrefix, target ) );
         } );
         template.find( '[for^="' + templatePrefix + '"]' ).each( function( node ) {
-            $( this ).attr( 'for', $( this ).attr( 'for' ).replace( templatePrefix, target + '.value' ) );
+            $( this ).attr( 'for', $( this ).attr( 'for' ).replace( templatePrefix, target ) );
         } );
         template.find( '[id^="' + templatePrefix + '"]' ).each( function( node ) {
-            $( this ).attr( 'id', $( this ).attr( 'id' ).replace( templatePrefix, target + '.value' ) );
+            $( this ).attr( 'id', $( this ).attr( 'id' ).replace( templatePrefix, target ) );
         } );
 
         template.find( '[data-action=remove-item]' ).click( function( e ) {
@@ -60,6 +63,7 @@ var EmbeddedCollection = function( element ) {
             $( this ).closest( '[data-role=item]' ).remove();
         } );
 
+        template.append( $('<input type="hidden" name="' + target + '.sortIndex" value="' + (10 + index ) + '" />'))
         items.append( template );
 
         BootstrapUiModule.initializeFormElements( template );

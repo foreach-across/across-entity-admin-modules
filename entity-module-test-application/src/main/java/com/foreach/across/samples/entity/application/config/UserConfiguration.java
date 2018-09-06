@@ -39,9 +39,9 @@ public class UserConfiguration implements EntityConfigurer
 				        props ->
 						        // display name as not required
 						        props.property( "name" ).attribute( EntityAttributes.PROPERTY_REQUIRED, false ).and()
-						             .property( "profilePicture" )
-						             .viewElementBuilder( ViewElementMode.CONTROL, BootstrapUiBuilders.file().controlName( "entity.profilePicture" ) )
-						             .attribute( EntityAttributes.FORM_ENCTYPE, FormViewElement.ENCTYPE_MULTIPART )
+//						             .property( "profilePicture" )
+//						             .viewElementBuilder( ViewElementMode.CONTROL, BootstrapUiBuilders.file().controlName( "entity.profilePicture" ) )
+//						             .attribute( EntityAttributes.FORM_ENCTYPE, FormViewElement.ENCTYPE_MULTIPART )
 		        );
 	}
 }

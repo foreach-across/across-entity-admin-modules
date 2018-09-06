@@ -16,18 +16,32 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
+import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
+import com.foreach.across.modules.bootstrapui.utils.ControlNamePrefixAdjuster;
+import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
+import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
+import com.foreach.across.modules.entity.bind.MapEntityPropertyBinder;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Map;
 
 /**
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
-@Deprecated
+// todo: better naming
 @Accessors(chain = true, fluent = true)
 public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 {
@@ -40,112 +54,107 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 	@Override
 	protected NodeViewElement createElement( ViewElementBuilderContext builderContext ) {
-		//Object collection = EntityViewElementUtils.currentPropertyValue( builderContext );
+		EntityPropertyBinder binder = EntityViewElementUtils.currentPropertyValueHolder( builderContext );
 
-//		EntityPropertyBinder holder = EntityViewElementUtils.currentPropertyValueHolder( builderContext );
-//
-//		ListEntityPropertyBinder multiValue = (ListEntityPropertyBinder) holder;
-//		val collection = multiValue.getItemList();
-//
-//		val descriptor = EntityViewElementUtils.currentPropertyDescriptor( builderContext );
-//		val collectionsBinder = builderContext.getAttribute( EmbeddedCollectionsBinder.class );
-//
-//		val memberDescriptor = descriptor.getPropertyRegistry().getProperty( descriptor.getName() + EntityPropertyRegistry.INDEXER );
-//
-//		val binderPrefix = buildBinderPrefix( collectionsBinder, descriptor );
-//
-//		NodeViewElement node = super.createElement( builderContext );
-//		node.addCssClass( "js-embedded-collection-form-group" );
-//		node.setAttribute( "data-source-property", EntityAttributes.controlName( descriptor ) );
-//		node.setAttribute( "data-target-property", EntityAttributes.controlName( memberDescriptor ) );
-//
-//		String controlPrefix = StringUtils.removeEnd( EntityAttributes.controlName( descriptor ), ".value" );
-//
-//		/*
-//		   class="form-group js-embedded-collection-form-group"
-//     data-source-property="entity.phones"
-//     data-target-property="extensions[EmbeddedCollections][entity.phones]">
-//		 */
-//		node.addChild( TextViewElement.html( "<a style=\"float: right\" data-action=\"add-item\"><span class=\"glyphicon glyphicon-plus-sign\"></span></a>" ) );
-//		node.addChild(
-//				BootstrapUiBuilders.fieldset()
-//				                   .attribute( "data-role", "items" )
-//				                   .add(
-//						                   BootstrapUiBuilders.generator( EntityPropertyBinder.class, ContainerViewElement.class )
-//						                                      .creationCallback( ( item, container ) -> {
-//
-//							                                      NodeViewElement itemWrapper = new NodeViewElement( "div" );
-//							                                      itemWrapper.setAttribute( "data-role", "item" );
-//							                                      itemWrapper.setAttribute( "data-item-id", item.getItem().getKey() );
-//							                                      itemWrapper.addChild( TextViewElement
-//									                                                            .html( "<a data-action=\"remove-item\" role=\"button\" class=\"btn btn-link\" title=\"Remove\" href=\"#\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a>" ) );
-//
-//							                                      container.findAll( FormGroupElement.class )
-//							                                               .forEach( groupElement -> {
-//								                                               updateControlName( descriptor, item.getItem(), groupElement, controlPrefix );
-//							                                               } );
-//
-//							                                      HiddenFormElement sortIndex = new HiddenFormElement();
-//							                                      sortIndex.setControlName(
-//									                                      controlPrefix + ".items[" + item.getItem().getKey() + "].sortIndex" );
-//							                                      sortIndex.setValue( item.getItem().getSortIndex() );
-//							                                      container.addChild( sortIndex );
-//
-//							                                      itemWrapper.addChild( container );
-//							                                      return itemWrapper;
-//						                                      } )
-//						                                      .items( collection )
-//						                                      .itemBuilder( itemTemplate )
-//				                   )
-//				                   .build( builderContext )
-//		);
-//
-//		ViewElementBuilderContext bc = new DefaultViewElementBuilderContext( builderContext );
-//		EntityViewElementUtils.setCurrentEntity( bc, null );
-//		bc.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
-//
-//		String baseControlName = EntityAttributes.controlName( memberDescriptor );
-//		String templateControlName = StringUtils.removeEnd( baseControlName, "items[].value" ) + "template";
-//
-//		node.addChild(
-//				BootstrapUiBuilders.hidden()
-//				                   .controlName( StringUtils.removeEnd( baseControlName, "items[].value" ) + "bound" )
-//				                   .value( "1" )
-//				                   .build( bc )
-//		);
-//		node.addChild(
-//				BootstrapUiBuilders.node( "script" )
-//				                   .attribute( "type", "text/html" )
-//				                   .attribute( "data-role", "edit-item-template" )
-//				                   .add( itemTemplate )
-//				                   .postProcessor( BootstrapElementUtils.replaceControlNamesPrefix( baseControlName, templateControlName ) )
-//				                   .build( bc )
-//
-//		);
-//
-//		return node;
+		if ( binder instanceof ListEntityPropertyBinder ) {
+			return createListControl( (ListEntityPropertyBinder) binder, builderContext );
+		}
+		else if ( binder instanceof MapEntityPropertyBinder ) {
+			throw new IllegalStateException( "Map types are not yet supported as embedded collections" );
+		}
+
 		return null;
 	}
 
-//	private String buildBinderPrefix( EmbeddedCollectionsBinder binder, EntityPropertyDescriptor propertyDescriptor ) {
-//		return ( binder != null ? binder.getBinderPrefix() : "" ) + ".prop[" + propertyDescriptor.getName() + "]";
-//	}
-//
-//	// todo use correct prefixing approach
-//	private void updateControlName( EntityPropertyDescriptor descriptor,
-//	                                EntityPropertyBinder item,
-//	                                FormGroupElement groupElement,
-//	                                String binderPrefix ) {
-//		val ctl = groupElement.getControl( FormControlElement.class );
-//		if ( ctl != null ) {
-//			ctl.setControlName( StringUtils.replaceOnce( ctl.getControlName(), binderPrefix + ".items[].value",
-//			                                             binderPrefix + ".items[" + item.getKey() + "].value" ) );
-//		}
-//		else if ( groupElement.getControl() instanceof ContainerViewElement ) {
-//			( (ContainerViewElement) groupElement.getControl() )
-//					.findAll( CheckboxFormElement.class )
-//					.forEach( cb -> cb.setControlName( "test" + "." + cb.getControlName() ) );
-//
-//		}
-//	}
+	private NodeViewElement createListControl( ListEntityPropertyBinder binder, ViewElementBuilderContext builderContext ) {
+		NodeViewElement node = super.createElement( builderContext );
+		node.addCssClass( "js-embedded-collection-form-group" );
+		//node.setAttribute( "data-source-property", EntityAttributes.controlName( descriptor ) );
+		//node.setAttribute( "data-target-property", EntityAttributes.controlName( memberDescriptor ) );
+
+		String controlPrefix = StringUtils.removeEnd( EntityAttributes.controlName( EntityViewElementUtils.currentPropertyDescriptor( builderContext ) ),
+		                                              ".value" );
+
+		node.setAttribute( "data-item-format", controlPrefix + ".items[{{key}}]" );
+		/*
+		   class="form-group js-embedded-collection-form-group"
+     data-source-property="entity.phones"
+     data-target-property="extensions[EmbeddedCollections][entity.phones]">
+		 */
+		node.addChild( TextViewElement.html( "<a style=\"float: right\" data-action=\"add-item\"><span class=\"glyphicon glyphicon-plus-sign\"></span></a>" ) );
+
+		FieldsetFormElement fieldset = new FieldsetFormElement();
+		fieldset.setAttribute( "data-role", "items" );
+
+		Map<String, EntityPropertyBinder<Object>> items = binder.getItems();
+
+		int position = 0;
+		int total = items.size();
+
+		for ( Map.Entry<String, EntityPropertyBinder<Object>> entry : items.entrySet() ) {
+			IteratorItemStats<Object> itemStats = new IteratorItemStatsImpl<>( entry.getValue().getValue(), position, position < total );
+			IteratorViewElementBuilderContext ctx = new IteratorViewElementBuilderContext<>( itemStats );
+			ctx.setParentContext( builderContext );
+
+			NodeViewElement itemWrapper = new NodeViewElement( "div" );
+			itemWrapper.setAttribute( "data-role", "item" );
+			itemWrapper.setAttribute( "data-item-id", entry.getKey() );
+			itemWrapper.addChild( TextViewElement
+					                      .html( "<a data-action=\"remove-item\" role=\"button\" class=\"btn btn-link\" title=\"Remove\" href=\"#\"><span aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></span></a>" ) );
+
+			ViewElement singleItemControl = itemTemplate.build( ctx );
+			new ControlNamePrefixAdjuster<>()
+					.prefixToReplace( controlPrefix + ".items[]" )
+					.prefixToAdd( controlPrefix + ".items[" + entry.getKey() + "]" )
+					.accept( singleItemControl );
+
+			HiddenFormElement sortIndex = new HiddenFormElement();
+			sortIndex.setControlName( controlPrefix + ".items[" + entry.getKey() + "].sortIndex" );
+			sortIndex.setValue( entry.getValue().getSortIndex() );
+			itemWrapper.addChild( singleItemControl );
+			itemWrapper.addChild( sortIndex );
+
+			fieldset.addChild( itemWrapper );
+
+		}
+
+		node.addChild( fieldset );
+
+		ViewElementBuilderContext bc = new DefaultViewElementBuilderContext( builderContext );
+		EntityViewElementUtils.setCurrentEntity( bc, null );
+		bc.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
+
+		String baseControlName = controlPrefix;//EntityAttributes.controlName( memberDescriptor );
+
+		String templateControlName = StringUtils.removeEnd( baseControlName, "items[].value" ) + "template";
+
+		node.addChild(
+				BootstrapUiBuilders.hidden()
+				                   .controlName( controlPrefix + ".bound" )
+				                   .value( "1" )
+				                   .build( bc )
+		);
+		node.addChild(
+				BootstrapUiBuilders.node( "script" )
+				                   .attribute( "type", "text/html" )
+				                   .attribute( "data-role", "edit-item-template" )
+				                   .attribute( "data-template-prefix", controlPrefix + ".itemTemplate" )
+				                   .add( itemTemplate )
+				                   .postProcessor(
+						                   new ControlNamePrefixAdjuster<>()
+								                   .prefixToReplace( controlPrefix + ".items[]" )
+								                   .prefixToAdd( controlPrefix + ".itemTemplate" )
+								                   ::postProcess
+
+				                   )
+				                   .postProcessor(
+						                   ( builderContext1, element ) -> element.findAll( FormGroupElement.class )
+						                                                          .forEach( group -> group.setDetectFieldErrors( false ) )
+				                   )
+				                   .build( bc )
+
+		);
+
+		return node;
+	}
 }

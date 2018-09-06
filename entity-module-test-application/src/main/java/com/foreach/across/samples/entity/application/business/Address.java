@@ -44,12 +44,12 @@ public class Address
 	@NotBlank
 	@Length(max = 250)
 	private String street;
-/*
+
 	@Column
-	@NotBlank
-	@Length(max = 10)
-	private String number;
-*/
+	//@NotBlank
+	//@Length(max = 10)
+	private Integer number;
+
 	@Column
 	@NotBlank
 	@Length(max = 50)

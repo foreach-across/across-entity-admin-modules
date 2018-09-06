@@ -132,6 +132,16 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				descriptor.setWritable( false );
 				descriptor.setHidden( true );
 
+				// todo: centralize descriptor creation to the factory
+				( (ConfigurableEntityPropertyController) descriptor.getController() ).createValueSupplier( () -> {
+					try {
+						return memberTypeDescriptor.getObjectType().newInstance();
+					}
+					catch ( Exception e ) {
+						throw new IllegalStateException( "Unable to create value for: " + memberTypeDescriptor );
+					}
+				} );
+
 				register( descriptor );
 
 				return descriptor;

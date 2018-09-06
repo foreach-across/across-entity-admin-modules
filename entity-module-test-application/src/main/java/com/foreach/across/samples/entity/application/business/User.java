@@ -78,7 +78,6 @@ public class User extends SettableIdBasedEntity<User>
 	@Setter
 	private Set<Address> address = new HashSet<>();
 
-
 	@Column
 	private String profilePicture;
 

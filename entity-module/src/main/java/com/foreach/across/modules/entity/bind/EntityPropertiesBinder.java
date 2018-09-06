@@ -83,6 +83,9 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	@Setter
 	private ConversionService conversionService;
 
+	@Getter
+	private boolean bindingEnabled;
+
 	/**
 	 * Returns self so that this binder could be used as direct {@link org.springframework.validation.DataBinder} target.
 	 * The {@link #setBinderPrefix(String)} is usually set to {@code properties} in this case.
@@ -127,6 +130,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 				}
 
 				AbstractEntityPropertyBinder binder = (AbstractEntityPropertyBinder) createPropertyBinder( descriptor );
+				binder.enableBinding( bindingEnabled );
 
 				// if there is a child binding context with the same name, assume it represents the same property and
 				// use the pre-loaded binding context for property values
@@ -208,10 +212,17 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 
 	}
 
+	public void setBindingEnabled( boolean bindingEnabled ) {
+		this.bindingEnabled = bindingEnabled;
+
+		values().forEach( b -> b.enableBinding( bindingEnabled ) );
+	}
+
 	EntityPropertiesBinder createChildBinder( EntityPropertyDescriptor parent, EntityPropertyController controller, Object propertyValue ) {
 		EntityPropertiesBinder childBinder = new EntityPropertiesBinder( propertyRegistry );
 		childBinder.parentProperty = parent;
 		childBinder.setConversionService( conversionService );
+		childBinder.setBindingEnabled( bindingEnabled );
 
 		if ( EntityPropertyRegistry.isMemberPropertyDescriptor( parent ) ) {
 			childBinder.setBindingContext( EntityPropertyBindingContext.of( propertyValue ) );

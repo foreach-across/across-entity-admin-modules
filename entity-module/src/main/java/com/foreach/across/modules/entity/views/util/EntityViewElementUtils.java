@@ -153,21 +153,26 @@ TODO
 	}
 
 	private static Object resolveValue( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor, Object root ) {
-		if ( properties != null && EntityAttributes.handlingType( descriptor ) == EntityPropertyHandlingType.EXTENSION ) {
-			val valueHolder = properties.get( descriptor.getName() );
-			return valueHolder.getValue();
-		}
-		else {
-			if ( descriptor.isNestedProperty() && !descriptor.getParentDescriptor().getName().endsWith( EntityPropertyRegistry.INDEXER ) ) {
-				EntityPropertyDescriptor target = descriptor.getAttribute( EntityAttributes.TARGET_DESCRIPTOR, EntityPropertyDescriptor.class );
-
-				if ( target != null ) {
-					Object owner = resolveValue( properties, descriptor.getParentDescriptor(), root );
-					return target.getPropertyValue( owner );
-				}
+		try {
+			if ( properties != null && EntityAttributes.handlingType( descriptor ) == EntityPropertyHandlingType.EXTENSION ) {
+				val valueHolder = properties.get( descriptor.getName() );
+				return valueHolder.getValue();
 			}
+			else {
+				if ( descriptor.isNestedProperty() && !descriptor.getParentDescriptor().getName().endsWith( EntityPropertyRegistry.INDEXER ) ) {
+					EntityPropertyDescriptor target = descriptor.getAttribute( EntityAttributes.TARGET_DESCRIPTOR, EntityPropertyDescriptor.class );
 
-			return descriptor.getPropertyValue( root );
+					if ( target != null ) {
+						Object owner = resolveValue( properties, descriptor.getParentDescriptor(), root );
+						return target.getPropertyValue( owner );
+					}
+				}
+
+				return descriptor.getPropertyValue( root );
+			}
+		}
+		catch ( Exception e ) {
+			throw new RuntimeException( "An error occurred resolving property value for '" + descriptor.getName() + "'", e );
 		}
 	}
 
