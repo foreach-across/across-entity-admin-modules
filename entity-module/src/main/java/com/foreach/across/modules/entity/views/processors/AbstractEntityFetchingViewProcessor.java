@@ -75,6 +75,9 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	@Setter
 	private boolean replaceExistingAttribute;
 
+	/**
+	 * The {@link AllowableAction} that is required for an item to be viewable.
+	 */
 	@Setter
 	protected AllowableAction requestedAction;
 

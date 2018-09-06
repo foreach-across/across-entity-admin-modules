@@ -156,15 +156,17 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				);
 
 				EntityQuery propertyPredicate = queryFacade.convertToExecutableQuery( EntityQuery.and( propertyCondition ) );
-				//TODO sort
-				return filterByRequestedAction(
-						entityQueryExecutor.findAll( EntityQuery.and( query, propertyPredicate ), requestedAction != null ? null : pageable ),
-						viewContext.getEntityConfiguration(), pageable );
+				query = EntityQuery.and( query, propertyPredicate );
 			}
-			else {
-				return filterByRequestedAction( entityQueryExecutor.findAll( query, requestedAction != null ? null : pageable ),
+			if ( requestedAction != null ) {
+				if ( pageable != null ) {
+					return filterByRequestedAction( entityQueryExecutor.findAll( EntityQuery.and( query ), pageable.getSort() ),
+					                                viewContext.getEntityConfiguration(), pageable );
+				}
+				return filterByRequestedAction( entityQueryExecutor.findAll( EntityQuery.and( query ) ),
 				                                viewContext.getEntityConfiguration(), pageable );
 			}
+			return entityQueryExecutor.findAll( EntityQuery.and( query ), pageable );
 		}
 		catch ( EntityQueryParsingException pe ) {
 			String message = pe.getMessage();
