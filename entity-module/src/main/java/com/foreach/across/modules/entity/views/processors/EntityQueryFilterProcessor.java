@@ -132,9 +132,6 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		try {
 			EntityQueryFacade queryFacade = resolveEntityQueryFacade( entityViewRequest );
 			EntityQueryExecutor entityQueryExecutor = queryFacade;
-			if ( requestedAction != null && allowableActionsResolver != null ) {
-				entityQueryExecutor = new AllowableActionFilteringEntityQueryExecutor( allowableActionsResolver, queryFacade, requestedAction );
-			}
 			Assert.notNull( queryFacade, "No EntityQueryExecutor or EntityQueryFacade is available" );
 
 			EntityQuery query = EntityQueryParser.parseRawQuery( filter );
@@ -159,6 +156,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				);
 
 				EntityQuery propertyPredicate = queryFacade.convertToExecutableQuery( EntityQuery.and( propertyCondition ) );
+				//TODO sort
 				return filterByRequestedAction(
 						entityQueryExecutor.findAll( EntityQuery.and( query, propertyPredicate ), requestedAction != null ? null : pageable ),
 						viewContext.getEntityConfiguration(), pageable );
