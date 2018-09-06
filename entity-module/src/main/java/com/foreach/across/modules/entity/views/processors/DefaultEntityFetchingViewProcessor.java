@@ -95,7 +95,8 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 			);
 		}
 
-		return fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), entityQueryFacade, entityQuery, pageable );
+		Iterable<Object> items = fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), entityQueryFacade, entityQuery, pageable );
+		return filterByRequestedAction( items, entityViewContext.getEntityConfiguration(), pageable );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -105,14 +106,26 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 	                                                           Pageable pageable ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );
 
+		boolean filterByAllowableAction = requestedAction != null;
 		if ( entityQuery == null ) {
 			if ( repository instanceof PagingAndSortingRepository ) {
+				if ( filterByAllowableAction ) {
+					return pageable != null
+							? ( (PagingAndSortingRepository) repository ).findAll( pageable.getSort() )
+							: ( (PagingAndSortingRepository) repository ).findAll();
+				}
 				return ( (PagingAndSortingRepository) repository ).findAll( pageable );
 			}
 		}
 
 		if ( entityQueryFacade != null ) {
-			return entityQueryFacade.findAll( entityQuery != null ? entityQuery : EntityQuery.all(), pageable );
+			EntityQuery query = entityQuery != null ? entityQuery : EntityQuery.all();
+			if ( filterByAllowableAction ) {
+				return pageable != null
+						? entityQueryFacade.findAll( query, pageable.getSort() )
+						: entityQueryFacade.findAll( query );
+			}
+			return entityQueryFacade.findAll( query, pageable );
 		}
 
 		if ( entityQuery != null ) {
@@ -121,9 +134,9 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 							.getName() );
 		}
 
-		// return all results - ignore paging
 		if ( repository instanceof CrudRepository ) {
-			return ( (CrudRepository) repository ).findAll();
+			Iterable results = ( (CrudRepository) repository ).findAll();
+			return pageable != null ? buildPage( results, pageable ) : results;
 		}
 
 		throw new IllegalStateException(

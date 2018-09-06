@@ -16,16 +16,16 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.query.EntityQueryFacadeResolver;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.DispatchingEntityViewFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
-import com.foreach.across.modules.entity.views.processors.DelegatingEntityFetchingViewProcessor;
-import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
-import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
-import com.foreach.across.modules.entity.views.processors.SortableTableRenderingViewProcessor;
+import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterConfiguration;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -169,5 +169,38 @@ public class TestEntityListViewFactoryBuilder
 			assertNotNull( r.getProcessor( DelegatingEntityFetchingViewProcessor.class ) );
 			assertNotEquals( new DelegatingEntityFetchingViewProcessor( consumer ), r.getProcessor() );
 		} );
+	}
+
+	@Test
+	public void requestedActionWithDefaultEntityFetchingViewProcessor() {
+		processors.addProcessor( DefaultEntityFetchingViewProcessor.class.getName(),
+		                         new DefaultEntityFetchingViewProcessor( mock( EntityQueryFacadeResolver.class ) ) );
+		AllowableAction action = AllowableAction.READ;
+		builder.showOnlyItemsWithAction( action ).build();
+
+		Optional<DefaultEntityFetchingViewProcessor> processor
+				= processors.getProcessor( DefaultEntityFetchingViewProcessor.class.getName(), DefaultEntityFetchingViewProcessor.class );
+		Assertions.assertThat( processor )
+		          .isPresent()
+		          .get()
+		          .hasFieldOrPropertyWithValue( "requestedAction", action );
+	}
+
+	@Test
+	public void requestedActionWithEntityQueryFilterProcessor() {
+		EntityQueryFilterProcessor queryFilterProcessor = new EntityQueryFilterProcessor();
+		queryFilterProcessor.setFilterConfiguration( EntityQueryFilterConfiguration.builder().build() );
+		when( beanFactory.createBean( EntityQueryFilterProcessor.class ) ).thenReturn( queryFilterProcessor );
+		AllowableAction action = AllowableAction.READ;
+
+		builder.showOnlyItemsWithAction( action ).entityQueryFilter( true ).build();
+
+		Optional<EntityQueryFilterProcessor> processor
+				= processors.getProcessor( EntityQueryFilterProcessor.class.getName(), EntityQueryFilterProcessor.class );
+		Assertions.assertThat( processor )
+		          .isPresent()
+		          .get()
+		          .isEqualTo( queryFilterProcessor )
+		          .hasFieldOrPropertyWithValue( "requestedAction", action );
 	}
 }

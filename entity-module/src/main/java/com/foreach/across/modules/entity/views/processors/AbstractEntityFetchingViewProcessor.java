@@ -16,11 +16,22 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.support.PageableExecutionUtils;
+
+import java.util.List;
+import java.util.Spliterator;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Adapter for {@link com.foreach.across.modules.entity.views.EntityViewProcessor} that fetches an {@link Iterable}
@@ -64,6 +75,12 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	@Setter
 	private boolean replaceExistingAttribute;
 
+	@Setter
+	protected AllowableAction requestedAction;
+
+	@Setter
+	protected Function<?, AllowableActions> allowableActionsResolver;
+
 	@Override
 	public final void doControl( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command ) {
 		if ( !entityView.containsAttribute( attributeName ) || replaceExistingAttribute ) {
@@ -76,4 +93,32 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	}
 
 	protected abstract Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable );
+
+	@SuppressWarnings("unchecked")
+	protected Iterable filterByRequestedAction( Iterable entities, EntityConfiguration configuration, Pageable pageable ) {
+		Iterable result = entities;
+		if ( requestedAction != null ) {
+			result = (List) StreamSupport.stream( entities.spliterator(), false )
+			                             .filter( entity -> configuration.getAllowableActions( entity ).contains( requestedAction ) )
+			                             .collect( Collectors.toList() );
+			if ( pageable != null ) {
+				result = buildPage( result, pageable );
+			}
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Page buildPage( Iterable allItems, Pageable pageable ) {
+		Spliterator spliterator = allItems.spliterator();
+		long estimatedSize = spliterator.estimateSize();
+		PageableExecutionUtils.TotalSupplier totalSupplier = () -> estimatedSize;
+
+		List content = (List) StreamSupport.stream( spliterator, false )
+		                                   .skip( pageable.getOffset() )
+		                                   .limit( pageable.getPageSize() )
+		                                   .collect( Collectors.toList() );
+
+		return PageableExecutionUtils.getPage( content, pageable, totalSupplier );
+	}
 }

@@ -18,12 +18,15 @@ package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder;
+import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.query.EntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
@@ -33,6 +36,10 @@ import com.foreach.across.modules.entity.views.processors.support.EntityPageStru
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.hibernate.business.IdBasedEntity;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
+import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -95,6 +102,25 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.withType( Note.class )
+		             .allowableActionsBuilder( new EntityConfigurationAllowableActionsBuilder()
+		             {
+			             @Override
+			             public AllowableActions getAllowableActions( EntityConfiguration<?> entityConfiguration ) {
+				             return FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS;
+			             }
+
+			             @Override
+			             public <V> AllowableActions getAllowableActions( EntityConfiguration<V> entityConfiguration, V entity ) {
+				             IdBasedEntity item = (IdBasedEntity) entity;
+				             AllowableActionSet allowableActions = new AllowableActionSet();
+				             if ( Math.floorMod( item.getId(), 2 ) == 0 ) {
+					             allowableActions.add( AllowableAction.READ );
+					             allowableActions.add( AllowableAction.DELETE );
+				             }
+				             allowableActions.add( AllowableAction.UPDATE );
+				             return allowableActions;
+			             }
+		             } )
 		             .properties( props -> props.property( "text" )
 		                                        .valueFetcher( entity -> "" )
 		                                        .propertyType( TypeDescriptor.valueOf( String.class ) )
@@ -107,7 +133,9 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		             .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
 		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text", "parent.content" )
 		                                                                .basicMode( true )
-		                                                                .advancedMode( true ) ) )
+		                                                                .advancedMode( true ) )
+		                                  .showOnlyItemsWithAction( AllowableAction.READ )
+		             )
 		;
 		configuration.withType( User.class )
 		             .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate", "active" )

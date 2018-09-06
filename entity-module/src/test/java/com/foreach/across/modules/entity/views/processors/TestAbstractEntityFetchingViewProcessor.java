@@ -16,16 +16,31 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.hibernate.business.IdBasedEntity;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
+import com.foreach.across.modules.spring.security.actions.AllowableActions;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -35,6 +50,10 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class TestAbstractEntityFetchingViewProcessor
 {
+	Entry one = new Entry( 1L ), two = new Entry( 2L ),
+			three = new Entry( 3L ), four = new Entry( 4L );
+	List<Entry> entries = Arrays.asList( one, two, three, four );
+
 	@Mock
 	private EntityViewRequest viewRequest;
 
@@ -103,5 +122,52 @@ public class TestAbstractEntityFetchingViewProcessor
 
 		verify( entityView ).containsAttribute( "customAttribute" );
 		verify( entityView ).addAttribute( "customAttribute", items );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void filterByRequestedAction() {
+		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
+		when( entityConfiguration.getAllowableActions( any( IdBasedEntity.class ) ) )
+				.thenAnswer( getAllowableActionsAnswer() );
+		processor.setRequestedAction( AllowableAction.READ );
+
+		Iterable iterable = processor.filterByRequestedAction( entries, entityConfiguration, null );
+		assertThat( iterable ).isNotNull()
+		                      .isInstanceOf( List.class )
+		                      .containsExactly( two, four );
+		processor.setRequestedAction( null );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void filterByRequestedActionForPage() {
+		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
+		when( entityConfiguration.getAllowableActions( any( IdBasedEntity.class ) ) )
+				.thenAnswer( getAllowableActionsAnswer() );
+		processor.setRequestedAction( AllowableAction.READ );
+
+		Iterable iterable = processor.filterByRequestedAction( entries, entityConfiguration, new PageRequest( 0, 1, Sort.Direction.DESC, "id" ) );
+		assertThat( iterable ).isNotNull()
+		                      .isInstanceOf( Page.class )
+		                      .containsExactly( two );
+		Page page = (Page) iterable;
+		assertThat( page.getTotalElements() ).isEqualTo( 2 );
+		assertThat( page.getTotalPages() ).isEqualTo( 2 );
+		processor.setRequestedAction( null );
+	}
+
+	private Answer<AllowableActions> getAllowableActionsAnswer() {
+		return (Answer<AllowableActions>) invocation -> {
+			IdBasedEntity argument = invocation.getArgument( 0 );
+			return Math.floorMod( argument.getId(), 2L ) == 0 ? new AllowableActionSet( AllowableAction.READ.getId() ) : new AllowableActionSet();
+		};
+	}
+
+	@Data
+	@RequiredArgsConstructor
+	public static class Entry implements IdBasedEntity
+	{
+		private final Long id;
 	}
 }

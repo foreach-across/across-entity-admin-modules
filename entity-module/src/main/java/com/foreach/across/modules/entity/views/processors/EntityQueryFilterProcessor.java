@@ -131,6 +131,10 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 		try {
 			EntityQueryFacade queryFacade = resolveEntityQueryFacade( entityViewRequest );
+			EntityQueryExecutor entityQueryExecutor = queryFacade;
+			if ( requestedAction != null && allowableActionsResolver != null ) {
+				entityQueryExecutor = new AllowableActionFilteringEntityQueryExecutor( allowableActionsResolver, queryFacade, requestedAction );
+			}
 			Assert.notNull( queryFacade, "No EntityQueryExecutor or EntityQueryFacade is available" );
 
 			EntityQuery query = EntityQueryParser.parseRawQuery( filter );
@@ -155,10 +159,13 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				);
 
 				EntityQuery propertyPredicate = queryFacade.convertToExecutableQuery( EntityQuery.and( propertyCondition ) );
-				return queryFacade.findAll( EntityQuery.and( query, propertyPredicate ), pageable );
+				return filterByRequestedAction(
+						entityQueryExecutor.findAll( EntityQuery.and( query, propertyPredicate ), requestedAction != null ? null : pageable ),
+						viewContext.getEntityConfiguration(), pageable );
 			}
 			else {
-				return queryFacade.findAll( query, pageable );
+				return filterByRequestedAction( entityQueryExecutor.findAll( query, requestedAction != null ? null : pageable ),
+				                                viewContext.getEntityConfiguration(), pageable );
 			}
 		}
 		catch ( EntityQueryParsingException pe ) {
