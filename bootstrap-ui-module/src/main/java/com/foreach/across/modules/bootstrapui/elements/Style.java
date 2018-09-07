@@ -18,13 +18,18 @@ package com.foreach.across.modules.bootstrapui.elements;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
+
 /**
  * Contains the common Bootstrap styles and provides ability to define new styles as constants.
  *
  * @author Arne Vandamme
  */
-public class Style
+public class Style implements Serializable
 {
+
+	private static final long serialVersionUID = 1186095031223055070L;
+
 	public static class Button
 	{
 		public static final Style DEFAULT = Style.DEFAULT;
