@@ -115,9 +115,11 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 				             AllowableActionSet allowableActions = new AllowableActionSet();
 				             if ( Math.floorMod( item.getId(), 2 ) == 0 ) {
 					             allowableActions.add( AllowableAction.READ );
-					             allowableActions.add( AllowableAction.DELETE );
 				             }
-				             allowableActions.add( AllowableAction.UPDATE );
+				             if ( Math.floorMod( item.getId(), 4 ) == 0 ) {
+					             allowableActions.add( AllowableAction.UPDATE );
+				             }
+				             allowableActions.add( AllowableAction.DELETE );
 				             return allowableActions;
 			             }
 		             } )

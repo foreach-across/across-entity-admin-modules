@@ -47,8 +47,6 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 			= new LinkedHashMap<>();
 	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> customViewConsumers
 			= new LinkedHashMap<>();
-	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> readonlyViewConsumers
-			= new LinkedHashMap<>();
 
 	/**
 	 * Configure a default list view builder for the entity being configured.
@@ -162,6 +160,27 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 	}
 
 	/**
+	 * Configure a default delete view builder for the entity being configured.
+	 * Does not customize the builder but ensures the view gets created using the default builder.
+	 *
+	 * @return current builder
+	 */
+	public AbstractWritableAttributesAndViewsBuilder readOnlyFormView() {
+		return readOnlyFormView( triggerBuild() );
+	}
+
+	/**
+	 * Configure the default delete form view builder for the entity being configured.
+	 * A default delete form view is usually available.
+	 *
+	 * @param consumer for configuring the view builder
+	 * @return current builder
+	 */
+	public AbstractWritableAttributesAndViewsBuilder readOnlyFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return formView( EntityView.READONLY_UPDATE_VIEW_NAME, consumer );
+	}
+
+	/**
 	 * Configure the named form view builder for the entity being configured.
 	 * If the view is not available, it will be created.
 	 *
@@ -192,7 +211,6 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 	protected void applyViews( ConfigurableEntityViewRegistry viewRegistry ) {
 		registerViews( EntityListViewFactoryBuilder.class, EntityView.LIST_VIEW_NAME, listViewConsumers, viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityView.UPDATE_VIEW_NAME, formViewConsumers, viewRegistry );
-		registerViews( EntityViewFactoryBuilder.class, EntityView.READONLY_UPDATE_VIEW_NAME, readonlyViewConsumers, viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityView.DELETE_VIEW_NAME, deleteViewConsumers, viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityView.GENERIC_VIEW_NAME, customViewConsumers, viewRegistry );
 	}

@@ -114,11 +114,17 @@ class EntityModuleAdminMenuRegistrar
 		EntityMessageCodeResolver messageCodeResolver = entityConfiguration.getEntityMessageCodeResolver();
 
 		if ( menu.isForUpdate() ) {
+			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
 			val currentEntityLink = menu.getLinkBuilder().forInstance( menu.getEntity() );
 
-			builder.item( currentEntityLink.updateView().toString(),
-			              messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
-			       .order( Ordered.HIGHEST_PRECEDENCE );
+			val generalBuilder = builder.item( currentEntityLink.updateView().toString(),
+			                                   messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
+			                            .order( Ordered.HIGHEST_PRECEDENCE );
+
+			if ( !allowableActions.contains( AllowableAction.UPDATE ) ) {
+				generalBuilder.changePathTo( currentEntityLink.toString() )
+				              .url( currentEntityLink.toString() );
+			}
 
 			if ( !isAssociation ) {
 				// Get associations
@@ -144,7 +150,6 @@ class EntityModuleAdminMenuRegistrar
 			       .attribute( NavComponentBuilder.ATTR_KEEP_GROUP_ITEM, true )
 			       .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );
 
-			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
 			if ( allowableActions.contains( AllowableAction.DELETE ) ) {
 				val deleteLink = currentEntityLink.deleteView();
 
