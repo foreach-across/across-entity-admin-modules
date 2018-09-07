@@ -32,6 +32,13 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 	}
 
 	/**
+	 * @return readonly view for the current instance
+	 */
+	public SingleEntityViewLinkBuilder readonlyView() {
+		return cloneLinkBuilder( toUriComponentsBuilder() );
+	}
+
+	/**
 	 * @return update view for the current instance
 	 */
 	public SingleEntityViewLinkBuilder updateView() {
@@ -39,7 +46,7 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 	}
 
 	/**
-	 * @return update view for the current instance
+	 * @return delete view for the current instance
 	 */
 	public SingleEntityViewLinkBuilder deleteView() {
 		return cloneLinkBuilder( toUriComponentsBuilder().pathSegment( "delete" ) );

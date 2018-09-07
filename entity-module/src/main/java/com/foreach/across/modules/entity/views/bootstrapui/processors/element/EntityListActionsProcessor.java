@@ -80,6 +80,13 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 					                   .text( messages.updateAction() )
 			);
 		}
+		else if ( allowableActions.contains( AllowableAction.READ ) ) {
+			cell.add( BootstrapUiBuilders.button()
+			                             .link( url.readonlyView().toUriString() )
+			                             .iconOnly( new GlyphIcon( GlyphIcon.EYE_OPEN ) )
+			                             .text( messages.viewAction() )
+			);
+		}
 
 		if ( allowableActions.contains( AllowableAction.DELETE ) ) {
 			cell.add(

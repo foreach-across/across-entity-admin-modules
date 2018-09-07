@@ -86,7 +86,7 @@ final class ReadonlyViewInitializer extends AbstractViewInitializer<EntityViewFa
 
 			SingleEntityPageStructureViewProcessor pageStructureViewProcessor = beanFactory.createBean( SingleEntityPageStructureViewProcessor.class );
 			pageStructureViewProcessor.setAddEntityMenu( true );
-			pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE );
+			pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_VIEW );
 			builder.viewProcessor( pageStructureViewProcessor );
 
 			SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );

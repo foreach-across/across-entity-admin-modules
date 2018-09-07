@@ -32,6 +32,7 @@ import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
+import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
@@ -122,8 +123,9 @@ class EntityModuleAdminMenuRegistrar
 			                            .order( Ordered.HIGHEST_PRECEDENCE );
 
 			if ( !allowableActions.contains( AllowableAction.UPDATE ) ) {
-				generalBuilder.changePathTo( currentEntityLink.toString() )
-				              .url( currentEntityLink.toString() );
+				SingleEntityViewLinkBuilder readonlyView = currentEntityLink.readonlyView();
+				generalBuilder.changePathTo( readonlyView.toString() )
+				              .url( readonlyView.toString() );
 			}
 
 			if ( !isAssociation ) {
