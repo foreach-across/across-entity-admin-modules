@@ -130,13 +130,13 @@ public class TestAbstractEntityFetchingViewProcessor
 		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 		when( entityConfiguration.getAllowableActions( any( IdBasedEntity.class ) ) )
 				.thenAnswer( getAllowableActionsAnswer() );
-		processor.setRequestedAction( AllowableAction.READ );
+		processor.setAccessItemAction( AllowableAction.READ );
 
-		Iterable iterable = processor.filterByRequestedAction( entries, entityConfiguration, null );
+		Iterable iterable = processor.filterAccessibleItems( entries, entityConfiguration, null );
 		assertThat( iterable ).isNotNull()
 		                      .isInstanceOf( List.class )
 		                      .containsExactly( two, four );
-		processor.setRequestedAction( null );
+		processor.setAccessItemAction( null );
 	}
 
 	@Test
@@ -145,16 +145,16 @@ public class TestAbstractEntityFetchingViewProcessor
 		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 		when( entityConfiguration.getAllowableActions( any( IdBasedEntity.class ) ) )
 				.thenAnswer( getAllowableActionsAnswer() );
-		processor.setRequestedAction( AllowableAction.READ );
+		processor.setAccessItemAction( AllowableAction.READ );
 
-		Iterable iterable = processor.filterByRequestedAction( entries, entityConfiguration, new PageRequest( 0, 1, Sort.Direction.DESC, "id" ) );
+		Iterable iterable = processor.filterAccessibleItems( entries, entityConfiguration, new PageRequest( 0, 1, Sort.Direction.DESC, "id" ) );
 		assertThat( iterable ).isNotNull()
 		                      .isInstanceOf( Page.class )
 		                      .containsExactly( two );
 		Page page = (Page) iterable;
 		assertThat( page.getTotalElements() ).isEqualTo( 2 );
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
-		processor.setRequestedAction( null );
+		processor.setAccessItemAction( null );
 	}
 
 	private Answer<AllowableActions> getAllowableActionsAnswer() {

@@ -96,7 +96,7 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 		}
 
 		Iterable<Object> items = fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), entityQueryFacade, entityQuery, pageable );
-		return filterByRequestedAction( items, entityViewContext.getEntityConfiguration(), pageable );
+		return filterAccessibleItems( items, entityViewContext.getEntityConfiguration(), pageable );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -106,7 +106,7 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 	                                                           Pageable pageable ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );
 
-		boolean filterByAllowableAction = requestedAction != null;
+		boolean filterByAllowableAction = accessItemAction != null;
 		if ( entityQuery == null ) {
 			if ( repository instanceof PagingAndSortingRepository ) {
 				if ( filterByAllowableAction ) {

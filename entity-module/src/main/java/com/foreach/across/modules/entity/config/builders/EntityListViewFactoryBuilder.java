@@ -28,7 +28,6 @@ import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterConfiguration;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewProcessorRegistry;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
-import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -67,8 +66,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	private Sort defaultSort;
 	private Collection<String> sortableProperties;
 	private BiFunction<EntityViewContext, Pageable, Iterable<?>> pageFetcher;
-	private AllowableAction requestedAction;
-	private Function<?, AllowableActions> allowableActionsResolver;
+	private AllowableAction accessItemAction;
 
 	@Autowired
 	public EntityListViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
@@ -199,7 +197,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	 * @return current builder
 	 */
 	public EntityListViewFactoryBuilder showOnlyItemsWithAction( AllowableAction action ) {
-		this.requestedAction = action;
+		this.accessItemAction = action;
 		return this;
 	}
 
@@ -336,11 +334,11 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	}
 
 	private void configureRequestedActionFiltering() {
-		if ( requestedAction != null ) {
+		if ( accessItemAction != null ) {
 			this.postProcess( ( factory, registry ) ->
 					                  registry.getProcessors().stream()
 					                          .filter( p -> AbstractEntityFetchingViewProcessor.class.isAssignableFrom( p.getClass() ) )
-					                          .forEach( p -> ( (AbstractEntityFetchingViewProcessor) p ).setRequestedAction( requestedAction ) ) );
+					                          .forEach( p -> ( (AbstractEntityFetchingViewProcessor) p ).setAccessItemAction( accessItemAction ) ) );
 		}
 	}
 

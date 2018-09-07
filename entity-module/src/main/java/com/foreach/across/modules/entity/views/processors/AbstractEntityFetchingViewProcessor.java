@@ -21,7 +21,6 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
-import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +28,6 @@ import org.springframework.data.repository.support.PageableExecutionUtils;
 
 import java.util.List;
 import java.util.Spliterator;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -79,10 +77,7 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	 * The {@link AllowableAction} that is required for an item to be viewable.
 	 */
 	@Setter
-	protected AllowableAction requestedAction;
-
-	@Setter
-	protected Function<?, AllowableActions> allowableActionsResolver;
+	protected AllowableAction accessItemAction;
 
 	@Override
 	public final void doControl( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command ) {
@@ -98,11 +93,11 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	protected abstract Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable );
 
 	@SuppressWarnings("unchecked")
-	protected Iterable filterByRequestedAction( Iterable entities, EntityConfiguration configuration, Pageable pageable ) {
+	protected Iterable filterAccessibleItems( Iterable entities, EntityConfiguration configuration, Pageable pageable ) {
 		Iterable result = entities;
-		if ( requestedAction != null ) {
+		if ( accessItemAction != null ) {
 			result = (List) StreamSupport.stream( entities.spliterator(), false )
-			                             .filter( entity -> configuration.getAllowableActions( entity ).contains( requestedAction ) )
+			                             .filter( entity -> configuration.getAllowableActions( entity ).contains( accessItemAction ) )
 			                             .collect( Collectors.toList() );
 			if ( pageable != null ) {
 				result = buildPage( result, pageable );
