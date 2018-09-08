@@ -16,11 +16,9 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
@@ -57,6 +55,7 @@ public class EmbeddedCollectionElementBuilderFactory implements EntityViewElemen
 	public ViewElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode, String viewElementType ) {
 		val embedded = new EmbeddedCollectionViewElementBuilder();
 		embedded.itemTemplate( createItemTemplate( propertyDescriptor, viewElementMode ) );
+
 		return embedded;
 		/*
 
@@ -70,6 +69,10 @@ public class EmbeddedCollectionElementBuilderFactory implements EntityViewElemen
 	}
 
 	private ViewElementBuilder createItemTemplate( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode ) {
+		EntityPropertyDescriptor memberDescriptor = propertyDescriptor.getPropertyRegistry().getProperty( propertyDescriptor.getName() + "[]" );
+
+		return entityViewElementBuilderService.getElementBuilder( memberDescriptor, ViewElementMode.FORM_WRITE );
+		/*
 		EntityPropertySelector selector = retrieveMembersSelector( propertyDescriptor );
 		EntityPropertyRegistry propertyRegistry = propertyDescriptor.getPropertyRegistry();
 
@@ -84,7 +87,7 @@ public class EmbeddedCollectionElementBuilderFactory implements EntityViewElemen
 			}
 		}
 
-		return template;
+		return template;*/
 	}
 
 	private EntityPropertySelector retrieveMembersSelector( EntityPropertyDescriptor descriptor ) {

@@ -59,7 +59,6 @@ public class FieldsetFormElementBuilderFactory extends EntityViewElementBuilderF
 	protected FieldsetFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                           ViewElementMode viewElementMode,
 	                                                           String viewElementType ) {
-
 		ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder( propertyDescriptor, ViewElementMode.LABEL );
 
 		FieldsetFormElementBuilder fieldset = BootstrapUiBuilders.fieldset()

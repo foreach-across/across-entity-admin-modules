@@ -304,11 +304,14 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .writable( true )
 			     .hidden( false )
 			     .controller( controller )
-			     .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
-			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) )
+			     .viewElementType( ViewElementMode.CONTROL, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
+			     //.attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) )
 			     .and()
 			     .property( "brands[]" )
-			     .controller( memberController );
+			     .propertyType( Brand.class )
+			     .controller( memberController )
+			     .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
+			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) );
 		};
 	}
 
