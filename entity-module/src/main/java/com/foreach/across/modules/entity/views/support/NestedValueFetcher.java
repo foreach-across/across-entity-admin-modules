@@ -27,10 +27,10 @@ public class NestedValueFetcher implements ValueFetcher<Object>
 		this.child = child;
 	}
 
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object getValue( Object entity ) {
-		Object topLevelValue = parent.getValue( entity );
-		return topLevelValue != null ? child.getValue( topLevelValue ) : null;
+		Object topLevelValue = parent != null ? parent.getValue( entity ) : null;
+		return topLevelValue != null ? ( child != null ? child.getValue( topLevelValue ) : null ) : null;
 	}
 }

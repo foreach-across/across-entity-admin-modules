@@ -16,8 +16,8 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -30,8 +30,8 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
 import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder.CSS_FORM_TEXT_HELP;
 
 /**
- * Post-processor that resolves a help text for a current property and a {@link com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement}.
- * By default supports HTML in the resulting message. The help text is added at the bottom of the fieldset.
+ * Post-processor that resolves a help text for a current property and a {@link com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset}.
+ * By default supports HTML in the resulting message. The help text is added in the footer of the fieldset.
  * <p/>
  * This post processor is usually registered automatically when rendering {@link com.foreach.across.modules.entity.views.ViewElementMode#FORM_WRITE}.
  *
@@ -41,7 +41,7 @@ import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupE
  */
 @AllArgsConstructor
 @NoArgsConstructor
-public class FieldsetHelpTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, FieldsetFormElement>
+public class FieldsetHelpTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, ViewElementFieldset>
 {
 	/**
 	 * -- SETTER --
@@ -50,15 +50,16 @@ public class FieldsetHelpTextPostProcessor<T extends ViewElement> extends Abstra
 	private boolean escapeHtml;
 
 	@Override
-	protected void postProcess( ViewElementBuilderContext builderContext, FieldsetFormElement element, EntityPropertyDescriptor propertyDescriptor ) {
+	protected void postProcess( ViewElementBuilderContext builderContext, ViewElementFieldset element, EntityPropertyDescriptor propertyDescriptor ) {
 		val text = builderContext.getMessage( "properties." + propertyDescriptor.getName() + "[help]", "" );
 
 		if ( !StringUtils.isEmpty( text ) ) {
-			element.addChild(
-					helpBlock().css( CSS_FORM_TEXT_HELP )
-					           .add( new TextViewElement( text, escapeHtml ) )
-					           .build( builderContext )
-			);
+			element.getFooter()
+			       .addChild(
+					       helpBlock().css( CSS_FORM_TEXT_HELP )
+					                  .add( new TextViewElement( text, escapeHtml ) )
+					                  .build( builderContext )
+			       );
 		}
 	}
 }
