@@ -17,6 +17,7 @@
 package admin.application.config;
 
 import com.foreach.across.modules.adminweb.events.UserContextAdminMenuGroup;
+import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 
@@ -29,5 +30,12 @@ public class UserContextConfiguration
 			userContextAdminMenuGroup.setDisplayName( "Administrator" );
 			userContextAdminMenuGroup.setThumbnailUrl( "http://www.gravatar.com/avatar/73543542128f5a067ffc34305eefe48a" );
 		}
+	}
+
+	@EventListener
+	public void buildUserContextMenu( AdminMenuEvent menu ) {
+		menu.item( UserContextAdminMenuGroup.MENU_PATH + "/profile" )
+		    .title( "Your profile" )
+		    .url( "@adminWeb:/user/profile" );
 	}
 }
