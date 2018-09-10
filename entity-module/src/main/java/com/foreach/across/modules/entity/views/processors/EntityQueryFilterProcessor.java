@@ -141,7 +141,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		String filter = command.getExtension( PARAM, String.class );
 
 		EntityQueryRequest entityQueryRequest = command.getExtension( ENTITY_QUERY_REQUEST );
-		boolean onlySort = pageable == null;
+		boolean shouldOnlySort = pageable == null;
 
 		try {
 			EntityQueryFacade queryFacade = resolveEntityQueryFacade( entityViewRequest );
@@ -171,7 +171,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				EntityQuery propertyPredicate = queryFacade.convertToExecutableQuery( EntityQuery.and( propertyCondition ) );
 				query = EntityQuery.and( query, propertyPredicate );
 			}
-			if ( onlySort ) {
+			if ( shouldOnlySort ) {
 				return queryFacade.findAll( EntityQuery.and( query ), sort );
 			}
 			return queryFacade.findAll( EntityQuery.and( query ), pageable );

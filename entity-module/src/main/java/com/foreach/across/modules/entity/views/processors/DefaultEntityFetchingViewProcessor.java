@@ -115,10 +115,10 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 	                                                           Sort sort ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );
 
-		boolean onlySort = pageable == null;
+		boolean shouldOnlySort = pageable == null;
 		if ( entityQuery == null ) {
 			if ( repository instanceof PagingAndSortingRepository ) {
-				if ( onlySort ) {
+				if ( shouldOnlySort ) {
 					return ( (PagingAndSortingRepository) repository ).findAll( sort );
 				}
 				return ( (PagingAndSortingRepository) repository ).findAll( pageable );
@@ -127,7 +127,7 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 
 		if ( entityQueryFacade != null ) {
 			EntityQuery query = entityQuery != null ? entityQuery : EntityQuery.all();
-			if ( onlySort ) {
+			if ( shouldOnlySort ) {
 				return entityQueryFacade.findAll( query, sort );
 			}
 			return entityQueryFacade.findAll( query, pageable );
