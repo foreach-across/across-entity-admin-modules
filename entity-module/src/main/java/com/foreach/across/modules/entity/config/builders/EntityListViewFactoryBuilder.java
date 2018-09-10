@@ -66,7 +66,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	private Sort defaultSort;
 	private Collection<String> sortableProperties;
 	private BiFunction<EntityViewContext, Pageable, Iterable<?>> pageFetcher;
-	private AllowableAction accessItemAction;
+	private AllowableAction showOnlyItemsWithAction;
 
 	@Autowired
 	public EntityListViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
@@ -197,7 +197,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	 * @return current builder
 	 */
 	public EntityListViewFactoryBuilder showOnlyItemsWithAction( AllowableAction action ) {
-		this.accessItemAction = action;
+		this.showOnlyItemsWithAction = action;
 		return this;
 	}
 
@@ -334,11 +334,12 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	}
 
 	private void configureRequestedActionFiltering() {
-		if ( accessItemAction != null ) {
+		if ( showOnlyItemsWithAction != null ) {
 			this.postProcess( ( factory, registry ) ->
 					                  registry.getProcessors().stream()
-					                          .filter( p -> AbstractEntityFetchingViewProcessor.class.isAssignableFrom( p.getClass() ) )
-					                          .forEach( p -> ( (AbstractEntityFetchingViewProcessor) p ).setAccessItemAction( accessItemAction ) ) );
+					                          .filter( AbstractEntityFetchingViewProcessor.class::isInstance )
+					                          .forEach( p -> ( (AbstractEntityFetchingViewProcessor) p )
+							                          .setShowOnlyItemsWithAction( showOnlyItemsWithAction ) ) );
 		}
 	}
 

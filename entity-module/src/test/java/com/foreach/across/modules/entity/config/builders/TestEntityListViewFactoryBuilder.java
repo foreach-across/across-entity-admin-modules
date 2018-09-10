@@ -183,7 +183,7 @@ public class TestEntityListViewFactoryBuilder
 		Assertions.assertThat( processor )
 		          .isPresent()
 		          .get()
-		          .hasFieldOrPropertyWithValue( "accessItemAction", action );
+		          .hasFieldOrPropertyWithValue( "showOnlyItemsWithAction", action );
 	}
 
 	@Test
@@ -201,6 +201,6 @@ public class TestEntityListViewFactoryBuilder
 		          .isPresent()
 		          .get()
 		          .isEqualTo( queryFilterProcessor )
-		          .hasFieldOrPropertyWithValue( "accessItemAction", action );
+		          .hasFieldOrPropertyWithValue( "showOnlyItemsWithAction", action );
 	}
 }

@@ -106,7 +106,7 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 	                                                           Pageable pageable ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );
 
-		boolean filterByAllowableAction = accessItemAction != null;
+		boolean filterByAllowableAction = showOnlyItemsWithAction != null;
 		if ( entityQuery == null ) {
 			if ( repository instanceof PagingAndSortingRepository ) {
 				if ( filterByAllowableAction ) {

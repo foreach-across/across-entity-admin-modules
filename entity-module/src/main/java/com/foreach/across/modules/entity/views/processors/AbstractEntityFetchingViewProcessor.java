@@ -77,7 +77,7 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	 * The {@link AllowableAction} that is required for an item to be viewable.
 	 */
 	@Setter
-	protected AllowableAction accessItemAction;
+	protected AllowableAction showOnlyItemsWithAction;
 
 	@Override
 	public final void doControl( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command ) {
@@ -95,9 +95,9 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	@SuppressWarnings("unchecked")
 	protected Iterable filterAccessibleItems( Iterable entities, EntityConfiguration configuration, Pageable pageable ) {
 		Iterable result = entities;
-		if ( accessItemAction != null ) {
+		if ( showOnlyItemsWithAction != null ) {
 			result = (List) StreamSupport.stream( entities.spliterator(), false )
-			                             .filter( entity -> configuration.getAllowableActions( entity ).contains( accessItemAction ) )
+			                             .filter( entity -> configuration.getAllowableActions( entity ).contains( showOnlyItemsWithAction ) )
 			                             .collect( Collectors.toList() );
 			if ( pageable != null ) {
 				result = buildPage( result, pageable );

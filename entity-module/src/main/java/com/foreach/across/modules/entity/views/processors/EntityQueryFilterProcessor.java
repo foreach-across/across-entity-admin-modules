@@ -158,7 +158,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				EntityQuery propertyPredicate = queryFacade.convertToExecutableQuery( EntityQuery.and( propertyCondition ) );
 				query = EntityQuery.and( query, propertyPredicate );
 			}
-			if ( accessItemAction != null ) {
+			if ( showOnlyItemsWithAction != null ) {
 				if ( pageable != null ) {
 					return filterAccessibleItems( entityQueryExecutor.findAll( EntityQuery.and( query ), pageable.getSort() ),
 					                              viewContext.getEntityConfiguration(), pageable );

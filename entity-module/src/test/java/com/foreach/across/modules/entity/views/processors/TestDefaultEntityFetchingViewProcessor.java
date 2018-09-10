@@ -147,7 +147,7 @@ public class TestDefaultEntityFetchingViewProcessor
 	@Test
 	@SuppressWarnings("unchecked")
 	public void pagingAndSortingRepositoryDoesNotApplyPagingIfRequestedActionIsPresent() {
-		processor.setAccessItemAction( AllowableAction.READ );
+		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
 		Sort sort = new Sort( Sort.Direction.ASC, "name" );
 		PagingAndSortingRepository repository = mock( PagingAndSortingRepository.class );
 		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( repository );
@@ -164,7 +164,7 @@ public class TestDefaultEntityFetchingViewProcessor
 	@Test
 	@SuppressWarnings("unchecked")
 	public void pagingAndSortingRepositoryWithoutPagingAndRequestedActionIsPresent() {
-		processor.setAccessItemAction( AllowableAction.READ );
+		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
 		PagingAndSortingRepository repository = mock( PagingAndSortingRepository.class );
 		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( repository );
 		when( repository.findAll() ).thenReturn( entries );
@@ -179,7 +179,7 @@ public class TestDefaultEntityFetchingViewProcessor
 	@Test
 	@SuppressWarnings("unchecked")
 	public void entityQueryFacadeWithoutPagingAndRequestedActionIsPresent() {
-		processor.setAccessItemAction( AllowableAction.READ );
+		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
 		EntityQueryFacade queryExecutor = mock( EntityQueryFacade.class );
 		when( entityQueryFacadeResolver.forEntityViewRequest( viewRequest ) ).thenReturn( queryExecutor );
 		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( mock( CrudRepository.class ) );
@@ -195,7 +195,7 @@ public class TestDefaultEntityFetchingViewProcessor
 	@Test
 	@SuppressWarnings("unchecked")
 	public void entityQueryFacadeDoesNotApplyPagingIfRequestedActionIsPresent() {
-		processor.setAccessItemAction( AllowableAction.READ );
+		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
 		EntityQueryFacade queryExecutor = mock( EntityQueryFacade.class );
 		Sort sort = new Sort( Sort.Direction.ASC, "name" );
 		when( entityQueryFacadeResolver.forEntityViewRequest( viewRequest ) ).thenReturn( queryExecutor );
