@@ -49,6 +49,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.WebDataBinder;
@@ -118,20 +119,32 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		command.addExtension( ENTITY_QUERY_REQUEST, entityQueryRequest );
 	}
 
+	@Override
+	protected Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Sort sort ) {
+		return fetchItems( entityViewRequest, entityView, null, sort );
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Iterable fetchItems( EntityViewRequest entityViewRequest,
 	                               EntityView entityView,
 	                               Pageable pageable ) {
+		return fetchItems( entityViewRequest, entityView, pageable, null );
+	}
+
+	private Iterable fetchItems( EntityViewRequest entityViewRequest,
+	                             EntityView entityView,
+	                             Pageable pageable,
+	                             Sort sort ) {
 		EntityViewContext viewContext = entityViewRequest.getEntityViewContext();
 		EntityViewCommand command = entityViewRequest.getCommand();
 		String filter = command.getExtension( PARAM, String.class );
 
 		EntityQueryRequest entityQueryRequest = command.getExtension( ENTITY_QUERY_REQUEST );
+		boolean onlySort = pageable == null;
 
 		try {
 			EntityQueryFacade queryFacade = resolveEntityQueryFacade( entityViewRequest );
-			EntityQueryExecutor entityQueryExecutor = queryFacade;
 			Assert.notNull( queryFacade, "No EntityQueryExecutor or EntityQueryFacade is available" );
 
 			EntityQuery query = EntityQueryParser.parseRawQuery( filter );
@@ -158,15 +171,10 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				EntityQuery propertyPredicate = queryFacade.convertToExecutableQuery( EntityQuery.and( propertyCondition ) );
 				query = EntityQuery.and( query, propertyPredicate );
 			}
-			if ( showOnlyItemsWithAction != null ) {
-				if ( pageable != null ) {
-					return filterAccessibleItems( entityQueryExecutor.findAll( EntityQuery.and( query ), pageable.getSort() ),
-					                              viewContext.getEntityConfiguration(), pageable );
-				}
-				return filterAccessibleItems( entityQueryExecutor.findAll( EntityQuery.and( query ) ),
-				                              viewContext.getEntityConfiguration(), pageable );
+			if ( onlySort ) {
+				return queryFacade.findAll( EntityQuery.and( query ), sort );
 			}
-			return entityQueryExecutor.findAll( EntityQuery.and( query ), pageable );
+			return queryFacade.findAll( EntityQuery.and( query ), pageable );
 		}
 		catch ( EntityQueryParsingException pe ) {
 			String message = pe.getMessage();

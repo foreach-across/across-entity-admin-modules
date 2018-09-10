@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
@@ -28,6 +29,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -77,7 +79,7 @@ public class TestAbstractEntityFetchingViewProcessor
 		processor.doControl( viewRequest, entityView, command );
 		verify( entityView ).containsAttribute( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME );
 		verifyNoMoreInteractions( entityView );
-		verify( processor, never() ).fetchItems( any(), any(), any() );
+		verify( processor, never() ).fetchItems( any(), any(), (Pageable) any() );
 	}
 
 	@Test
@@ -96,7 +98,7 @@ public class TestAbstractEntityFetchingViewProcessor
 		processor.doControl( viewRequest, entityView, command );
 
 		verify( entityView, never() ).addAttribute( any(), any() );
-		verify( processor, never() ).fetchItems( any(), any(), any() );
+		verify( processor, never() ).fetchItems( any(), any(), (Pageable) any() );
 	}
 
 	@Test
@@ -126,32 +128,27 @@ public class TestAbstractEntityFetchingViewProcessor
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void filterByRequestedAction() {
+	public void filterByAllowableAction() {
 		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 		when( entityConfiguration.getAllowableActions( any( IdBasedEntity.class ) ) )
 				.thenAnswer( getAllowableActionsAnswer() );
+		EntityViewContext viewContext = mock( EntityViewContext.class );
+		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
+		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
+
+		PageRequest pageRequest = new PageRequest( 0, 1, Sort.Direction.DESC, "id" );
+		when( command.getExtension( PageableExtensionViewProcessor.DEFAULT_EXTENSION_NAME, Pageable.class ) ).thenReturn( pageRequest );
+		when( processor.fetchItems( viewRequest, entityView, pageRequest.getSort() ) ).thenReturn( entries );
 		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
 
-		Iterable iterable = processor.filterAccessibleItems( entries, entityConfiguration, null );
-		assertThat( iterable ).isNotNull()
-		                      .isInstanceOf( List.class )
-		                      .containsExactly( two, four );
-		processor.setShowOnlyItemsWithAction( null );
-	}
+		processor.doControl( viewRequest, entityView, command );
+		ArgumentCaptor<Iterable> iterable = ArgumentCaptor.forClass( Iterable.class );
+		verify( entityView, times( 1 ) ).addAttribute( eq( AbstractEntityFetchingViewProcessor.DEFAULT_ATTRIBUTE_NAME ), iterable.capture() );
 
-	@Test
-	@SuppressWarnings("unchecked")
-	public void filterByRequestedActionForPage() {
-		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
-		when( entityConfiguration.getAllowableActions( any( IdBasedEntity.class ) ) )
-				.thenAnswer( getAllowableActionsAnswer() );
-		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
-
-		Iterable iterable = processor.filterAccessibleItems( entries, entityConfiguration, new PageRequest( 0, 1, Sort.Direction.DESC, "id" ) );
-		assertThat( iterable ).isNotNull()
-		                      .isInstanceOf( Page.class )
-		                      .containsExactly( two );
-		Page page = (Page) iterable;
+		assertThat( iterable.getValue() ).isNotNull()
+		                                 .isInstanceOf( Page.class )
+		                                 .containsExactly( two );
+		Page page = (Page) iterable.getValue();
 		assertThat( page.getTotalElements() ).isEqualTo( 2 );
 		assertThat( page.getTotalPages() ).isEqualTo( 2 );
 		processor.setShowOnlyItemsWithAction( null );

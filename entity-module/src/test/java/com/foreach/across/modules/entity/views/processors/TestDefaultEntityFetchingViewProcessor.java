@@ -27,7 +27,6 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
-import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.junit.Before;
@@ -36,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
@@ -98,9 +96,6 @@ public class TestDefaultEntityFetchingViewProcessor
 
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 		when( viewContext.getEntityAssociation() ).thenReturn( entityAssociation );
-
-		when( entityConfiguration.getAllowableActions( one ) ).thenReturn( new AllowableActionSet() );
-		when( entityConfiguration.getAllowableActions( two ) ).thenReturn( new AllowableActionSet( AllowableAction.READ.getId() ) );
 	}
 
 	@Test
@@ -146,89 +141,34 @@ public class TestDefaultEntityFetchingViewProcessor
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void pagingAndSortingRepositoryDoesNotApplyPagingIfRequestedActionIsPresent() {
-		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
+	public void pagingAndSortingRepositoryUsesSortIfPageableIsNotPresent() {
 		Sort sort = new Sort( Sort.Direction.ASC, "name" );
 		PagingAndSortingRepository repository = mock( PagingAndSortingRepository.class );
 		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( repository );
 		when( repository.findAll( sort ) ).thenReturn( entries );
 
-		PageRequest pageRequest = new PageRequest( 0, 50, sort );
-		assertThat( processor.fetchItems( viewRequest, mock( EntityView.class ), pageRequest ) )
+		assertThat( processor.fetchItems( viewRequest, mock( EntityView.class ), sort ) )
 				.isNotNull()
-				.isInstanceOf( Page.class )
-				.containsExactly( two );
+				.containsExactly( one, two );
 		verify( repository, times( 1 ) ).findAll( sort );
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void pagingAndSortingRepositoryWithoutPagingAndRequestedActionIsPresent() {
-		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
-		PagingAndSortingRepository repository = mock( PagingAndSortingRepository.class );
-		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( repository );
-		when( repository.findAll() ).thenReturn( entries );
-
-		assertThat( processor.fetchItems( viewRequest, mock( EntityView.class ), null ) )
-				.isNotNull()
-				.isInstanceOf( List.class )
-				.containsExactly( two );
-		verify( repository, times( 1 ) ).findAll();
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void entityQueryFacadeWithoutPagingAndRequestedActionIsPresent() {
-		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
-		EntityQueryFacade queryExecutor = mock( EntityQueryFacade.class );
-		when( entityQueryFacadeResolver.forEntityViewRequest( viewRequest ) ).thenReturn( queryExecutor );
-		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( mock( CrudRepository.class ) );
-		when( queryExecutor.findAll( EntityQuery.all() ) ).thenReturn( entries );
-
-		assertThat( processor.fetchItems( viewRequest, mock( EntityView.class ), null ) )
-				.isNotNull()
-				.isInstanceOf( List.class )
-				.containsExactly( two );
-		verify( queryExecutor, times( 1 ) ).findAll( EntityQuery.all() );
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void entityQueryFacadeDoesNotApplyPagingIfRequestedActionIsPresent() {
-		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
-		EntityQueryFacade queryExecutor = mock( EntityQueryFacade.class );
+	public void entityQueryFacadeUsesSortIfPageableIsNotPresent() {
 		Sort sort = new Sort( Sort.Direction.ASC, "name" );
+		processor.setShowOnlyItemsWithAction( AllowableAction.READ );
+		EntityQueryFacade queryExecutor = mock( EntityQueryFacade.class );
 		when( entityQueryFacadeResolver.forEntityViewRequest( viewRequest ) ).thenReturn( queryExecutor );
 		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( mock( CrudRepository.class ) );
-		when( queryExecutor.findAll( EntityQuery.all(), sort ) ).thenReturn( entries );
+		EntityQuery query = EntityQuery.all();
+		when( queryExecutor.findAll( query, sort ) ).thenReturn( entries );
 
-		PageRequest pageRequest = new PageRequest( 0, 50, sort );
-		assertThat( processor.fetchItems( viewRequest, mock( EntityView.class ), pageRequest ) )
+		assertThat( processor.fetchItems( viewRequest, mock( EntityView.class ), sort ) )
 				.isNotNull()
-				.isInstanceOf( Page.class )
-				.containsExactly( two );
-		verify( queryExecutor, times( 1 ) ).findAll( EntityQuery.all(), sort );
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void fetchingFromCrudRepositorySupportsPaging() {
-		CrudRepository repository = mock( CrudRepository.class );
-		when( entityConfiguration.getAttribute( Repository.class ) ).thenReturn( repository );
-		when( repository.findAll() ).thenReturn( entries );
-
-		PageRequest pageRequest = new PageRequest( 0, 1 );
-		Iterable actual = processor.fetchItems( viewRequest, mock( EntityView.class ), pageRequest );
-		assertThat( actual )
-				.isNotNull()
-				.isInstanceOf( Page.class )
-				.containsExactly( one );
-		Page page = (Page) actual;
-		assertThat( page.getTotalPages() )
-				.isEqualTo( 2 );
-		assertThat( page.getTotalElements() )
-				.isEqualTo( 2 );
-		verify( repository, times( 1 ) ).findAll();
+				.isInstanceOf( List.class )
+				.containsExactly( one, two );
+		verify( queryExecutor, times( 1 ) ).findAll( query, sort );
 	}
 
 	private void verifyItems() {

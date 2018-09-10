@@ -24,6 +24,7 @@ import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.support.PageableExecutionUtils;
 
 import java.util.List;
@@ -85,15 +86,43 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 			Pageable pageable = command.getExtension( pageableExtensionName, Pageable.class );
 
 			if ( pageable != null ) {
-				entityView.addAttribute( attributeName, fetchItems( entityViewRequest, entityView, pageable ) );
+				entityView.addAttribute( attributeName, fetchItemsAndFilter( entityViewRequest, entityView, pageable ) );
 			}
 		}
 	}
 
+	/**
+	 * Fetches all items for a specified {@link Pageable} request.
+	 *
+	 * @param entityViewRequest
+	 * @param entityView
+	 * @param pageable          that is requested
+	 * @return an {@link Iterable} holding the items.
+	 */
 	protected abstract Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable );
 
+	/**
+	 * Fetches all items for a specified {@link Sort}.
+	 *
+	 * @param entityViewRequest
+	 * @param entityView
+	 * @param sort
+	 * @return an {@link Iterable} holding the items.
+	 */
+	protected abstract Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Sort sort );
+
+	private Iterable fetchItemsAndFilter( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
+		if ( showOnlyItemsWithAction != null ) {
+			EntityConfiguration entityConfiguration = entityViewRequest.getEntityViewContext().getEntityConfiguration();
+			return filterAccessibleItems( fetchItems( entityViewRequest, entityView, pageable.getSort() ),
+			                              entityConfiguration,
+			                              pageable );
+		}
+		return fetchItems( entityViewRequest, entityView, pageable );
+	}
+
 	@SuppressWarnings("unchecked")
-	protected Iterable filterAccessibleItems( Iterable entities, EntityConfiguration configuration, Pageable pageable ) {
+	private Iterable filterAccessibleItems( Iterable entities, EntityConfiguration configuration, Pageable pageable ) {
 		Iterable result = entities;
 		if ( showOnlyItemsWithAction != null ) {
 			result = (List) StreamSupport.stream( entities.spliterator(), false )
@@ -107,7 +136,7 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Page buildPage( Iterable allItems, Pageable pageable ) {
+	private Page buildPage( Iterable allItems, Pageable pageable ) {
 		Spliterator spliterator = allItems.spliterator();
 		long estimatedSize = spliterator.estimateSize();
 		PageableExecutionUtils.TotalSupplier totalSupplier = () -> estimatedSize;
