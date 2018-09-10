@@ -16,9 +16,9 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import lombok.AllArgsConstructor;
@@ -27,8 +27,8 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Post-processor that resolves a tooltip text for a current property and the legend of a {@link FieldsetFormElement}.
- * By default supports HTML in the resulting message.
+ * Post-processor that resolves a tooltip text for a current property and a {@link com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset}.
+ * Any tooltip text will be added to the title of the fieldset. By default supports HTML in the resulting message.
  * <p/>
  * This post processor is usually registered automatically when rendering {@link com.foreach.across.modules.entity.views.ViewElementMode#FORM_WRITE}.
  *
@@ -38,7 +38,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @AllArgsConstructor
 @NoArgsConstructor
-public class FieldsetTooltipTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, FieldsetFormElement>
+public class FieldsetTooltipTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, ViewElementFieldset>
 {
 	/**
 	 * -- SETTER --
@@ -47,14 +47,14 @@ public class FieldsetTooltipTextPostProcessor<T extends ViewElement> extends Abs
 	private boolean escapeHtml;
 
 	@Override
-	protected void postProcess( ViewElementBuilderContext builderContext, FieldsetFormElement element, EntityPropertyDescriptor propertyDescriptor ) {
+	protected void postProcess( ViewElementBuilderContext builderContext, ViewElementFieldset element, EntityPropertyDescriptor propertyDescriptor ) {
 		val text = builderContext.getMessage( "properties." + propertyDescriptor.getName() + "[tooltip]", "" );
 
 		if ( !StringUtils.isEmpty( text ) ) {
 			TooltipViewElement tooltip = new TooltipViewElement();
 			tooltip.setText( text );
 			tooltip.setEscapeHtml( escapeHtml );
-			element.getLegend().addChild( tooltip );
+			element.getTitle().addChild( tooltip );
 		}
 	}
 }

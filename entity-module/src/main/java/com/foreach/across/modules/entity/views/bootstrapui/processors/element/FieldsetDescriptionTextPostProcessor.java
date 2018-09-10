@@ -16,8 +16,8 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -30,18 +30,18 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
 import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder.CSS_FORM_TEXT_DESCRIPTION;
 
 /**
- * Post-processor that resolves a description text for a current property and a {@link com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement}.
- * By default supports HTML in the resulting message. The description text is added at the top of the fieldset.
+ * Post-processor that resolves a description text for a current property and a {@link com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset}.
+ * By default supports HTML in the resulting message. The description text is added in the header of the fieldset.
  * <p/>
  * This post processor is usually registered automatically when rendering {@link com.foreach.across.modules.entity.views.ViewElementMode#FORM_WRITE}.
  *
  * @author Arne Vandamme
- * @since 3.0.0
  * @see FormGroupDescriptionTextPostProcessor
+ * @since 3.0.0
  */
 @AllArgsConstructor
 @NoArgsConstructor
-public class FieldsetDescriptionTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, FieldsetFormElement>
+public class FieldsetDescriptionTextPostProcessor<T extends ViewElement> extends AbstractPropertyDescriptorAwarePostProcessor<T, ViewElementFieldset>
 {
 	/**
 	 * -- SETTER --
@@ -50,16 +50,17 @@ public class FieldsetDescriptionTextPostProcessor<T extends ViewElement> extends
 	private boolean escapeHtml;
 
 	@Override
-	protected void postProcess( ViewElementBuilderContext builderContext, FieldsetFormElement element, EntityPropertyDescriptor propertyDescriptor ) {
+	protected void postProcess( ViewElementBuilderContext builderContext, ViewElementFieldset element, EntityPropertyDescriptor propertyDescriptor ) {
 		val text = builderContext.getMessage( "properties." + propertyDescriptor.getName() + "[description]", "" );
 
 		if ( !StringUtils.isEmpty( text ) ) {
-			element.addFirstChild(
-					helpBlock()
-							.css( CSS_FORM_TEXT_DESCRIPTION )
-							.add( new TextViewElement( text, escapeHtml ) )
-							.build( builderContext )
-			);
+			element.getHeader()
+			       .addChild(
+					       helpBlock()
+							       .css( CSS_FORM_TEXT_DESCRIPTION )
+							       .add( new TextViewElement( text, escapeHtml ) )
+							       .build( builderContext )
+			       );
 		}
 	}
 }

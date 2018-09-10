@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.menu;
 
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.EntityViewRegistry;
+import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -65,7 +66,7 @@ public class EntityAdminMenuAttributeRegistrar
 					String viewName = entityViewFactory.getAttribute( EntityViewFactoryAttributes.VIEW_NAME, String.class );
 					PathBasedMenuBuilder.PathBasedMenuItemBuilder builder = menuEvent.builder().item(
 							menuPath,
-							"#{adminMenu.views[" + viewName + "]=" + viewName + "}",
+							"#{adminMenu.views[" + viewName + "]=" + EntityUtils.generateDisplayName( viewName ) + "}",
 							menuEvent.getLinkBuilder().forInstance( menuEvent.getEntity() ).updateView().withViewName( viewName ).toString()
 					);
 					if ( itemCustomizer != null ) {

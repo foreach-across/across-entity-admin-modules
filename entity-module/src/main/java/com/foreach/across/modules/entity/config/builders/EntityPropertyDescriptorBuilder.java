@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
+import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -227,8 +228,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name, parent );
 
 		if ( parent == null ) {
-			descriptor.setDisplayName( name );
-			descriptor.setValueFetcher( new SpelValueFetcher( name ) );
+			descriptor.setDisplayName( EntityUtils.generateDisplayName( name ) );
 			descriptor.setReadable( true );
 		}
 

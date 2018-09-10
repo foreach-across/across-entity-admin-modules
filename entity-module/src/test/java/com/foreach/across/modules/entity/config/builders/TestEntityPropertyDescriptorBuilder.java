@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.support.SpelValueFetcher;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.junit.Before;
@@ -67,11 +66,11 @@ public class TestEntityPropertyDescriptorBuilder
 		build();
 
 		assertEquals( "myprop", descriptor.getName() );
-		assertEquals( "myprop", descriptor.getDisplayName() );
+		assertEquals( "Myprop", descriptor.getDisplayName() );
 		assertNull( descriptor.getPropertyType() );
 		assertNull( descriptor.getPropertyTypeDescriptor() );
 		assertNull( descriptor.getPropertyRegistry() );
-		assertTrue( descriptor.getValueFetcher() instanceof SpelValueFetcher );
+		assertNull( descriptor.getValueFetcher() );
 		assertFalse( descriptor.isHidden() );
 		assertFalse( descriptor.isWritable() );
 		assertTrue( descriptor.isReadable() );

@@ -89,7 +89,7 @@ public class TestEntityAdminMenuAttributeRegistrar
 		assertThat( menu.size() ).isEqualTo( 1 );
 		Menu item = menu.getFirstItem();
 		assertThat( item.getPath() ).isEqualTo( "/my-path" );
-		assertThat( item.getTitle() ).isEqualTo( "#{adminMenu.views[myView]=myView}" );
+		assertThat( item.getTitle() ).isEqualTo( "#{adminMenu.views[myView]=My view}" );
 		assertThat( item.getUrl() ).isEqualTo( "/my-entity?view=myView" );
 	}
 
@@ -104,7 +104,7 @@ public class TestEntityAdminMenuAttributeRegistrar
 		assertThat( menu.size() ).isEqualTo( 1 );
 		Menu item = menu.getFirstItem();
 		assertThat( item.getPath() ).isEqualTo( "/my-path" );
-		assertThat( item.getTitle() ).isEqualTo( "#{adminMenu.views[myView]=myView}" );
+		assertThat( item.getTitle() ).isEqualTo( "#{adminMenu.views[myView]=My view}" );
 		assertThat( item.getUrl() ).isEqualTo( "/my-entity?view=myView" );
 	}
 
