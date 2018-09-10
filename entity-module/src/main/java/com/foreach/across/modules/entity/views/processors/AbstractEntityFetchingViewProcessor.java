@@ -94,8 +94,8 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	/**
 	 * Fetches all items for a specified {@link Pageable} request.
 	 *
-	 * @param entityViewRequest
-	 * @param entityView
+	 * @param entityViewRequest current request
+	 * @param entityView        current view
 	 * @param pageable          that is requested
 	 * @return an {@link Iterable} holding the items.
 	 */
@@ -104,9 +104,9 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	/**
 	 * Fetches all items for a specified {@link Sort}.
 	 *
-	 * @param entityViewRequest
-	 * @param entityView
-	 * @param sort
+	 * @param entityViewRequest current request
+	 * @param entityView        current view
+	 * @param sort              that is requested
 	 * @return an {@link Iterable} holding the items.
 	 */
 	protected abstract Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Sort sort );
