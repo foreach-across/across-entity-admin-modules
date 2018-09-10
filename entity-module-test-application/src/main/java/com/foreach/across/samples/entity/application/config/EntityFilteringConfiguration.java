@@ -52,13 +52,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.ENTITY_QUERY_OPERAND;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
@@ -103,6 +106,17 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                                    EntityQueryConditionTranslator.expandingOr( "name", "content" ) )
 		                                        .hidden( true )
 
+		             )
+		             .association( ab -> ab.name( "imaginary" )
+		                                   .targetEntityType( Note.class )
+		                                   .associationType( EntityAssociation.Type.EMBEDDED )
+		                                   .listView( lvb -> lvb.pageFetcher( (Function<Pageable, Iterable<?>>) pageable -> {
+			                                   return new PageImpl<>( Collections.emptyList(), pageable, 0L );
+		                                   } ) )
+		             )
+		             .association( ab -> ab.name( "note.parent" )
+		                                   .targetEntityType( Note.class )
+		                                   .associationType( EntityAssociation.Type.EMBEDDED )
 		             )
 		             .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
 		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text", "parent.content" )

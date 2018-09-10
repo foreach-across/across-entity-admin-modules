@@ -21,6 +21,7 @@ import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenu;
@@ -100,7 +101,7 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		        .ifPresent( subText -> page.addToPageTitleSubText( TextViewElement.html( subText ) ) );
 
 		if ( addEntityMenu ) {
-			buildEntityMenu( entityViewContext, page, builderContext );
+			buildEntityMenu( entityViewRequest, page, builderContext );
 		}
 	}
 
@@ -138,6 +139,40 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 				                   .replaceGroupBySelectedItem()
 				                   .build( builderContext )
 		);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void buildEntityMenu( EntityViewRequest entityViewRequest, PageContentStructure page, ViewElementBuilderContext builderContext ) {
+		String viewName = entityViewRequest.getViewName();
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+		if ( entityViewContext.isForAssociation() ) {
+			EntityAdminMenu entityMenu = EntityAdminMenu.create( entityViewContext.getParentContext() );
+			menuFactory.buildMenu( entityMenu );
+			page.addToNav( BootstrapUiBuilders.nav( entityMenu )
+			                                  .tabs()
+			                                  .replaceGroupBySelectedItem()
+			                                  .build( builderContext ) );
+
+			if ( EntityAssociation.Type.EMBEDDED == entityViewContext.getEntityAssociation().getAssociationType()
+					&& !( StringUtils.equals( EntityView.CREATE_VIEW_NAME, viewName ) || StringUtils.equals( EntityView.LIST_VIEW_NAME, viewName ) ) ) {
+				entityMenu = EntityAdminMenu.create( entityViewContext );
+				menuFactory.buildMenu( entityMenu );
+				page.addToFooter( BootstrapUiBuilders.nav( entityMenu )
+				                                     .pills()
+				                                     .replaceGroupBySelectedItem()
+				                                     .build( builderContext ) );
+			}
+
+		}
+		else {
+			EntityAdminMenu entityMenu = EntityAdminMenu.create( entityViewContext );
+			menuFactory.buildMenu( entityMenu );
+			page.addToHeader( BootstrapUiBuilders.nav( entityMenu )
+			                                     .tabs()
+			                                     .replaceGroupBySelectedItem()
+			                                     .build( builderContext ) );
+		}
+
 	}
 
 	private EntityViewContext resolveEntityViewContext( EntityViewRequest entityViewRequest ) {
