@@ -19,12 +19,20 @@ package com.foreach.across.modules.bootstrapui.elements;
 import org.junit.Test;
 import org.springframework.util.SerializationUtils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class TestStyle
 {
 	@Test
 	public void shouldBeSerializable() {
-		assertNotNull( SerializationUtils.serialize( new Style( "custom-style" ) ) );
+		byte[] serialized = SerializationUtils.serialize( new Style( "custom-style" ) );
+		assertNotNull( serialized );
+		assertEquals( new Style( "custom-style" ), SerializationUtils.deserialize( serialized ) );
+
+		assertEquals(
+				Style.Button.LINK,
+				SerializationUtils.deserialize( SerializationUtils.serialize( Style.Button.LINK ) )
+		);
 	}
 }
