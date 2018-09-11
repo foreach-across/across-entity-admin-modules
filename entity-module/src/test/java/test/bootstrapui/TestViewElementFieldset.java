@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementF
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +59,7 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 
 	@Test
 	public void customTemplate() {
-		fieldset.setTemplate( fields -> {
+		val function = ViewElementFieldset.template( fields -> {
 			NodeViewElement div = new NodeViewElement( "div" );
 			NodeViewElement h1 = new NodeViewElement( "h1" );
 			h1.addChild( fields.getTitle() );
@@ -67,6 +68,8 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 			div.addChild( html( "<footer>fixed footer</footer>" ) );
 			return div;
 		} );
+
+		fieldset.setTemplate( function );
 
 		renderAndExpect( fieldset, "<div><h1>title</h1>body<footer>fixed footer</footer></div>" );
 	}

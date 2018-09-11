@@ -230,6 +230,19 @@ public class ViewElementFieldset extends ContainerViewElement
 	}
 
 	/**
+	 * Helper for type inference when declaring a template, simply returns the input function.
+	 * Can be used with {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor} attributes, for example:
+	 * {@code descriptor.attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.template( fields -> new ContainerViewElement() ) )}.
+	 *
+	 * @param template function (not null)
+	 * @param <U> output view element type
+	 * @return template function
+	 */
+	public static <U extends ViewElement> Function<ViewElementFieldset, U> template( @NonNull Function<ViewElementFieldset, U> template ) {
+		return template;
+	}
+
+	/**
 	 * Generate a template function that outputs a simple HTML structure based on a structure string.
 	 * The structure can be any of the following:
 	 * <ul>
