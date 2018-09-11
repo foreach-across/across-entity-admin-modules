@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.builders;
 
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
@@ -125,6 +126,9 @@ final class ReadonlyViewInitializer extends AbstractViewInitializer<EntityViewFa
 			EntityConfiguration entityConfiguration = entityViewContext.getEntityConfiguration();
 			Object entity = getEntity( entityViewContext );
 
+			ButtonViewElementBuilder backButton = button().name( "btn-back" )
+			                                              .link( cancelUrl )
+			                                              .text( messages.messageWithFallback( "actions.back" ) );
 			if ( entityConfiguration.getAllowableActions( entity ).contains( AllowableAction.UPDATE ) ) {
 				container.add(
 						button().name( "btn-update" )
@@ -133,12 +137,11 @@ final class ReadonlyViewInitializer extends AbstractViewInitializer<EntityViewFa
 						        .text( messages.withNameSingular( "actions.modify", entity ) )
 				);
 			}
+			else {
+				backButton.style( Style.PRIMARY );
+			}
 
-			container.add(
-					button().name( "btn-cancel" )
-					        .link( cancelUrl )
-					        .text( messages.messageWithFallback( "actions.cancel" ) )
-			);
+			container.add( backButton );
 			return container;
 		}
 
