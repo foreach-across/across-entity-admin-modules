@@ -16,6 +16,7 @@
 
 package test.bootstrapui;
 
+import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -49,7 +50,10 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 
 	@Test
 	public void byDefaultFormFieldsetIsRendered() {
-		renderAndExpect( fieldset, "<fieldset><legend>title</legend>headerbodyfooter</fieldset>" );
+		renderAndExpect( fieldset, "<fieldset class='element-fieldset element-fieldset-fieldset'>" +
+				"<legend class='element-fieldset-title'>title</legend>" +
+				"headerbodyfooter" +
+				"</fieldset>" );
 	}
 
 	@Test
@@ -79,9 +83,6 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 		testCases.put( ViewElementFieldset.TEMPLATE_SECTION_H1, "h1" );
 		testCases.put( ViewElementFieldset.TEMPLATE_SECTION_H2, "h2" );
 		testCases.put( ViewElementFieldset.TEMPLATE_SECTION_H3, "h3" );
-		testCases.put( ViewElementFieldset.TEMPLATE_SECTION_H4, "h4" );
-		testCases.put( ViewElementFieldset.TEMPLATE_SECTION_H5, "h5" );
-		testCases.put( ViewElementFieldset.TEMPLATE_SECTION_H6, "h6" );
 
 		testCases.forEach(
 				( template, heading ) -> {
@@ -97,20 +98,78 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 	}
 
 	@Test
+	public void panelTemplates() {
+		Map<Function<ViewElementFieldset, ? extends ViewElement>, String> testCases = new HashMap<>();
+		testCases.put( ViewElementFieldset.TEMPLATE_PANEL_DEFAULT, "panel-default" );
+		testCases.put( ViewElementFieldset.TEMPLATE_PANEL_DANGER, "panel-danger" );
+		testCases.put( ViewElementFieldset.TEMPLATE_PANEL_PRIMARY, "panel-primary" );
+		testCases.put( ViewElementFieldset.TEMPLATE_PANEL_INFO, "panel-info" );
+		testCases.put( ViewElementFieldset.TEMPLATE_PANEL_SUCCESS, "panel-success" );
+		testCases.put( ViewElementFieldset.TEMPLATE_PANEL_WARNING, "panel-warning" );
+
+		testCases.forEach(
+				( template, panelStyle ) -> {
+					String expected = StringUtils.replace(
+							"<div class='element-fieldset element-fieldset-panel-default panel panel-default'>" +
+									"<div class='element-fieldset-title panel-heading'>title</div>" +
+									"<div class='element-fieldset-content panel-body'>" +
+									"<div class='element-fieldset-header'>header</div>" +
+									"<div class='element-fieldset-body'>body</div>" +
+									"</div>" +
+									"<div class='element-fieldset-footer panel-footer'>footer</div>" +
+									"</div>", "panel-default", panelStyle );
+					fieldset.setTemplate( template );
+					renderAndExpect( fieldset, expected );
+				}
+		);
+	}
+
+	@Test
+	public void customPanelTemplateFormat() {
+		fieldset.setTemplate( ViewElementFieldset.panelTemplate( "x", Style.DANGER ) );
+		renderAndExpect( fieldset, "<div class='element-fieldset x panel panel-danger'>" +
+				"<div class='element-fieldset-title panel-heading'>title</div>" +
+				"<div class='element-fieldset-content panel-body'>" +
+				"<div class='element-fieldset-header'>header</div>" +
+				"<div class='element-fieldset-body'>body</div>" +
+				"</div>" +
+				"<div class='element-fieldset-footer panel-footer'>footer</div>" +
+				"</div>" );
+
+		fieldset.setTemplate( ViewElementFieldset.panelTemplate( "y", Style.PRIMARY ) );
+		fieldset.getFooter().clearChildren();
+		renderAndExpect( fieldset, "<div class='element-fieldset y panel panel-primary'>" +
+				"<div class='element-fieldset-title panel-heading'>title</div>" +
+				"<div class='element-fieldset-content panel-body'>" +
+				"<div class='element-fieldset-header'>header</div>" +
+				"<div class='element-fieldset-body'>body</div>" +
+				"</div>" +
+				"</div>" );
+
+		fieldset.getTitle().clearChildren();
+		renderAndExpect( fieldset, "<div class='element-fieldset y panel panel-primary'>" +
+				"<div class='element-fieldset-content panel-body'>" +
+				"<div class='element-fieldset-header'>header</div>" +
+				"<div class='element-fieldset-body'>body</div>" +
+				"</div>" +
+				"</div>" );
+	}
+
+	@Test
 	public void customTemplateFormat() {
-		fieldset.setTemplate( ViewElementFieldset.template( "x", "section" ) );
+		fieldset.setTemplate( ViewElementFieldset.structureTemplate( "x", "section" ) );
 		renderAndExpect( fieldset, "<section class='element-fieldset x'>titleheaderbodyfooter</section>" );
 
-		fieldset.setTemplate( ViewElementFieldset.template( "y", "section/h3" ) );
+		fieldset.setTemplate( ViewElementFieldset.structureTemplate( "y", "section/h3" ) );
 		renderAndExpect( fieldset, "<section class='element-fieldset y'><h3 class='element-fieldset-title'>title</h3>headerbodyfooter</section>" );
 
-		fieldset.setTemplate( ViewElementFieldset.template( "z", "section/h3/content" ) );
+		fieldset.setTemplate( ViewElementFieldset.structureTemplate( "z", "section/h3/content" ) );
 		renderAndExpect( fieldset, "<section class='element-fieldset z'>" +
 				"<h3 class='element-fieldset-title'>title</h3>" +
 				"<content class='element-fieldset-content'>headerbodyfooter</content>" +
 				"</section>" );
 
-		fieldset.setTemplate( ViewElementFieldset.template( "u", "section/h3/head/main/foot" ) );
+		fieldset.setTemplate( ViewElementFieldset.structureTemplate( "u", "section/h3/head/main/foot" ) );
 		renderAndExpect( fieldset, "<section class='element-fieldset u'>" +
 				"<h3 class='element-fieldset-title'>title</h3>" +
 				"<head class='element-fieldset-header'>header</head>" +
@@ -118,7 +177,7 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 				"<foot class='element-fieldset-footer'>footer</foot>" +
 				"</section>" );
 
-		fieldset.setTemplate( ViewElementFieldset.template( "v", "section/h3/content/head/main/foot" ) );
+		fieldset.setTemplate( ViewElementFieldset.structureTemplate( "v", "section/h3/content/head/main/foot" ) );
 		renderAndExpect( fieldset, "<section class='element-fieldset v'>" +
 				"<h3 class='element-fieldset-title'>title</h3>" +
 				"<content class='element-fieldset-content'>" +
