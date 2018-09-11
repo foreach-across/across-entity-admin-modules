@@ -160,7 +160,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 	}
 
 	/**
-	 * Configure a default delete view builder for the entity being configured.
+	 * Configure a default readonly view builder for the entity being configured.
 	 * Does not customize the builder but ensures the view gets created using the default builder.
 	 *
 	 * @return current builder
@@ -170,14 +170,14 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 	}
 
 	/**
-	 * Configure the default delete form view builder for the entity being configured.
-	 * A default delete form view is usually available.
+	 * Configure the default readonly form view builder for the entity being configured.
+	 * A default readonly form view is usually available.
 	 *
 	 * @param consumer for configuring the view builder
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder readonlyFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		return formView( EntityView.READONLY_UPDATE_VIEW_NAME, consumer );
+		return formView( EntityView.READONLY_VIEW_NAME, consumer );
 	}
 
 	/**

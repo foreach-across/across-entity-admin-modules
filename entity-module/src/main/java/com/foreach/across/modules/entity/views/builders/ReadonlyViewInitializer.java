@@ -50,7 +50,7 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.container;
 
 /**
- * //TODO document
+ * Configures a blank {@link EntityViewFactoryBuilder} for the {@link EntityView#READONLY_VIEW_NAME}.
  *
  * @author Marc Vanbrabant, Steven Gentens
  * @since 3.2.0
@@ -66,7 +66,7 @@ final class ReadonlyViewInitializer extends AbstractViewInitializer<EntityViewFa
 
 	@Override
 	protected String templateName() {
-		return EntityView.READONLY_UPDATE_VIEW_NAME;
+		return EntityView.READONLY_VIEW_NAME;
 	}
 
 	@Override
