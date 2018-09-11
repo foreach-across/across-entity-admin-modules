@@ -62,7 +62,7 @@ public class EntityCustomization implements EntityConfigurer
 				                      .and()
 				                      .property( "searchText" )
 				                      .propertyType( String.class )
-				                      .attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.expandingOr( "name", "name" ) )
+				                      .attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.expandingOr( "id", "name" ) )
 		        );
 
 		entities.withType( ClientGroup.class )

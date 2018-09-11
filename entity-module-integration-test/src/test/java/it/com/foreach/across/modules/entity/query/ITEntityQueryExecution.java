@@ -282,6 +282,10 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 			// AXEUM-128 - a combination of expanding to name property should still take into account the case insensitivity
 			findRepresentatives( "searchText contains 'surname'", john, joe, peter );
 			findRepresentatives( "searchText contains 'SURNAME'", john, joe, peter );
+
+			// AXEUM-127 - negation should exclude the results
+			findRepresentatives( "searchText not contains 'surname'", weirdo );
+			findRepresentatives( "searchText not contains 'SURNAME'", weirdo );
 		}
 		finally {
 			descriptor.removeAttribute( EntityQueryConditionTranslator.class );
