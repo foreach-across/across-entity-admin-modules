@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityConfigurationBuilder;
+import com.foreach.across.modules.entity.query.EntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
@@ -56,7 +57,13 @@ public class EntityCustomization implements EntityConfigurer
 		        .allowableActionsBuilder( new FixedEntityAllowableActionsBuilder( allowableActions ) );
 
 		entities.withType( Representative.class )
-		        .properties( props -> props.property( "name" ).viewElementType( ViewElementMode.CONTROL, TextareaFormElement.ELEMENT_TYPE ) );
+		        .properties(
+				        props -> props.property( "name" ).viewElementType( ViewElementMode.CONTROL, TextareaFormElement.ELEMENT_TYPE )
+				                      .and()
+				                      .property( "searchText" )
+				                      .propertyType( String.class )
+				                      .attribute( EntityQueryConditionTranslator.class, EntityQueryConditionTranslator.expandingOr( "name", "name" ) )
+		        );
 
 		entities.withType( ClientGroup.class )
 		        .label( "role" );

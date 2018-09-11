@@ -278,6 +278,10 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 			findRepresentatives( "name like '% surname'", john, joe, peter );
 			findRepresentatives( "name like '%\\\\% surname'", john );
 			findRepresentatives( "name contains 'SURNAME'", john, joe, peter );
+
+			// AXEUM-128 - a combination of expanding to name property should still take into account the case insensitivity
+			findRepresentatives( "searchText contains 'surname'", john, joe, peter );
+			findRepresentatives( "searchText contains 'SURNAME'", john, joe, peter );
 		}
 		finally {
 			descriptor.removeAttribute( EntityQueryConditionTranslator.class );
