@@ -138,7 +138,7 @@ final class ReadonlyViewInitializer extends AbstractViewInitializer<EntityViewFa
 				);
 			}
 			else {
-				backButton.style( Style.PRIMARY );
+				backButton.style( Style.DEFAULT );
 			}
 
 			container.add( backButton );
