@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import 'modules/_entity-query-filter-form';
 
 .sortable {
@@ -79,7 +78,15 @@ table > tbody > tr > td.row-actions {
         color: #999;
       }
     }
+
+    .panel-footer .help-block {
+      margin: 0;
+    }
   }
+}
+
+fieldset .help-block:last-child {
+  margin-bottom: 0;
 }
 
 
