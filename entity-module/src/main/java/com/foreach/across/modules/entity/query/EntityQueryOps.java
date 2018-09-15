@@ -19,6 +19,8 @@ import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,26 +46,53 @@ public enum EntityQueryOps
 			"or"
 	),
 	EQ( ( field, args ) -> field + " = " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), "=" ),
-	NEQ( ( field, args ) -> field + " != " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), "!=", "<>" ),
+	NEQ( ( field, args ) -> field + " != " + ( args.length > 0 ? objectAsString( args[0] ) : "" ), true, "!=", "<>" ),
 	CONTAINS( ( field, args ) -> field + " contains " + objectAsString( args[0] ), "contains" ),
 	NOT_CONTAINS(
 			( ( field, args ) -> field + " not contains " + objectAsString( args[0] ) ),
+			true,
 			"not contains"
 	),
 	IN( ( field, args ) -> field + " in " + joinAsGroup( args ), "in" ),
-	NOT_IN( ( field, args ) -> field + " not in " + joinAsGroup( args ), "not in" ),
+	NOT_IN( ( field, args ) -> field + " not in " + joinAsGroup( args ), true, "not in" ),
 	LIKE( ( field, args ) -> field + " like " + objectAsString( args[0] ), "like" ),
 	LIKE_IC( ( field, args ) -> field + " ilike " + objectAsString( args[0] ), "ilike" ),
-	NOT_LIKE( ( field, args ) -> field + " not like " + objectAsString( args[0] ), "not like" ),
-	NOT_LIKE_IC( ( field, args ) -> field + " not ilike " + objectAsString( args[0] ), "not ilike" ),
+	NOT_LIKE( ( field, args ) -> field + " not like " + objectAsString( args[0] ), true, "not like" ),
+	NOT_LIKE_IC( ( field, args ) -> field + " not ilike " + objectAsString( args[0] ), true, "not ilike" ),
 	GT( ( field, args ) -> field + " > " + objectAsString( args[0] ), ">" ),
 	GE( ( field, args ) -> field + " >= " + objectAsString( args[0] ), ">=" ),
 	LT( ( field, args ) -> field + " < " + objectAsString( args[0] ), "<" ),
 	LE( ( field, args ) -> field + " <= " + objectAsString( args[0] ), "<=" ),
 	IS_NULL( ( field, args ) -> field + " is NULL", "is" ),
-	IS_NOT_NULL( ( field, args ) -> field + " is not NULL", "is not" ),
+	IS_NOT_NULL( ( field, args ) -> field + " is not NULL", true, "is not" ),
 	IS_EMPTY( ( field, args ) -> field + " is EMPTY", "is" ),
-	IS_NOT_EMPTY( ( field, args ) -> field + " is not EMPTY", "is not" );
+	IS_NOT_EMPTY( ( field, args ) -> field + " is not EMPTY", true, "is not" );
+
+	private final static Map<EntityQueryOps, EntityQueryOps> REVERSE_OPS = new HashMap<>();
+
+	static {
+		REVERSE_OPS.put( OR, AND );
+		REVERSE_OPS.put( AND, OR );
+		REVERSE_OPS.put( NEQ, EQ );
+		REVERSE_OPS.put( EQ, NEQ );
+		REVERSE_OPS.put( NOT_CONTAINS, CONTAINS );
+		REVERSE_OPS.put( CONTAINS, NOT_CONTAINS );
+		REVERSE_OPS.put( IN, NOT_IN );
+		REVERSE_OPS.put( NOT_IN, IN );
+		REVERSE_OPS.put( NOT_LIKE, LIKE );
+		REVERSE_OPS.put( LIKE, NOT_LIKE );
+		REVERSE_OPS.put( NOT_LIKE_IC, LIKE_IC );
+		REVERSE_OPS.put( LIKE_IC, NOT_LIKE_IC );
+		REVERSE_OPS.put( GT, LT );
+		REVERSE_OPS.put( LT, GT );
+		REVERSE_OPS.put( GE, LE );
+		REVERSE_OPS.put( LE, GE );
+		REVERSE_OPS.put( IS_NULL, IS_NOT_NULL );
+		REVERSE_OPS.put( IS_NOT_NULL, IS_NULL );
+		REVERSE_OPS.put( IS_EMPTY, IS_NOT_EMPTY );
+		REVERSE_OPS.put( IS_NOT_EMPTY, IS_EMPTY );
+
+	}
 
 	private interface OpsWriter
 	{
@@ -96,11 +125,17 @@ public enum EntityQueryOps
 		                   .collect( Collectors.joining( "," ) ) + ")";
 	}
 
-	private String[] tokens;
+	private final String[] tokens;
+	private final boolean negation;
 	private final OpsWriter opsWriter;
 
 	EntityQueryOps( OpsWriter opsWriter, String... tokens ) {
+		this( opsWriter, false, tokens );
+	}
+
+	EntityQueryOps( OpsWriter opsWriter, boolean negation, String... tokens ) {
 		this.opsWriter = opsWriter;
+		this.negation = negation;
 		this.tokens = tokens;
 	}
 
@@ -110,6 +145,20 @@ public enum EntityQueryOps
 
 	public String getToken() {
 		return tokens[0];
+	}
+
+	/**
+	 * @return true if this is the negative (NOT) operand of an original
+	 */
+	public boolean isNegation() {
+		return negation;
+	}
+
+	/**
+	 * @return the reverse operand (if available), often the negation
+	 */
+	public EntityQueryOps reverse() {
+		return REVERSE_OPS.get( this );
 	}
 
 	public static EntityQueryOps forToken( String token ) {

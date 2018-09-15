@@ -16,14 +16,11 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,8 +29,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -48,7 +44,7 @@ public class TestFieldsetTooltipTextPostProcessor
 	@Spy
 	private DefaultViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
 
-	private FieldsetFormElement fieldset = new FieldsetFormElement();
+	private ViewElementFieldset fieldset = new ViewElementFieldset();
 	private FieldsetTooltipTextPostProcessor<ViewElement> postProcessor = new FieldsetTooltipTextPostProcessor<>();
 	
 	@Before
@@ -61,14 +57,14 @@ public class TestFieldsetTooltipTextPostProcessor
 	public void textNotSetIfEmpty() {
 		when( builderContext.getMessage( "properties.myprop[tooltip]", "" ) ).thenReturn( "" );
 		postProcessor.postProcess( builderContext, fieldset );
-		assertThat( fieldset.getLegend().getChildren() ).isEmpty();
+		assertThat( fieldset.getTitle().getChildren() ).isEmpty();
 	}
 
 	@Test
 	public void resolvedMessageSupportsHtmlByDefault() {
 		when( builderContext.getMessage( "properties.myprop[tooltip]", "" ) ).thenReturn( "description" );
 		postProcessor.postProcess( builderContext, fieldset );
-		assertThat( (TooltipViewElement) fieldset.getLegend().getChildren().get( 0 ) )
+		assertThat( (TooltipViewElement) fieldset.getTitle().getChildren().get( 0 ) )
 				.satisfies( text -> {
 					assertThat( text.getText() ).isEqualTo( "description" );
 					assertThat( text.isEscapeHtml() ).isFalse();
@@ -80,7 +76,7 @@ public class TestFieldsetTooltipTextPostProcessor
 		postProcessor = new FieldsetTooltipTextPostProcessor<>( true );
 		when( builderContext.getMessage( "properties.myprop[tooltip]", "" ) ).thenReturn( "description" );
 		postProcessor.postProcess( builderContext, fieldset );
-		assertThat( (TooltipViewElement) fieldset.getLegend().getChildren().get( 0 ) )
+		assertThat( (TooltipViewElement) fieldset.getTitle().getChildren().get( 0 ) )
 				.satisfies( text -> {
 					assertThat( text.getText() ).isEqualTo( "description" );
 					assertThat( text.isEscapeHtml() ).isTrue();

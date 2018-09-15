@@ -66,6 +66,7 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	private Sort defaultSort;
 	private Collection<String> sortableProperties;
 	private BiFunction<EntityViewContext, Pageable, Iterable<?>> pageFetcher;
+	private AllowableAction showOnlyItemsWithAction;
 
 	@Autowired
 	public EntityListViewFactoryBuilder( AutowireCapableBeanFactory beanFactory ) {
@@ -192,6 +193,17 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 	@Override
 	public EntityListViewFactoryBuilder and( Consumer<EntityViewFactoryBuilder> consumer ) {
 		return (EntityListViewFactoryBuilder) super.and( consumer );
+	}
+
+	/**
+	 * Configures the {@link AllowableAction} that is required on an item before it is visible.
+	 *
+	 * @param action that is required to see items
+	 * @return current builder
+	 */
+	public EntityListViewFactoryBuilder showOnlyItemsWithAction( AllowableAction action ) {
+		this.showOnlyItemsWithAction = action;
+		return this;
 	}
 
 	/**
@@ -323,6 +335,17 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		configureSortableTableProcessor( processorRegistry, propertiesToShow, viewElementMode );
 		configureEntityQueryFilter( processorRegistry );
 		configurePageFetcher( processorRegistry );
+		configureRequestedActionFiltering();
+	}
+
+	private void configureRequestedActionFiltering() {
+		if ( showOnlyItemsWithAction != null ) {
+			this.postProcess( ( factory, registry ) ->
+					                  registry.getProcessors().stream()
+					                          .filter( AbstractEntityFetchingViewProcessor.class::isInstance )
+					                          .forEach( p -> ( (AbstractEntityFetchingViewProcessor) p )
+							                          .setShowOnlyItemsWithAction( showOnlyItemsWithAction ) ) );
+		}
 	}
 
 	private void configurePageFetcher( EntityViewProcessorRegistry processorRegistry ) {

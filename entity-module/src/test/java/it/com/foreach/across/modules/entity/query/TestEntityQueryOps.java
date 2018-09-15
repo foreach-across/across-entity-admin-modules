@@ -20,8 +20,7 @@ import com.foreach.across.modules.entity.query.EntityQueryOps;
 import org.junit.Test;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * @author Arne Vandamme
@@ -31,14 +30,14 @@ public class TestEntityQueryOps
 {
 	@Test
 	public void isTokenReturnsNullByDefault() {
-		assertEquals( EntityQueryOps.IS_NULL, EntityQueryOps.forToken( "is" ) );
-		assertEquals( EntityQueryOps.IS_NOT_NULL, EntityQueryOps.forToken( "is not" ) );
+		assertEquals( IS_NULL, EntityQueryOps.forToken( "is" ) );
+		assertEquals( IS_NOT_NULL, EntityQueryOps.forToken( "is not" ) );
 	}
 
 	@Test
 	public void characterEscaping() {
 		assertEquals( "name = 'my \\' name'", EQ.toString( "name", "my ' name" ) );
-		assertEquals( "name != 'my \\\\ name'", EntityQueryOps.NEQ.toString( "name", "my \\ name" ) );
+		assertEquals( "name != 'my \\\\ name'", NEQ.toString( "name", "my \\ name" ) );
 	}
 
 	@Test
@@ -53,5 +52,46 @@ public class TestEntityQueryOps
 		assertNull( EntityQueryOps.resolveMultiValueOperand( LIKE ) );
 		assertNull( EntityQueryOps.resolveMultiValueOperand( AND ) );
 		assertNull( EntityQueryOps.resolveMultiValueOperand( GE ) );
+	}
+
+	@Test
+	public void negation() {
+		assertFalse( EQ.isNegation() );
+		assertTrue( NEQ.isNegation() );
+		assertFalse( CONTAINS.isNegation() );
+		assertTrue( NOT_CONTAINS.isNegation() );
+		assertFalse( IN.isNegation() );
+		assertTrue( NOT_IN.isNegation() );
+		assertFalse( LIKE.isNegation() );
+		assertTrue( NOT_LIKE.isNegation() );
+		assertFalse( LIKE_IC.isNegation() );
+		assertTrue( NOT_LIKE_IC.isNegation() );
+		assertFalse( IS_NULL.isNegation() );
+		assertTrue( IS_NOT_NULL.isNegation() );
+		assertFalse( IS_EMPTY.isNegation() );
+		assertTrue( IS_NOT_EMPTY.isNegation() );
+		assertFalse( GT.isNegation() );
+		assertFalse( GE.isNegation() );
+		assertFalse( LT.isNegation() );
+		assertFalse( LE.isNegation() );
+	}
+
+	@Test
+	public void reverseOperands() {
+		assertReverse( AND, OR );
+		assertReverse( EQ, NEQ );
+		assertReverse( CONTAINS, NOT_CONTAINS );
+		assertReverse( IN, NOT_IN );
+		assertReverse( LIKE, NOT_LIKE );
+		assertReverse( LIKE_IC, NOT_LIKE_IC );
+		assertReverse( IS_NULL, IS_NOT_NULL );
+		assertReverse( IS_EMPTY, IS_NOT_EMPTY );
+		assertReverse( GT, LT );
+		assertReverse( GE, LE );
+	}
+
+	private void assertReverse( EntityQueryOps initial, EntityQueryOps reversed ) {
+		assertEquals( reversed, initial.reverse() );
+		assertEquals( initial, reversed.reverse() );
 	}
 }

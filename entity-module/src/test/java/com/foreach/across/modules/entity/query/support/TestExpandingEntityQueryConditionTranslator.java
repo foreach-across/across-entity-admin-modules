@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
  * @author Arne Vandamme
  * @since 2.2.0
  */
-public class TestExpandingOrEntityQueryConditionTranslator
+public class TestExpandingEntityQueryConditionTranslator
 {
 	@Test
 	public void noMembersResultsInEmptyQuery() {
@@ -65,6 +65,32 @@ public class TestExpandingOrEntityQueryConditionTranslator
 				EntityQuery.or( new EntityQueryCondition( "firstName", EntityQueryOps.LIKE, "My Text" ),
 				                new EntityQueryCondition( "lastName", EntityQueryOps.LIKE, "My Text" ) ),
 				translator.translate( new EntityQueryCondition( "title", EntityQueryOps.LIKE, "My Text" ) )
+		);
+	}
+
+	@Test
+	public void negationExpandsIntoAnd() {
+		EntityQueryConditionTranslator translator = EntityQueryConditionTranslator.expandingOr( "firstName", "lastName" );
+		assertEquals(
+				EntityQuery.and( new EntityQueryCondition( "firstName", EntityQueryOps.NOT_LIKE, "My Text" ),
+				                 new EntityQueryCondition( "lastName", EntityQueryOps.NOT_LIKE, "My Text" ) ),
+				translator.translate( new EntityQueryCondition( "title", EntityQueryOps.NOT_LIKE, "My Text" ) )
+		);
+	}
+
+	@Test
+	public void expandingUsingAnd() {
+		EntityQueryConditionTranslator translator = EntityQueryConditionTranslator.expandingAnd( "firstName", "lastName" );
+		assertEquals(
+				EntityQuery.and( new EntityQueryCondition( "firstName", EntityQueryOps.LIKE, "My Text" ),
+				                 new EntityQueryCondition( "lastName", EntityQueryOps.LIKE, "My Text" ) ),
+				translator.translate( new EntityQueryCondition( "title", EntityQueryOps.LIKE, "My Text" ) )
+		);
+
+		assertEquals(
+				EntityQuery.or( new EntityQueryCondition( "firstName", EntityQueryOps.NOT_LIKE, "My Text" ),
+				                new EntityQueryCondition( "lastName", EntityQueryOps.NOT_LIKE, "My Text" ) ),
+				translator.translate( new EntityQueryCondition( "title", EntityQueryOps.NOT_LIKE, "My Text" ) )
 		);
 	}
 }

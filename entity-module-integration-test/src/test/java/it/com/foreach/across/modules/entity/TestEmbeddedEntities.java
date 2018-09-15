@@ -19,7 +19,6 @@ package it.com.foreach.across.modules.entity;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.adminweb.AdminWebModule;
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
@@ -30,16 +29,17 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
-import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.testmodules.springdata.business.Client;
-import com.foreach.across.testmodules.springdata.business.ClientGroup;
-import com.foreach.across.testmodules.springdata.business.Company;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.test.support.AbstractViewElementTemplateTest;
+import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
+import com.foreach.across.testmodules.springdata.business.Client;
+import com.foreach.across.testmodules.springdata.business.ClientGroup;
+import com.foreach.across.testmodules.springdata.business.Company;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -88,7 +88,7 @@ public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( Company.class );
 		EntityPropertyDescriptor address = entityConfiguration.getPropertyRegistry().getProperty( "address" );
 
-		FieldsetFormElement fieldset = (FieldsetFormElement) viewElementBuilderService
+		ViewElementFieldset fieldset = (ViewElementFieldset) viewElementBuilderService
 				.getElementBuilder( address, ViewElementMode.FORM_WRITE )
 				.build( new DefaultViewElementBuilderContext() );
 

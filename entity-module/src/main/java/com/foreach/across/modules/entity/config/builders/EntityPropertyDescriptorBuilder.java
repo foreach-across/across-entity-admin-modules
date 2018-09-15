@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -270,8 +271,8 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	public MutableEntityPropertyDescriptor build() {
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name, original );
 
-		if ( original == null ) {
-			descriptor.setDisplayName( name );
+		if ( parent == null ) {
+			descriptor.setDisplayName( EntityUtils.generateDisplayName( name ) );
 			descriptor.setReadable( true );
 		}
 

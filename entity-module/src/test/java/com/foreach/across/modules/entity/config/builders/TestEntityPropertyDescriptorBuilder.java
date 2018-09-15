@@ -67,10 +67,11 @@ public class TestEntityPropertyDescriptorBuilder
 		build();
 
 		assertEquals( "myprop", descriptor.getName() );
-		assertEquals( "myprop", descriptor.getDisplayName() );
+		assertEquals( "Myprop", descriptor.getDisplayName() );
 		assertNull( descriptor.getPropertyType() );
 		assertNull( descriptor.getPropertyTypeDescriptor() );
 		assertNull( descriptor.getPropertyRegistry() );
+		assertNull( descriptor.getValueFetcher() );
 		assertFalse( descriptor.isHidden() );
 		assertFalse( descriptor.isWritable() );
 		assertTrue( descriptor.isReadable() );

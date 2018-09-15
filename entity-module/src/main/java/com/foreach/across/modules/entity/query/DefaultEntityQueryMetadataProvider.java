@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.util.Assert;
 
 import java.time.temporal.Temporal;
 import java.util.Date;
@@ -62,7 +63,9 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 	@Override
 	public boolean isValidOperatorForProperty( EntityQueryOps operator, String property ) {
 		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( property );
-		return ArrayUtils.contains( retrieveOperandsForType( descriptor.getPropertyTypeDescriptor() ), operator );
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		Assert.notNull( typeDescriptor, "No type descriptor for property '" + property + "', unable to validate EntityQuery" );
+		return ArrayUtils.contains( retrieveOperandsForType( typeDescriptor ), operator );
 	}
 
 	@Override
