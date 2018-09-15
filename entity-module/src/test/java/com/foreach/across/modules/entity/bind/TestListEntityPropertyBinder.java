@@ -200,12 +200,10 @@ public class TestListEntityPropertyBinder
 		EntityPropertyBinder<Object> template = mock( EntityPropertyBinder.class );
 
 		when( binder.createPropertyBinder( memberDescriptor ) ).thenReturn( template );
-		when( binder.createValue( memberController, TypeDescriptor.valueOf( Integer.class ) ) ).thenReturn( 123 );
 
 		assertThat( property.getItemTemplate() ).isSameAs( template );
 		assertThat( property.getItemTemplate() ).isSameAs( template );
 		verify( binder, times( 1 ) ).createPropertyBinder( any() );
-		verify( template, times( 1 ) ).setValue( 123 );
 	}
 
 	@Test

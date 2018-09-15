@@ -71,7 +71,6 @@ public class TestEntityPropertyDescriptorBuilder
 		assertNull( descriptor.getPropertyType() );
 		assertNull( descriptor.getPropertyTypeDescriptor() );
 		assertNull( descriptor.getPropertyRegistry() );
-		assertNull( descriptor.getValueFetcher() );
 		assertFalse( descriptor.isHidden() );
 		assertFalse( descriptor.isWritable() );
 		assertTrue( descriptor.isReadable() );

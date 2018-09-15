@@ -19,7 +19,6 @@ package com.foreach.across.modules.entity.bind;
 import com.foreach.across.modules.entity.registry.properties.*;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.MethodInvocationException;
 import org.springframework.core.convert.ConversionFailedException;
@@ -256,16 +255,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	Object createValue( EntityPropertyController<Object, Object> controller, TypeDescriptor descriptor ) {
 		if ( controller != null ) {
 			return controller.createValue( getBindingContext() );
-		}
-
-		if ( descriptor != null ) {
-			val constructor = ConstructorUtils.getAccessibleConstructor( descriptor.getObjectType() );
-			if ( constructor != null ) {
-				try {
-					return constructor.newInstance();
-				}
-				catch ( Exception ignore ) { /* ignore instantiation exceptions */ }
-			}
 		}
 
 		return null;

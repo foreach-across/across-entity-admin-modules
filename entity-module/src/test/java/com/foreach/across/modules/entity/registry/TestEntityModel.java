@@ -44,7 +44,7 @@ public class TestEntityModel
 		model = new DefaultEntityModel<>();
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void printerCannotBeNull() {
 		model.setLabelPrinter( null );
 	}
@@ -67,7 +67,7 @@ public class TestEntityModel
 		assertEquals( "hello", model.getLabel( "test" ) );
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void entityFactoryCannotBeNull() {
 		model.setEntityFactory( null );
 	}
@@ -94,7 +94,7 @@ public class TestEntityModel
 		assertEquals( "dto", model.createDto( "existing" ) );
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void findOneMethodCannotBeNull() {
 		model.setFindOneMethod( null );
 	}
@@ -107,7 +107,7 @@ public class TestEntityModel
 		assertEquals( "yes", model.findOne( "go" ) );
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void saveMethodCannotBeNull() {
 		model.setSaveMethod( null );
 	}
@@ -120,7 +120,7 @@ public class TestEntityModel
 		assertEquals( "yes", model.save( "go" ) );
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void deleteMethodCannotBeNull() {
 		model.setDeleteMethod( null );
 	}
@@ -135,7 +135,7 @@ public class TestEntityModel
 		verify( consumer ).accept( "entity" );
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void entityInformationCannotBeNull() {
 		model.setEntityInformation( null );
 	}

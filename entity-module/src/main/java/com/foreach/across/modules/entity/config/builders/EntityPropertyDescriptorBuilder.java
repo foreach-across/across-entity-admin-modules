@@ -271,7 +271,7 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	public MutableEntityPropertyDescriptor build() {
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name, original );
 
-		if ( parent == null ) {
+		if ( original == null ) {
 			descriptor.setDisplayName( EntityUtils.generateDisplayName( name ) );
 			descriptor.setReadable( true );
 		}

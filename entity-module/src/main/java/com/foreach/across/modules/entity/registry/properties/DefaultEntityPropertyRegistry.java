@@ -19,6 +19,7 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
 
@@ -135,10 +136,10 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				// todo: centralize descriptor creation to the factory
 				( (ConfigurableEntityPropertyController) descriptor.getController() ).createValueSupplier( () -> {
 					try {
-						return memberTypeDescriptor.getObjectType().newInstance();
+						return ConstructorUtils.invokeConstructor( memberTypeDescriptor.getObjectType() );
 					}
 					catch ( Exception e ) {
-						throw new IllegalStateException( "Unable to create value for: " + memberTypeDescriptor );
+						throw new IllegalStateException( "Unable to create value for: " + memberTypeDescriptor, e );
 					}
 				} );
 

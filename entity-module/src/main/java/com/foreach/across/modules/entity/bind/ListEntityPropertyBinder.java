@@ -46,9 +46,9 @@ import java.util.stream.Collectors;
  * @author Arne Vandamme
  * @see SingleEntityPropertyBinder
  * @see MapEntityPropertyBinder
- * @since 3.1.0
+ * @since 3.2.0
  */
-@SuppressWarnings( "Duplicates" )
+@SuppressWarnings("Duplicates")
 public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 {
 	private final EntityPropertiesBinder binder;
@@ -74,7 +74,6 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	@Getter
 	@Setter
 	private boolean updateItemsOnBinding;
-
 
 	ListEntityPropertyBinder( EntityPropertiesBinder binder,
 	                          EntityPropertyDescriptor collectionDescriptor,
@@ -111,9 +110,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	}
 
 	private EntityPropertyBinder<Object> createItem() {
-		EntityPropertyBinder<Object> controller = binder.createPropertyBinder( memberDescriptor );
-		controller.setValue( binder.createValue( memberController, memberTypeDescriptor ) );
-		return controller;
+		return binder.createPropertyBinder( memberDescriptor );
 	}
 
 	public Map<String, EntityPropertyBinder<Object>> getItems() {

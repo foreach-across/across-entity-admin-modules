@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.support.MethodValueFetcher;
 import com.foreach.across.modules.entity.views.support.MethodValueWriter;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.stereotype.Service;
@@ -88,10 +89,10 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 
 		configurable.createValueSupplier( () -> {
 			try {
-				return property.getObjectType().newInstance();
+				return ConstructorUtils.invokeConstructor( property.getType() );
 			}
 			catch ( Exception e ) {
-				throw new IllegalStateException( "Unable to create value for: " + property.getObjectType() );
+				throw new IllegalStateException( "Unable to create value for: " + property.getType(), e );
 			}
 		} );
 

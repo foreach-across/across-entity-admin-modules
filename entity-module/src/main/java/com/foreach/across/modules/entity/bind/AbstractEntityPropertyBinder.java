@@ -32,7 +32,7 @@ import java.util.Optional;
  * related methods and simple properties.
  *
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder<Object>

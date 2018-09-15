@@ -142,11 +142,9 @@ public class TestMapEntityPropertyBinder
 
 		when( binder.createPropertyBinder( keyDescriptor ) ).thenReturn( templateKey );
 		when( binder.createPropertyBinder( valueDescriptor ) ).thenReturn( templateValue );
-		when( binder.createValue( valueController, VALUE ) ).thenReturn( 123 );
 
 		assertThat( property.getTemplate().getKey() ).isSameAs( templateKey );
 		assertThat( property.getTemplate().getValue() ).isSameAs( templateValue );
-		verify( templateValue, times( 1 ) ).setValue( 123 );
 	}
 
 	@Test

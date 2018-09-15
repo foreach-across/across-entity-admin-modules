@@ -34,7 +34,7 @@ import java.util.*;
  * @author Arne Vandamme
  * @see SingleEntityPropertyBinder
  * @see ListEntityPropertyBinder
- * @since 3.1.0
+ * @since 3.2.0
  */
 @SuppressWarnings("Duplicates")
 public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
@@ -230,11 +230,6 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		if ( String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
 			item.setEntryKey( key );
 		}
-		else {
-			item.setEntryKey( binder.createValue( keyController, keyTypeDescriptor ) );
-		}
-
-		item.setEntryValue( binder.createValue( valueController, valueTypeDescriptor ) );
 
 		return item;
 	}

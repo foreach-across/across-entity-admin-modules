@@ -27,7 +27,7 @@ import java.util.Objects;
  * The original property value will be loaded as soon as any value-related action is attempted.
  *
  * @author Arne Vandamme
- * @since 3.1.0
+ * @since 3.2.0
  */
 public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBinder
 {

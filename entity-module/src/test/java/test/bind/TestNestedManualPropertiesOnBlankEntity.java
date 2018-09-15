@@ -105,12 +105,12 @@ public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPrope
 	@Test
 	public void bindingMapPropertyOfCustomListPropertyOnCustomType() {
 		bind( "properties[holder].properties[id].value=5",
-		      "properties[holder].properties[holders].items[1].value.id=10",
+		      "properties[holder].properties[holders].items[1].initializedValue.id=10",
 		      "properties[holder].properties[holders].items[1].properties[dummies].entries[1].key.value=Test",
 		      "properties[holder].properties[holders].items[1].properties[dummies].entries[1].value.properties[id].value=33",
 		      "properties[holder].properties[holders].items[1].properties[dummies].entries[1].value.properties[name].value=Test dummy",
-		      "properties[holder].properties[holders].items[2].value.id=15",
-		      "properties[holder].properties[holders].items[2].properties[holders].items[1].value.id=20"
+		      "properties[holder].properties[holders].items[2].initializedValue.id=15",
+		      "properties[holder].properties[holders].items[2].properties[holders].items[1].initializedValue.id=20"
 		);
 
 		DummiesHolder holder = (DummiesHolder) propertyValues.get( "holder" ).getValue();

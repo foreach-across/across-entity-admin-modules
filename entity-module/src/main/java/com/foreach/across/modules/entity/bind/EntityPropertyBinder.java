@@ -31,7 +31,7 @@ import org.springframework.validation.Errors;
  *
  * @author Arne Vandamme
  * @see EntityPropertiesBinder
- * @since 3.1.0
+ * @since 3.2.0
  */
 public interface EntityPropertyBinder<T>
 {

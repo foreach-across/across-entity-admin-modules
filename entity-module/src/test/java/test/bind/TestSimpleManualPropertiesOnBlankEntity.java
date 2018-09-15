@@ -183,11 +183,11 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 	@Test
 	public void listWithCustomType() {
 		bind( "properties[dummyList].bound=1",
-		      "properties[dummyList].items[1].value.id=10",
-		      "properties[dummyList].items[1].value.name=Hello",
+		      "properties[dummyList].items[1].initializedValue.id=10",
+		      "properties[dummyList].items[1].initializedValue.name=Hello",
 		      "properties[dummyList].items[1].sortIndex=2000",
-		      "properties[dummyList].items[2].value.id=20",
-		      "properties[dummyList].items[2].value.name=Olleh",
+		      "properties[dummyList].items[2].initializedValue.id=20",
+		      "properties[dummyList].items[2].initializedValue.name=Olleh",
 		      "properties[dummyList].items[2].sortIndex=1000",
 		      "properties[dummyList].items[3].value=",
 		      "properties[dummyList].items[3].sortIndex=1500" );
@@ -237,8 +237,8 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 		      "properties[longDummyMap].entries[y].entryKey=-1",
 		      "properties[longDummyMap].entries[y].entryValue=",
 		      "properties[longDummyMap].entries[z].entryKey=2",
-		      "properties[longDummyMap].entries[z].entryValue.id=5",
-		      "properties[longDummyMap].entries[z].entryValue.name=Hello" );
+		      "properties[longDummyMap].entries[z].value.initializedValue.id=5",
+		      "properties[longDummyMap].entries[z].value.initializedValue.name=Hello" );
 
 		assertMap( "longDummyMap" )
 				.hasSize( 3 )
@@ -253,12 +253,12 @@ public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPrope
 	public void mapWithCustomKeyAndCustomValueType() {
 		bind( "properties[dummyDummyMap].entries[x].key.value=1",
 		      "properties[dummyDummyMap].entries[x].value.value=1",
-		      "properties[dummyDummyMap].entries[y].key.value.id=55",
+		      "properties[dummyDummyMap].entries[y].key.initializedValue.id=55",
 		      "properties[dummyDummyMap].entries[y].value.value=",
-		      "properties[dummyDummyMap].entries[z].key.value.id=33",
-		      "properties[dummyDummyMap].entries[z].key.value.name=Olleh",
-		      "properties[dummyDummyMap].entries[z].value.value.id=5",
-		      "properties[dummyDummyMap].entries[z].value.value.name=Hello" );
+		      "properties[dummyDummyMap].entries[z].key.initializedValue.id=33",
+		      "properties[dummyDummyMap].entries[z].key.initializedValue.name=Olleh",
+		      "properties[dummyDummyMap].entries[z].value.initializedValue.id=5",
+		      "properties[dummyDummyMap].entries[z].value.initializedValue.name=Hello" );
 
 		assertMap( "dummyDummyMap" )
 				.hasSize( 3 )

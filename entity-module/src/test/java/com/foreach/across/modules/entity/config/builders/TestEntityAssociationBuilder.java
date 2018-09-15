@@ -181,8 +181,8 @@ public class TestEntityAssociationBuilder
 		entityRegistryImpl.register( new EntityConfigurationImpl<>( "-bad-association-name", String.class ) );
 		when( beanFactory.getBean( EntityRegistry.class ) ).thenReturn( entityRegistryImpl );
 
-		assertThatThrownBy( () -> builder.parentDeleteMode( EntityAssociation.ParentDeleteMode.IGNORE ).name( "foobar" ).apply( configuration ) ).isInstanceOf(
-				NullPointerException.class ).hasMessageContaining(
-				"entityType" );
+		assertThatThrownBy( () -> builder.parentDeleteMode( EntityAssociation.ParentDeleteMode.IGNORE ).name( "foobar" ).apply( configuration ) )
+				.isInstanceOf( IllegalArgumentException.class )
+				.hasMessageContaining( "entityType" );
 	}
 }
