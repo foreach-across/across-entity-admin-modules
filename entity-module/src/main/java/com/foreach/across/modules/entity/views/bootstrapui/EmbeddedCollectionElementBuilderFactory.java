@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.EmbeddedCollectionViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -68,7 +69,8 @@ public class EmbeddedCollectionElementBuilderFactory implements EntityViewElemen
 		                          */
 	}
 
-	private ViewElementBuilder createItemTemplate( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode ) {
+	@SuppressWarnings( "unchecked" )
+	private ViewElementBuilder<ViewElement> createItemTemplate( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode ) {
 		EntityPropertyDescriptor memberDescriptor = propertyDescriptor.getPropertyRegistry().getProperty( propertyDescriptor.getName() + "[]" );
 
 		return entityViewElementBuilderService.getElementBuilder( memberDescriptor, ViewElementMode.FORM_WRITE );

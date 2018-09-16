@@ -89,4 +89,41 @@ fieldset .help-block:last-child {
   margin-bottom: 0;
 }
 
+.embedded-collection-item {
+  display: table-row;
 
+  border-bottom: 1px dotted #eaeaea;
+
+  > div {
+    display: table-cell;
+    vertical-align: top;
+    border-top: 1px dotted #eaeaea;
+    padding-top: 10px;
+  }
+
+  &:last-child {
+    > div {
+      border-bottom: 1px dotted #eaeaea;
+    }
+  }
+
+  .embedded-collection-item-data {
+    width: 100%;
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+  }
+
+  .embedded-collection-item-handle {
+    padding: 11px 10px 0 0;
+    color: #eaeaea;
+  }
+  .embedded-collection-item-actions {
+    padding: 11px 0 0 10px;
+
+    a {
+      color: red;
+    }
+  }
+}

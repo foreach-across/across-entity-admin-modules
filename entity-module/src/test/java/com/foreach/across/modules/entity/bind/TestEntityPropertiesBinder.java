@@ -30,11 +30,9 @@ import org.springframework.beans.MethodInvocationException;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -332,6 +330,11 @@ public class TestEntityPropertiesBinder
 		verifyZeroInteractions( listValueController, mapValueController );
 
 		verify( parentController ).applyValue( bindingContext, new EntityPropertyValue( "original", "dto", false ) );
+	}
+
+	@Test
+	public void accessingNestedPropertyAsDirectOrViaChildPropertiesUseSameController() {
+		// todo: binder.get( "user.name" ) and binder.get("user").getProperties().get("name")
 	}
 
 	private SingleEntityPropertyBinder single( String propertyName ) {

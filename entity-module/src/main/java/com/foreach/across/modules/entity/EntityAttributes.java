@@ -16,13 +16,13 @@
 
 package com.foreach.across.modules.entity;
 
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
-import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -135,6 +135,10 @@ public interface EntityAttributes
 
 		if ( descriptor.isNestedProperty() ) {
 			String parentControlName = controlName( descriptor.getParentDescriptor() );
+
+			// todo: only if the parent is of a certain type?
+			parentControlName = StringUtils.removeEnd( parentControlName, ".value" ) + ".initializedValue";
+
 			EntityPropertyDescriptor targetDescriptor = descriptor.getAttribute( EntityAttributes.TARGET_DESCRIPTOR, EntityPropertyDescriptor.class );
 
 			return parentControlName + "." + ( targetDescriptor != null ? targetDescriptor.getName() : descriptorName );
