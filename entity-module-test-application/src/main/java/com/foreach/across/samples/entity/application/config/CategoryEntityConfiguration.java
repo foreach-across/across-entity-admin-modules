@@ -34,6 +34,7 @@ import com.foreach.across.modules.entity.registry.properties.GenericEntityProper
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
@@ -311,6 +312,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .propertyType( Brand.class )
 			     .controller( memberController )
 			     .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
+			     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_BODY_ONLY )
 			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) );
 		};
 	}
