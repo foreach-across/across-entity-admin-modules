@@ -69,7 +69,7 @@ public class TestFieldsetElementBuilderFactory extends ViewElementBuilderFactory
 
 	@Test
 	public void customTemplateAttributeIsUsed() {
-		val template = ViewElementFieldset.template( "", "x/y" );
+		val template = ViewElementFieldset.structureTemplate( "", "x/y" );
 
 		EntityPropertyDescriptor embedded = properties.get( "embedded" );
 		when( embedded.getAttribute( ViewElementFieldset.TEMPLATE, Function.class ) ).thenReturn( template );

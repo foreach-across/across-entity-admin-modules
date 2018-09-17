@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
+import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -43,10 +44,15 @@ import java.util.stream.Stream;
  * How a {@code ViewElementFieldset} is rendered depends on the {@link #setTemplate(Function)} that has been set.
  * By default all content will be rendered in an actual HTML fieldset element.
  * A number of default templates are also available: {@link #TEMPLATE_BODY_ONLY}, {@link #TEMPLATE_SECTION_H1}, {@link #TEMPLATE_SECTION_H2},
- * {@link #TEMPLATE_SECTION_H3}, {@link #TEMPLATE_SECTION_H4}, {@link #TEMPLATE_SECTION_H5} and {@link #TEMPLATE_SECTION_H6}.
+ * {@link #TEMPLATE_SECTION_H3}, {@link #TEMPLATE_PANEL_DEFAULT}, {@link #TEMPLATE_PANEL_INFO}, {@link #TEMPLATE_PANEL_PRIMARY},
+ * {@link #TEMPLATE_PANEL_SUCCESS}, {@link #TEMPLATE_PANEL_WARNING} and {@link #TEMPLATE_PANEL_DANGER}.
  * </p>
  * <p>
- * See also the {@link #template(String, String)} utility function for manually generating simple templates.
+ * See also the utility functions for manually generating simple templates:
+ * <ul>
+ * <li>{@link #structureTemplate(String, String)}</li>
+ * <li>{@link #panelTemplate(String, Style)}</li>
+ * </ul>
  * </p>
  * <p>
  * Any child element operations (adding, removing) performed directly on the {@code ViewElementFieldset},
@@ -78,46 +84,81 @@ public class ViewElementFieldset extends ContainerViewElement
 	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_BODY_ONLY = ViewElementFieldset::getBody;
 
 	/**
+	 * Template that renders the fieldset as an actual HTML {@code fieldset} element with only a {@code legend}.
+	 * An additional class {@code element-fieldset-fieldset} will be put on the outer wrapper.
+	 * The body of the fieldset will not be wrapped to stay compatible with the equivalent {@link FieldsetFormElement} output.
+	 * See the {@link #structureTemplate(String, String)} documentation for information on the other CSS classes added.
+	 * <p/>
+	 * NOTE: this is the default rendering template.
+	 */
+	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_FIELDSET = structureTemplate( "element-fieldset-fieldset",
+	                                                                                                                "fieldset/legend" );
+
+	/**
 	 * Template that renders the fieldset with an outer {@code section} element, using a {@code h1} for the title and a {@code div} for the content wrapper.
 	 * An additional class {@code element-fieldset-section-h1} will be put on the outer wrapper.
-	 * See the {@link #template(String, String)} documentation for information on the other CSS classes added.
+	 * See the {@link #structureTemplate(String, String)} documentation for information on the other CSS classes added.
 	 */
-	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_SECTION_H1 = template( "element-fieldset-section-h1", "section/h1/div" );
+	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_SECTION_H1 = structureTemplate( "element-fieldset-section-h1",
+	                                                                                                                  "section/h1/div" );
 
 	/**
 	 * Template that renders the fieldset with an outer {@code section} element, using a {@code h2} for the title and a {@code div} for the content wrapper.
 	 * An additional class {@code element-fieldset-section-h2} will be put on the outer wrapper.
-	 * See the {@link #template(String, String)} documentation for information on the other CSS classes added.
+	 * See the {@link #structureTemplate(String, String)} documentation for information on the other CSS classes added.
 	 */
-	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_SECTION_H2 = template( "element-fieldset-section-h2", "section/h2/div" );
+	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_SECTION_H2 = structureTemplate( "element-fieldset-section-h2",
+	                                                                                                                  "section/h2/div" );
 
 	/**
 	 * Template that renders the fieldset with an outer {@code section} element, using a {@code h3} for the title and a {@code div} for the content wrapper.
 	 * An additional class {@code element-fieldset-section-h3} will be put on the outer wrapper.
-	 * See the {@link #template(String, String)} documentation for information on the other CSS classes added.
+	 * See the {@link #structureTemplate(String, String)} documentation for information on the other CSS classes added.
 	 */
-	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_SECTION_H3 = template( "element-fieldset-section-h3", "section/h3/div" );
+	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_SECTION_H3 = structureTemplate( "element-fieldset-section-h3",
+	                                                                                                                  "section/h3/div" );
 
 	/**
-	 * Template that renders the fieldset with an outer {@code section} element, using a {@code h4} for the title and a {@code div} for the content wrapper.
-	 * An additional class {@code element-fieldset-section-h4} will be put on the outer wrapper.
-	 * See the {@link #template(String, String)} documentation for information on the other CSS classes added.
+	 * Template that renders the fieldset as a Bootstrap {@code panel-default} with additional css class {@code element-fieldset-panel-default}.
+	 * See {@link #panelTemplate(String, Style)} for information on the structure generated.
 	 */
-	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_SECTION_H4 = template( "element-fieldset-section-h4", "section/h4/div" );
+	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_PANEL_DEFAULT
+			= panelTemplate( "element-fieldset-panel-default", Style.DEFAULT );
 
 	/**
-	 * Template that renders the fieldset with an outer {@code section} element, using a {@code h5} for the title and a {@code div} for the content wrapper.
-	 * An additional class {@code element-fieldset-section-h5} will be put on the outer wrapper.
-	 * See the {@link #template(String, String)} documentation for information on the other CSS classes added.
+	 * Template that renders the fieldset as a Bootstrap {@code panel-primary} with additional css class {@code element-fieldset-panel-primary}.
+	 * See {@link #panelTemplate(String, Style)} for information on the structure generated.
 	 */
-	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_SECTION_H5 = template( "element-fieldset-section-h5", "section/h5/div" );
+	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_PANEL_PRIMARY
+			= panelTemplate( "element-fieldset-panel-primary", Style.PRIMARY );
 
 	/**
-	 * Template that renders the fieldset with an outer {@code section} element, using a {@code h6} for the title and a {@code div} for the content wrapper.
-	 * An additional class {@code element-fieldset-section-h6} will be put on the outer wrapper.
-	 * See the {@link #template(String, String)} documentation for information on the other CSS classes added.
+	 * Template that renders the fieldset as a Bootstrap {@code panel-info} with additional css class {@code element-fieldset-panel-info}.
+	 * See {@link #panelTemplate(String, Style)} for information on the structure generated.
 	 */
-	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_SECTION_H6 = template( "element-fieldset-section-h6", "section/h6/div" );
+	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_PANEL_INFO
+			= panelTemplate( "element-fieldset-panel-info", Style.INFO );
+
+	/**
+	 * Template that renders the fieldset as a Bootstrap {@code panel-success} with additional css class {@code element-fieldset-panel-success}.
+	 * See {@link #panelTemplate(String, Style)} for information on the structure generated.
+	 */
+	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_PANEL_SUCCESS
+			= panelTemplate( "element-fieldset-panel-success", Style.SUCCESS );
+
+	/**
+	 * Template that renders the fieldset as a Bootstrap {@code panel-warning} with additional css class {@code element-fieldset-panel-warning}.
+	 * See {@link #panelTemplate(String, Style)} for information on the structure generated.
+	 */
+	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_PANEL_WARNING
+			= panelTemplate( "element-fieldset-panel-warning", Style.WARNING );
+
+	/**
+	 * Template that renders the fieldset as a Bootstrap {@code panel-danger} with additional css class {@code element-fieldset-panel-danger}.
+	 * See {@link #panelTemplate(String, Style)} for information on the structure generated.
+	 */
+	public static final Function<ViewElementFieldset, ? extends ViewElement> TEMPLATE_PANEL_DANGER
+			= panelTemplate( "element-fieldset-panel-danger", Style.DANGER );
 
 	/**
 	 * Contains elements that make up the title of the fieldset.
@@ -151,14 +192,7 @@ public class ViewElementFieldset extends ContainerViewElement
 	@Setter
 	@Getter
 	@NonNull
-	private Function<ViewElementFieldset, ? extends ViewElement> template = fields -> {
-		FieldsetFormElement fieldset = new FieldsetFormElement();
-		fieldset.getLegend().addChild( title );
-		fieldset.addChild( header );
-		fieldset.addChild( body );
-		fieldset.addChild( footer );
-		return fieldset;
-	};
+	private Function<ViewElementFieldset, ? extends ViewElement> template = TEMPLATE_FIELDSET;
 
 	@Override
 	public Stream<ViewElement> elementStream() {
@@ -196,8 +230,21 @@ public class ViewElementFieldset extends ContainerViewElement
 	}
 
 	/**
-	 * Generate a template function that outputs a simple HTML structure based on a format string.
-	 * The format can be any of the following:
+	 * Helper for type inference when declaring a template, simply returns the input function.
+	 * Can be used with {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor} attributes, for example:
+	 * {@code descriptor.attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.template( fields -> new ContainerViewElement() ) )}.
+	 *
+	 * @param template function (not null)
+	 * @param <U> output view element type
+	 * @return template function
+	 */
+	public static <U extends ViewElement> Function<ViewElementFieldset, U> template( @NonNull Function<ViewElementFieldset, U> template ) {
+		return template;
+	}
+
+	/**
+	 * Generate a template function that outputs a simple HTML structure based on a structure string.
+	 * The structure can be any of the following:
 	 * <ul>
 	 * <li>{@code wrapper}: a single outer element {@code wrapper} will be added</li>
 	 * <li>{@code wrapper/title}: in addition to the wrapper, the title will be wrapped with a {@code title} element</li>
@@ -227,15 +274,15 @@ public class ViewElementFieldset extends ContainerViewElement
 	 * }</pre>
 	 *
 	 * @param cssClassName additional css class that should be added to the outer wrapper
-	 * @param format       string
+	 * @param structure    string
 	 * @return template function
 	 */
 	@SuppressWarnings("unchecked")
-	public static Function<ViewElementFieldset, NodeViewElement> template( @NonNull String cssClassName, @NonNull String format ) {
-		String[] nodes = format.split( "/" );
+	public static Function<ViewElementFieldset, NodeViewElement> structureTemplate( @NonNull String cssClassName, @NonNull String structure ) {
+		String[] nodes = structure.split( "/" );
 
 		if ( nodes.length == 4 || nodes.length > 7 ) {
-			throw new IllegalArgumentException( "Valid fieldset template format is 'wrapper', 'wrapper/title', 'wrapper/title/content', " +
+			throw new IllegalArgumentException( "Valid fieldset template structure is 'wrapper', 'wrapper/title', 'wrapper/title/content', " +
 					                                    "'wrapper/title/header/body/footer' or 'wrapper/title/content/header/body/footer'" );
 		}
 
@@ -243,14 +290,16 @@ public class ViewElementFieldset extends ContainerViewElement
 			NodeViewElement wrapper = new NodeViewElement( nodes[0] );
 			wrapper.addCssClass( "element-fieldset", cssClassName );
 
-			if ( nodes.length > 1 ) {
-				NodeViewElement title = new NodeViewElement( nodes[1] );
-				title.addCssClass( "element-fieldset-title" );
-				title.addChild( fieldset.getTitle() );
-				wrapper.addChild( title );
-			}
-			else {
-				wrapper.addChild( fieldset.getTitle() );
+			if ( fieldset.getTitle().hasChildren() ) {
+				if ( nodes.length > 1 ) {
+					NodeViewElement title = new NodeViewElement( nodes[1] );
+					title.addCssClass( "element-fieldset-title" );
+					title.addChild( fieldset.getTitle() );
+					wrapper.addChild( title );
+				}
+				else {
+					wrapper.addChild( fieldset.getTitle() );
+				}
 			}
 
 			NodeViewElement content = wrapper;
@@ -276,14 +325,88 @@ public class ViewElementFieldset extends ContainerViewElement
 				footer.addCssClass( "element-fieldset-footer" );
 				footer.addChild( fieldset.getFooter() );
 
-				content.addChild( header );
+				if ( fieldset.getHeader().hasChildren() ) {
+					content.addChild( header );
+				}
 				content.addChild( body );
-				content.addChild( footer );
+				if ( fieldset.getFooter().hasChildren() ) {
+					content.addChild( footer );
+				}
 			}
 			else {
 				content.addChild( fieldset.getHeader() );
 				content.addChild( fieldset.getBody() );
 				content.addChild( fieldset.getFooter() );
+			}
+
+			return wrapper;
+		};
+	}
+
+	/**
+	 * Generate a template function that builds a Bootstrap panel layout for the fieldset.
+	 * Heading and footer panel elements will only be added if their content is not empty.
+	 * <p>
+	 * This template will also add the following CSS classes to the output:
+	 * <ul>
+	 * <li>{@code element-fieldset}: to the main panel div</li>
+	 * <li>{@code element-fieldset-title}: to the panel heading</li>
+	 * <li>{@code element-fieldset-body}: to the panel body</li>
+	 * <li>{@code element-fieldset-header}: to an additional div wrapping the header element (inside panel body)</li>
+	 * <li>{@code element-fieldset-body}: to an additional div wrapping the body element (inside panel body)</li>
+	 * <li>{@code element-fieldset-footer}: to the panel footer</li>
+	 * </ul>
+	 * For example a format of {@code Style.DANGER} with a {@code cssClassName='my-custom-css'} will output the following:
+	 * <pre>{@code
+	 * <div class="element-fieldset my-custom-css panel panel-danger">
+	 *  <div class="element-fieldset-title panel-heading">[title elements]</div>
+	 *  <div class="element-fieldset-content panel-body">
+	 *      <div class="element-fieldset-header">[header elements]</div>
+	 *      <div class="element-fieldset-body">[body elements]</div>
+	 *  </div>
+	 *  <div class="element-fieldset-footer panel-footer">[footer elements]</div>
+	 * </div>
+	 * }</pre>
+	 *
+	 * @param cssClassName additional css class that should be added to the main panel div
+	 * @param style        panel style
+	 * @return template function
+	 */
+	public static Function<ViewElementFieldset, NodeViewElement> panelTemplate( @NonNull String cssClassName, @NonNull Style style ) {
+		return fieldset -> {
+			NodeViewElement wrapper = new NodeViewElement( "div" );
+			wrapper.addCssClass( "element-fieldset", cssClassName, "panel", style.forPrefix( "panel" ) );
+
+			if ( fieldset.getTitle().hasChildren() ) {
+				NodeViewElement panelHeading = new NodeViewElement( "div" );
+				panelHeading.addCssClass( "element-fieldset-title", "panel-heading" );
+				panelHeading.addChild( fieldset.getTitle() );
+				wrapper.addChild( panelHeading );
+			}
+
+			NodeViewElement panelBody = new NodeViewElement( "div" );
+			panelBody.addCssClass( "element-fieldset-content", "panel-body" );
+
+			if ( fieldset.getHeader().hasChildren() ) {
+				NodeViewElement header = new NodeViewElement( "div" );
+				header.addCssClass( "element-fieldset-header" );
+				header.addChild( fieldset.getHeader() );
+				panelBody.addChild( header );
+			}
+
+			NodeViewElement b = new NodeViewElement( "div" );
+			b.addCssClass( "element-fieldset-body" );
+			b.addChild( fieldset.getBody() );
+			panelBody.addChild( b );
+
+			NodeViewElement panelFooter = new NodeViewElement( "div" );
+			panelFooter.addCssClass( "element-fieldset-footer", "panel-footer" );
+			panelFooter.addChild( fieldset.getFooter() );
+
+			wrapper.addChild( panelBody );
+
+			if ( fieldset.getFooter().hasChildren() ) {
+				wrapper.addChild( panelFooter );
 			}
 
 			return wrapper;

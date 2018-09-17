@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.entity.query;
 
-import com.foreach.across.modules.entity.query.support.ExpandingOrEntityQueryConditionTranslator;
+import com.foreach.across.modules.entity.query.support.ExpandingEntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.query.support.IgnoringCaseEntityQueryConditionTranslator;
 
 /**
@@ -46,13 +46,26 @@ public interface EntityQueryConditionTranslator
 	}
 
 	/**
-	 * Creates a translator that replaces a single condition by an OR combination of multiple other conditions,
-	 * having the same operand and argument values.
+	 * Creates a translator that replaces a single condition by an {@code OR} combination of multiple other conditions,
+	 * having the same operand and argument values. If the original operand is a negation, the expansion will
+	 * happen with an {@code AND} operand instead.
 	 *
 	 * @param propertyNames to combine
 	 * @return translator for the property names
 	 */
 	static EntityQueryConditionTranslator expandingOr( String... propertyNames ) {
-		return new ExpandingOrEntityQueryConditionTranslator( propertyNames );
+		return ExpandingEntityQueryConditionTranslator.or( propertyNames );
+	}
+
+	/**
+	 * Creates a translator that replaces a single condition by an {@code AND} combination of multiple other conditions,
+	 * having the same operand and argument values. If the original operand is a negation, the expansion will
+	 * happen with an {@code OR} operand instead.
+	 *
+	 * @param propertyNames to combine
+	 * @return translator for the property names
+	 */
+	static EntityQueryConditionTranslator expandingAnd( String... propertyNames ) {
+		return ExpandingEntityQueryConditionTranslator.and( propertyNames );
 	}
 }

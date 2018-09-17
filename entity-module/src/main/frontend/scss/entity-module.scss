@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 @import 'modules/_entity-query-filter-form';
 
 .sortable {
@@ -49,10 +48,6 @@ table > tbody > tr > td.row-actions {
 }
 
 .element-fieldset {
-  .form-group:last-child {
-    margin-bottom: 0;
-  }
-
   h1, h2, h3, h4, h5, h6 {
     padding-bottom: 5px;
     margin-bottom: 15px;
@@ -68,41 +63,30 @@ table > tbody > tr > td.row-actions {
   h3 {
     font-size: 16px;
   }
-  h4, h5 {
-    font-size: 16px;
-    background-color: #efefef;
-    border: solid 1px #e5e5e5;
-    padding: 10px 10px;
-    color: #777;
-    margin-bottom: 0;
-  }
 
-  &.element-fieldset-section-h4 .element-fieldset-content {
-    border: solid 1px #e5e5e5;
-    border-top: 0;
-    padding: 15px 10px 20px 10px;
-    margin-bottom: 15px;
-  }
+  &.panel {
+    .form-group:last-child {
+      margin-bottom: 15px;
+    }
 
-  &.element-fieldset-section-h5 .element-fieldset-content {
-    border: 0;
-    padding: 15px 0 20px 10px;
-    margin-bottom: 15px;
-  }
+    .panel-heading .text-muted {
+      color: white;
+    }
 
-  h6 {
-    font-size: 16px;
-    border-bottom: none;
-    padding-bottom: 0;
-    margin-bottom: 8px;
-  }
+    &.panel-default {
+      .panel-heading .text-muted {
+        color: #999;
+      }
+    }
 
-  &.element-fieldset-section-h6 .element-fieldset-content {
-    border: dotted 1px #e5e5e5;
-    padding: 15px 10px 20px 10px;
-    margin-bottom: 15px;
+    .panel-footer .help-block {
+      margin: 0;
+    }
   }
+}
 
+fieldset .help-block:last-child {
+  margin-bottom: 0;
 }
 
 

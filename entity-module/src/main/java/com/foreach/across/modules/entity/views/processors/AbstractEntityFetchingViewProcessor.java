@@ -21,15 +21,14 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
-import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.support.PageableExecutionUtils;
 
 import java.util.List;
 import java.util.Spliterator;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -79,10 +78,7 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	 * The {@link AllowableAction} that is required for an item to be viewable.
 	 */
 	@Setter
-	protected AllowableAction requestedAction;
-
-	@Setter
-	protected Function<?, AllowableActions> allowableActionsResolver;
+	protected AllowableAction showOnlyItemsWithAction;
 
 	@Override
 	public final void doControl( EntityViewRequest entityViewRequest, EntityView entityView, EntityViewCommand command ) {
@@ -90,19 +86,47 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 			Pageable pageable = command.getExtension( pageableExtensionName, Pageable.class );
 
 			if ( pageable != null ) {
-				entityView.addAttribute( attributeName, fetchItems( entityViewRequest, entityView, pageable ) );
+				entityView.addAttribute( attributeName, fetchItemsAndFilter( entityViewRequest, entityView, pageable ) );
 			}
 		}
 	}
 
+	/**
+	 * Fetches all items for a specified {@link Pageable} request.
+	 *
+	 * @param entityViewRequest current request
+	 * @param entityView        current view
+	 * @param pageable          that is requested
+	 * @return an {@link Iterable} holding the items.
+	 */
 	protected abstract Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable );
 
+	/**
+	 * Fetches all items for a specified {@link Sort}.
+	 *
+	 * @param entityViewRequest current request
+	 * @param entityView        current view
+	 * @param sort              that is requested
+	 * @return an {@link Iterable} holding the items.
+	 */
+	protected abstract Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Sort sort );
+
+	private Iterable fetchItemsAndFilter( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
+		if ( showOnlyItemsWithAction != null ) {
+			EntityConfiguration entityConfiguration = entityViewRequest.getEntityViewContext().getEntityConfiguration();
+			return filterAccessibleItems( fetchItems( entityViewRequest, entityView, pageable.getSort() ),
+			                              entityConfiguration,
+			                              pageable );
+		}
+		return fetchItems( entityViewRequest, entityView, pageable );
+	}
+
 	@SuppressWarnings("unchecked")
-	protected Iterable filterByRequestedAction( Iterable entities, EntityConfiguration configuration, Pageable pageable ) {
+	private Iterable filterAccessibleItems( Iterable entities, EntityConfiguration configuration, Pageable pageable ) {
 		Iterable result = entities;
-		if ( requestedAction != null ) {
+		if ( showOnlyItemsWithAction != null ) {
 			result = (List) StreamSupport.stream( entities.spliterator(), false )
-			                             .filter( entity -> configuration.getAllowableActions( entity ).contains( requestedAction ) )
+			                             .filter( entity -> configuration.getAllowableActions( entity ).contains( showOnlyItemsWithAction ) )
 			                             .collect( Collectors.toList() );
 			if ( pageable != null ) {
 				result = buildPage( result, pageable );
@@ -112,7 +136,7 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Page buildPage( Iterable allItems, Pageable pageable ) {
+	private Page buildPage( Iterable allItems, Pageable pageable ) {
 		Spliterator spliterator = allItems.spliterator();
 		long estimatedSize = spliterator.estimateSize();
 		PageableExecutionUtils.TotalSupplier totalSupplier = () -> estimatedSize;
