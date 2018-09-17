@@ -82,7 +82,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 		}
 		else if ( allowableActions.contains( AllowableAction.READ ) ) {
 			cell.add( BootstrapUiBuilders.button()
-			                             .link( url.readonlyView().toUriString() )
+			                             .link( url.toUriString() )
 			                             .iconOnly( new GlyphIcon( GlyphIcon.EYE_OPEN ) )
 			                             .text( messages.viewAction() )
 			);

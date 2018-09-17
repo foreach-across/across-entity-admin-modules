@@ -34,7 +34,6 @@ import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
-import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
@@ -125,10 +124,9 @@ class EntityModuleAdminMenuRegistrar
 			                                   messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			                            .order( Ordered.HIGHEST_PRECEDENCE );
 
-			if ( EntityView.READONLY_VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
-				SingleEntityViewLinkBuilder readonlyView = currentEntityLink.readonlyView();
-				generalBuilder.changePathTo( readonlyView.toString() )
-				              .url( readonlyView.toString() );
+			if ( !allowableActions.contains( AllowableAction.UPDATE ) || EntityView.DEFAULT_VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
+				generalBuilder.changePathTo( currentEntityLink.toString() )
+				              .url( currentEntityLink.toString() );
 			}
 
 			if ( !isAssociation ) {

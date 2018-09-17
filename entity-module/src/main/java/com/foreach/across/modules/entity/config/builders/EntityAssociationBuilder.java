@@ -250,8 +250,8 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	}
 
 	@Override
-	public EntityAssociationBuilder readonlyView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		return (EntityAssociationBuilder) super.readonlyView( consumer );
+	public EntityAssociationBuilder detailView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.detailView( consumer );
 	}
 
 	@Override
@@ -287,8 +287,8 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	}
 
 	@Override
-	public EntityAssociationBuilder readonlyView() {
-		return (EntityAssociationBuilder) super.readonlyView();
+	public EntityAssociationBuilder detailView() {
+		return (EntityAssociationBuilder) super.detailView();
 	}
 
 	@Override

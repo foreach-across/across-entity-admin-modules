@@ -32,13 +32,6 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 	}
 
 	/**
-	 * @return readonly view for the current instance
-	 */
-	public SingleEntityViewLinkBuilder readonlyView() {
-		return cloneLinkBuilder( toUriComponentsBuilder() );
-	}
-
-	/**
 	 * @return update view for the current instance
 	 */
 	public SingleEntityViewLinkBuilder updateView() {

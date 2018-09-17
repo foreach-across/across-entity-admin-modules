@@ -51,23 +51,23 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.container;
 
 /**
- * Configures a blank {@link EntityViewFactoryBuilder} for the {@link EntityView#READONLY_VIEW_NAME}.
+ * Configures a blank {@link EntityViewFactoryBuilder} for the {@link EntityView#DEFAULT_VIEW_NAME}.
  *
  * @author Marc Vanbrabant, Steven Gentens
  * @since 3.2.0
  */
 @Component
 @ConditionalOnAdminWeb
-final class ReadonlyViewInitializer extends AbstractViewInitializer<EntityViewFactoryBuilder>
+final class DefaultViewInitializer extends AbstractViewInitializer<EntityViewFactoryBuilder>
 {
-	public ReadonlyViewInitializer( AutowireCapableBeanFactory beanFactory,
-	                                EntityPropertyRegistryProvider propertyRegistryProvider ) {
+	public DefaultViewInitializer( AutowireCapableBeanFactory beanFactory,
+	                               EntityPropertyRegistryProvider propertyRegistryProvider ) {
 		super( beanFactory, propertyRegistryProvider );
 	}
 
 	@Override
 	protected String templateName() {
-		return EntityView.READONLY_VIEW_NAME;
+		return EntityView.DEFAULT_VIEW_NAME;
 	}
 
 	@Override
@@ -94,12 +94,12 @@ final class ReadonlyViewInitializer extends AbstractViewInitializer<EntityViewFa
 			formViewProcessor.setAddDefaultButtons( false );
 			formViewProcessor.setAddGlobalBindingErrors( true );
 			builder.viewProcessor( formViewProcessor )
-			       .viewProcessor( new ReadOnlyFormViewPostProcessor() );
+			       .viewProcessor( new DefaultFormViewPostProcessor() );
 		};
 	}
 
 	@RequiredArgsConstructor
-	private static final class ReadOnlyFormViewPostProcessor extends EntityViewProcessorAdapter
+	private static final class DefaultFormViewPostProcessor extends EntityViewProcessorAdapter
 	{
 		@Override
 		protected void createViewElementBuilders( EntityViewRequest entityViewRequest,
