@@ -28,8 +28,10 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
@@ -55,6 +57,7 @@ import java.util.function.Consumer;
 class EntityModuleAdminMenuRegistrar
 {
 	private final EntityRegistry entityRegistry;
+	private final EntityViewRequest entityViewRequest;
 
 	@EventListener
 	public void adminMenu( AdminMenuEvent adminMenuEvent ) {
@@ -122,7 +125,7 @@ class EntityModuleAdminMenuRegistrar
 			                                   messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			                            .order( Ordered.HIGHEST_PRECEDENCE );
 
-			if ( !allowableActions.contains( AllowableAction.UPDATE ) ) {
+			if ( EntityView.READONLY_VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
 				SingleEntityViewLinkBuilder readonlyView = currentEntityLink.readonlyView();
 				generalBuilder.changePathTo( readonlyView.toString() )
 				              .url( readonlyView.toString() );
