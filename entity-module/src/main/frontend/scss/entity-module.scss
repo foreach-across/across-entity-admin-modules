@@ -1,3 +1,18 @@
+/*!
+ * Copyright 2014 the original author or authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 @import 'modules/_entity-query-filter-form';
 
 .sortable {
@@ -30,6 +45,48 @@ table > tbody > tr > td.row-actions {
   padding-left: 20px;
   padding-right: 20px;
   white-space: nowrap;
+}
+
+.element-fieldset {
+  h1, h2, h3, h4, h5, h6 {
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    border-bottom: solid 3px #e5e5e5;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+  h2 {
+    font-size: 20px;
+  }
+  h3 {
+    font-size: 16px;
+  }
+
+  &.panel {
+    .form-group:last-child {
+      margin-bottom: 15px;
+    }
+
+    .panel-heading .text-muted {
+      color: white;
+    }
+
+    &.panel-default {
+      .panel-heading .text-muted {
+        color: #999;
+      }
+    }
+
+    .panel-footer .help-block {
+      margin: 0;
+    }
+  }
+}
+
+fieldset .help-block:last-child {
+  margin-bottom: 0;
 }
 
 

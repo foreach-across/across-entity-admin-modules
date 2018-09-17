@@ -15,23 +15,24 @@
  */
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
-import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.FieldsetFormElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.FieldsetElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
+import lombok.val;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import java.util.Collections;
+import java.util.function.Function;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -39,14 +40,14 @@ import static org.mockito.Mockito.*;
 /**
  * @author Arne Vandamme
  */
-public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<FieldsetFormElement>
+public class TestFieldsetElementBuilderFactory extends ViewElementBuilderFactoryTestSupport<ViewElementFieldset>
 {
 	@Mock
 	private EntityViewElementBuilderService viewElementBuilderService;
 
 	@Override
 	protected EntityViewElementBuilderFactory createBuilderFactory() {
-		return new FieldsetFormElementBuilderFactory( viewElementBuilderService );
+		return new FieldsetElementBuilderFactory( viewElementBuilderService );
 	}
 
 	@Override
@@ -61,25 +62,33 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 
 		EntityPropertyDescriptor embedded = properties.get( "embedded" );
 
-		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_READ );
+		ViewElementFieldset fieldset = assemble( embedded, ViewElementMode.FORM_READ );
 		assertNotNull( fieldset );
-		assertEquals( "label text", ( (TextViewElement) fieldset.getLegend().getChildren().get( 0 ) ).getText() );
+		assertEquals( "label text", ( (TextViewElement) fieldset.getTitle().getChildren().get( 0 ) ).getText() );
 	}
 
 	@Test
-	public void embeddedClassSelectsByDefault() {
+	public void customTemplateAttributeIsUsed() {
+		val template = ViewElementFieldset.structureTemplate( "", "x/y" );
+
+		EntityPropertyDescriptor embedded = properties.get( "embedded" );
+		when( embedded.getAttribute( ViewElementFieldset.TEMPLATE, Function.class ) ).thenReturn( template );
+
+		ViewElementFieldset fieldset = assemble( embedded, ViewElementMode.FORM_READ );
+		assertNotNull( fieldset );
+		assertSame( template, fieldset.getTemplate() );
+	}
+
+	@Test
+	public void childPropertiesAreSelectedIfNoSelector() {
 		EntityPropertyDescriptor member = mock( EntityPropertyDescriptor.class );
 
 		EntityPropertySelector selector = new EntityPropertySelector( "embedded.*" );
 		when( registry.select( selector ) ).thenReturn( Collections.singletonList( member ) );
 
-		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
-		metadata.setEmbedded( true );
-
 		EntityPropertyDescriptor embedded = properties.get( "embedded" );
-		when( embedded.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
 
-		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_READ );
+		ViewElementFieldset fieldset = assemble( embedded, ViewElementMode.FORM_READ );
 		assertNotNull( fieldset );
 		verify( registry ).select( selector );
 		verify( viewElementBuilderService ).getElementBuilder( member, ViewElementMode.FORM_READ );
@@ -96,7 +105,7 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 		when( embedded.getAttribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.class ) )
 				.thenReturn( selector );
 
-		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_READ );
+		ViewElementFieldset fieldset = assemble( embedded, ViewElementMode.FORM_READ );
 		assertNotNull( fieldset );
 		verify( registry ).select( selector );
 		verify( viewElementBuilderService ).getElementBuilder( member, ViewElementMode.FORM_READ );
@@ -122,11 +131,10 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 				propertyBuilder );
 		when( propertyBuilder.build( builderContext ) ).thenReturn( mock( TextViewElement.class ) );
 
-		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_WRITE );
+		ViewElementFieldset fieldset = assemble( embedded, ViewElementMode.FORM_WRITE );
 		assertNotNull( fieldset );
-		assertTrue( fieldset.getChildren().get( 0 ) instanceof FieldsetFormElement.Legend );
 
-		NodeViewElement descriptionBlock = (NodeViewElement) fieldset.getChildren().get( 1 );
+		NodeViewElement descriptionBlock = (NodeViewElement) fieldset.getHeader().getChildren().get( 0 );
 		assertNotNull( descriptionBlock );
 		assertEquals( "description", ( (TextViewElement) descriptionBlock.getChildren().get( 0 ) ).getText() );
 
@@ -139,9 +147,9 @@ public class TestFieldsetFormElementBuilderFactory extends ViewElementBuilderFac
 	public void inReadModeTheTextSettingsAreNotAdded() {
 		EntityPropertyDescriptor embedded = properties.get( "embedded" );
 
-		FieldsetFormElement fieldset = assemble( embedded, ViewElementMode.FORM_READ );
+		ViewElementFieldset fieldset = assemble( embedded, ViewElementMode.FORM_READ );
 		assertNotNull( fieldset );
-		assertTrue( fieldset.getChildren().isEmpty() );
+		assertTrue( fieldset.getBody().getChildren().isEmpty() );
 
 		verify( builderContext, never() ).getMessage( eq( "properties.embedded[description]" ), any( String.class ) );
 		verify( builderContext, never() ).getMessage( eq( "properties.embedded[help]" ), any( String.class ) );
