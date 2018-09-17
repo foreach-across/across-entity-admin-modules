@@ -55,7 +55,7 @@ public class EntityView implements Model
 	public static final String LIST_VIEW_NAME = "listView";
 	public static final String GENERIC_VIEW_NAME = "genericView";
 	public static final String SUMMARY_VIEW_NAME = "listSummaryView";
-	public static final String DEFAULT_VIEW_NAME = "view";
+	public static final String DETAIL_VIEW_NAME = "view";
 
 	private final ModelMap model;
 	private final RedirectAttributes redirectAttributes;

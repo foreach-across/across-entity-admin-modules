@@ -177,7 +177,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 	 * @return current builder
 	 */
 	public AbstractWritableAttributesAndViewsBuilder detailView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		return formView( EntityView.DEFAULT_VIEW_NAME, consumer );
+		return formView( EntityView.DETAIL_VIEW_NAME, consumer );
 	}
 
 	/**

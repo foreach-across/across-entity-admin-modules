@@ -17,6 +17,8 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
+import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -40,6 +42,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -153,7 +156,7 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 				tableBuilder.items( EntityUtils.asPage( items ) );
 			}
 
-			registerDefaultListActions( entityViewContext, tableBuilder );
+			registerDefaultListActions( entityViewRequest, tableBuilder );
 			registerSummaryView( entityViewContext, tableBuilder );
 
 			builderMap.put( TABLE_BUILDER, tableBuilder );
@@ -191,14 +194,29 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 						: entityViewContext.getEntityConfiguration().hasView( summaryViewName ) );
 	}
 
-	private void registerDefaultListActions( EntityViewContext entityViewContext, SortableTableBuilder tableBuilder ) {
+	private void registerDefaultListActions( EntityViewRequest entityViewRequest, SortableTableBuilder tableBuilder ) {
 		if ( includeDefaultActions ) {
-			EntityListActionsProcessor actionsProcessor = new EntityListActionsProcessor( entityViewContext.getEntityConfiguration(),
+			EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+			EntityConfiguration entityConfiguration = entityViewContext.getEntityConfiguration();
+			boolean linkToDefaultView = isLinkToDefaultView( entityViewRequest, entityConfiguration );
+			EntityListActionsProcessor actionsProcessor = new EntityListActionsProcessor( entityConfiguration,
 			                                                                              entityViewContext.getLinkBuilder(),
-			                                                                              entityViewContext.getEntityMessages() );
+			                                                                              entityViewContext.getEntityMessages(),
+			                                                                              linkToDefaultView );
 			tableBuilder.headerRowProcessor( actionsProcessor );
 			tableBuilder.valueRowProcessor( actionsProcessor );
 		}
+	}
+
+	private boolean isLinkToDefaultView( EntityViewRequest entityViewRequest, EntityConfiguration entityConfiguration ) {
+		Map<String, Object> configurationAttributes = entityViewRequest.getConfigurationAttributes();
+		if ( configurationAttributes.containsKey( EntityAttributes.LINK_TO_DETAIL_VIEW ) ) {
+			return (boolean) configurationAttributes.get( EntityAttributes.LINK_TO_DETAIL_VIEW );
+		}
+		else if ( entityConfiguration.hasAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ) {
+			return entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW, boolean.class );
+		}
+		return false;
 	}
 
 	@Override

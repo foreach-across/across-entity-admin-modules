@@ -21,6 +21,7 @@ import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -47,6 +48,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @ConditionalOnAdminWeb
@@ -124,7 +126,14 @@ class EntityModuleAdminMenuRegistrar
 			                                   messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			                            .order( Ordered.HIGHEST_PRECEDENCE );
 
-			if ( !allowableActions.contains( AllowableAction.UPDATE ) || EntityView.DEFAULT_VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
+			boolean linkToDetailView = isLinkToDetailView( entityViewRequest, entityConfiguration );
+			boolean isForDetailOrUpdateView = EntityView.DETAIL_VIEW_NAME.equals( entityViewRequest.getViewName() )
+					|| EntityView.UPDATE_VIEW_NAME.equals( entityViewRequest.getViewName() );
+			if ( linkToDetailView && !isForDetailOrUpdateView ) {
+				generalBuilder.changePathTo( currentEntityLink.toString() )
+				              .url( currentEntityLink.toString() );
+			}
+			else if ( !allowableActions.contains( AllowableAction.UPDATE ) || EntityView.DETAIL_VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
 				generalBuilder.changePathTo( currentEntityLink.toString() )
 				              .url( currentEntityLink.toString() );
 			}
@@ -180,5 +189,16 @@ class EntityModuleAdminMenuRegistrar
 				viewMenuBuilder.accept( menu );
 			}
 		}
+	}
+
+	private boolean isLinkToDetailView( EntityViewRequest entityViewRequest, EntityConfiguration configuration ) {
+		Map<String, Object> configurationAttributes = entityViewRequest.getConfigurationAttributes();
+		if ( configurationAttributes.containsKey( EntityAttributes.LINK_TO_DETAIL_VIEW ) ) {
+			return (boolean) configurationAttributes.get( EntityAttributes.LINK_TO_DETAIL_VIEW );
+		}
+		else if ( configuration.hasAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ) {
+			return configuration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW, boolean.class );
+		}
+		return false;
 	}
 }
