@@ -127,8 +127,8 @@ class EntityModuleAdminMenuRegistrar
 			                            .order( Ordered.HIGHEST_PRECEDENCE );
 
 			boolean linkToDetailView = isLinkToDetailView( entityViewRequest, entityConfiguration );
-			boolean isForDetailOrUpdateView = EntityView.DETAIL_VIEW_NAME.equals( entityViewRequest.getViewName() )
-					|| EntityView.UPDATE_VIEW_NAME.equals( entityViewRequest.getViewName() );
+			boolean isForDetailOrUpdateView = entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME )
+					|| entityViewRequest.isForView( EntityView.UPDATE_VIEW_NAME );
 			if ( linkToDetailView && !isForDetailOrUpdateView ) {
 				generalBuilder.changePathTo( currentEntityLink.toString() )
 				              .url( currentEntityLink.toString() );
