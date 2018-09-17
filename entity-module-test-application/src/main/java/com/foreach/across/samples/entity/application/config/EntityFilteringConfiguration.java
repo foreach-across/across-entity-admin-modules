@@ -70,6 +70,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
+import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
 import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.ENTITY_QUERY_OPERAND;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
@@ -100,6 +102,11 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		else {
 			page.getPageContentStructure().addToPageTitleSubText( TextViewElement.text( "[create]" ) );
 		}
+	}
+
+	@EventListener
+	void modifyAssociationMenu() {
+
 	}
 
 	@Override
@@ -143,6 +150,9 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		             .association( ab -> ab.name( "note.parent" )
 		                                   .targetEntityType( Note.class )
 		                                   .associationType( EntityAssociation.Type.EMBEDDED )
+		                                   .view( "myCustomView", basicSettings().renderAdminMenu( true )
+		                                                                         .andThen( formSettings().forExtension( false )
+		                                                                                                 .addFormButtons( true ) ) )
 		             )
 		             .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
 		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text", "parent.content" )
