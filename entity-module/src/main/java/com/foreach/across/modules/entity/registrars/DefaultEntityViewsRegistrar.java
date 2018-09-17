@@ -93,7 +93,7 @@ final class DefaultEntityViewsRegistrar implements EntityConfigurer
 			                                .listView()
 			                                .createFormView()
 			                                .updateFormView()
-			                                .readonlyFormView()
+			                                .readonlyView()
 			                                .deleteFormView();
 		                        }
 		              );

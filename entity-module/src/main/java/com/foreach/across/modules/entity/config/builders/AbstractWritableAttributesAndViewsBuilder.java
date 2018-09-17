@@ -165,8 +165,8 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 	 *
 	 * @return current builder
 	 */
-	public AbstractWritableAttributesAndViewsBuilder readonlyFormView() {
-		return readonlyFormView( triggerBuild() );
+	public AbstractWritableAttributesAndViewsBuilder readonlyView() {
+		return readonlyView( triggerBuild() );
 	}
 
 	/**
@@ -176,7 +176,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 	 * @param consumer for configuring the view builder
 	 * @return current builder
 	 */
-	public AbstractWritableAttributesAndViewsBuilder readonlyFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
+	public AbstractWritableAttributesAndViewsBuilder readonlyView( Consumer<EntityViewFactoryBuilder> consumer ) {
 		return formView( EntityView.READONLY_VIEW_NAME, consumer );
 	}
 

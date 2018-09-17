@@ -330,8 +330,8 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	@Override
-	public EntityConfigurationBuilder readonlyFormView( Consumer<EntityViewFactoryBuilder> consumer ) {
-		return (EntityConfigurationBuilder<T>) super.readonlyFormView( consumer );
+	public EntityConfigurationBuilder readonlyView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityConfigurationBuilder<T>) super.readonlyView( consumer );
 	}
 
 	@Override
@@ -367,8 +367,8 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	@Override
-	public EntityConfigurationBuilder readonlyFormView() {
-		return (EntityConfigurationBuilder<T>) super.readonlyFormView();
+	public EntityConfigurationBuilder readonlyView() {
+		return (EntityConfigurationBuilder<T>) super.readonlyView();
 	}
 
 	/**
