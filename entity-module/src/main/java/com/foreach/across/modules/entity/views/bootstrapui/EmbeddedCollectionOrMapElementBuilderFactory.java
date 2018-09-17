@@ -32,18 +32,18 @@ import lombok.val;
 import org.springframework.stereotype.Component;
 
 /**
- * Experimental control for managing collection of embedded elements.
+ * Experimental control for managing a {@link java.util.Collection} or {@link java.util.Map} of embedded elements.
  *
  * @author Arne Vandamme
- * @since 3.1.0
+ * @see EmbeddedCollectionViewElementBuilder
+ * @since 3.2.0
  */
-@Deprecated
 @ConditionalOnBootstrapUI
 @Component
 @RequiredArgsConstructor
-public class EmbeddedCollectionElementBuilderFactory implements EntityViewElementBuilderFactory<ViewElementBuilder>
+public class EmbeddedCollectionOrMapElementBuilderFactory implements EntityViewElementBuilderFactory<ViewElementBuilder>
 {
-	public static final String ELEMENT_TYPE = "entityEmbeddedCollection";
+	public static final String ELEMENT_TYPE = "embeddedCollectionOrMap";
 
 	private final EntityViewElementBuilderService entityViewElementBuilderService;
 
@@ -69,7 +69,7 @@ public class EmbeddedCollectionElementBuilderFactory implements EntityViewElemen
 		                          */
 	}
 
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings("unchecked")
 	private ViewElementBuilder<ViewElement> createItemTemplate( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode ) {
 		EntityPropertyDescriptor memberDescriptor = propertyDescriptor.getPropertyRegistry().getProperty( propertyDescriptor.getName() + "[]" );
 

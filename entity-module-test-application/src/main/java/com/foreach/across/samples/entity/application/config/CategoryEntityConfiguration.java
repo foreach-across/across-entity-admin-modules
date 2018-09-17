@@ -33,7 +33,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertySelec
 import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionOrMapElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
@@ -182,7 +182,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 				                  .entityQueryFilter( cfg -> cfg.showProperties( "id", "name" ).multiValue( "id" ) )
 		        )
 		        .createFormView( fvb -> fvb.showProperties( "id", "generateId", "name", "manager", "stockCount", "brands" ) )
-		        .updateFormView( fvb -> fvb.showProperties( "name", "stockCount", "manager", "brands" ) )
+		        .updateFormView( fvb -> fvb.showProperties( "name", "manager", "brands", "stockCount" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
 		        .show()
 		        .attribute( ( configuration, attributes ) ->
@@ -294,7 +294,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			val memberController = new GenericEntityPropertyController();
 			memberController
 					.withTarget( Map.class, Brand.class )
-					.valueFetcher( category -> new Brand() )
+					//.valueFetcher( category -> new Brand() )
 					.createValueSupplier( Brand::new )
 					.addValidator( validator );
 
@@ -305,15 +305,15 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .writable( true )
 			     .hidden( false )
 			     .controller( controller )
-			     .viewElementType( ViewElementMode.CONTROL, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
+			     //.viewElementType( ViewElementMode.CONTROL, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE )
 			     //.attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) )
 			     .and()
 			     .property( "brands[]" )
 			     .propertyType( Brand.class )
 			     .controller( memberController )
-			     .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
-			     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_BODY_ONLY )
-			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) );
+			     .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET );
+			     //.attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_BODY_ONLY );
+			     //.attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) );
 		};
 	}
 

@@ -101,12 +101,6 @@ fieldset .help-block:last-child {
     padding-top: 10px;
   }
 
-  &:last-child {
-    > div {
-      border-bottom: 1px dotted #eaeaea;
-    }
-  }
-
   .embedded-collection-item-data {
     width: 100%;
 
@@ -126,4 +120,8 @@ fieldset .help-block:last-child {
       color: red;
     }
   }
+}
+
+.embedded-collection-actions .btn {
+  width: 100%;
 }

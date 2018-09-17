@@ -20,18 +20,8 @@ var EmbeddedCollection = function( element ) {
     var items = wrapper.find( '[data-role=items]' );
     var editItemTemplate = wrapper.find( '[data-role=edit-item-template]' );
 
-    /*
-    var tmpl = editItemTemplate[0].innerHTML.trim();
-    tmpl = tmpl.substr( 4, tmpl.length - 7 ).trim();
-    console.log(tmpl);
-*/
-
     var templatePrefix = editItemTemplate.attr('data-template-prefix');
-    console.log("template prefix: " + templatePrefix);
-
     var targetPrefix = wrapper.attr( 'data-item-format' );
-    console.log("target prefix: " + targetPrefix );
-
     index = items.find( '.form-group' ).length;
 
     items.find( '[data-action=remove-item]' ).click( function( e ) {
@@ -42,10 +32,8 @@ var EmbeddedCollection = function( element ) {
     wrapper.find( '[data-action=add-item]' ).click( function() {
         var id = 'item-' + index++;
         var target = targetPrefix.replace('{{key}}', id);
-        console.log("target: " + target);
 
-        var template = $( '<div>' + editItemTemplate.html() + '</div>' );
-        template.attr( 'data-role', 'item' );
+        var template = $(  editItemTemplate.html() );
         template.attr( 'data-item-id', id );
 
         template.find( '[name^="' + templatePrefix + '"]' ).each( function( node ) {
@@ -63,30 +51,13 @@ var EmbeddedCollection = function( element ) {
             $( this ).closest( '[data-role=item]' ).remove();
         } );
 
-        template.append( $('<input type="hidden" name="' + target + '.sortIndex" value="' + (10 + index ) + '" />'))
+        template.find( '[name="' + target + '.sortIndex"]' )
+                .attr( 'value', 10 + index );
+
         items.append( template );
 
         BootstrapUiModule.initializeFormElements( template );
     } );
-
-    /*
-
-    var template = container.find( '.js-multi-value-template' ).clone( false );
-                            template.removeClass( 'hidden js-multi-value-template' );
-                            template.addClass( 'js-multi-value-item' );
-
-                            template.find( '.js-multi-value-value' ).each( function( i, node ) {
-                                node.innerText = value;
-                            } );
-
-                            template.find( '[type=hidden]' ).val( value ).removeAttr( 'disabled' );
-                            container.find( 'table' ).append( template );
-
-                            template.find( 'a' ).on( 'click', function() {
-                                $( this ).closest( 'tr' ).remove();
-                            } );
-
-     */
 };
 
 // expose global var

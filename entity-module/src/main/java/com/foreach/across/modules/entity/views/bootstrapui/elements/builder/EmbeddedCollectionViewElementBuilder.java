@@ -16,11 +16,8 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
+import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.utils.ControlNamePrefixAdjuster;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.MapEntityPropertyBinder;
@@ -28,15 +25,17 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.element.En
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.entity.EntityAttributes.controlName;
+import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentPropertyDescriptor;
 
 /**
  * @author Arne Vandamme
@@ -51,6 +50,39 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 	@Setter
 	private ViewElementBuilder<ViewElement> itemTemplate;
+
+	/**
+	 * Maximum number of items that can be managed through the control.
+	 * The add option should be disabled if the maximum is reached.
+	 */
+	@Setter
+	private int maximumNrOfItems = -1;
+
+	/**
+	 * Minimum number of items that must be managed through the control.
+	 * The delete option will be disabled if the minimum is reached.
+	 */
+	@Setter
+	private int minimumNrOfItems = -1;
+
+	/**
+	 * Set to {@code true} (default) if an add item button should be inserted.
+	 */
+	@Setter
+	private boolean enableAddingItem = true;
+
+	/**
+	 * Set to {@code true} (default) if a remove button should be added to each item.
+	 */
+	@Setter
+	private boolean enableRemovingItem = true;
+
+	/**
+	 * Set to {@code true} if a sorting handle should be inserted.
+	 * Defaults to {@code false}.
+	 */
+	@Setter
+	private boolean sortable;
 
 	public EmbeddedCollectionViewElementBuilder() {
 		super( "div" );
@@ -71,84 +103,88 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 	}
 
 	private NodeViewElement createListControl( ListEntityPropertyBinder binder, ViewElementBuilderContext builderContext ) {
+		String controlPrefix = StringUtils.removeEnd( controlName( currentPropertyDescriptor( builderContext ) ), ".value" );
+		val propertyName = currentPropertyDescriptor( builderContext ).getName();
+
+		String removeItemMessage = builderContext.getMessage( "properties." + propertyName + "[removeItem]", "" );
+		String addItemMessage = builderContext.getMessage( "properties." + propertyName + "[addItem]", "" );
+
 		NodeViewElement list = super.createElement( builderContext );
-		list.setTagName( "div" );
 		list.addCssClass( "js-embedded-collection-form-group", "embedded-collection-control", "embedded-collection-control-list" );
-
-		String controlPrefix = StringUtils.removeEnd( EntityAttributes.controlName( EntityViewElementUtils.currentPropertyDescriptor( builderContext ) ),
-		                                              ".value" );
-
 		list.setAttribute( "data-item-format", controlPrefix + ".items[{{key}}]" );
 
+		list.addChild( itemRows( builderContext, controlPrefix, binder.getItems(), removeItemMessage ) );
+
+		if ( enableAddingItem ) {
+			list.addChild( addItemAction( builderContext, addItemMessage ) );
+		}
+
+		list.addChild( boundIndicator( controlPrefix ) );
+		list.addChild( itemTemplate( builderContext, controlPrefix, removeItemMessage ) );
+
+		return list;
+	}
+
+	private ViewElement boundIndicator( String controlPrefix ) {
+		HiddenFormElement hidden = new HiddenFormElement();
+		hidden.setControlName( controlPrefix + ".bound" );
+		hidden.setValue( "1" );
+		return hidden;
+	}
+
+	private NodeViewElement itemTemplate( ViewElementBuilderContext parentBuilderContext, String controlPrefix, String removeItemMessage ) {
+		ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( parentBuilderContext );
+		EntityViewElementUtils.setCurrentEntity( builderContext, null );
+		builderContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
+
+		return node( "script" )
+				.attribute( "type", "text/html" )
+				.data( ROLE, "edit-item-template" )
+				.data( "template-prefix", controlPrefix + ".itemTemplate" )
+				.add( createItemRowBuilder( controlPrefix, null, Integer.MAX_VALUE, removeItemMessage ) )
+				.postProcessor(
+						( bc, element ) -> element.findAll( FormGroupElement.class )
+						                          .forEach( group -> group.setDetectFieldErrors( false ) )
+				)
+				.build( builderContext );
+	}
+
+	private NodeViewElement itemRows( ViewElementBuilderContext builderContext, String controlPrefix, Map<String, EntityPropertyBinder<Object>> items,
+	                                  String removeItemMessage ) {
 		NodeViewElement itemRows = new NodeViewElement( "div" );
 		itemRows.setAttribute( "data-role", "items" );
 		itemRows.addCssClass( "embedded-collection-items" );
-
-		Map<String, EntityPropertyBinder<Object>> items = binder.getItems();
 
 		int position = 0;
 		int total = items.size();
 
 		for ( Map.Entry<String, EntityPropertyBinder<Object>> entry : items.entrySet() ) {
 			IteratorItemStats<Object> itemStats = new IteratorItemStatsImpl<>( entry.getValue().getValue(), position, position < total );
-			IteratorViewElementBuilderContext ctx = new IteratorViewElementBuilderContext<>( itemStats );
-			ctx.setParentContext( builderContext );
+			IteratorViewElementBuilderContext itemContext = new IteratorViewElementBuilderContext<>( itemStats );
+			itemContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
+			itemContext.setParentContext( builderContext );
 
-			itemRows.addChild( createItemRow( ctx, controlPrefix, entry.getKey(), entry.getValue() ) );
+			itemRows.addChild( createItemRowBuilder( controlPrefix, entry.getKey(), entry.getValue().getSortIndex(), removeItemMessage ).build( itemContext ) );
 		}
 
-		list.addChild( itemRows );
-
-		ViewElementBuilderContext bc = new DefaultViewElementBuilderContext( builderContext );
-		EntityViewElementUtils.setCurrentEntity( bc, null );
-		bc.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
-
-		String baseControlName = controlPrefix;//EntityAttributes.controlName( memberDescriptor );
-
-		String templateControlName = StringUtils.removeEnd( baseControlName, "items[].value" ) + "template";
-
-		list.addChild( createAddItemAction() );
-		list.addChild(
-				hidden()
-						.controlName( controlPrefix + ".bound" )
-						.value( "1" )
-						.build( bc )
-		);
-		list.addChild(
-				node( "script" )
-						.attribute( "type", "text/html" )
-						.attribute( "data-role", "edit-item-template" )
-						.attribute( "data-template-prefix", controlPrefix + ".itemTemplate" )
-						.add( itemTemplate )
-						.postProcessor(
-								new ControlNamePrefixAdjuster<>()
-										.prefixToReplace( controlPrefix + ".items[]" )
-										.prefixToAdd( controlPrefix + ".itemTemplate" )
-										::postProcess
-
-						)
-						.postProcessor(
-								( builderContext1, element ) -> element.findAll( FormGroupElement.class )
-								                                       .forEach( group -> group.setDetectFieldErrors( false ) )
-						)
-						.build( bc )
-
-		);
-
-		return list;
+		return itemRows;
 	}
 
-	private NodeViewElement createItemRow( ViewElementBuilderContext builderContext, String controlPrefix, String itemKey, EntityPropertyBinder<Object> item ) {
+	private NodeViewElementBuilder createItemRowBuilder( String controlPrefix, String itemKey, int sortIndex, String removeItemMessage ) {
+		String suffix = itemKey != null ? ".items[" + itemKey + "]" : ".itemTemplate";
+
 		return div()
 				.data( ROLE, "item" )
 				.data( "item-id", itemKey )
 				.css( "embedded-collection-item" )
 				.add(
-						div()
-								.name( "itemHandle" )
-								.data( ROLE, "item-handle" )
-								.css( "embedded-collection-item-handle" )
-								.add( BootstrapUiBuilders.glyphIcon( GlyphIcon.MENU_HAMBURGER ) )
+						sortable ?
+								div()
+										.name( "itemHandle" )
+										.data( ROLE, "item-handle" )
+										.css( "embedded-collection-item-handle" )
+										.add( BootstrapUiBuilders.glyphIcon( GlyphIcon.MENU_HAMBURGER ) )
+								: null
 				)
 				.add(
 						div()
@@ -159,39 +195,45 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 										itemTemplate.andThen(
 												new ControlNamePrefixAdjuster<>()
 														.prefixToReplace( controlPrefix + ".items[]" )
-														.prefixToAdd( controlPrefix + ".items[" + itemKey + "]" )
+														.prefixToAdd( controlPrefix + suffix )
 										)
 								)
 								.add(
 										hidden()
-												.controlName( controlPrefix + ".items[" + itemKey + "].sortIndex" )
-												.value( item.getSortIndex() )
+												.controlName( controlPrefix + suffix + ".sortIndex" )
+												.value( sortIndex )
 								)
 				)
 				.add(
-						div()
-								.name( "itemActions" )
-								.data( ROLE, "item-actions" )
-								.css( "embedded-collection-item-actions" )
-								.add(
-										link()
-												.data( ACTION, "remove-item" )
-												.title( "Remove" )
-												.add( glyphIcon( GlyphIcon.REMOVE ) )
-								)
+						enableRemovingItem ?
+								div()
+										.name( "itemActions" )
+										.data( ROLE, "item-actions" )
+										.css( "embedded-collection-item-actions" )
+										.add(
+												link()
+														.data( ACTION, "remove-item" )
+														.title( removeItemMessage )
+														.add( glyphIcon( GlyphIcon.REMOVE ) )
+										)
+								: null
+				);
+	}
+
+	private NodeViewElement addItemAction( ViewElementBuilderContext builderContext, String addItemMessage ) {
+		return div()
+				.data( ROLE, "actions" )
+				.css( "embedded-collection-actions" )
+				.add(
+						button()
+								.data( ACTION, "add-item" )
+								.style( Style.DEFAULT )
+								.iconLeft()
+								.icon( glyphIcon( GlyphIcon.PLUS ) )
+								.title( addItemMessage )
+								.text( StringUtils.isEmpty( addItemMessage ) ? "" : " " + addItemMessage )
+
 				)
 				.build( builderContext );
-	}
-
-	private NodeViewElement createItemTemplate( ViewElementBuilderContext builderContext ) {
-		return new NodeViewElement( "div" );
-	}
-
-	private NodeViewElement createAddItemAction() {
-		NodeViewElement actions = new NodeViewElement( "div" );
-		actions.addChild(
-				TextViewElement
-						.html( "Toevoegen <a style=\"float: right\" data-action=\"add-item\"><span class=\"glyphicon glyphicon-plus-sign\"></span></a>" ) );
-		return actions;
 	}
 }

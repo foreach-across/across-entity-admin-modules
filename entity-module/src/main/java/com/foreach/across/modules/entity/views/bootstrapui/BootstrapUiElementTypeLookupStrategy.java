@@ -80,6 +80,10 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			return null;
 		}
 
+		Class propertyType = descriptor.getPropertyType();
+		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( propertyType );
+
+		boolean isRegisteredEntity = entityConfiguration != null && entityConfiguration.hasEntityModel();
 		boolean isEmbedded = PropertyPersistenceMetadata.isEmbeddedProperty( descriptor );
 
 		if ( ViewElementMode.FORM_WRITE.equals( singleMode ) || ViewElementMode.FORM_READ.equals( singleMode ) ) {
@@ -97,8 +101,6 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		if ( isEmbedded ) {
 			return null;
 		}
-
-		Class propertyType = descriptor.getPropertyType();
 
 		if ( propertyType != null ) {
 			if ( ClassUtils.isAssignable( propertyType, Number.class ) ) {
@@ -133,19 +135,25 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 					return BootstrapUiElements.SELECT;
 				}
 
-				if ( !ClassUtils.isPrimitiveOrWrapper( propertyType ) ) {
-					EntityConfiguration member = entityRegistry.getEntityConfiguration( propertyType );
-
-					if ( member != null ) {
-						return BootstrapUiElements.SELECT;
-					}
-				}
-
 				if ( ClassUtils.isAssignable( propertyType, Boolean.class ) || ClassUtils.isAssignable( propertyType, AtomicBoolean.class ) ) {
 					return BootstrapUiElements.CHECKBOX;
 				}
 
-				return BootstrapUiElements.TEXTBOX;
+				if ( CharSequence.class.isAssignableFrom( propertyType ) ) {
+					return BootstrapUiElements.TEXTBOX;
+				}
+
+				if ( !ClassUtils.isPrimitiveOrWrapper( propertyType ) ) {
+					if ( isRegisteredEntity ) {
+						return BootstrapUiElements.SELECT;
+					}
+					else {
+						return BootstrapUiElements.FIELDSET;
+					}
+				}
+				else {
+					return BootstrapUiElements.TEXTBOX;
+				}
 			}
 		}
 

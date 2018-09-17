@@ -30,7 +30,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandl
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionOrMapElementBuilderFactory;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.query.EQLStringValueOptionEnhancer;
@@ -143,14 +143,14 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		configuration.withType( Client.class )
 		             .properties( props -> props.property( "phones" )
 		                                        .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION )
-		                                        .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE ) );
+		                                        .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE ) );
 
 		configuration.withType( User.class )
 		             .properties(
 				             props -> props.property( "address" )
 				                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION )
-				                           .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
-				                           .viewElementType( ViewElementMode.FORM_READ, EmbeddedCollectionElementBuilderFactory.ELEMENT_TYPE )
+				                           .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE )
+				                           .viewElementType( ViewElementMode.FORM_READ, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE )
 		             )
 		             .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate", "active" )
 		                                  .properties(

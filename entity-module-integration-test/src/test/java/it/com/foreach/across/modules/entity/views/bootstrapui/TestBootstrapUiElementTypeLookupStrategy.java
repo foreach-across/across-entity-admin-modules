@@ -20,12 +20,12 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
-import com.foreach.across.testmodules.springdata.business.Client;
-import com.foreach.across.testmodules.springdata.business.CompanyStatus;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
 import com.foreach.across.modules.entity.views.bootstrapui.MultiValueElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
+import com.foreach.across.testmodules.springdata.business.Client;
+import com.foreach.across.testmodules.springdata.business.CompanyStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -242,6 +242,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@SuppressWarnings("unchecked")
 	public void singleEntityTypeShouldReturnSelectType() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
+		when( clientConfig.hasEntityModel() ).thenReturn( true );
 
 		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
 		when( entityRegistry.contains( Client.class ) ).thenReturn( true );
