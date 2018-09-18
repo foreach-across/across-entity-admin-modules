@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpMethod;
@@ -129,6 +130,16 @@ public class EntityViewRequest
 	 */
 	public boolean hasPartialFragment() {
 		return partialFragment != null;
+	}
+
+	/**
+	 * Checks whether the given name matches the view being rendered.
+	 *
+	 * @param viewName to check
+	 * @return {@code true} if the name matches the current view name.
+	 */
+	public boolean isForView( String viewName ) {
+		return StringUtils.equals( viewName, getViewName() );
 	}
 
 	@Override
