@@ -81,7 +81,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		when( messageCodeResolver.getMessageWithFallback( eq( "menu.delete" ), anyString() ) ).thenReturn( "menu.delete" );
 		when( entityConfiguration.getEntityMessageCodeResolver() ).thenReturn( messageCodeResolver );
 		when( entityConfiguration.getViewNames() ).thenReturn( new String[0] );
-		when( entityConfiguration.hasAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ).thenReturn( false );
 		when( entityConfiguration.getEntityType() ).thenReturn( Item.class );
 		when( entityConfiguration.getName() ).thenReturn( "item" );
 		when( entityConfiguration.getId( item ) ).thenReturn( 1L );
@@ -159,7 +158,6 @@ public class TestEntityModuleAdminMenuRegistrar
 
 	@Test
 	public void shouldLinkToDetailView() {
-		when( entityConfiguration.hasAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ).thenReturn( true );
 		when( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ).thenReturn( true );
 		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
 				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );

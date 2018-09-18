@@ -38,15 +38,16 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 {
 	public static final String CELL_NAME = "row-actions";
 
+	protected final EntityConfiguration<Object> entityConfiguration;
+	protected final EntityViewLinkBuilder linkBuilder;
+	protected final EntityMessages messages;
+
 	/**
 	 * -- SETTER --
 	 * Sets whether every result item should link to the detail view by default.
 	 */
 	@Setter
 	private boolean linkToDetailView = false;
-	protected final EntityConfiguration<Object> entityConfiguration;
-	protected final EntityViewLinkBuilder linkBuilder;
-	protected final EntityMessages messages;
 
 	@SuppressWarnings("unchecked")
 	public EntityListActionsProcessor( EntityConfiguration entityConfiguration,
@@ -112,6 +113,5 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 			);
 		}
 	}
-
 
 }
