@@ -28,6 +28,7 @@ import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.entity.web.links.EntityViewLinks;
+import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
@@ -176,6 +177,21 @@ public class TestEntityModuleAdminMenuRegistrar
 		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
 		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNotNull();
+	}
+
+	@Test
+	public void updateViewWithoutUpdateAction() {
+		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
+				.thenReturn( new AllowableActionSet( AllowableAction.READ.getId() ) );
+		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
+		when( viewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ).thenReturn( true );
+
+		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
+		Menu menu = menuBuilder.build();
+		assertThat( menu.getItems() ).isNotEmpty();
+		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
+		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNull();
 	}
 
 	class Item
