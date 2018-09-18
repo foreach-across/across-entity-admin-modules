@@ -120,7 +120,6 @@ public class TestEntityModuleAdminMenuRegistrar
 				FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
 		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( false );
-		when( viewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ).thenReturn( true );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
@@ -136,7 +135,6 @@ public class TestEntityModuleAdminMenuRegistrar
 				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
 		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( false );
-		when( viewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ).thenReturn( false );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
@@ -150,8 +148,6 @@ public class TestEntityModuleAdminMenuRegistrar
 	public void noPermissions() {
 		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) ).thenReturn( new AllowableActionSet() );
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
-		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( false );
-		when( viewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ).thenReturn( false );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
@@ -169,7 +165,6 @@ public class TestEntityModuleAdminMenuRegistrar
 				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
 		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( false );
-		when( viewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ).thenReturn( false );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
@@ -184,7 +179,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
 				.thenReturn( new AllowableActionSet( AllowableAction.READ.getId() ) );
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
-		when( viewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ).thenReturn( true );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
