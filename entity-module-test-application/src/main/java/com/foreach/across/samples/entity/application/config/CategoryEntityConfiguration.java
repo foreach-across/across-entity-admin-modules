@@ -310,8 +310,8 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .and()
 			     .property( "brands[]" )
 			     .propertyType( Brand.class )
-			     .controller( memberController )
-			     .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET );
+			     .controller( memberController );
+			     //.viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET );
 			     //.attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_BODY_ONLY );
 			     //.attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) );
 		};

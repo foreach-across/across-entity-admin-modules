@@ -44,8 +44,6 @@ public class UserConfiguration implements EntityConfigurer
 						        // display name as not required
 
 						        props.property( "name" ).attribute( EntityAttributes.PROPERTY_REQUIRED, false ).and()
-						             // todo automaticall resolve to fieldset
-						             .property( "address[]" ).viewElementType( ViewElementMode.FORM_WRITE, ViewElementFieldset.ELEMENT_TYPE ).and()
 //						             .property( "profilePicture" )
 //						             .viewElementBuilder( ViewElementMode.CONTROL, BootstrapUiBuilders.file().controlName( "entity.profilePicture" ) )
 //						             .attribute( EntityAttributes.FORM_ENCTYPE, FormViewElement.ENCTYPE_MULTIPART )

@@ -146,12 +146,10 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                        .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE ) );
 
 		configuration.withType( User.class )
-		             .properties(
-				             props -> props.property( "address" )
-				                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION )
-				                           .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE )
-				                           .viewElementType( ViewElementMode.FORM_READ, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE )
-		             )
+//		             .properties(
+//				             props -> props.property( "address" )
+//				                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION )
+//		             )
 		             .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate", "active" )
 		                                  .properties(
 				                                  props -> props.property( "id" )

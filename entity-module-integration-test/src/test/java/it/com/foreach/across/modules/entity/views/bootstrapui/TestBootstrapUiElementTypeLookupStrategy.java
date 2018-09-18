@@ -16,12 +16,14 @@
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
+import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionOrMapElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.MultiValueElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
 import com.foreach.across.testmodules.springdata.business.Client;
@@ -177,23 +179,42 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 	@Test
 	public void fieldsetForEmbeddedTypesWhenFormElementsRequested() {
-		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
-		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
-
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( AtomicInteger.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( AtomicInteger.class, ViewElementMode.FORM_WRITE ) );
 
-		metadata.setEmbedded( true );
+		when( descriptor.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
 
 		assertEquals( BootstrapUiElements.FIELDSET, lookup( AtomicInteger.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FIELDSET, lookup( AtomicInteger.class, ViewElementMode.FORM_WRITE ) );
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
+	public void propertyIsEmbeddedIfTargetEntityConfigurationIsEmbedded() {
+		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
+		when( clientConfig.hasEntityModel() ).thenReturn( false );
+		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
+
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( Client.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( Client.class, ViewElementMode.FORM_WRITE ) );
+
+		when( clientConfig.hasEntityModel() ).thenReturn( true );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Client.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Client.class, ViewElementMode.FORM_WRITE ) );
+
+		when( clientConfig.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( Client.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( Client.class, ViewElementMode.FORM_WRITE ) );
+
+		when( clientConfig.hasEntityModel() ).thenReturn( false );
+		when( clientConfig.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Client.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Client.class, ViewElementMode.FORM_WRITE ) );
+	}
+
+	@Test
 	public void labelForEmbeddedTypesWhenLabelRequested() {
-		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
-		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
-		metadata.setEmbedded( true );
+		when( descriptor.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
 
 		assertEquals( BootstrapUiElements.LABEL, lookup( AtomicInteger.class, ViewElementMode.LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( AtomicInteger.class, ViewElementMode.LIST_LABEL ) );
@@ -202,20 +223,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
-	public void nullForEmbeddedTypesIfNotAFormElement() {
-		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
-		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
-
-		assertEquals( BootstrapUiElements.NUMERIC, lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
-
-		metadata.setEmbedded( true );
-
-		assertNull( lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
-		assertNull( lookup( AtomicInteger.class, ViewElementMode.LIST_VALUE ) );
-	}
-
-	@Test
-	public void dateTypeForDates() throws Exception {
+	public void dateTypeForDates() {
 		assertEquals( BootstrapUiElements.DATETIME, lookup( Date.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDate.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalTime.class, ViewElementMode.CONTROL ) );
@@ -264,6 +272,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void stringSetsAreSupportedAsMultiValue() {
 		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
 		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
@@ -293,6 +302,51 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertEquals( BootstrapUiElements.TEXT, lookup( ViewElementMode.VALUE ) );
 	}
 
+	@Test
+	public void specificDomainTypeShouldReturnTextboxControlIfMarkedAsNonEmbedded() {
+		when( descriptor.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
+		assertEquals( BootstrapUiElements.TEXTBOX, lookup( EmailType.class, ViewElementMode.CONTROL ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void collectionIsEmbeddedIfPropertyIsEmbeddedEvenIfTargetIsRelatedEntity() {
+		EntityPropertyDescriptor member = mock( EntityPropertyDescriptor.class );
+		EntityPropertyRegistry rootRegistry = mock( EntityPropertyRegistry.class );
+
+		when( descriptor.getName() ).thenReturn( "users" );
+		when( descriptor.getPropertyType() ).thenReturn( (Class) List.class );
+		when( descriptor.getPropertyRegistry() ).thenReturn( rootRegistry );
+		when( rootRegistry.getProperty( "users[]" ) ).thenReturn( member );
+		when( member.getPropertyType() ).thenReturn( (Class) Client.class );
+
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+
+		when( member.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+
+		when( member.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+
+		when( member.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( null );
+
+		EntityConfiguration memberConfiguration = mock( EntityConfiguration.class );
+		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( memberConfiguration );
+		when( memberConfiguration.hasEntityModel() ).thenReturn( true );
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+
+		when( memberConfiguration.hasEntityModel() ).thenReturn( false );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+
+		when( memberConfiguration.hasEntityModel() ).thenReturn( true );
+		when( memberConfiguration.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+
+		when( memberConfiguration.hasEntityModel() ).thenReturn( false );
+		when( memberConfiguration.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+	}
+
 	@SuppressWarnings("unchecked")
 	private String lookup( Class propertyType, ViewElementMode mode ) {
 		when( descriptor.getPropertyType() ).thenReturn( propertyType );
@@ -302,6 +356,10 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 	private String lookup( ViewElementMode mode ) {
 		return strategy.findElementType( descriptor, mode );
+	}
+
+	private static class EmailType
+	{
 	}
 
 	@Configuration

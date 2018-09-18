@@ -132,7 +132,6 @@ public class EntityViewElementBuilderServiceImpl implements EntityViewElementBui
 	{
 		private final EntityTypeDescriptor typeDescriptor;
 		private final ViewElementLookupRegistry propertyLookupRegistry;
-
 		private final ViewElementLookupRegistry entityLookupRegistry;
 
 		public boolean isResolved() {

@@ -16,10 +16,11 @@
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.util.EntityTypeDescriptor;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -27,6 +28,8 @@ import com.foreach.across.modules.entity.views.ViewElementTypeLookupStrategy;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.stereotype.Component;
 
@@ -35,19 +38,27 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy.ORDER;
+
 /**
  * Default {@link ViewElementTypeLookupStrategy} that maps the default {@link ViewElementMode} to a known view element type.
+ * Has a specific {@link #ORDER} assigned making sure this default strategy comes late, other strategies without an order assigned
+ * will always come before unless explicitly ordered after.
  *
  * @author Arne Vandamme
  */
 @ConditionalOnClass(BootstrapUiElements.class)
 @Component
 @RequiredArgsConstructor
+@Order(ORDER)
 public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLookupStrategy
 {
+	public static final int ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
+
 	private final EntityRegistry entityRegistry;
 
 	@SuppressWarnings("unchecked")
@@ -84,10 +95,11 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( propertyType );
 
 		boolean isRegisteredEntity = entityConfiguration != null && entityConfiguration.hasEntityModel();
-		boolean isEmbedded = PropertyPersistenceMetadata.isEmbeddedProperty( descriptor );
+		Boolean isEmbedded = isEmbedded( descriptor, entityConfiguration );
 
 		if ( ViewElementMode.FORM_WRITE.equals( singleMode ) || ViewElementMode.FORM_READ.equals( singleMode ) ) {
-			if ( isEmbedded ) {
+			if ( isSingularType( propertyType ) &&
+					( ( isEmbedded == null && !isRegisteredEntity && isEmbeddedCandidate( propertyType ) ) || Boolean.TRUE.equals( isEmbedded ) ) ) {
 				return BootstrapUiElements.FIELDSET;
 			}
 
@@ -96,10 +108,6 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 		if ( ViewElementMode.isLabel( singleMode ) ) {
 			return BootstrapUiElements.LABEL;
-		}
-
-		if ( isEmbedded ) {
-			return null;
 		}
 
 		if ( propertyType != null ) {
@@ -127,8 +135,8 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 					return MultiValueElementBuilderFactory.ELEMENT_TYPE;
 				}
 
-				if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) ) {
-					return OptionsFormElementBuilderFactory.OPTIONS;
+				if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) || Map.class.isAssignableFrom( propertyType ) ) {
+					return resolveCollectionOrMapElementType( descriptor, viewElementMode );
 				}
 
 				if ( propertyType.isEnum() ) {
@@ -147,17 +155,74 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 					if ( isRegisteredEntity ) {
 						return BootstrapUiElements.SELECT;
 					}
-					else {
+					else if ( isEmbedded == null || Boolean.TRUE.equals( isEmbedded ) ) {
 						return BootstrapUiElements.FIELDSET;
 					}
 				}
-				else {
-					return BootstrapUiElements.TEXTBOX;
-				}
+
+				return BootstrapUiElements.TEXTBOX;
 			}
 		}
 
 		return null;
+	}
+
+	private boolean isEmbeddedCandidate( Class type ) {
+		if ( type.isEnum() ) {
+			return false;
+		}
+		if ( type.isArray() || Collection.class.isAssignableFrom( type ) || Map.class.isAssignableFrom( type ) ) {
+			return false;
+		}
+		if ( CharSequence.class.isAssignableFrom( type ) ) {
+			return false;
+		}
+		if ( ClassUtils.isPrimitiveOrWrapper( type ) ) {
+			return false;
+		}
+		if ( ClassUtils.isAssignable( type, Number.class ) ) {
+			return false;
+		}
+		return !isDateType( type );
+	}
+
+	private String resolveCollectionOrMapElementType( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
+		if ( ViewElementMode.CONTROL.equals( viewElementMode ) ) {
+			if ( descriptor.getPropertyType().isArray() || Collection.class.isAssignableFrom( descriptor.getPropertyType() ) ) {
+				EntityPropertyRegistry owningRegistry = descriptor.getPropertyRegistry();
+
+				if ( owningRegistry != null ) {
+					EntityPropertyDescriptor memberDescriptor = owningRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.INDEXER );
+					EntityConfiguration<?> target = entityRegistry.getEntityConfiguration( memberDescriptor.getPropertyType() );
+
+					boolean isRegisteredEntity = target != null && target.hasEntityModel();
+					Boolean memberIsEmbedded = isEmbedded( memberDescriptor, target );
+
+					if ( ( memberIsEmbedded == null && !isRegisteredEntity ) || Boolean.TRUE.equals( memberIsEmbedded ) ) {
+						return EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE;
+					}
+				}
+			}
+			else {
+				// todo: support map types ?
+			}
+		}
+
+		return OptionsFormElementBuilderFactory.OPTIONS;
+	}
+
+	private boolean isSingularType( Class propertyType ) {
+		return !propertyType.isArray() && !Collection.class.isAssignableFrom( propertyType ) && !Map.class.isAssignableFrom( propertyType );
+	}
+
+	private Boolean isEmbedded( EntityPropertyDescriptor descriptor, EntityConfiguration target ) {
+		Object attribute = descriptor.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT );
+
+		if ( attribute == null && target != null ) {
+			attribute = target.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT );
+		}
+
+		return attribute != null ? Boolean.TRUE.equals( attribute ) : null;
 	}
 
 	/**

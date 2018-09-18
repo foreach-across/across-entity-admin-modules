@@ -102,6 +102,16 @@ public interface EntityAttributes
 	String FORM_ENCTYPE = SingleEntityFormViewProcessor.ATTR_ENCTYPE;
 
 	/**
+	 * Holds {@code true} if a property (or a target {@link com.foreach.across.modules.entity.registry.EntityConfiguration} represents
+	 * an embedded object instead of a related object. This will impact the control types being generated for this property.
+	 * An attribute value set on the {@link EntityPropertyDescriptor} will take precedence over the value on an
+	 * {@link com.foreach.across.modules.entity.registry.EntityConfiguration}.
+	 * <p/>
+	 * If not explicitly set, a strategy will be used to determine if a property should behave as an embedded object.
+	 */
+	String IS_EMBEDDED_OBJECT = EntityPropertyDescriptor.class.getName() + ".embedded";
+
+	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.
 	 * Which control name gets generated depends on the value of {@link #handlingType(EntityPropertyDescriptor)}.
 	 * An extension property will return a path to a {@link EntityPropertyBinder} on the {@link EntityPropertiesBinder}.

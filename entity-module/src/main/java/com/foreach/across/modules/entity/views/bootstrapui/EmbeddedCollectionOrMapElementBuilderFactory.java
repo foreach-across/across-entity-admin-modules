@@ -16,11 +16,8 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
-import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -30,6 +27,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 /**
  * Experimental control for managing a {@link java.util.Collection} or {@link java.util.Map} of embedded elements.
@@ -55,7 +53,10 @@ public class EmbeddedCollectionOrMapElementBuilderFactory implements EntityViewE
 	@Override
 	public ViewElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode, String viewElementType ) {
 		val embedded = new EmbeddedCollectionViewElementBuilder();
-		embedded.itemTemplate( createItemTemplate( propertyDescriptor, viewElementMode ) );
+		ViewElementBuilder<ViewElement> itemTemplate = createItemTemplate( propertyDescriptor, viewElementMode );
+		Assert.notNull( itemTemplate, "Unable to retrieve item template for property: " + propertyDescriptor );
+
+		embedded.itemTemplate( itemTemplate );
 
 		return embedded;
 		/*
@@ -91,7 +92,7 @@ public class EmbeddedCollectionOrMapElementBuilderFactory implements EntityViewE
 
 		return template;*/
 	}
-
+/*
 	private EntityPropertySelector retrieveMembersSelector( EntityPropertyDescriptor descriptor ) {
 		EntityPropertySelector selector = descriptor.getAttribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.class );
 
@@ -101,4 +102,5 @@ public class EmbeddedCollectionOrMapElementBuilderFactory implements EntityViewE
 
 		return selector;
 	}
+	*/
 }

@@ -129,8 +129,8 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( parent.getName() + suffix );
 				descriptor.setDisplayName( parent.getDisplayName() );
 				descriptor.setPropertyTypeDescriptor( memberTypeDescriptor );
-				descriptor.setReadable( false );
-				descriptor.setWritable( false );
+				descriptor.setReadable( true );
+				descriptor.setWritable( true );
 				descriptor.setHidden( true );
 
 				// todo: centralize descriptor creation to the factory
