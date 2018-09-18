@@ -70,7 +70,7 @@ public class EntityViewLinks
 	}
 
 	/**
-	 * Create a link builder to the {@link com.foreach.across.modules.entity.views.EntityView#DETAIL_VIEW_NAME} view an entity type page.
+	 * Create a link builder to an entity type page.
 	 *
 	 * @param entityType type of entity
 	 * @return link builder
@@ -81,7 +81,7 @@ public class EntityViewLinks
 	}
 
 	/**
-	 * Create a link builder to the {@link com.foreach.across.modules.entity.views.EntityView#DETAIL_VIEW_NAME} view for a basic entity type (by name).
+	 * Create a link builder for a basic entity type (by name).
 	 *
 	 * @param entityName of the entity type
 	 * @return link builder
@@ -101,7 +101,7 @@ public class EntityViewLinks
 	}
 
 	/**
-	 * Create a link builder to the {@link com.foreach.across.modules.entity.views.EntityView#DETAIL_VIEW_NAME} view for an entity configuration.
+	 * Create a link builder to an entity configuration.
 	 *
 	 * @param entityConfiguration type of entity
 	 * @return link builder

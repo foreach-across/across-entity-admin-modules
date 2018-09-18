@@ -29,6 +29,7 @@ import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import lombok.Setter;
 
 /**
  * Adds common actions (update, delete) for an {@link EntityConfiguration} entity to every result item.
@@ -37,7 +38,12 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 {
 	public static final String CELL_NAME = "row-actions";
 
-	protected final boolean linkToDetailView;
+	/**
+	 * -- SETTER --
+	 * Sets whether every result item should link to the detail view by default.
+	 */
+	@Setter
+	private boolean linkToDetailView = false;
 	protected final EntityConfiguration<Object> entityConfiguration;
 	protected final EntityViewLinkBuilder linkBuilder;
 	protected final EntityMessages messages;
@@ -45,12 +51,10 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 	@SuppressWarnings("unchecked")
 	public EntityListActionsProcessor( EntityConfiguration entityConfiguration,
 	                                   EntityViewLinkBuilder linkBuilder,
-	                                   EntityMessages messages,
-	                                   boolean linkToDetailView ) {
+	                                   EntityMessages messages ) {
 		this.entityConfiguration = entityConfiguration;
 		this.linkBuilder = linkBuilder;
 		this.messages = messages;
-		this.linkToDetailView = linkToDetailView;
 	}
 
 	@Override
@@ -108,4 +112,6 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 			);
 		}
 	}
+
+
 }

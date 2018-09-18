@@ -108,7 +108,7 @@ final class DetailViewInitializer extends AbstractViewInitializer<EntityViewFact
 			FormViewElementBuilder form = (FormViewElementBuilder) builderMap.get( SingleEntityFormViewProcessor.FORM );
 			EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 
-			Object entity = getEntity( entityViewContext );
+			Object entity = entityViewContext.getEntity();
 			EntityViewLinkBuilder linkBuilder = entityViewContext.getLinkBuilder();
 			SingleEntityViewLinkBuilder linkToEntity = linkBuilder.forInstance( entity );
 
@@ -124,7 +124,7 @@ final class DetailViewInitializer extends AbstractViewInitializer<EntityViewFact
 			EntityMessages messages = entityViewContext.getEntityMessages();
 			ContainerViewElementBuilder container = container().name( "buttons" );
 			EntityConfiguration entityConfiguration = entityViewContext.getEntityConfiguration();
-			Object entity = getEntity( entityViewContext );
+			Object entity = entityViewContext.getEntity();
 
 			ButtonViewElementBuilder backButton = button().name( "btn-back" )
 			                                              .link( cancelUrl )
@@ -144,11 +144,5 @@ final class DetailViewInitializer extends AbstractViewInitializer<EntityViewFact
 			container.add( backButton );
 			return container;
 		}
-
-		private Object getEntity( EntityViewContext entityViewContext ) {
-			return entityViewContext.getEntity();
-		}
-
 	}
-
 }

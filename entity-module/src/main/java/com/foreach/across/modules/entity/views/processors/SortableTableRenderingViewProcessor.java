@@ -198,23 +198,22 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 		if ( includeDefaultActions ) {
 			EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 			EntityConfiguration entityConfiguration = entityViewContext.getEntityConfiguration();
-			boolean linkToDefaultView = isLinkToDefaultView( entityViewRequest, entityConfiguration );
 			EntityListActionsProcessor actionsProcessor = new EntityListActionsProcessor( entityConfiguration,
 			                                                                              entityViewContext.getLinkBuilder(),
-			                                                                              entityViewContext.getEntityMessages(),
-			                                                                              linkToDefaultView );
+			                                                                              entityViewContext.getEntityMessages() );
+			actionsProcessor.setLinkToDetailView( shouldLinkToDetailView( entityViewRequest, entityConfiguration ) );
 			tableBuilder.headerRowProcessor( actionsProcessor );
 			tableBuilder.valueRowProcessor( actionsProcessor );
 		}
 	}
 
-	private boolean isLinkToDefaultView( EntityViewRequest entityViewRequest, EntityConfiguration entityConfiguration ) {
+	private boolean shouldLinkToDetailView( EntityViewRequest entityViewRequest, EntityConfiguration entityConfiguration ) {
 		Map<String, Object> configurationAttributes = entityViewRequest.getConfigurationAttributes();
 		if ( configurationAttributes.containsKey( EntityAttributes.LINK_TO_DETAIL_VIEW ) ) {
-			return (boolean) configurationAttributes.get( EntityAttributes.LINK_TO_DETAIL_VIEW );
+			return Boolean.TRUE.equals( configurationAttributes.get( EntityAttributes.LINK_TO_DETAIL_VIEW ) );
 		}
 		else if ( entityConfiguration.hasAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ) {
-			return entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW, boolean.class );
+			return Boolean.TRUE.equals( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) );
 		}
 		return false;
 	}

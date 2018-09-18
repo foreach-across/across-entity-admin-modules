@@ -139,7 +139,7 @@ public class EntityViewRequest
 	 * @return {@code true} if the name matches the current view name.
 	 */
 	public boolean isForView( String viewName ) {
-		return StringUtils.equals( viewName, this.getViewName() );
+		return StringUtils.equals( viewName, getViewName() );
 	}
 
 	@Override
