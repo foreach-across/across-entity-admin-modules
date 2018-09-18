@@ -134,11 +134,11 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		String viewName = entityViewRequest.getViewName();
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 		if ( entityViewContext.isForAssociation() ) {
-			page.addToNav( buildMenu( entityViewContext.getParentContext() ).tabs().build( builderContext ) );
+			page.addToNav( buildMenu( entityViewContext.getParentContext() ).pills().build( builderContext ) );
 
 			if ( EntityAssociation.Type.EMBEDDED == entityViewContext.getEntityAssociation().getAssociationType()
 					&& !( StringUtils.equals( EntityView.CREATE_VIEW_NAME, viewName ) || StringUtils.equals( EntityView.LIST_VIEW_NAME, viewName ) ) ) {
-				page.addFirstChild( buildMenu( entityViewContext ).pills().build( builderContext ) );
+				page.addFirstChild( buildMenu( entityViewContext ).tabs().build( builderContext ) );
 			}
 
 		}

@@ -29,6 +29,7 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.query.EQLStringValueOptionEnhancer;
@@ -36,6 +37,7 @@ import com.foreach.across.modules.entity.views.processors.support.EntityPageStru
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
@@ -68,7 +70,6 @@ import org.springframework.web.bind.WebDataBinder;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
@@ -105,8 +106,14 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	}
 
 	@EventListener
-	void modifyAssociationMenu() {
-
+	void modifyAssociationMenu( EntityAdminMenuEvent<Note> menuEvent ) {
+		if ( menuEvent.getViewContext().isForAssociation() ) {
+			if ( menuEvent.isForUpdate() ) {
+				SingleEntityViewLinkBuilder linkBuilder = menuEvent.getLinkBuilder().forInstance( menuEvent.getEntity() );
+				menuEvent.builder()
+				         .item( linkBuilder.withViewName( "customListView" ).toString(), "Custom list view" );
+			}
+		}
 	}
 
 	@Override
@@ -140,19 +147,15 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                        .hidden( true )
 
 		             )
-		             .association( ab -> ab.name( "imaginary" )
-		                                   .targetEntityType( Note.class )
-		                                   .associationType( EntityAssociation.Type.EMBEDDED )
-		                                   .listView( lvb -> lvb.pageFetcher( (Function<Pageable, Iterable<?>>) pageable -> {
-			                                   return new PageImpl<>( Collections.emptyList(), pageable, 0L );
-		                                   } ) )
-		             )
 		             .association( ab -> ab.name( "note.parent" )
 		                                   .targetEntityType( Note.class )
 		                                   .associationType( EntityAssociation.Type.EMBEDDED )
-		                                   .view( "myCustomView", basicSettings().renderAdminMenu( true )
-		                                                                         .andThen( formSettings().forExtension( false )
-		                                                                                                 .addFormButtons( true ) ) )
+		                                   .listView( "customListView", lvb -> lvb.pageFetcher( pageable -> {
+			                                   return new PageImpl<>( Collections.emptyList(), pageable, 0L );
+		                                   } ) )
+		                                   .formView( "customView", basicSettings().adminMenu( "customView" )
+		                                                                           .andThen( formSettings().forExtension( false )
+		                                                                                                   .addFormButtons( true ) ) )
 		             )
 		             .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
 		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text", "parent.content" )
