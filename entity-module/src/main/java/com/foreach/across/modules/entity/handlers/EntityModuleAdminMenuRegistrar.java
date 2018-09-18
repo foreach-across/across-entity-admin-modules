@@ -35,6 +35,7 @@ import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
+import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
@@ -48,7 +49,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.function.Consumer;
 
 @ConditionalOnAdminWeb
@@ -122,21 +122,9 @@ class EntityModuleAdminMenuRegistrar
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
 			val currentEntityLink = menu.getLinkBuilder().forInstance( menu.getEntity() );
 
-			val generalBuilder = builder.item( currentEntityLink.updateView().toString(),
-			                                   messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
-			                            .order( Ordered.HIGHEST_PRECEDENCE );
-
-			boolean linkToDetailView = isLinkToDetailView( entityViewRequest, entityConfiguration );
-			boolean isForDetailOrUpdateView = entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME )
-					|| entityViewRequest.isForView( EntityView.UPDATE_VIEW_NAME );
-			if ( linkToDetailView && !isForDetailOrUpdateView ) {
-				generalBuilder.changePathTo( currentEntityLink.toString() )
-				              .url( currentEntityLink.toString() );
-			}
-			else if ( !allowableActions.contains( AllowableAction.UPDATE ) || EntityView.DETAIL_VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
-				generalBuilder.changePathTo( currentEntityLink.toString() )
-				              .url( currentEntityLink.toString() );
-			}
+			String path = resolvePathToGeneralMenuItem( currentEntityLink, entityViewRequest, allowableActions );
+			builder.item( path, messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
+			       .order( Ordered.HIGHEST_PRECEDENCE );
 
 			if ( !isAssociation ) {
 				// Get associations
@@ -191,14 +179,19 @@ class EntityModuleAdminMenuRegistrar
 		}
 	}
 
-	private boolean isLinkToDetailView( EntityViewRequest entityViewRequest, EntityConfiguration configuration ) {
-		Map<String, Object> configurationAttributes = entityViewRequest.getConfigurationAttributes();
-		if ( configurationAttributes.containsKey( EntityAttributes.LINK_TO_DETAIL_VIEW ) ) {
-			return (boolean) configurationAttributes.get( EntityAttributes.LINK_TO_DETAIL_VIEW );
+	private String resolvePathToGeneralMenuItem( SingleEntityViewLinkBuilder currentEntityLink,
+	                                             EntityViewRequest entityViewRequest,
+	                                             AllowableActions allowableActions ) {
+		EntityConfiguration entityConfiguration = entityViewRequest.getEntityViewContext().getEntityConfiguration();
+		boolean linkToDetailView = entityConfiguration.hasAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW )
+				&& Boolean.TRUE.equals( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) );
+		boolean isForDetailOrUpdateView = entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME )
+				|| entityViewRequest.isForView( EntityView.UPDATE_VIEW_NAME );
+		boolean isContextForDefaultView = !allowableActions.contains( AllowableAction.UPDATE ) || entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME );
+
+		if ( ( linkToDetailView && !isForDetailOrUpdateView ) || isContextForDefaultView ) {
+			return currentEntityLink.toString();
 		}
-		else if ( configuration.hasAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ) {
-			return configuration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW, boolean.class );
-		}
-		return false;
+		return currentEntityLink.updateView().toString();
 	}
 }
