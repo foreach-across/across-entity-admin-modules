@@ -35,6 +35,8 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
+import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
@@ -91,7 +93,7 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		PageContentStructure page = entityViewRequest.getPageContentStructure();
 		page.setRenderAsTabs( true );
 
-		configureBreadcumb( entityViewContext );
+		configureBreadcrumb( entityViewContext );
 
 		EntityMessages entityMessages = entityViewContext.getEntityMessages();
 
@@ -103,10 +105,11 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 
 		if ( addEntityMenu ) {
 			buildEntityMenu( entityViewRequest, page, builderContext );
+			addTitleForEmbeddedAssociation( entityViewRequest, page, builderContext );
 		}
 	}
 
-	private void configureBreadcumb( EntityViewContext entityViewContext ) {
+	private void configureBreadcrumb( EntityViewContext entityViewContext ) {
 		AdminMenu adminMenu = (AdminMenu) menuFactory.getMenuWithName( AdminMenu.NAME );
 		if ( adminMenu != null && entityViewContext.holdsEntity() ) {
 			adminMenu.breadcrumbLeaf(
@@ -114,6 +117,31 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 							? entityViewContext.getParentContext().getEntityLabel()
 							: entityViewContext.getEntityLabel()
 			);
+		}
+	}
+
+	private void addTitleForEmbeddedAssociation( EntityViewRequest entityViewRequest,
+	                                             PageContentStructure page,
+	                                             ViewElementBuilderContext builderContext ) {
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+		if ( entityViewContext.isForAssociation() && !EntityView.LIST_VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
+			EntityMessages entityMessages = entityViewContext.getEntityMessages();
+			String titleMessageCode = getAssociationTitleMessageCode( entityViewRequest.getViewName() );
+			Optional.ofNullable( StringUtils.defaultIfEmpty( entityMessages.withNameSingular( titleMessageCode, entityViewContext.getEntityLabel() ), null ) )
+			        .ifPresent( title -> page.addFirstChild( new NodeViewElementBuilder( "h4" )
+					                                                 .add( new TextViewElementBuilder().content( title ) )
+					                                                 .build( builderContext ) ) );
+		}
+	}
+
+	private String getAssociationTitleMessageCode( String viewName ) {
+		switch ( viewName ) {
+			case EntityView.CREATE_VIEW_NAME:
+				return EntityMessages.PAGE_TITLE_CREATE;
+			case EntityView.DELETE_VIEW_NAME:
+				return EntityMessages.PAGE_TITLE_DELETE;
+			default:
+				return EntityMessages.PAGE_TITLE_UPDATE;
 		}
 	}
 
@@ -134,18 +162,16 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		String viewName = entityViewRequest.getViewName();
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 		if ( entityViewContext.isForAssociation() ) {
-			page.addToNav( buildMenu( entityViewContext.getParentContext() ).pills().build( builderContext ) );
+			page.addToNav( buildMenu( entityViewContext.getParentContext() ).tabs().build( builderContext ) );
 
 			if ( EntityAssociation.Type.EMBEDDED == entityViewContext.getEntityAssociation().getAssociationType()
 					&& !( StringUtils.equals( EntityView.CREATE_VIEW_NAME, viewName ) || StringUtils.equals( EntityView.LIST_VIEW_NAME, viewName ) ) ) {
-				page.addFirstChild( buildMenu( entityViewContext ).tabs().build( builderContext ) );
+				page.addFirstChild( buildMenu( entityViewContext ).pills().build( builderContext ) );
 			}
-
 		}
 		else {
-			page.addToHeader( buildMenu( entityViewContext ).pills().build( builderContext ) );
+			page.addToHeader( buildMenu( entityViewContext ).tabs().build( builderContext ) );
 		}
-
 	}
 
 	private DefaultNavComponentBuilder buildMenu( EntityViewContext context ) {
