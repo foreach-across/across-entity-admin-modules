@@ -183,13 +183,13 @@ class EntityModuleAdminMenuRegistrar
 	                                             EntityViewRequest entityViewRequest,
 	                                             AllowableActions allowableActions ) {
 		EntityConfiguration entityConfiguration = entityViewRequest.getEntityViewContext().getEntityConfiguration();
-		boolean linkToDetailView = entityConfiguration.hasAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW )
+		boolean shouldLinkToDetailView = entityConfiguration.hasAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW )
 				&& Boolean.TRUE.equals( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) );
 		boolean isForDetailOrUpdateView = entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME )
 				|| entityViewRequest.isForView( EntityView.UPDATE_VIEW_NAME );
-		boolean isContextForDefaultView = !allowableActions.contains( AllowableAction.UPDATE ) || entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME );
+		boolean isContextForDetailView = !allowableActions.contains( AllowableAction.UPDATE ) || entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME );
 
-		if ( ( linkToDetailView && !isForDetailOrUpdateView ) || isContextForDefaultView ) {
+		if ( ( shouldLinkToDetailView && !isForDetailOrUpdateView ) || isContextForDetailView ) {
 			return currentEntityLink.toString();
 		}
 		return currentEntityLink.updateView().toString();
