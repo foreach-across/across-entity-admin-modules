@@ -89,4 +89,58 @@ fieldset .help-block:last-child {
   margin-bottom: 0;
 }
 
+.tab-pane-header {
+  > h4 {
+    color: #666;
+
+    &:last-child {
+      padding-bottom: 10px;
+      border-bottom: dotted 1px #e5e5e5;
+    }
+  }
+  //.nav-pills {
+  //  a {
+  //    border-radius: 6px;
+  //    font-size: 13px;
+  //    padding: 5px 15px;
+  //    border: solid 1px #e5e5e5;
+  //  }
+  //
+  //  li.active > a {
+  //    border-color: #002c41;
+  //    opacity: 0.9;
+  //  }
+  //}
+
+  .nav-pills {
+    font-size: 13px;
+    //border-top: dotted 1px #e5e5e5;
+    border-bottom: dotted 1px #e5e5e5;
+
+    a {
+      padding: 6px 15px;
+    }
+
+    a:hover, a:active, a:focus {
+      background-color: transparent;
+      //border-top: solid 3px #e5e5e5;
+      border-bottom: solid 4px #e5e5e5;
+      //margin-top: -2px;
+      margin-bottom: -3px;
+      //padding-top: 5px;
+    }
+
+    li.active > a {
+      //border-top: solid 3px #e5e5e5;
+      border-bottom: solid 4px #e5e5e5;
+      background-color: transparent;
+      //margin-top: -2px;
+      margin-bottom: -3px;
+      //padding-top: 5px;
+      color: #002c41;
+    }
+  }
+
+  margin-bottom: 20px;
+}
 
