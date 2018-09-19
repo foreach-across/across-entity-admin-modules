@@ -96,6 +96,11 @@ fieldset .help-block:last-child {
     &:last-child {
       padding-bottom: 10px;
       border-bottom: dotted 1px #e5e5e5;
+      margin-bottom: 20px;
+    }
+
+    &:empty {
+      display: none;
     }
   }
   //.nav-pills {
@@ -116,6 +121,7 @@ fieldset .help-block:last-child {
     font-size: 13px;
     //border-top: dotted 1px #e5e5e5;
     border-bottom: dotted 1px #e5e5e5;
+    margin-bottom: 20px;
 
     a {
       padding: 6px 15px;
@@ -141,6 +147,6 @@ fieldset .help-block:last-child {
     }
   }
 
-  margin-bottom: 20px;
+
 }
 
