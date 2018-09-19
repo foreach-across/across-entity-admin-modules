@@ -85,6 +85,7 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 			tableRenderingViewProcessor.setFormName( ListFormViewProcessor.DEFAULT_FORM_NAME );
 			builder.viewProcessor( tableRenderingViewProcessor );
 
+			builder.postProcess( AssociationHeaderViewProcessor.class, p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_LIST ).setAddEntityMenu( false ) );
 			configureDefaultFallbackFetcher( builder );
 		};
 	}
@@ -129,11 +130,9 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 				builder.properties( props -> props.property( entityAssociation.getTargetProperty().getName() ).writable( false ).hidden( true ) );
 			}
 
-			if ( EntityAssociation.Type.EMBEDDED.equals( entityAssociation.getAssociationType() ) ) {
-				AssociationHeaderViewProcessor associationHeaderViewProcessor = beanFactory.createBean( AssociationHeaderViewProcessor.class );
-				associationHeaderViewProcessor.setAddEntityMenu( true );
-				builder.viewProcessor( associationHeaderViewProcessor );
-			}
+			AssociationHeaderViewProcessor associationHeaderViewProcessor = beanFactory.createBean( AssociationHeaderViewProcessor.class );
+			associationHeaderViewProcessor.setAddEntityMenu( true );
+			builder.viewProcessor( associationHeaderViewProcessor );
 		};
 	}
 

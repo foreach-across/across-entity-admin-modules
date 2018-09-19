@@ -30,12 +30,14 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
+import com.foreach.across.modules.entity.views.processors.AssociationHeaderViewProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.query.EQLStringValueOptionEnhancer;
 import com.foreach.across.modules.entity.views.processors.support.EntityPageStructureRenderedEvent;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
@@ -153,9 +155,12 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		             .association( ab -> ab.name( "note.parent" )
 		                                   .targetEntityType( Note.class )
 		                                   .associationType( EntityAssociation.Type.EMBEDDED )
-		                                   .listView( "customListView", lvb -> lvb.pageFetcher( pageable -> {
-			                                   return new PageImpl<>( Collections.emptyList(), pageable, 0L );
-		                                   } ) )
+		                                   .listView( "customListView",
+		                                              lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( Collections.emptyList(), pageable, 0L ) )
+		                                                        .postProcess( AssociationHeaderViewProcessor.class,
+		                                                                      p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE )
+		                                                                            .setAddEntityMenu( true ) )
+		                                   )
 		                                   .formView( "customView", basicSettings().adminMenu( "customView" )
 		                                                                           .andThen( formSettings().forExtension( false )
 		                                                                                                   .addFormButtons( true ) ) )
