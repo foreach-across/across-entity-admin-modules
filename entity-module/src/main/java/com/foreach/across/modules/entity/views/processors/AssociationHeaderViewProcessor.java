@@ -30,7 +30,6 @@ import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.RequiredArgsConstructor;
@@ -103,13 +102,14 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 	private ViewElementBuilder associatedContentTitle( EntityViewContext entityViewContext ) {
 		EntityMessages entityMessages = entityViewContext.getEntityMessages();
 
-		ContainerViewElementBuilder container = container();
+		NodeViewElementBuilder header = node( "h4" ).name( "tab-pane-title" );
 
 		Optional.ofNullable( StringUtils.defaultIfEmpty( entityMessages.withNameSingular( titleMessageCode, entityViewContext.getEntityLabel() ), null ) )
-		        .ifPresent( title -> container.add( node( "h4" ).add( text( title ) ) ) );
+		        .ifPresent( title -> header.add( text( title ) )
+		                                   .add( text( " " ) ) );
 		Optional.ofNullable(
 				StringUtils.defaultIfEmpty( entityMessages.withNameSingular( titleMessageCode + ".subText", entityViewContext.getEntityLabel() ), null ) )
-		        .ifPresent( subText -> container.add( node( "small" ).add( html( subText ) ) ) );
-		return container;
+		        .ifPresent( subText -> header.add( node( "small" ).name( "tab-pane-title-subtext" ).add( html( subText ) ) ) );
+		return header;
 	}
 }
