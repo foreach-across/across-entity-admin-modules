@@ -19,10 +19,8 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
-import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenu;
@@ -35,8 +33,6 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
-import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
@@ -104,8 +100,7 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		        .ifPresent( subText -> page.addToPageTitleSubText( TextViewElement.html( subText ) ) );
 
 		if ( addEntityMenu ) {
-			buildEntityMenu( entityViewRequest, page, builderContext );
-			addTitleForEmbeddedAssociation( entityViewRequest, page, builderContext );
+			buildEntityMenu( entityViewContext, page, builderContext );
 		}
 	}
 
@@ -117,31 +112,6 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 							? entityViewContext.getParentContext().getEntityLabel()
 							: entityViewContext.getEntityLabel()
 			);
-		}
-	}
-
-	private void addTitleForEmbeddedAssociation( EntityViewRequest entityViewRequest,
-	                                             PageContentStructure page,
-	                                             ViewElementBuilderContext builderContext ) {
-		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
-		if ( entityViewContext.isForAssociation() && !EntityView.LIST_VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
-			EntityMessages entityMessages = entityViewContext.getEntityMessages();
-			String titleMessageCode = getAssociationTitleMessageCode( entityViewRequest.getViewName() );
-			Optional.ofNullable( StringUtils.defaultIfEmpty( entityMessages.withNameSingular( titleMessageCode, entityViewContext.getEntityLabel() ), null ) )
-			        .ifPresent( title -> page.addFirstChild( new NodeViewElementBuilder( "h4" )
-					                                                 .add( new TextViewElementBuilder().content( title ) )
-					                                                 .build( builderContext ) ) );
-		}
-	}
-
-	private String getAssociationTitleMessageCode( String viewName ) {
-		switch ( viewName ) {
-			case EntityView.CREATE_VIEW_NAME:
-				return EntityMessages.PAGE_TITLE_CREATE;
-			case EntityView.DELETE_VIEW_NAME:
-				return EntityMessages.PAGE_TITLE_DELETE;
-			default:
-				return EntityMessages.PAGE_TITLE_UPDATE;
 		}
 	}
 
@@ -158,27 +128,16 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 	}
 
 	@SuppressWarnings("unchecked")
-	private void buildEntityMenu( EntityViewRequest entityViewRequest, PageContentStructure page, ViewElementBuilderContext builderContext ) {
-		String viewName = entityViewRequest.getViewName();
-		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
-		if ( entityViewContext.isForAssociation() ) {
-			page.addToNav( buildMenu( entityViewContext.getParentContext() ).tabs().build( builderContext ) );
+	private void buildEntityMenu( EntityViewContext entityViewContext, PageContentStructure page, ViewElementBuilderContext builderContext ) {
+		EntityAdminMenu entityMenu = EntityAdminMenu.create( entityViewContext );
+		menuFactory.buildMenu( entityMenu );
 
-			if ( EntityAssociation.Type.EMBEDDED == entityViewContext.getEntityAssociation().getAssociationType()
-					&& !( StringUtils.equals( EntityView.CREATE_VIEW_NAME, viewName ) || StringUtils.equals( EntityView.LIST_VIEW_NAME, viewName ) ) ) {
-				page.addFirstChild( buildMenu( entityViewContext ).pills().build( builderContext ) );
-			}
-		}
-		else {
-			page.addToHeader( buildMenu( entityViewContext ).tabs().build( builderContext ) );
-		}
-	}
-
-	private DefaultNavComponentBuilder buildMenu( EntityViewContext context ) {
-		EntityAdminMenu entityAdminMenu = EntityAdminMenu.create( context );
-		menuFactory.buildMenu( entityAdminMenu );
-		return BootstrapUiBuilders.nav( entityAdminMenu )
-		                          .replaceGroupBySelectedItem();
+		page.addToNav(
+				BootstrapUiBuilders.nav( entityMenu )
+				                   .tabs()
+				                   .replaceGroupBySelectedItem()
+				                   .build( builderContext )
+		);
 	}
 
 	private EntityViewContext resolveEntityViewContext( EntityViewRequest entityViewRequest ) {

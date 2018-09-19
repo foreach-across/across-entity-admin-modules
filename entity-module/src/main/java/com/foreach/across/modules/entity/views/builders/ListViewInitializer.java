@@ -128,6 +128,12 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 			if ( targetProperty != null ) {
 				builder.properties( props -> props.property( entityAssociation.getTargetProperty().getName() ).writable( false ).hidden( true ) );
 			}
+
+			if ( EntityAssociation.Type.EMBEDDED.equals( entityAssociation.getAssociationType() ) ) {
+				AssociationHeaderViewProcessor associationHeaderViewProcessor = beanFactory.createBean( AssociationHeaderViewProcessor.class );
+				associationHeaderViewProcessor.setAddEntityMenu( true );
+				builder.viewProcessor( associationHeaderViewProcessor );
+			}
 		};
 	}
 
