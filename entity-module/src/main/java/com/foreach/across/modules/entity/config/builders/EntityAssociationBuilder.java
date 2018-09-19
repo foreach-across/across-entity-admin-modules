@@ -250,6 +250,11 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	}
 
 	@Override
+	public EntityAssociationBuilder detailView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.detailView( consumer );
+	}
+
+	@Override
 	public EntityAssociationBuilder formView( String viewName,
 	                                          Consumer<EntityViewFactoryBuilder> consumer ) {
 		return (EntityAssociationBuilder) super.formView( viewName, consumer );
@@ -279,6 +284,11 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	@Override
 	public EntityAssociationBuilder deleteFormView() {
 		return (EntityAssociationBuilder) super.deleteFormView();
+	}
+
+	@Override
+	public EntityAssociationBuilder detailView() {
+		return (EntityAssociationBuilder) super.detailView();
 	}
 
 	@Override

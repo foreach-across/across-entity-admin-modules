@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
+import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
@@ -28,6 +29,7 @@ import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import lombok.Setter;
 
 /**
  * Adds common actions (update, delete) for an {@link EntityConfiguration} entity to every result item.
@@ -39,6 +41,13 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 	protected final EntityConfiguration<Object> entityConfiguration;
 	protected final EntityViewLinkBuilder linkBuilder;
 	protected final EntityMessages messages;
+
+	/**
+	 * -- SETTER --
+	 * Sets whether every result item should link to the detail view by default.
+	 */
+	@Setter
+	private boolean linkToDetailView = false;
 
 	@SuppressWarnings("unchecked")
 	public EntityListActionsProcessor( EntityConfiguration entityConfiguration,
@@ -72,13 +81,27 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 
 		SingleEntityViewLinkBuilder url = linkBuilder.forInstance( entity );
 
-		if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
-			cell.add(
-					BootstrapUiBuilders.button()
-					                   .link( url.updateView().toUriString() )
-					                   .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
-					                   .text( messages.updateAction() )
-			);
+		ButtonViewElementBuilder detailViewBtn = BootstrapUiBuilders.button()
+		                                                            .link( url.toUriString() )
+		                                                            .iconOnly( new GlyphIcon( GlyphIcon.EYE_OPEN ) )
+		                                                            .text( messages.viewAction() );
+		if ( linkToDetailView ) {
+			if ( allowableActions.contains( AllowableAction.READ ) ) {
+				cell.add( detailViewBtn );
+			}
+		}
+		else {
+			if ( allowableActions.contains( AllowableAction.UPDATE ) ) {
+				cell.add(
+						BootstrapUiBuilders.button()
+						                   .link( url.updateView().toUriString() )
+						                   .iconOnly( new GlyphIcon( GlyphIcon.EDIT ) )
+						                   .text( messages.updateAction() )
+				);
+			}
+			else if ( allowableActions.contains( AllowableAction.READ ) ) {
+				cell.add( detailViewBtn );
+			}
 		}
 
 		if ( allowableActions.contains( AllowableAction.DELETE ) ) {
@@ -90,4 +113,5 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 			);
 		}
 	}
+
 }

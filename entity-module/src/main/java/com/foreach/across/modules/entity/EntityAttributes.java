@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
+import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityListActionsProcessor;
 import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -90,6 +91,13 @@ public interface EntityAttributes
 	 * @see SingleEntityFormViewProcessor
 	 */
 	String FORM_ENCTYPE = SingleEntityFormViewProcessor.ATTR_ENCTYPE;
+
+	/**
+	 * Can be set on either {@link com.foreach.across.modules.entity.views.EntityViewFactory} or {@link com.foreach.across.modules.entity.registry.EntityConfiguration}.
+	 * Holds whether views should link to the {@link com.foreach.across.modules.entity.views.EntityView#DETAIL_VIEW_NAME} by default or not.
+	 * The actual value should be {@code true} or {@code false}
+	 */
+	String LINK_TO_DETAIL_VIEW = EntityListActionsProcessor.class.getName() + ".linkToDetailView";
 
 	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.

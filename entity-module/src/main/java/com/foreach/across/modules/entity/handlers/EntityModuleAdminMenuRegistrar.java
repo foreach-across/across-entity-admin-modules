@@ -21,6 +21,7 @@ import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -28,10 +29,13 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
+import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
+import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
@@ -54,6 +58,7 @@ import java.util.function.Consumer;
 class EntityModuleAdminMenuRegistrar
 {
 	private final EntityRegistry entityRegistry;
+	private final EntityViewRequest entityViewRequest;
 
 	@EventListener
 	public void adminMenu( AdminMenuEvent adminMenuEvent ) {
@@ -114,10 +119,11 @@ class EntityModuleAdminMenuRegistrar
 		EntityMessageCodeResolver messageCodeResolver = entityConfiguration.getEntityMessageCodeResolver();
 
 		if ( menu.isForUpdate() ) {
+			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
 			val currentEntityLink = menu.getLinkBuilder().forInstance( menu.getEntity() );
 
-			builder.item( currentEntityLink.updateView().toString(),
-			              messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
+			String path = resolvePathToGeneralMenuItem( currentEntityLink, entityViewRequest, allowableActions );
+			builder.item( path, messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
 
 			if ( !isAssociation ) {
@@ -144,7 +150,6 @@ class EntityModuleAdminMenuRegistrar
 			       .attribute( NavComponentBuilder.ATTR_KEEP_GROUP_ITEM, true )
 			       .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );
 
-			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
 			if ( allowableActions.contains( AllowableAction.DELETE ) ) {
 				val deleteLink = currentEntityLink.deleteView();
 
@@ -172,5 +177,18 @@ class EntityModuleAdminMenuRegistrar
 				viewMenuBuilder.accept( menu );
 			}
 		}
+	}
+
+	private String resolvePathToGeneralMenuItem( SingleEntityViewLinkBuilder currentEntityLink,
+	                                             EntityViewRequest entityViewRequest,
+	                                             AllowableActions allowableActions ) {
+		EntityConfiguration entityConfiguration = entityViewRequest.getEntityViewContext().getEntityConfiguration();
+		boolean shouldLinkToDetailView = Boolean.TRUE.equals( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) );
+		boolean isContextForDetailView = !allowableActions.contains( AllowableAction.UPDATE ) || entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME );
+
+		if ( shouldLinkToDetailView || isContextForDetailView ) {
+			return currentEntityLink.toString();
+		}
+		return currentEntityLink.updateView().toString();
 	}
 }
