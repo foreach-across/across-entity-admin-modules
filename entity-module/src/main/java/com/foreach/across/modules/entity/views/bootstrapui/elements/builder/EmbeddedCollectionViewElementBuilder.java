@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.utils.ControlNamePrefixAdjuster;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.MapEntityPropertyBinder;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
@@ -106,6 +107,8 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		String controlPrefix = StringUtils.removeEnd( controlName( currentPropertyDescriptor( builderContext ) ), ".value" );
 		val propertyName = currentPropertyDescriptor( builderContext ).getName();
 
+		EntityPropertyControlName.ForProperty controlName = EntityPropertyControlName.forProperty( currentPropertyDescriptor( builderContext ), builderContext  );
+
 		String removeItemMessage = builderContext.getMessage( "properties." + propertyName + "[removeItem]", "" );
 		String addItemMessage = builderContext.getMessage( "properties." + propertyName + "[addItem]", "" );
 
@@ -113,7 +116,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		list.addCssClass( "js-embedded-collection-form-group", "embedded-collection-control", "embedded-collection-control-list" );
 		list.setAttribute( "data-item-format", controlPrefix + ".items[{{key}}]" );
 
-		list.addChild( itemRows( builderContext, controlPrefix, binder.getItems(), removeItemMessage ) );
+		list.addChild( itemRows( builderContext, controlPrefix, controlName, binder.getItems(), removeItemMessage ) );
 
 		if ( enableAddingItem ) {
 			list.addChild( addItemAction( builderContext, addItemMessage ) );
@@ -149,7 +152,9 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 				.build( builderContext );
 	}
 
-	private NodeViewElement itemRows( ViewElementBuilderContext builderContext, String controlPrefix, Map<String, EntityPropertyBinder<Object>> items,
+	private NodeViewElement itemRows( ViewElementBuilderContext builderContext, String controlPrefix,
+	                                  EntityPropertyControlName.ForProperty controlName,
+	                                  Map<String, EntityPropertyBinder<Object>> items,
 	                                  String removeItemMessage ) {
 		NodeViewElement itemRows = new NodeViewElement( "div" );
 		itemRows.setAttribute( "data-role", "items" );
@@ -162,6 +167,10 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 			IteratorItemStats<Object> itemStats = new IteratorItemStatsImpl<>( entry.getValue().getValue(), position, position < total );
 			IteratorViewElementBuilderContext itemContext = new IteratorViewElementBuilderContext<>( itemStats );
 			itemContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
+			itemContext.setAttribute(
+					EntityPropertyControlName.class,
+					controlName.asCollectionItem().withIndex( position ).withBinderItemKey( entry.getKey() ).asBinderItem().withInitializedValue()
+			);
 			itemContext.setParentContext( builderContext );
 
 			itemRows.addChild( createItemRowBuilder( controlPrefix, entry.getKey(), entry.getValue().getSortIndex(), removeItemMessage ).build( itemContext ) );

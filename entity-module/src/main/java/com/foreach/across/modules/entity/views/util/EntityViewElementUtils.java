@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.util;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.bind.EntityPropertyValues;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
@@ -25,6 +26,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegis
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import lombok.NonNull;
 import lombok.val;
 
 /**
@@ -48,6 +50,14 @@ public class EntityViewElementUtils
 	 */
 	public static Object currentEntity( ViewElementBuilderContext builderContext ) {
 		return currentEntity( builderContext, Object.class );
+	}
+
+
+	public static EntityPropertyControlName controlName( @NonNull EntityPropertyDescriptor descriptor, @NonNull ViewElementBuilderContext builderContext ) {
+		EntityPropertyHandlingType handlingType = EntityPropertyHandlingType.forProperty( descriptor );
+		EntityPropertyControlName.ForProperty controlName = EntityPropertyControlName.forProperty( descriptor, builderContext );
+
+		return controlName.forHandlingType( handlingType );
 	}
 
 	/**
