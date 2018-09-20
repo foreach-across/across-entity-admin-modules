@@ -31,6 +31,7 @@ import com.foreach.across.modules.entity.registry.EntityViewRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
@@ -113,7 +114,6 @@ class EntityModuleAdminMenuRegistrar
 	@SuppressWarnings("unchecked")
 	public void entityMenu( EntityAdminMenuEvent menu ) {
 		PathBasedMenuBuilder builder = menu.builder();
-
 		boolean isAssociation = menu.getViewContext().isForAssociation();
 		EntityConfiguration<Object> entityConfiguration = entityRegistry.getEntityConfiguration( menu.getEntityType() );
 		EntityMessageCodeResolver messageCodeResolver = entityConfiguration.getEntityMessageCodeResolver();
@@ -122,8 +122,8 @@ class EntityModuleAdminMenuRegistrar
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
 			val currentEntityLink = menu.getLinkBuilder().forInstance( menu.getEntity() );
 
-			String path = resolvePathToGeneralMenuItem( currentEntityLink, entityViewRequest, allowableActions );
-			builder.item( path, messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
+			val linkToGeneralMenuItem = resolveLinkToGeneralMenuItem( currentEntityLink, entityViewRequest, menu.getViewContext(), allowableActions );
+			builder.item( linkToGeneralMenuItem.toString(), messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
 			       .order( Ordered.HIGHEST_PRECEDENCE );
 
 			if ( !isAssociation ) {
@@ -155,7 +155,7 @@ class EntityModuleAdminMenuRegistrar
 
 				builder.item( "/advanced-options/delete",
 				              messageCodeResolver.getMessageWithFallback( "menu.delete", "Delete" ),
-				              deleteLink.withFromUrl( currentEntityLink.updateView().toUriString() ).toString() )
+				              deleteLink.withFromUrl( linkToGeneralMenuItem.toUriString() ).toString() )
 				       .attribute( RequestMenuSelector.ATTRIBUTE_MATCHERS, Collections.singleton( deleteLink.toUriString() ) )
 				       .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
 				       .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.BEFORE )
@@ -179,16 +179,20 @@ class EntityModuleAdminMenuRegistrar
 		}
 	}
 
-	private String resolvePathToGeneralMenuItem( SingleEntityViewLinkBuilder currentEntityLink,
-	                                             EntityViewRequest entityViewRequest,
-	                                             AllowableActions allowableActions ) {
-		EntityConfiguration entityConfiguration = entityViewRequest.getEntityViewContext().getEntityConfiguration();
-		boolean shouldLinkToDetailView = Boolean.TRUE.equals( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) );
-		boolean isContextForDetailView = !allowableActions.contains( AllowableAction.UPDATE ) || entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME );
+	private SingleEntityViewLinkBuilder resolveLinkToGeneralMenuItem( SingleEntityViewLinkBuilder currentEntityLink,
+	                                                                  EntityViewRequest entityViewRequest,
+	                                                                  EntityViewContext menuViewContext,
+	                                                                  AllowableActions allowableActions ) {
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+		EntityConfiguration entityConfiguration = entityViewContext.getEntityConfiguration();
+		boolean shouldLinkToDetailView = Boolean.TRUE.equals( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) )
+				&& !entityViewRequest.isForView( EntityView.UPDATE_VIEW_NAME );
+		boolean isContextForDetailView = !allowableActions.contains( AllowableAction.UPDATE )
+				|| ( entityViewContext.equals( menuViewContext ) && entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) );
 
 		if ( shouldLinkToDetailView || isContextForDetailView ) {
-			return currentEntityLink.toString();
+			return currentEntityLink;
 		}
-		return currentEntityLink.updateView().toString();
+		return currentEntityLink.updateView();
 	}
 }

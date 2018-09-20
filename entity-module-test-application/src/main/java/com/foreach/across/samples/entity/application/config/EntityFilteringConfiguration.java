@@ -121,8 +121,8 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.withType( Note.class )
-		             .attribute( EntityAttributes.LINK_TO_DETAIL_VIEW, true )
-		             .allowableActionsBuilder( new EntityConfigurationAllowableActionsBuilder()
+//		             .attribute( EntityAttributes.LINK_TO_DETAIL_VIEW, true )
+                     .allowableActionsBuilder( new EntityConfigurationAllowableActionsBuilder()
 		             {
 			             @Override
 			             public AllowableActions getAllowableActions( EntityConfiguration<?> entityConfiguration ) {
