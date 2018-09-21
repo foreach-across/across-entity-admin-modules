@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.views.util;
 
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
@@ -126,6 +127,47 @@ public class TestEntityViewElementUtils
 			streetDescriptor.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION );
 			assertEquals(
 					"properties[user].properties[street].value",
+					EntityViewElementUtils.controlName( streetDescriptor, ctx ).toString()
+			);
+		}
+
+		{
+			// manual uses the control name
+			streetDescriptor.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.MANUAL );
+			streetDescriptor.setAttribute( EntityAttributes.CONTROL_NAME, "customStreetControl" );
+
+			assertEquals(
+					"customStreetControl",
+					EntityViewElementUtils.controlName( streetDescriptor, ctx ).toString()
+			);
+		}
+	}
+
+	@Test
+	public void generateControlNameWithParentOnTheBuilderContext() {
+		ViewElementBuilderContext ctx = new DefaultViewElementBuilderContext();
+		ctx.setAttribute( EntityPropertyControlName.class, EntityPropertyControlName.forProperty( "data" ) );
+
+		SimpleEntityPropertyDescriptor userDescriptor = new SimpleEntityPropertyDescriptor( "user" );
+		SimpleEntityPropertyDescriptor streetDescriptor = new SimpleEntityPropertyDescriptor( "user.street" );
+		streetDescriptor.setParentDescriptor( userDescriptor );
+
+		userDescriptor.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.DIRECT );
+
+		{
+			// direct
+			streetDescriptor.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.DIRECT );
+			assertEquals(
+					"data.user.street",
+					EntityViewElementUtils.controlName( streetDescriptor, ctx ).toString()
+			);
+		}
+
+		{
+			// extension uses the binder
+			streetDescriptor.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION );
+			assertEquals(
+					"properties[data].properties[user.street].value",
 					EntityViewElementUtils.controlName( streetDescriptor, ctx ).toString()
 			);
 		}

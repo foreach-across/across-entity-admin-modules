@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.views.util;
 
+import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
@@ -25,7 +26,10 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandl
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.NonNull;
 import lombok.val;
 
@@ -52,7 +56,45 @@ public class EntityViewElementUtils
 		return currentEntity( builderContext, Object.class );
 	}
 
+	/**
+	 * Create a {@link ViewElementPostProcessor} that generates the {@link EntityPropertyControlName} for the given property descriptor
+	 * and sets it using {@link FormInputElement#setControlName(String)} on the generated control.
+	 * <p/>
+	 * If the element built is not a {@link FormInputElement} but a {@link ContainerViewElement}, the container will be searched for
+	 * the {@code FormInputElement} children and the control name will be set on the first child.
+	 *
+	 * @param descriptor property descriptor
+	 * @param <T>        form control element type
+	 * @return post processor
+	 */
+	public static <T extends ViewElement> ViewElementPostProcessor<T> controlNamePostProcessor( @NonNull EntityPropertyDescriptor descriptor ) {
+		return ( builderContext, element ) -> {
+			if ( element instanceof FormInputElement ) {
+				( (FormInputElement) element ).setControlName( controlName( descriptor, builderContext ).toString() );
+			}
+			else if ( element instanceof ContainerViewElement ) {
+				( (ContainerViewElement) element )
+						.findAll( FormInputElement.class )
+						.findFirst()
+						.ifPresent( input -> {
+							String controlName = controlName( descriptor, builderContext ).toString();
+							input.setControlName( controlName );
+						} );
+			}
+		};
+	}
 
+	/**
+	 * Generate the right {@link EntityPropertyControlName} for the property represented by the descriptor. Inspect the {@link ViewElementBuilderContext}
+	 * and use a parent {@link EntityPropertyControlName} that might be set.
+	 * <p/>
+	 * The control name returned will be scoped to the {@link EntityPropertyHandlingType} resolved for the descriptor.
+	 *
+	 * @param descriptor     for the property
+	 * @param builderContext that might contain a parent {@link EntityPropertyControlName}
+	 * @return control name
+	 * @see EntityPropertyControlName
+	 */
 	public static EntityPropertyControlName controlName( @NonNull EntityPropertyDescriptor descriptor, @NonNull ViewElementBuilderContext builderContext ) {
 		EntityPropertyHandlingType handlingType = EntityPropertyHandlingType.forProperty( descriptor );
 		EntityPropertyControlName.ForProperty controlName = EntityPropertyControlName.forProperty( descriptor, builderContext );
@@ -164,7 +206,7 @@ TODO
 
 	private static Object resolveValue( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor, Object root ) {
 		try {
-			if ( properties != null && EntityAttributes.handlingType( descriptor ) == EntityPropertyHandlingType.EXTENSION ) {
+			if ( properties != null && EntityPropertyHandlingType.forProperty( descriptor ) == EntityPropertyHandlingType.EXTENSION ) {
 				val valueHolder = properties.get( descriptor.getName() );
 				return valueHolder.getValue();
 			}

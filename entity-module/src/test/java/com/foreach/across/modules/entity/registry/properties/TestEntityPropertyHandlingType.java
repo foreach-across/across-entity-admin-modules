@@ -43,22 +43,22 @@ public class TestEntityPropertyHandlingType
 
 	@Test
 	public void nativePropertyUsesDirectAsDefault() {
-		when( descriptor.getAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ).thenReturn( "native-descr" );
+		when( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ).thenReturn( true );
 		assertThat( forProperty( descriptor ) ).isEqualTo( DIRECT );
 	}
 
 	@Test
 	public void ifControlNameSpecifiedDefaultIsManual() {
-		when( descriptor.getAttribute( EntityAttributes.CONTROL_NAME ) ).thenReturn( "control-name" );
+		when( descriptor.hasAttribute( EntityAttributes.CONTROL_NAME ) ).thenReturn( true );
 		assertThat( forProperty( descriptor ) ).isEqualTo( MANUAL );
-		verify( descriptor, never() ).getAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR );
+		verify( descriptor, never() ).hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR );
 	}
 
 	@Test
 	public void explicitAttributeHasPrecedence() {
 		when( descriptor.getAttribute( EntityPropertyHandlingType.class ) ).thenReturn( EntityPropertyHandlingType.DIRECT );
 		assertThat( forProperty( descriptor ) ).isEqualTo( DIRECT );
-		verify( descriptor, never() ).getAttribute( EntityAttributes.CONTROL_NAME );
-		verify( descriptor, never() ).getAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR );
+		verify( descriptor, never() ).hasAttribute( EntityAttributes.CONTROL_NAME );
+		verify( descriptor, never() ).hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR );
 	}
 }

@@ -19,7 +19,6 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.HiddenFormElementBuilder;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -67,7 +66,7 @@ public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFac
 	                                                         ViewElementMode viewElementMode, String viewElementType ) {
 		return BootstrapUiBuilders.hidden()
 		                          .name( propertyDescriptor.getName() )
-		                          .controlName( EntityAttributes.controlName( propertyDescriptor ) )
+		                          .postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
 		                          .postProcessor(
 				                          new EntityPropertyValueHiddenPostProcessor(
 						                          entityRegistry, conversionService, propertyDescriptor

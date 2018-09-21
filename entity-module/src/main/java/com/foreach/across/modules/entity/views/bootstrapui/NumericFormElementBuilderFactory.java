@@ -161,9 +161,9 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 			return BootstrapUiBuilders
 					.numeric()
 					.name( propertyDescriptor.getName() )
-					.controlName( EntityAttributes.controlName( propertyDescriptor ) )
 					.required( EntityAttributes.isRequired( propertyDescriptor ) )
 					.configuration( determineBaseConfiguration( propertyDescriptor ) )
+					.postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
 					.postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
 					.postProcessor(
 							( builderContext, numericFormElement ) ->

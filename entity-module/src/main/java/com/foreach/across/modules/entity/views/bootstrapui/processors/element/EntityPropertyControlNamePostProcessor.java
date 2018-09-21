@@ -46,6 +46,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author Arne Vandamme
  * @since 2.0.0
  */
+@Deprecated
 public final class EntityPropertyControlNamePostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
 {
 	/**

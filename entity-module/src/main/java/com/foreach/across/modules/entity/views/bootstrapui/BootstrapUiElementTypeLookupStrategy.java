@@ -92,14 +92,15 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		}
 
 		Class propertyType = descriptor.getPropertyType();
-		EntityConfiguration entityConfiguration = entityRegistry.getEntityConfiguration( propertyType );
+		EntityConfiguration entityConfiguration = propertyType != null ? entityRegistry.getEntityConfiguration( propertyType ) : null;
 
 		boolean isRegisteredEntity = entityConfiguration != null && entityConfiguration.hasEntityModel();
 		Boolean isEmbedded = isEmbedded( descriptor, entityConfiguration );
 
 		if ( ViewElementMode.FORM_WRITE.equals( singleMode ) || ViewElementMode.FORM_READ.equals( singleMode ) ) {
-			if ( isSingularType( propertyType ) &&
-					( ( isEmbedded == null && !isRegisteredEntity && isEmbeddedCandidate( propertyType ) ) || Boolean.TRUE.equals( isEmbedded ) ) ) {
+			if ( propertyType != null
+					&& isSingularType( propertyType )
+					&& ( ( isEmbedded == null && !isRegisteredEntity && isEmbeddedCandidate( propertyType ) ) || Boolean.TRUE.equals( isEmbedded ) ) ) {
 				return BootstrapUiElements.FIELDSET;
 			}
 

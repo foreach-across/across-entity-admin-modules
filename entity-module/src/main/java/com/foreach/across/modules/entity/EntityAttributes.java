@@ -16,11 +16,7 @@
 
 package com.foreach.across.modules.entity;
 
-import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
@@ -113,59 +109,14 @@ public interface EntityAttributes
 
 	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.
-	 * Which control name gets generated depends on the value of {@link #handlingType(EntityPropertyDescriptor)}.
-	 * An extension property will return a path to a {@link EntityPropertyBinder} on the {@link EntityPropertiesBinder}.
-	 * A direct or manual property will generate a control name based on the property name or attribute.
 	 * If an attribute {@link #CONTROL_NAME} is present, it will be used, else the regular name will be used.
 	 *
 	 * @param descriptor of the property
 	 * @return control name to use
 	 */
+	@Deprecated
 	static String controlName( EntityPropertyDescriptor descriptor ) {
-		String fixedControlName = descriptor.getAttribute( CONTROL_NAME, String.class );
-
-		if ( fixedControlName != null ) {
-			return fixedControlName;
-		}
-
-		String descriptorName = descriptor.getName();
-		boolean indexed = StringUtils.endsWith( descriptorName, EntityPropertyRegistry.INDEXER );
-
-		EntityPropertyHandlingType handlingType = handlingType( descriptor );
-
-		if ( handlingType == EntityPropertyHandlingType.EXTENSION && descriptorName != null ) {
-			if ( indexed ) {
-				descriptorName = StringUtils.substring( descriptorName, 0, descriptorName.length() - 2 );
-				return "properties[" + descriptorName + "].items[].value";
-			}
-			else {
-				return "properties[" + descriptorName + "].value";
-			}
-		}
-
-		if ( descriptor.isNestedProperty() ) {
-			String parentControlName = controlName( descriptor.getParentDescriptor() );
-
-			// todo: only if the parent is of a certain type?
-			parentControlName = StringUtils.removeEnd( parentControlName, ".value" ) + ".initializedValue";
-
-			EntityPropertyDescriptor targetDescriptor = descriptor.getAttribute( EntityAttributes.TARGET_DESCRIPTOR, EntityPropertyDescriptor.class );
-
-			return parentControlName + "." + ( targetDescriptor != null ? targetDescriptor.getName() : descriptorName );
-		}
-
-		return descriptorName;
-	}
-
-	/**
-	 * Determine the {@link EntityPropertyHandlingType} for a {@link EntityPropertyDescriptor}.
-	 * If no attribute of the former type is present, a handling type will be resolved.
-	 *
-	 * @param descriptor of the property
-	 * @return handling type - never {@code null}
-	 */
-	static EntityPropertyHandlingType handlingType( EntityPropertyDescriptor descriptor ) {
-		return EntityPropertyHandlingType.forProperty( descriptor );
+		return StringUtils.defaultString( descriptor.getAttribute( CONTROL_NAME, String.class ), descriptor.getName() );
 	}
 
 	/**

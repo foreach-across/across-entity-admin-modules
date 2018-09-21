@@ -30,6 +30,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,11 +79,11 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		return BootstrapUiBuilders
 				.textbox()
 				.name( propertyDescriptor.getName() )
-				.controlName( EntityAttributes.controlName( propertyDescriptor ) )
 				.required( EntityAttributes.isRequired( propertyDescriptor ) )
 				.multiLine(
 						String.class.equals( propertyDescriptor.getPropertyType() ) || BootstrapUiElements.TEXTAREA.equals( viewElementType )
 				)
+				.postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
 				.postProcessor( builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) )
 				.postProcessor( new PropertyPlaceholderTextPostProcessor<>() );
 	}

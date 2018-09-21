@@ -104,7 +104,9 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 	}
 
 	private NodeViewElement createListControl( ListEntityPropertyBinder binder, ViewElementBuilderContext builderContext ) {
-		String controlPrefix = StringUtils.removeEnd( controlName( currentPropertyDescriptor( builderContext ) ), ".value" );
+		String controlPrefix = EntityViewElementUtils.controlName( currentPropertyDescriptor( builderContext ), builderContext ).toString();
+
+				//StringUtils.removeEnd( controlName( currentPropertyDescriptor( builderContext ) ), ".value" );
 		val propertyName = currentPropertyDescriptor( builderContext ).getName();
 
 		EntityPropertyControlName.ForProperty controlName = EntityPropertyControlName.forProperty( currentPropertyDescriptor( builderContext ), builderContext  );

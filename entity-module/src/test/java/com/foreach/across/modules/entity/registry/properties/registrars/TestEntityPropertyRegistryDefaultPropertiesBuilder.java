@@ -121,8 +121,8 @@ public class TestEntityPropertyRegistryDefaultPropertiesBuilder
 		assertEquals( "stays[]", member.getName() );
 		assertEquals( "Stays", member.getDisplayName() );
 		assertEquals( Address.class, member.getPropertyType() );
-		assertFalse( member.isReadable() );
-		assertFalse( member.isWritable() );
+		assertTrue( member.isReadable() );
+		assertTrue( member.isWritable() );
 		assertTrue( member.isHidden() );
 
 		// should not be a nested

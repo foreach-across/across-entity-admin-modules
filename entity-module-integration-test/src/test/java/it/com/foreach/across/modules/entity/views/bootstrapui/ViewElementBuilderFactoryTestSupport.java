@@ -17,8 +17,10 @@
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -108,6 +110,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 				TypeDescriptor typeDescriptor = new TypeDescriptor( field );
 				when( descriptor.getPropertyTypeDescriptor() ).thenReturn( typeDescriptor );
 				when( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ).thenReturn( true );
+				when( descriptor.getController() ).thenReturn( mock( EntityPropertyController.class ) );
 
 				when( codeResolver.getMessageWithFallback(
 						eq( "properties." + field.getName() ), any( String.class )

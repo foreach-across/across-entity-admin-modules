@@ -28,8 +28,6 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHe
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.DateTimeFormElementBuilderFactory;
-import com.foreach.across.modules.entity.views.request.EntityViewCommand;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -240,10 +238,8 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		LocaleContextHolder.setLocale( Locale.UK );
 
 		try {
-			ValueFetcher valueFetcher = mock( ValueFetcher.class );
 			when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
-			when( valueFetcher.getValue( any() ) ).thenReturn( PRINT_DATE );
-			when( properties.get( "required" ).getValueFetcher() ).thenReturn( valueFetcher );
+			when( properties.get( "required" ).getPropertyValue( "entity" ) ).thenReturn( PRINT_DATE );
 
 			TextViewElement text = assembleValue( "required" );
 			assertEquals( "07-Aug-2015 10:31", text.getText() );
@@ -298,10 +294,8 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		LocaleContextHolder.setLocale( Locale.UK );
 
 		try {
-			ValueFetcher valueFetcher = mock( ValueFetcher.class );
 			when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
-			when( valueFetcher.getValue( any() ) ).thenReturn( value );
-			when( properties.get( name ).getValueFetcher() ).thenReturn( valueFetcher );
+			when( properties.get( name ).getPropertyValue( "entity" ) ).thenReturn( value );
 			if ( format != null ) {
 				when( properties.get( name ).hasAttribute( Format.class ) ).thenReturn( true );
 				when( properties.get( name ).getAttribute( Format.class ) ).thenReturn( format );

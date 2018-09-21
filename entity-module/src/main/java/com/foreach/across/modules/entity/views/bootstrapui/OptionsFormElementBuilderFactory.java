@@ -34,6 +34,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.*;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -91,7 +92,8 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		OptionsFormElementBuilder options
 				= BootstrapUiBuilders.options()
 				                     .name( descriptor.getName() )
-				                     .controlName( EntityAttributes.controlName( descriptor ) );
+				                     .controlName( descriptor.getName() )
+				                     .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) );
 
 		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( typeDescriptor.getSimpleTargetType() );
 		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, typeDescriptor.getSimpleTargetType(), optionConfiguration, viewElementMode );

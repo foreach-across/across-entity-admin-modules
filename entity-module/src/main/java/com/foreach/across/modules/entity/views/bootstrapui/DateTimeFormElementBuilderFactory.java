@@ -199,8 +199,8 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 			return BootstrapUiBuilders
 					.datetime()
 					.name( propertyDescriptor.getName() )
-					.controlName( EntityAttributes.controlName( propertyDescriptor ) )
 					.required( EntityAttributes.isRequired( propertyDescriptor ) )
+					.postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
 					.postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
 					.postProcessor(
 							( builderContext, datetime ) ->

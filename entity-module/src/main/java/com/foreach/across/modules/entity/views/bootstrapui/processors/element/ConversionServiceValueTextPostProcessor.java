@@ -48,6 +48,10 @@ public class ConversionServiceValueTextPostProcessor<T extends ConfigurableTextV
 
 	@Override
 	protected String print( Object value, Locale locale ) {
+		if ( value instanceof String ) {
+			return (String) value;
+		}
+
 		TypeDescriptor sourceType = getPropertyDescriptor().getPropertyTypeDescriptor();
 
 		if ( sourceType == null || !sourceType.getType().isInstance( value ) ) {

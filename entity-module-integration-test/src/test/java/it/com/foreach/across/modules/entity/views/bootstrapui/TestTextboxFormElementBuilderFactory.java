@@ -26,7 +26,6 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBuilderFactory;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -201,15 +200,10 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void valueSetFromEntity() {
-		when( properties.get( "noValidator" ).getValueFetcher() ).thenReturn( new ValueFetcher()
-		{
-			@Override
-			public Object getValue( Object entity ) {
-				return "fetchedValue";
-			}
-		} );
+		when( properties.get( "noValidator" ).getPropertyValue( "entity" ) ).thenReturn( 123 );
 
-		when( conversionService.convert( eq( "fetchedValue" ), any( TypeDescriptor.class ),
+		when( conversionService.canConvert( any( TypeDescriptor.class ), any() ) ).thenReturn( true );
+		when( conversionService.convert( eq( 123 ), any( TypeDescriptor.class ),
 		                                 any( TypeDescriptor.class ) ) )
 				.thenReturn( "converted-value" );
 

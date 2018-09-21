@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
@@ -26,6 +25,7 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyValueCheckboxPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.TextCodeResolverPostProcessor;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -51,9 +51,9 @@ public class CheckboxFormElementBuilderFactory extends EntityViewElementBuilderF
 	                                                      ViewElementMode viewElementMode, String viewElementType ) {
 		return BootstrapUiBuilders.checkbox()
 		                          .name( descriptor.getName() )
-		                          .controlName( EntityAttributes.controlName( descriptor ) )
 		                          .text( descriptor.getDisplayName() )
 		                          .value( "on" )
+		                          .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) )
 		                          .postProcessor( new EntityPropertyValueCheckboxPostProcessor( descriptor ) )
 		                          .postProcessor( new TextCodeResolverPostProcessor<>( "properties." + descriptor.getName() ) );
 	}

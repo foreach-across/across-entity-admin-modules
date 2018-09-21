@@ -57,10 +57,10 @@ public enum EntityPropertyHandlingType
 		EntityPropertyHandlingType value = descriptor.getAttribute( EntityPropertyHandlingType.class );
 
 		if ( value == null ) {
-			if ( descriptor.getAttribute( EntityAttributes.CONTROL_NAME ) != null ) {
+			if ( descriptor.hasAttribute( EntityAttributes.CONTROL_NAME ) ) {
 				return MANUAL;
 			}
-			if ( descriptor.getAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) != null ) {
+			if ( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ) {
 				return DIRECT;
 			}
 			return EXTENSION;

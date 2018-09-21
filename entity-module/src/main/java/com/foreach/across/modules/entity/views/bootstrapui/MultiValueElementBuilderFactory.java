@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
@@ -57,7 +56,7 @@ public class MultiValueElementBuilderFactory extends EntityViewElementBuilderFac
 	protected ViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode, String viewElementType ) {
 		return new MultiValueControlViewElementBuilder()
 				.name( propertyDescriptor.getName() )
-				.controlName( EntityAttributes.controlName( propertyDescriptor ) )
+				.postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
 				.postProcessor( new PropertyValueFetcher( propertyDescriptor ) )
 				.postProcessor( new PropertyPlaceholderTextPostProcessor<>() );
 	}
