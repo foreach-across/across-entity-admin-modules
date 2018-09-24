@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -170,7 +171,8 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 					: containerBuilder;
 
 			try {
-				builderContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, true );
+				builderContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
+
 				propertyBuilders.forEach( ( propertyName, builder ) -> {
 					if ( builder == null ) {
 						throw new IllegalStateException( "No ViewElementBuilder was registered for property '" + propertyName + "'" );

@@ -22,7 +22,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.builder.MultiValueControlViewElementBuilder;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -43,10 +42,6 @@ public class MultiValueElementBuilderFactory extends EntityViewElementBuilderFac
 {
 	public static final String ELEMENT_TYPE = "entityMultiValue";
 
-	public MultiValueElementBuilderFactory() {
-		addProcessor( new FormControlNameBuilderProcessor<>() );
-	}
-
 	@Override
 	public boolean supports( String viewElementType ) {
 		return ELEMENT_TYPE.equals( viewElementType );
@@ -56,6 +51,7 @@ public class MultiValueElementBuilderFactory extends EntityViewElementBuilderFac
 	protected ViewElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode, String viewElementType ) {
 		return new MultiValueControlViewElementBuilder()
 				.name( propertyDescriptor.getName() )
+				.controlName( propertyDescriptor.getName() )
 				.postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
 				.postProcessor( new PropertyValueFetcher( propertyDescriptor ) )
 				.postProcessor( new PropertyPlaceholderTextPostProcessor<>() );

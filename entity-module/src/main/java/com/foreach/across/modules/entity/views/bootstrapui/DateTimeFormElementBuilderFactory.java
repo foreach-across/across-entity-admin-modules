@@ -27,7 +27,6 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHe
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.PersistenceAnnotationBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
@@ -149,7 +148,6 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 		public ControlBuilderFactory() {
 			addProcessor( new TemporalAnnotationProcessor() );
 			addProcessor( new PastAndFutureValidationProcessor() );
-			addProcessor( new FormControlNameBuilderProcessor<>() );
 		}
 
 		@Override
@@ -199,6 +197,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 			return BootstrapUiBuilders
 					.datetime()
 					.name( propertyDescriptor.getName() )
+					.controlName( propertyDescriptor.getName() )
 					.required( EntityAttributes.isRequired( propertyDescriptor ) )
 					.postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
 					.postProcessor( new PropertyPlaceholderTextPostProcessor<>() )

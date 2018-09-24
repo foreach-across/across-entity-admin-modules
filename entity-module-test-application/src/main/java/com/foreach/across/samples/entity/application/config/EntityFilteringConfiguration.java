@@ -140,11 +140,11 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                  .showOnlyItemsWithAction( AllowableAction.READ )
 		             )
 		;
-		configuration.withType( Client.class )
+		/*configuration.withType( Client.class )
 		             .properties( props -> props.property( "phones" )
 		                                        .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION )
 		                                        .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE ) );
-
+*/
 		configuration.withType( User.class )
 //		             .properties(
 //				             props -> props.property( "address" )

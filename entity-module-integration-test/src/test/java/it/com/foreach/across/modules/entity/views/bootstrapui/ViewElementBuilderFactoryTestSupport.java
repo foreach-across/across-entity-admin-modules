@@ -18,6 +18,7 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
@@ -136,7 +137,7 @@ public abstract class ViewElementBuilderFactoryTestSupport<T extends ViewElement
 
 	protected void simulateEntityViewForm() {
 		when( builderContext.hasAttribute( EntityViewCommand.class ) ).thenReturn( true );
-		when( builderContext.getAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, Boolean.class ) ).thenReturn( true );
+		when( builderContext.getAttribute( EntityPropertyControlName.class ) ).thenReturn( EntityPropertyControlName.root( "entity" ) );
 	}
 
 	protected abstract EntityViewElementBuilderFactory createBuilderFactory();

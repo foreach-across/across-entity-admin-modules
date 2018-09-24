@@ -22,7 +22,6 @@ import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyValueCheckboxPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.TextCodeResolverPostProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -37,10 +36,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CheckboxFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<OptionFormElementBuilder>
 {
-	public CheckboxFormElementBuilderFactory() {
-		addProcessor( new FormControlNameBuilderProcessor<>() );
-	}
-
 	@Override
 	public boolean supports( String viewElementType ) {
 		return BootstrapUiElements.CHECKBOX.equals( viewElementType );
@@ -51,6 +46,7 @@ public class CheckboxFormElementBuilderFactory extends EntityViewElementBuilderF
 	                                                      ViewElementMode viewElementMode, String viewElementType ) {
 		return BootstrapUiBuilders.checkbox()
 		                          .name( descriptor.getName() )
+		                          .controlName( descriptor.getName() )
 		                          .text( descriptor.getDisplayName() )
 		                          .value( "on" )
 		                          .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) )

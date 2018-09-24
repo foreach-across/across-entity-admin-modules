@@ -623,6 +623,13 @@ public abstract class EntityPropertyControlName
 				return new BinderProperty( "" ).toSortIndex();
 			}
 
+			/**
+			 * @return binder item control name for the entry path, without termination
+			 */
+			public String toBinderEntryPath() {
+				return new BinderProperty( "" ).toItemPath();
+			}
+
 			@Override
 			String binderSuffix() {
 				return ".entries[" + Objects.toString( entryKey, "" ) + "]";
@@ -686,6 +693,13 @@ public abstract class EntityPropertyControlName
 			 */
 			public String toSortIndex() {
 				return binderItemPath() + ".sortIndex";
+			}
+
+			/**
+			 * @return binder item control name path (only the path segment without an actual termination)
+			 */
+			public String toItemPath() {
+				return binderItemPath();
 			}
 
 			@Override

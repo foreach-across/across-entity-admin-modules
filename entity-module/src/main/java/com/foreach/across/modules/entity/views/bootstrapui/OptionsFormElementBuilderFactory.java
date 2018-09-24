@@ -32,7 +32,6 @@ import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.*;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -62,10 +61,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	public static final String OPTIONS = "entityModuleOptions";
 
 	private EntityRegistry entityRegistry;
-
-	public OptionsFormElementBuilderFactory() {
-		addProcessor( new FormControlNameBuilderProcessor<>() );
-	}
 
 	@Override
 	public boolean supports( String viewElementType ) {

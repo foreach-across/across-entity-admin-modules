@@ -33,8 +33,8 @@ var EmbeddedCollection = function( element ) {
         var id = 'item-' + index++;
         var target = targetPrefix.replace('{{key}}', id);
 
-        var template = $(  editItemTemplate.html() );
-        template.attr( 'data-item-id', id );
+        var template = $( editItemTemplate.html() );
+        template.attr( 'data-item-key', id );
 
         template.find( '[name^="' + templatePrefix + '"]' ).each( function( node ) {
             $( this ).attr( 'name', $( this ).attr( 'name' ).replace( templatePrefix, target ) );

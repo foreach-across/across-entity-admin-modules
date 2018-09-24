@@ -17,12 +17,10 @@
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
-import com.foreach.across.modules.bootstrapui.utils.ControlNamePrefixAdjuster;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.MapEntityPropertyBinder;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -35,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
-import static com.foreach.across.modules.entity.EntityAttributes.controlName;
+import static com.foreach.across.modules.entity.bind.EntityPropertyControlName.forProperty;
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentPropertyDescriptor;
 
 /**
@@ -104,49 +102,49 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 	}
 
 	private NodeViewElement createListControl( ListEntityPropertyBinder binder, ViewElementBuilderContext builderContext ) {
-		String controlPrefix = EntityViewElementUtils.controlName( currentPropertyDescriptor( builderContext ), builderContext ).toString();
-
-				//StringUtils.removeEnd( controlName( currentPropertyDescriptor( builderContext ) ), ".value" );
 		val propertyName = currentPropertyDescriptor( builderContext ).getName();
 
-		EntityPropertyControlName.ForProperty controlName = EntityPropertyControlName.forProperty( currentPropertyDescriptor( builderContext ), builderContext  );
+		EntityPropertyControlName.ForProperty controlName = forProperty( currentPropertyDescriptor( builderContext ), builderContext );
+		EntityPropertyControlName.ForProperty.BinderProperty templateControlName = controlName.asCollectionItem().withBinderItemKey( "{{key}}" ).asBinderItem();
 
 		String removeItemMessage = builderContext.getMessage( "properties." + propertyName + "[removeItem]", "" );
 		String addItemMessage = builderContext.getMessage( "properties." + propertyName + "[addItem]", "" );
 
 		NodeViewElement list = super.createElement( builderContext );
 		list.addCssClass( "js-embedded-collection-form-group", "embedded-collection-control", "embedded-collection-control-list" );
-		list.setAttribute( "data-item-format", controlPrefix + ".items[{{key}}]" );
+		list.setAttribute( "data-item-format", templateControlName.toItemPath() );
 
-		list.addChild( itemRows( builderContext, controlPrefix, controlName, binder.getItems(), removeItemMessage ) );
+		list.addChild( itemRows( builderContext, controlName, binder.getItems(), removeItemMessage ) );
 
 		if ( enableAddingItem ) {
 			list.addChild( addItemAction( builderContext, addItemMessage ) );
 		}
 
-		list.addChild( boundIndicator( controlPrefix ) );
-		list.addChild( itemTemplate( builderContext, controlPrefix, removeItemMessage ) );
+		list.addChild( boundIndicator( controlName ) );
+		list.addChild( itemTemplate( builderContext, templateControlName, removeItemMessage ) );
 
 		return list;
 	}
 
-	private ViewElement boundIndicator( String controlPrefix ) {
+	private ViewElement boundIndicator( EntityPropertyControlName.ForProperty controlName ) {
 		HiddenFormElement hidden = new HiddenFormElement();
-		hidden.setControlName( controlPrefix + ".bound" );
+		hidden.setControlName( controlName.asBinderItem().toBound() );
 		hidden.setValue( "1" );
 		return hidden;
 	}
 
-	private NodeViewElement itemTemplate( ViewElementBuilderContext parentBuilderContext, String controlPrefix, String removeItemMessage ) {
+	private NodeViewElement itemTemplate( ViewElementBuilderContext parentBuilderContext,
+	                                      EntityPropertyControlName.ForProperty.BinderProperty controlName,
+	                                      String removeItemMessage ) {
 		ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( parentBuilderContext );
 		EntityViewElementUtils.setCurrentEntity( builderContext, null );
-		builderContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
+		builderContext.setAttribute( EntityPropertyControlName.class, controlName.withInitializedValue() );
 
 		return node( "script" )
 				.attribute( "type", "text/html" )
 				.data( ROLE, "edit-item-template" )
-				.data( "template-prefix", controlPrefix + ".itemTemplate" )
-				.add( createItemRowBuilder( controlPrefix, null, Integer.MAX_VALUE, removeItemMessage ) )
+				.data( "template-prefix", controlName.toItemPath() )
+				.add( createItemRowBuilder( controlName, null, Integer.MAX_VALUE, removeItemMessage ) )
 				.postProcessor(
 						( bc, element ) -> element.findAll( FormGroupElement.class )
 						                          .forEach( group -> group.setDetectFieldErrors( false ) )
@@ -154,7 +152,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 				.build( builderContext );
 	}
 
-	private NodeViewElement itemRows( ViewElementBuilderContext builderContext, String controlPrefix,
+	private NodeViewElement itemRows( ViewElementBuilderContext builderContext,
 	                                  EntityPropertyControlName.ForProperty controlName,
 	                                  Map<String, EntityPropertyBinder<Object>> items,
 	                                  String removeItemMessage ) {
@@ -166,27 +164,31 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		int total = items.size();
 
 		for ( Map.Entry<String, EntityPropertyBinder<Object>> entry : items.entrySet() ) {
+			EntityPropertyControlName.ForProperty.BinderProperty itemControlName = controlName.asCollectionItem()
+			                                                                                  .withIndex( position )
+			                                                                                  .withBinderItemKey( entry.getKey() )
+			                                                                                  .asBinderItem();
+
 			IteratorItemStats<Object> itemStats = new IteratorItemStatsImpl<>( entry.getValue().getValue(), position, position < total );
 			IteratorViewElementBuilderContext itemContext = new IteratorViewElementBuilderContext<>( itemStats );
-			itemContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
-			itemContext.setAttribute(
-					EntityPropertyControlName.class,
-					controlName.asCollectionItem().withIndex( position ).withBinderItemKey( entry.getKey() ).asBinderItem().withInitializedValue()
-			);
+			itemContext.setAttribute( EntityPropertyControlName.class, itemControlName.withInitializedValue() );
 			itemContext.setParentContext( builderContext );
 
-			itemRows.addChild( createItemRowBuilder( controlPrefix, entry.getKey(), entry.getValue().getSortIndex(), removeItemMessage ).build( itemContext ) );
+			itemRows.addChild(
+					createItemRowBuilder( itemControlName, entry.getKey(), entry.getValue().getSortIndex(), removeItemMessage ).build( itemContext )
+			);
 		}
 
 		return itemRows;
 	}
 
-	private NodeViewElementBuilder createItemRowBuilder( String controlPrefix, String itemKey, int sortIndex, String removeItemMessage ) {
-		String suffix = itemKey != null ? ".items[" + itemKey + "]" : ".itemTemplate";
-
+	private NodeViewElementBuilder createItemRowBuilder( EntityPropertyControlName.ForProperty.BinderProperty propertyControlName,
+	                                                     String itemKey,
+	                                                     int sortIndex,
+	                                                     String removeItemMessage ) {
 		return div()
 				.data( ROLE, "item" )
-				.data( "item-id", itemKey )
+				.data( "item-key", itemKey )
 				.css( "embedded-collection-item" )
 				.add(
 						sortable ?
@@ -202,16 +204,10 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 								.name( "itemData" )
 								.data( ROLE, "item-data" )
 								.css( "embedded-collection-item-data" )
-								.add(
-										itemTemplate.andThen(
-												new ControlNamePrefixAdjuster<>()
-														.prefixToReplace( controlPrefix + ".items[]" )
-														.prefixToAdd( controlPrefix + suffix )
-										)
-								)
+								.add( itemTemplate )
 								.add(
 										hidden()
-												.controlName( controlPrefix + suffix + ".sortIndex" )
+												.controlName( propertyControlName.toSortIndex() )
 												.value( sortIndex )
 								)
 				)

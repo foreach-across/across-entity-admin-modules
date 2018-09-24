@@ -32,6 +32,7 @@ import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.NonNull;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Contains utility methods related to view elements and view building in an entity context.
@@ -58,10 +59,10 @@ public class EntityViewElementUtils
 
 	/**
 	 * Create a {@link ViewElementPostProcessor} that generates the {@link EntityPropertyControlName} for the given property descriptor
-	 * and sets it using {@link FormInputElement#setControlName(String)} on the generated control.
+	 * and sets it using {@link FormInputElement#setControlName(String)} on the generated control. This will update all {@link FormInputElement}
+	 * elements where the current control name is the same as {@link EntityPropertyDescriptor#getName()}.
 	 * <p/>
-	 * If the element built is not a {@link FormInputElement} but a {@link ContainerViewElement}, the container will be searched for
-	 * the {@code FormInputElement} children and the control name will be set on the first child.
+	 * Any container will be searched for {@code FormInputElement} children that might get updated as well.
 	 *
 	 * @param descriptor property descriptor
 	 * @param <T>        form control element type
@@ -69,17 +70,20 @@ public class EntityViewElementUtils
 	 */
 	public static <T extends ViewElement> ViewElementPostProcessor<T> controlNamePostProcessor( @NonNull EntityPropertyDescriptor descriptor ) {
 		return ( builderContext, element ) -> {
+			String controlName = controlName( descriptor, builderContext ).toString();
+
 			if ( element instanceof FormInputElement ) {
-				( (FormInputElement) element ).setControlName( controlName( descriptor, builderContext ).toString() );
+				FormInputElement input = (FormInputElement) element;
+				if ( StringUtils.equals( descriptor.getName(), input.getControlName() ) ) {
+					input.setControlName( controlName );
+				}
 			}
-			else if ( element instanceof ContainerViewElement ) {
+
+			if ( element instanceof ContainerViewElement ) {
 				( (ContainerViewElement) element )
 						.findAll( FormInputElement.class )
-						.findFirst()
-						.ifPresent( input -> {
-							String controlName = controlName( descriptor, builderContext ).toString();
-							input.setControlName( controlName );
-						} );
+						.filter( input -> StringUtils.equals( descriptor.getName(), input.getControlName() ) )
+						.forEach( input -> input.setControlName( controlName ) );
 			}
 		};
 	}

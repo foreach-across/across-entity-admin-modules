@@ -27,7 +27,6 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHe
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -59,7 +58,6 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		addProcessor( new EmailTypeDetectionProcessor() );
 		addProcessor( new TextboxTypeDetectionProcessor() );
 		addProcessor( new PasswordTypeDetectionProcessor() );
-		addProcessor( new FormControlNameBuilderProcessor<>() );
 		addProcessor( new FilterControlProcessor() );
 	}
 
@@ -79,6 +77,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 		return BootstrapUiBuilders
 				.textbox()
 				.name( propertyDescriptor.getName() )
+				.controlName( propertyDescriptor.getName() )
 				.required( EntityAttributes.isRequired( propertyDescriptor ) )
 				.multiLine(
 						String.class.equals( propertyDescriptor.getPropertyType() ) || BootstrapUiElements.TEXTAREA.equals( viewElementType )

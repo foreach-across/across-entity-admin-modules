@@ -18,10 +18,11 @@ package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.support.EntityViewMessageSource;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
-import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -154,6 +155,7 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 		EntityViewCommand command = entityViewRequest.getCommand();
 		builderContext.setAttribute( EntityViewCommand.class, command );
 		builderContext.setAttribute( EntityPropertiesBinder.class, command.getProperties() );
+		builderContext.setAttribute( EntityPropertyControlName.class, EntityPropertyControlName.root( "entity" ) );
 
 		return builderContext;
 	}
