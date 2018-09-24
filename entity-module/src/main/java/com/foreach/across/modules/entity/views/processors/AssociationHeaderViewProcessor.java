@@ -44,6 +44,10 @@ import java.util.Optional;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 
 /**
+ * Adds a header component to embedded associations.
+ *
+ * @see SingleEntityPageStructureViewProcessor
+ *
  * @author Steven Gentens
  * @since 3.2.0
  */
