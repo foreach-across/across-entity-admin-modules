@@ -29,13 +29,17 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
+import com.foreach.across.modules.entity.views.processors.AssociationHeaderViewProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.query.EQLStringValueOptionEnhancer;
 import com.foreach.across.modules.entity.views.processors.support.EntityPageStructureRenderedEvent;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
@@ -59,14 +63,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 
+import java.util.Collections;
 import java.util.Optional;
 
+import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
+import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
 import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.ENTITY_QUERY_OPERAND;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
@@ -99,11 +107,22 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		}
 	}
 
+	@EventListener
+	void modifyAssociationMenu( EntityAdminMenuEvent<Note> menuEvent ) {
+		if ( menuEvent.getViewContext().isForAssociation() ) {
+			if ( menuEvent.isForUpdate() ) {
+				SingleEntityViewLinkBuilder linkBuilder = menuEvent.getLinkBuilder().forInstance( menuEvent.getEntity() );
+				menuEvent.builder()
+				         .item( linkBuilder.withViewName( "customListView" ).toString(), "Custom list view" );
+			}
+		}
+	}
+
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.withType( Note.class )
-		             .attribute( EntityAttributes.LINK_TO_DETAIL_VIEW, true )
-		             .allowableActionsBuilder( new EntityConfigurationAllowableActionsBuilder()
+//		             .attribute( EntityAttributes.LINK_TO_DETAIL_VIEW, true )
+                     .allowableActionsBuilder( new EntityConfigurationAllowableActionsBuilder()
 		             {
 			             @Override
 			             public AllowableActions getAllowableActions( EntityConfiguration<?> entityConfiguration ) {
@@ -132,6 +151,19 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                                    EntityQueryConditionTranslator.expandingOr( "name", "content" ) )
 		                                        .hidden( true )
 
+		             )
+		             .association( ab -> ab.name( "note.parent" )
+		                                   .targetEntityType( Note.class )
+		                                   .associationType( EntityAssociation.Type.EMBEDDED )
+		                                   .listView( "customListView",
+		                                              lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( Collections.emptyList(), pageable, 0L ) )
+		                                                        .postProcess( AssociationHeaderViewProcessor.class,
+		                                                                      p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE )
+		                                                                            .setAddEntityMenu( true ) )
+		                                   )
+		                                   .formView( "customView", basicSettings().adminMenu( "customView" )
+		                                                                           .andThen( formSettings().forExtension( false )
+		                                                                                                   .addFormButtons( true ) ) )
 		             )
 		             .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
 		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text", "parent.content" )

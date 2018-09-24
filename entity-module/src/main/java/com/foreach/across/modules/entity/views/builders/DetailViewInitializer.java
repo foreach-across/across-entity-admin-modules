@@ -29,10 +29,7 @@ import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
-import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
-import com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor;
-import com.foreach.across.modules.entity.views.processors.SingleEntityFormViewProcessor;
-import com.foreach.across.modules.entity.views.processors.SingleEntityPageStructureViewProcessor;
+import com.foreach.across.modules.entity.views.processors.*;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
@@ -89,6 +86,7 @@ final class DetailViewInitializer extends AbstractViewInitializer<EntityViewFact
 			pageStructureViewProcessor.setAddEntityMenu( true );
 			pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_VIEW );
 			builder.viewProcessor( pageStructureViewProcessor );
+			builder.postProcess( AssociationHeaderViewProcessor.class, p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_VIEW ) );
 
 			SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
 			formViewProcessor.setAddDefaultButtons( false );

@@ -64,6 +64,7 @@ public class TestFieldsetElementBuilderFactory extends ViewElementBuilderFactory
 
 		ViewElementFieldset fieldset = assemble( embedded, ViewElementMode.FORM_READ );
 		assertNotNull( fieldset );
+		assertEquals( "embedded", fieldset.getName() );
 		assertEquals( "label text", ( (TextViewElement) fieldset.getTitle().getChildren().get( 0 ) ).getText() );
 	}
 

@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.handlers;
 
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.actions.FixedEntityAllowableActionsBuilder;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -48,12 +49,14 @@ import static org.mockito.Mockito.when;
  * @since 3.2.0
  */
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("unchecked")
 public class TestEntityModuleAdminMenuRegistrar
 {
 	private EntityModuleAdminMenuRegistrar adminMenuRegistrar;
 	private EntityRegistry entityRegistry;
 	private EntityViewRequest viewRequest;
 	private EntityViewContext viewContext;
+	private EntityViewContext rootViewContext;
 	private EntityConfiguration entityConfiguration;
 	private EntityAdminMenuEvent entityAdminMenuEvent;
 	private EntityAdminMenu entityAdminMenu;
@@ -67,7 +70,10 @@ public class TestEntityModuleAdminMenuRegistrar
 		entityRegistry = mock( EntityRegistry.class );
 		viewRequest = mock( EntityViewRequest.class );
 		viewContext = mock( EntityViewContext.class );
+		rootViewContext = mock( EntityViewContext.class );
 
+		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( false );
+		when( viewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ).thenReturn( false );
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 		when( viewContext.isForAssociation() ).thenReturn( false );
@@ -114,26 +120,10 @@ public class TestEntityModuleAdminMenuRegistrar
 	}
 
 	@Test
-	public void readAndUpdatePermissionsUpdateView() {
-		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) ).thenReturn(
-				FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
-		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
-		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( false );
-
-		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-		Menu menu = menuBuilder.build();
-		assertThat( menu.getItems() ).isNotEmpty();
-		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNull();
-		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNotNull();
-		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNotNull();
-	}
-
-	@Test
-	public void readAndUpdateNoDetailOrUpdateView() {
+	public void readAndUpdatePermissionsNoDetailView() {
 		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
 				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
-		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( false );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
@@ -162,7 +152,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
 				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
-		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( false );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
@@ -184,6 +173,106 @@ public class TestEntityModuleAdminMenuRegistrar
 		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
 		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNull();
+	}
+
+	@Test
+	public void generalTabShouldLinkToUpdateViewIfUpdateViewIsActive() {
+		when( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ).thenReturn( true );
+		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
+				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
+		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
+		when( viewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ).thenReturn( true );
+
+		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
+		Menu menu = menuBuilder.build();
+		assertThat( menu.getItems() ).isNotEmpty();
+		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNull();
+		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNotNull();
+	}
+
+	@Test
+	public void deleteShouldRedirectToUpdate() {
+		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
+				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
+		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
+
+		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
+		Menu menu = menuBuilder.build();
+		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
+		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isTrue();
+	}
+
+	@Test
+	public void deleteShouldRedirectToDetailNoUpdatePermission() {
+		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
+				.thenReturn( new AllowableActionSet( AllowableAction.READ.getId(), AllowableAction.DELETE.getId() ) );
+		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
+
+		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
+		Menu menu = menuBuilder.build();
+		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
+		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isFalse();
+	}
+
+	@Test
+	public void deleteShouldRedirectToDetail() {
+		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
+				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
+		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
+		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( true );
+
+		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
+		Menu menu = menuBuilder.build();
+		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
+		assertThat( deleteItem ).isNotNull();
+		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isFalse();
+	}
+
+	@Test
+	public void deleteShouldLinkToDetailByDefault() {
+		when( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ).thenReturn( true );
+		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
+				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
+		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
+
+		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
+		Menu menu = menuBuilder.build();
+		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
+		assertThat( deleteItem ).isNotNull();
+		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isFalse();
+	}
+
+	@Test
+	public void updateForRootContext() {
+		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
+				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
+		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
+		when( entityAdminMenuEvent.getViewContext() ).thenReturn( rootViewContext );
+
+		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
+		Menu menu = menuBuilder.build();
+		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
+		assertThat( deleteItem ).isNotNull();
+		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isTrue();
+	}
+
+	@Test
+	public void detailForAssociationContext() {
+		when( viewContext.isForAssociation() ).thenReturn( true );
+		EntityAssociation entityAssociation = mock( EntityAssociation.class );
+		when( viewContext.getEntityAssociation() ).thenReturn( entityAssociation );
+		when( entityAssociation.getViewNames() ).thenReturn( new String[0] );
+		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
+				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
+		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
+		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( true );
+
+		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
+		Menu menu = menuBuilder.build();
+		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
+		assertThat( deleteItem ).isNotNull();
+		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isFalse();
 	}
 
 	class Item

@@ -69,6 +69,7 @@ final class DeleteViewInitializer extends AbstractViewInitializer<EntityViewFact
 			pageStructureViewProcessor.setAddEntityMenu( true );
 			pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_DELETE );
 			builder.viewProcessor( pageStructureViewProcessor );
+			builder.postProcess( AssociationHeaderViewProcessor.class, p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_DELETE ) );
 
 			SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
 			formViewProcessor.setAddDefaultButtons( true );
