@@ -150,7 +150,7 @@ public interface EntityPropertyBinder<T>
 	 *
 	 * @param errors          object in which to register the errors
 	 * @param validationHints to customize validation rules
-	 * @return true if validation errors have been added for this property
+	 * @return true if validation was successful, no validation errors have been added for this property
 	 */
 	boolean validate( Errors errors, Object... validationHints );
 

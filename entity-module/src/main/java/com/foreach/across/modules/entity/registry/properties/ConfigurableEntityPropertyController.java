@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  *
  * @author Arne Vandamme
  * @see EntityPropertyController
- * @since 3.1.0
+ * @since 3.2.0
  */
 public interface ConfigurableEntityPropertyController<T, U>
 {

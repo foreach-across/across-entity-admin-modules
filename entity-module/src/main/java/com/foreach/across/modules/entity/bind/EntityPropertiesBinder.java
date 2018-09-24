@@ -49,6 +49,7 @@ import java.util.Optional;
  * whereas in the former {@code name} is a direct bean path.
  *
  * @author Arne Vandamme
+ * @see EntityPropertiesBinderController
  * @since 3.2.0
  */
 @RequiredArgsConstructor
@@ -154,6 +155,50 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return valueHolder;
 	}
 
+	/**
+	 * Signal that actual binding is enabled, this allows individual property binders to determine how they
+	 * should interpret the current value. For example: if binding is enabled and a list value is requested,
+	 * the list will only return the items that have been bound before, disregarding the possible currently
+	 * stored value.
+	 * <p/>
+	 * In readonly mode this property will usually be kept {@code false}, simply returning the property values.
+	 *
+	 * @param bindingEnabled true to signal binding is enabled
+	 */
+	public void setBindingEnabled( boolean bindingEnabled ) {
+		this.bindingEnabled = bindingEnabled;
+
+		values().forEach( b -> b.enableBinding( bindingEnabled ) );
+	}
+
+	/**
+	 * Create a new controller for this properties binder, allows for saving and validating binder properties.
+	 *
+	 * @return new controller instance
+	 */
+	public EntityPropertiesBinderController createController() {
+		return new EntityPropertiesBinderController( this );
+	}
+
+	/**
+	 * Bind the registered properties to the target entity.
+	 */
+	@Deprecated
+	public void bind() {
+		values().forEach( v -> {
+			if ( v.isModified() ) {
+				v.applyValue();
+			}
+		} );
+
+		// todo forward *bind* events so it cascades down
+		bindingContext.getChildContexts()
+		              .values()
+		              .stream()
+		              .filter( c -> c.getController() != null )
+		              .forEach( child -> child.getController().applyValue( child.getParent(), child.toPropertyValue() ) );
+	}
+
 	EntityPropertyBinder<Object> createPropertyBinder( EntityPropertyDescriptor descriptor ) {
 		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
 
@@ -185,38 +230,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return descriptor;
 	}
 
-	public void validate( Object... validationHints ) {
-
-	}
-
-	/**
-	 * Bind the registered properties to the target entity.
-	 */
-	public void bind() {
-		values().forEach( v -> {
-			if ( v.isModified() ) {
-				v.applyValue();
-			}
-		} );
-
-		// todo forward *bind* events so it cascades down
-		bindingContext.getChildContexts()
-		              .values()
-		              .stream()
-		              .filter( c -> c.getController() != null )
-		              .forEach( child -> child.getController().applyValue( child.getParent(), child.toPropertyValue() ) );
-	}
-
-	public void save() {
-
-	}
-
-	public void setBindingEnabled( boolean bindingEnabled ) {
-		this.bindingEnabled = bindingEnabled;
-
-		values().forEach( b -> b.enableBinding( bindingEnabled ) );
-	}
-
 	EntityPropertiesBinder createChildBinder( EntityPropertyDescriptor parent, EntityPropertyController controller, Object propertyValue ) {
 		EntityPropertiesBinder childBinder = new EntityPropertiesBinder( propertyRegistry );
 		childBinder.parentProperty = parent;
@@ -240,7 +253,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 				// todo: customize the binding context builder
 
 				bindingContext.retrieveNamedChildContext( parent.getName(), p -> builder.parent( p ).build() );
-
 			}
 		}
 

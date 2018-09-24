@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
-import com.foreach.across.modules.entity.bind.EntityPropertyValues;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -157,8 +156,7 @@ TODO
 	/**
 	 * Retrieve the current property value being rendered, if it is of the expected type.
 	 * Depending on the type of property, this will fetch the property directly from the entity,
-	 * or from the {@link EntityPropertyValues} that
-	 * is present on the {@link ViewElementBuilderContext}.
+	 * or from the {@link EntityPropertiesBinder} that is present on the {@link ViewElementBuilderContext}.
 	 *
 	 * @param builderContext current builder context
 	 * @param expectedType   the property value should have

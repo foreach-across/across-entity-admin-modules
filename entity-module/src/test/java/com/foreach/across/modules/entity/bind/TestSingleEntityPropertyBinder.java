@@ -257,6 +257,8 @@ public class TestSingleEntityPropertyBinder
 
 	@Test
 	public void validate() {
+
+
 		// todo: implement validation test
 	}
 

@@ -32,6 +32,7 @@ import org.springframework.validation.ValidationUtils;
  * @since 3.1.0
  */
 @FunctionalInterface
+@Deprecated
 public interface ContextualValidator<T, U> extends SmartValidator
 {
 	default boolean supports( Class<?> targetType, Class<?> contextType ) {
