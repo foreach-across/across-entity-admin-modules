@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.validation.Errors;
 
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyController.AFTER_ENTITY;
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyController.BEFORE_ENTITY;
@@ -104,7 +105,35 @@ public class TestEntityPropertiesBinderController
 
 	@Test
 	public void controllersAreOrderedForValidate() {
+		binder.get( "propOne" ).setValue( "one" );
+		binder.get( "propTwo" ).setValue( "two" );
 
+		when( propOne.getOrder() ).thenReturn( BEFORE_ENTITY );
+		when( propTwo.getOrder() ).thenReturn( AFTER_ENTITY );
+
+		Errors errors = mock( Errors.class );
+		controller.addEntityValidationCallback( callbackOne, callbackTwo ).validateAndBind( errors );
+
+		InOrder inOrder = inOrder( propTwo, callbackOne, propOne, callbackTwo );
+		inOrder.verify( propOne ).validate( any(), any(), any() );
+		inOrder.verify( callbackOne ).run();
+		inOrder.verify( callbackTwo ).run();
+		inOrder.verify( propTwo ).validate( any(), any(), any() );
+
+		reset( propOne, propTwo, callbackOne, callbackTwo );
+
+		when( propOne.getOrder() ).thenReturn( AFTER_ENTITY );
+		when( propTwo.getOrder() ).thenReturn( BEFORE_ENTITY );
+
+		binder.createController().addEntityValidationCallback( callbackTwo, callbackOne ).validateAndBind( errors );
+
+		inOrder = inOrder( propTwo, callbackOne, propOne, callbackTwo );
+		inOrder.verify( propTwo ).validate( any(), any(), any() );
+		inOrder.verify( propTwo ).applyValue( any(), any() );
+		inOrder.verify( callbackTwo ).run();
+		inOrder.verify( callbackOne ).run();
+		inOrder.verify( propOne ).validate( any(), any(), any() );
+		inOrder.verify( propOne ).applyValue( any(), any() );
 	}
 
 	@Test

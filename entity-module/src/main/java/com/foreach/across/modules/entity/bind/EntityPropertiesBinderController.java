@@ -86,7 +86,7 @@ public final class EntityPropertiesBinderController
 	 */
 	public boolean validateAndBind( @NonNull Errors errors, Object... validationHints ) {
 		List<OrderedRunnable> actions = new ArrayList<>();
-		actions.add( new OrderedRunnable( 0, () -> entitySaveCallbacks.forEach( Runnable::run ) ) );
+		actions.add( new OrderedRunnable( 0, () -> entityValidationCallbacks.forEach( Runnable::run ) ) );
 
 		propertiesBinder.values()
 		                .stream()
