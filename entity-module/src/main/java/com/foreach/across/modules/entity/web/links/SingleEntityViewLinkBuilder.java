@@ -39,7 +39,7 @@ public abstract class SingleEntityViewLinkBuilder extends EntityViewLinkBuilderS
 	}
 
 	/**
-	 * @return update view for the current instance
+	 * @return delete view for the current instance
 	 */
 	public SingleEntityViewLinkBuilder deleteView() {
 		return cloneLinkBuilder( toUriComponentsBuilder().pathSegment( "delete" ) );

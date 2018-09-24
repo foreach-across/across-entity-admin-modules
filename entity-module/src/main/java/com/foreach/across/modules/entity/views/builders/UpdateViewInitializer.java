@@ -74,6 +74,7 @@ final class UpdateViewInitializer extends AbstractViewInitializer<EntityViewFact
 			pageStructureViewProcessor.setAddEntityMenu( true );
 			pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE );
 			builder.viewProcessor( pageStructureViewProcessor );
+			builder.postProcess( AssociationHeaderViewProcessor.class, p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE ) );
 
 			SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
 			formViewProcessor.setAddDefaultButtons( true );
@@ -82,6 +83,7 @@ final class UpdateViewInitializer extends AbstractViewInitializer<EntityViewFact
 
 			SaveEntityViewProcessor saveEntityViewProcessor = beanFactory.createBean( SaveEntityViewProcessor.class );
 			builder.viewProcessor( saveEntityViewProcessor );
+
 		};
 	}
 }

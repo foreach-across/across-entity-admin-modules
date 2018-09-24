@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
+import com.foreach.across.modules.entity.views.processors.AssociationHeaderViewProcessor;
 import com.foreach.across.modules.entity.views.processors.SingleEntityPageStructureViewProcessor;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,10 @@ abstract class AbstractViewInitializer<T extends EntityViewFactoryBuilder>
 			}
 
 			builder.postProcess( SingleEntityPageStructureViewProcessor.class, p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE ) );
+
+			AssociationHeaderViewProcessor associationHeaderViewProcessor = beanFactory.createBean( AssociationHeaderViewProcessor.class );
+			associationHeaderViewProcessor.setAddEntityMenu( true );
+			builder.viewProcessor( associationHeaderViewProcessor );
 		};
 	}
 }

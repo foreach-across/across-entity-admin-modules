@@ -89,6 +89,44 @@ fieldset .help-block:last-child {
   margin-bottom: 0;
 }
 
+.tab-pane-header {
+  > h4 {
+    color: #666;
+
+    &:last-child {
+      padding-bottom: 10px;
+      border-bottom: dotted 1px #e5e5e5;
+      margin-bottom: 20px;
+    }
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .nav-pills {
+    font-size: 13px;
+    border-bottom: dotted 1px #e5e5e5;
+    margin-bottom: 20px;
+
+    a {
+      padding: 6px 15px;
+    }
+
+    a:hover, a:active, a:focus {
+      background-color: transparent;
+      border-bottom: solid 4px #e5e5e5;
+      margin-bottom: -3px;
+    }
+
+    li.active > a {
+      border-bottom: solid 4px #e5e5e5;
+      background-color: transparent;
+      margin-bottom: -3px;
+      color: #002c41;
+    }
+  }
+}
 .embedded-collection-item {
   display: table-row;
 

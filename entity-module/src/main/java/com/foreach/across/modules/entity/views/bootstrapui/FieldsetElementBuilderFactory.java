@@ -144,7 +144,7 @@ public class FieldsetElementBuilderFactory extends EntityViewElementBuilderFacto
 	{
 		@Override
 		protected ViewElementFieldset createElement( ViewElementBuilderContext builderContext ) {
-			return new ViewElementFieldset();
+			return apply( new ViewElementFieldset(), builderContext );
 		}
 	}
 }

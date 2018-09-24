@@ -89,7 +89,7 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		PageContentStructure page = entityViewRequest.getPageContentStructure();
 		page.setRenderAsTabs( true );
 
-		configureBreadcumb( entityViewContext );
+		configureBreadcrumb( entityViewContext );
 
 		EntityMessages entityMessages = entityViewContext.getEntityMessages();
 
@@ -104,7 +104,7 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		}
 	}
 
-	private void configureBreadcumb( EntityViewContext entityViewContext ) {
+	private void configureBreadcrumb( EntityViewContext entityViewContext ) {
 		AdminMenu adminMenu = (AdminMenu) menuFactory.getMenuWithName( AdminMenu.NAME );
 		if ( adminMenu != null && entityViewContext.holdsEntity() ) {
 			adminMenu.breadcrumbLeaf(

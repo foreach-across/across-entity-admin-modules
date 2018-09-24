@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.core.support.AttributeSupport;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
@@ -117,7 +118,8 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 				ContainerViewElement container = actualContainerBuilder.build();
 				entityView.addAttribute( ATTRIBUTE_CONTAINER_ELEMENT, container );
 
-				entityViewRequest.getPageContentStructure().addFirstChild( container );
+				PageContentStructure page = entityViewRequest.getPageContentStructure();
+				page.addChild( container );
 
 				// perform render related post-processing
 				processorRegistry.dispatch( p -> p.postRender( entityViewRequest, entityView ) );

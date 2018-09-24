@@ -160,6 +160,27 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 	}
 
 	/**
+	 * Configure a default detail view builder for the entity being configured.
+	 * Does not customize the builder but ensures the view gets created using the default builder.
+	 *
+	 * @return current builder
+	 */
+	public AbstractWritableAttributesAndViewsBuilder detailView() {
+		return detailView( triggerBuild() );
+	}
+
+	/**
+	 * Configure the default detail view builder for the entity being configured.
+	 * A default detail view is usually available.
+	 *
+	 * @param consumer for configuring the view builder
+	 * @return current builder
+	 */
+	public AbstractWritableAttributesAndViewsBuilder detailView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return formView( EntityView.DETAIL_VIEW_NAME, consumer );
+	}
+
+	/**
 	 * Configure the named form view builder for the entity being configured.
 	 * If the view is not available, it will be created.
 	 *
