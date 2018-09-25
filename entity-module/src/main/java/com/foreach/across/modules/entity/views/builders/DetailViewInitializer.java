@@ -16,9 +16,6 @@
 
 package com.foreach.across.modules.entity.views.builders;
 
-import com.foreach.across.modules.bootstrapui.elements.Style;
-import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
-import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
@@ -28,24 +25,13 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertySelec
 import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.*;
-import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
-import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
-import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
-import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
-import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.function.BiConsumer;
-
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.button;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.container;
 
 /**
  * Configures a blank {@link EntityViewFactoryBuilder} for the {@link EntityView#DETAIL_VIEW_NAME}.
@@ -92,55 +78,7 @@ final class DetailViewInitializer extends AbstractViewInitializer<EntityViewFact
 			formViewProcessor.setAddDefaultButtons( false );
 			formViewProcessor.setAddGlobalBindingErrors( true );
 			builder.viewProcessor( formViewProcessor )
-			       .viewProcessor( new DetailFormViewPostProcessor() );
+			       .viewProcessor( beanFactory.getBean( DetailFormViewProcessor.class ) );
 		};
-	}
-
-	@RequiredArgsConstructor
-	private static final class DetailFormViewPostProcessor extends EntityViewProcessorAdapter
-	{
-		@Override
-		protected void createViewElementBuilders( EntityViewRequest entityViewRequest,
-		                                          EntityView entityView,
-		                                          ViewElementBuilderMap builderMap ) {
-			FormViewElementBuilder form = (FormViewElementBuilder) builderMap.get( SingleEntityFormViewProcessor.FORM );
-			EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
-
-			Object entity = entityViewContext.getEntity();
-			EntityViewLinkBuilder linkBuilder = entityViewContext.getLinkBuilder();
-			SingleEntityViewLinkBuilder linkToEntity = linkBuilder.forInstance( entity );
-
-			String updateUrl = linkToEntity.updateView().withFromUrl( linkToEntity.toUriString() ).toUriString();
-
-			ContainerViewElementBuilderSupport buttons = buildButtonsContainer( entityViewContext, updateUrl, linkBuilder.listView().toUriString() );
-			form.add( buttons );
-			builderMap.put( SingleEntityFormViewProcessor.FORM_BUTTONS, buttons );
-		}
-
-		@SuppressWarnings("unchecked")
-		private ContainerViewElementBuilderSupport buildButtonsContainer( EntityViewContext entityViewContext, String updateUrl, String cancelUrl ) {
-			EntityMessages messages = entityViewContext.getEntityMessages();
-			ContainerViewElementBuilder container = container().name( "buttons" );
-			EntityConfiguration entityConfiguration = entityViewContext.getEntityConfiguration();
-			Object entity = entityViewContext.getEntity();
-
-			ButtonViewElementBuilder backButton = button().name( "btn-back" )
-			                                              .link( cancelUrl )
-			                                              .text( messages.messageWithFallback( "actions.back" ) );
-			if ( entityConfiguration.getAllowableActions( entity ).contains( AllowableAction.UPDATE ) ) {
-				container.add(
-						button().name( "btn-update" )
-						        .link( updateUrl )
-						        .style( Style.PRIMARY )
-						        .text( messages.withNameSingular( "actions.modify", entity ) )
-				);
-			}
-			else {
-				backButton.style( Style.DEFAULT );
-			}
-
-			container.add( backButton );
-			return container;
-		}
 	}
 }
