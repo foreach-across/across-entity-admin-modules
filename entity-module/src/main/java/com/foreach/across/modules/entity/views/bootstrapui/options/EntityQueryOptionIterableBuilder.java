@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Generates {@link OptionFormElementBuilder}s for a particular entity type, where the list of options
@@ -45,7 +46,6 @@ import java.util.List;
  */
 public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 {
-	private static final ConversionService DEFAULT_CONVERSION_SERVICE = DefaultConversionService.getSharedInstance();
 	private ConversionService conversionService;
 	private EntityModel<Object, Serializable> entityModel;
 	private EntityQueryExecutor<Object> entityQueryExecutor;
@@ -131,8 +131,8 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 		return options;
 	}
 
-	String convertId( Object value ) {
-		return conversionService != null ? conversionService.convert( value, String.class ) : DEFAULT_CONVERSION_SERVICE.convert( value, String.class );
+	private String convertId( Object value ) {
+		return Optional.ofNullable( conversionService ).orElseGet( DefaultConversionService::getSharedInstance ).convert( value, String.class );
 	}
 
 	private EntityQuery prepareEntityQuery() {
