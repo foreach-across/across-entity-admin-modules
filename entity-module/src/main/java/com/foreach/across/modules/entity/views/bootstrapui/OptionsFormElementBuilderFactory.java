@@ -63,9 +63,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	public static final String OPTIONS = "entityModuleOptions";
 
 	private EntityRegistry entityRegistry;
-
-	@Autowired
-	@Qualifier("mvcConversionService")
 	private ConversionService conversionService;
 
 	public OptionsFormElementBuilderFactory() {
@@ -338,5 +335,11 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Autowired
 	public void setEntityRegistry( EntityRegistry entityRegistry ) {
 		this.entityRegistry = entityRegistry;
+	}
+	
+	@Autowired
+	@Qualifier("mvcConversionService")
+	public void setConversionService( ConversionService conversionService ) {
+		this.conversionService = conversionService;
 	}
 }
