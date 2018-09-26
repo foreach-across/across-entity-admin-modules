@@ -62,12 +62,12 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 		this.entityModel = entityModel;
 	}
 
-	/*
-	Sets an alternative {@link ConversionService} which is used to convert the Id of an entity.
-	If none is set, the {@link DefaultConversionService} will be used.
-
-	@author Marc Vanbrabant
-	@since 3.2.0
+	/**
+	 * Sets an alternative {@link ConversionService} which is used to convert the Id of an entity.
+	 * If none is set, the {@link DefaultConversionService} will be used.
+	 *
+     * @author Marc Vanbrabant
+	 * @since 3.2.0
 	 */
 	public void setConversionService( ConversionService conversionService ) {
 		this.conversionService = conversionService;
