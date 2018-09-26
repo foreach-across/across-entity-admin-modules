@@ -36,6 +36,8 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.Fo
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
@@ -61,6 +63,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	public static final String OPTIONS = "entityModuleOptions";
 
 	private EntityRegistry entityRegistry;
+	private ConversionService conversionService;
 
 	public OptionsFormElementBuilderFactory() {
 		addProcessor( new FormControlNameBuilderProcessor<>() );
@@ -276,6 +279,11 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			throw new IllegalStateException(
 					"Illegal " + EntityAttributes.OPTIONS_ENTITY_QUERY + " attribute - expected to be String or EntityQuery" );
 		}
+
+		if ( conversionService != null ) {
+			eqBuilder.setConversionService( conversionService );
+		}
+
 		return eqBuilder;
 	}
 
@@ -327,5 +335,11 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	@Autowired
 	public void setEntityRegistry( EntityRegistry entityRegistry ) {
 		this.entityRegistry = entityRegistry;
+	}
+	
+	@Autowired
+	@Qualifier("mvcConversionService")
+	public void setConversionService( ConversionService conversionService ) {
+		this.conversionService = conversionService;
 	}
 }
