@@ -70,6 +70,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	 * When using
 	 */
 	@Setter
+	@Getter
 	private String binderPrefix = "";
 
 	/**
@@ -84,6 +85,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	private ConversionService conversionService;
 
 	@Getter
+	@Setter
 	private boolean bindingEnabled;
 
 	/**
@@ -197,6 +199,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		              .stream()
 		              .filter( c -> c.getController() != null )
 		              .forEach( child -> child.getController().applyValue( child.getParent(), child.toPropertyValue() ) );
+	}
+
+	String getPropertyBinderPath( String propertyName ) {
+		return StringUtils.defaultIfEmpty( binderPrefix, "properties" ) + "[" + propertyName + "]";
 	}
 
 	EntityPropertyBinder<Object> createPropertyBinder( EntityPropertyDescriptor descriptor ) {

@@ -128,16 +128,19 @@ public class GenericEntityPropertyController implements EntityPropertyController
 	}
 
 	@Override
+	@Deprecated
 	public GenericEntityPropertyController addValidator( ContextualValidator<EntityPropertyBindingContext, Object> contextualValidator ) {
 		return addValidators( contextualValidator );
 	}
 
 	@Override
+	@Deprecated
 	public GenericEntityPropertyController addValidator( Validator validator ) {
 		return addValidators( validator );
 	}
 
 	@Override
+	@Deprecated
 	public GenericEntityPropertyController addValidators( Validator... validators ) {
 		this.validators.addAll( Arrays.asList( validators ) );
 		return this;

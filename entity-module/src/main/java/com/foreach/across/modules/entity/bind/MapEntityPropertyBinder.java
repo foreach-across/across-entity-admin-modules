@@ -187,7 +187,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 			getEntries()
 					.forEach( ( key, item ) -> {
 						errors.pushNestedPath( "entries[" + key + "].value" );
-						valueController.validate( binder.getBindingContext().getEntity(), item.getValue(), errors, validationHints );
+						//valueController.validate( binder.getBindingContext(), item.getValue(), errors, validationHints );
 						errors.popNestedPath();
 					} );
 		}

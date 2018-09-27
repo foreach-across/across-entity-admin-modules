@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.MethodInvocationException;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
@@ -101,6 +102,13 @@ public class TestEntityPropertiesBinder
 //		when( registry.getProperty( "memberMap" ) ).thenReturn( mapValue );
 //		when( registry.getProperty( "memberMap[key]" ) ).thenReturn( singleValue );
 //		when( registry.getProperty( "memberMap[value]" ) ).thenReturn( singleValue );
+	}
+
+	@Test
+	public void binderPrefixIsUsedForPropertyPath() {
+		assertThat( binder.getPropertyBinderPath( "some.prop" ) ).isEqualTo( "properties[some.prop]" );
+		binder.setBinderPrefix( "my.props" );
+		assertThat( binder.getPropertyBinderPath( "some.prop.other" ) ).isEqualTo( "my.props[some.prop.other]" );
 	}
 
 	@Test

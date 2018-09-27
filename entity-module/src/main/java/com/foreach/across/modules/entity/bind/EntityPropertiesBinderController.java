@@ -88,11 +88,13 @@ public final class EntityPropertiesBinderController
 		List<OrderedRunnable> actions = new ArrayList<>();
 		actions.add( new OrderedRunnable( 0, () -> entityValidationCallbacks.forEach( Runnable::run ) ) );
 
+		int errorCount = errors.getErrorCount();
+
 		propertiesBinder.values()
 		                .stream()
 		                .map( property -> new OrderedRunnable( property.getControllerOrder(), () -> {
 			                try {
-				                errors.pushNestedPath( "propertyPrefix" );
+				                errors.pushNestedPath( property.getBinderPath() );
 				                if ( property.validate( errors, validationHints ) ) {
 					                property.applyValue();
 				                }
@@ -106,12 +108,12 @@ public final class EntityPropertiesBinderController
 		actions.sort( Comparator.comparingInt( OrderedRunnable::getOrder ) );
 		actions.forEach( OrderedRunnable::run );
 
-		return true;
+		return errorCount >= errors.getErrorCount();
 	}
 
 	/**
-	 * Save the properties present on the binder, executing the registered callbacks when the actual entity
-	 * is expected to be saved.
+	 * Save the properties present on the binder, executing the registered callbacks
+	 * when the actual entity is expected to be saved.
 	 */
 	public void save() {
 		List<OrderedRunnable> actions = new ArrayList<>();

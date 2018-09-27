@@ -78,19 +78,16 @@ public interface EntityPropertyController<T, U> extends Ordered
 	U createValue( EntityPropertyBindingContext<T, ?> context );
 
 	/**
-	 * Validate a property value for the given owner entity.
+	 * Validate a property value in the given binding context.
 	 * Validation errors should be registered on the {@link Errors} argument.
-	 * Validating should happen before {@link #applyValue(EntityPropertyBindingContext, EntityPropertyValue)} or {@link #save(Object, Object)}
-	 * calls, to check that a property value can in fact be set.
 	 *
-	 * @param owner           entity
+	 * @param context         binding context
 	 * @param propertyValue   to validate
 	 * @param errors          where validation errors should be added to
 	 * @param validationHints optional hints for validation (eg. validation groups)
-	 * @see org.springframework.validation.SmartValidator
+	 * @see EntityPropertyValidator
 	 */
-	@Deprecated
-	default void validate( T owner, U propertyValue, Errors errors, Object... validationHints ) {
+	default void validate( EntityPropertyBindingContext<T, ?> context, EntityPropertyValue<Object> propertyValue, Errors errors, Object... validationHints ) {
 	}
 
 	/**

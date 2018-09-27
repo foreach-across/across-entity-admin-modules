@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import org.springframework.validation.Errors;
 
 import java.util.Objects;
@@ -127,12 +128,23 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 
 	@Override
 	public boolean validate( Errors errors, Object... validationHints ) {
-		int beforeValidate = errors.getErrorCount();
-		errors.pushNestedPath( "value" );
-		if ( controller != null ) {
-			controller.validate( binder.getBindingContext().getEntity(), value, errors, validationHints );
+		Runnable validation = () -> {
+			// determine if initializedValue or value should be used
+			errors.pushNestedPath( "value" );
+			controller.validate(
+					binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), value, isDeleted() ), errors, validationHints
+			);
+			errors.popNestedPath();
+		};
+
+		if ( properties != null ) {
+			return properties.createController()
+			                 .addEntityValidationCallback( validation )
+			                 .validateAndBind( errors, validationHints );
 		}
-		errors.popNestedPath();
+
+		int beforeValidate = errors.getErrorCount();
+		validation.run();
 		return beforeValidate >= errors.getErrorCount();
 	}
 
