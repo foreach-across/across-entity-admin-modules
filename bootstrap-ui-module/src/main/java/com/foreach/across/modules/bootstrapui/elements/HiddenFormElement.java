@@ -15,7 +15,11 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractVoidNodeViewElement;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.HashMap;
 
 /**
  * @author Arne Vandamme
@@ -64,5 +68,42 @@ public class HiddenFormElement extends AbstractVoidNodeViewElement implements Fo
 
 	public void setValue( Object value ) {
 		setAttribute( "value", value );
+	}
+
+	/**
+	 * Returns a generic {@link FormControlElement} matching this hidden element.
+	 * Will be detected by {@link com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils#getFormControl(ViewElement)},
+	 * whereas the regular {@link HiddenFormElement} will not.
+	 * <p/>
+	 * Can be used to provide a (disabled) errors holder in a {@link FormGroupElement} for example.
+	 *
+	 * @return hidden element as form control
+	 */
+	public FormControlElement toFormControl() {
+		return new FormControl( this );
+	}
+
+	private static class FormControl extends FormControlElementSupport
+	{
+		FormControl( HiddenFormElement hidden ) {
+			super( BootstrapUiElements.GENERIC_FORM_CONTROL );
+
+			setCustomTemplate( hidden.getCustomTemplate() );
+
+			if ( StringUtils.isNotEmpty( hidden.getName() ) ) {
+				setName( hidden.getName() );
+			}
+			if ( StringUtils.isNotEmpty( hidden.getHtmlId() ) ) {
+				setHtmlId( hidden.getHtmlId() );
+			}
+
+			setAttributes( new HashMap<>( hidden.getAttributes() ) );
+
+			removeAttribute( "name" );
+			setControlName( hidden.getControlName() );
+
+			removeAttribute( "disabled" );
+			setDisabled( hidden.isDisabled() );
+		}
 	}
 }
