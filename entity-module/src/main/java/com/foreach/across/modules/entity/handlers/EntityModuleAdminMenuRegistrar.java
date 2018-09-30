@@ -40,7 +40,6 @@ import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
-import com.foreach.across.modules.web.menu.RequestMenuSelector;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -49,7 +48,6 @@ import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import java.util.Collections;
 import java.util.function.Consumer;
 
 @ConditionalOnAdminWeb
@@ -122,9 +120,11 @@ class EntityModuleAdminMenuRegistrar
 			AllowableActions allowableActions = entityConfiguration.getAllowableActions( menu.getEntity() );
 			val currentEntityLink = menu.getLinkBuilder().forInstance( menu.getEntity() );
 
-			val linkToGeneralMenuItem = resolveLinkToGeneralMenuItem( currentEntityLink, entityViewRequest, menu.getViewContext(), allowableActions );
-			builder.item( linkToGeneralMenuItem.toString(), messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
-			       .order( Ordered.HIGHEST_PRECEDENCE );
+			if ( allowableActions.contains( AllowableAction.UPDATE ) || allowableActions.contains( AllowableAction.READ ) ) {
+				val linkToGeneralMenuItem = resolveLinkToGeneralMenuItem( currentEntityLink, entityViewRequest, menu.getViewContext(), allowableActions );
+				builder.item( linkToGeneralMenuItem.toString(), messageCodeResolver.getMessageWithFallback( "adminMenu.general", "General" ) )
+				       .order( Ordered.HIGHEST_PRECEDENCE );
+			}
 
 			if ( !isAssociation ) {
 				// Get associations
@@ -149,18 +149,6 @@ class EntityModuleAdminMenuRegistrar
 			       .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.COG ) )
 			       .attribute( NavComponentBuilder.ATTR_KEEP_GROUP_ITEM, true )
 			       .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );
-
-			if ( allowableActions.contains( AllowableAction.DELETE ) ) {
-				val deleteLink = currentEntityLink.deleteView();
-
-				builder.item( "/advanced-options/delete",
-				              messageCodeResolver.getMessageWithFallback( "menu.delete", "Delete" ),
-				              deleteLink.withFromUrl( linkToGeneralMenuItem.toUriString() ).toString() )
-				       .attribute( RequestMenuSelector.ATTRIBUTE_MATCHERS, Collections.singleton( deleteLink.toUriString() ) )
-				       .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
-				       .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.BEFORE )
-				       .order( Ordered.LOWEST_PRECEDENCE );
-			}
 		}
 		else {
 			builder.item( menu.getLinkBuilder().createView().toString(),

@@ -27,6 +27,7 @@ import com.foreach.across.modules.entity.views.menu.EntityAdminMenu;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -46,9 +47,8 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
 /**
  * Adds a header component to embedded associations.
  *
- * @see SingleEntityPageStructureViewProcessor
- *
  * @author Steven Gentens
+ * @see SingleEntityPageStructureViewProcessor
  * @since 3.2.0
  */
 @ConditionalOnAdminWeb
@@ -96,11 +96,21 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 		if ( EntityAssociation.Type.EMBEDDED == entityViewContext.getEntityAssociation().getAssociationType() ) {
 			EntityAdminMenu entityAdminMenu = EntityAdminMenu.create( entityViewContext );
 			menuFactory.buildMenu( entityAdminMenu );
+
+			if ( ( containsEmptyAdvancedOptions( entityAdminMenu ) && entityAdminMenu.getItems().size() == 2 ) ||
+					entityAdminMenu.getItems().size() == 1 ) {
+				return null;
+			}
 			return BootstrapUiBuilders.nav( entityAdminMenu )
 			                          .pills()
 			                          .replaceGroupBySelectedItem();
 		}
 		return null;
+	}
+
+	private boolean containsEmptyAdvancedOptions( EntityAdminMenu entityAdminMenu ) {
+		Menu itemWithPath = entityAdminMenu.getItemWithPath( "/advanced-options" );
+		return itemWithPath != null && itemWithPath.isEmpty();
 	}
 
 	private ViewElementBuilder associatedContentTitle( EntityViewContext entityViewContext ) {

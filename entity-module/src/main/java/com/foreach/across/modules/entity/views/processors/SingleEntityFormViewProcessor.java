@@ -28,7 +28,6 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
-import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
@@ -231,8 +230,6 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 	protected ContainerViewElementBuilderSupport buildButtonsContainer( EntityViewRequest entityViewRequest,
 	                                                                    EntityView entityView, String fromUrl ) {
 		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
-		SingleEntityViewLinkBuilder singleEntityViewLinkBuilder = entityViewRequest.getEntityViewContext().getLinkBuilder().forInstance(
-				entityViewRequest.getEntityViewContext().getEntity() ).deleteView();
 		return BootstrapUiBuilders
 				.container()
 				.name( "buttons" )
@@ -246,14 +243,7 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 				                         .name( "btn-cancel" )
 				                         .link( fromUrl )
 				                         .text( messages.messageWithFallback( "actions.cancel" ) )
-				)
-				.add( BootstrapUiBuilders.button()
-				                         .name( "btn-delete" )
-				                         .style( Style.DANGER )
-				                         .css( "pull-right" )
-				                         .link( singleEntityViewLinkBuilder.toUriString() )
-				                         .text( messages.messageWithFallback( "buttons.delete" ) ) )
-				;
+				);
 	}
 
 	private Map<String, ColumnViewElementBuilder> buildFormColumns() {
