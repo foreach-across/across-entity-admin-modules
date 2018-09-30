@@ -82,6 +82,7 @@ class BootstrapUiConfiguration
 			                                         new TableViewElementModelBuilder.CellElementThymeleafBuilder() );
 			modelWriterRegistry.registerModelWriter( FileUploadFormElement.class,
 			                                         new FileUploadElementModelWriter() );
+			modelWriterRegistry.registerModelWriter( ScriptViewElement.class, new ScriptViewElementModelWriter() );
 			modelWriterRegistry.registerModelWriter( BootstrapUiElements.GENERIC_FORM_CONTROL, new FormControlElementModelWriter() );
 		} );
 	}

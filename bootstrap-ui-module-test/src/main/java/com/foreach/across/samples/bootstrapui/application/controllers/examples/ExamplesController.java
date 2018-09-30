@@ -46,7 +46,8 @@ public class ExamplesController
 	protected void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
 		       .group( "/examples", "Examples" ).and()
-		       .item( "/examples/todo", "Control names", "/examples/todo" ).order( 1 );
+		       .item( "/examples/todo", "Control names", "/examples/todo" ).order( 1 ).and()
+		       .item( "/examples/scripts", "Scripts", "/examples/scripts" ).order( 2 );
 	}
 
 	@Data

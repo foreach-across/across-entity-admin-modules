@@ -26,7 +26,7 @@ import com.foreach.across.modules.web.resource.WebResource;
  */
 public class BootstrapUiWebResources extends SimpleWebResourcePackage
 {
-	public static final String VERSION = "3.3.5";
+	public static final String VERSION = "3.3.7";
 	public static final String NAME = "bootstrap";
 
 	public BootstrapUiWebResources() {
