@@ -30,11 +30,10 @@ import com.foreach.across.modules.entity.query.collections.CollectionEntityQuery
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValidator;
 import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionOrMapElementBuilderFactory;
-import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
 import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
@@ -59,6 +58,8 @@ import org.springframework.validation.Validator;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static com.foreach.across.modules.entity.registry.properties.EntityPropertyController.AFTER_ENTITY;
 
 /**
  * Configures a dummy <strong>category</strong> entity.
@@ -205,7 +206,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 				     .controller(
 						     c -> c.withTarget( Map.class, Integer.class )
 						           .valueFetcher( category -> stockCounts.get( category.get( "id" ) ) )
-						           .addValidator( ( category, stockCount, errors, validationHints ) -> {
+						           .contextualValidator( ( category, stockCount, errors, validationHints ) -> {
 							           // stock count must be positive number`
 							           if ( stockCount == null || stockCount < 0 ) {
 								           errors.rejectValue( "", "must-be-positive", "Must be a positive number" );
@@ -233,14 +234,9 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 						     c -> c.withTarget( Map.class, Boolean.class )
 						           .order( EntityPropertyController.BEFORE_ENTITY )
 						           .valueFetcher( category -> false )
-						           .addValidator( ( category, shouldGenerate, errors, validationHints ) -> {
-							           // category name must not yet be filled in
-							           if ( Boolean.TRUE.equals( shouldGenerate ) && !StringUtils.isEmpty( (String) category.get( "id" ) ) ) {
-								           errors.rejectValue( "", "id-not-empty", "Unable to generate identity when already set." );
-							           }
-						           } )
 						           .applyValueConsumer( ( category, shouldGenerate ) -> {
-							           if ( Boolean.TRUE.equals( shouldGenerate.getNewValue() ) ) {
+							           if ( Boolean.TRUE.equals( shouldGenerate.getNewValue() ) && StringUtils.isEmpty(
+									           Objects.toString( category.get( "id" ), "" ) ) ) {
 								           category.put( "id", UUID.randomUUID().toString() );
 							           }
 						           } )
@@ -259,7 +255,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			val controller = new GenericEntityPropertyController();
 			controller.withTarget( Map.class, Manager.class )
 			          .valueFetcher( category -> categoryManagers.getOrDefault( category.get( "id" ), new Manager() ) )
-			          .addValidator( validator )
+			          .validator( EntityPropertyValidator.of( validator ) )
 			          .saveConsumer( ( category, holder ) -> categoryManagers.put( category.get( "id" ), holder.getNewValue() ) );
 
 			props.property( "manager" )
@@ -289,14 +285,21 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			val controller = new GenericEntityPropertyController();
 			controller.withTarget( Map.class, List.class )
 			          .valueFetcher( category -> brands.getOrDefault( category.get( "id" ), Collections.emptyList() ) )
-			          .saveConsumer( ( category, holder ) -> brands.put( category.get( "id" ), holder.getNewValue() ) );
+			          .contextualValidator( ( category, brands, errors, hints ) -> {
+				          if ( brands.isEmpty() ) {
+					          errors.rejectValue( "", "at-least-one", "Please add at least one brand." );
+				          }
+			          } )
+			          .saveConsumer( ( category, holder ) -> brands.put( category.get( "id" ), holder.getNewValue() ) )
+			          .order( AFTER_ENTITY )
+			;
 
 			val memberController = new GenericEntityPropertyController();
 			memberController
 					.withTarget( Map.class, Brand.class )
 					//.valueFetcher( category -> new Brand() )
 					.createValueSupplier( Brand::new )
-					.addValidator( validator );
+					.validator( EntityPropertyValidator.of( validator ) );
 
 			props.property( "brands" )
 			     .displayName( "Brands" )
@@ -311,9 +314,9 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .property( "brands[]" )
 			     .propertyType( Brand.class )
 			     .controller( memberController );
-			     //.viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET );
-			     //.attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_BODY_ONLY );
-			     //.attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) );
+			//.viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET );
+			//.attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_BODY_ONLY );
+			//.attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "brands[].*" ) );
 		};
 	}
 

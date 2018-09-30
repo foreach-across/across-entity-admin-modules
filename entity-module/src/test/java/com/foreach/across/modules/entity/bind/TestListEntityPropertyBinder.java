@@ -27,6 +27,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,6 +109,9 @@ public class TestListEntityPropertyBinder
 		when( itemTwo.getValue() ).thenReturn( 2 );
 		when( itemOne.getSortIndex() ).thenReturn( 1 );
 		when( itemTwo.getSortIndex() ).thenReturn( 2 );
+
+		when( binder.getProperties() ).thenReturn( binder );
+		when( binder.get( "prop" ) ).thenReturn( property );
 	}
 
 	@Test
@@ -426,11 +431,56 @@ public class TestListEntityPropertyBinder
 		assertThat( property.save() ).isTrue();
 		verify( collectionController ).save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) );
 	}
-/*
+
 	@Test
 	public void validate() {
-		// todo: implement validation test
+		Errors errors = new BeanPropertyBindingResult( binder, "" );
+		errors.pushNestedPath( "properties[prop]" );
+
+		assertThat( property.validate( errors, "hint" ) ).isTrue();
+		assertThat( errors.getErrorCount() ).isEqualTo( 0 );
+
+		property.getItems().get( "0" ).setValue( "do nothing" );
+
+		doAnswer( invocation -> {
+			Errors err = invocation.getArgument( 0 );
+			err.rejectValue( "value", "bad-value" );
+
+			return null;
+		} )
+				.when( itemOne )
+				.validate( errors, "hint" );
+
+		doAnswer( invocation -> {
+			Errors err = invocation.getArgument( 2 );
+			err.rejectValue( "", "bad-value" );
+
+			return null;
+		} )
+				.when( collectionController )
+				.validate( any(), any(), eq( errors ), eq( "hint" ) );
+
+		assertThat( property.validate( errors, "hint" ) ).isFalse();
+
+		errors.popNestedPath();
+
+		assertThat( errors.getErrorCount() ).isEqualTo( 2 );
+		assertThat( errors.getFieldError( "properties[prop].items[0].value" ) )
+				.isNotNull()
+				.satisfies( fe -> {
+					assertThat( fe.isBindingFailure() ).isFalse();
+					assertThat( fe.getField() ).isEqualTo( "properties[prop].items[0].value" );
+					assertThat( fe.getCode() ).isEqualTo( "bad-value" );
+				} );
+		assertThat( errors.getFieldError( "properties[prop].value" ) )
+				.isNotNull()
+				.satisfies( fe -> {
+					assertThat( fe.isBindingFailure() ).isFalse();
+					assertThat( fe.getField() ).isEqualTo( "properties[prop].value" );
+					assertThat( fe.getCode() ).isEqualTo( "bad-value" );
+				} );
 	}
+/*
 
 	@Test
 	public void resetBindStatus() {

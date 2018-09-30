@@ -16,10 +16,8 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.modules.entity.views.support.ContextualValidator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.Validator;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -99,20 +97,22 @@ class ScopedConfigurableEntityPropertyController<T, U> implements ConfigurableEn
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<T, U> addValidator( ContextualValidator<T, U> contextualValidator ) {
-		parent.addValidator( contextualValidator );
+	public ConfigurableEntityPropertyController<T, U> validator( EntityPropertyValidator propertyValidator ) {
+		parent.validator( propertyValidator );
 		return this;
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<T, U> addValidator( Validator validator ) {
-		parent.addValidator( validator );
-		return this;
-	}
-
-	@Override
-	public ConfigurableEntityPropertyController<T, U> addValidators( Validator... validators ) {
-		parent.addValidators( validators );
+	public ConfigurableEntityPropertyController<T, U> contextualValidator( ContextualValidator<T, U> contextualValidator ) {
+		if ( contextualValidator != null ) {
+			parent.contextualValidator(
+					( ctx, target, errors, validationHints ) -> contextualValidator
+							.validate( (T) bindingContextTranslator.apply( ctx ), (U) target, errors, validationHints )
+			);
+		}
+		else {
+			parent.validator( null );
+		}
 		return this;
 	}
 

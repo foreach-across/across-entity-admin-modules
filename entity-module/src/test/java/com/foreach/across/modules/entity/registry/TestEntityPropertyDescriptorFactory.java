@@ -39,10 +39,12 @@ public class TestEntityPropertyDescriptorFactory
 		SimpleEntityPropertyDescriptor one = new SimpleEntityPropertyDescriptor( "address" );
 		one.setDisplayName( "Address" );
 		one.setAttribute( Sort.Order.class, new Sort.Order( "address" ) );
+		( (GenericEntityPropertyController) one.getController() ).order( 1000 );
 
-		MutableEntityPropertyDescriptor merged = descriptorFactory.createWithParent( "street", one );
+		MutableEntityPropertyDescriptor merged = descriptorFactory.createWithOriginal( "street", one );
 		merged.setAttribute( Sort.Order.class, new Sort.Order( "street" ) );
 
+		assertEquals( 1000, merged.getController().getOrder() );
 		assertEquals( "street", merged.getName() );
 		assertEquals( "Address", merged.getDisplayName() );
 		assertEquals( new Sort.Order( "street" ), merged.getAttribute( Sort.Order.class ) );
@@ -60,6 +62,7 @@ public class TestEntityPropertyDescriptorFactory
 
 		EntityPropertyController<Instance, String> controller = descriptor.getController();
 		assertNotNull( controller );
+		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
 
 		Instance instance = new Instance();
 		EntityPropertyBindingContext<Instance, Instance> context = EntityPropertyBindingContext.of( instance );
@@ -87,6 +90,7 @@ public class TestEntityPropertyDescriptorFactory
 
 		EntityPropertyController<Instance, Integer> controller = descriptor.getController();
 		assertNotNull( controller );
+		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
 
 		Instance instance = new Instance();
 		EntityPropertyBindingContext<Instance, Instance> context = EntityPropertyBindingContext.of( instance );
@@ -112,6 +116,7 @@ public class TestEntityPropertyDescriptorFactory
 
 		EntityPropertyController<Instance, Date> controller = descriptor.getController();
 		assertNotNull( controller );
+		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
 
 		Date now = new Date();
 

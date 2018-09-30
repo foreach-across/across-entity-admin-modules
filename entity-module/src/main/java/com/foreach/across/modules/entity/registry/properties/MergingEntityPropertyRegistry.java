@@ -49,8 +49,7 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			EntityPropertyDescriptor parentProperty = parent.getProperty( propertyName );
 
 			if ( parentProperty != null ) {
-				MutableEntityPropertyDescriptor mutable
-						= descriptorFactory.createWithParent( propertyName, parentProperty );
+				MutableEntityPropertyDescriptor mutable = descriptorFactory.createWithOriginal( propertyName, parentProperty );
 				register( mutable );
 
 				localProperty = mutable;
@@ -72,7 +71,7 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			EntityPropertyDescriptor local = actual.get( descriptor.getName() );
 
 			if ( local == null ) {
-				MutableEntityPropertyDescriptor mutable = descriptorFactory.createWithParent( descriptor.getName(), descriptor );
+				MutableEntityPropertyDescriptor mutable = descriptorFactory.createWithOriginal( descriptor.getName(), descriptor );
 				register( mutable );
 
 				actual.put( mutable.getName(), mutable );

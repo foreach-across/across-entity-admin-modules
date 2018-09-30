@@ -28,6 +28,8 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -119,6 +121,9 @@ public class TestMapEntityPropertyBinder
 
 		when( key.getValue() ).thenReturn( "one" );
 		when( value.getValue() ).thenReturn( 1 );
+
+		when( binder.getProperties() ).thenReturn( binder );
+		when( binder.get( "prop" ) ).thenReturn( property );
 	}
 
 	@Test
@@ -461,5 +466,70 @@ public class TestMapEntityPropertyBinder
 		property.setDeleted( true );
 		assertThat( property.save() ).isTrue();
 		verify( collectionController ).save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) );
+	}
+
+	@Test
+	public void validate() {
+		Errors errors = new BeanPropertyBindingResult( binder, "" );
+		errors.pushNestedPath( "properties[prop]" );
+
+		assertThat( property.validate( errors, "hint" ) ).isTrue();
+		assertThat( errors.getErrorCount() ).isEqualTo( 0 );
+
+		property.getEntries().get( "0" ).setEntryKey( "do nothing" );
+
+		doAnswer( invocation -> {
+			Errors err = invocation.getArgument( 0 );
+			err.rejectValue( "value", "bad-key" );
+
+			return null;
+		} )
+				.when( key )
+				.validate( errors, "hint" );
+
+		doAnswer( invocation -> {
+			Errors err = invocation.getArgument( 0 );
+			err.rejectValue( "value", "bad-value" );
+
+			return null;
+		} )
+				.when( value )
+				.validate( errors, "hint" );
+
+		doAnswer( invocation -> {
+			Errors err = invocation.getArgument( 2 );
+			err.rejectValue( "", "bad" );
+
+			return null;
+		} )
+				.when( collectionController )
+				.validate( any(), any(), eq( errors ), eq( "hint" ) );
+
+		assertThat( property.validate( errors, "hint" ) ).isFalse();
+
+		errors.popNestedPath();
+
+		assertThat( errors.getErrorCount() ).isEqualTo( 3 );
+		assertThat( errors.getFieldError( "properties[prop].entries[0].key.value" ) )
+				.isNotNull()
+				.satisfies( fe -> {
+					assertThat( fe.isBindingFailure() ).isFalse();
+					assertThat( fe.getField() ).isEqualTo( "properties[prop].entries[0].key.value" );
+					assertThat( fe.getCode() ).isEqualTo( "bad-key" );
+				} );
+		assertThat( errors.getFieldError( "properties[prop].entries[0].value.value" ) )
+				.isNotNull()
+				.satisfies( fe -> {
+					assertThat( fe.isBindingFailure() ).isFalse();
+					assertThat( fe.getField() ).isEqualTo( "properties[prop].entries[0].value.value" );
+					assertThat( fe.getCode() ).isEqualTo( "bad-value" );
+				} );
+		assertThat( errors.getFieldError( "properties[prop].value" ) )
+				.isNotNull()
+				.satisfies( fe -> {
+					assertThat( fe.isBindingFailure() ).isFalse();
+					assertThat( fe.getField() ).isEqualTo( "properties[prop].value" );
+					assertThat( fe.getCode() ).isEqualTo( "bad" );
+				} );
 	}
 }

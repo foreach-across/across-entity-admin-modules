@@ -131,9 +131,14 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 				if ( typeDescriptor != null
 						&& typeDescriptor.isCollection()
-						&& Set.class.isAssignableFrom( typeDescriptor.getObjectType() )
-						&& String.class.equals( typeDescriptor.getElementTypeDescriptor().getObjectType() ) ) {
-					return MultiValueElementBuilderFactory.ELEMENT_TYPE;
+						&& Set.class.isAssignableFrom( typeDescriptor.getObjectType() ) ) {
+					Class<?> elementType = typeDescriptor.getElementTypeDescriptor().getObjectType();
+					if ( String.class.equals( elementType ) ) {
+						return MultiValueElementBuilderFactory.ELEMENT_TYPE;
+					}
+					else if ( elementType.isEnum()) {
+						return OptionsFormElementBuilderFactory.OPTIONS;
+					}
 				}
 
 				if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) || Map.class.isAssignableFrom( propertyType ) ) {

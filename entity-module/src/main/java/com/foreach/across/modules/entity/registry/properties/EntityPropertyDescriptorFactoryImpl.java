@@ -78,6 +78,7 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 
 	private EntityPropertyController<?, ?> createPropertyController( Property property ) {
 		GenericEntityPropertyController controller = new GenericEntityPropertyController();
+		controller.order( EntityPropertyController.BEFORE_ENTITY );
 
 		ConfigurableEntityPropertyController<Object, Object> configurable = controller.withTarget( Object.class, Object.class );
 		if ( property.getReadMethod() != null ) {
@@ -100,7 +101,7 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 	}
 
 	@Override
-	public MutableEntityPropertyDescriptor createWithParent( String name, EntityPropertyDescriptor parent ) {
+	public MutableEntityPropertyDescriptor createWithOriginal( String name, EntityPropertyDescriptor parent ) {
 		return new SimpleEntityPropertyDescriptor( name, parent );
 	}
 }

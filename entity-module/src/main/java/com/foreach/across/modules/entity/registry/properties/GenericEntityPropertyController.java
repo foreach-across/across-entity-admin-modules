@@ -16,14 +16,12 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.modules.entity.views.support.ContextualValidator;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -34,16 +32,25 @@ import java.util.function.Supplier;
  * @author Arne Vandamme
  * @since 3.2.0
  */
-@RequiredArgsConstructor
 public class GenericEntityPropertyController implements EntityPropertyController, ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object>
 {
 	private final EntityPropertyController<EntityPropertyBindingContext, Object> original;
 
 	/**
 	 * Processing order for this controller.
+	 * Manually created properties will default to execute after the entity, native properties
+	 * or other properties changing the original entity should usually execute before changes on the entity itself.
 	 */
-	@Getter
-	private int order = AFTER_ENTITY;
+	private Integer order = AFTER_ENTITY;
+
+	@Override
+	public int getOrder() {
+		if ( order == null && original != null ) {
+			return original.getOrder();
+		}
+
+		return order == null ? AFTER_ENTITY : order;
+	}
 
 	@Getter
 	private Function<EntityPropertyBindingContext, Object> valueFetcher;
@@ -58,10 +65,18 @@ public class GenericEntityPropertyController implements EntityPropertyController
 	private BiFunction<EntityPropertyBindingContext, EntityPropertyValue<Object>, Boolean> saveFunction;
 
 	@Getter
+	private EntityPropertyValidator validator;
+
+	@Getter
 	private List<Validator> validators = new ArrayList<>();
 
 	public GenericEntityPropertyController() {
 		this.original = null;
+	}
+
+	public GenericEntityPropertyController( EntityPropertyController<EntityPropertyBindingContext, Object> original ) {
+		this.original = original;
+		this.order = null;
 	}
 
 	@Override
@@ -128,21 +143,20 @@ public class GenericEntityPropertyController implements EntityPropertyController
 	}
 
 	@Override
-	@Deprecated
-	public GenericEntityPropertyController addValidator( ContextualValidator<EntityPropertyBindingContext, Object> contextualValidator ) {
-		return addValidators( contextualValidator );
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> validator( EntityPropertyValidator validator ) {
+		this.validator = validator;
+		return this;
 	}
 
 	@Override
-	@Deprecated
-	public GenericEntityPropertyController addValidator( Validator validator ) {
-		return addValidators( validator );
-	}
-
-	@Override
-	@Deprecated
-	public GenericEntityPropertyController addValidators( Validator... validators ) {
-		this.validators.addAll( Arrays.asList( validators ) );
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> contextualValidator( ContextualValidator<EntityPropertyBindingContext, Object> validator ) {
+		if ( validator != null ) {
+			this.validator = ( bindingContext, propertyValue, errors, validationHints )
+					-> validator.validate( bindingContext, propertyValue.getNewValue(), errors, validationHints );
+		}
+		else {
+			this.validator = null;
+		}
 		return this;
 	}
 
@@ -180,6 +194,16 @@ public class GenericEntityPropertyController implements EntityPropertyController
 		}
 
 		return original != null ? original.save( context, propertyValue ) : false;
+	}
+
+	@Override
+	public void validate( EntityPropertyBindingContext context, EntityPropertyValue propertyValue, Errors errors, Object... validationHints ) {
+		if ( validator != null ) {
+			validator.validate( context, propertyValue, errors, validationHints );
+		}
+		else if ( original != null ) {
+			original.validate( context, propertyValue, errors, validationHints );
+		}
 	}
 
 	@Override

@@ -209,6 +209,7 @@ public class TestDefaultEntityPropertyRegistry
 		assertNull( write.getController().fetchValue( ctx ) );
 		assertEquals( "read-write", readWrite.getController().fetchValue( ctx ) );
 
+		assertEquals( EntityPropertyController.BEFORE_ENTITY, read.getController().getOrder() );
 		assertFalse( read.getController().applyValue( ctx, new EntityPropertyValue<>( null, "updated-read", false ) ) );
 		assertTrue( write.getController().applyValue( ctx, new EntityPropertyValue<>( null, "updated-write", false ) ) );
 		assertTrue( readWrite.getController().applyValue( ctx, new EntityPropertyValue<>( null, "updated-read-write", false ) ) );

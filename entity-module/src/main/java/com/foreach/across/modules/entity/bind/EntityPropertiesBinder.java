@@ -174,7 +174,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	}
 
 	/**
-	 * Create a new controller for this properties binder, allows for saving and validating binder properties.
+	 * Create a new controller for this properties binder, allows for applying, validating and saving the configured binder properties.
 	 *
 	 * @return new controller instance
 	 */

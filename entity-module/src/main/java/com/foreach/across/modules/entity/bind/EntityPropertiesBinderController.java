@@ -19,10 +19,7 @@ package com.foreach.across.modules.entity.bind;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.validation.Errors;
 
 import java.util.*;
@@ -72,10 +69,38 @@ public final class EntityPropertiesBinderController
 	}
 
 	/**
+	 * First apply the values that have been registered on the binder, and then validate them.
+	 * Combines in sequence {@link #applyValues()} and {@link #validate(Errors, Object...)}.
+	 *
+	 * @param errors          to register validation errors
+	 * @param validationHints optional validation hints (eg. validation groups)
+	 * @return true if validation was successful, no validation errors have been added
+	 */
+	public boolean applyValuesAndValidate( @NonNull Errors errors, Object... validationHints ) {
+		applyValues();
+		return validate( errors, validationHints );
+	}
+
+	/**
+	 * Apply the values of the properties present on the binder.
+	 * This will call {@link EntityPropertyController#applyValue(EntityPropertyBindingContext, EntityPropertyValue)} for all those properties.
+	 */
+	public void applyValues() {
+		List<OrderedRunnable> actions = new ArrayList<>( propertiesBinder.size() );
+
+		propertiesBinder.values()
+		                .stream()
+		                .map( property -> new OrderedRunnable( property.getControllerOrder(), property::applyValue ) )
+		                .forEach( actions::add );
+
+		actions.sort( Comparator.comparingInt( OrderedRunnable::getOrder ) );
+		actions.forEach( OrderedRunnable::run );
+	}
+
+	/**
 	 * Validate the properties that are present on the binder, executing the registered callbacks when the
-	 * actual entity validation is expected to happen. Note that performing validation will also call
-	 * {@link EntityPropertyController#applyValue(EntityPropertyBindingContext, EntityPropertyValue)} for any
-	 * property with successful validation.
+	 * actual entity validation is expected to happen. Note that performing validation usually required that
+	 * {@link #applyValues()} has been called (as value changes might not yet have been applied upwards otherwise).
 	 * <p/>
 	 * Validation is considered successful (returns {@code true}) if no additional errors have been added and
 	 * the count at the start of the method is the same as at the end.
@@ -84,25 +109,27 @@ public final class EntityPropertiesBinderController
 	 * @param validationHints optional validation hints (eg. validation groups)
 	 * @return true if validation was successful, no validation errors have been added
 	 */
-	public boolean validateAndBind( @NonNull Errors errors, Object... validationHints ) {
+	public boolean validate( @NonNull Errors errors, Object... validationHints ) {
 		List<OrderedRunnable> actions = new ArrayList<>();
 		actions.add( new OrderedRunnable( 0, () -> entityValidationCallbacks.forEach( Runnable::run ) ) );
 
 		int errorCount = errors.getErrorCount();
 
-		propertiesBinder.values()
+		propertiesBinder.entrySet()
 		                .stream()
-		                .map( property -> new OrderedRunnable( property.getControllerOrder(), () -> {
-			                try {
-				                errors.pushNestedPath( property.getBinderPath() );
-				                if ( property.validate( errors, validationHints ) ) {
-					                property.applyValue();
-				                }
-			                }
-			                finally {
-				                errors.popNestedPath();
-			                }
-		                } ) )
+		                .map( entry -> {
+			                      val property = entry.getValue();
+			                      return new OrderedRunnable( property.getControllerOrder(), () -> {
+				                      try {
+					                      errors.pushNestedPath( propertiesBinder.getPropertyBinderPath( entry.getKey() ) );
+					                      property.validate( errors, validationHints );
+				                      }
+				                      finally {
+					                      errors.popNestedPath();
+				                      }
+			                      } );
+		                      }
+		                )
 		                .forEach( actions::add );
 
 		actions.sort( Comparator.comparingInt( OrderedRunnable::getOrder ) );

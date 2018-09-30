@@ -175,5 +175,6 @@ public interface EntityPropertyBinder<T>
 	/**
 	 * @return the direct path to this property on the {@link EntityPropertiesBinder} it belongs to
 	 */
+	@Deprecated
 	String getBinderPath();
 }

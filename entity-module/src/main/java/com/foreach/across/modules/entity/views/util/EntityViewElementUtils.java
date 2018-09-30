@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
+import com.foreach.across.modules.entity.bind.SingleEntityPropertyBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
@@ -193,12 +194,18 @@ TODO
 			return null;
 		}
 
-		EntityPropertiesBinder properties = builderContext.getAttribute( EntityPropertiesBinder.class );
-
-		return resolveValueHolder( properties, descriptor );
+		return resolveValueHolder( builderContext, descriptor );
 	}
 
-	private static EntityPropertyBinder<Object> resolveValueHolder( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor ) {
+	private static EntityPropertyBinder<Object> resolveValueHolder( ViewElementBuilderContext builderContext, EntityPropertyDescriptor descriptor ) {
+		EntityPropertyBinder parent = builderContext.getAttribute( EntityPropertyBinder.class );
+
+		if ( parent instanceof SingleEntityPropertyBinder ) {
+			return ( (SingleEntityPropertyBinder) parent ).resolvePropertyBinder( descriptor );
+		}
+
+		EntityPropertiesBinder properties = builderContext.getAttribute( EntityPropertiesBinder.class );
+
 		if ( properties != null ) {
 			return properties.get( descriptor.getName() );
 		}

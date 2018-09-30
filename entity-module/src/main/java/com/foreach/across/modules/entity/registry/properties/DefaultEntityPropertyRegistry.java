@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.registry.properties;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.TypeDescriptor;
@@ -43,6 +44,9 @@ import java.util.function.Function;
  */
 public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 {
+	@Setter
+	private EntityPropertyValidator defaultMemberValidator;
+
 	/**
 	 * Create a new detached entity property registry.  Only properties registered directly will be available,
 	 * no nested properties will be looked up.
@@ -134,14 +138,17 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				descriptor.setHidden( true );
 
 				// todo: centralize descriptor creation to the factory
-				( (ConfigurableEntityPropertyController) descriptor.getController() ).createValueSupplier( () -> {
-					try {
-						return BeanUtils.instantiate( memberTypeDescriptor.getObjectType() );
-					}
-					catch ( Exception e ) {
-						throw new IllegalStateException( "Unable to create value for: " + memberTypeDescriptor, e );
-					}
-				} );
+				( (ConfigurableEntityPropertyController) descriptor.getController() )
+						.createValueSupplier( () -> {
+							try {
+								return BeanUtils.instantiate( memberTypeDescriptor.getObjectType() );
+							}
+							catch ( Exception e ) {
+								throw new IllegalStateException( "Unable to create value for: " + memberTypeDescriptor, e );
+							}
+						} )
+						.validator( defaultMemberValidator )
+						.order( EntityPropertyController.BEFORE_ENTITY );
 
 				register( descriptor );
 

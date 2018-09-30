@@ -16,10 +16,9 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.modules.entity.views.support.ContextualValidator;
 import lombok.NonNull;
 import lombok.val;
-import org.springframework.validation.Validator;
+import org.springframework.validation.Errors;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -30,6 +29,7 @@ import java.util.function.Supplier;
  * @author Arne Vandamme
  * @since 3.2.0
  */
+// todo: implement
 public class NestedEntityPropertyController implements EntityPropertyController, ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object>
 {
 	private final String contextName;
@@ -43,6 +43,7 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 		this.parent = parent;
 		this.child = new GenericEntityPropertyController( child );
 	}
+
 
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> order( int order ) {
@@ -85,17 +86,12 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> addValidator( ContextualValidator<EntityPropertyBindingContext, Object> contextualValidator ) {
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> validator( EntityPropertyValidator propertyValidator ) {
 		return null;
 	}
 
 	@Override
-	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> addValidator( Validator validator ) {
-		return null;
-	}
-
-	@Override
-	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> addValidators( Validator... validators ) {
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> contextualValidator( ContextualValidator<EntityPropertyBindingContext, Object> contextualValidator ) {
 		return null;
 	}
 
@@ -127,6 +123,11 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	@Override
+	public void validate( EntityPropertyBindingContext context, EntityPropertyValue propertyValue, Errors errors, Object... validationHints ) {
+		child.validate( childContext( context ), propertyValue, errors, validationHints );
+	}
+
+	@Override
 	public boolean applyValue( EntityPropertyBindingContext context, EntityPropertyValue propertyValue ) {
 		return child.applyValue( childContext( context ), propertyValue );
 	}
@@ -142,7 +143,7 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 
 	@Override
 	public int getOrder() {
-		return 0;
+		return child.getOrder();
 	}
 
 	private EntityPropertyBindingContext childContextFactory( EntityPropertyBindingContext parentContext ) {

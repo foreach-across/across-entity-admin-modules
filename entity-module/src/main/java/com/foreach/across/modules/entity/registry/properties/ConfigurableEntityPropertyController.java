@@ -16,8 +16,7 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
-import com.foreach.across.modules.entity.views.support.ContextualValidator;
-import org.springframework.validation.Validator;
+import org.springframework.validation.Errors;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -107,29 +106,22 @@ public interface ConfigurableEntityPropertyController<T, U>
 	ConfigurableEntityPropertyController<T, U> saveFunction( BiFunction<T, EntityPropertyValue<U>, Boolean> saveFunction );
 
 	/**
-	 * Add a contextual validator for this property type and entity combination.
+	 * Set the property validator.
+	 *
+	 * @param propertyValidator to use
+	 * @return self
+	 */
+	ConfigurableEntityPropertyController<T, U> validator( EntityPropertyValidator propertyValidator );
+
+	/**
+	 * Set the contextual validator for this context and target.
+	 * A contextual validator can receive a different binding context but will always validate on the new property value.
+	 * If you want to access the full {@link EntityPropertyValue}, you should use {@link #validator(EntityPropertyValidator)} instead.
 	 *
 	 * @param contextualValidator validator to add
 	 * @return self
 	 */
-	ConfigurableEntityPropertyController<T, U> addValidator( ContextualValidator<T, U> contextualValidator );
-
-	/**
-	 * Add a generic validator for this property. Note that {@link Validator#supports(Class)}
-	 * will not be called before calling the actual validate method.
-	 *
-	 * @param validator to add
-	 * @return self
-	 */
-	ConfigurableEntityPropertyController<T, U> addValidator( Validator validator );
-
-	/**
-	 * Add a number of validators for this property. Prefer {@link ContextualValidator} instances.
-	 *
-	 * @param validators to add
-	 * @return self
-	 */
-	ConfigurableEntityPropertyController<T, U> addValidators( Validator... validators );
+	ConfigurableEntityPropertyController<T, U> contextualValidator( ContextualValidator<T, U> contextualValidator );
 
 	/**
 	 * Return a scoped instance that works directly on the original entity.
@@ -170,4 +162,13 @@ public interface ConfigurableEntityPropertyController<T, U>
 	<X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext<X, W>, V> withBindingContext( Class<X> entityType,
 	                                                                                                          Class<W> targetType,
 	                                                                                                          Class<V> propertyType );
+
+	@FunctionalInterface
+	interface ContextualValidator<T, U>
+	{
+		/**
+		 * Validate the supplied {@code target} in the given context.
+		 */
+		void validate( T context, U target, Errors errors, Object... validationHints );
+	}
 }

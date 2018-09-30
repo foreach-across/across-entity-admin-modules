@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -62,6 +63,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 	private boolean bindingBusy;
 	private boolean itemsInitialized;
+	private boolean initializedValuePathWasUsed;
 
 	private EntityPropertyBinder<Object> itemTemplate;
 	private Map<String, EntityPropertyBinder<Object>> items;
@@ -141,6 +143,8 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 	@Override
 	public Object getInitializedValue() {
+		initializedValuePathWasUsed = true;
+
 		Object originalValue = loadOriginalValue();
 
 		if ( !itemsInitialized && originalValue == null ) {
@@ -198,14 +202,30 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	@Override
 	public boolean validate( Errors errors, Object... validationHints ) {
 		int beforeValidate = errors.getErrorCount();
-		/*if ( valueController != null ) {
-			getItems()
-					.forEach( ( key, item ) -> {
-						errors.pushNestedPath( "items[" + key + "].value" );
-						valueController.validate( binder.getEntity(), item.getValue(), errors, validationHints );
+
+		getItems()
+				.forEach( ( key, item ) -> {
+					try {
+						errors.pushNestedPath( "items[" + key + "]" );
+						item.validate( errors, validationHints );
+					}
+					finally {
 						errors.popNestedPath();
-					} );
-		}*/
+					}
+				} );
+
+		if ( collectionController != null ) {
+			try {
+				errors.pushNestedPath( initializedValuePathWasUsed ? "initializedValue" : "value" );
+				collectionController.validate(
+						binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ), errors, validationHints
+				);
+			}
+			finally {
+				errors.popNestedPath();
+			}
+		}
+
 		return beforeValidate >= errors.getErrorCount();
 	}
 

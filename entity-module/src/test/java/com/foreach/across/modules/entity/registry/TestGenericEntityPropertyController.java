@@ -16,13 +16,16 @@
 
 package com.foreach.across.modules.entity.registry;
 
-import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValidator;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
+import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import lombok.val;
 import org.junit.Test;
+import org.springframework.validation.Errors;
 
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
@@ -185,31 +188,39 @@ public class TestGenericEntityPropertyController
 		verify( consumer ).accept( context.getTarget(), propertyValue );
 	}
 
-	/*
 	@Test
 	public void validate() {
-		Validator validator = mock( Validator.class );
-		SmartValidator smartValidator = mock( SmartValidator.class );
-		ContextualValidator contextualValidator = mock( ContextualValidator.class );
-		assertThat( controller.addValidator( validator ) ).isSameAs( controller );
-		assertThat( controller.addValidators( smartValidator, contextualValidator ) ).isSameAs( controller );
+		Errors errors = mock( Errors.class );
 
-		val errors = mock( Errors.class );
-		controller.validate( "context", 123L, errors, Date.class );
+		controller.validate( context, new EntityPropertyValue( 123, 321, false ), errors, "hint" );
 
-		val inOrder = Mockito.inOrder( validator, smartValidator, contextualValidator );
-		inOrder.verify( validator ).validate( 123L, errors );
-		inOrder.verify( smartValidator ).validate( 123L, errors, Date.class );
-		inOrder.verify( contextualValidator ).validate( "context", 123L, errors, Date.class );
+		EntityPropertyValidator validator = mock( EntityPropertyValidator.class );
+		controller.validator( validator );
+		controller.validate( context, new EntityPropertyValue( 123, 321, false ), errors, "hint" );
+		verify( validator ).validate( context, new EntityPropertyValue( 123, 321, false ), errors, "hint" );
+
+		GenericEntityPropertyController child = new GenericEntityPropertyController( controller );
+		child.validate( context, new EntityPropertyValue( 456, 321, false ), errors, "hint" );
+		verify( validator ).validate( context, new EntityPropertyValue( 456, 321, false ), errors, "hint" );
+
+		EntityPropertyValidator otherValidator = mock( EntityPropertyValidator.class );
+		child.validator( otherValidator );
+		child.validate( context, new EntityPropertyValue( 789, 321, false ), errors, "hint" );
+		verify( otherValidator ).validate( context, new EntityPropertyValue( 789, 321, false ), errors, "hint" );
+		verifyNoMoreInteractions( validator );
+
+		AtomicBoolean called = new AtomicBoolean();
+		assertThat( controller.withTarget( BigDecimal.class, Long.class )
+		                      .contextualValidator( ( d, l, e, hints ) -> {
+			                      assertThat( d ).isEqualTo( context.getTarget() );
+			                      assertThat( l ).isEqualTo( 321L );
+			                      assertThat( e ).isSameAs( errors );
+			                      assertThat( hints ).containsExactly( "hint" );
+			                      called.set( true );
+		                      } ) )
+				.isNotNull();
+
+		controller.validate( context, new EntityPropertyValue<>( 123L, 321L, false ), errors, "hint" );
+		assertThat( called ).isTrue();
 	}
-
-	@Test
-	public void overridingParentController() {
-		GenericEntityPropertyController<String, Long> child = new GenericEntityPropertyController<>( controller );
-		val vf = mock( Function.class );
-		when( vf.apply( "any-string" ) ).thenReturn( 123L );
-		assertThat( controller.valueFetcher( vf ) ).isSameAs( controller );
-		assertThat( child.fetchValue( "any-string" ) ).isEqualTo( 123L );
-	}
-	 */
 }

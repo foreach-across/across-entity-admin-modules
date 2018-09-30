@@ -132,7 +132,8 @@ public interface EntityPropertyController<T, U> extends Ordered
 	/**
 	 * The order in which this controller should be applied.
 	 * Defaults to {@link #AFTER_ENTITY} meaning the controller methods will be executed after
-	 * the equivalent entity methods.
+	 * the equivalent entity methods. This is appropriate for custom properties that do not
+	 * operate on the entity itself but require the entity to have been processed fully.
 	 *
 	 * @return order
 	 */

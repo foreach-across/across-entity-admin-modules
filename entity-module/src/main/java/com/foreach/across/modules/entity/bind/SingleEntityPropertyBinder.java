@@ -19,6 +19,8 @@ package com.foreach.across.modules.entity.bind;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 import java.util.Objects;
@@ -37,6 +39,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 	private final EntityPropertyController<Object, Object> controller;
 
 	private boolean valueHasBeenSet;
+	private boolean initializedValuePathWasUsed;
 
 	private EntityPropertiesBinder properties;
 
@@ -56,6 +59,12 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 		this.binder = binder;
 		this.descriptor = descriptor;
 		controller = descriptor.getController();
+	}
+
+	@Override
+	public Object getInitializedValue() {
+		initializedValuePathWasUsed = true;
+		return super.getInitializedValue();
 	}
 
 	@Override
@@ -129,23 +138,43 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 	@Override
 	public boolean validate( Errors errors, Object... validationHints ) {
 		Runnable validation = () -> {
-			// determine if initializedValue or value should be used
-			errors.pushNestedPath( "value" );
-			controller.validate(
-					binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), value, isDeleted() ), errors, validationHints
-			);
-			errors.popNestedPath();
+			try {
+				errors.pushNestedPath( initializedValuePathWasUsed ? "initializedValue" : "value" );
+				controller.validate(
+						binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), value, isDeleted() ), errors, validationHints
+				);
+			}
+			finally {
+				errors.popNestedPath();
+			}
 		};
 
 		if ( properties != null ) {
 			return properties.createController()
 			                 .addEntityValidationCallback( validation )
-			                 .validateAndBind( errors, validationHints );
+			                 .applyValuesAndValidate( errors, validationHints );
 		}
 
 		int beforeValidate = errors.getErrorCount();
 		validation.run();
 		return beforeValidate >= errors.getErrorCount();
+	}
+
+	/**
+	 * Resolve the {@link EntityPropertyBinder} for the property descriptor.
+	 * If the descriptor represents a nested property, the descriptor name of the current binder
+	 * will be considered a prefix and removed, and only the remaining name will be used for lookup.
+	 * <p/></p>
+	 * This will initialize the child properties binder as if calling {@link #getProperties()}.
+	 *
+	 * @param descriptor to resolve
+	 * @return binder for the property
+	 */
+	public EntityPropertyBinder resolvePropertyBinder( @NonNull EntityPropertyDescriptor descriptor ) {
+		// todo add something like "leaf name" on property descriptor for nested descriptors
+		String propertyToResolve = descriptor.isNestedProperty()
+				? StringUtils.removeStart( descriptor.getName(), this.descriptor.getName() + "." ) : descriptor.getName();
+		return getProperties().get( propertyToResolve );
 	}
 
 	private String binderPath() {

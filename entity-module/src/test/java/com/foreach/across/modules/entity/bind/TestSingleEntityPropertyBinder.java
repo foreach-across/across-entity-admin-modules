@@ -27,6 +27,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
 
 import java.util.Collections;
 
@@ -73,6 +75,8 @@ public class TestSingleEntityPropertyBinder
 		);
 
 		property = new SingleEntityPropertyBinder( binder, descriptor );
+		when( binder.getProperties() ).thenReturn( binder );
+		when( binder.get( "prop" ) ).thenReturn( property );
 	}
 
 	@Test
@@ -256,10 +260,86 @@ public class TestSingleEntityPropertyBinder
 	}
 
 	@Test
-	public void validate() {
+	public void validateOnValue() {
+		Errors errors = new BeanPropertyBindingResult( binder, "" );
+		errors.pushNestedPath( "properties[prop]" );
 
+		assertThat( property.validate( errors, "hint" ) ).isTrue();
+		assertThat( errors.getErrorCount() ).isEqualTo( 0 );
 
-		// todo: implement validation test
+		property.setValue( 123 );
+
+		doAnswer( invocation -> {
+			EntityPropertyBindingContext bindingContext = invocation.getArgument( 0 );
+			assertThat( bindingContext ).isSameAs( BINDING_CONTEXT );
+
+			EntityPropertyValue<Object> propertyValue = invocation.getArgument( 1 );
+			assertThat( propertyValue ).isEqualTo( new EntityPropertyValue<Object>( 1, 123, false ) );
+
+			Errors err = invocation.getArgument( 2 );
+			err.rejectValue( "", "bad-value" );
+
+			return null;
+		} )
+				.when( controller )
+				.validate( any(), any(), eq( errors ), eq( "hint" ) );
+
+		assertThat( property.validate( errors, "hint" ) ).isFalse();
+
+		errors.popNestedPath();
+
+		assertThat( errors.getErrorCount() ).isEqualTo( 1 );
+		assertThat( errors.getFieldError( "properties[prop].value" ) )
+				.isNotNull()
+				.satisfies( fe -> {
+					assertThat( fe.isBindingFailure() ).isFalse();
+					assertThat( fe.getField() ).isEqualTo( "properties[prop].value" );
+					assertThat( fe.getRejectedValue() ).isEqualTo( 123 );
+					assertThat( fe.getCode() ).isEqualTo( "bad-value" );
+				} );
+	}
+
+	@Test
+	public void validateOnInitializedValue() {
+		Errors errors = new BeanPropertyBindingResult( binder, "" );
+		errors.pushNestedPath( "properties[prop]" );
+
+		assertThat( property.validate( errors, "hint" ) ).isTrue();
+		assertThat( errors.getErrorCount() ).isEqualTo( 0 );
+
+		property.setValue( null );
+		when( binder.createValue( controller, TypeDescriptor.valueOf( Integer.class ) ) )
+				.thenReturn( 123 );
+		property.getInitializedValue();
+
+		doAnswer( invocation -> {
+			EntityPropertyBindingContext bindingContext = invocation.getArgument( 0 );
+			assertThat( bindingContext ).isSameAs( BINDING_CONTEXT );
+
+			EntityPropertyValue<Object> propertyValue = invocation.getArgument( 1 );
+			assertThat( propertyValue ).isEqualTo( new EntityPropertyValue<Object>( 1, 123, false ) );
+
+			Errors err = invocation.getArgument( 2 );
+			err.rejectValue( "class", "bad-value" );
+
+			return null;
+		} )
+				.when( controller )
+				.validate( any(), any(), eq( errors ), eq( "hint" ) );
+
+		assertThat( property.validate( errors, "hint" ) ).isFalse();
+
+		errors.popNestedPath();
+
+		assertThat( errors.getErrorCount() ).isEqualTo( 1 );
+		assertThat( errors.getFieldError( "properties[prop].initializedValue.class" ) )
+				.isNotNull()
+				.satisfies( fe -> {
+					assertThat( fe.isBindingFailure() ).isFalse();
+					assertThat( fe.getField() ).isEqualTo( "properties[prop].initializedValue.class" );
+					assertThat( fe.getRejectedValue() ).isEqualTo( Integer.class );
+					assertThat( fe.getCode() ).isEqualTo( "bad-value" );
+				} );
 	}
 
 	@Test
@@ -318,6 +398,25 @@ public class TestSingleEntityPropertyBinder
 
 		assertThat( property.getProperties() ).isSameAs( childBinder );
 		assertThat( property.isDeleted() ).isFalse();
+	}
+
+	@Test
+	public void resolveChildProperty() {
+		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
+		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
+
+		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
+		when( descriptor.getName() ).thenReturn( "prop.user.name" );
+
+		EntityPropertyBinder one = mock( EntityPropertyBinder.class );
+		EntityPropertyBinder two = mock( EntityPropertyBinder.class );
+		when( childBinder.get( "prop.user.name" ) ).thenReturn( one );
+		when( childBinder.get( "user.name" ) ).thenReturn( two );
+
+		assertThat( property.resolvePropertyBinder( descriptor ) ).isSameAs( one );
+
+		when( descriptor.isNestedProperty() ).thenReturn( true );
+		assertThat( property.resolvePropertyBinder( descriptor ) ).isSameAs( two );
 	}
 
 	@Test

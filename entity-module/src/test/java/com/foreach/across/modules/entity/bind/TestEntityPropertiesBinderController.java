@@ -105,6 +105,32 @@ public class TestEntityPropertiesBinderController
 	}
 
 	@Test
+	public void controllersAreOrderedForApplyValues() {
+		binder.get( "propOne" ).setValue( "one" );
+		binder.get( "propTwo" ).setValue( "two" );
+
+		when( propOne.getOrder() ).thenReturn( BEFORE_ENTITY );
+		when( propTwo.getOrder() ).thenReturn( AFTER_ENTITY );
+
+		binder.createController().applyValues();
+
+		InOrder inOrder = inOrder( propTwo, propOne );
+		inOrder.verify( propOne ).applyValue( any(), any() );
+		inOrder.verify( propTwo ).applyValue( any(), any() );
+
+		reset( propOne, propTwo );
+
+		when( propOne.getOrder() ).thenReturn( AFTER_ENTITY );
+		when( propTwo.getOrder() ).thenReturn( BEFORE_ENTITY );
+
+		binder.createController().applyValues();
+
+		inOrder = inOrder( propTwo, callbackOne, propOne, callbackTwo );
+		inOrder.verify( propTwo ).applyValue( any(), any() );
+		inOrder.verify( propOne ).applyValue( any(), any() );
+	}
+
+	@Test
 	public void controllersAreOrderedForValidate() {
 		binder.get( "propOne" ).setValue( "one" );
 		binder.get( "propTwo" ).setValue( "two" );
@@ -113,7 +139,7 @@ public class TestEntityPropertiesBinderController
 		when( propTwo.getOrder() ).thenReturn( AFTER_ENTITY );
 
 		Errors errors = mock( Errors.class );
-		controller.addEntityValidationCallback( callbackOne, callbackTwo ).validateAndBind( errors );
+		controller.addEntityValidationCallback( callbackOne, callbackTwo ).applyValuesAndValidate( errors );
 
 		InOrder inOrder = inOrder( propTwo, callbackOne, propOne, callbackTwo );
 		inOrder.verify( propOne ).validate( any(), any(), any() );
@@ -126,36 +152,18 @@ public class TestEntityPropertiesBinderController
 		when( propOne.getOrder() ).thenReturn( AFTER_ENTITY );
 		when( propTwo.getOrder() ).thenReturn( BEFORE_ENTITY );
 
-		assertThat( binder.createController().addEntityValidationCallback( callbackTwo, callbackOne ).validateAndBind( errors ) )
+		assertThat( binder.createController().addEntityValidationCallback( callbackTwo, callbackOne ).applyValuesAndValidate( errors ) )
 				.isTrue();
 
 		inOrder = inOrder( propTwo, callbackOne, propOne, callbackTwo, errors );
 		inOrder.verify( errors ).pushNestedPath( "properties[propOne]" );
 		inOrder.verify( propTwo ).validate( any(), any(), any() );
-		inOrder.verify( propTwo ).applyValue( any(), any() );
 		inOrder.verify( errors ).popNestedPath();
 		inOrder.verify( callbackTwo ).run();
 		inOrder.verify( callbackOne ).run();
 		inOrder.verify( errors ).pushNestedPath( "properties[propOne]" );
 		inOrder.verify( propOne ).validate( any(), any(), any() );
-		inOrder.verify( propOne ).applyValue( any(), any() );
 		inOrder.verify( errors ).popNestedPath();
-	}
-
-	@Test
-	public void valueIsAppliedOnlyIfValidationDidNotFail() {
-		binder.get( "propOne" ).setValue( "one" );
-
-		Errors errors = mock( Errors.class );
-		when( errors.getErrorCount() ).thenReturn( 0 );
-
-		doAnswer( invocation -> when( errors.getErrorCount() ).thenReturn( 1 ) )
-				.when( propOne )
-				.validate( any(), any(), any() );
-		binder.createController().validateAndBind( errors );
-
-		verify( propOne ).validate( any(), any(), any() );
-		verify( propOne, never() ).applyValue( any(), any() );
 	}
 
 	@Test
@@ -168,7 +176,47 @@ public class TestEntityPropertiesBinderController
 		doAnswer( invocation -> when( errors.getErrorCount() ).thenReturn( 1 ) )
 				.when( propOne )
 				.validate( any(), any(), any() );
-		assertThat( binder.createController().validateAndBind( errors ) ).isFalse();
+		assertThat( binder.createController().applyValuesAndValidate( errors ) ).isFalse();
+	}
+
+	@Test
+	public void applyValuesAndValidateDoesValidationAfterApplyingTheValues() {
+		binder.get( "propOne" ).setValue( "one" );
+		binder.get( "propTwo" ).setValue( "two" );
+
+		when( propOne.getOrder() ).thenReturn( BEFORE_ENTITY );
+		when( propTwo.getOrder() ).thenReturn( AFTER_ENTITY );
+
+		Errors errors = mock( Errors.class );
+		controller.addEntityValidationCallback( callbackOne, callbackTwo ).applyValuesAndValidate( errors );
+
+		InOrder inOrder = inOrder( propTwo, callbackOne, propOne, callbackTwo );
+		inOrder.verify( propOne ).applyValue( any(), any() );
+		inOrder.verify( propTwo ).applyValue( any(), any() );
+		inOrder.verify( propOne ).validate( any(), any(), any() );
+		inOrder.verify( callbackOne ).run();
+		inOrder.verify( callbackTwo ).run();
+		inOrder.verify( propTwo ).validate( any(), any(), any() );
+
+		reset( propOne, propTwo, callbackOne, callbackTwo );
+
+		when( propOne.getOrder() ).thenReturn( AFTER_ENTITY );
+		when( propTwo.getOrder() ).thenReturn( BEFORE_ENTITY );
+
+		assertThat( binder.createController().addEntityValidationCallback( callbackTwo, callbackOne ).applyValuesAndValidate( errors ) )
+				.isTrue();
+
+		inOrder = inOrder( propTwo, callbackOne, propOne, callbackTwo, errors );
+		inOrder.verify( propTwo ).applyValue( any(), any() );
+		inOrder.verify( propOne ).applyValue( any(), any() );
+		inOrder.verify( errors ).pushNestedPath( "properties[propTwo]" );
+		inOrder.verify( propTwo ).validate( any(), any(), any() );
+		inOrder.verify( errors ).popNestedPath();
+		inOrder.verify( callbackTwo ).run();
+		inOrder.verify( callbackOne ).run();
+		inOrder.verify( errors ).pushNestedPath( "properties[propOne]" );
+		inOrder.verify( propOne ).validate( any(), any(), any() );
+		inOrder.verify( errors ).popNestedPath();
 	}
 }
 

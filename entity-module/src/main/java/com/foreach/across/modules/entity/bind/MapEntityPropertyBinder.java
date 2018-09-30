@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -54,6 +55,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 	private boolean bindingBusy;
 	private boolean itemsInitialized;
+	private boolean initializedValuePathWasUsed;
 
 	private Item template;
 	private Map<String, Item> entries;
@@ -105,6 +107,8 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 	@Override
 	public Object getInitializedValue() {
+		initializedValuePathWasUsed = true;
+
 		Object originalValue = loadOriginalValue();
 
 		if ( !itemsInitialized && originalValue == null ) {
@@ -183,14 +187,37 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	@Override
 	public boolean validate( Errors errors, Object... validationHints ) {
 		int beforeValidate = errors.getErrorCount();
-		if ( valueController != null ) {
-			getEntries()
-					.forEach( ( key, item ) -> {
-						errors.pushNestedPath( "entries[" + key + "].value" );
-						//valueController.validate( binder.getBindingContext(), item.getValue(), errors, validationHints );
+
+		getEntries()
+				.forEach( ( key, entry ) -> {
+					try {
+						errors.pushNestedPath( "entries[" + key + "].key" );
+						entry.getKey().validate( errors, validationHints );
+					}
+					finally {
 						errors.popNestedPath();
-					} );
+					}
+					try {
+						errors.pushNestedPath( "entries[" + key + "].value" );
+						entry.getValue().validate( errors, validationHints );
+					}
+					finally {
+						errors.popNestedPath();
+					}
+				} );
+
+		if ( collectionController != null ) {
+			try {
+				errors.pushNestedPath( initializedValuePathWasUsed ? "initializedValue" : "value" );
+				collectionController.validate(
+						binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ), errors, validationHints
+				);
+			}
+			finally {
+				errors.popNestedPath();
+			}
 		}
+
 		return beforeValidate >= errors.getErrorCount();
 	}
 

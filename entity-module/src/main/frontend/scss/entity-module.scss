@@ -127,6 +127,12 @@ fieldset .help-block:last-child {
     }
   }
 }
+
+.embedded-collection-items {
+  display: table;
+  width: 100%;
+}
+
 .embedded-collection-item {
   display: table-row;
 

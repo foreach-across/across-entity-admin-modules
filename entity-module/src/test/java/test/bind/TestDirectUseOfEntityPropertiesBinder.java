@@ -18,17 +18,21 @@ package test.bind;
 
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.SingleEntityPropertyBinder;
+import com.foreach.across.modules.entity.config.builders.EntityPropertyDescriptorBuilder;
 import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.registry.properties.registrars.DefaultPropertiesRegistrar;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.junit.Test;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
 
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * @author Arne Vandamme
@@ -93,6 +97,59 @@ public class TestDirectUseOfEntityPropertiesBinder
 		child.get( "email" ).setValue( "jane.doe@localhost" );
 
 		binder.bind();
+	}
+
+	@Test
+	public void nestedPropertiesValidation() {
+		DefaultEntityPropertyRegistryProvider provider = new DefaultEntityPropertyRegistryProvider( new EntityPropertyDescriptorFactoryImpl()  );
+		provider.setPropertiesRegistrars( Collections.singleton( new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() ) ) );
+
+		MutableEntityPropertyRegistry propertyRegistry = provider.get( UserProperties.class );
+
+		new EntityPropertyDescriptorBuilder( "owner" )
+				.controller(
+						c -> c.withTarget( UserProperties.class, User.class )
+						      .contextualValidator( ( userProps, user, errors, hints ) -> {
+							      errors.rejectValue( "", "required" );
+						      } )
+				)
+				.apply( propertyRegistry.getProperty( "owner" ) );
+
+		new EntityPropertyDescriptorBuilder( "name" )
+				.controller(
+						c -> c.withTarget( User.class, String.class )
+						      .contextualValidator( ( user, name, errors, hints ) -> {
+							      errors.rejectValue( "", "required" );
+						      } )
+				)
+				.apply( provider.get( User.class ).getProperty( "name" ) );
+
+		User user = new User( "john.doe" );
+		UserProperties props = new UserProperties( 1, user, "" );
+
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
+		binder.setBindingContext( EntityPropertyBindingContext.of( props ) );
+
+		SingleEntityPropertyBinder ownerProperty = (SingleEntityPropertyBinder) binder.get( "owner" );
+		ownerProperty.getProperties().get( "name" ).setValue( null );
+
+		Errors errors = new BeanPropertyBindingResult( binder, "" );
+		binder.createController()
+		      .applyValuesAndValidate( errors );
+
+		assertThat( errors.getErrorCount() ).isEqualTo( 2 );
+		assertThat( errors.getFieldError( "properties[owner].initializedValue" ) )
+				.isNotNull()
+				.satisfies( fe -> {
+					assertThat( fe.getRejectedValue() ).isSameAs( user );
+					assertThat( fe.getCode() ).isEqualTo( "required" );
+				} );
+		assertThat( errors.getFieldError( "properties[owner].properties[name].value" ) )
+				.isNotNull()
+				.satisfies( fe -> {
+					assertThat( fe.getRejectedValue() ).isNull();
+					assertThat( fe.getCode() ).isEqualTo( "required" );
+				} );
 	}
 
 	@Data
