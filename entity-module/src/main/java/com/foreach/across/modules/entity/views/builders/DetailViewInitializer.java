@@ -79,7 +79,7 @@ final class DetailViewInitializer extends AbstractViewInitializer<EntityViewFact
 			formViewProcessor.setAddGlobalBindingErrors( true );
 			builder.viewProcessor( formViewProcessor )
 			       .viewProcessor( beanFactory.getBean( DetailFormViewProcessor.class ) )
-			       .viewProcessor( beanFactory.getBean( DeleteFormViewProcessor.class ) );
+			       .viewProcessor( beanFactory.getBean( DeleteActionFormViewProcessor.class ) );
 		};
 	}
 }

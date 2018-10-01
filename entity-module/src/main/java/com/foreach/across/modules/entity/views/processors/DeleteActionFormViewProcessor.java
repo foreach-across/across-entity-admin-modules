@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
  * @since 3.2.0
  */
 @Component
-public class DeleteFormViewProcessor extends EntityViewProcessorAdapter
+public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 {
 	@SuppressWarnings("unchecked")
 	@Override
@@ -51,7 +51,7 @@ public class DeleteFormViewProcessor extends EntityViewProcessorAdapter
 				&& builderMap.containsKey( SingleEntityFormViewProcessor.FORM_BUTTONS ) ) {
 			ContainerViewElementBuilderSupport buttonsContainer = builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS,
 			                                                                      ContainerViewElementBuilderSupport.class );
-			EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
+			EntityMessages messages = entityViewContext.getEntityMessages();
 			SingleEntityViewLinkBuilder links = entityViewContext.getLinkBuilder()
 			                                                     .forInstance( entity ).deleteView();
 			buttonsContainer.add(

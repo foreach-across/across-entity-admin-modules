@@ -80,7 +80,7 @@ final class UpdateViewInitializer extends AbstractViewInitializer<EntityViewFact
 			formViewProcessor.setAddDefaultButtons( true );
 			formViewProcessor.setAddGlobalBindingErrors( true );
 			builder.viewProcessor( formViewProcessor )
-			       .viewProcessor( beanFactory.getBean( DeleteFormViewProcessor.class ) );
+			       .viewProcessor( beanFactory.getBean( DeleteActionFormViewProcessor.class ) );
 
 			SaveEntityViewProcessor saveEntityViewProcessor = beanFactory.createBean( SaveEntityViewProcessor.class );
 			builder.viewProcessor( saveEntityViewProcessor );
