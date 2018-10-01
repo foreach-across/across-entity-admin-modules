@@ -171,10 +171,4 @@ public interface EntityPropertyBinder<T>
 	 */
 	default void enableBinding( boolean enabled ) {
 	}
-
-	/**
-	 * @return the direct path to this property on the {@link EntityPropertiesBinder} it belongs to
-	 */
-	@Deprecated
-	String getBinderPath();
 }

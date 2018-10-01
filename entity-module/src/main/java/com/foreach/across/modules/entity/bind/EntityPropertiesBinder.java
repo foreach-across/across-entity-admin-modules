@@ -268,11 +268,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return childBinder;
 	}
 
-	@Deprecated
-	Object createValue( EntityPropertyController<Object, Object> controller, Object entity, TypeDescriptor descriptor ) {
-		return null;
-	}
-
 	Object createValue( EntityPropertyController<Object, Object> controller, TypeDescriptor descriptor ) {
 		if ( controller != null ) {
 			return controller.createValue( getBindingContext() );

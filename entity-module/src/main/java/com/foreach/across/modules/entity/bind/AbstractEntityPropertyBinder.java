@@ -107,11 +107,6 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder<Obje
 	}
 
 	@Override
-	public String getBinderPath() {
-		return binder.getPropertyBinderPath( descriptor.getName() );
-	}
-
-	@Override
 	public int getControllerOrder() {
 		return controller != null ? controller.getOrder() : Ordered.LOWEST_PRECEDENCE;
 	}
