@@ -31,12 +31,11 @@ import org.springframework.validation.Errors;
  * Likewise the {@link #delete(Object)} method is only relevant for properties where delete means
  * something. For most properties this is simply a no-op.
  *
- * @param <T> entity type that the property belongs to
- * @param <U> property type
+ * @param <T> type of the property that is being managed
  * @author Arne Vandamme
  * @since 3.2.0
  */
-public interface EntityPropertyController<T, U> extends Ordered
+public interface EntityPropertyController<T> extends Ordered
 {
 	/**
 	 * Controller methods for this property should be executed before the equivalent method
@@ -57,10 +56,10 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * Depending on the type of property this might be a simple getter being called,
 	 * or something like a database retrieval happening.
 	 *
-	 * @param owner entity
+	 * @param context binding context
 	 * @return property value
 	 */
-	U fetchValue( EntityPropertyBindingContext context );
+	Object fetchValue( EntityPropertyBindingContext context );
 
 	/**
 	 * Create a new value for the property on the owning entity.
@@ -70,7 +69,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param context binding context
 	 * @return valid property value
 	 */
-	U createValue( EntityPropertyBindingContext context );
+	Object createValue( EntityPropertyBindingContext context );
 
 	/**
 	 * Validate a property value in the given binding context.
@@ -82,7 +81,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param validationHints optional hints for validation (eg. validation groups)
 	 * @see EntityPropertyValidator
 	 */
-	default void validate( EntityPropertyBindingContext context, EntityPropertyValue<Object> propertyValue, Errors errors, Object... validationHints ) {
+	default void validate( EntityPropertyBindingContext context, EntityPropertyValue<T> propertyValue, Errors errors, Object... validationHints ) {
 	}
 
 	/**
@@ -106,7 +105,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @return true if value has been set
 	 * @see #save(EntityPropertyBindingContext, EntityPropertyValue)
 	 */
-	default boolean applyValue( EntityPropertyBindingContext context, EntityPropertyValue<U> propertyValue ) {
+	default boolean applyValue( EntityPropertyBindingContext context, EntityPropertyValue<T> propertyValue ) {
 		return false;
 	}
 
@@ -120,7 +119,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param propertyValue to save
 	 * @return true if the property value has been saved
 	 */
-	default boolean save( EntityPropertyBindingContext context, EntityPropertyValue<U> propertyValue ) {
+	default boolean save( EntityPropertyBindingContext context, EntityPropertyValue<T> propertyValue ) {
 		return false;
 	}
 

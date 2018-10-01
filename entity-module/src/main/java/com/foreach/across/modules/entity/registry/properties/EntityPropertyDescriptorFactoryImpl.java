@@ -76,7 +76,7 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 		return descriptor;
 	}
 
-	private EntityPropertyController<?, ?> createPropertyController( Property property ) {
+	private EntityPropertyController createPropertyController( Property property ) {
 		GenericEntityPropertyController controller = new GenericEntityPropertyController();
 		controller.order( EntityPropertyController.BEFORE_ENTITY );
 

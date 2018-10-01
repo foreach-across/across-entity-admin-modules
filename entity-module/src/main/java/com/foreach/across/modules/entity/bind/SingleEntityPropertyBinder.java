@@ -36,7 +36,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor descriptor;
-	private final EntityPropertyController<Object, Object> controller;
+	private final EntityPropertyController controller;
 
 	private boolean valueHasBeenSet;
 	private boolean initializedValuePathWasUsed;

@@ -56,19 +56,19 @@ public class TestMapEntityPropertyBinder
 	private EntityPropertiesBinder binder;
 
 	@Mock
-	private EntityPropertyController<Object, Object> collectionController;
+	private EntityPropertyController collectionController;
 
 	@Mock
-	private EntityPropertyController<Object, Object> keyController;
+	private EntityPropertyController keyController;
 
 	@Mock
-	private EntityPropertyController<Object, Object> valueController;
+	private EntityPropertyController valueController;
 
 	@Mock
-	private EntityPropertyBinder<Object> key;
+	private EntityPropertyBinder key;
 
 	@Mock
-	private EntityPropertyBinder<Object> value;
+	private EntityPropertyBinder value;
 
 	private EntityPropertyDescriptor collectionDescriptor;
 	private EntityPropertyDescriptor keyDescriptor;
@@ -142,8 +142,8 @@ public class TestMapEntityPropertyBinder
 
 	@Test
 	public void templateGetsLazilyCreatedOnce() {
-		EntityPropertyBinder<Object> templateKey = mock( EntityPropertyBinder.class );
-		EntityPropertyBinder<Object> templateValue = mock( EntityPropertyBinder.class );
+		EntityPropertyBinder templateKey = mock( EntityPropertyBinder.class );
+		EntityPropertyBinder templateValue = mock( EntityPropertyBinder.class );
 
 		when( binder.createPropertyBinder( keyDescriptor ) ).thenReturn( templateKey );
 		when( binder.createPropertyBinder( valueDescriptor ) ).thenReturn( templateValue );

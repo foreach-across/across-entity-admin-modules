@@ -49,7 +49,7 @@ public class TestSingleEntityPropertyBinder
 	private EntityPropertiesBinder binder;
 
 	@Mock
-	private EntityPropertyController<Object, Object> controller;
+	private EntityPropertyController controller;
 
 	private EntityPropertyDescriptor descriptor;
 	private SingleEntityPropertyBinder property;

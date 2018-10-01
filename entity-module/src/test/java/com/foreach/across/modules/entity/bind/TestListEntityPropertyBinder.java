@@ -55,16 +55,16 @@ public class TestListEntityPropertyBinder
 	private EntityPropertiesBinder binder;
 
 	@Mock
-	private EntityPropertyController<Object, Object> collectionController;
+	private EntityPropertyController collectionController;
 
 	@Mock
-	private EntityPropertyController<Object, Object> memberController;
+	private EntityPropertyController memberController;
 
 	@Mock
-	private EntityPropertyBinder<Object> itemOne;
+	private EntityPropertyBinder itemOne;
 
 	@Mock
-	private EntityPropertyBinder<Object> itemTwo;
+	private EntityPropertyBinder itemTwo;
 
 	private EntityPropertyDescriptor collectionDescriptor;
 	private EntityPropertyDescriptor memberDescriptor;
@@ -202,7 +202,7 @@ public class TestListEntityPropertyBinder
 	@Test
 	@SuppressWarnings("unchecked")
 	public void templateGetsLazilyCreatedOnce() {
-		EntityPropertyBinder<Object> template = mock( EntityPropertyBinder.class );
+		EntityPropertyBinder template = mock( EntityPropertyBinder.class );
 
 		when( binder.createPropertyBinder( memberDescriptor ) ).thenReturn( template );
 

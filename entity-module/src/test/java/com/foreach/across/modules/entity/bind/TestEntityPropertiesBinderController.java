@@ -39,10 +39,10 @@ import static org.mockito.Mockito.*;
 public class TestEntityPropertiesBinderController
 {
 	@Mock
-	private EntityPropertyController<String, String> propOne;
+	private EntityPropertyController propOne;
 
 	@Mock
-	private EntityPropertyController<String, String> propTwo;
+	private EntityPropertyController propTwo;
 
 	@Mock
 	private Runnable callbackOne;

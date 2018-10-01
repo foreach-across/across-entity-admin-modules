@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  */
 public class GenericEntityPropertyController implements EntityPropertyController, ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object>
 {
-	private final EntityPropertyController<EntityPropertyBindingContext, Object> original;
+	private final EntityPropertyController original;
 
 	/**
 	 * Processing order for this controller.
@@ -74,7 +74,7 @@ public class GenericEntityPropertyController implements EntityPropertyController
 		this.original = null;
 	}
 
-	public GenericEntityPropertyController( EntityPropertyController<EntityPropertyBindingContext, Object> original ) {
+	public GenericEntityPropertyController( EntityPropertyController original ) {
 		this.original = original;
 		this.order = null;
 	}
@@ -183,7 +183,7 @@ public class GenericEntityPropertyController implements EntityPropertyController
 			return applyValueFunction.apply( context, propertyValue );
 		}
 
-		return original != null ? original.applyValue( context, propertyValue ) : false;
+		return original != null && original.applyValue( context, propertyValue );
 	}
 
 	@Override
@@ -193,10 +193,11 @@ public class GenericEntityPropertyController implements EntityPropertyController
 			return saveFunction.apply( context, propertyValue );
 		}
 
-		return original != null ? original.save( context, propertyValue ) : false;
+		return original != null && original.save( context, propertyValue );
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void validate( EntityPropertyBindingContext context, EntityPropertyValue propertyValue, Errors errors, Object... validationHints ) {
 		if ( validator != null ) {
 			validator.validate( context, propertyValue, errors, validationHints );

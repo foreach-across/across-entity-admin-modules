@@ -183,7 +183,7 @@ TODO
 	}
 
 	// todo: more and more to clean up
-	public static EntityPropertyBinder<Object> currentPropertyValueHolder( ViewElementBuilderContext builderContext ) {
+	public static EntityPropertyBinder currentPropertyBinder( ViewElementBuilderContext builderContext ) {
 		if ( builderContext == null ) {
 			return null;
 		}
@@ -197,7 +197,7 @@ TODO
 		return resolveValueHolder( builderContext, descriptor );
 	}
 
-	private static EntityPropertyBinder<Object> resolveValueHolder( ViewElementBuilderContext builderContext, EntityPropertyDescriptor descriptor ) {
+	private static EntityPropertyBinder resolveValueHolder( ViewElementBuilderContext builderContext, EntityPropertyDescriptor descriptor ) {
 		EntityPropertyBinder parent = builderContext.getAttribute( EntityPropertyBinder.class );
 
 		if ( parent instanceof SingleEntityPropertyBinder ) {

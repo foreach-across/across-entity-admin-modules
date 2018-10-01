@@ -43,15 +43,15 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor collectionDescriptor;
 	private final TypeDescriptor collectionTypeDescriptor;
-	private final EntityPropertyController<Object, Object> collectionController;
+	private final EntityPropertyController collectionController;
 
 	private final EntityPropertyDescriptor valueDescriptor;
 	private final TypeDescriptor valueTypeDescriptor;
-	private final EntityPropertyController<Object, Object> valueController;
+	private final EntityPropertyController valueController;
 
 	private final EntityPropertyDescriptor keyDescriptor;
 	private final TypeDescriptor keyTypeDescriptor;
-	private final EntityPropertyController<Object, Object> keyController;
+	private final EntityPropertyController keyController;
 
 	private boolean bindingBusy;
 	private boolean itemsInitialized;
@@ -303,10 +303,10 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		private int sortIndex;
 
 		@Getter
-		private final EntityPropertyBinder<Object> key;
+		private final EntityPropertyBinder key;
 
 		@Getter
-		private final EntityPropertyBinder<Object> value;
+		private final EntityPropertyBinder value;
 
 		public void setEntryKey( Object key ) {
 			this.key.setValue( key );

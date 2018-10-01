@@ -55,18 +55,17 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor collectionDescriptor;
 	private final TypeDescriptor collectionTypeDescriptor;
-	private final EntityPropertyController<Object, Object> collectionController;
+	private final EntityPropertyController collectionController;
 
 	private final EntityPropertyDescriptor memberDescriptor;
 	private final TypeDescriptor memberTypeDescriptor;
-	private final EntityPropertyController<Object, Object> memberController;
 
 	private boolean bindingBusy;
 	private boolean itemsInitialized;
 	private boolean initializedValuePathWasUsed;
 
-	private EntityPropertyBinder<Object> itemTemplate;
-	private Map<String, EntityPropertyBinder<Object>> items;
+	private EntityPropertyBinder itemTemplate;
+	private Map<String, EntityPropertyBinder> items;
 
 	/**
 	 * If set to {@code true}, the existing items will always be returned when performing data binding,
@@ -90,7 +89,6 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		memberTypeDescriptor = memberDescriptor.getPropertyTypeDescriptor();
 
 		collectionController = collectionDescriptor.getController();
-		memberController = memberDescriptor.getController();
 	}
 
 	/**
@@ -99,7 +97,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	 *
 	 * @return template item controller
 	 */
-	public EntityPropertyBinder<Object> getItemTemplate() {
+	public EntityPropertyBinder getItemTemplate() {
 		if ( itemTemplate == null ) {
 			itemTemplate = createItem();
 		}
@@ -111,11 +109,11 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return isDeleted() || ( ( isBound() || itemsInitialized ) && !Objects.equals( loadOriginalValue(), getValue() ) );
 	}
 
-	private EntityPropertyBinder<Object> createItem() {
+	private EntityPropertyBinder createItem() {
 		return binder.createPropertyBinder( memberDescriptor );
 	}
 
-	public Map<String, EntityPropertyBinder<Object>> getItems() {
+	public Map<String, EntityPropertyBinder> getItems() {
 		if ( items == null ) {
 			val originalValue = loadOriginalValue();
 
@@ -131,7 +129,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return items;
 	}
 
-	public Collection<EntityPropertyBinder<Object>> getItemList() {
+	public Collection<EntityPropertyBinder> getItemList() {
 		return Collections.unmodifiableList(
 				getItems()
 						.values()
@@ -191,7 +189,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			int index = 0;
 			for ( Object v : values ) {
 				String key = "" + index;
-				EntityPropertyBinder<Object> item = binder.createPropertyBinder( memberDescriptor );
+				EntityPropertyBinder item = binder.createPropertyBinder( memberDescriptor );
 				item.setValue( v );
 				item.setSortIndex( index++ );
 				items.put( key, item );
@@ -266,12 +264,12 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	/**
 	 * Creates a new item for every key requested.
 	 */
-	class Items extends TreeMap<String, EntityPropertyBinder<Object>>
+	class Items extends TreeMap<String, EntityPropertyBinder>
 	{
 		@Override
-		public EntityPropertyBinder<Object> get( Object key ) {
+		public EntityPropertyBinder get( Object key ) {
 			String itemKey = (String) key;
-			EntityPropertyBinder<Object> item = super.get( itemKey );
+			EntityPropertyBinder item = super.get( itemKey );
 
 			if ( item == null ) {
 				item = createItem();

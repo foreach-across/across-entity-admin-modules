@@ -41,7 +41,7 @@ public interface EntityPropertyValidator
 	 * @param errors          object containing all current errors
 	 * @param validationHints to apply specific validation only
 	 */
-	void validate( EntityPropertyBindingContext bindingContext, EntityPropertyValue<Object> propertyValue, Errors errors, Object... validationHints );
+	void validate( EntityPropertyBindingContext bindingContext, EntityPropertyValue propertyValue, Errors errors, Object... validationHints );
 
 	/**
 	 * Create a new validator that first apply the current validator and then the one passed as argument.

@@ -34,7 +34,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -52,13 +51,13 @@ public class TestEntityPropertiesBinder
 	private ConversionService conversionService = new DefaultConversionService();
 
 	@Mock
-	private EntityPropertyController<String, Long> singleValueController;
+	private EntityPropertyController singleValueController;
 
 	@Mock
-	private EntityPropertyController<String, Long[]> listValueController;
+	private EntityPropertyController listValueController;
 
 	@Mock
-	private EntityPropertyController<String, Map<Long, Long>> mapValueController;
+	private EntityPropertyController mapValueController;
 
 	@Mock
 	private EntityPropertyRegistry registry;

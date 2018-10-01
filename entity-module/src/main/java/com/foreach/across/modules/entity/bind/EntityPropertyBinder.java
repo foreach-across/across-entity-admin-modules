@@ -22,7 +22,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue
 import org.springframework.validation.Errors;
 
 /**
- * Helper class representing a single property of an entity, allowing
+ * Basic binder interface for a single property of an entity, allowing
  * access to the property value, updating the value, validating it and saving it.
  * <p/>
  * Dispatches to the {@link EntityPropertyController} for the actual handling.
@@ -33,7 +33,7 @@ import org.springframework.validation.Errors;
  * @see EntityPropertiesBinder
  * @since 3.2.0
  */
-public interface EntityPropertyBinder<T>
+public interface EntityPropertyBinder
 {
 	/**
 	 * @return Sort index value, only relevant when the property value is part of a (sorted) collection.
@@ -69,12 +69,12 @@ public interface EntityPropertyBinder<T>
 	 *
 	 * @return the original value that was present before
 	 */
-	T getOriginalValue();
+	Object getOriginalValue();
 
 	/**
 	 * @return the current value
 	 */
-	T getValue();
+	Object getValue();
 
 	/**
 	 * Get the current value or initialize a new value if it has not been set.
@@ -84,11 +84,11 @@ public interface EntityPropertyBinder<T>
 	 * @return the value and initialize a new value if necessary
 	 * @see #createNewValue()
 	 */
-	default T getInitializedValue() {
-		T currentValue = getValue();
+	default Object getInitializedValue() {
+		Object currentValue = getValue();
 
 		if ( currentValue == null ) {
-			T newValue = createNewValue();
+			Object newValue = createNewValue();
 			if ( newValue != null ) {
 				setValue( newValue );
 				return newValue;
@@ -103,7 +103,7 @@ public interface EntityPropertyBinder<T>
 	 *
 	 * @param value to set
 	 */
-	void setValue( T value );
+	void setValue( Object value );
 
 	/**
 	 * Explicitly set this property as deleted. The value returned will usually be {@code null}.
@@ -128,7 +128,7 @@ public interface EntityPropertyBinder<T>
 	 *
 	 * @return new value, can be {@code null}
 	 */
-	T createNewValue();
+	Object createNewValue();
 
 	/**
 	 * Apply the current property value to the owning entity by calling {@link EntityPropertyController#applyValue(EntityPropertyBindingContext, EntityPropertyValue)}.

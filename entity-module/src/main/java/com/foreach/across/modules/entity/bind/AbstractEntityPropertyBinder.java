@@ -35,11 +35,11 @@ import java.util.Optional;
  * @since 3.2.0
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder<Object>
+abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 {
 	private final EntityPropertiesBinder binder;
 	private final EntityPropertyDescriptor descriptor;
-	private final EntityPropertyController<Object, Object> controller;
+	private final EntityPropertyController controller;
 
 	@Getter
 	@Setter

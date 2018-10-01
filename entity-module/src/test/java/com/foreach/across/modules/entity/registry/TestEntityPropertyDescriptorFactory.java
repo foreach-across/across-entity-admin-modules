@@ -60,7 +60,7 @@ public class TestEntityPropertyDescriptorFactory
 		assertFalse( descriptor.isHidden() );
 		assertSame( nativeDescriptor, descriptor.getAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) );
 
-		EntityPropertyController<Instance, String> controller = descriptor.getController();
+		EntityPropertyController controller = descriptor.getController();
 		assertNotNull( controller );
 		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
 
@@ -88,7 +88,7 @@ public class TestEntityPropertyDescriptorFactory
 		assertFalse( descriptor.isWritable() );
 		assertTrue( descriptor.isHidden() );
 
-		EntityPropertyController<Instance, Integer> controller = descriptor.getController();
+		EntityPropertyController controller = descriptor.getController();
 		assertNotNull( controller );
 		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
 
@@ -114,7 +114,7 @@ public class TestEntityPropertyDescriptorFactory
 		assertTrue( descriptor.isWritable() );
 		assertTrue( descriptor.isHidden() );
 
-		EntityPropertyController<Instance, Date> controller = descriptor.getController();
+		EntityPropertyController controller = descriptor.getController();
 		assertNotNull( controller );
 		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
 

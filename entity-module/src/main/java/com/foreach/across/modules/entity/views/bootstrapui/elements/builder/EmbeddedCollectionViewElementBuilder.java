@@ -92,7 +92,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 	@Override
 	protected NodeViewElement createElement( ViewElementBuilderContext builderContext ) {
-		EntityPropertyBinder binder = EntityViewElementUtils.currentPropertyValueHolder( builderContext );
+		EntityPropertyBinder binder = EntityViewElementUtils.currentPropertyBinder( builderContext );
 
 		if ( binder instanceof ListEntityPropertyBinder ) {
 			return createListControl( (ListEntityPropertyBinder) binder, builderContext );
@@ -166,7 +166,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 	private NodeViewElement itemRows( ViewElementBuilderContext builderContext,
 	                                  EntityPropertyControlName.ForProperty controlName,
-	                                  Map<String, EntityPropertyBinder<Object>> items,
+	                                  Map<String, EntityPropertyBinder> items,
 	                                  String removeItemMessage ) {
 		NodeViewElement itemRows = new NodeViewElement( "div" );
 		itemRows.setAttribute( "data-role", "items" );
@@ -175,7 +175,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		int position = 0;
 		int total = items.size();
 
-		for ( Map.Entry<String, EntityPropertyBinder<Object>> entry : items.entrySet() ) {
+		for ( Map.Entry<String, EntityPropertyBinder> entry : items.entrySet() ) {
 			EntityPropertyControlName.ForProperty.BinderProperty itemControlName = controlName.asCollectionItem()
 			                                                                                  .withIndex( position )
 			                                                                                  .withBinderItemKey( entry.getKey() )

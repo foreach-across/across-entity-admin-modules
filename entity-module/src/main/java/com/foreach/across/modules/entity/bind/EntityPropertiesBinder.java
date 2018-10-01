@@ -205,7 +205,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return StringUtils.defaultIfEmpty( binderPrefix, "properties" ) + "[" + propertyName + "]";
 	}
 
-	EntityPropertyBinder<Object> createPropertyBinder( EntityPropertyDescriptor descriptor ) {
+	EntityPropertyBinder createPropertyBinder( EntityPropertyDescriptor descriptor ) {
 		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
 
 		if ( typeDescriptor.isMap() ) {
@@ -268,7 +268,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return childBinder;
 	}
 
-	Object createValue( EntityPropertyController<Object, Object> controller, TypeDescriptor descriptor ) {
+	Object createValue( EntityPropertyController controller, TypeDescriptor descriptor ) {
 		if ( controller != null ) {
 			return controller.createValue( getBindingContext() );
 		}
