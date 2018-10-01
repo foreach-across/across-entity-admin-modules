@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  * Holds the binding context information for an entity.
@@ -69,21 +68,6 @@ public final class EntityPropertyBindingContext
 	 * The only way to create child contexts is by using {@link #getOrCreateChildContext(String, BiConsumer)}.
 	 */
 	private final Map<String, EntityPropertyBindingContext> childContexts = new LinkedHashMap<>();
-
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	public EntityPropertyBindingContext( Object entity ) {
-		this( entity, entity );
-	}
-
-	@Deprecated
-	public EntityPropertyBindingContext( Object entity, Object target ) {
-		this.entity = entity;
-		this.target = target;
-		this.parent = null;
-		this.readonly = false;
-		this.controller = null;
-	}
 
 	/**
 	 * Get the original entity value.
@@ -168,16 +152,6 @@ public final class EntityPropertyBindingContext
 	 */
 	public EntityPropertyBindingContext removeChildContext( @NonNull String name ) {
 		return childContexts.remove( name );
-	}
-
-	@Deprecated
-	public EntityPropertyBindingContext withParent( @NonNull EntityPropertyBindingContext parentContext ) {
-		return null;//return new EntityPropertyBindingContext( entity, target, parentContext, controller );
-	}
-
-	@Deprecated
-	public EntityPropertyBindingContext withController( @NonNull EntityPropertyController controller ) {
-		return null;//		return new EntityPropertyBindingContext( entity, target, parent, controller );
 	}
 
 	/**

@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
 public class TestGenericEntityPropertyController
 {
 	private GenericEntityPropertyController controller = new GenericEntityPropertyController();
-	private EntityPropertyBindingContext context = new EntityPropertyBindingContext( "123", BigDecimal.TEN );
+	private EntityPropertyBindingContext context = EntityPropertyBindingContext.forUpdating( "123", BigDecimal.TEN );
 	private EntityPropertyValue<Long> propertyValue = new EntityPropertyValue<>( 123L, 456L, false );
 
 	@Test
@@ -212,7 +212,7 @@ public class TestGenericEntityPropertyController
 		AtomicBoolean called = new AtomicBoolean();
 		assertThat( controller.withTarget( BigDecimal.class, Long.class )
 		                      .contextualValidator( ( d, l, e, hints ) -> {
-			                      assertThat( d ).isEqualTo( context.getTarget() );
+			                      assertThat( d ).isEqualTo( context.<BigDecimal>getTarget() );
 			                      assertThat( l ).isEqualTo( 321L );
 			                      assertThat( e ).isSameAs( errors );
 			                      assertThat( hints ).containsExactly( "hint" );

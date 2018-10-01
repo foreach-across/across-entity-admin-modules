@@ -54,7 +54,7 @@ public class TestDirectUseOfEntityPropertiesBinder
 		assertThat( binder.get( "name" ).getValue() ).isEqualTo( "other name" );
 
 		assertThat( user.getName() ).isEqualTo( "my name" );
-		binder.bind();
+		binder.createController().applyValues();
 		assertThat( user.getName() ).isEqualTo( "other name" );
 	}
 
@@ -94,14 +94,11 @@ public class TestDirectUseOfEntityPropertiesBinder
 		assertThat( child.get( "id" ).getValue() ).isEqualTo( 1 );
 		assertThat( child.get( "owner" ).getValue() ).isEqualTo( user );
 		assertThat( child.get( "email" ).getValue() ).isEqualTo( "john.doe@localhost" );
-		child.get( "email" ).setValue( "jane.doe@localhost" );
-
-		binder.bind();
 	}
 
 	@Test
 	public void nestedPropertiesValidation() {
-		DefaultEntityPropertyRegistryProvider provider = new DefaultEntityPropertyRegistryProvider( new EntityPropertyDescriptorFactoryImpl()  );
+		DefaultEntityPropertyRegistryProvider provider = new DefaultEntityPropertyRegistryProvider( new EntityPropertyDescriptorFactoryImpl() );
 		provider.setPropertiesRegistrars( Collections.singleton( new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() ) ) );
 
 		MutableEntityPropertyRegistry propertyRegistry = provider.get( UserProperties.class );

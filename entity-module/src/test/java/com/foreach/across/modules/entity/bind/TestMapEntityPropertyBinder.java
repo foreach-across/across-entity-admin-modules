@@ -46,7 +46,7 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({ "Duplicates", "unchecked" })
 public class TestMapEntityPropertyBinder
 {
-	private static final EntityPropertyBindingContext BINDING_CONTEXT = new EntityPropertyBindingContext( "entity" );
+	private static final EntityPropertyBindingContext BINDING_CONTEXT = EntityPropertyBindingContext.forReading( "entity" );
 	private static final TypeDescriptor KEY = TypeDescriptor.valueOf( String.class );
 	private static final TypeDescriptor VALUE = TypeDescriptor.valueOf( Integer.class );
 	private static final TypeDescriptor COLLECTION = TypeDescriptor.map( LinkedHashMap.class, KEY, VALUE );

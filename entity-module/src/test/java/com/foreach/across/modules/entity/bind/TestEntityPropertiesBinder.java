@@ -327,6 +327,7 @@ public class TestEntityPropertiesBinder
 		);
 
 		binder.bind();
+		//binder.createController().applyValues();
 
 		verify( singleValueController ).applyValue( any(), eq( new EntityPropertyValue<>( null, 123L, false ) ) );
 		verifyZeroInteractions( listValueController, mapValueController );
