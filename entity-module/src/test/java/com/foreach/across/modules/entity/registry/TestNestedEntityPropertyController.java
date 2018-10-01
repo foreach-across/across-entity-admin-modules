@@ -20,11 +20,14 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindi
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import com.foreach.across.modules.entity.registry.properties.NestedEntityPropertyController;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.function.BiConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -42,21 +45,22 @@ public class TestNestedEntityPropertyController
 	@Mock
 	private EntityPropertyController address;
 
-	private EntityPropertyController userAddress;
+	private NestedEntityPropertyController userAddress;
 
-	private EntityPropertyBindingContext<String, String> originalContext;
-	private EntityPropertyBindingContext<Long, Long> childContext;
-	private EntityPropertyBindingContext<String, String> finalContext;
+	private EntityPropertyBindingContext originalContext;
+	private EntityPropertyBindingContext childContext;
+	private EntityPropertyBindingContext finalContext;
 
 	@Before
 	public void before() {
 		userAddress = new NestedEntityPropertyController( "user", user, address );
 
-		originalContext = EntityPropertyBindingContext.of( "page" );
+		originalContext = EntityPropertyBindingContext.forReading( "page" );
 		when( user.fetchValue( originalContext ) ).thenReturn( 123L );
 
-		finalContext = EntityPropertyBindingContext.of( "page" );
-		childContext = finalContext.retrieveNamedChildContext( "user", p -> EntityPropertyBindingContext.of( 123L ).withController( user ) );
+		finalContext = EntityPropertyBindingContext.forReading( "page" );
+
+		childContext = finalContext.getOrCreateChildContext( "user", ( p, b ) -> b.entity( 123L ).target( 123L ).controller( user ) );
 	}
 
 	@Test
@@ -89,5 +93,10 @@ public class TestNestedEntityPropertyController
 		EntityPropertyValue value = new EntityPropertyValue<>( "old", "new", false );
 		userAddress.save( originalContext, value );
 		verify( address ).save( childContext, value );
+
+		val sf = mock( BiConsumer.class );
+		userAddress.saveConsumer( sf );
+		userAddress.save( originalContext, value );
+		verify( sf ).accept( childContext, value );
 	}
 }

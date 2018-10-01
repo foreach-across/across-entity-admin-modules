@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import lombok.NonNull;
-import lombok.val;
 import org.springframework.validation.Errors;
 
 import java.util.function.BiConsumer;
@@ -34,7 +33,7 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 {
 	private final String contextName;
 	private final EntityPropertyController parent;
-	private final EntityPropertyController child;
+	private final GenericEntityPropertyController child;
 
 	public NestedEntityPropertyController( @NonNull String requiredChildContextName,
 	                                       @NonNull EntityPropertyController parent,
@@ -44,72 +43,71 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 		this.child = new GenericEntityPropertyController( child );
 	}
 
-
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> order( int order ) {
-		return null;
+		return child.order( order );
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> valueFetcher( Function<EntityPropertyBindingContext, Object> valueFetcher ) {
-		return null;
+		return child.createValueFunction( valueFetcher );
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> createValueSupplier( Supplier<Object> supplier ) {
-		return null;
+		return child.createValueSupplier( supplier );
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> createValueFunction( Function<EntityPropertyBindingContext, Object> function ) {
-		return null;
+		return child.createValueFunction( function );
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> applyValueConsumer( BiConsumer<EntityPropertyBindingContext, EntityPropertyValue<Object>> valueWriter ) {
-		return null;
+		return child.applyValueConsumer( valueWriter );
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> applyValueFunction( BiFunction<EntityPropertyBindingContext, EntityPropertyValue<Object>, Boolean> valueWriter ) {
-		return null;
+		return child.applyValueFunction( valueWriter );
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> saveConsumer( BiConsumer<EntityPropertyBindingContext, EntityPropertyValue<Object>> saveFunction ) {
-		return null;
+		return child.saveConsumer( saveFunction );
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> saveFunction( BiFunction<EntityPropertyBindingContext, EntityPropertyValue<Object>, Boolean> saveFunction ) {
-		return null;
+		return child.saveFunction( saveFunction );
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> validator( EntityPropertyValidator propertyValidator ) {
-		return null;
+		return child.validator( propertyValidator );
 	}
 
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> contextualValidator( ContextualValidator<EntityPropertyBindingContext, Object> contextualValidator ) {
-		return null;
+		return child.contextualValidator( contextualValidator );
 	}
 
 	@Override
 	public <X, V> ConfigurableEntityPropertyController<X, V> withEntity( Class<X> entityType, Class<V> propertyType ) {
-		return null;
+		return child.withEntity( entityType, propertyType );
 	}
 
 	@Override
 	public <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<X> targetType, Class<V> propertyType ) {
-		return null;
+		return child.withTarget( targetType, propertyType );
 	}
 
 	@Override
-	public <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext<X, W>, V> withBindingContext( Class<X> entityType,
-	                                                                                                                 Class<W> targetType,
-	                                                                                                                 Class<V> propertyType ) {
-		return null;
+	public <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<X> entityType,
+	                                                                                                           Class<W> targetType,
+	                                                                                                           Class<V> propertyType ) {
+		return child.withBindingContext( entityType, targetType, propertyType );
 	}
 
 	@Override
@@ -138,26 +136,15 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	private EntityPropertyBindingContext childContext( EntityPropertyBindingContext context ) {
-		return context.retrieveNamedChildContext( contextName, c -> childContextFactory( (EntityPropertyBindingContext) c ) );
+		return context.getOrCreateChildContext( contextName, ( parentContext, builder ) -> {
+			Object parentValue = parent.fetchValue( parentContext );
+
+			builder.controller( parent ).entity( parentValue ).target( parentValue );
+		} );
 	}
 
 	@Override
 	public int getOrder() {
 		return child.getOrder();
-	}
-
-	private EntityPropertyBindingContext childContextFactory( EntityPropertyBindingContext parentContext ) {
-		Object parentValue = parent.fetchValue( parentContext );
-
-		val builder = EntityPropertyBindingContext.builder()
-		                                          .controller( parent )
-		                                          .entity( parentValue )
-		                                          .target( parentValue )
-				//.target( parent.createBinderTarget( parentContext, parentValue ) )
-				;
-
-		// todo: customize the binding context builder
-
-		return builder.build();
 	}
 }

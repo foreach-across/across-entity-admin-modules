@@ -217,7 +217,7 @@ public class GenericEntityPropertyController implements EntityPropertyController
 	}
 
 	@Override
-	public <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext<X, W>, V> withBindingContext(
+	public <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext(
 			Class<X> entityType, Class<W> targetType, Class<V> propertyType ) {
 		return new ScopedConfigurableEntityPropertyController<>( this, ctx -> ctx );
 	}

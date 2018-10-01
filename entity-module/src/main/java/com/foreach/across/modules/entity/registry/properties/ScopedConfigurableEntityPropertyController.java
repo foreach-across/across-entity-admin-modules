@@ -127,9 +127,9 @@ class ScopedConfigurableEntityPropertyController<T, U> implements ConfigurableEn
 	}
 
 	@Override
-	public <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext<X, W>, V> withBindingContext( Class<X> entityType,
-	                                                                                                                 Class<W> targetType,
-	                                                                                                                 Class<V> propertyType ) {
+	public <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<X> entityType,
+	                                                                                                           Class<W> targetType,
+	                                                                                                           Class<V> propertyType ) {
 		return parent.withBindingContext( entityType, targetType, propertyType );
 	}
 }

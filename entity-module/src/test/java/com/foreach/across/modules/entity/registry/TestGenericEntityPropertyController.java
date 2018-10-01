@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
 public class TestGenericEntityPropertyController
 {
 	private GenericEntityPropertyController controller = new GenericEntityPropertyController();
-	private EntityPropertyBindingContext<String, BigDecimal> context = new EntityPropertyBindingContext<>( "123", BigDecimal.TEN );
+	private EntityPropertyBindingContext context = new EntityPropertyBindingContext( "123", BigDecimal.TEN );
 	private EntityPropertyValue<Long> propertyValue = new EntityPropertyValue<>( 123L, 456L, false );
 
 	@Test
@@ -73,7 +73,7 @@ public class TestGenericEntityPropertyController
 		assertThat( controller.fetchValue( context ) ).isEqualTo( 10L );
 
 		controller.withBindingContext( String.class, BigDecimal.class, Long.class )
-		          .valueFetcher( ctx -> ctx.getTarget().longValue() + ctx.getEntity().length() );
+		          .valueFetcher( ctx -> ctx.<BigDecimal>getTarget().longValue() + ctx.<String>getEntity().length() );
 		assertThat( controller.fetchValue( context ) ).isEqualTo( 13L );
 	}
 
@@ -94,7 +94,7 @@ public class TestGenericEntityPropertyController
 		assertThat( controller.createValue( context ) ).isEqualTo( 20L );
 
 		controller.withBindingContext( String.class, BigDecimal.class, Long.class )
-		          .createValueFunction( ctx -> ctx.getTarget().longValue() + ctx.getEntity().length() );
+		          .createValueFunction( ctx -> ctx.<BigDecimal>getTarget().longValue() + ctx.<String>getEntity().length() );
 		assertThat( controller.createValue( context ) ).isEqualTo( 13L );
 
 		// supplier

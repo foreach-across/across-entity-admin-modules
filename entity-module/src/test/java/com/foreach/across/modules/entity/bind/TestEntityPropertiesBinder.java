@@ -27,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.MethodInvocationException;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
@@ -71,7 +70,7 @@ public class TestEntityPropertiesBinder
 
 	@Before
 	public void before() {
-		bindingContext = EntityPropertyBindingContext.of( ENTITY );
+		bindingContext = EntityPropertyBindingContext.forReading( ENTITY );
 
 		binder.setConversionService( conversionService );
 		binder.setBindingContext( bindingContext );
@@ -321,16 +320,11 @@ public class TestEntityPropertiesBinder
 
 		val parentController = mock( EntityPropertyController.class );
 
-		bindingContext.retrieveNamedChildContext( "test", parent -> {
-			EntityPropertyBindingContext<Object, Object> childContext = EntityPropertyBindingContext
-					.builder()
-					.parent( (EntityPropertyBindingContext<?, ?>) parent )
-					.entity( "original" )
-					.target( "dto" )
-					.controller( parentController )
-					.build();
-			return childContext;
-		} );
+		bindingContext.getOrCreateChildContext( "test", ( p, child ) ->
+				child.entity( "original" )
+				     .target( "dto" )
+				     .controller( parentController )
+		);
 
 		binder.bind();
 

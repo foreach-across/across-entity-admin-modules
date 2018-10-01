@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class TestSingleEntityPropertyBinder
 {
-	private static final EntityPropertyBindingContext<Object, Object> BINDING_CONTEXT = new EntityPropertyBindingContext<>( "entity" );
+	private static final EntityPropertyBindingContext BINDING_CONTEXT = new EntityPropertyBindingContext( "entity" );
 
 	@Mock
 	private EntityPropertiesBinder binder;

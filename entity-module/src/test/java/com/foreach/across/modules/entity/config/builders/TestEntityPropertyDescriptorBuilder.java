@@ -145,7 +145,7 @@ public class TestEntityPropertyDescriptorBuilder
 		assertFalse( lookupRegistry.isCacheable( ViewElementMode.FORM_READ ) );
 
 		assertEquals( 5, descriptor.getController().getOrder() );
-		descriptor.getController().fetchValue( EntityPropertyBindingContext.of( "x" ) );
+		descriptor.getController().fetchValue( EntityPropertyBindingContext.forReading( "x" ) );
 		verify( vf ).getValue( "x" );
 	}
 

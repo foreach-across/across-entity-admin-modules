@@ -46,7 +46,7 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({ "Duplicates", "unchecked" })
 public class TestListEntityPropertyBinder
 {
-	private static final EntityPropertyBindingContext<Object, Object> BINDING_CONTEXT = new EntityPropertyBindingContext<>( "entity" );
+	private static final EntityPropertyBindingContext BINDING_CONTEXT = new EntityPropertyBindingContext( "entity" );
 	private static final TypeDescriptor COLLECTION = TypeDescriptor.collection( ArrayList.class, TypeDescriptor.valueOf( Integer.class ) );
 	private static final TypeDescriptor MEMBER = TypeDescriptor.valueOf( Integer.class );
 	private static final List<Integer> ORIGINAL_VALUE = Arrays.asList( 1, 2 );

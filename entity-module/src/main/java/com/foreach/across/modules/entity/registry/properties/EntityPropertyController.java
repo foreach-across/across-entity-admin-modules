@@ -60,12 +60,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param owner entity
 	 * @return property value
 	 */
-	@Deprecated
-	default U fetchValue( T owner ) {
-		return fetchValue( new EntityPropertyBindingContext<>( owner ) );
-	}
-
-	U fetchValue( EntityPropertyBindingContext<T, ?> context );
+	U fetchValue( EntityPropertyBindingContext context );
 
 	/**
 	 * Create a new value for the property on the owning entity.
@@ -75,7 +70,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param context binding context
 	 * @return valid property value
 	 */
-	U createValue( EntityPropertyBindingContext<T, ?> context );
+	U createValue( EntityPropertyBindingContext context );
 
 	/**
 	 * Validate a property value in the given binding context.
@@ -87,7 +82,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param validationHints optional hints for validation (eg. validation groups)
 	 * @see EntityPropertyValidator
 	 */
-	default void validate( EntityPropertyBindingContext<T, ?> context, EntityPropertyValue<Object> propertyValue, Errors errors, Object... validationHints ) {
+	default void validate( EntityPropertyBindingContext context, EntityPropertyValue<Object> propertyValue, Errors errors, Object... validationHints ) {
 	}
 
 	/**
@@ -111,7 +106,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @return true if value has been set
 	 * @see #save(EntityPropertyBindingContext, EntityPropertyValue)
 	 */
-	default boolean applyValue( EntityPropertyBindingContext<T, ?> context, EntityPropertyValue<U> propertyValue ) {
+	default boolean applyValue( EntityPropertyBindingContext context, EntityPropertyValue<U> propertyValue ) {
 		return false;
 	}
 
@@ -125,7 +120,7 @@ public interface EntityPropertyController<T, U> extends Ordered
 	 * @param propertyValue to save
 	 * @return true if the property value has been saved
 	 */
-	default boolean save( EntityPropertyBindingContext<T, ?> context, EntityPropertyValue<U> propertyValue ) {
+	default boolean save( EntityPropertyBindingContext context, EntityPropertyValue<U> propertyValue ) {
 		return false;
 	}
 

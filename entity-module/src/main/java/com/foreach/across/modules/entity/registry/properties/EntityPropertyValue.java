@@ -16,19 +16,21 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
+import java.util.Objects;
 
 /**
- * Represents a property value that should be applied.
- * Both the new value that should be applied, as well as the {@link #deleted} value can be modified
- * by controller methods.
+ * Represents a property value in a binding context.
  *
  * @param <T> property type
  * @author Arne Vandamme
  * @see EntityPropertyController
  * @since 3.2.0
  */
-@Setter
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor
@@ -45,12 +47,23 @@ public final class EntityPropertyValue<T>
 	 * -- GETTER --
 	 * New value for the property.
 	 */
-	private T newValue;
+	private final T newValue;
 
 	/**
 	 * -- GETTER --
 	 * Should the property value be deleted.
 	 * If {@code true} then the value of {@link #getNewValue()} should be {@code null}.
 	 */
-	private boolean deleted;
+	private final boolean deleted;
+
+	/**
+	 * Check if the property value has been modified.
+	 * This will return {@code true} if the value is either deleted ({@link #isDeleted() returns {@code true}),
+	 * or if the {@code oldValue.equals(newValue)} returns {@code false}.
+	 *
+	 * @return
+	 */
+	public boolean isModified() {
+		return deleted || !Objects.equals( oldValue, newValue );
+	}
 }

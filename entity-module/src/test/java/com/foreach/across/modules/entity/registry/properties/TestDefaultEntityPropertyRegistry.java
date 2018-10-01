@@ -204,7 +204,7 @@ public class TestDefaultEntityPropertyRegistry
 
 		Scanned instance = new Scanned( "read-write", "read-only", "write-only" );
 
-		EntityPropertyBindingContext ctx = EntityPropertyBindingContext.of( instance );
+		EntityPropertyBindingContext ctx = EntityPropertyBindingContext.forReading( instance );
 		assertEquals( "read-only", read.getController().fetchValue( ctx ) );
 		assertNull( write.getController().fetchValue( ctx ) );
 		assertEquals( "read-write", readWrite.getController().fetchValue( ctx ) );

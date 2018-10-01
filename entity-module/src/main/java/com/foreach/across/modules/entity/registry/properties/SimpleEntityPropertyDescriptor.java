@@ -143,7 +143,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	@SuppressWarnings("unchecked")
 	public Object getPropertyValue( Object entity ) {
 		if ( entity != null ) {
-			return controller.fetchValue( EntityPropertyBindingContext.of( entity ) );
+			return controller.fetchValue( EntityPropertyBindingContext.forReading( entity ) );
 		}
 		return null;
 	}

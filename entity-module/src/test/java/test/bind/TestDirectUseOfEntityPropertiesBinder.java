@@ -47,7 +47,7 @@ public class TestDirectUseOfEntityPropertiesBinder
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
 
 		User user = new User( "my name" );
-		binder.setBindingContext( EntityPropertyBindingContext.of( user ) );
+		binder.setBindingContext( EntityPropertyBindingContext.forReading( user ) );
 
 		assertThat( binder.get( "name" ).getValue() ).isEqualTo( "my name" );
 		binder.get( "name" ).setValue( "other name" );
@@ -81,7 +81,7 @@ public class TestDirectUseOfEntityPropertiesBinder
 		User user = new User( "john.doe" );
 
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
-		binder.setBindingContext( EntityPropertyBindingContext.of( user ) );
+		binder.setBindingContext( EntityPropertyBindingContext.forReading( user ) );
 
 		binder.get( "name" ).setValue( "jane.doe" );
 		assertThat( binder.get( "properties.id" ).getValue() ).isEqualTo( 1 );
@@ -128,7 +128,7 @@ public class TestDirectUseOfEntityPropertiesBinder
 		UserProperties props = new UserProperties( 1, user, "" );
 
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
-		binder.setBindingContext( EntityPropertyBindingContext.of( props ) );
+		binder.setBindingContext( EntityPropertyBindingContext.forReading( props ) );
 
 		SingleEntityPropertyBinder ownerProperty = (SingleEntityPropertyBinder) binder.get( "owner" );
 		ownerProperty.getProperties().get( "name" ).setValue( null );

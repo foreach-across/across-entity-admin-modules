@@ -57,7 +57,7 @@ public class TestEntityPropertiesBinderController
 	public void before() {
 		MutableEntityPropertyRegistry registry = mock( MutableEntityPropertyRegistry.class );
 		binder = new EntityPropertiesBinder( registry );
-		binder.setBindingContext( EntityPropertyBindingContext.of( "nothing" ) );
+		binder.setBindingContext( EntityPropertyBindingContext.forReading( "nothing" ) );
 
 		MutableEntityPropertyDescriptor propertyOne = EntityPropertyDescriptor.builder( "propOne" )
 		                                                                      .propertyType( String.class )

@@ -103,7 +103,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	 */
 	@Setter
 	@Getter
-	private EntityPropertyBindingContext<Object, Object> bindingContext;
+	private EntityPropertyBindingContext bindingContext;
 
 	@Override
 	public EntityPropertyBinder getOrDefault( Object key, EntityPropertyBinder defaultValue ) {
@@ -243,7 +243,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		childBinder.setBindingEnabled( bindingEnabled );
 
 		if ( EntityPropertyRegistry.isMemberPropertyDescriptor( parent ) ) {
-			childBinder.setBindingContext( EntityPropertyBindingContext.of( propertyValue ) );
+			childBinder.setBindingContext( EntityPropertyBindingContext.forReading( propertyValue ) );
 		}
 		else {
 			// nested property
@@ -258,7 +258,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 
 				// todo: customize the binding context builder
 
-				bindingContext.retrieveNamedChildContext( parent.getName(), p -> builder.parent( p ).build() );
+				bindingContext.getOrCreateChildContext(
+						parent.getName(),
+						( p, b ) -> b.controller( controller ).entity( propertyValue ).target( propertyValue )
+				);
 			}
 		}
 

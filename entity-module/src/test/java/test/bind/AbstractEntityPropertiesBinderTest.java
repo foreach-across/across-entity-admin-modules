@@ -17,7 +17,6 @@
 package test.bind;
 
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.bind.SingleEntityPropertyBinder;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyDescriptorBuilder;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
@@ -63,7 +62,7 @@ public abstract class AbstractEntityPropertiesBinderTest
 		propertyValues = new EntityPropertiesBinder( propertyRegistry );
 		propertyValues.setBinderPrefix( "properties" );
 		propertyValues.setConversionService( conversionService );
-		propertyValues.setBindingContext( EntityPropertyBindingContext.of( ENTITY ) );
+		propertyValues.setBindingContext( EntityPropertyBindingContext.forReading( ENTITY ) );
 
 		dataBinder = new DataBinder( propertyValues );
 		dataBinder.setConversionService( conversionService );

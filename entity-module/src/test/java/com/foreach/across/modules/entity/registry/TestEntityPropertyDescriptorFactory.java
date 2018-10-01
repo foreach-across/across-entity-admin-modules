@@ -65,7 +65,7 @@ public class TestEntityPropertyDescriptorFactory
 		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
 
 		Instance instance = new Instance();
-		EntityPropertyBindingContext<Instance, Instance> context = EntityPropertyBindingContext.of( instance );
+		EntityPropertyBindingContext context = EntityPropertyBindingContext.forReading( instance );
 
 		assertNull( instance.getName() );
 		assertNull( controller.fetchValue( context ) );
@@ -75,7 +75,7 @@ public class TestEntityPropertyDescriptorFactory
 		assertEquals( "my name", instance.getName() );
 		assertEquals( "my name", controller.fetchValue( context ) );
 
-		assertFalse( controller.applyValue( EntityPropertyBindingContext.of( null ), new EntityPropertyValue<>( null, "my name", false ) ) );
+		assertFalse( controller.applyValue( EntityPropertyBindingContext.forReading( null ), new EntityPropertyValue<>( null, "my name", false ) ) );
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class TestEntityPropertyDescriptorFactory
 		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
 
 		Instance instance = new Instance();
-		EntityPropertyBindingContext<Instance, Instance> context = EntityPropertyBindingContext.of( instance );
+		EntityPropertyBindingContext context = EntityPropertyBindingContext.forReading( instance );
 
 		assertEquals( 0, instance.readonly );
 		assertEquals( Integer.valueOf( 0 ), controller.fetchValue( context ) );
@@ -121,7 +121,7 @@ public class TestEntityPropertyDescriptorFactory
 		Date now = new Date();
 
 		Instance instance = new Instance();
-		EntityPropertyBindingContext<Instance, Instance> context = EntityPropertyBindingContext.of( instance );
+		EntityPropertyBindingContext context = EntityPropertyBindingContext.forReading( instance );
 
 		assertNull( instance.writeonly );
 		assertNull( controller.fetchValue( context ) );
