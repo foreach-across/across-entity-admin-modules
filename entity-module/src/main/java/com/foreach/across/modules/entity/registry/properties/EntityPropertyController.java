@@ -59,7 +59,9 @@ public interface EntityPropertyController<T> extends Ordered
 	 * @param context binding context
 	 * @return property value
 	 */
-	Object fetchValue( EntityPropertyBindingContext context );
+	default Object fetchValue( EntityPropertyBindingContext context ) {
+		return null;
+	}
 
 	/**
 	 * Create a new value for the property on the owning entity.
@@ -69,7 +71,9 @@ public interface EntityPropertyController<T> extends Ordered
 	 * @param context binding context
 	 * @return valid property value
 	 */
-	Object createValue( EntityPropertyBindingContext context );
+	default Object createValue( EntityPropertyBindingContext context ) {
+		return null;
+	}
 
 	/**
 	 * Validate a property value in the given binding context.
