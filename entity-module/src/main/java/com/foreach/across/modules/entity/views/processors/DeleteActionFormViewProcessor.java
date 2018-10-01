@@ -52,13 +52,21 @@ public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 			ContainerViewElementBuilderSupport buttonsContainer = builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS,
 			                                                                      ContainerViewElementBuilderSupport.class );
 			EntityMessages messages = entityViewContext.getEntityMessages();
-			SingleEntityViewLinkBuilder links = entityViewContext.getLinkBuilder()
-			                                                     .forInstance( entity ).deleteView();
+			SingleEntityViewLinkBuilder links = entityViewContext.getLinkBuilder().forInstance( entity );
+			SingleEntityViewLinkBuilder linkToDeleteView = links.deleteView();
+
+			if ( entityViewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ) {
+				linkToDeleteView = linkToDeleteView.withFromUrl( links.updateView().toUriString() );
+			}
+			else if ( entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ) {
+				linkToDeleteView = linkToDeleteView.withFromUrl( links.toUriString() );
+			}
+
 			buttonsContainer.add(
 					BootstrapUiBuilders.button()
 					                   .name( "btn-delete" )
 					                   .css( "pull-right" )
-					                   .link( links.toUriString() )
+					                   .link( linkToDeleteView.toUriString() )
 					                   .style( Style.DANGER )
 					                   .text( messages.messageWithFallback( "buttons.delete" ) )
 			);

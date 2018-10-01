@@ -111,6 +111,47 @@ public class TestDeleteActionFormViewProcessor
 	}
 
 	@Test
+	public void deleteFromDetailView() {
+		when( entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( true );
+		when( entityConfiguration.getAllowableActions( entity ) ).thenReturn( new AllowableActionSet( AllowableAction.DELETE.getId() ) );
+		ContainerViewElementBuilderSupport buttonsContainer = builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS,
+		                                                                      ContainerViewElementBuilderSupport.class );
+		ContainerViewElement build = (ContainerViewElement) buttonsContainer.build( builderContext );
+		assertThat( build.getChildren() ).isEmpty();
+
+		deleteActionFormViewProcessor.render( entityViewRequest, entityView, containerBuilder, builderMap, builderContext );
+		build = (ContainerViewElement) buttonsContainer.build( builderContext );
+		assertThat( build.getChildren() ).isNotEmpty()
+		                                 .hasSize( 1 );
+		ViewElement viewElement = build.getChildren().get( 0 );
+		assertThat( viewElement ).isInstanceOf( ButtonViewElement.class );
+		assertThat( viewElement.getName() ).isEqualTo( "btn-delete" );
+		ButtonViewElement buttonViewElement = (ButtonViewElement) viewElement;
+		assertThat( buttonViewElement.getUrl() ).contains( "from=" );
+	}
+
+	@Test
+	public void deleteFromUpdateView() {
+		when( entityViewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ).thenReturn( true );
+		when( entityConfiguration.getAllowableActions( entity ) ).thenReturn( new AllowableActionSet( AllowableAction.DELETE.getId() ) );
+		ContainerViewElementBuilderSupport buttonsContainer = builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS,
+		                                                                      ContainerViewElementBuilderSupport.class );
+		ContainerViewElement build = (ContainerViewElement) buttonsContainer.build( builderContext );
+		assertThat( build.getChildren() ).isEmpty();
+
+		deleteActionFormViewProcessor.render( entityViewRequest, entityView, containerBuilder, builderMap, builderContext );
+		build = (ContainerViewElement) buttonsContainer.build( builderContext );
+		assertThat( build.getChildren() ).isNotEmpty()
+		                                 .hasSize( 1 );
+		ViewElement viewElement = build.getChildren().get( 0 );
+		assertThat( viewElement ).isInstanceOf( ButtonViewElement.class );
+		assertThat( viewElement.getName() ).isEqualTo( "btn-delete" );
+		ButtonViewElement buttonViewElement = (ButtonViewElement) viewElement;
+		assertThat( buttonViewElement.getUrl() ).contains( "from=" )
+		                                        .endsWith( "/update" );
+	}
+
+	@Test
 	public void deleteButtonIsNotPresentWithoutDeleteAction() {
 		when( entityConfiguration.getAllowableActions( entity ) ).thenReturn( new AllowableActionSet() );
 		ContainerViewElementBuilderSupport buttonsContainer = builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS,
