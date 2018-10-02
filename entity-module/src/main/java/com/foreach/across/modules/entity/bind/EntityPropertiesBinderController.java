@@ -23,6 +23,8 @@ import lombok.*;
 import org.springframework.validation.Errors;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Controller for an {@link EntityPropertiesBinder} which will perform {@link EntityPropertyController}
@@ -38,6 +40,9 @@ import java.util.*;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class EntityPropertiesBinderController
 {
+	private static final Comparator<OrderedRunnable> ORDERED_RUNNABLE_COMPARATOR
+			= Comparator.comparingInt( OrderedRunnable::getOrder ).thenComparing( Comparator.comparing( OrderedRunnable::getPropertyKey ).reversed() );
+
 	private final EntityPropertiesBinder propertiesBinder;
 	private final Collection<Runnable> entityValidationCallbacks = new ArrayList<>( 1 );
 	private final Collection<Runnable> entitySaveCallbacks = new ArrayList<>( 1 );
@@ -85,15 +90,18 @@ public final class EntityPropertiesBinderController
 	 * Apply the values of the properties present on the binder.
 	 * This will call {@link EntityPropertyController#applyValue(EntityPropertyBindingContext, EntityPropertyValue)} for all those properties.
 	 */
+	@SuppressWarnings("unchecked")
 	public void applyValues() {
 		List<OrderedRunnable> actions = new ArrayList<>( propertiesBinder.size() );
 
-		propertiesBinder.values()
+		propertiesBinder.entrySet()
 		                .stream()
-		                .map( property -> new OrderedRunnable( property.getControllerOrder(), property::applyValue ) )
+		                .map( entry -> new OrderedRunnable( entry.getValue().getControllerOrder(), entry.getKey(), entry.getValue()::applyValue ) )
 		                .forEach( actions::add );
 
-		actions.sort( Comparator.comparingInt( OrderedRunnable::getOrder ) );
+		addChildContextActions( actions, e -> e::applyValue );
+
+		actions.sort( ORDERED_RUNNABLE_COMPARATOR );
 		actions.forEach( OrderedRunnable::run );
 	}
 
@@ -111,7 +119,7 @@ public final class EntityPropertiesBinderController
 	 */
 	public boolean validate( @NonNull Errors errors, Object... validationHints ) {
 		List<OrderedRunnable> actions = new ArrayList<>();
-		actions.add( new OrderedRunnable( 0, () -> entityValidationCallbacks.forEach( Runnable::run ) ) );
+		actions.add( new OrderedRunnable( 0, "", () -> entityValidationCallbacks.forEach( Runnable::run ) ) );
 
 		int errorCount = errors.getErrorCount();
 
@@ -119,20 +127,23 @@ public final class EntityPropertiesBinderController
 		                .stream()
 		                .map( entry -> {
 			                      val property = entry.getValue();
-			                      return new OrderedRunnable( property.getControllerOrder(), () -> {
-				                      try {
-					                      errors.pushNestedPath( propertiesBinder.getPropertyBinderPath( entry.getKey() ) );
-					                      property.validate( errors, validationHints );
-				                      }
-				                      finally {
-					                      errors.popNestedPath();
-				                      }
-			                      } );
+			                      return new OrderedRunnable(
+					                      property.getControllerOrder(),
+					                      entry.getKey(),
+					                      () -> {
+						                      try {
+							                      errors.pushNestedPath( propertiesBinder.getPropertyBinderPath( entry.getKey() ) );
+							                      property.validate( errors, validationHints );
+						                      }
+						                      finally {
+							                      errors.popNestedPath();
+						                      }
+					                      } );
 		                      }
 		                )
 		                .forEach( actions::add );
 
-		actions.sort( Comparator.comparingInt( OrderedRunnable::getOrder ) );
+		actions.sort( ORDERED_RUNNABLE_COMPARATOR );
 		actions.forEach( OrderedRunnable::run );
 
 		return errorCount >= errors.getErrorCount();
@@ -142,17 +153,39 @@ public final class EntityPropertiesBinderController
 	 * Save the properties present on the binder, executing the registered callbacks
 	 * when the actual entity is expected to be saved.
 	 */
+	@SuppressWarnings("unchecked")
 	public void save() {
 		List<OrderedRunnable> actions = new ArrayList<>();
-		actions.add( new OrderedRunnable( 0, () -> entitySaveCallbacks.forEach( Runnable::run ) ) );
+		actions.add( new OrderedRunnable( 0, "", () -> entitySaveCallbacks.forEach( Runnable::run ) ) );
 
-		propertiesBinder.values()
+		propertiesBinder.entrySet()
 		                .stream()
-		                .map( property -> new OrderedRunnable( property.getControllerOrder(), property::save ) )
+		                .map( entry -> new OrderedRunnable( entry.getValue().getControllerOrder(), entry.getKey(), entry.getValue()::save ) )
 		                .forEach( actions::add );
 
-		actions.sort( Comparator.comparingInt( OrderedRunnable::getOrder ) );
+		addChildContextActions( actions, e -> e::save );
+
+		actions.sort( ORDERED_RUNNABLE_COMPARATOR );
 		actions.forEach( OrderedRunnable::run );
+	}
+
+	private void addChildContextActions( List<OrderedRunnable> actions,
+	                                     Function<EntityPropertyController, BiFunction<EntityPropertyBindingContext, EntityPropertyValue, Boolean>> method ) {
+		propertiesBinder.getBindingContext()
+		                .getChildContexts()
+		                .entrySet()
+		                .stream()
+		                .filter( e -> !propertiesBinder.containsKey( e.getKey() ) )
+		                .filter( e -> e.getValue().getController() != null )
+		                .map( entry -> {
+			                EntityPropertyBindingContext childContext = entry.getValue();
+			                return new OrderedRunnable(
+					                childContext.getController().getOrder(),
+					                entry.getKey(),
+					                () -> method.apply( childContext.getController() ).apply( childContext.getParent(), childContext.toPropertyValue() )
+			                );
+		                } )
+		                .forEach( actions::add );
 	}
 
 	@RequiredArgsConstructor
@@ -160,6 +193,10 @@ public final class EntityPropertiesBinderController
 	{
 		@Getter
 		private final int order;
+
+		@Getter
+		private final String propertyKey;
+
 		private final Runnable target;
 
 		@Override

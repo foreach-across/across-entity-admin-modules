@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.registry.properties.registrars.DefaultPropertiesRegistrar;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -33,13 +34,40 @@ import java.util.function.BiConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * @author Arne Vandamme
  * @since 3.2.0
  */
+@SuppressWarnings("unchecked")
 public class TestDirectUseOfEntityPropertiesBinder
 {
+	private AtomicInteger counter = new AtomicInteger( 0 );
+	private BiConsumer<User, EntityPropertyValue<UserProperties>> consumer = mock( BiConsumer.class );
+
+	private EntityPropertyRegistry userWithPropertiesRegistry;
+
+	@Before
+	public void createRegistries() {
+		MutableEntityPropertyRegistry propertyRegistry = DefaultEntityPropertyRegistry.forClass( User.class );
+		propertyRegistry.register(
+				EntityPropertyDescriptor.builder( "properties" )
+				                        .propertyType( UserProperties.class )
+				                        .controller(
+						                        c -> c.withTarget( User.class, UserProperties.class )
+						                              .valueFetcher(
+								                              user -> new UserProperties( counter.incrementAndGet(), user, user.getName() + "@localhost" )
+						                              )
+						                              .applyValueConsumer( consumer )
+				                        )
+				                        .build()
+		);
+
+		userWithPropertiesRegistry = propertyRegistry;
+	}
+
 	@Test
 	public void simpleBinderWithEntityPropertyRegistry() {
 		MutableEntityPropertyRegistry propertyRegistry = DefaultEntityPropertyRegistry.forClass( User.class );
@@ -60,27 +88,9 @@ public class TestDirectUseOfEntityPropertiesBinder
 
 	@Test
 	public void nestedObjectBinder() {
-		AtomicInteger counter = new AtomicInteger( 0 );
-
-		BiConsumer<User, EntityPropertyValue<UserProperties>> consumer = mock( BiConsumer.class );
-
-		MutableEntityPropertyRegistry propertyRegistry = DefaultEntityPropertyRegistry.forClass( User.class );
-		propertyRegistry.register(
-				EntityPropertyDescriptor.builder( "properties" )
-				                        .propertyType( UserProperties.class )
-				                        .controller(
-						                        c -> c.withTarget( User.class, UserProperties.class )
-						                              .valueFetcher(
-								                              user -> new UserProperties( counter.incrementAndGet(), user, user.getName() + "@localhost" )
-						                              )
-						                              .applyValueConsumer( consumer )
-				                        )
-				                        .build()
-		);
-
 		User user = new User( "john.doe" );
 
-		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( userWithPropertiesRegistry );
 		binder.setBindingContext( EntityPropertyBindingContext.forReading( user ) );
 
 		binder.get( "name" ).setValue( "jane.doe" );
@@ -94,6 +104,73 @@ public class TestDirectUseOfEntityPropertiesBinder
 		assertThat( child.get( "id" ).getValue() ).isEqualTo( 1 );
 		assertThat( child.get( "owner" ).getValue() ).isEqualTo( user );
 		assertThat( child.get( "email" ).getValue() ).isEqualTo( "john.doe@localhost" );
+	}
+
+	@Test
+	public void accessingThroughNestedPropertiesBinderWillApplyTheParentProperty() {
+		User user = new User( "john.doe" );
+
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( userWithPropertiesRegistry );
+		binder.setBindingContext( EntityPropertyBindingContext.forUpdating( user, user ) );
+
+		SingleEntityPropertyBinder props = (SingleEntityPropertyBinder) binder.get( "properties" );
+		props.getProperties().get( "email" ).setValue( "franz@localhost" );
+
+		binder.createController().applyValues();
+
+		verify( consumer ).accept(
+				user,
+				new EntityPropertyValue<>(
+						new UserProperties( 1, user, "franz@localhost" ),
+						new UserProperties( 1, user, "franz@localhost" ),
+						false
+				)
+		);
+	}
+
+	@Test
+	public void accessingNestedPathWillAlsoApplyTheParentProperty() {
+		User user = new User( "john.doe" );
+
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( userWithPropertiesRegistry );
+		binder.setBindingContext( EntityPropertyBindingContext.forUpdating( user, user ) );
+
+		binder.get( "properties.email" ).setValue( "franz@localhost" );
+
+		binder.createController().applyValues();
+
+		verify( consumer ).accept(
+				user,
+				new EntityPropertyValue<>(
+						new UserProperties( 1, user, "franz@localhost" ),
+						new UserProperties( 1, user, "franz@localhost" ),
+						false
+				)
+		);
+	}
+
+	@Test
+	public void accessingTheSamePropertyThroughNestedPathAndPropertiesBinderWillOnlyApplyTheParentPropertyOnce() {
+		User user = new User( "john.doe" );
+
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( userWithPropertiesRegistry );
+		binder.setBindingContext( EntityPropertyBindingContext.forUpdating( user, user ) );
+
+		SingleEntityPropertyBinder props = (SingleEntityPropertyBinder) binder.get( "properties" );
+		props.getProperties().get( "id" ).setValue( 2 );
+		binder.get( "properties.email" ).setValue( "joseph@localhost" );
+
+		binder.createController().applyValues();
+
+		verify( consumer ).accept(
+				user,
+				new EntityPropertyValue<>(
+						new UserProperties( 2, user, "joseph@localhost" ),
+						new UserProperties( 2, user, "joseph@localhost" ),
+						false
+				)
+		);
+		verifyNoMoreInteractions( consumer );
 	}
 
 	@Test

@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyContr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 import java.util.Objects;
@@ -171,10 +170,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 	 * @return binder for the property
 	 */
 	public EntityPropertyBinder resolvePropertyBinder( @NonNull EntityPropertyDescriptor descriptor ) {
-		// todo add something like "leaf name" on property descriptor for nested descriptors
-		String propertyToResolve = descriptor.isNestedProperty()
-				? StringUtils.removeStart( descriptor.getName(), this.descriptor.getName() + "." ) : descriptor.getName();
-		return getProperties().get( propertyToResolve );
+		return getProperties().get( descriptor.getTargetPropertyName() );
 	}
 
 	private String binderPath() {

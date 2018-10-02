@@ -29,6 +29,19 @@ import static org.mockito.Mockito.*;
 public class TestSimpleEntityPropertyDescriptor
 {
 	@Test
+	public void targetPropertyName() {
+		SimpleEntityPropertyDescriptor parent = new SimpleEntityPropertyDescriptor( "parent" );
+		assertEquals( "parent", parent.getTargetPropertyName() );
+
+		SimpleEntityPropertyDescriptor nonNested = new SimpleEntityPropertyDescriptor( "parent.name" );
+		assertEquals( "parent.name", nonNested.getTargetPropertyName() );
+
+		SimpleEntityPropertyDescriptor nested = new SimpleEntityPropertyDescriptor( "parent.name" );
+		nested.setParentDescriptor( parent );
+		assertEquals( "name", nested.getTargetPropertyName() );
+	}
+
+	@Test
 	public void nestedDescriptor() {
 		SimpleEntityPropertyDescriptor parent = new SimpleEntityPropertyDescriptor( "parent" );
 		assertFalse( parent.isNestedProperty() );

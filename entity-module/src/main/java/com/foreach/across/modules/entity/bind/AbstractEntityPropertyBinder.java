@@ -87,7 +87,7 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 
 	@Override
 	public Object createNewValue() {
-		return binder.createValue( controller, descriptor.getPropertyTypeDescriptor() );
+		return binder.createValue( controller );
 	}
 
 	@Override

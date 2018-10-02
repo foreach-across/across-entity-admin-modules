@@ -401,7 +401,7 @@ public class TestMapEntityPropertyBinder
 
 	@Test
 	public void createNewValueCreatesNewValueButDoesNotUpdatePropertyItself() {
-		when( binder.createValue( collectionController, COLLECTION ) ).thenReturn( Collections.singletonMap( "two", 2 ) );
+		when( binder.createValue( collectionController ) ).thenReturn( Collections.singletonMap( "two", 2 ) );
 		Object value = property.createNewValue();
 		assertThat( value ).isEqualTo( Collections.singletonMap( "two", 2 ) );
 
@@ -411,18 +411,18 @@ public class TestMapEntityPropertyBinder
 	@Test
 	public void getInitializedValueDoesNotModifyCurrentValue() {
 		assertThat( property.getInitializedValue() ).isEqualTo( ORIGINAL_VALUE );
-		verify( binder, never() ).createValue( any(), any() );
+		verify( binder, never() ).createValue( any() );
 	}
 
 	@Test
 	public void getInitializedValueInitializesNewValueIfNullFetched() {
 		reset( collectionController );
-		when( binder.createValue( collectionController, COLLECTION ) ).thenReturn( Collections.singletonMap( "two", 2 ) );
+		when( binder.createValue( collectionController ) ).thenReturn( Collections.singletonMap( "two", 2 ) );
 
 		when( key.getValue() ).thenReturn( "two" );
 		when( value.getValue() ).thenReturn( 2 );
 		assertThat( property.getInitializedValue() ).isEqualTo( Collections.singletonMap( "two", 2 ) );
-		verify( binder ).createValue( collectionController, COLLECTION );
+		verify( binder ).createValue( collectionController );
 		verify( key ).setValue( "two" );
 		verify( value ).setValue( 2 );
 

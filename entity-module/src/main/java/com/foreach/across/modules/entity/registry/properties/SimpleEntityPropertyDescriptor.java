@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
 
@@ -72,6 +73,11 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public String getTargetPropertyName() {
+		return isNestedProperty() ? StringUtils.removeFirst( name,parentDescriptor.getName() + "." ) : name;
 	}
 
 	@Override

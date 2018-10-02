@@ -37,7 +37,7 @@ import java.util.LinkedHashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -307,36 +307,6 @@ public class TestEntityPropertiesBinder
 					assertThat( e.getRequiredType() ).isEqualTo( Long.class );
 					assertThat( e.getValue() ).isEqualTo( 123 );
 				} );
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
-	public void onlyModifiedPropertiesAndChildContextsAreBound() {
-		val holder = single( "id" );
-		holder.setValue( 123L );
-		val listValue = list( "members" );
-		assertThat( listValue.isModified() ).isFalse();
-
-		val parentController = mock( EntityPropertyController.class );
-
-		bindingContext.getOrCreateChildContext( "test", ( p, child ) ->
-				child.entity( "original" )
-				     .target( "dto" )
-				     .controller( parentController )
-		);
-
-		binder.bind();
-		//binder.createController().applyValues();
-
-		verify( singleValueController ).applyValue( any(), eq( new EntityPropertyValue<>( null, 123L, false ) ) );
-		verifyZeroInteractions( listValueController, mapValueController );
-
-		verify( parentController ).applyValue( bindingContext, new EntityPropertyValue( "original", "dto", false ) );
-	}
-
-	@Test
-	public void accessingNestedPropertyAsDirectOrViaChildPropertiesUseSameController() {
-		// todo: binder.get( "user.name" ) and binder.get("user").getProperties().get("name")
 	}
 
 	private SingleEntityPropertyBinder single( String propertyName ) {

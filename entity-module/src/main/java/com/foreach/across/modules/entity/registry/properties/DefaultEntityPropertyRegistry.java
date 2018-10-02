@@ -202,7 +202,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		descriptor.setHidden( child.isHidden() );
 
 		if ( !isMemberDescriptor ) {
-			descriptor.setController( new NestedEntityPropertyController( parent.getName(), parent.getController(), child.getController() ) );
+			descriptor.setController( new NestedEntityPropertyController( parent.getTargetPropertyName(), parent.getController(), child.getController() ) );
 		}
 		else {
 			descriptor.setController( new GenericEntityPropertyController( child.getController() ) );

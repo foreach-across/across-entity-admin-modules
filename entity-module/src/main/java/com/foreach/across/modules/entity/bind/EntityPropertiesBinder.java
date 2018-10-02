@@ -182,25 +182,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return new EntityPropertiesBinderController( this );
 	}
 
-	/**
-	 * Bind the registered properties to the target entity.
-	 */
-	@Deprecated
-	public void bind() {
-		values().forEach( v -> {
-			if ( v.isModified() ) {
-				v.applyValue();
-			}
-		} );
-
-		// todo forward *bind* events so it cascades down
-		bindingContext.getChildContexts()
-		              .values()
-		              .stream()
-		              .filter( c -> c.getController() != null )
-		              .forEach( child -> child.getController().applyValue( child.getParent(), child.toPropertyValue() ) );
-	}
-
 	String getPropertyBinderPath( String propertyName ) {
 		return StringUtils.defaultIfEmpty( binderPrefix, "properties" ) + "[" + propertyName + "]";
 	}
@@ -243,23 +224,21 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		childBinder.setBindingEnabled( bindingEnabled );
 
 		if ( EntityPropertyRegistry.isMemberPropertyDescriptor( parent ) ) {
-			childBinder.setBindingContext( EntityPropertyBindingContext.forReading( propertyValue ) );
+			childBinder.setBindingContext(
+					EntityPropertyBindingContext.builder()
+					                            .entity( propertyValue )
+					                            .target( propertyValue )
+					                            .readonly( bindingContext.isReadonly() )
+					                            .build()
+			);
 		}
 		else {
-			// nested property
+			// nested property will lookup the child binding context
 			childBinder.setBindingContext( bindingContext );
-			if ( !bindingContext.getChildContexts().containsKey( parent.getName() ) ) {
-				val builder = EntityPropertyBindingContext.builder()
-				                                          .controller( controller )
-				                                          .entity( propertyValue )
-				                                          .target( propertyValue )
-						//.target( parent.createBinderTarget( parentContext, parentValue ) )
-						;
-
-				// todo: customize the binding context builder
-
+			String childContextName = parent.getTargetPropertyName();
+			if ( !bindingContext.hasChildContext( childContextName ) ) {
 				bindingContext.getOrCreateChildContext(
-						parent.getName(),
+						childContextName,
 						( p, b ) -> b.controller( controller ).entity( propertyValue ).target( propertyValue )
 				);
 			}
@@ -268,7 +247,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return childBinder;
 	}
 
-	Object createValue( EntityPropertyController controller, TypeDescriptor descriptor ) {
+	Object createValue( EntityPropertyController controller ) {
 		if ( controller != null ) {
 			return controller.createValue( getBindingContext() );
 		}

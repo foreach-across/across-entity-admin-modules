@@ -23,9 +23,29 @@ import org.springframework.core.convert.TypeDescriptor;
 public interface EntityPropertyDescriptor extends ReadableAttributes
 {
 	/**
-	 * @return Property name.
+	 * Get the property descriptor path. For simple properties this usually
+	 * corresponds with the property name. For nested properties this is the full
+	 * property path, optionally with member descriptors.
+	 * <p/>
+	 * Use {@link #getTargetPropertyName()} to retrieve the exact property name
+	 * this descriptor represents.
+	 *
+	 * @return property descriptor name
 	 */
 	String getName();
+
+	/**
+	 * Get the target property name that this property descriptor represents.
+	 * In case of a simple property this is the same as {@link #getName()}, but
+	 * for nested properties this will remove the path representing the parent property.
+	 * <p/>
+	 * For example, suppose the descriptor is {@code user.name}, which represents
+	 * a nested property descriptor with parent descriptor {@code user}. In this case
+	 * the target property name would be {@code user}.
+	 *
+	 * @return target property name
+	 */
+	String getTargetPropertyName();
 
 	String getDisplayName();
 

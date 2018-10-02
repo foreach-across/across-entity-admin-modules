@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
  * @author Arne Vandamme
  * @since 3.2.0
  */
-@SuppressWarnings("Duplicates")
+@SuppressWarnings({ "Duplicates", "unchecked" })
 @RunWith(MockitoJUnitRunner.class)
 public class TestSingleEntityPropertyBinder
 {
@@ -200,7 +200,7 @@ public class TestSingleEntityPropertyBinder
 
 	@Test
 	public void initializeValueCreatesNewValueButDoesNotUpdatePropertyItself() {
-		when( binder.createValue( controller, TypeDescriptor.valueOf( Integer.class ) ) )
+		when( binder.createValue( controller ) )
 				.thenReturn( "hello" );
 		Object value = property.createNewValue();
 		assertThat( value ).isEqualTo( "hello" );
@@ -211,13 +211,13 @@ public class TestSingleEntityPropertyBinder
 	@Test
 	public void getInitializedValueDoesNotModifyCurrentValue() {
 		assertThat( property.getInitializedValue() ).isEqualTo( 1 );
-		verify( binder, never() ).createValue( any(), any() );
+		verify( binder, never() ).createValue( any() );
 	}
 
 	@Test
 	public void getInitializedValueInitializesNewValueIfNull() {
 		property.setValue( null );
-		when( binder.createValue( controller, TypeDescriptor.valueOf( Integer.class ) ) )
+		when( binder.createValue( controller ) )
 				.thenReturn( 123 );
 		assertThat( property.getInitializedValue() ).isEqualTo( 123 );
 		assertThat( property.getValue() ).isEqualTo( 123 );
@@ -308,7 +308,7 @@ public class TestSingleEntityPropertyBinder
 		assertThat( errors.getErrorCount() ).isEqualTo( 0 );
 
 		property.setValue( null );
-		when( binder.createValue( controller, TypeDescriptor.valueOf( Integer.class ) ) )
+		when( binder.createValue( controller ) )
 				.thenReturn( 123 );
 		property.getInitializedValue();
 
@@ -346,7 +346,7 @@ public class TestSingleEntityPropertyBinder
 	public void propertiesGetCreatedFirstTime() {
 		property.setValue( null );
 
-		when( binder.createValue( controller, TypeDescriptor.valueOf( Integer.class ) ) )
+		when( binder.createValue( controller ) )
 				.thenReturn( "hello" );
 		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
 		when( binder.createChildBinder( eq( descriptor ), any(), eq( "hello" ) ) ).thenReturn( childBinder );
@@ -405,18 +405,13 @@ public class TestSingleEntityPropertyBinder
 		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
 		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
 
-		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
-		when( descriptor.getName() ).thenReturn( "prop.user.name" );
+		EntityPropertyDescriptor childDescriptor = mock( EntityPropertyDescriptor.class );
+		when( childDescriptor.getTargetPropertyName()).thenReturn( "user.name" );
 
 		EntityPropertyBinder one = mock( EntityPropertyBinder.class );
-		EntityPropertyBinder two = mock( EntityPropertyBinder.class );
-		when( childBinder.get( "prop.user.name" ) ).thenReturn( one );
-		when( childBinder.get( "user.name" ) ).thenReturn( two );
+		when( childBinder.get( "user.name" ) ).thenReturn( one );
 
-		assertThat( property.resolvePropertyBinder( descriptor ) ).isSameAs( one );
-
-		when( descriptor.isNestedProperty() ).thenReturn( true );
-		assertThat( property.resolvePropertyBinder( descriptor ) ).isSameAs( two );
+		assertThat( property.resolvePropertyBinder( childDescriptor ) ).isSameAs( one );
 	}
 
 	@Test
