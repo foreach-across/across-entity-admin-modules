@@ -20,16 +20,10 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyCompa
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.mapping.PersistentEntity;
-import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.stereotype.Component;
 
 import javax.validation.ValidatorFactory;
 import javax.validation.metadata.BeanDescriptor;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * <p>Creates a {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry} for a
@@ -41,15 +35,11 @@ import java.util.List;
 @RequiredArgsConstructor
 class RepositoryEntityPropertyRegistryBuilder
 {
-	private static final Logger LOG = LoggerFactory.getLogger( RepositoryEntityPropertyRegistryBuilder.class );
-
 	private final ValidatorFactory validatorFactory;
 	private final EntityPropertyRegistryProvider entityPropertyRegistryProvider;
 
 	public <T> void buildEntityPropertyRegistry( MutableEntityConfiguration<T> entityConfiguration ) {
 		Class<? extends T> entityType = entityConfiguration.getEntityType();
-		RepositoryFactoryInformation<T, ?> repositoryFactoryInformation
-				= entityConfiguration.getAttribute( RepositoryFactoryInformation.class );
 
 		MutableEntityPropertyRegistry registry = entityPropertyRegistryProvider.get( entityType );
 
@@ -58,45 +48,45 @@ class RepositoryEntityPropertyRegistryBuilder
 		setBeanDescriptor( entityConfiguration );
 
 		// add @Embedded
-		PersistentEntity<?, ?> persistentEntity = repositoryFactoryInformation.getPersistentEntity();
+		//PersistentEntity<?, ?> persistentEntity = repositoryFactoryInformation.getPersistentEntity();
 
-		configureDefaultFilter( entityType, registry );
-		configureKnownDescriptors( entityType, registry );
+		configureDefaultFilter( /*entityType,*/ registry );
+		//configureKnownDescriptors( entityType, registry );
 
 		entityConfiguration.setPropertyRegistry( registry );
 	}
 
-	private void configureDefaultFilter( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
-		if ( registry.getDefaultFilter() == null ) {
-			List<String> excludedProps = new LinkedList<>();
-			excludedProps.add( "class" );
-
-//			if ( Persistable.class.isAssignableFrom( entityType ) ) {
-//				excludedProps.add( "new" );
-//			}
+	private void configureDefaultFilter( /*Class<?> entityType,*/ MutableEntityPropertyRegistry registry ) {
+//		if ( registry.getDefaultFilter() == null ) {
+////			List<String> excludedProps = new LinkedList<>();
+////			excludedProps.add( "class" );
 //
-//			if ( SettableIdBasedEntity.class.isAssignableFrom( entityType ) ) {
-//				excludedProps.add( "newEntityId" );
-//			}
-
-			//registry.setDefaultFilter( EntityPropertyFilters.exclude( excludedProps ) );
-		}
+////			if ( Persistable.class.isAssignableFrom( entityType ) ) {
+////				excludedProps.add( "new" );
+////			}
+////
+////			if ( SettableIdBasedEntity.class.isAssignableFrom( entityType ) ) {
+////				excludedProps.add( "newEntityId" );
+////			}
+//
+//			//registry.setDefaultFilter( EntityPropertyFilters.exclude( excludedProps ) );
+//		}
 
 		registry.getProperty( "class" ).setHidden( true );
 	}
 
-	private void configureKnownDescriptors( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
-
-//		if ( Persistable.class.isAssignableFrom( entityType ) ) {
-//			registry.getMutableProperty( "id" ).setHidden( true );
-//		}
+//	private void configureKnownDescriptors( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
 //
-//		if ( SettableIdBasedEntity.class.isAssignableFrom( entityType ) ) {
-//			MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( "newEntityId" );
-//			mutable.setReadable( false );
-//			mutable.setHidden( true );
-//		}
-	}
+////		if ( Persistable.class.isAssignableFrom( entityType ) ) {
+////			registry.getMutableProperty( "id" ).setHidden( true );
+////		}
+////
+////		if ( SettableIdBasedEntity.class.isAssignableFrom( entityType ) ) {
+////			MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( "newEntityId" );
+////			mutable.setReadable( false );
+////			mutable.setHidden( true );
+////		}
+//	}
 
 	private void setBeanDescriptor( MutableEntityConfiguration<?> entityConfiguration ) {
 		BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass(
