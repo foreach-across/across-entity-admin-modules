@@ -70,9 +70,6 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 
 	@Override
 	public boolean isValidValueForPropertyAndOperator( Object value, String property, EntityQueryOps operator ) {
-		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( property );
-		TypeDescriptor type = descriptor.getPropertyTypeDescriptor();
-//		Class<?> objectType = type.getObjectType();
 		TypeDescriptor valueType = TypeDescriptor.forObject( value );
 
 		if ( operator == CONTAINS || operator == NOT_CONTAINS ) {
