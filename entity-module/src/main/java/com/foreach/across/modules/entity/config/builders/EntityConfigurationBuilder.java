@@ -330,7 +330,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	@Override
-	public EntityConfigurationBuilder detailView( Consumer<EntityViewFactoryBuilder> consumer ) {
+	public EntityConfigurationBuilder<T> detailView( Consumer<EntityViewFactoryBuilder> consumer ) {
 		return (EntityConfigurationBuilder<T>) super.detailView( consumer );
 	}
 
