@@ -73,7 +73,8 @@ public class TestDefaultEntityQueryMetadataProvider
 		expectedValidValue( new EQString( "text" ), EQ, NEQ, LIKE, NOT_LIKE );
 		expectedInvalidValue( new EQGroup( Collections.singleton( new EQString( "text" ) ) ), EQ, NEQ );
 		expectedValidValue( new EQGroup( Collections.singleton( new EQString( "text" ) ) ), IN, NOT_IN );
-		expectedValidValue( new EQFunction( "text" ), DefaultEntityQueryMetadataProvider.STRING_OPS );
+		expectedValidValue( new EQFunction( "text" ), EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY,
+		                    CONTAINS, NOT_CONTAINS );
 	}
 
 	@Test

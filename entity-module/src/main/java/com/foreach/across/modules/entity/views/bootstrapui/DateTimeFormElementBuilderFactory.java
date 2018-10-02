@@ -144,9 +144,9 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 	/**
 	 * Responsible for creating the actual control.
 	 */
-	private class ControlBuilderFactory extends EntityViewElementBuilderFactorySupport<DateTimeFormElementBuilder>
+	private static class ControlBuilderFactory extends EntityViewElementBuilderFactorySupport<DateTimeFormElementBuilder>
 	{
-		public ControlBuilderFactory() {
+		ControlBuilderFactory() {
 			addProcessor( new TemporalAnnotationProcessor() );
 			addProcessor( new PastAndFutureValidationProcessor() );
 			addProcessor( new FormControlNameBuilderProcessor<>() );
