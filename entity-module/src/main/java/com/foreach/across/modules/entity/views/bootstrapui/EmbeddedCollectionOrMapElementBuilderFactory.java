@@ -30,7 +30,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
- * Experimental control for managing a {@link java.util.Collection} or {@link java.util.Map} of embedded elements.
+ * Experimental.
+ * Registers control for managing a {@link java.util.Collection} or {@link java.util.Map} of embedded elements.
  *
  * @author Arne Vandamme
  * @see EmbeddedCollectionViewElementBuilder
@@ -52,55 +53,23 @@ public class EmbeddedCollectionOrMapElementBuilderFactory implements EntityViewE
 
 	@Override
 	public ViewElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode, String viewElementType ) {
-		val embedded = new EmbeddedCollectionViewElementBuilder();
-		ViewElementBuilder<ViewElement> itemTemplate = createItemTemplate( propertyDescriptor, viewElementMode );
-		Assert.notNull( itemTemplate, "Unable to retrieve item template for property: " + propertyDescriptor );
+		if ( propertyDescriptor.getPropertyTypeDescriptor().isCollection() ) {
+			val embedded = new EmbeddedCollectionViewElementBuilder();
+			ViewElementBuilder<ViewElement> itemTemplate = createItemTemplate( propertyDescriptor, viewElementMode );
+			Assert.notNull( itemTemplate, "Unable to retrieve item template for property: " + propertyDescriptor );
 
-		embedded.itemTemplate( itemTemplate );
+			embedded.itemTemplate( itemTemplate );
 
-		return embedded;
-		/*
+			return embedded;
+		}
 
+		throw new IllegalStateException( "Map types are not yet supported as embedded controls" );
 
-
-
-		return BootstrapUiBuilders.node( "div" )
-		                          .customTemplate( "th/entity/elements :: embedded-collection" )
-		                          .add( template );
-		                          */
 	}
 
 	@SuppressWarnings("unchecked")
 	private ViewElementBuilder<ViewElement> createItemTemplate( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode ) {
 		EntityPropertyDescriptor memberDescriptor = propertyDescriptor.getPropertyRegistry().getProperty( propertyDescriptor.getName() + "[]" );
-
 		return entityViewElementBuilderService.getElementBuilder( memberDescriptor, ViewElementMode.FORM_WRITE );
-		/*
-		EntityPropertySelector selector = retrieveMembersSelector( propertyDescriptor );
-		EntityPropertyRegistry propertyRegistry = propertyDescriptor.getPropertyRegistry();
-
-		val template = BootstrapUiBuilders.container();
-		if ( selector != null && propertyRegistry != null ) {
-			for ( EntityPropertyDescriptor member : propertyRegistry.select( selector ) ) {
-				ViewElementBuilder memberBuilder = entityViewElementBuilderService.getElementBuilder( member, viewElementMode );
-
-				if ( memberBuilder != null ) {
-					template.add( memberBuilder );
-				}
-			}
-		}
-
-		return template;*/
 	}
-/*
-	private EntityPropertySelector retrieveMembersSelector( EntityPropertyDescriptor descriptor ) {
-		EntityPropertySelector selector = descriptor.getAttribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.class );
-
-		if ( selector == null && PropertyPersistenceMetadata.isEmbeddedProperty( descriptor ) ) {
-			selector = new EntityPropertySelector( descriptor.getName() + "[].*" );
-		}
-
-		return selector;
-	}
-	*/
 }

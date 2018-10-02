@@ -64,7 +64,7 @@ public class TestSingleEntityPropertyBinder
 
 		doAnswer( i -> i.getArgument( 0 ) )
 				.when( binder )
-				.convertIfNecessary( any(), eq( TypeDescriptor.valueOf( Integer.class ) ), eq( "[prop].value" ) );
+				.convertIfNecessary( any(), eq( TypeDescriptor.valueOf( Integer.class ) ), eq( "properties[prop].value" ) );
 
 		descriptor = spy(
 				EntityPropertyDescriptor
@@ -75,6 +75,7 @@ public class TestSingleEntityPropertyBinder
 		);
 
 		property = new SingleEntityPropertyBinder( binder, descriptor );
+		property.setBinderPath( "properties[prop]" );
 		when( binder.getProperties() ).thenReturn( binder );
 		when( binder.get( "prop" ) ).thenReturn( property );
 	}
@@ -189,7 +190,7 @@ public class TestSingleEntityPropertyBinder
 
 		doAnswer( i -> i.getArgument( 0 ) )
 				.when( binder )
-				.convertIfNecessary( any(), eq( TypeDescriptor.valueOf( String.class ) ), eq( "[prop].value" ) );
+				.convertIfNecessary( any(), eq( TypeDescriptor.valueOf( String.class ) ), eq( "properties[prop].value" ) );
 
 		property.setValue( "" );
 		assertThat( property.getValue() ).isEqualTo( "" );
@@ -406,24 +407,11 @@ public class TestSingleEntityPropertyBinder
 		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
 
 		EntityPropertyDescriptor childDescriptor = mock( EntityPropertyDescriptor.class );
-		when( childDescriptor.getTargetPropertyName()).thenReturn( "user.name" );
+		when( childDescriptor.getTargetPropertyName() ).thenReturn( "user.name" );
 
 		EntityPropertyBinder one = mock( EntityPropertyBinder.class );
 		when( childBinder.get( "user.name" ) ).thenReturn( one );
 
 		assertThat( property.resolvePropertyBinder( childDescriptor ) ).isSameAs( one );
-	}
-
-	@Test
-	public void resetBindStatus() {
-		property.setBound( true );
-		assertThat( property.isModified() ).isTrue();
-		assertThat( property.isBound() ).isTrue();
-		property.setValue( 123 );
-		assertThat( property.isModified() ).isTrue();
-		assertThat( property.isBound() ).isTrue();
-		property.resetBindStatus();
-		assertThat( property.isBound() ).isFalse();
-		assertThat( property.isModified() ).isFalse();
 	}
 }

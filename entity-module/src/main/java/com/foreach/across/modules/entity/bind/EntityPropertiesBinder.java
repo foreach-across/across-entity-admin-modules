@@ -25,6 +25,7 @@ import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.support.DefaultConversionService;
 
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import java.util.Optional;
  *
  * @author Arne Vandamme
  * @see EntityPropertiesBinderController
+ * @see EntityPropertyControlName
  * @since 3.2.0
  */
 @RequiredArgsConstructor
@@ -85,7 +87,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	private ConversionService conversionService;
 
 	@Getter
-	@Setter
 	private boolean bindingEnabled;
 
 	/**
@@ -132,6 +133,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 				}
 
 				AbstractEntityPropertyBinder binder = (AbstractEntityPropertyBinder) createPropertyBinder( descriptor );
+				binder.setBinderPath( getPropertyBinderPath( propertyName ) );
 				binder.enableBinding( bindingEnabled );
 
 				// if there is a child binding context with the same name, assume it represents the same property and
@@ -186,7 +188,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return StringUtils.defaultIfEmpty( binderPrefix, "properties" ) + "[" + propertyName + "]";
 	}
 
-	EntityPropertyBinder createPropertyBinder( EntityPropertyDescriptor descriptor ) {
+	AbstractEntityPropertyBinder createPropertyBinder( EntityPropertyDescriptor descriptor ) {
 		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
 
 		if ( typeDescriptor.isMap() ) {
@@ -215,6 +217,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		}
 
 		return descriptor;
+	}
+
+	boolean shouldSetBinderPrefix() {
+		return StringUtils.isNotEmpty( binderPrefix );
 	}
 
 	EntityPropertiesBinder createChildBinder( EntityPropertyDescriptor parent, EntityPropertyController controller, Object propertyValue ) {
@@ -265,6 +271,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		}
 
 		try {
+			ConversionService conversionService = this.conversionService != null ? this.conversionService : DefaultConversionService.getSharedInstance();
 			if ( conversionService != null ) {
 				return conversionService.convert( source, TypeDescriptor.forObject( source ), targetType );
 			}
@@ -273,7 +280,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		}
 		catch ( ClassCastException | ConversionFailedException | ConverterNotFoundException cce ) {
 			if ( !StringUtils.isEmpty( binderPrefix ) ) {
-				PropertyChangeEvent pce = new PropertyChangeEvent( this, binderPrefix + path, null, source );
+				PropertyChangeEvent pce = new PropertyChangeEvent( this, path, null, source );
 				throw new ConversionNotSupportedException( pce, typeToReport, cce );
 			}
 			throw cce;

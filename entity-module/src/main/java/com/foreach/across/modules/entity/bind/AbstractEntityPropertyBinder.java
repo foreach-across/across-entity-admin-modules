@@ -17,12 +17,12 @@
 package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.Ordered;
 
 import java.util.Optional;
@@ -38,7 +38,6 @@ import java.util.Optional;
 abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 {
 	private final EntityPropertiesBinder binder;
-	private final EntityPropertyDescriptor descriptor;
 	private final EntityPropertyController controller;
 
 	@Getter
@@ -59,6 +58,13 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Getter
 	@Setter
 	private int sortIndex;
+
+	@Setter
+	private String binderPath;
+
+	String getBinderPath( String target ) {
+		return binderPath + ( StringUtils.isNotEmpty( target ) ? "." + target : "" );
+	}
 
 	@Override
 	public Object getOriginalValue() {

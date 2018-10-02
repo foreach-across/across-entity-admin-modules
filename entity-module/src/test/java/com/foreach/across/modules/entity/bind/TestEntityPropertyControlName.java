@@ -610,8 +610,6 @@ public class TestEntityPropertyControlName
 		).is( "properties[user].items[10].initializedValue.address" );
 	}
 
-	// todo: check [key] or asBinderEntryKey() equivalents
-
 	private ControlNameTest controlName( Object controlName ) {
 		return new ControlNameTest( controlName );
 	}

@@ -18,9 +18,6 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityAttributes;
-import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -37,12 +34,13 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.WebDataBinder;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Renders one or more registered properties from the {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry}
@@ -99,7 +97,6 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	public static final String ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER = "entityForm-column-0";
 
 	private EntityViewElementBuilderService viewElementBuilderService;
-	private ConversionService conversionService;
 
 	private EntityPropertySelector selector = EntityPropertySelector.of( EntityPropertySelector.READABLE );
 
@@ -121,27 +118,6 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 
 	@Override
 	public void initializeCommandObject( EntityViewRequest entityViewRequest, EntityViewCommand command, WebDataBinder dataBinder ) {
-		EntityPropertiesBinder propertiesBinder = new EntityPropertiesBinder( entityViewRequest.getEntityViewContext().getPropertyRegistry() );
-		propertiesBinder.setConversionService( conversionService );
-		propertiesBinder.setBinderPrefix( "properties" );
-
-		Object originalEntity = entityViewRequest.getEntityViewContext().getEntity();
-
-		// todo: where dto is created the binding context should be updated
-		propertiesBinder.setBindingContext(
-				EntityPropertyBindingContext.builder()
-				                            .entity( originalEntity )
-				                            .target( Optional.ofNullable( command.getEntity() ).orElse( originalEntity ) )
-				                            .build()
-		);
-
-		// todo: binding should be enabled based on the readonly value of the binding context
-		if ( HttpMethod.POST.equals( entityViewRequest.getHttpMethod() ) ) {
-			propertiesBinder.setBindingEnabled( true );
-		}
-
-		command.setProperties( propertiesBinder );
-
 		List<EntityPropertyDescriptor> properties = entityViewRequest.getEntityViewContext().getPropertyRegistry().select( selector );
 		Map<String, EntityPropertyDescriptor> descriptorMap = new LinkedHashMap<>();
 		properties.forEach( p -> descriptorMap.put( p.getName(), p ) );
@@ -207,11 +183,6 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 	@Autowired
 	void setViewElementBuilderService( EntityViewElementBuilderService viewElementBuilderService ) {
 		this.viewElementBuilderService = viewElementBuilderService;
-	}
-
-	@Autowired
-	void setConversionService( ConversionService conversionService ) {
-		this.conversionService = conversionService;
 	}
 
 	/**

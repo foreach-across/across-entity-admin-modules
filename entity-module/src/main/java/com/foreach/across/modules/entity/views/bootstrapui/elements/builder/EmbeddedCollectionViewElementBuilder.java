@@ -33,6 +33,7 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
@@ -40,10 +41,13 @@ import static com.foreach.across.modules.entity.bind.EntityPropertyControlName.f
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentPropertyDescriptor;
 
 /**
+ * Experimental.
+ * Builds a form control for an embedded {@link Collection} of objects.
+ * Every item renders as a sub-form with add/remove option.
+ *
  * @author Arne Vandamme
  * @since 3.2.0
  */
-// todo: better naming
 @Accessors(chain = true, fluent = true)
 public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 {
@@ -98,7 +102,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 			return createListControl( (ListEntityPropertyBinder) binder, builderContext );
 		}
 		else if ( binder instanceof MapEntityPropertyBinder ) {
-			throw new IllegalStateException( "Map types are not yet supported as embedded collections" );
+
 		}
 
 		return null;

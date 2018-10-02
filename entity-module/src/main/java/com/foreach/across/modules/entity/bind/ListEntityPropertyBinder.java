@@ -64,7 +64,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	private boolean itemsInitialized;
 	private boolean initializedValuePathWasUsed;
 
-	private EntityPropertyBinder itemTemplate;
+	private AbstractEntityPropertyBinder itemTemplate;
 	private Map<String, EntityPropertyBinder> items;
 
 	/**
@@ -79,7 +79,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	ListEntityPropertyBinder( EntityPropertiesBinder binder,
 	                          EntityPropertyDescriptor collectionDescriptor,
 	                          EntityPropertyDescriptor memberDescriptor ) {
-		super( binder, collectionDescriptor, collectionDescriptor.getController() );
+		super( binder, collectionDescriptor.getController() );
 
 		this.binder = binder;
 		this.collectionDescriptor = collectionDescriptor;
@@ -100,6 +100,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	public EntityPropertyBinder getItemTemplate() {
 		if ( itemTemplate == null ) {
 			itemTemplate = createItem();
+			itemTemplate.setBinderPath( getBinderPath( "itemTemplate" ) );
 		}
 		return itemTemplate;
 	}
@@ -109,7 +110,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return isDeleted() || ( ( isBound() || itemsInitialized ) && !Objects.equals( loadOriginalValue(), getValue() ) );
 	}
 
-	private EntityPropertyBinder createItem() {
+	private AbstractEntityPropertyBinder createItem() {
 		return binder.createPropertyBinder( memberDescriptor );
 	}
 
@@ -167,7 +168,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 		}
 
-		return binder.convertIfNecessary( items, collectionTypeDescriptor, binderPath( "items" ) );
+		return binder.convertIfNecessary( items, collectionTypeDescriptor, getBinderPath( "items" ) );
 	}
 
 	@Override
@@ -184,7 +185,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			List values = (List) binder.convertIfNecessary( value,
 			                                                TypeDescriptor.collection( ArrayList.class, memberTypeDescriptor ),
 			                                                collectionTypeDescriptor.getObjectType(),
-			                                                binderPath( "value" ) );
+			                                                getBinderPath( "value" ) );
 
 			int index = 0;
 			for ( Object v : values ) {
@@ -227,15 +228,6 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return beforeValidate >= errors.getErrorCount();
 	}
 
-	private String binderPath( String property ) {
-		return "[" + collectionDescriptor.getName() + "]" + ( StringUtils.isNotEmpty( property ) ? "." + property : "" );
-	}
-
-	@Override
-	public void resetBindStatus() {
-		setBound( false );
-		itemsInitialized = false;
-	}
 
 	/**
 	 * While binding is enabled, the items collection will not remove any (possibly) deleted items.
@@ -272,7 +264,10 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			EntityPropertyBinder item = super.get( itemKey );
 
 			if ( item == null ) {
-				item = createItem();
+				AbstractEntityPropertyBinder itemBinder = createItem();
+				itemBinder.setBinderPath( getBinderPath( "items[" + itemKey + "]" ) );
+
+				item = itemBinder;
 				super.put( itemKey, item );
 			}
 

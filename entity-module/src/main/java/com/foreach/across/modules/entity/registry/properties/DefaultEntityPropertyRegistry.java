@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
 
@@ -137,16 +136,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				descriptor.setWritable( true );
 				descriptor.setHidden( true );
 
-				// todo: centralize descriptor creation to the factory
 				( (ConfigurableEntityPropertyController) descriptor.getController() )
-						.createValueSupplier( () -> {
-							try {
-								return BeanUtils.instantiate( memberTypeDescriptor.getObjectType() );
-							}
-							catch ( Exception e ) {
-								throw new IllegalStateException( "Unable to create value for: " + memberTypeDescriptor, e );
-							}
-						} )
 						.validator( defaultMemberValidator )
 						.order( EntityPropertyController.BEFORE_ENTITY );
 

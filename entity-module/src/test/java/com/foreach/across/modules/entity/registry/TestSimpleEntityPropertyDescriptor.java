@@ -20,6 +20,8 @@ import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -39,6 +41,9 @@ public class TestSimpleEntityPropertyDescriptor
 		SimpleEntityPropertyDescriptor nested = new SimpleEntityPropertyDescriptor( "parent.name" );
 		nested.setParentDescriptor( parent );
 		assertEquals( "name", nested.getTargetPropertyName() );
+
+		SimpleEntityPropertyDescriptor shadow = new SimpleEntityPropertyDescriptor( "parent.name", nested );
+		assertEquals( "name", shadow.getTargetPropertyName() );
 	}
 
 	@Test
@@ -141,5 +146,13 @@ public class TestSimpleEntityPropertyDescriptor
 		when( fetcher.getValue( "some entity" ) ).thenReturn( 123 );
 
 		assertEquals( 123, descriptor.getPropertyValue( "some entity" ) );
+	}
+
+	@Test
+	public void defaultPropertyAttemptsToCreateValueForType() {
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( "anything" );
+		descriptor.setPropertyTypeDescriptor( TypeDescriptor.collection( ArrayList.class, TypeDescriptor.valueOf( String.class ) ) );
+
+		assertEquals( new ArrayList(), descriptor.getController().createValue( null ) );
 	}
 }

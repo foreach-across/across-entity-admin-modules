@@ -47,11 +47,9 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 	private final EntityPropertyDescriptor valueDescriptor;
 	private final TypeDescriptor valueTypeDescriptor;
-	private final EntityPropertyController valueController;
 
 	private final EntityPropertyDescriptor keyDescriptor;
 	private final TypeDescriptor keyTypeDescriptor;
-	private final EntityPropertyController keyController;
 
 	private boolean bindingBusy;
 	private boolean itemsInitialized;
@@ -73,7 +71,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	                         EntityPropertyDescriptor collectionDescriptor,
 	                         EntityPropertyDescriptor keyDescriptor,
 	                         EntityPropertyDescriptor valueDescriptor ) {
-		super( binder, collectionDescriptor, collectionDescriptor.getController() );
+		super( binder, collectionDescriptor.getController() );
 		this.binder = binder;
 		this.collectionDescriptor = collectionDescriptor;
 		this.valueDescriptor = valueDescriptor;
@@ -88,8 +86,6 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 				: collectionTypeDescriptor.getMapKeyTypeDescriptor();
 
 		collectionController = collectionDescriptor.getController();
-		valueController = valueDescriptor != null ? valueDescriptor.getController() : null;
-		keyController = keyDescriptor != null ? keyDescriptor.getController() : null;
 	}
 
 	/**
@@ -153,7 +149,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 					.forEach( item -> map.put( item.getEntryKey(), item.getEntryValue() ) );
 		}
 
-		return binder.convertIfNecessary( map, collectionTypeDescriptor, binderPath( "entries" ) );
+		return binder.convertIfNecessary( map, collectionTypeDescriptor, getBinderPath( "entries" ) );
 	}
 
 	@Override
@@ -170,7 +166,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 			Map<?, ?> values = (Map) binder.convertIfNecessary( value,
 			                                                    TypeDescriptor.map( LinkedHashMap.class, keyTypeDescriptor, valueTypeDescriptor ),
 			                                                    LinkedHashMap.class,
-			                                                    binderPath( "value" ) );
+			                                                    getBinderPath( "value" ) );
 
 			int index = 0;
 			for ( val entry : values.entrySet() ) {
@@ -221,12 +217,6 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return beforeValidate >= errors.getErrorCount();
 	}
 
-	@Override
-	public void resetBindStatus() {
-		setBound( false );
-		itemsInitialized = false;
-	}
-
 	/**
 	 * While binding is enabled, the items collection will not remove any (possibly) deleted items.
 	 * When explicitly disabling binding, the items will be cleared of any deleted items and will be
@@ -259,14 +249,6 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		}
 
 		return item;
-	}
-
-	private String collectionBinderPath() {
-		return "[" + collectionDescriptor.getName() + "]";
-	}
-
-	private String binderPath( String property ) {
-		return "[" + collectionDescriptor.getName() + "]" + ( StringUtils.isNotEmpty( property ) ? "." + property : "" );
 	}
 
 	/**

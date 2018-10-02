@@ -25,10 +25,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
+ * {@link EntityPropertyController} implementation for a nested property, the property value
+ * of the parent controller actually supplies the binding context of the child controller.
+ *
  * @author Arne Vandamme
  * @since 3.2.0
  */
-// todo: implement
 public class NestedEntityPropertyController implements EntityPropertyController, ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object>
 {
 	private final String contextName;

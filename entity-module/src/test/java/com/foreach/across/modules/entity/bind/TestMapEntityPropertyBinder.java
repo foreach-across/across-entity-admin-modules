@@ -65,10 +65,10 @@ public class TestMapEntityPropertyBinder
 	private EntityPropertyController valueController;
 
 	@Mock
-	private EntityPropertyBinder key;
+	private AbstractEntityPropertyBinder key;
 
 	@Mock
-	private EntityPropertyBinder value;
+	private AbstractEntityPropertyBinder value;
 
 	private EntityPropertyDescriptor collectionDescriptor;
 	private EntityPropertyDescriptor keyDescriptor;
@@ -84,11 +84,11 @@ public class TestMapEntityPropertyBinder
 
 		doAnswer( i -> i.getArgument( 0 ) )
 				.when( binder )
-				.convertIfNecessary( any(), eq( COLLECTION ), eq( "[collection].entries" ) );
+				.convertIfNecessary( any(), eq( COLLECTION ), eq( "properties[collection].entries" ) );
 
 		doAnswer( i -> i.getArgument( 0 ) )
 				.when( binder )
-				.convertIfNecessary( any(), eq( COLLECTION ), eq( COLLECTION.getObjectType() ), eq( "[collection].value" ) );
+				.convertIfNecessary( any(), eq( COLLECTION ), eq( COLLECTION.getObjectType() ), eq( "properties[collection].value" ) );
 
 		collectionDescriptor = spy(
 				EntityPropertyDescriptor
@@ -115,6 +115,7 @@ public class TestMapEntityPropertyBinder
 		);
 
 		property = new MapEntityPropertyBinder( binder, collectionDescriptor, keyDescriptor, valueDescriptor );
+		property.setBinderPath( "properties[collection]" );
 
 		when( binder.createPropertyBinder( keyDescriptor ) ).thenReturn( key );
 		when( binder.createPropertyBinder( valueDescriptor ) ).thenReturn( value );
@@ -142,8 +143,8 @@ public class TestMapEntityPropertyBinder
 
 	@Test
 	public void templateGetsLazilyCreatedOnce() {
-		EntityPropertyBinder templateKey = mock( EntityPropertyBinder.class );
-		EntityPropertyBinder templateValue = mock( EntityPropertyBinder.class );
+		AbstractEntityPropertyBinder templateKey = mock( AbstractEntityPropertyBinder.class );
+		AbstractEntityPropertyBinder templateValue = mock( AbstractEntityPropertyBinder.class );
 
 		when( binder.createPropertyBinder( keyDescriptor ) ).thenReturn( templateKey );
 		when( binder.createPropertyBinder( valueDescriptor ) ).thenReturn( templateValue );
@@ -187,12 +188,12 @@ public class TestMapEntityPropertyBinder
 		assertThat( property.getOriginalValue() ).isEqualTo( ORIGINAL_VALUE );
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 
-		val keyOne = mock( EntityPropertyBinder.class );
-		val keyTwo = mock( EntityPropertyBinder.class );
+		val keyOne = mock( AbstractEntityPropertyBinder.class );
+		val keyTwo = mock( AbstractEntityPropertyBinder.class );
 		when( binder.createPropertyBinder( keyDescriptor ) ).thenReturn( keyOne ).thenReturn( keyTwo );
 
-		val valueOne = mock( EntityPropertyBinder.class );
-		val valueTwo = mock( EntityPropertyBinder.class );
+		val valueOne = mock( AbstractEntityPropertyBinder.class );
+		val valueTwo = mock( AbstractEntityPropertyBinder.class );
 		when( binder.createPropertyBinder( valueDescriptor ) ).thenReturn( valueOne ).thenReturn( valueTwo );
 
 		Map<String, Integer> values = new LinkedHashMap<>();
@@ -213,10 +214,10 @@ public class TestMapEntityPropertyBinder
 	public void itemCanBeAddedByKeyAndInitialKeyIsTheEntryKey() {
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 
-		val key = mock( EntityPropertyBinder.class );
+		val key = mock( AbstractEntityPropertyBinder.class );
 		when( binder.createPropertyBinder( keyDescriptor ) ).thenReturn( key );
 
-		val value = mock( EntityPropertyBinder.class );
+		val value = mock( AbstractEntityPropertyBinder.class );
 		when( binder.createPropertyBinder( valueDescriptor ) ).thenReturn( value );
 
 		property.getEntries().clear();
@@ -263,12 +264,12 @@ public class TestMapEntityPropertyBinder
 
 	@Test
 	public void valueSortsTheItems() {
-		val keyOne = mock( EntityPropertyBinder.class );
-		val keyTwo = mock( EntityPropertyBinder.class );
+		val keyOne = mock( AbstractEntityPropertyBinder.class );
+		val keyTwo = mock( AbstractEntityPropertyBinder.class );
 		when( binder.createPropertyBinder( keyDescriptor ) ).thenReturn( keyOne ).thenReturn( keyTwo );
 
-		val valueOne = mock( EntityPropertyBinder.class );
-		val valueTwo = mock( EntityPropertyBinder.class );
+		val valueOne = mock( AbstractEntityPropertyBinder.class );
+		val valueTwo = mock( AbstractEntityPropertyBinder.class );
 		when( binder.createPropertyBinder( valueDescriptor ) ).thenReturn( valueOne ).thenReturn( valueTwo );
 
 		Map<String, Integer> values = new LinkedHashMap<>();
@@ -318,7 +319,7 @@ public class TestMapEntityPropertyBinder
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 		assertThat( property.isModified() ).isFalse();
 
-		when( binder.convertIfNecessary( any(), eq( COLLECTION ), eq( "[collection].entries" ) ) ).thenReturn( Collections.emptyMap() );
+		when( binder.convertIfNecessary( any(), eq( COLLECTION ), eq( "properties[collection].entries" ) ) ).thenReturn( Collections.emptyMap() );
 		assertThat( property.isModified() ).isTrue();
 	}
 

@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
 
@@ -48,7 +49,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 	@Getter
 	@Setter
 	@NonNull
-	private EntityPropertyController controller = new GenericEntityPropertyController();
+	private EntityPropertyController controller;
 
 	public SimpleEntityPropertyDescriptor( String name ) {
 		this( name, null );
@@ -65,6 +66,12 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 		if ( original != null ) {
 			controller = new GenericEntityPropertyController( original.getController() );
 		}
+		else {
+			GenericEntityPropertyController genericController = new GenericEntityPropertyController();
+			genericController.createValueSupplier( () -> BeanUtils.instantiate( this.getPropertyType() ) );
+
+			this.controller = genericController;
+		}
 	}
 
 	/**
@@ -77,7 +84,7 @@ public class SimpleEntityPropertyDescriptor extends AttributeOverridingSupport i
 
 	@Override
 	public String getTargetPropertyName() {
-		return isNestedProperty() ? StringUtils.removeFirst( name,parentDescriptor.getName() + "." ) : name;
+		return isNestedProperty() ? StringUtils.removeStart( getName(), getParentDescriptor().getName() + "." ) : getName();
 	}
 
 	@Override

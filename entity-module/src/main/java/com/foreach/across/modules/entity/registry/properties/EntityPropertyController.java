@@ -23,16 +23,29 @@ import org.springframework.validation.Errors;
  * Generic controller for a single property on an entity.
  * Allows reading and writing a property value, as well as validating a value.
  * <p/>
- * The difference between a {@link #save(Object, Object)} and a {@link #applyValue(Object, Object, Object)}
- * method, is that setting the value is usually done on the entity before the entity itself is saved.
- * The {@link #save(Object, Object)} method is useful for properties that are not actually present
- * on the entity instance itself.
+ * The difference between a {@link #save(EntityPropertyBindingContext, EntityPropertyValue)} and
+ * a {@link #applyValue(EntityPropertyBindingContext, EntityPropertyValue)}* method, i
+ * s that applying the value can be done several times during a binding process, and is usually
+ * done on the entity itself before the entity itself is saved.
+ * The {@link #save(EntityPropertyBindingContext, EntityPropertyValue)} method is more
+ * useful for properties that are not actually present on the entity instance itself.
  * <p/>
- * Likewise the {@link #delete(Object)} method is only relevant for properties where delete means
- * something. For most properties this is simply a no-op.
+ * The entity the property belongs to is represented in the {@link EntityPropertyBindingContext},
+ * which holds the original entity and optionally a different target to which the changes should
+ * be applied. The value of {@link EntityPropertyBindingContext#isReadonly()} can be used to
+ * determine optimizations in case of an expected readonly situation.
+ * <p/>
+ * A property value is represented as {@link EntityPropertyValue}. Note that there is no guarantee
+ * that {@link EntityPropertyValue#getOldValue()} actually represents the previous value. Especially
+ * when working with custom object types it is quite possible that updates have been applied to the
+ * same instance, and old value would be the same as the new value. Controllers should be aware of
+ * the actual behaviour and should know if they can rely on the contents of the old value.
+ * To determine if a property should be deleted, the value of {@link EntityPropertyValue#isDeleted()}
+ * can be used.
  *
  * @param <T> type of the property that is being managed
  * @author Arne Vandamme
+ * @see ConfigurableEntityPropertyController
  * @since 3.2.0
  */
 public interface EntityPropertyController<T> extends Ordered
@@ -98,8 +111,10 @@ public interface EntityPropertyController<T> extends Ordered
 	 * implies that the final store will happen transitively through the context (entity)
 	 * to which the property value is applied.
 	 * <p/>
-	 * Applying a property value usually happens immediately after successful validation,
-	 * before the next property is validated.
+	 * Applying a property value might happen several times during a binding process, so operations should be idempotent.
+	 * Applying values usually happens right after regular data-binding but before validation, whereas
+	 * {@link #save(EntityPropertyBindingContext, EntityPropertyValue)} is usually only called a single time after
+	 * successful validation.
 	 * <p/>
 	 * A single controller implements usually either {@code applyValue(EntityPropertyBindingContext, EntityPropertyValue)}
 	 * or {@link #save(EntityPropertyBindingContext, EntityPropertyValue)}.

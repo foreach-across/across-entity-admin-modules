@@ -19,7 +19,6 @@ package com.foreach.across.modules.entity.bind;
 import com.foreach.across.modules.entity.registry.properties.*;
 import lombok.val;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -225,16 +224,11 @@ public class TestEntityPropertiesBinder
 				.isThrownBy( () -> multiValueHolder.getItems().get( "0" ).setValue( singleValueHolder ) );
 
 		binder.setConversionService( null );
-		assertThatExceptionOfType( ClassCastException.class )
-				.isThrownBy( () -> singleValueHolder.setValue( 123 ) );
-		assertThatExceptionOfType( ClassCastException.class )
-				.isThrownBy( () -> multiValueHolder.setValue( 123 ) );
-		assertThatExceptionOfType( ClassCastException.class )
-				.isThrownBy( () -> multiValueHolder.getItems().get( "0" ).setValue( 123 ) );
+		assertThatExceptionOfType( ConversionFailedException.class )
+				.isThrownBy( () -> singleValueHolder.setValue( "abc" ) );
 	}
 
 	@Test
-	@Ignore
 	public void wrappedExceptionsIfBinderPrefix() {
 		binder.setBinderPrefix( "properties" );
 
@@ -287,25 +281,25 @@ public class TestEntityPropertiesBinder
 
 		binder.setConversionService( null );
 		assertThatExceptionOfType( ConversionNotSupportedException.class )
-				.isThrownBy( () -> singleValueHolder.setValue( 123 ) )
+				.isThrownBy( () -> singleValueHolder.setValue( "aba" ) )
 				.satisfies( e -> {
 					assertThat( e.getPropertyName() ).isEqualTo( "properties[id].value" );
 					assertThat( e.getRequiredType() ).isEqualTo( Long.class );
-					assertThat( e.getValue() ).isEqualTo( 123 );
+					assertThat( e.getValue() ).isEqualTo( "aba" );
 				} );
 		assertThatExceptionOfType( ConversionNotSupportedException.class )
-				.isThrownBy( () -> multiValueHolder.setValue( 123 ) )
+				.isThrownBy( () -> multiValueHolder.setValue( "aba" ) )
 				.satisfies( e -> {
 					assertThat( e.getPropertyName() ).isEqualTo( "properties[members].value" );
 					assertThat( e.getRequiredType() ).isEqualTo( Long[].class );
-					assertThat( e.getValue() ).isEqualTo( 123 );
+					assertThat( e.getValue() ).isEqualTo( "aba" );
 				} );
 		assertThatExceptionOfType( ConversionNotSupportedException.class )
-				.isThrownBy( () -> multiValueHolder.getItems().get( "0" ).setValue( 123 ) )
+				.isThrownBy( () -> multiValueHolder.getItems().get( "0" ).setValue( "aba" ) )
 				.satisfies( e -> {
 					assertThat( e.getPropertyName() ).isEqualTo( "properties[members].items[0].value" );
 					assertThat( e.getRequiredType() ).isEqualTo( Long.class );
-					assertThat( e.getValue() ).isEqualTo( 123 );
+					assertThat( e.getValue() ).isEqualTo( "aba" );
 				} );
 	}
 

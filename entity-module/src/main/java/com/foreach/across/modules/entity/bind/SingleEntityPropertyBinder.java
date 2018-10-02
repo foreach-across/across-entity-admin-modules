@@ -54,7 +54,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 
 	@SuppressWarnings("unchecked")
 	SingleEntityPropertyBinder( EntityPropertiesBinder binder, EntityPropertyDescriptor descriptor ) {
-		super( binder, descriptor, descriptor.getController() );
+		super( binder, descriptor.getController() );
 		this.binder = binder;
 		this.descriptor = descriptor;
 		controller = descriptor.getController();
@@ -77,6 +77,10 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 
 			valueHasBeenSet = true;
 			properties = binder.createChildBinder( descriptor, controller, getInitializedValue() );
+
+			if ( binder.shouldSetBinderPrefix() ) {
+				binder.setBinderPrefix( getBinderPath( "properties" ) );
+			}
 		}
 
 		return properties;
@@ -121,7 +125,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 			newValue = null;
 		}
 
-		newValue = binder.convertIfNecessary( newValue, descriptor.getPropertyTypeDescriptor(), binderPath() );
+		newValue = binder.convertIfNecessary( newValue, descriptor.getPropertyTypeDescriptor(), getBinderPath( "value" ) );
 
 		if ( !Objects.equals( this.value, newValue ) ) {
 			modified = true;
@@ -171,16 +175,5 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 	 */
 	public EntityPropertyBinder resolvePropertyBinder( @NonNull EntityPropertyDescriptor descriptor ) {
 		return getProperties().get( descriptor.getTargetPropertyName() );
-	}
-
-	private String binderPath() {
-		return "[" + descriptor.getName() + "].value";
-	}
-
-	@Override
-	public void resetBindStatus() {
-		setBound( false );
-		valueHasBeenSet = false;
-		modified = false;
 	}
 }

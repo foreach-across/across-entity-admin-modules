@@ -118,6 +118,8 @@ public interface EntityPropertyBinder
 	boolean isDeleted();
 
 	/**
+	 * Check if the property that this binder represents has been modified.
+	 *
 	 * @return true if the property has been modified, a deleted property is usually also considered modified
 	 */
 	boolean isModified();
@@ -153,12 +155,6 @@ public interface EntityPropertyBinder
 	 * @return true if validation was successful, no validation errors have been added for this property
 	 */
 	boolean validate( Errors errors, Object... validationHints );
-
-	/**
-	 * Reset bind status for this property. This will reset tracking properties related
-	 * to detecting if a property value has been removed.
-	 */
-	void resetBindStatus();
 
 	/**
 	 * Enable binding for this property. This signals that property binding is in progress, which allows

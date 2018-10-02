@@ -61,10 +61,10 @@ public class TestListEntityPropertyBinder
 	private EntityPropertyController memberController;
 
 	@Mock
-	private EntityPropertyBinder itemOne;
+	private AbstractEntityPropertyBinder itemOne;
 
 	@Mock
-	private EntityPropertyBinder itemTwo;
+	private AbstractEntityPropertyBinder itemTwo;
 
 	private EntityPropertyDescriptor collectionDescriptor;
 	private EntityPropertyDescriptor memberDescriptor;
@@ -79,10 +79,10 @@ public class TestListEntityPropertyBinder
 
 		doAnswer( i -> Arrays.asList( (Object[]) i.getArgument( 0 ) ) )
 				.when( binder )
-				.convertIfNecessary( any(), eq( COLLECTION ), eq( "[collection].items" ) );
+				.convertIfNecessary( any(), eq( COLLECTION ), eq( "properties[collection].items" ) );
 		doAnswer( i -> i.getArgument( 0 ) )
 				.when( binder )
-				.convertIfNecessary( any(), eq( COLLECTION ), eq( COLLECTION.getObjectType() ), eq( "[collection].value" ) );
+				.convertIfNecessary( any(), eq( COLLECTION ), eq( COLLECTION.getObjectType() ), eq( "properties[collection].value" ) );
 
 		collectionDescriptor = spy(
 				EntityPropertyDescriptor
@@ -101,14 +101,18 @@ public class TestListEntityPropertyBinder
 		);
 
 		property = new ListEntityPropertyBinder( binder, collectionDescriptor, memberDescriptor );
+		property.setBinderPath( "properties[collection]" );
 
 		when( binder.createPropertyBinder( memberDescriptor ) )
 				.thenReturn( itemOne )
 				.thenReturn( itemTwo );
 		when( itemOne.getValue() ).thenReturn( 1 );
 		when( itemTwo.getValue() ).thenReturn( 2 );
-		when( itemOne.getSortIndex() ).thenReturn( 1 );
-		when( itemTwo.getSortIndex() ).thenReturn( 2 );
+
+		itemOne.setSortIndex( 1 );
+		itemTwo.setSortIndex( 2 );
+		assertThat( itemOne.getSortIndex() ).isEqualTo( 1 );
+		assertThat( itemTwo.getSortIndex() ).isEqualTo( 2 );
 
 		when( binder.getProperties() ).thenReturn( binder );
 		when( binder.get( "prop" ) ).thenReturn( property );
@@ -133,8 +137,8 @@ public class TestListEntityPropertyBinder
 		assertThat( property.getOriginalValue() ).isEqualTo( ORIGINAL_VALUE );
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 
-		val one = mock( EntityPropertyBinder.class );
-		val two = mock( EntityPropertyBinder.class );
+		val one = mock( AbstractEntityPropertyBinder.class );
+		val two = mock( AbstractEntityPropertyBinder.class );
 		when( binder.createPropertyBinder( memberDescriptor ) ).thenReturn( one )
 		                                                       .thenReturn( two );
 		property.setValue( Arrays.asList( 3, 4 ) );
@@ -150,7 +154,8 @@ public class TestListEntityPropertyBinder
 	public void itemCanBeAddedByKey() {
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 
-		val random = mock( EntityPropertyBinder.class );
+		val random = mock( AbstractEntityPropertyBinder.class );
+		random.setSortIndex( -1 );
 		when( binder.createPropertyBinder( memberDescriptor ) ).thenReturn( random );
 
 		property.getItems().get( "random" ).setValue( 33 );
@@ -181,7 +186,7 @@ public class TestListEntityPropertyBinder
 
 	@Test
 	public void deletedItemsArePresentInTheItemsButNotInTheValueWhileBindingIsBusy() {
-		when( itemTwo.isDeleted() ).thenReturn( true );
+		itemTwo.setDeleted( true );
 
 		assertThat( property.getItemList() ).hasSize( 2 );
 		assertThat( property.getItems() ).hasSize( 2 );
@@ -190,7 +195,7 @@ public class TestListEntityPropertyBinder
 
 	@Test
 	public void deletedItemsAreRemovedWhenBindingIsDisabled() {
-		when( itemTwo.isDeleted() ).thenReturn( true );
+		itemTwo.setDeleted( true );
 		assertThat( property.getItems() ).hasSize( 2 );
 		property.enableBinding( false );
 
@@ -202,7 +207,7 @@ public class TestListEntityPropertyBinder
 	@Test
 	@SuppressWarnings("unchecked")
 	public void templateGetsLazilyCreatedOnce() {
-		EntityPropertyBinder template = mock( EntityPropertyBinder.class );
+		AbstractEntityPropertyBinder template = mock( AbstractEntityPropertyBinder.class );
 
 		when( binder.createPropertyBinder( memberDescriptor ) ).thenReturn( template );
 
@@ -226,18 +231,18 @@ public class TestListEntityPropertyBinder
 
 		assertThat( items.get( "0" ) ).isSameAs( itemOne );
 		verify( itemOne ).setValue( 1 );
-		verify( itemOne ).setSortIndex( 0 );
+		assertThat( itemOne.getSortIndex() ).isEqualTo( 0 );
 
 		assertThat( items.get( "1" ) ).isSameAs( itemTwo );
 		verify( itemTwo ).setValue( 2 );
-		verify( itemTwo ).setSortIndex( 1 );
+		assertThat( itemTwo.getSortIndex() ).isEqualTo( 1 );
 	}
 
 	@Test
 	public void valueSortsTheItems() {
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 
-		when( itemTwo.getSortIndex() ).thenReturn( -1 );
+		itemTwo.setSortIndex( -1 );
 		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 2, 1 ) );
 	}
 
@@ -248,7 +253,7 @@ public class TestListEntityPropertyBinder
 				.hasSize( 2 )
 				.isEqualTo( Arrays.asList( itemOne, itemTwo ) );
 
-		when( itemTwo.getSortIndex() ).thenReturn( -1 );
+		itemTwo.setSortIndex( -1 );
 		assertThat( property.getItemList() ).isEqualTo( Arrays.asList( itemTwo, itemOne ) );
 	}
 
@@ -277,7 +282,7 @@ public class TestListEntityPropertyBinder
 		assertThat( property.getValue() ).isEqualTo( original );
 		assertThat( property.isModified() ).isFalse();
 
-		when( binder.convertIfNecessary( any(), eq( COLLECTION ), eq( "[collection].items" ) ) ).thenReturn( Collections.emptyList() );
+		when( binder.convertIfNecessary( any(), eq( COLLECTION ), eq( "properties[collection].items" ) ) ).thenReturn( Collections.emptyList() );
 		assertThat( property.isModified() ).isTrue();
 	}
 
@@ -480,19 +485,4 @@ public class TestListEntityPropertyBinder
 					assertThat( fe.getCode() ).isEqualTo( "bad-value" );
 				} );
 	}
-/*
-
-	@Test
-	public void resetBindStatus() {
-		property.setBound( true );
-		assertThat( property.isModified() ).isTrue();
-		assertThat( property.isBound() ).isTrue();
-		property.setValue( 123 );
-		assertThat( property.isModified() ).isTrue();
-		assertThat( property.isBound() ).isTrue();
-		property.resetBindStatus();
-		assertThat( property.isBound() ).isFalse();
-		assertThat( property.isModified() ).isFalse();
-	}
-	*/
 }

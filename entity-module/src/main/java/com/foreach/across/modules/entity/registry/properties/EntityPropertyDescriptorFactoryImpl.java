@@ -88,14 +88,7 @@ public class EntityPropertyDescriptorFactoryImpl implements EntityPropertyDescri
 			configurable.applyValueFunction( new MethodValueWriter<>( property.getWriteMethod() ) );
 		}
 
-		configurable.createValueSupplier( () -> {
-			try {
-				return BeanUtils.instantiate( property.getType() );
-			}
-			catch ( Exception e ) {
-				throw new IllegalStateException( "Unable to create value for: " + property.getType(), e );
-			}
-		} );
+		configurable.createValueSupplier( () -> BeanUtils.instantiate( property.getType() ) );
 
 		return controller;
 	}
