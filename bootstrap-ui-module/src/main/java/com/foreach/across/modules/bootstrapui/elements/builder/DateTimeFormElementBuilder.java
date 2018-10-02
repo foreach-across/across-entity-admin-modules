@@ -50,7 +50,9 @@ public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupp
 	 * @return current builder
 	 */
 	public DateTimeFormElementBuilder value( Date value ) {
-		this.value = value;
+		if ( value != null ) {
+			this.value = new Date( value.getTime() );
+		}
 		return this;
 	}
 
