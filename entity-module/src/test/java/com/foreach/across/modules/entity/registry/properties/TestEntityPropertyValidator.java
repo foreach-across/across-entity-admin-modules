@@ -89,6 +89,32 @@ public class TestEntityPropertyValidator
 	}
 
 	@Test
+	public void ofValidatorWithNullValidation() {
+		Validator target = mock( Validator.class );
+		EntityPropertyValidator adapted = EntityPropertyValidator.of( target, true );
+
+		assertThat( adapted ).isNotNull();
+
+		when( propertyValue.getNewValue() ).thenReturn( null );
+		adapted.validate( bindingContext, propertyValue, errors, "hint" );
+
+		verify( target ).validate( null, errors );
+	}
+
+	@Test
+	public void ofValidatorWithoutNullValidation() {
+		Validator target = mock( Validator.class );
+		EntityPropertyValidator adapted = EntityPropertyValidator.of( target );
+
+		assertThat( adapted ).isNotNull();
+
+		when( propertyValue.getNewValue() ).thenReturn( null );
+		adapted.validate( bindingContext, propertyValue, errors, "hint" );
+
+		verifyNoMoreInteractions( target );
+	}
+
+	@Test
 	public void ofSmartValidator() {
 		SmartValidator target = mock( SmartValidator.class );
 		EntityPropertyValidator adapted = EntityPropertyValidator.of( target );
@@ -99,5 +125,31 @@ public class TestEntityPropertyValidator
 		adapted.validate( bindingContext, propertyValue, errors, "hint", "extra" );
 
 		verify( target ).validate( 123, errors, "hint", "extra" );
+	}
+
+	@Test
+	public void ofSmartValidatorWithNullValidation() {
+		SmartValidator target = mock( SmartValidator.class );
+		EntityPropertyValidator adapted = EntityPropertyValidator.of( target, true );
+
+		assertThat( adapted ).isNotNull();
+
+		when( propertyValue.getNewValue() ).thenReturn( null );
+		adapted.validate( bindingContext, propertyValue, errors, "hint", "extra" );
+
+		verify( target ).validate( null, errors, "hint", "extra" );
+	}
+
+	@Test
+	public void ofSmartValidatorWithoutNullValidation() {
+		SmartValidator target = mock( SmartValidator.class );
+		EntityPropertyValidator adapted = EntityPropertyValidator.of( target );
+
+		assertThat( adapted ).isNotNull();
+
+		when( propertyValue.getNewValue() ).thenReturn( null );
+		adapted.validate( bindingContext, propertyValue, errors, "hint", "extra" );
+
+		verifyNoMoreInteractions( target );
 	}
 }

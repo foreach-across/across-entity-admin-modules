@@ -78,7 +78,7 @@ public interface EntityPropertyValidator
 	 * @return property validator instance
 	 */
 	static EntityPropertyValidator of( @NonNull Validator validator ) {
-		return ( bindingContext, propertyValue, errors, validationHints ) -> validator.validate( propertyValue.getNewValue(), errors );
+		return of( validator, false );
 	}
 
 	/**
@@ -89,6 +89,34 @@ public interface EntityPropertyValidator
 	 * @return property validator instance
 	 */
 	static EntityPropertyValidator of( @NonNull SmartValidator validator ) {
-		return ( bindingContext, propertyValue, errors, validationHints ) -> validator.validate( propertyValue.getNewValue(), errors, validationHints );
+		return of( validator, false );
+	}
+
+	static EntityPropertyValidator of( @NonNull Validator validator, boolean validateNulls ) {
+		if ( validator instanceof SmartValidator ) {
+			SmartValidator smartValidator = (SmartValidator) validator;
+			return ( bindingContext, propertyValue, errors, validationHints ) -> {
+				if ( validateNulls ) {
+					smartValidator.validate( propertyValue.getNewValue(), errors, validationHints );
+				}
+				else {
+					if ( propertyValue.getNewValue() != null && !propertyValue.isDeleted() ) {
+						smartValidator.validate( propertyValue.getNewValue(), errors, validationHints );
+					}
+				}
+			};
+		}
+		else {
+			return ( bindingContext, propertyValue, errors, validationHints ) -> {
+				if ( validateNulls ) {
+					validator.validate( propertyValue.getNewValue(), errors );
+				}
+				else {
+					if ( propertyValue.getNewValue() != null && !propertyValue.isDeleted() ) {
+						validator.validate( propertyValue.getNewValue(), errors );
+					}
+				}
+			};
+		}
 	}
 }
