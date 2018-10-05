@@ -168,6 +168,7 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 			if ( propertiesBinder == null ) {
 				propertiesBinder = new EntityPropertiesBinder( entityViewContext.getPropertyRegistry() );
 				propertiesBinder.setBindingContext( EntityPropertyBindingContext.forReading( entity ) );
+				command.setProperties( propertiesBinder );
 			}
 		}
 

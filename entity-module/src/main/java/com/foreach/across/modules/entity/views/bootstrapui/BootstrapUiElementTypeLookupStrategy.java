@@ -121,6 +121,12 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 			}
 		}
 
+		boolean isEmbeddedCollection = isEmbeddedCollection( descriptor );
+
+		if ( isEmbeddedCollection && ViewElementMode.VALUE.equals( viewElementMode.forSingle() ) ) {
+			return EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE;
+		}
+
 		if ( ViewElementMode.isValue( viewElementMode ) ) {
 			return BootstrapUiElements.TEXT;
 		}
@@ -136,13 +142,18 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 					if ( String.class.equals( elementType ) ) {
 						return MultiValueElementBuilderFactory.ELEMENT_TYPE;
 					}
-					else if ( elementType.isEnum()) {
+					else if ( elementType.isEnum() ) {
 						return OptionsFormElementBuilderFactory.OPTIONS;
 					}
 				}
 
 				if ( propertyType.isArray() || Collection.class.isAssignableFrom( propertyType ) || Map.class.isAssignableFrom( propertyType ) ) {
-					return resolveCollectionOrMapElementType( descriptor, viewElementMode );
+					if ( isEmbeddedCollection ) {
+						return EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE;
+					}
+					else {
+						return OptionsFormElementBuilderFactory.OPTIONS;
+					}
 				}
 
 				if ( propertyType.isEnum() ) {
@@ -192,33 +203,28 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		return !isDateType( type );
 	}
 
-	private String resolveCollectionOrMapElementType( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
-		if ( ViewElementMode.CONTROL.equals( viewElementMode ) ) {
-			if ( descriptor.getPropertyType().isArray() || Collection.class.isAssignableFrom( descriptor.getPropertyType() ) ) {
-				EntityPropertyRegistry owningRegistry = descriptor.getPropertyRegistry();
+	private boolean isSingularType( Class propertyType ) {
+		return !propertyType.isArray() && !Collection.class.isAssignableFrom( propertyType ) && !Map.class.isAssignableFrom( propertyType );
+	}
 
-				if ( owningRegistry != null ) {
-					EntityPropertyDescriptor memberDescriptor = owningRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.INDEXER );
-					EntityConfiguration<?> target = entityRegistry.getEntityConfiguration( memberDescriptor.getPropertyType() );
+	private boolean isEmbeddedCollection( EntityPropertyDescriptor descriptor ) {
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
 
-					boolean isRegisteredEntity = target != null && target.hasEntityModel();
-					Boolean memberIsEmbedded = isEmbedded( memberDescriptor, target );
+		if ( typeDescriptor != null && typeDescriptor.isCollection() ) {
+			EntityPropertyRegistry owningRegistry = descriptor.getPropertyRegistry();
 
-					if ( ( memberIsEmbedded == null && !isRegisteredEntity ) || Boolean.TRUE.equals( memberIsEmbedded ) ) {
-						return EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE;
-					}
-				}
-			}
-			else {
-				// todo: support map types ?
+			if ( owningRegistry != null ) {
+				EntityPropertyDescriptor memberDescriptor = owningRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.INDEXER );
+				EntityConfiguration<?> target = entityRegistry.getEntityConfiguration( memberDescriptor.getPropertyType() );
+
+				boolean isRegisteredEntity = target != null && target.hasEntityModel();
+				Boolean memberIsEmbedded = isEmbedded( memberDescriptor, target );
+
+				return ( memberIsEmbedded == null && !isRegisteredEntity ) || Boolean.TRUE.equals( memberIsEmbedded );
 			}
 		}
 
-		return OptionsFormElementBuilderFactory.OPTIONS;
-	}
-
-	private boolean isSingularType( Class propertyType ) {
-		return !propertyType.isArray() && !Collection.class.isAssignableFrom( propertyType ) && !Map.class.isAssignableFrom( propertyType );
+		return false;
 	}
 
 	private Boolean isEmbedded( EntityPropertyDescriptor descriptor, EntityConfiguration target ) {

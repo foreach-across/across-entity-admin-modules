@@ -316,17 +316,21 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 		when( descriptor.getName() ).thenReturn( "users" );
 		when( descriptor.getPropertyType() ).thenReturn( (Class) List.class );
+		when( descriptor.getPropertyTypeDescriptor()).thenReturn( TypeDescriptor.valueOf( List.class ) );
 		when( descriptor.getPropertyRegistry() ).thenReturn( rootRegistry );
 		when( rootRegistry.getProperty( "users[]" ) ).thenReturn( member );
 		when( member.getPropertyType() ).thenReturn( (Class) Client.class );
 
 		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
 
 		when( member.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
 		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
 
 		when( member.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
 		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
 
 		when( member.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( null );
 
@@ -334,17 +338,21 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( memberConfiguration );
 		when( memberConfiguration.hasEntityModel() ).thenReturn( true );
 		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
 
 		when( memberConfiguration.hasEntityModel() ).thenReturn( false );
 		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
 
 		when( memberConfiguration.hasEntityModel() ).thenReturn( true );
 		when( memberConfiguration.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
 		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
 
 		when( memberConfiguration.hasEntityModel() ).thenReturn( false );
 		when( memberConfiguration.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
 		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
 	}
 
 	@SuppressWarnings("unchecked")

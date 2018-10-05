@@ -166,6 +166,35 @@ fieldset .help-block:last-child {
   }
 }
 
+.embedded-collection-readonly {
+  .embedded-collection-items {
+    border: 1px solid #eaeaea;
+    padding: 12px 12px 0 12px;
+  }
+
+  .embedded-collection-item > div {
+    border: none;
+  }
+
+  .embedded-collection-item {
+    display: block;
+    border-bottom: 1px dotted #eaeaea;
+
+    &:last-child {
+      border-bottom: none;
+    }
+    &:first-child > div {
+      padding-top: 0;
+    }
+  }
+
+  .embedded-collection-item-data {
+    .form-group {
+      margin-bottom: 12px;
+    }
+  }
+}
+
 .embedded-collection-actions .btn {
   width: 100%;
 }

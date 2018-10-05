@@ -249,6 +249,15 @@ public abstract class EntityPropertyControlName
 		return forChildProperty( descriptor.getName() );
 	}
 
+	/**
+	 * Return the base property control name that was used to create the current one.
+	 * If the current control name is a specific type (for example a {@link ForProperty.BinderProperty}) then this
+	 * will return the {@link ForProperty} instance that was used to create it.
+	 *
+	 * @return the property control name that was the basis for the current one
+	 */
+	public abstract ForProperty asProperty();
+
 	private static ForProperty create( String binderPrefix, String propertyName, EntityPropertyControlName parent ) {
 		if ( propertyName.endsWith( EntityPropertyRegistry.INDEXER ) ) {
 			return new ForProperty.CollectionItem( binderPrefix, propertyName, parent );
@@ -303,6 +312,11 @@ public abstract class EntityPropertyControlName
 		}
 
 		@Override
+		public ForProperty asProperty() {
+			return new ForProperty.SingleValue( binderPrefix, prefix, null );
+		}
+
+		@Override
 		public String toString() {
 			return prefix;
 		}
@@ -342,7 +356,7 @@ public abstract class EntityPropertyControlName
 		 *
 		 * @return same reference
 		 */
-		public ForProperty asDirectProperty() {
+		public ForProperty asProperty() {
 			return this;
 		}
 
@@ -375,7 +389,7 @@ public abstract class EntityPropertyControlName
 					return new SingleValue( propertyPath );
 			}
 
-			return asDirectProperty();
+			return asProperty();
 		}
 
 		/**
@@ -703,6 +717,11 @@ public abstract class EntityPropertyControlName
 			}
 
 			@Override
+			public ForProperty asProperty() {
+				return ForProperty.this;
+			}
+
+			@Override
 			String resolvePathPrefix() {
 				return ForProperty.this.resolvePathPrefix();
 			}
@@ -768,6 +787,11 @@ public abstract class EntityPropertyControlName
 			public class BinderPropertyValue extends EntityPropertyControlName
 			{
 				private final String suffix;
+
+				@Override
+				public ForProperty asProperty() {
+					return ForProperty.this;
+				}
 
 				public String toString() {
 					return BinderProperty.this.binderItemPath() + "." + suffix;

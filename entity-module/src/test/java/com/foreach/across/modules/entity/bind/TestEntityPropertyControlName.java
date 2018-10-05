@@ -42,9 +42,9 @@ public class TestEntityPropertyControlName
 		assertThat( controlName.asSingleValue() ).isSameAs( controlName );
 
 		controlName( controlName ).is( "address" );
-		controlName( controlName.asDirectProperty() ).is( "address" );
+		controlName( controlName.asProperty() ).is( "address" );
 		controlName( controlName.asBinderItem() ).is( "properties[address].value" );
-		controlName( controlName.asBinderItem().toItemPath() ).is("properties[address]" );
+		controlName( controlName.asBinderItem().toItemPath() ).is( "properties[address]" );
 		controlName( controlName.asBinderItem().withValue() ).is( "properties[address].value" );
 		controlName( controlName.asBinderItem().withInitializedValue() ).is( "properties[address].initializedValue" );
 	}
@@ -54,7 +54,7 @@ public class TestEntityPropertyControlName
 		EntityPropertyControlName.ForProperty controlName = forProperty( "address" );
 		EntityPropertyControlName.ForProperty child = controlName.forChildProperty( "street" );
 		controlName( child ).is( "address.street" );
-		controlName( child.asDirectProperty() ).is( "address.street" );
+		controlName( child.asProperty() ).is( "address.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].properties[street].value" );
 		controlName( child.asBinderItem().toItemPath() ).is( "properties[address].properties[street]" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].properties[street].value" );
@@ -63,10 +63,10 @@ public class TestEntityPropertyControlName
 
 	@Test
 	public void childFromDirectProperty() {
-		EntityPropertyControlName address = forProperty( "address" ).asDirectProperty();
+		EntityPropertyControlName address = forProperty( "address" ).asProperty();
 		EntityPropertyControlName.ForProperty child = address.forChildProperty( "street" );
 		controlName( child ).is( "address.street" );
-		controlName( child.asDirectProperty() ).is( "address.street" );
+		controlName( child.asProperty() ).is( "address.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].properties[street].value" );
 		controlName( child.asBinderItem().toItemPath() ).is( "properties[address].properties[street]" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].properties[street].value" );
@@ -79,7 +79,7 @@ public class TestEntityPropertyControlName
 		EntityPropertyControlName.ForProperty child = address.forChildProperty( "street" );
 
 		controlName( child ).is( "properties[address].initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].properties[street].value" );
 		controlName( child.asBinderItem().toItemPath() ).is( "properties[address].properties[street]" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].properties[street].value" );
@@ -92,7 +92,7 @@ public class TestEntityPropertyControlName
 		EntityPropertyControlName.ForProperty child = address.forChildProperty( "street" );
 
 		controlName( child ).is( "properties[address].initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].properties[street].initializedValue" );
@@ -105,7 +105,7 @@ public class TestEntityPropertyControlName
 		assertThat( address.asCollectionItem() ).isSameAs( address );
 
 		controlName( address ).is( "address[]" );
-		controlName( address.asDirectProperty() ).is( "address[]" );
+		controlName( address.asProperty() ).is( "address[]" );
 		controlName( address.asBinderItem() ).is( "properties[address].items[].value" );
 		controlName( address.asBinderItem().withValue() ).is( "properties[address].items[].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "properties[address].items[].initializedValue" );
@@ -118,17 +118,17 @@ public class TestEntityPropertyControlName
 	public void indexerProperty() {
 		EntityPropertyControlName.ForProperty address = forProperty( "address[]" ).asCollectionItem().withIndex( 10 );
 		controlName( address ).is( "address[10]" );
-		controlName( address.asDirectProperty() ).is( "address[10]" );
+		controlName( address.asProperty() ).is( "address[10]" );
 		controlName( address.asBinderItem() ).is( "properties[address].items[10].value" );
-		controlName( address.asBinderItem().toItemPath() ).is( "properties[address].items[10]"  );
+		controlName( address.asBinderItem().toItemPath() ).is( "properties[address].items[10]" );
 		controlName( address.asBinderItem().withValue() ).is( "properties[address].items[10].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "properties[address].items[10].initializedValue" );
 
 		address = forProperty( "address[]" ).asCollectionItem().withIndex( 5 ).withBinderItemKey( "abc" );
 		controlName( address ).is( "address[5]" );
-		controlName( address.asDirectProperty() ).is( "address[5]" );
+		controlName( address.asProperty() ).is( "address[5]" );
 		controlName( address.asBinderItem() ).is( "properties[address].items[abc].value" );
-		controlName( address.asBinderItem().toItemPath() ).is( "properties[address].items[abc]"  );
+		controlName( address.asBinderItem().toItemPath() ).is( "properties[address].items[abc]" );
 		controlName( address.asBinderItem().withValue() ).is( "properties[address].items[abc].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "properties[address].items[abc].initializedValue" );
 	}
@@ -140,7 +140,7 @@ public class TestEntityPropertyControlName
 				                                                                          "abc" );
 		EntityPropertyControlName.ForProperty child = address.forChildProperty( "street" );
 		controlName( child ).is( "address[10].street" );
-		controlName( child.asDirectProperty() ).is( "address[10].street" );
+		controlName( child.asProperty() ).is( "address[10].street" );
 		controlName( child.asBinderItem() ).is( "properties[address].items[abc].properties[street].value" );
 		controlName( child.asBinderItem().toItemPath() ).is( "properties[address].items[abc].properties[street]" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].items[abc].properties[street].value" );
@@ -158,7 +158,7 @@ public class TestEntityPropertyControlName
 		EntityPropertyControlName.ForProperty child = address.forChildProperty( "street" );
 
 		controlName( child ).is( "properties[address].items[abc].initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].items[abc].initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].items[abc].initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].items[abc].properties[street].value" );
 		controlName( child.asBinderItem().toItemPath() ).is( "properties[address].items[abc].properties[street]" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].items[abc].properties[street].value" );
@@ -176,7 +176,7 @@ public class TestEntityPropertyControlName
 		EntityPropertyControlName.ForProperty child = address.forChildProperty( "street" );
 
 		controlName( child ).is( "properties[address].items[abc].initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].items[abc].initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].items[abc].initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].items[abc].properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].items[abc].properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].items[abc].properties[street].initializedValue" );
@@ -186,7 +186,7 @@ public class TestEntityPropertyControlName
 	public void emptyMapEntryProperty() {
 		EntityPropertyControlName.ForProperty.MapEntry address = forProperty( "address" ).asMapEntry();
 		controlName( address ).is( "address[]" );
-		controlName( address.asDirectProperty() ).is( "address[]" );
+		controlName( address.asProperty() ).is( "address[]" );
 		controlName( address.toBinderEntryPath() ).is( "properties[address].entries[]" );
 		controlName( address.asBinderEntryKey() ).is( "properties[address].entries[].key.value" );
 		controlName( address.asBinderEntryKey().withValue() ).is( "properties[address].entries[].key.value" );
@@ -206,7 +206,7 @@ public class TestEntityPropertyControlName
 				.withBinderEntryKey( "def" );
 
 		controlName( address ).is( "address[abc]" );
-		controlName( address.asDirectProperty() ).is( "address[abc]" );
+		controlName( address.asProperty() ).is( "address[abc]" );
 		controlName( address.toBinderEntryPath() ).is( "properties[address].entries[def]" );
 		controlName( address.asBinderEntryKey() ).is( "properties[address].entries[def].key.value" );
 		controlName( address.asBinderEntryKey().withValue() ).is( "properties[address].entries[def].key.value" );
@@ -224,21 +224,21 @@ public class TestEntityPropertyControlName
 				.withBinderEntryKey( "def" );
 		EntityPropertyControlName.ForProperty child = address.forChildProperty( "street" );
 		controlName( child ).is( "address[abc].street" );
-		controlName( child.asDirectProperty() ).is( "address[abc].street" );
+		controlName( child.asProperty() ).is( "address[abc].street" );
 		controlName( child.asBinderItem() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].entries[def].value.properties[street].initializedValue" );
 
 		child = address.asBinderEntryValue().forChildProperty( "street" );
 		controlName( child ).is( "properties[address].entries[def].value.initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].entries[def].value.initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].entries[def].value.initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].entries[def].value.properties[street].initializedValue" );
 
 		child = address.asBinderEntryKey().forChildProperty( "street" );
 		controlName( child ).is( "properties[address].entries[def].key.initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].entries[def].key.initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].entries[def].key.initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].entries[def].key.properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].entries[def].key.properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].entries[def].key.properties[street].initializedValue" );
@@ -253,7 +253,7 @@ public class TestEntityPropertyControlName
 				.asBinderItem();
 		EntityPropertyControlName.ForProperty child = address.forChildProperty( "street" );
 		controlName( child ).is( "properties[address].entries[def].value.initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].entries[def].value.initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].entries[def].value.initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].entries[def].value.properties[street].initializedValue" );
@@ -265,7 +265,7 @@ public class TestEntityPropertyControlName
 				.asBinderEntryValue();
 		child = address.forChildProperty( "street" );
 		controlName( child ).is( "properties[address].entries[def].value.initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].entries[def].value.initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].entries[def].value.initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].entries[def].value.properties[street].initializedValue" );
@@ -277,7 +277,7 @@ public class TestEntityPropertyControlName
 				.asBinderEntryKey();
 		child = address.forChildProperty( "street" );
 		controlName( child ).is( "properties[address].entries[def].key.initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].entries[def].key.initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].entries[def].key.initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].entries[def].key.properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].entries[def].key.properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].entries[def].key.properties[street].initializedValue" );
@@ -293,7 +293,7 @@ public class TestEntityPropertyControlName
 				.withInitializedValue();
 		EntityPropertyControlName.ForProperty child = address.forChildProperty( "street" );
 		controlName( child ).is( "properties[address].entries[def].value.initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].entries[def].value.initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].entries[def].value.initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].entries[def].value.properties[street].initializedValue" );
@@ -306,7 +306,7 @@ public class TestEntityPropertyControlName
 				.withInitializedValue();
 		child = address.forChildProperty( "street" );
 		controlName( child ).is( "properties[address].entries[def].value.initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].entries[def].value.initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].entries[def].value.initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].entries[def].value.properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].entries[def].value.properties[street].initializedValue" );
@@ -319,7 +319,7 @@ public class TestEntityPropertyControlName
 				.withInitializedValue();
 		child = address.forChildProperty( "street" );
 		controlName( child ).is( "properties[address].entries[def].key.initializedValue.street" );
-		controlName( child.asDirectProperty() ).is( "properties[address].entries[def].key.initializedValue.street" );
+		controlName( child.asProperty() ).is( "properties[address].entries[def].key.initializedValue.street" );
 		controlName( child.asBinderItem() ).is( "properties[address].entries[def].key.properties[street].value" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].entries[def].key.properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].entries[def].key.properties[street].initializedValue" );
@@ -331,12 +331,20 @@ public class TestEntityPropertyControlName
 		EntityPropertyControlName.ForProperty address = user.forChildProperty( "address[]" );
 
 		controlName( user.forHandlingType( EntityPropertyHandlingType.DIRECT ) ).is( "user" );
+		assertThat( user.forHandlingType( EntityPropertyHandlingType.DIRECT ).asProperty() ).isEqualTo( user );
 		controlName( user.forHandlingType( EntityPropertyHandlingType.EXTENSION ) ).is( "properties[user].value" );
+		assertThat( user.forHandlingType( EntityPropertyHandlingType.EXTENSION ).asProperty() ).isEqualTo( user );
 		controlName( user.forHandlingType( EntityPropertyHandlingType.MANUAL ) ).is( "user" );
+		assertThat( user.forHandlingType( EntityPropertyHandlingType.MANUAL ).asProperty() ).isEqualTo( user );
 
 		controlName( address.forHandlingType( EntityPropertyHandlingType.DIRECT ) ).is( "user.address[]" );
+		assertThat( address.forHandlingType( EntityPropertyHandlingType.DIRECT ).asProperty() ).isEqualTo( address );
 		controlName( address.forHandlingType( EntityPropertyHandlingType.EXTENSION ) ).is( "properties[user].properties[address].items[].value" );
+		assertThat( address.forHandlingType( EntityPropertyHandlingType.EXTENSION ).asProperty() ).isEqualTo( address );
 		controlName( address.forHandlingType( EntityPropertyHandlingType.MANUAL ) ).is( "address[]" );
+		assertThat( address.forHandlingType( EntityPropertyHandlingType.MANUAL ).asProperty() ).isEqualTo(
+				forProperty( "address[]" ).forHandlingType( EntityPropertyHandlingType.MANUAL )
+		);
 	}
 
 	@Test
@@ -347,14 +355,15 @@ public class TestEntityPropertyControlName
 
 		EntityPropertyControlName.ForProperty user = forProperty( userDescriptor, "props" );
 		controlName( user ).is( "user" );
-		controlName( user.asDirectProperty() ).is( "user" );
+		controlName( user.asProperty() ).is( "user" );
 		controlName( user.asBinderItem() ).is( "props[user].value" );
 		controlName( user.asBinderItem().withValue() ).is( "props[user].value" );
 		controlName( user.asBinderItem().withInitializedValue() ).is( "props[user].initializedValue" );
+		assertThat( user.asBinderItem().withInitializedValue().asProperty() ).isEqualTo( user );
 
 		EntityPropertyControlName.ForProperty address = forProperty( addressDescriptor );
 		controlName( address ).is( "user.address" );
-		controlName( address.asDirectProperty() ).is( "user.address" );
+		controlName( address.asProperty() ).is( "user.address" );
 		controlName( address.asBinderItem() ).is( "properties[user.address].value" );
 		controlName( address.asBinderItem().withValue() ).is( "properties[user.address].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "properties[user.address].initializedValue" );
@@ -363,7 +372,7 @@ public class TestEntityPropertyControlName
 		addressDescriptor.setParentDescriptor( userDescriptor );
 		address = forProperty( addressDescriptor );
 		controlName( address ).is( "user.address" );
-		controlName( address.asDirectProperty() ).is( "user.address" );
+		controlName( address.asProperty() ).is( "user.address" );
 		controlName( address.asBinderItem() ).is( "properties[user].properties[address].value" );
 		controlName( address.asBinderItem().withValue() ).is( "properties[user].properties[address].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "properties[user].properties[address].initializedValue" );
@@ -382,7 +391,7 @@ public class TestEntityPropertyControlName
 		ViewElementBuilderContext bc = new DefaultViewElementBuilderContext();
 		EntityPropertyControlName.ForProperty address = forProperty( addressDescriptor, bc );
 		controlName( address ).is( "user.address" );
-		controlName( address.asDirectProperty() ).is( "user.address" );
+		controlName( address.asProperty() ).is( "user.address" );
 		controlName( address.asBinderItem() ).is( "properties[user.address].value" );
 		controlName( address.asBinderItem().withValue() ).is( "properties[user.address].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "properties[user.address].initializedValue" );
@@ -393,7 +402,7 @@ public class TestEntityPropertyControlName
 
 		address = forProperty( addressDescriptor, bc );
 		controlName( address ).is( "props[user].initializedValue.address" );
-		controlName( address.asDirectProperty() ).is( "props[user].initializedValue.address" );
+		controlName( address.asProperty() ).is( "props[user].initializedValue.address" );
 		controlName( address.asBinderItem() ).is( "props[user].properties[address].value" );
 		controlName( address.asBinderItem().withValue() ).is( "props[user].properties[address].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "props[user].properties[address].initializedValue" );
@@ -408,7 +417,7 @@ public class TestEntityPropertyControlName
 
 		EntityPropertyControlName.ForProperty address = forProperty( addressDescriptor );
 		controlName( address ).is( "user.address" );
-		controlName( address.asDirectProperty() ).is( "user.address" );
+		controlName( address.asProperty() ).is( "user.address" );
 		controlName( address.asBinderItem() ).is( "properties[user].properties[address].value" );
 		controlName( address.asBinderItem().withValue() ).is( "properties[user].properties[address].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "properties[user].properties[address].initializedValue" );
@@ -416,7 +425,7 @@ public class TestEntityPropertyControlName
 		userDescriptor.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION );
 		address = forProperty( addressDescriptor );
 		controlName( address ).is( "properties[user].initializedValue.address" );
-		controlName( address.asDirectProperty() ).is( "properties[user].initializedValue.address" );
+		controlName( address.asProperty() ).is( "properties[user].initializedValue.address" );
 		controlName( address.asBinderItem() ).is( "properties[user].properties[address].value" );
 		controlName( address.asBinderItem().withValue() ).is( "properties[user].properties[address].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "properties[user].properties[address].initializedValue" );
@@ -425,7 +434,7 @@ public class TestEntityPropertyControlName
 		userDescriptor.setAttribute( EntityAttributes.CONTROL_NAME, "extensions[user]" );
 		address = forProperty( addressDescriptor );
 		controlName( address ).is( "extensions[user].user.address" );
-		controlName( address.asDirectProperty() ).is( "extensions[user].user.address" );
+		controlName( address.asProperty() ).is( "extensions[user].user.address" );
 
 		// for manual controls the binder paths are not valid
 		controlName( address.asBinderItem() ).is( "properties[extensions[user]].properties[user.address].value" );
@@ -434,7 +443,7 @@ public class TestEntityPropertyControlName
 
 		EntityPropertyControlName.ForProperty user = forProperty( userDescriptor );
 		controlName( user ).is( "extensions[user]" );
-		controlName( user.asDirectProperty() ).is( "extensions[user]" );
+		controlName( user.asProperty() ).is( "extensions[user]" );
 		controlName( user.asBinderItem() ).is( "properties[extensions[user]].value" );
 		controlName( user.asBinderItem().withValue() ).is( "properties[extensions[user]].value" );
 		controlName( user.asBinderItem().withInitializedValue() ).is( "properties[extensions[user]].initializedValue" );
@@ -449,6 +458,7 @@ public class TestEntityPropertyControlName
 	public void rootControlNameImpactsSetsBinderPrefixAndDirectPrefix() {
 		EntityPropertyControlName root = EntityPropertyControlName.root( "entity" );
 		controlName( root ).is( "entity" );
+		assertThat( root.asProperty() ).isEqualTo( forProperty( "entity" ).asSingleValue() );
 
 		EntityPropertyControlName.ForProperty property = root.forChildProperty( "user" );
 		controlName( property ).is( "entity.user" );
@@ -478,14 +488,14 @@ public class TestEntityPropertyControlName
 
 		EntityPropertyControlName.ForProperty user = root.forChildProperty( userDescriptor );
 		controlName( user ).is( "entity.data.user" );
-		controlName( user.asDirectProperty() ).is( "entity.data.user" );
+		controlName( user.asProperty() ).is( "entity.data.user" );
 		controlName( user.asBinderItem() ).is( "binderTarget.fields[user].value" );
 		controlName( user.asBinderItem().withValue() ).is( "binderTarget.fields[user].value" );
 		controlName( user.asBinderItem().withInitializedValue() ).is( "binderTarget.fields[user].initializedValue" );
 
 		EntityPropertyControlName.ForProperty address = root.forChildProperty( addressDescriptor );
 		controlName( address ).is( "entity.data.user.address[]" );
-		controlName( address.asDirectProperty() ).is( "entity.data.user.address[]" );
+		controlName( address.asProperty() ).is( "entity.data.user.address[]" );
 		controlName( address.asBinderItem() ).is( "binderTarget.fields[user.address[]].value" );
 		controlName( address.asBinderItem().withValue() ).is( "binderTarget.fields[user.address[]].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "binderTarget.fields[user.address[]].initializedValue" );
@@ -494,7 +504,7 @@ public class TestEntityPropertyControlName
 		addressDescriptor.setParentDescriptor( userDescriptor );
 		address = root.forChildProperty( addressDescriptor );
 		controlName( address ).is( "entity.data.user.address[]" );
-		controlName( address.asDirectProperty() ).is( "entity.data.user.address[]" );
+		controlName( address.asProperty() ).is( "entity.data.user.address[]" );
 		controlName( address.asBinderItem() ).is( "binderTarget.fields[user].properties[address].items[].value" );
 		controlName( address.asBinderItem().withValue() ).is( "binderTarget.fields[user].properties[address].items[].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "binderTarget.fields[user].properties[address].items[].initializedValue" );

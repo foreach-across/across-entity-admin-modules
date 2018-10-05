@@ -53,9 +53,12 @@ public class EmbeddedCollectionOrMapElementBuilderFactory implements EntityViewE
 
 	@Override
 	public ViewElementBuilder createBuilder( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode, String viewElementType ) {
+		boolean forWriting = ViewElementMode.isControl( viewElementMode );
+		ViewElementMode itemViewElementMode = forWriting ? ViewElementMode.FORM_WRITE : ViewElementMode.FORM_READ;
+
 		if ( propertyDescriptor.getPropertyTypeDescriptor().isCollection() ) {
-			val embedded = new EmbeddedCollectionViewElementBuilder();
-			ViewElementBuilder<ViewElement> itemTemplate = createItemTemplate( propertyDescriptor, viewElementMode );
+			val embedded = new EmbeddedCollectionViewElementBuilder().readonly( !forWriting );
+			ViewElementBuilder<ViewElement> itemTemplate = createItemTemplate( propertyDescriptor, itemViewElementMode );
 			Assert.notNull( itemTemplate, "Unable to retrieve item template for property: " + propertyDescriptor );
 
 			embedded.itemTemplate( itemTemplate );
@@ -70,6 +73,6 @@ public class EmbeddedCollectionOrMapElementBuilderFactory implements EntityViewE
 	@SuppressWarnings("unchecked")
 	private ViewElementBuilder<ViewElement> createItemTemplate( EntityPropertyDescriptor propertyDescriptor, ViewElementMode viewElementMode ) {
 		EntityPropertyDescriptor memberDescriptor = propertyDescriptor.getPropertyRegistry().getProperty( propertyDescriptor.getName() + "[]" );
-		return entityViewElementBuilderService.getElementBuilder( memberDescriptor, ViewElementMode.FORM_WRITE );
+		return entityViewElementBuilderService.getElementBuilder( memberDescriptor, viewElementMode );
 	}
 }

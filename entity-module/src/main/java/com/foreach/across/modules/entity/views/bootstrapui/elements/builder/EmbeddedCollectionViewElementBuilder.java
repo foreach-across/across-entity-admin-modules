@@ -20,7 +20,6 @@ import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
-import com.foreach.across.modules.entity.bind.MapEntityPropertyBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -90,6 +89,13 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 	@Setter
 	private boolean sortable;
 
+	/**
+	 * Set to {@code true} if only the existing values should be rendered, without any possibility
+	 * of adding/removing/sorting items. This will not render any script templates either.
+	 */
+	@Setter
+	private boolean readonly;
+
 	public EmbeddedCollectionViewElementBuilder() {
 		super( "div" );
 	}
@@ -101,9 +107,6 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		if ( binder instanceof ListEntityPropertyBinder ) {
 			return createListControl( (ListEntityPropertyBinder) binder, builderContext );
 		}
-		else if ( binder instanceof MapEntityPropertyBinder ) {
-
-		}
 
 		return null;
 	}
@@ -112,25 +115,40 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		EntityPropertyDescriptor propertyDescriptor = currentPropertyDescriptor( builderContext );
 		val propertyName = propertyDescriptor.getName();
 
-		EntityPropertyControlName.ForProperty controlName = forProperty( propertyDescriptor, builderContext );
+		EntityPropertyControlName.ForProperty controlName = EntityViewElementUtils.controlName( propertyDescriptor, builderContext ).asProperty();
 		EntityPropertyControlName.ForProperty.BinderProperty templateControlName = controlName.asCollectionItem().withBinderItemKey( "{{key}}" ).asBinderItem();
 
 		String removeItemMessage = builderContext.getMessage( "properties." + propertyName + "[removeItem]", "" );
 		String addItemMessage = builderContext.getMessage( "properties." + propertyName + "[addItem]", "" );
 
+		Map<String, EntityPropertyBinder> items = binder.getItems();
+
+		if ( readonly && items.isEmpty() ) {
+			return paragraph().css( "form-control-static" ).build( builderContext );
+		}
+
 		NodeViewElement list = super.createElement( builderContext );
-		list.addCssClass( "js-embedded-collection-form-group", "embedded-collection-control", "embedded-collection-control-list" );
-		list.setAttribute( "data-item-format", templateControlName.toItemPath() );
-		list.addChild( collectionErrorHolder( controlName.forHandlingType( EntityPropertyHandlingType.forProperty( propertyDescriptor ) ) ) );
+		list.addCssClass( "embedded-collection-control", "embedded-collection-control-list" );
 
-		list.addChild( itemRows( builderContext, controlName, binder.getItems(), removeItemMessage ) );
+		if ( readonly ) {
+			list.addCssClass( "embedded-collection-readonly" );
+		}
+		else {
+			list.addCssClass( "js-embedded-collection-form-group" );
+			list.setAttribute( "data-item-format", templateControlName.toItemPath() );
+			list.addChild( collectionErrorHolder( controlName.forHandlingType( EntityPropertyHandlingType.forProperty( propertyDescriptor ) ) ) );
+		}
 
-		if ( enableAddingItem ) {
+		list.addChild( itemRows( builderContext, controlName, items, removeItemMessage ) );
+
+		if ( !readonly && enableAddingItem ) {
 			list.addChild( addItemAction( builderContext, addItemMessage ) );
 		}
 
-		list.addChild( boundIndicator( controlName ) );
-		list.addChild( itemTemplate( builderContext, templateControlName, removeItemMessage ) );
+		if ( !readonly ) {
+			list.addChild( boundIndicator( controlName ) );
+			list.addChild( itemTemplate( builderContext, templateControlName, removeItemMessage ) );
+		}
 
 		return list;
 	}
@@ -208,7 +226,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 				.data( "item-key", itemKey )
 				.css( "embedded-collection-item" )
 				.add(
-						sortable ?
+						sortable && !readonly ?
 								div()
 										.name( "itemHandle" )
 										.data( ROLE, "item-handle" )
@@ -223,13 +241,15 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 								.css( "embedded-collection-item-data" )
 								.add( itemTemplate )
 								.add(
-										hidden()
-												.controlName( propertyControlName.toSortIndex() )
-												.value( sortIndex )
+										!readonly ?
+												hidden()
+														.controlName( propertyControlName.toSortIndex() )
+														.value( sortIndex )
+												: null
 								)
 				)
 				.add(
-						enableRemovingItem ?
+						enableRemovingItem && !readonly ?
 								div()
 										.name( "itemActions" )
 										.data( ROLE, "item-actions" )
