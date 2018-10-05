@@ -28,7 +28,7 @@ import java.util.function.Predicate;
  * @author Arne Vandamme
  * @see DefaultEntityPropertyRegistry
  */
-public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
+public class MergingEntityPropertyRegistry extends DefaultEntityPropertyRegistry
 {
 	private final EntityPropertyRegistry parent;
 	private final EntityPropertyDescriptorFactory descriptorFactory;
@@ -39,6 +39,7 @@ public class MergingEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		super( registryProvider );
 		this.parent = parent;
 		this.descriptorFactory = descriptorFactory;
+		setDefaultFilter( null );
 	}
 
 	@Override

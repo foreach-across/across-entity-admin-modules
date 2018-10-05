@@ -190,20 +190,21 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 
 	AbstractEntityPropertyBinder createPropertyBinder( EntityPropertyDescriptor descriptor ) {
 		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		EntityPropertyBindingType bindingType = EntityPropertyBindingType.forProperty( descriptor );
 
-		if ( typeDescriptor.isMap() ) {
-			val keyDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_KEY, typeDescriptor.getMapKeyTypeDescriptor() );
-			val valueDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_VALUE, typeDescriptor.getMapValueTypeDescriptor() );
+		switch( bindingType ) {
+			case MAP:
+				val keyDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_KEY, typeDescriptor.getMapKeyTypeDescriptor() );
+				val valueDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_VALUE, typeDescriptor.getMapValueTypeDescriptor() );
 
-			return new MapEntityPropertyBinder( this, descriptor, keyDescriptor, valueDescriptor );
+				return new MapEntityPropertyBinder( this, descriptor, keyDescriptor, valueDescriptor );
+			case COLLECTION:
+				val memberDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.INDEXER, typeDescriptor.getElementTypeDescriptor() );
+
+				return new ListEntityPropertyBinder( this, descriptor, memberDescriptor );
+			default:
+				return new SingleEntityPropertyBinder( this, descriptor );
 		}
-		else if ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) {
-			val memberDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.INDEXER, typeDescriptor.getElementTypeDescriptor() );
-
-			return new ListEntityPropertyBinder( this, descriptor, memberDescriptor );
-		}
-
-		return new SingleEntityPropertyBinder( this, descriptor );
 	}
 
 	private EntityPropertyDescriptor getOrCreateDescriptor( String name, TypeDescriptor expectedType ) {

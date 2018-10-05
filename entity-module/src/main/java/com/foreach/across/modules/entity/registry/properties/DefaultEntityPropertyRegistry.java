@@ -69,22 +69,33 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 	@Override
 	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
-		MutableEntityPropertyDescriptor descriptor = resolveProperty( propertyName );
+		MutableEntityPropertyDescriptor descriptor = super.getProperty( propertyName );
 
 		if ( descriptor == null ) {
-			String rootProperty = findRootProperty( propertyName );
+			if ( propertyName.endsWith( INDEXER ) ) {
+				return buildMemberDescriptor( propertyName, INDEXER, this::resolveMemberType );
+			}
+			else if ( propertyName.endsWith( MAP_KEY ) ) {
+				return buildMemberDescriptor( propertyName, MAP_KEY, this::resolveMapKeyType );
+			}
+			else if ( propertyName.endsWith( MAP_VALUE ) ) {
+				return buildMemberDescriptor( propertyName, MAP_VALUE, this::resolveMapValueType );
+			}
+			else {
+				String rootProperty = findRootProperty( propertyName );
 
-			if ( rootProperty != null ) {
-				EntityPropertyDescriptor rootDescriptor = resolveProperty( rootProperty );
+				if ( rootProperty != null && !StringUtils.equals( rootProperty, propertyName ) ) {
+					EntityPropertyDescriptor rootDescriptor = getProperty( rootProperty );
 
-				if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
-					EntityPropertyRegistry subRegistry = resolveRegistryForPropertyDescriptor( rootDescriptor );
+					if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
+						EntityPropertyRegistry subRegistry = resolveRegistryForPropertyDescriptor( rootDescriptor );
 
-					if ( subRegistry != null ) {
-						EntityPropertyDescriptor childDescriptor = subRegistry.getProperty( findChildProperty( propertyName ) );
+						if ( subRegistry != null ) {
+							EntityPropertyDescriptor childDescriptor = subRegistry.getProperty( findChildProperty( propertyName ) );
 
-						if ( childDescriptor != null ) {
-							descriptor = buildNestedDescriptor( propertyName, rootDescriptor, childDescriptor );
+							if ( childDescriptor != null ) {
+								descriptor = buildNestedDescriptor( propertyName, rootDescriptor, childDescriptor );
+							}
 						}
 					}
 				}
@@ -108,24 +119,6 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		return targetRegistry;
 	}
 
-	private MutableEntityPropertyDescriptor resolveProperty( String propertyName ) {
-		MutableEntityPropertyDescriptor descriptor = super.getProperty( propertyName );
-
-		if ( descriptor == null ) {
-			if ( propertyName.endsWith( INDEXER ) ) {
-				return buildMemberDescriptor( propertyName, INDEXER, this::resolveMemberType );
-			}
-			else if ( propertyName.endsWith( MAP_KEY ) ) {
-				return buildMemberDescriptor( propertyName, MAP_KEY, this::resolveMapKeyType );
-			}
-			else if ( propertyName.endsWith( MAP_VALUE ) ) {
-				return buildMemberDescriptor( propertyName, MAP_VALUE, this::resolveMapValueType );
-			}
-		}
-
-		return descriptor;
-	}
-
 	/**
 	 * Create an indexed property descriptor. This descriptor represents the member type of the corresponding
 	 * parent descriptor. An indexed property descriptor does not have a wrapping value fetcher, as it has no
@@ -137,7 +130,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	                                                               String suffix,
 	                                                               Function<EntityPropertyDescriptor, TypeDescriptor> typeResolver ) {
 		String nonIndexedProperty = propertyName.substring( 0, propertyName.length() - suffix.length() );
-		MutableEntityPropertyDescriptor parent = resolveProperty( nonIndexedProperty );
+		MutableEntityPropertyDescriptor parent = getProperty( nonIndexedProperty );
 
 		if ( parent != null ) {
 			TypeDescriptor memberTypeDescriptor = typeResolver.apply( parent );
