@@ -182,6 +182,24 @@ public class TestDefaultEntityPropertyRegistry
 	}
 
 	@Test
+	public void nestedPropertyUsesCustomTargetEntityPropertyRegistryIfPresent() {
+		registry = new DefaultEntityPropertyRegistry( DefaultEntityPropertyRegistryProvider.INSTANCE );
+		SimpleEntityPropertyDescriptor name = register( "name", String.class );
+		assertNotNull( registry.getProperty( "name.class" ) );
+
+		DefaultEntityPropertyRegistry subRegistry = new DefaultEntityPropertyRegistry();
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( "bytes" );
+		descriptor.setPropertyType( String.class );
+		descriptor.setHidden( false );
+		subRegistry.register( descriptor );
+		name.setAttribute( EntityPropertyRegistry.class, subRegistry );
+
+		EntityPropertyDescriptor bytes = registry.getProperty( "name.bytes" );
+		assertNotNull( bytes );
+		assertEquals( String.class, bytes.getPropertyType() );
+	}
+
+	@Test
 	public void defaultSharedRegistryProviderCreatesSampleControllers() {
 		MutableEntityPropertyRegistry registry = DefaultEntityPropertyRegistry.forClass( Scanned.class );
 		EntityPropertyDescriptor read = registry.getProperty( "read" );

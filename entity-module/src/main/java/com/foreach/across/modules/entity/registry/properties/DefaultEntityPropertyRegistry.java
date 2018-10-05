@@ -71,14 +71,14 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
 		MutableEntityPropertyDescriptor descriptor = resolveProperty( propertyName );
 
-		if ( descriptor == null && getRegistryProvider() != null ) {
+		if ( descriptor == null ) {
 			String rootProperty = findRootProperty( propertyName );
 
 			if ( rootProperty != null ) {
 				EntityPropertyDescriptor rootDescriptor = resolveProperty( rootProperty );
 
 				if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
-					EntityPropertyRegistry subRegistry = getRegistryProvider().get( rootDescriptor.getPropertyType() );
+					EntityPropertyRegistry subRegistry = resolveRegistryForPropertyDescriptor( rootDescriptor );
 
 					if ( subRegistry != null ) {
 						EntityPropertyDescriptor childDescriptor = subRegistry.getProperty( findChildProperty( propertyName ) );
@@ -92,6 +92,20 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		}
 
 		return descriptor;
+	}
+
+	private EntityPropertyRegistry resolveRegistryForPropertyDescriptor( EntityPropertyDescriptor descriptor ) {
+		EntityPropertyRegistry targetRegistry = descriptor.getAttribute( EntityPropertyRegistry.class );
+
+		if ( targetRegistry == null ) {
+			EntityPropertyRegistryProvider registryProvider = getRegistryProvider();
+
+			if ( registryProvider != null ) {
+				targetRegistry = registryProvider.get( descriptor.getPropertyType() );
+			}
+		}
+
+		return targetRegistry;
 	}
 
 	private MutableEntityPropertyDescriptor resolveProperty( String propertyName ) {
