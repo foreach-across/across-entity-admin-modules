@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
@@ -200,7 +201,7 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void valueSetFromEntity() {
-		when( properties.get( "noValidator" ).getPropertyValue( "entity" ) ).thenReturn( 123 );
+		when( properties.get( "noValidator" ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( 123 );
 
 		when( conversionService.canConvert( any( TypeDescriptor.class ), any() ) ).thenReturn( true );
 		when( conversionService.convert( eq( 123 ), any( TypeDescriptor.class ),

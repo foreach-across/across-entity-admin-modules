@@ -332,15 +332,15 @@ public class TestEntityPropertyControlName
 
 		controlName( user.forHandlingType( EntityPropertyHandlingType.DIRECT ) ).is( "user" );
 		assertThat( user.forHandlingType( EntityPropertyHandlingType.DIRECT ).asProperty() ).isEqualTo( user );
-		controlName( user.forHandlingType( EntityPropertyHandlingType.EXTENSION ) ).is( "properties[user].value" );
-		assertThat( user.forHandlingType( EntityPropertyHandlingType.EXTENSION ).asProperty() ).isEqualTo( user );
+		controlName( user.forHandlingType( EntityPropertyHandlingType.BINDER ) ).is( "properties[user].value" );
+		assertThat( user.forHandlingType( EntityPropertyHandlingType.BINDER ).asProperty() ).isEqualTo( user );
 		controlName( user.forHandlingType( EntityPropertyHandlingType.MANUAL ) ).is( "user" );
 		assertThat( user.forHandlingType( EntityPropertyHandlingType.MANUAL ).asProperty() ).isEqualTo( user );
 
 		controlName( address.forHandlingType( EntityPropertyHandlingType.DIRECT ) ).is( "user.address[]" );
 		assertThat( address.forHandlingType( EntityPropertyHandlingType.DIRECT ).asProperty() ).isEqualTo( address );
-		controlName( address.forHandlingType( EntityPropertyHandlingType.EXTENSION ) ).is( "properties[user].properties[address].items[].value" );
-		assertThat( address.forHandlingType( EntityPropertyHandlingType.EXTENSION ).asProperty() ).isEqualTo( address );
+		controlName( address.forHandlingType( EntityPropertyHandlingType.BINDER ) ).is( "properties[user].properties[address].items[].value" );
+		assertThat( address.forHandlingType( EntityPropertyHandlingType.BINDER ).asProperty() ).isEqualTo( address );
 		controlName( address.forHandlingType( EntityPropertyHandlingType.MANUAL ) ).is( "address[]" );
 		assertThat( address.forHandlingType( EntityPropertyHandlingType.MANUAL ).asProperty() ).isEqualTo(
 				forProperty( "address[]" ).forHandlingType( EntityPropertyHandlingType.MANUAL )
@@ -422,7 +422,7 @@ public class TestEntityPropertyControlName
 		controlName( address.asBinderItem().withValue() ).is( "properties[user].properties[address].value" );
 		controlName( address.asBinderItem().withInitializedValue() ).is( "properties[user].properties[address].initializedValue" );
 
-		userDescriptor.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION );
+		userDescriptor.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER );
 		address = forProperty( addressDescriptor );
 		controlName( address ).is( "properties[user].initializedValue.address" );
 		controlName( address.asProperty() ).is( "properties[user].initializedValue.address" );

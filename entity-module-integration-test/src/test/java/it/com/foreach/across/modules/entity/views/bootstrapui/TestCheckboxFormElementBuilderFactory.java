@@ -17,6 +17,7 @@
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.CheckboxFormElementBuilderFactory;
@@ -64,9 +65,10 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 
 	@Test
 	public void checkedFromEntity() {
-		when( properties.get( "primitive" ).getPropertyValue( "entity" ) ).thenReturn( true );
-		when( properties.get( "object" ).getPropertyValue( "entity" ) ).thenReturn( Boolean.TRUE );
-		when( properties.get( "atomic" ).getPropertyValue( "entity" ) ).thenReturn( new AtomicBoolean( true ) );
+		EntityPropertyBindingContext bindingContext = EntityPropertyBindingContext.forReading( "entity" );
+		when( properties.get( "primitive" ).getController().fetchValue( bindingContext ) ).thenReturn( true );
+		when( properties.get( "object" ).getController().fetchValue( bindingContext ) ).thenReturn( Boolean.TRUE );
+		when( properties.get( "atomic" ).getController().fetchValue( bindingContext ) ).thenReturn( new AtomicBoolean( true ) );
 		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
 
 		CheckboxFormElement checkbox = assembleAndVerify( "primitive", false );
@@ -81,9 +83,10 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 
 	@Test
 	public void uncheckedFromEntity() {
-		when( properties.get( "primitive" ).getPropertyValue( "entity" ) ).thenReturn( false );
-		when( properties.get( "object" ).getPropertyValue( "entity" ) ).thenReturn( null );
-		when( properties.get( "atomic" ).getPropertyValue( "entity" ) ).thenReturn( new AtomicBoolean( false ) );
+		EntityPropertyBindingContext bindingContext = EntityPropertyBindingContext.forReading( "entity" );
+		when( properties.get( "primitive" ).getController().fetchValue( bindingContext ) ).thenReturn( false );
+		when( properties.get( "object" ).getController().fetchValue( bindingContext ) ).thenReturn( null );
+		when( properties.get( "atomic" ).getController().fetchValue( bindingContext ) ).thenReturn( new AtomicBoolean( false ) );
 		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
 
 		CheckboxFormElement checkbox = assembleAndVerify( "primitive", false );

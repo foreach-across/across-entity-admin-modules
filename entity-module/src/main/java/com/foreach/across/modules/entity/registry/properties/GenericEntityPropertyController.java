@@ -19,10 +19,7 @@ package com.foreach.across.modules.entity.registry.properties;
 import lombok.Getter;
 import lombok.NonNull;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -66,9 +63,6 @@ public class GenericEntityPropertyController implements EntityPropertyController
 
 	@Getter
 	private EntityPropertyValidator validator;
-
-	@Getter
-	private List<Validator> validators = new ArrayList<>();
 
 	public GenericEntityPropertyController() {
 		this.original = null;

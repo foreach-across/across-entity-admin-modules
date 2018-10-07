@@ -132,7 +132,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 					throw new IllegalArgumentException( "No such property descriptor: '" + fqPropertyName + "'" );
 				}
 
-				AbstractEntityPropertyBinder binder = (AbstractEntityPropertyBinder) createPropertyBinder( descriptor );
+				AbstractEntityPropertyBinder binder = createPropertyBinder( descriptor );
 				binder.setBinderPath( getPropertyBinderPath( propertyName ) );
 				binder.enableBinding( bindingEnabled );
 
@@ -220,6 +220,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return descriptor;
 	}
 
+	// todo: cleanup
 	boolean shouldSetBinderPrefix() {
 		return StringUtils.isNotEmpty( binderPrefix );
 	}

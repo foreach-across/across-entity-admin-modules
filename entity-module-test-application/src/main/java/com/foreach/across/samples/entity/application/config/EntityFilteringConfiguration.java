@@ -26,13 +26,11 @@ import com.foreach.across.modules.entity.query.EntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.processors.AssociationHeaderViewProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionOrMapElementBuilderFactory;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.query.EQLStringValueOptionEnhancer;
@@ -58,7 +56,6 @@ import com.foreach.across.samples.entity.application.business.Partner;
 import com.foreach.across.samples.entity.application.business.User;
 import com.foreach.across.samples.entity.application.repositories.PartnerRepository;
 import com.foreach.across.samples.entity.application.repositories.UserRepository;
-import com.foreach.across.testmodules.springdata.business.Client;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,13 +174,13 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		;
 		/*configuration.withType( Client.class )
 		             .properties( props -> props.property( "phones" )
-		                                        .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION )
+		                                        .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER )
 		                                        .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE ) );
 */
 		configuration.withType( User.class )
 //		             .properties(
 //				             props -> props.property( "address" )
-//				                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.EXTENSION )
+//				                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER )
 //		             )
                      .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate", "active" )
                                           .properties(

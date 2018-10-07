@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
-import static com.foreach.across.modules.entity.bind.EntityPropertyControlName.forProperty;
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentPropertyDescriptor;
 
 /**
@@ -147,7 +146,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 		if ( !readonly ) {
 			list.addChild( boundIndicator( controlName ) );
-			list.addChild( itemTemplate( builderContext, templateControlName, removeItemMessage ) );
+			list.addChild( itemTemplate( builderContext, binder.getItemTemplate(), templateControlName, removeItemMessage ) );
 		}
 
 		return list;
@@ -168,10 +167,12 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 	}
 
 	private ViewElement itemTemplate( ViewElementBuilderContext parentBuilderContext,
+	                                  EntityPropertyBinder templateBinder,
 	                                  EntityPropertyControlName.ForProperty.BinderProperty controlName,
 	                                  String removeItemMessage ) {
 		ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( parentBuilderContext );
 		EntityViewElementUtils.setCurrentEntity( builderContext, null );
+		builderContext.setAttribute( EntityPropertyBinder.class, templateBinder );
 		builderContext.setAttribute( EntityPropertyControlName.class, controlName.withInitializedValue() );
 
 		return script( MediaType.TEXT_HTML )

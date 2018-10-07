@@ -38,7 +38,7 @@ public class TestEntityPropertyHandlingType
 
 	@Test
 	public void defaultHandlingTypeIsExtension() {
-		assertThat( forProperty( descriptor ) ).isEqualTo( EXTENSION );
+		assertThat( forProperty( descriptor ) ).isEqualTo( BINDER );
 	}
 
 	@Test

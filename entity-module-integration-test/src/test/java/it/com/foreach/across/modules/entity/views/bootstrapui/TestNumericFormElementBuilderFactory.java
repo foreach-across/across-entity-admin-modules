@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
@@ -171,7 +172,7 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 	@Test
 	public void valueOrderIsPrinterFormatNumericConfigurationAndConversionService() {
 		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
-		when( properties.get( "decimal" ).getPropertyValue( "entity" ) ).thenReturn( 123L );
+		when( properties.get( "decimal" ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( 123L );
 		when( mvcConversionService.canConvert( any( TypeDescriptor.class ), any() ) ).thenReturn( true );
 		when( mvcConversionService.convert( eq( 123L ), any(), any() ) ).thenReturn( "fromConversionService" );
 

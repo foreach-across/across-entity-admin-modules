@@ -77,10 +77,10 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 
 			valueHasBeenSet = true;
 			properties = binder.createChildBinder( descriptor, controller, getInitializedValue() );
-
-			if ( binder.shouldSetBinderPrefix() ) {
-				binder.setBinderPrefix( getBinderPath( "properties" ) );
-			}
+// todo: cleanup
+//			if ( binder.shouldSetBinderPrefix() ) {
+//				binder.setBinderPrefix( getBinderPath( "properties" ) );
+//			}
 		}
 
 		return properties;

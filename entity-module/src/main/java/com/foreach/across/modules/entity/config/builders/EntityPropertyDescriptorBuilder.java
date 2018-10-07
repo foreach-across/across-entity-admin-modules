@@ -88,8 +88,8 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	 * Set a parent descriptor for this property. This turns the new descriptor into a nested property,
 	 * expected to be a child of the object that the parent property represents.
 	 * <p/>
-	 * When settings a parent descriptor, u often want to set a {@link com.foreach.across.modules.entity.EntityAttributes#TARGET_DESCRIPTOR}
-	 * value as well, to ensure control names get built correctly.
+	 * When setting a parent descriptor, you may consider setting a {@link com.foreach.across.modules.entity.EntityAttributes#TARGET_DESCRIPTOR}
+	 * value as well referring to the original leaf descriptor that was the basis for a nested combination.
 	 *
 	 * @param parent descriptor
 	 * @return current builder

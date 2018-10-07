@@ -36,14 +36,15 @@ public enum EntityPropertyHandlingType
 	DIRECT,
 
 	/**
-	 * Property that is a custom extension property, possibly with no direct relation to the entity itself.
+	 * Property that is a custom property, possibly with no direct relation to the entity itself.
 	 * Property values will be managed through {@link EntityPropertiesBinder} and validate/save
 	 * will be called from the {@link EntityPropertyController}.
 	 */
-	EXTENSION,
+	BINDER,
 
 	/**
 	 * Custom property for which the user is responsible for the handling.
+	 * Usually means the equivalent {@link EntityPropertyDescriptor} also has a value for {@link EntityAttributes#CONTROL_NAME}.
 	 */
 	MANUAL;
 
@@ -63,7 +64,7 @@ public enum EntityPropertyHandlingType
 			if ( descriptor.hasAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) ) {
 				return DIRECT;
 			}
-			return EXTENSION;
+			return BINDER;
 		}
 
 		return value;

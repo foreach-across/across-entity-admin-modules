@@ -40,11 +40,15 @@ public class MergingEntityPropertyRegistry extends DefaultEntityPropertyRegistry
 		this.parent = parent;
 		this.descriptorFactory = descriptorFactory;
 		setDefaultFilter( null );
+
+		if ( parent instanceof DefaultEntityPropertyRegistry ) {
+			setDefaultMemberValidator( ( (DefaultEntityPropertyRegistry) parent ).getDefaultMemberValidator() );
+		}
 	}
 
 	@Override
 	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
-		MutableEntityPropertyDescriptor localProperty = super.getProperty( propertyName );
+		MutableEntityPropertyDescriptor localProperty = getLocalProperty( propertyName );
 
 		if ( localProperty == null ) {
 			EntityPropertyDescriptor parentProperty = parent.getProperty( propertyName );
@@ -54,6 +58,9 @@ public class MergingEntityPropertyRegistry extends DefaultEntityPropertyRegistry
 				register( mutable );
 
 				localProperty = mutable;
+			}
+			else {
+				localProperty = super.getProperty( propertyName );
 			}
 		}
 

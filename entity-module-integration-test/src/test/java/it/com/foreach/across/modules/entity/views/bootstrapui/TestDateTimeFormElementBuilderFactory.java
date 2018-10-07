@@ -22,6 +22,7 @@ import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfig
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
@@ -239,7 +240,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 		try {
 			when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
-			when( properties.get( "required" ).getPropertyValue( "entity" ) ).thenReturn( PRINT_DATE );
+			when( properties.get( "required" ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( PRINT_DATE );
 
 			TextViewElement text = assembleValue( "required" );
 			assertEquals( "07-Aug-2015 10:31", text.getText() );
@@ -295,7 +296,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 		try {
 			when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
-			when( properties.get( name ).getPropertyValue( "entity" ) ).thenReturn( value );
+			when( properties.get( name ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( value );
 			if ( format != null ) {
 				when( properties.get( name ).hasAttribute( Format.class ) ).thenReturn( true );
 				when( properties.get( name ).getAttribute( Format.class ) ).thenReturn( format );

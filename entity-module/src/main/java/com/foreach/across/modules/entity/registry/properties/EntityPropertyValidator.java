@@ -73,25 +73,28 @@ public interface EntityPropertyValidator
 	 * Adapt a regular Spring {@link Validator} into an {@link EntityPropertyValidator}.
 	 * Only the value of the property will be passed to the target validator, any validation hints will be ignored.
 	 * Validation methods will be directly forwarded to the target, no {@link Validator#supports(Class)} will be called.
+	 * <p/>
+	 * By default {@code null} values will not be sent to the validator.
 	 *
 	 * @param validator that should be adapted
 	 * @return property validator instance
+	 * @see #of(Validator, boolean)
 	 */
 	static EntityPropertyValidator of( @NonNull Validator validator ) {
 		return of( validator, false );
 	}
 
 	/**
-	 * Adapt a Spring {@link SmartValidator} into an {@link EntityPropertyValidator}.
-	 * Only the value of the property will be passed on to the target validator.
+	 * Adapt a regular Spring {@link Validator} into an {@link EntityPropertyValidator}.
+	 * Only the value of the property will be passed to the target validator, any validation hints will be ignored.
+	 * Validation methods will be directly forwarded to the target, no {@link Validator#supports(Class)} will be called.
+	 * <p/>
+	 * The {@code validateNulls} argument can be used to pass {@code null} values for validation.
 	 *
-	 * @param validator that should be adapted
+	 * @param validator     that should be adapted
+	 * @param validateNulls should {@code null} values also be sent to the validator
 	 * @return property validator instance
 	 */
-	static EntityPropertyValidator of( @NonNull SmartValidator validator ) {
-		return of( validator, false );
-	}
-
 	static EntityPropertyValidator of( @NonNull Validator validator, boolean validateNulls ) {
 		if ( validator instanceof SmartValidator ) {
 			SmartValidator smartValidator = (SmartValidator) validator;

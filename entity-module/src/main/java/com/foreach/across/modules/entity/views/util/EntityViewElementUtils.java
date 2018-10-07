@@ -16,14 +16,13 @@
 package com.foreach.across.modules.entity.views.util;
 
 import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.bind.SingleEntityPropertyBinder;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -31,7 +30,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.NonNull;
-import lombok.val;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -39,11 +38,9 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Arne Vandamme
  */
+@UtilityClass
 public class EntityViewElementUtils
 {
-	protected EntityViewElementUtils() {
-	}
-
 	/**
 	 * <p>Retrieve the current entity being processed in the builder context.  In case of a
 	 * {@link IteratorViewElementBuilderContext} the entity of the iterator will be returned,
@@ -115,7 +112,7 @@ public class EntityViewElementUtils
 	 * @param builderContext current builder context
 	 * @return entity or null if none found or not of the expected type
 	 */
-	public static <U> U currentEntity( ViewElementBuilderContext builderContext, Class<U> expectedType ) {
+	public static <U> U currentEntity( @NonNull ViewElementBuilderContext builderContext, @NonNull Class<U> expectedType ) {
 		if ( builderContext == null ) {
 			return null;
 		}
@@ -128,12 +125,7 @@ public class EntityViewElementUtils
 		else {
 			value = builderContext.getAttribute( EntityViewModel.ENTITY );
 		}
-/*
-TODO
-		if ( value instanceof MultiEntityPropertyValue.Item ) {
-			value = ( (MultiEntityPropertyValue.Item) value ).getValue();
-		}
-*/
+
 		return expectedType.isInstance( value ) ? expectedType.cast( value ) : null;
 	}
 
@@ -150,7 +142,7 @@ TODO
 	 * @see com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper
 	 * @see com.foreach.across.modules.entity.views.EntityViewElementBuilderService
 	 */
-	public static Object currentPropertyValue( ViewElementBuilderContext builderContext ) {
+	public static Object currentPropertyValue( @NonNull ViewElementBuilderContext builderContext ) {
 		return currentPropertyValue( builderContext, Object.class );
 	}
 
@@ -165,39 +157,84 @@ TODO
 	 * @return property value or null if unable to determine or not of the expected type
 	 * @see #currentPropertyValue(ViewElementBuilderContext)
 	 */
-	public static <U> U currentPropertyValue( ViewElementBuilderContext builderContext, Class<U> expectedType ) {
-		if ( builderContext == null ) {
-			return null;
-		}
-
+	public static <U> U currentPropertyValue( @NonNull ViewElementBuilderContext builderContext, @NonNull Class<U> expectedType ) {
 		EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
 
 		if ( descriptor == null ) {
 			return null;
 		}
 
-		EntityPropertiesBinder properties = builderContext.getAttribute( EntityPropertiesBinder.class );
+		Object propertyValue;
 
-		Object propertyValue = resolveValue( properties, descriptor, currentEntity( builderContext ) );
+		switch ( EntityPropertyHandlingType.forProperty( descriptor ) ) {
+			case BINDER:
+				EntityPropertyBinder propertyBinder = resolvePropertyBinder( builderContext, descriptor );
+				if ( propertyBinder != null ) {
+					propertyValue = propertyBinder.getValue();
+					break;
+				}
+			default:
+				propertyValue = descriptor.getController().fetchValue( resolveBindingContext( builderContext ) );
+				break;
+		}
+
 		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
+
+//		EntityPropertyBinder propertyBinder = currentPropertyBinder( builderContext );
+//
+//		Object propertyValue;
+//
+//		if ( propertyBinder != null ) {
+//			propertyValue = propertyBinder.getValue();
+//		}
+//		else {
+//			EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
+//
+//			if ( descriptor == null ) {
+//				return null;
+//			}
+//
+//			propertyValue = resolveValue( null, descriptor, currentEntity( builderContext ) );
+//		}
+//
+//		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
 	}
 
-	// todo: more and more to clean up
-	public static EntityPropertyBinder currentPropertyBinder( ViewElementBuilderContext builderContext ) {
-		if ( builderContext == null ) {
-			return null;
+	private static EntityPropertyBindingContext resolveBindingContext( ViewElementBuilderContext builderContext ) {
+		EntityPropertyBindingContext bindingContext = builderContext.getAttribute( EntityPropertyBindingContext.class );
+
+		if ( bindingContext != null ) {
+			return bindingContext;
 		}
 
+		EntityPropertyBinder parent = builderContext.getAttribute( EntityPropertyBinder.class );
+
+		if ( parent instanceof SingleEntityPropertyBinder ) {
+			return ( (SingleEntityPropertyBinder) parent ).getProperties().getBindingContext();
+		}
+
+		return EntityPropertyBindingContext.forReading( currentEntity( builderContext ) );
+	}
+
+	/**
+	 * Retrieve a {@link EntityPropertyBinder} for the current property being rendered.
+	 * This required an {@link EntityPropertiesBinder} or a {@link EntityPropertyBinder} for the parent property
+	 * to be present.
+	 *
+	 * @param builderContext current builder context
+	 * @return binder for the property
+	 */
+	public static EntityPropertyBinder currentPropertyBinder( @NonNull ViewElementBuilderContext builderContext ) {
 		EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
 
 		if ( descriptor == null ) {
 			return null;
 		}
 
-		return resolveValueHolder( builderContext, descriptor );
+		return resolvePropertyBinder( builderContext, descriptor );
 	}
 
-	private static EntityPropertyBinder resolveValueHolder( ViewElementBuilderContext builderContext, EntityPropertyDescriptor descriptor ) {
+	private static EntityPropertyBinder resolvePropertyBinder( ViewElementBuilderContext builderContext, EntityPropertyDescriptor descriptor ) {
 		EntityPropertyBinder parent = builderContext.getAttribute( EntityPropertyBinder.class );
 
 		if ( parent instanceof SingleEntityPropertyBinder ) {
@@ -213,30 +250,6 @@ TODO
 		return null;
 	}
 
-	private static Object resolveValue( EntityPropertiesBinder properties, EntityPropertyDescriptor descriptor, Object root ) {
-		try {
-			if ( properties != null && EntityPropertyHandlingType.forProperty( descriptor ) == EntityPropertyHandlingType.EXTENSION ) {
-				val valueHolder = properties.get( descriptor.getName() );
-				return valueHolder.getValue();
-			}
-			else {
-				if ( descriptor.isNestedProperty() && !descriptor.getParentDescriptor().getName().endsWith( EntityPropertyRegistry.INDEXER ) ) {
-					EntityPropertyDescriptor target = descriptor.getAttribute( EntityAttributes.TARGET_DESCRIPTOR, EntityPropertyDescriptor.class );
-
-					if ( target != null ) {
-						Object owner = resolveValue( properties, descriptor.getParentDescriptor(), root );
-						return target.getPropertyValue( owner );
-					}
-				}
-
-				return descriptor.getPropertyValue( root );
-			}
-		}
-		catch ( Exception e ) {
-			throw new RuntimeException( "An error occurred resolving property value for '" + descriptor.getName() + "'", e );
-		}
-	}
-
 	/**
 	 * Retrieve the current property descriptor, if there is one. This looks for the {@link EntityPropertyDescriptor} attribute on the context.
 	 *
@@ -245,14 +258,14 @@ TODO
 	 * @see com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper
 	 * @see com.foreach.across.modules.entity.views.EntityViewElementBuilderService
 	 */
-	public static EntityPropertyDescriptor currentPropertyDescriptor( ViewElementBuilderContext builderContext ) {
+	public static EntityPropertyDescriptor currentPropertyDescriptor( @NonNull ViewElementBuilderContext builderContext ) {
 		return builderContext.getAttribute( EntityPropertyDescriptor.class );
 	}
 
 	/**
 	 * Set the current entity to the value specified.
 	 */
-	public static void setCurrentEntity( ViewElementBuilderContext builderContext, Object value ) {
+	public static void setCurrentEntity( @NonNull ViewElementBuilderContext builderContext, Object value ) {
 		builderContext.setAttribute( EntityViewModel.ENTITY, value );
 	}
 }

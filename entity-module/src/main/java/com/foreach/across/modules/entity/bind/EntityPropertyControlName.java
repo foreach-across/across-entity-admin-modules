@@ -375,7 +375,7 @@ public abstract class EntityPropertyControlName
 		 * Return the current control name adjusted for the property handling type.
 		 * <ul>
 		 * <li>In case of {@link EntityPropertyHandlingType#MANUAL}, a {@link SingleValue} with the property path will be returned.</li>
-		 * <li>In case of {@link EntityPropertyHandlingType#EXTENSION}, a {@link BinderProperty} will be returned</li>
+		 * <li>In case of {@link EntityPropertyHandlingType#BINDER}, a {@link BinderProperty} will be returned</li>
 		 * <li>In case of {@link EntityPropertyHandlingType#DIRECT}, the current control name will be returned</li>
 		 * </ul>
 		 *
@@ -383,7 +383,7 @@ public abstract class EntityPropertyControlName
 		 */
 		public EntityPropertyControlName forHandlingType( @NonNull EntityPropertyHandlingType handlingType ) {
 			switch ( handlingType ) {
-				case EXTENSION:
+				case BINDER:
 					return asBinderItem();
 				case MANUAL:
 					return new SingleValue( propertyPath );

@@ -18,6 +18,8 @@ package com.foreach.across.modules.entity.registry.properties;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.TypeDescriptor;
@@ -44,6 +46,7 @@ import java.util.function.Function;
 public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 {
 	@Setter
+	@Getter(AccessLevel.PROTECTED)
 	private EntityPropertyValidator defaultMemberValidator;
 
 	/**
@@ -69,7 +72,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 	@Override
 	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
-		MutableEntityPropertyDescriptor descriptor = super.getProperty( propertyName );
+		MutableEntityPropertyDescriptor descriptor = getLocalProperty( propertyName );
 
 		if ( descriptor == null ) {
 			if ( propertyName.endsWith( INDEXER ) ) {
@@ -103,6 +106,10 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		}
 
 		return descriptor;
+	}
+
+	protected final MutableEntityPropertyDescriptor getLocalProperty( String propertyName ) {
+		return super.getProperty( propertyName );
 	}
 
 	private EntityPropertyRegistry resolveRegistryForPropertyDescriptor( EntityPropertyDescriptor descriptor ) {
