@@ -125,6 +125,7 @@ public interface ConfigurableEntityPropertyController<T, U>
 
 	/**
 	 * Return a scoped instance that works directly on the original entity.
+	 * Can be used for type-specific configuration of the original entity and the property.
 	 *
 	 * @param entityType   type of the original entity
 	 * @param propertyType type of the property
@@ -137,6 +138,7 @@ public interface ConfigurableEntityPropertyController<T, U>
 
 	/**
 	 * Return a scoped instance that works directly on the target.
+	 * Can be used for type-specific configuration of the target and the property.
 	 *
 	 * @param targetType   type of the target for binding
 	 * @param propertyType type of the property
@@ -148,20 +150,14 @@ public interface ConfigurableEntityPropertyController<T, U>
 	<X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<X> targetType, Class<V> propertyType );
 
 	/**
-	 * Return a scoped instance that types the binding context.
+	 * Return a scoped instance that types the property.
 	 *
-	 * @param <X>          type of the original entity
-	 * @param <W>          type of the target for binding
 	 * @param <V>          type of the property
-	 * @param entityType   type of the original entity
-	 * @param targetType   type of the target for binding
 	 * @param propertyType type of the property
 	 * @return configurable controller
 	 * @see ScopedConfigurableEntityPropertyController
 	 */
-	<X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<X> entityType,
-	                                                                                                    Class<W> targetType,
-	                                                                                                    Class<V> propertyType );
+	<V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<V> propertyType );
 
 	@FunctionalInterface
 	interface ContextualValidator<T, U>

@@ -414,4 +414,42 @@ public class TestSingleEntityPropertyBinder
 
 		assertThat( property.resolvePropertyBinder( childDescriptor ) ).isSameAs( one );
 	}
+
+	@Test
+	public void resolveNonExistingChildProperty() {
+		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
+		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
+
+		assertThat( property.resolvePropertyBinder( mock( EntityPropertyDescriptor.class ) ) ).isNull();
+	}
+
+	@Test
+	public void resolveSelfProperty() {
+		assertThat( property.resolvePropertyBinder( descriptor ) ).isSameAs( property );
+	}
+
+	@Test
+	public void resolveNestedChildProperty() {
+		when( descriptor.getName() ).thenReturn( "user" );
+
+		EntityPropertyDescriptor address = mock( EntityPropertyDescriptor.class );
+		when( address.getName() ).thenReturn( "user.address" );
+		when( address.getTargetPropertyName() ).thenReturn( "address" );
+		when( address.isNestedProperty() ).thenReturn( true );
+		when( address.getParentDescriptor() ).thenReturn( descriptor );
+
+		EntityPropertyDescriptor street = mock( EntityPropertyDescriptor.class );
+		when( street.isNestedProperty() ).thenReturn( true );
+		when( street.getParentDescriptor() ).thenReturn( address );
+
+		EntityPropertiesBinder userBinder = mock( EntityPropertiesBinder.class );
+		SingleEntityPropertyBinder addressProperty = mock( SingleEntityPropertyBinder.class );
+		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( userBinder );
+		when( userBinder.get( "address" ) ).thenReturn( addressProperty );
+
+		EntityPropertyBinder streetProperty = mock( EntityPropertyBinder.class );
+		when( addressProperty.resolvePropertyBinder( street ) ).thenReturn( streetProperty );
+
+		assertThat( property.resolvePropertyBinder( street ) ).isSameAs( streetProperty );
+	}
 }

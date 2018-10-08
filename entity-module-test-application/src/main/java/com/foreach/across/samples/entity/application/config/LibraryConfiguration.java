@@ -30,6 +30,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.core.EntityInformation;
+import org.springframework.format.Printer;
 import org.springframework.format.annotation.NumberFormat;
 
 import javax.validation.constraints.NotNull;
@@ -50,6 +51,9 @@ public class LibraryConfiguration implements EntityConfigurer
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
+		Library example = createExampleLibrary();
+		libraries.put( example.id, example );
+
 		entities.create()
 		        .as( Library.class )
 		        .entityType( Library.class, true )
@@ -61,12 +65,16 @@ public class LibraryConfiguration implements EntityConfigurer
 				                      .labelPrinter( ( library, locale ) -> library.getName() )
 				                      .saveMethod( library -> {
 					                      if ( library.id == null ) {
-					                      	library.id = UUID.randomUUID().toString();
+						                      library.id = UUID.randomUUID().toString();
 					                      }
 					                      libraries.put( library.id, library );
 					                      return library;
 				                      } )
 				                      .deleteByIdMethod( libraries::remove )
+		        )
+		        .properties(
+				        props -> props.property( "books[]" )
+				                      .attribute( Printer.class, ( book, locale ) -> ( (Book) book ).getTitle() )
 		        )
 		        .attribute(
 				        ( configuration, attributes ) ->
@@ -75,13 +83,37 @@ public class LibraryConfiguration implements EntityConfigurer
 								        new CollectionEntityQueryExecutor<>( libraries.values(), configuration.getPropertyRegistry() )
 						        )
 		        )
+		        .detailView()
 		        .listView()
 		        .createFormView()
 		        .updateFormView()
 		        .deleteFormView()
-		        .show()
+		        .show();
 
-		;
+	}
+
+	private Library createExampleLibrary() {
+		Library library = new Library();
+		library.setId( "example" );
+		library.setName( "Some library" );
+
+		Book book = new Book();
+		book.setTitle( "Lord of the Rings" );
+		book.setGenre( EnumSet.of( Genre.FANTASY ) );
+
+		Author author = new Author();
+		author.setName( "JRR Tolkien" );
+		book.setAuthors( Collections.singletonList( author ) );
+
+		Publication publication = new Publication();
+		publication.setNumber( 1 );
+		publication.setListPrice( 22 );
+		publication.setPublicationDate( new Date() );
+		book.setPublications( Collections.singletonList( publication ) );
+
+		library.setBooks( Collections.singletonList( book ) );
+
+		return library;
 	}
 
 	private static final EntityFactory<Library> LIBRARY_FACTORY = new EntityFactory<Library>()

@@ -168,12 +168,14 @@ fieldset .help-block:last-child {
 
 .embedded-collection-readonly {
   .embedded-collection-items {
+    display: block;
     border: 1px solid #eaeaea;
     padding: 12px 12px 0 12px;
   }
 
   .embedded-collection-item > div {
     border: none;
+    display: block;
   }
 
   .embedded-collection-item {

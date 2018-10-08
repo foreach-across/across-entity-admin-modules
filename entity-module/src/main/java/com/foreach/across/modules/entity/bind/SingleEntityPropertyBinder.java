@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyContr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 import java.util.Objects;
@@ -165,8 +166,8 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 
 	/**
 	 * Resolve the {@link EntityPropertyBinder} for the property descriptor.
-	 * If the descriptor represents a nested property, the descriptor name of the current binder
-	 * will be considered a prefix and removed, and only the remaining name will be used for lookup.
+	 * If the descriptor represents a nested property, intermediate binders might get initialized
+	 * in order to correctly resolve the target property.
 	 * <p/></p>
 	 * This will initialize the child properties binder as if calling {@link #getProperties()}.
 	 *
@@ -174,6 +175,31 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 	 * @return binder for the property
 	 */
 	public EntityPropertyBinder resolvePropertyBinder( @NonNull EntityPropertyDescriptor descriptor ) {
+		if ( StringUtils.equals( descriptor.getName(), this.descriptor.getName() ) ) {
+			return this;
+
+		}
+		EntityPropertyDescriptor directChildProperty = findDirectChild( descriptor );
+
+		if ( directChildProperty != null ) {
+			EntityPropertyBinder binder = getProperties().get( directChildProperty.getTargetPropertyName() );
+			if ( directChildProperty != descriptor && binder instanceof SingleEntityPropertyBinder ) {
+				return ( (SingleEntityPropertyBinder) binder ).resolvePropertyBinder( descriptor );
+			}
+		}
+
 		return getProperties().get( descriptor.getTargetPropertyName() );
+	}
+
+	private EntityPropertyDescriptor findDirectChild( EntityPropertyDescriptor descriptor ) {
+		if ( descriptor.isNestedProperty() ) {
+			EntityPropertyDescriptor parent = descriptor.getParentDescriptor();
+			if ( !StringUtils.equals( parent.getName(), this.descriptor.getName() ) ) {
+				return findDirectChild( parent );
+			}
+			return descriptor;
+		}
+
+		return null;
 	}
 }

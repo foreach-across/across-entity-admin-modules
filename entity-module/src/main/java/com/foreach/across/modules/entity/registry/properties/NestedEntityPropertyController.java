@@ -106,10 +106,8 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	@Override
-	public <X, W, V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<X> entityType,
-	                                                                                                           Class<W> targetType,
-	                                                                                                           Class<V> propertyType ) {
-		return child.withBindingContext( entityType, targetType, propertyType );
+	public <V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<V> propertyType ) {
+		return child.withBindingContext( propertyType );
 	}
 
 	@Override

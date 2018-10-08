@@ -46,8 +46,15 @@ public abstract class AbstractValueTextPostProcessor<T extends ConfigurableTextV
 		Object propertyValue = EntityViewElementUtils.currentPropertyValue( builderContext );
 
 		if ( propertyValue != null ) {
-			element.setText( print( propertyValue, LocaleContextHolder.getLocale() ) );
+			String textToSet = print( propertyValue, LocaleContextHolder.getLocale(), builderContext );
+			if ( textToSet != null ) {
+				element.setText( textToSet );
+			}
 		}
+	}
+
+	protected String print( Object value, Locale locale, ViewElementBuilderContext builderContext ) {
+		return print( value, locale );
 	}
 
 	protected abstract String print( Object value, Locale locale );

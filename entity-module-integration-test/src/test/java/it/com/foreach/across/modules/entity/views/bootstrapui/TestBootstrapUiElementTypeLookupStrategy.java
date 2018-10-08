@@ -247,6 +247,12 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
+	public void enumValueShouldReturnValueForReadonly() {
+		assertEquals( BootstrapUiElements.TEXT, lookup( CompanyStatus.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.TEXT, lookup( CompanyStatus.class, ViewElementMode.LIST_VALUE ) );
+	}
+
+	@Test
 	@SuppressWarnings("unchecked")
 	public void singleEntityTypeShouldReturnSelectType() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
@@ -282,18 +288,28 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 		assertEquals( MultiValueElementBuilderFactory.ELEMENT_TYPE,
 		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+
+		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.LIST_VALUE ) );
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	public void collectionEnumShouldReturnOptions() {
-		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
-		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
-				Set.class, TypeDescriptor.valueOf( CompanyStatus.class )
-		);
-		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
+	public void collectionEnumShouldReturnOptionsForRegularControl() {
+		TypeDescriptor propertyType = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( CompanyStatus.class ) );
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, lookup( propertyType, ViewElementMode.CONTROL ) );
+	}
 
-		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+	@Test
+	public void collectionEnumShouldReturnSelectForFilterControl() {
+		TypeDescriptor propertyType = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( CompanyStatus.class ) );
+		assertEquals( BootstrapUiElements.SELECT, lookup( propertyType, ViewElementMode.FILTER_CONTROL ) );
+	}
+
+	@Test
+	public void collectionEnumShouldReturnTextForReadonly() {
+		TypeDescriptor propertyType = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( CompanyStatus.class ) );
+		assertEquals( BootstrapUiElements.TEXT, lookup( propertyType, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.TEXT, lookup( propertyType, ViewElementMode.LIST_VALUE ) );
 	}
 
 	@Test
@@ -316,7 +332,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 		when( descriptor.getName() ).thenReturn( "users" );
 		when( descriptor.getPropertyType() ).thenReturn( (Class) List.class );
-		when( descriptor.getPropertyTypeDescriptor()).thenReturn( TypeDescriptor.valueOf( List.class ) );
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( List.class ) );
 		when( descriptor.getPropertyRegistry() ).thenReturn( rootRegistry );
 		when( rootRegistry.getProperty( "users[]" ) ).thenReturn( member );
 		when( member.getPropertyType() ).thenReturn( (Class) Client.class );
@@ -359,6 +375,13 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	private String lookup( Class propertyType, ViewElementMode mode ) {
 		when( descriptor.getPropertyType() ).thenReturn( propertyType );
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( propertyType ) );
+		return strategy.findElementType( descriptor, mode );
+	}
+
+	@SuppressWarnings("unchecked")
+	private String lookup( TypeDescriptor propertyType, ViewElementMode mode ) {
+		when( descriptor.getPropertyType() ).thenReturn( (Class) propertyType.getObjectType() );
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( propertyType );
 		return strategy.findElementType( descriptor, mode );
 	}
 

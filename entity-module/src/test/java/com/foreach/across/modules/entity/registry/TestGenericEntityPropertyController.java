@@ -72,7 +72,7 @@ public class TestGenericEntityPropertyController
 		          .valueFetcher( BigDecimal::longValue );
 		assertThat( controller.fetchValue( context ) ).isEqualTo( 10L );
 
-		controller.withBindingContext( String.class, BigDecimal.class, Long.class )
+		controller.withBindingContext( Long.class )
 		          .valueFetcher( ctx -> ctx.<BigDecimal>getTarget().longValue() + ctx.<String>getEntity().length() );
 		assertThat( controller.fetchValue( context ) ).isEqualTo( 13L );
 	}
@@ -93,7 +93,7 @@ public class TestGenericEntityPropertyController
 		          .createValueFunction( d -> d.longValue() + 10L );
 		assertThat( controller.createValue( context ) ).isEqualTo( 20L );
 
-		controller.withBindingContext( String.class, BigDecimal.class, Long.class )
+		controller.withBindingContext( Long.class )
 		          .createValueFunction( ctx -> ctx.<BigDecimal>getTarget().longValue() + ctx.<String>getEntity().length() );
 		assertThat( controller.createValue( context ) ).isEqualTo( 13L );
 
@@ -109,7 +109,7 @@ public class TestGenericEntityPropertyController
 		          .createValueSupplier( () -> 333L );
 		assertThat( controller.createValue( context ) ).isEqualTo( 333L );
 
-		controller.withBindingContext( String.class, BigDecimal.class, Long.class )
+		controller.withBindingContext( Long.class )
 		          .createValueSupplier( () -> 222L );
 		assertThat( controller.createValue( context ) ).isEqualTo( 222L );
 	}

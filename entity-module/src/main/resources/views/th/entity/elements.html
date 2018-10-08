@@ -37,26 +37,4 @@
     </table>
     <input type="hidden" th:name="${'_' + component.controlName}" value="on"/>
 </div>
-
-<!--/* Renders embedded collection control */-->
-<div th:fragment="embedded-collection(component)"
-     class="form-group js-embedded-collection-form-group"
-     data-source-property="entity.phones"
-     data-target-property="extensions[EmbeddedCollections][entity.phones]">
-    <a style="float: right" data-action="add-item"><span class="glyphicon glyphicon-plus-sign"></span></a>
-    <label>Phones</label>
-    <fieldset data-role="items">
-    </fieldset>
-    <div data-role="templates" class="hidden">
-        <script data-role="edit-item-template" type="text/html">
-            <a style="float: right" data-action="remove-item"><span style="color:red" class="glyphicon glyphicon-remove"></span></a>
-            <across:view element="${component.children[0]}" />
-        </script>
-        <div data-role="view-item-template">
-
-        </div>
-    </div>
-    <input type="hidden" name="embedded" value="entity.phones"/>
-    <input type="hidden" data-role="item-count" value="0"/>
-</div>
 </html>

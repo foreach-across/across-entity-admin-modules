@@ -219,10 +219,11 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 				if ( memberDescriptor != null ) {
 					EntityConfiguration<?> target = entityRegistry.getEntityConfiguration( memberDescriptor.getPropertyType() );
 
+					boolean isEnum = memberDescriptor.getPropertyType().isEnum();
 					boolean isRegisteredEntity = target != null && target.hasEntityModel();
 					Boolean memberIsEmbedded = isEmbedded( memberDescriptor, target );
 
-					return ( memberIsEmbedded == null && !isRegisteredEntity ) || Boolean.TRUE.equals( memberIsEmbedded );
+					return ( memberIsEmbedded == null && !isRegisteredEntity && !isEnum ) || Boolean.TRUE.equals( memberIsEmbedded );
 				}
 			}
 		}

@@ -185,6 +185,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 		        .createFormView( fvb -> fvb.showProperties( "id", "generateId", "name", "manager", "stockCount", "brands" ) )
 		        .updateFormView( fvb -> fvb.showProperties( "name", "manager", "brands", "stockCount" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
+		        .detailView()
 		        .show()
 		        .attribute( ( configuration, attributes ) ->
 				                    attributes.setAttribute( EntityQueryExecutor.class,

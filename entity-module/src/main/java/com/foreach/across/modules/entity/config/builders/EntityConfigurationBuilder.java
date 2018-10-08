@@ -367,7 +367,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	@Override
-	public EntityConfigurationBuilder detailView() {
+	public EntityConfigurationBuilder<T> detailView() {
 		return (EntityConfigurationBuilder<T>) super.detailView();
 	}
 
