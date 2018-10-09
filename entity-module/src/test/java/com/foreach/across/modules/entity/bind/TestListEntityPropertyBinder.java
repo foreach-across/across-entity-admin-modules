@@ -485,4 +485,14 @@ public class TestListEntityPropertyBinder
 					assertThat( fe.getCode() ).isEqualTo( "bad-value" );
 				} );
 	}
+
+	@Test
+	public void resolveNonExistingChildProperty() {
+		assertThat( property.resolvePropertyBinder( mock( EntityPropertyDescriptor.class ) ) ).isNull();
+	}
+
+	@Test
+	public void resolveSelfProperty() {
+		assertThat( property.resolvePropertyBinder( collectionDescriptor ) ).isSameAs( property );
+	}
 }

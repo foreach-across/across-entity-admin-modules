@@ -241,6 +241,15 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		}
 	}
 
+	@Override
+	public EntityPropertyBinder resolvePropertyBinder( EntityPropertyDescriptor descriptor ) {
+		if ( StringUtils.equals( descriptor.getName(), collectionDescriptor.getName() ) ) {
+			return this;
+		}
+
+		return null;
+	}
+
 	private Item createItem( String key ) {
 		Item item = new Item( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
 
@@ -305,9 +314,5 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		public Object getEntryValue() {
 			return value.getValue();
 		}
-
-		/*private String memberBinderPath() {
-			return this == template ? collectionBinderPath() + ".template" : collectionBinderPath() + ".entries[" + key + "].value";
-		}*/
 	}
 }

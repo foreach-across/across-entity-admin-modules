@@ -243,7 +243,7 @@ public abstract class EntityPropertyControlName
 		}
 
 		if ( descriptor.isNestedProperty() ) {
-			return forChildProperty( StringUtils.removeStart( descriptor.getName(), resolvePathPrefix() ) );
+			return forChildProperty( removePrefix( descriptor.getName(), resolvePathPrefix() ) );
 		}
 
 		return forChildProperty( descriptor.getName() );
@@ -266,6 +266,14 @@ public abstract class EntityPropertyControlName
 			return new ForProperty.MapEntry( binderPrefix, propertyName, parent );
 		}
 		return new ForProperty.SingleValue( binderPrefix, propertyName, parent );
+	}
+
+	private static String dotJoin( String prefix, String suffix ) {
+		return suffix.startsWith( "[" ) || StringUtils.isEmpty( prefix ) ? prefix + suffix : prefix + "." + suffix;
+	}
+
+	private static String removePrefix( String path, String prefix ) {
+		return StringUtils.removeStart( StringUtils.removeStart( path, prefix ), "." );
 	}
 
 	abstract String resolvePathPrefix();
@@ -298,7 +306,7 @@ public abstract class EntityPropertyControlName
 				EntityPropertyDescriptor parentDescriptor = descriptor.getParentDescriptor();
 				ForProperty parent = forChildProperty( parentDescriptor );
 
-				String childPropertyName = StringUtils.removeStart( descriptor.getName(), parent.resolvePathPrefix() );
+				String childPropertyName = EntityPropertyControlName.removePrefix( descriptor.getName(), parent.resolvePathPrefix() );
 
 				return parent.forHandlingType( EntityPropertyHandlingType.forProperty( parentDescriptor ) ).forChildProperty( childPropertyName );
 			}
@@ -400,7 +408,15 @@ public abstract class EntityPropertyControlName
 		 * @return single value control name
 		 */
 		public SingleValue asSingleValue() {
-			return this instanceof SingleValue ? (SingleValue) this : new SingleValue( binderPrefix, propertyName, parent );
+			if ( this instanceof SingleValue ) {
+				return (SingleValue) this;
+			}
+
+		/*	if ( StringUtils.isEmpty( propertyName ) && parent != null ) {
+				return parent.asProperty().asSingleValue();
+			}
+*/
+			return new SingleValue( binderPrefix, propertyName, parent );
 		}
 
 		/**
@@ -429,12 +445,12 @@ public abstract class EntityPropertyControlName
 			String path = resolvePropertyPathSegment();
 
 			if ( parent != null ) {
-				if ( parent instanceof BinderProperty ) {
+				if ( parent instanceof BinderProperty && !StringUtils.isEmpty( path ) ) {
 					BinderProperty parentProperty = (BinderProperty) parent;
-					return parentProperty.withInitializedValue() + "." + path;
+					return EntityPropertyControlName.dotJoin( parentProperty.withInitializedValue().toString(), path );
 				}
 				else {
-					return parent.toString() + "." + path;
+					return StringUtils.removeEnd( dotJoin( parent.toString(), path ), "." );
 				}
 			}
 
@@ -447,7 +463,7 @@ public abstract class EntityPropertyControlName
 
 		@Override
 		protected String resolvePathPrefix() {
-			return ( parent != null ? parent.resolvePathPrefix() + propertyPath : propertyPath ) + ".";
+			return parent != null ? dotJoin( parent.resolvePathPrefix(), propertyPath ) : propertyPath;
 		}
 
 		/**
@@ -733,22 +749,23 @@ public abstract class EntityPropertyControlName
 				if ( parent != null ) {
 					if ( parent instanceof ForProperty ) {
 						ForProperty parentPath = (ForProperty) parent;
-						return parentPath.asBinderItem().binderItemPath() + "." + current.binderPrefix + "[" + current.propertyName + "]" + current
-								.binderSuffix() + suffix;
+						return parentPath.asBinderItem().binderItemPath() + propertiesBinderSegment( current ) + current.binderSuffix() + suffix;
 					}
 					else if ( parent instanceof BinderProperty ) {
 						BinderProperty parentProperty = (BinderProperty) parent;
-						return parentProperty.binderItemPath() + "." + current.binderPrefix + "[" + current.propertyName + "]" + current
-								.binderSuffix() + suffix;
+						return parentProperty.binderItemPath() + propertiesBinderSegment( current ) + current.binderSuffix() + suffix;
 					}
 					else if ( parent instanceof BinderPropertyValue ) {
 						BinderPropertyValue parentPropertyValue = (BinderPropertyValue) parent;
-						return parentPropertyValue.getBinderProperty().binderItemPath() + "." + current.binderPrefix
-								+ "[" + current.propertyName + "]" + current.binderSuffix() + suffix;
+						return parentPropertyValue.getBinderProperty().binderItemPath() + propertiesBinderSegment( current ) + current.binderSuffix() + suffix;
 					}
 				}
 
-				return current.binderPrefix + "[" + current.propertyName + "]" + current.binderSuffix() + suffix;
+				return StringUtils.removeStart( propertiesBinderSegment( current ), "." ) + current.binderSuffix() + suffix;
+			}
+
+			private String propertiesBinderSegment( ForProperty property ) {
+				return StringUtils.isEmpty( property.propertyName ) ? "" : "." + property.binderPrefix + "[" + property.propertyName + "]";
 			}
 
 			private ForProperty getProperty() {
@@ -794,7 +811,7 @@ public abstract class EntityPropertyControlName
 				}
 
 				public String toString() {
-					return BinderProperty.this.binderItemPath() + "." + suffix;
+					return EntityPropertyControlName.dotJoin( BinderProperty.this.binderItemPath(), suffix );
 				}
 
 				@Override

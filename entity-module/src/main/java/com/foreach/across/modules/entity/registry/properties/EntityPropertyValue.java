@@ -66,4 +66,16 @@ public final class EntityPropertyValue<T>
 	public boolean isModified() {
 		return deleted || !Objects.equals( oldValue, newValue );
 	}
+
+	/**
+	 * Create a fixed property value, only {@link #getNewValue()} will return the value specified.
+	 * {@link #getOldValue()} will be {@code null} and {@link #isDeleted()} will return {@code false}.
+	 *
+	 * @param value for the property
+	 * @param <T>   type of the property
+	 * @return property value
+	 */
+	public static <T> EntityPropertyValue<T> of( T value ) {
+		return new EntityPropertyValue<>( null, value, false );
+	}
 }

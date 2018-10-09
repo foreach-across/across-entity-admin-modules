@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.bind.SingleEntityPropertyBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -158,46 +159,33 @@ public class EntityViewElementUtils
 	 * @see #currentPropertyValue(ViewElementBuilderContext)
 	 */
 	public static <U> U currentPropertyValue( @NonNull ViewElementBuilderContext builderContext, @NonNull Class<U> expectedType ) {
-		EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
-
-		if ( descriptor == null ) {
-			return null;
-		}
-
 		Object propertyValue;
+		EntityPropertyValue fixedValue = builderContext.getAttribute( EntityPropertyValue.class );
 
-		switch ( EntityPropertyHandlingType.forProperty( descriptor ) ) {
-			case BINDER:
-				EntityPropertyBinder propertyBinder = resolvePropertyBinder( builderContext, descriptor );
-				if ( propertyBinder != null ) {
-					propertyValue = propertyBinder.getValue();
+		if ( fixedValue != null ) {
+			propertyValue = fixedValue.getNewValue();
+		}
+		else {
+			EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
+
+			if ( descriptor == null ) {
+				return null;
+			}
+
+			switch ( EntityPropertyHandlingType.forProperty( descriptor ) ) {
+				case BINDER:
+					EntityPropertyBinder propertyBinder = resolvePropertyBinder( builderContext, descriptor );
+					if ( propertyBinder != null ) {
+						propertyValue = propertyBinder.getValue();
+						break;
+					}
+				default:
+					propertyValue = descriptor.getController().fetchValue( resolveBindingContext( builderContext ) );
 					break;
-				}
-			default:
-				propertyValue = descriptor.getController().fetchValue( resolveBindingContext( builderContext ) );
-				break;
+			}
 		}
 
 		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
-
-//		EntityPropertyBinder propertyBinder = currentPropertyBinder( builderContext );
-//
-//		Object propertyValue;
-//
-//		if ( propertyBinder != null ) {
-//			propertyValue = propertyBinder.getValue();
-//		}
-//		else {
-//			EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
-//
-//			if ( descriptor == null ) {
-//				return null;
-//			}
-//
-//			propertyValue = resolveValue( null, descriptor, currentEntity( builderContext ) );
-//		}
-//
-//		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
 	}
 
 	private static EntityPropertyBindingContext resolveBindingContext( ViewElementBuilderContext builderContext ) {
@@ -237,8 +225,8 @@ public class EntityViewElementUtils
 	private static EntityPropertyBinder resolvePropertyBinder( ViewElementBuilderContext builderContext, EntityPropertyDescriptor descriptor ) {
 		EntityPropertyBinder parent = builderContext.getAttribute( EntityPropertyBinder.class );
 
-		if ( parent instanceof SingleEntityPropertyBinder ) {
-			return ( (SingleEntityPropertyBinder) parent ).resolvePropertyBinder( descriptor );
+		if ( parent != null ) {
+			return parent.resolvePropertyBinder( descriptor );
 		}
 
 		EntityPropertiesBinder properties = builderContext.getAttribute( EntityPropertiesBinder.class );
@@ -267,5 +255,19 @@ public class EntityViewElementUtils
 	 */
 	public static void setCurrentEntity( @NonNull ViewElementBuilderContext builderContext, Object value ) {
 		builderContext.setAttribute( EntityViewModel.ENTITY, value );
+	}
+
+	/**
+	 * Set a fixed {@link EntityPropertyValue} on the builder context. Care should be taken when using this approach
+	 * as a property value set this way will take precedence over all other mechanisms. If a parent context contains
+	 * a fixed property value, it will be used by all child contexts.
+	 * <p/>
+	 * Especially useful for test scenarios.
+	 *
+	 * @param builderContext on which to set the property value
+	 * @param value          for the property
+	 */
+	public static void setCurrentPropertyValue( @NonNull ViewElementBuilderContext builderContext, Object value ) {
+		builderContext.setAttribute( EntityPropertyValue.class, EntityPropertyValue.of( value ) );
 	}
 }

@@ -228,7 +228,6 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return beforeValidate >= errors.getErrorCount();
 	}
 
-
 	/**
 	 * While binding is enabled, the items collection will not remove any (possibly) deleted items.
 	 * When explicitly disabling binding, the items will be cleared of any deleted items and will be
@@ -251,6 +250,15 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 				items.entrySet().removeIf( e -> e.getValue().isDeleted() );
 			}
 		}
+	}
+
+	@Override
+	public EntityPropertyBinder resolvePropertyBinder( EntityPropertyDescriptor descriptor ) {
+		if ( StringUtils.equals( descriptor.getName(), collectionDescriptor.getName() ) ) {
+			return this;
+		}
+
+		return null;
 	}
 
 	/**

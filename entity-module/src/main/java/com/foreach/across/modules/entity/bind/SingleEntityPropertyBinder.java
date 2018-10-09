@@ -174,21 +174,25 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 	 * @param descriptor to resolve
 	 * @return binder for the property
 	 */
+	@Override
 	public EntityPropertyBinder resolvePropertyBinder( @NonNull EntityPropertyDescriptor descriptor ) {
 		if ( StringUtils.equals( descriptor.getName(), this.descriptor.getName() ) ) {
 			return this;
-
 		}
+
 		EntityPropertyDescriptor directChildProperty = findDirectChild( descriptor );
 
 		if ( directChildProperty != null ) {
 			EntityPropertyBinder binder = getProperties().get( directChildProperty.getTargetPropertyName() );
-			if ( directChildProperty != descriptor && binder instanceof SingleEntityPropertyBinder ) {
-				return ( (SingleEntityPropertyBinder) binder ).resolvePropertyBinder( descriptor );
+			if ( directChildProperty != descriptor ) {
+				return binder.resolvePropertyBinder( descriptor );
+			}
+			else {
+				return binder;
 			}
 		}
 
-		return getProperties().get( descriptor.getTargetPropertyName() );
+		return null;
 	}
 
 	private EntityPropertyDescriptor findDirectChild( EntityPropertyDescriptor descriptor ) {

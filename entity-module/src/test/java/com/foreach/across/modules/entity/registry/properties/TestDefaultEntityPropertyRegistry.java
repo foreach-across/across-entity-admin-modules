@@ -147,6 +147,8 @@ public class TestDefaultEntityPropertyRegistry
 		assertEquals( TypeDescriptor.valueOf( String.class ), member.getPropertyTypeDescriptor() );
 		assertSame( member, registry.getProperty( "aliases[]" ) );
 		assertTrue( member.isHidden() );
+		assertTrue( member.isNestedProperty() );
+		assertSame( descriptor, member.getParentDescriptor() );
 	}
 
 	@Test

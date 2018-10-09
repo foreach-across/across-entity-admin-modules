@@ -25,6 +25,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.http.client.utils.CloneUtils;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -32,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
 import org.springframework.format.annotation.NumberFormat;
+import org.springframework.util.SerializationUtils;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -99,7 +101,7 @@ public class LibraryConfiguration implements EntityConfigurer
 
 		Book book = new Book();
 		book.setTitle( "Lord of the Rings" );
-		book.setGenre( EnumSet.of( Genre.FANTASY ) );
+		book.setGenres( Collections.singletonList( EnumSet.of( Genre.FANTASY ) ) );
 
 		Author author = new Author();
 		author.setName( "JRR Tolkien" );
@@ -182,7 +184,7 @@ public class LibraryConfiguration implements EntityConfigurer
 		@Length(max = 100)
 		private String title;
 
-		private Set<Genre> genre = Collections.emptySet();
+		private List<Set<Genre>> genres = Collections.emptyList();
 
 		private List<Author> authors = Collections.emptyList();
 
@@ -192,7 +194,11 @@ public class LibraryConfiguration implements EntityConfigurer
 		public Book copy() {
 			Book b = new Book();
 			b.title = title;
-			b.genre = new HashSet<>( genre );
+
+			b.genres = new ArrayList<>( genres.size() );
+			genres.stream()
+			      .map( HashSet::new )
+			      .forEach( b.genres::add );
 			b.authors = authors.stream().map( Author::copy ).collect( Collectors.toList() );
 			b.publications = publications.stream().map( Publication::copy ).collect( Collectors.toList() );
 			return b;
@@ -234,7 +240,7 @@ public class LibraryConfiguration implements EntityConfigurer
 		}
 	}
 
-	enum Genre
+	enum Genre implements Serializable
 	{
 		FANTASY,
 		CRIME,

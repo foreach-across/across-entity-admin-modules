@@ -92,7 +92,13 @@ public class TestEntityViewElementUtils
 	}
 
 	@Test
-	public void currentPropertyValueIsReturnValueOfValueFetcherWithCurrentEntity() {
+	public void currentPropertyValueUsesFixedValueIfSet() {
+		setCurrentPropertyValue( builderContext, "123" );
+		assertEquals( "123", currentPropertyValue( builderContext ) );
+	}
+
+	@Test
+	public void currentPropertyValueIsReturnValueOfControllerWithCurrentEntity() {
 		when( descriptor.getAttribute( EntityPropertyHandlingType.class ) ).thenReturn( EntityPropertyHandlingType.DIRECT );
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
 		setCurrentEntity( builderContext, "my entity" );
@@ -100,11 +106,6 @@ public class TestEntityViewElementUtils
 		when( controller.fetchValue( EntityPropertyBindingContext.forReading( "my entity" ) ) ).thenReturn( 123L );
 
 		assertEquals( 123L, currentPropertyValue( builderContext ) );
-	}
-
-	@Test
-	public void currentPropertyValueUsesBinderIfHandlingType() {
-
 	}
 
 	@Test

@@ -18,7 +18,9 @@ package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
+import lombok.NonNull;
 import org.springframework.validation.Errors;
 
 /**
@@ -155,6 +157,16 @@ public interface EntityPropertyBinder
 	 * @return true if validation was successful, no validation errors have been added for this property
 	 */
 	boolean validate( Errors errors, Object... validationHints );
+
+	/**
+	 * Attempt to resolve a child property binder for the given property descriptor.
+	 * The descriptor is expected to represent either the same property the current binder is for,
+	 * or a child property.
+	 *
+	 * @param descriptor for the property you want to resolve
+	 * @return property binder
+	 */
+	EntityPropertyBinder resolvePropertyBinder( @NonNull EntityPropertyDescriptor descriptor );
 
 	/**
 	 * Enable binding for this property. This signals that property binding is in progress, which allows

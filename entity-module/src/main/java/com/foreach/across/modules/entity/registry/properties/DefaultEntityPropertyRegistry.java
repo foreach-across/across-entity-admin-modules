@@ -149,6 +149,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				descriptor.setReadable( true );
 				descriptor.setWritable( true );
 				descriptor.setHidden( true );
+				descriptor.setParentDescriptor( parent );
 
 				( (ConfigurableEntityPropertyController) descriptor.getController() )
 						.validator( defaultMemberValidator )

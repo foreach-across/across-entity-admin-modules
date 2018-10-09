@@ -402,11 +402,13 @@ public class TestSingleEntityPropertyBinder
 	}
 
 	@Test
-	public void resolveChildProperty() {
+	public void resolveValidChildProperty() {
 		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
 		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
 
 		EntityPropertyDescriptor childDescriptor = mock( EntityPropertyDescriptor.class );
+		when( childDescriptor.isNestedProperty() ).thenReturn( true );
+		when( childDescriptor.getParentDescriptor() ).thenReturn( descriptor );
 		when( childDescriptor.getTargetPropertyName() ).thenReturn( "user.name" );
 
 		EntityPropertyBinder one = mock( EntityPropertyBinder.class );
@@ -417,10 +419,8 @@ public class TestSingleEntityPropertyBinder
 
 	@Test
 	public void resolveNonExistingChildProperty() {
-		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
-
 		assertThat( property.resolvePropertyBinder( mock( EntityPropertyDescriptor.class ) ) ).isNull();
+		verifyZeroInteractions( binder );
 	}
 
 	@Test

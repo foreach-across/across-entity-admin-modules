@@ -205,10 +205,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 			optionGenerator.setEnhancer( consumer );
 		}
 
-		if ( !optionGenerator.hasValueFetcher() ) {
-			optionGenerator.setValueFetcher( descriptor.getValueFetcher() );
-		}
-
 		if ( !optionGenerator.hasOptions() ) {
 			optionGenerator.setOptions( determineOptionBuilder( descriptor, memberType, optionConfiguration ) );
 		}
@@ -333,7 +329,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	public void setEntityRegistry( EntityRegistry entityRegistry ) {
 		this.entityRegistry = entityRegistry;
 	}
-	
+
 	@Autowired
 	@Qualifier("mvcConversionService")
 	public void setConversionService( ConversionService conversionService ) {

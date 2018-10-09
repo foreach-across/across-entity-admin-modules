@@ -533,4 +533,14 @@ public class TestMapEntityPropertyBinder
 					assertThat( fe.getCode() ).isEqualTo( "bad" );
 				} );
 	}
+
+	@Test
+	public void resolveNonExistingChildProperty() {
+		assertThat( property.resolvePropertyBinder( mock( EntityPropertyDescriptor.class ) ) ).isNull();
+	}
+
+	@Test
+	public void resolveSelfProperty() {
+		assertThat( property.resolvePropertyBinder( collectionDescriptor ) ).isSameAs( property );
+	}
 }

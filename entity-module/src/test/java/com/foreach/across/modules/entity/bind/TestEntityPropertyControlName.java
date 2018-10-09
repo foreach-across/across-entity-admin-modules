@@ -136,8 +136,7 @@ public class TestEntityPropertyControlName
 	@Test
 	public void childOfIndexerProperty() {
 		EntityPropertyControlName.ForProperty address = forProperty( "address[]" ).asCollectionItem().withIndex( 10 )
-		                                                                          .withBinderItemKey(
-				                                                                          "abc" );
+		                                                                          .withBinderItemKey( "abc" );
 		EntityPropertyControlName.ForProperty child = address.forChildProperty( "street" );
 		controlName( child ).is( "address[10].street" );
 		controlName( child.asProperty() ).is( "address[10].street" );
@@ -163,6 +162,22 @@ public class TestEntityPropertyControlName
 		controlName( child.asBinderItem().toItemPath() ).is( "properties[address].items[abc].properties[street]" );
 		controlName( child.asBinderItem().withValue() ).is( "properties[address].items[abc].properties[street].value" );
 		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].items[abc].properties[street].initializedValue" );
+	}
+
+	@Test
+	public void childOfIndexerAsIndexerProperty() {
+		EntityPropertyControlName.ForProperty address = forProperty( "address[]" )
+				.asCollectionItem()
+				.withIndex( 10 )
+				.withBinderItemKey( "abc" );
+		EntityPropertyControlName.ForProperty child = address.forChildProperty( "[]" ).asCollectionItem().withIndex( 1 );
+
+		controlName( child ).is( "address[10][1]" );
+		controlName( child.asProperty() ).is( "address[10][1]" );
+		controlName( child.asBinderItem() ).is( "properties[address].items[abc].items[1].value" );
+		controlName( child.asBinderItem().toItemPath() ).is( "properties[address].items[abc].items[1]" );
+		controlName( child.asBinderItem().withValue() ).is( "properties[address].items[abc].items[1].value" );
+		controlName( child.asBinderItem().withInitializedValue() ).is( "properties[address].items[abc].items[1].initializedValue" );
 	}
 
 	@Test
@@ -618,6 +633,57 @@ public class TestEntityPropertyControlName
 						.withInitializedValue()
 						.forChildProperty( addressDescriptor )
 		).is( "properties[user].items[10].initializedValue.address" );
+	}
+
+	@Test
+	public void nestedIndexerProperty() {
+		SimpleEntityPropertyDescriptor userDescriptor = new SimpleEntityPropertyDescriptor( "user[]" );
+		SimpleEntityPropertyDescriptor nestedUserCollectionDescriptor = new SimpleEntityPropertyDescriptor( "user[][]" );
+		nestedUserCollectionDescriptor.setParentDescriptor( userDescriptor );
+
+		controlName(
+				forProperty( userDescriptor )
+						.asCollectionItem()
+						.withBinderItemKey( 10 )
+						.asBinderItem()
+		).is( "properties[user].items[10].value" );
+
+		EntityPropertyControlName.ForProperty collection = forProperty( userDescriptor )
+				.asCollectionItem()
+				.withBinderItemKey( 10 )
+				.asBinderItem()
+				.forChildProperty( nestedUserCollectionDescriptor );
+		controlName( collection ).is( "properties[user].items[10].initializedValue[]" );
+		controlName( collection.asProperty() ).is( "properties[user].items[10].initializedValue[]" );
+		controlName( collection.asBinderItem() ).is( "properties[user].items[10].items[].value" );
+		controlName( collection.asBinderItem().withValue() ).is( "properties[user].items[10].items[].value" );
+		controlName( collection.asBinderItem().withInitializedValue() ).is( "properties[user].items[10].items[].initializedValue" );
+		controlName( collection.asSingleValue() ).is( "properties[user].items[10].value" );
+		controlName( collection.asSingleValue().asCollectionItem() ).is( "properties[user].items[10].initializedValue[]" );
+
+		userDescriptor = new SimpleEntityPropertyDescriptor( "users[value]" );
+		nestedUserCollectionDescriptor = new SimpleEntityPropertyDescriptor( "users[value][]" );
+		nestedUserCollectionDescriptor.setParentDescriptor( userDescriptor );
+
+		controlName(
+				forProperty( userDescriptor )
+						.asMapEntry()
+						.withBinderEntryKey( "123" )
+						.asBinderEntryValue()
+		).is( "properties[users].entries[123].value.value" );
+
+		EntityPropertyControlName.ForProperty map = forProperty( userDescriptor )
+				.asMapEntry()
+				.withBinderEntryKey( "123" )
+				.asBinderEntryValue()
+				.forChildProperty( nestedUserCollectionDescriptor );
+		controlName( map ).is( "properties[users].entries[123].value.initializedValue[]" );
+		controlName( map.asProperty() ).is( "properties[users].entries[123].value.initializedValue[]" );
+		controlName( map.asBinderItem() ).is( "properties[users].entries[123].value.items[].value" );
+		controlName( map.asBinderItem().withValue() ).is( "properties[users].entries[123].value.items[].value" );
+		controlName( map.asBinderItem().withInitializedValue() ).is( "properties[users].entries[123].value.items[].initializedValue" );
+		controlName( map.asSingleValue() ).is( "properties[users].entries[123].value.value" );
+		controlName( map.asSingleValue().asCollectionItem() ).is( "properties[users].entries[123].value.initializedValue[]" );
 	}
 
 	private ControlNameTest controlName( Object controlName ) {
