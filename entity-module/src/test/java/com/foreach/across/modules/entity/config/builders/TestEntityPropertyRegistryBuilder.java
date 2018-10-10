@@ -20,12 +20,14 @@ import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryB
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistrySupport;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -33,6 +35,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -66,6 +69,27 @@ public class TestEntityPropertyRegistryBuilder
 
 		assertSame( propertyBuilder, builder.property( "test" ) );
 		assertNotSame( propertyBuilder, builder.property( "other" ) );
+	}
+
+	@Test
+	public void parentPropertyDescriptorReturnsExceptionWhenNotFound() {
+		PropertyDescriptorBuilder propertyBuilder = builder.property( "test" );
+		propertyBuilder.parent( "unknown" );
+		assertThatThrownBy( () -> builder.apply( registry ) ).isInstanceOf( IllegalArgumentException.class )
+		                                                     .hasMessage( "Cannot find parent property [unknown] on property: test" );
+	}
+
+	@Test
+	public void parentPropertyDescriptorSetsParentCorrectly() {
+		PropertyDescriptorBuilder propertyBuilder = builder.property( "test" );
+		propertyBuilder.parent( "unknown" );
+		SimpleEntityPropertyDescriptor propertyDescriptor = new SimpleEntityPropertyDescriptor( "unknown" );
+		when( registry.getProperty( "unknown" ) ).thenReturn( propertyDescriptor );
+		ArgumentCaptor<MutableEntityPropertyDescriptor> argumentCaptor = ArgumentCaptor.forClass( MutableEntityPropertyDescriptor.class );
+		builder.apply( registry );
+		verify( registry ).register( argumentCaptor.capture() );
+
+		assertSame( propertyDescriptor, argumentCaptor.getValue().getParentDescriptor() );
 	}
 
 	@Test

@@ -119,6 +119,14 @@ public class EntityPropertyRegistryBuilder
 	                           PropertyDescriptorBuilder builder ) {
 		MutableEntityPropertyDescriptor existing = propertyRegistry.getProperty( propertyName );
 
+		if ( builder.parent != null ) {
+			MutableEntityPropertyDescriptor parentPropertyDescriptor = propertyRegistry.getProperty( builder.parent );
+			if ( parentPropertyDescriptor == null ) {
+				throw new IllegalArgumentException( "Cannot find parent property [" + builder.parent + "] on property: " + propertyName );
+			}
+			builder.parent( parentPropertyDescriptor );
+		}
+
 		if ( existing != null ) {
 			builder.apply( existing );
 		}
@@ -152,6 +160,7 @@ public class EntityPropertyRegistryBuilder
 		private final EntityPropertyRegistryBuilder registryBuilder;
 
 		private Integer order;
+		private String parent;
 
 		PropertyDescriptorBuilder( EntityPropertyRegistryBuilder registryBuilder, String propertyName ) {
 			super( propertyName );
@@ -172,6 +181,11 @@ public class EntityPropertyRegistryBuilder
 		@Override
 		public PropertyDescriptorBuilder original( EntityPropertyDescriptor original ) {
 			return (PropertyDescriptorBuilder) super.original( original );
+		}
+
+		public PropertyDescriptorBuilder parent( String parent ) {
+			this.parent = parent;
+			return this;
 		}
 
 		@Override
