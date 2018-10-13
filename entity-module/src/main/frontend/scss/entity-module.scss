@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@import 'settings';
 @import 'modules/_entity-query-filter-form';
 
 .sortable {
@@ -45,6 +46,73 @@ table > tbody > tr > td.row-actions {
   padding-left: 20px;
   padding-right: 20px;
   white-space: nowrap;
+}
+
+table > tbody > tr[data-summary-url] {
+  > td {
+    cursor: pointer;
+
+    &:first-child:before {
+      font-family: FontAwesome;
+      content: "\f055";
+      margin-right: 10px;
+      margin-left: 2px;
+      color: $color-success;
+    }
+  }
+
+  &.info > td:first-child:before {
+    color: lighten($color-info, 10%);
+    margin-left: 0;
+  }
+  &.success > td:first-child:before {
+    color: lighten($color-success, 10%);
+    margin-left: 0;
+  }
+  &.danger > td:first-child:before {
+    color: lighten($color-danger, 10%);
+    margin-left: 0;
+  }
+  &.warning > td:first-child:before {
+    color: lighten($color-warning, 10%);
+    margin-left: 0;
+  }
+
+  &.summary-expanded {
+    > td {
+      border-bottom: none;
+    }
+    &.info > td:first-child:before {
+      color: darken($color-info, 20%);
+      margin-left: 0;
+    }
+    &.success > td:first-child:before {
+      color: darken($color-success, 20%);
+      margin-left: 0;
+    }
+    &.danger > td:first-child:before {
+      color: darken($color-danger, 20%);
+      margin-left: 0;
+    }
+    &.warning > td:first-child:before {
+      color: darken($color-warning, 20%);
+      margin-left: 0;
+    }
+
+    > td {
+      &:first-child:before {
+        content: "\f056";
+        color: $color-danger;
+      }
+    }
+  }
+
+}
+
+table > tbody > tr[data-summary], table > tbody > tr[data-summary] > td {
+  &:hover {
+    background-color: inherit;
+  }
 }
 
 .element-fieldset {
