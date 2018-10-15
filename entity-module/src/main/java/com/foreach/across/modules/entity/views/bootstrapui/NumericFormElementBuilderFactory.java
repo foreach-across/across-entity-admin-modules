@@ -27,11 +27,9 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHe
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.NumericValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
@@ -146,10 +144,6 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 	 */
 	private class ControlBuilderFactory extends EntityViewElementBuilderFactorySupport<NumericFormElementBuilder>
 	{
-		public ControlBuilderFactory() {
-			addProcessor( new FormControlNameBuilderProcessor<>() );
-		}
-
 		@Override
 		public boolean supports( String viewElementType ) {
 			return true;
@@ -162,22 +156,18 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 			return BootstrapUiBuilders
 					.numeric()
 					.name( propertyDescriptor.getName() )
-					.controlName( EntityAttributes.controlName( propertyDescriptor ) )
+					.controlName( propertyDescriptor.getName() )
 					.required( EntityAttributes.isRequired( propertyDescriptor ) )
 					.configuration( determineBaseConfiguration( propertyDescriptor ) )
+					.postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
 					.postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
 					.postProcessor(
 							( builderContext, numericFormElement ) ->
 							{
-								Object entity = EntityViewElementUtils.currentEntity( builderContext );
-								ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
+								Number propertyValue = EntityViewElementUtils.currentPropertyValue( builderContext, Number.class );
 
-								if ( entity != null && valueFetcher != null ) {
-									Number propertyValue = (Number) valueFetcher.getValue( entity );
-
-									if ( propertyValue != null ) {
-										numericFormElement.setValue( propertyValue );
-									}
+								if ( propertyValue != null ) {
+									numericFormElement.setValue( propertyValue );
 								}
 							}
 					);

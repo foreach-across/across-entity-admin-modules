@@ -27,6 +27,9 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author Arne Vandamme
@@ -62,6 +65,18 @@ public class User extends SettableIdBasedEntity<User>
 	@Column
 	private Date registrationDate;
 
+	@Getter
+	@Setter
+	@ElementCollection
+	@Column(name = "telephone")
+	private Set<String> phoneNumbers = new LinkedHashSet<>();
+
+	//@NotEmpty
+	@ElementCollection
+	@CollectionTable
+	@Getter
+	@Setter
+	private Set<Address> address = new HashSet<>();
 
 	@Column
 	private String profilePicture;

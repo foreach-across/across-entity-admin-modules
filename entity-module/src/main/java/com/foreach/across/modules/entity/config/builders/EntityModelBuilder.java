@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.config.builders;
 import com.foreach.across.modules.entity.registry.DefaultEntityModel;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.EntityModel;
+import lombok.NonNull;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
 
@@ -123,6 +124,17 @@ public class EntityModelBuilder<T>
 	 */
 	public EntityModelBuilder<T> deleteByIdMethod( Consumer<Serializable> deleteMethodById ) {
 		this.deleteByIdMethod = deleteMethodById;
+		return this;
+	}
+
+	/**
+	 * Apply an additional consumer to this builder.
+	 *
+	 * @param consumer to apply
+	 * @return current builder
+	 */
+	public EntityModelBuilder<T> and( @NonNull Consumer<EntityModelBuilder<T>> consumer ) {
+		consumer.accept( this );
 		return this;
 	}
 

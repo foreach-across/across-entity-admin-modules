@@ -81,6 +81,15 @@ public class TestFieldsetElementBuilderFactory extends ViewElementBuilderFactory
 	}
 
 	@Test
+	public void memberDescriptorUsesBodyOnlyTemplate() {
+		EntityPropertyDescriptor embedded = properties.get( "embedded" );
+		when( embedded.getName() ).thenReturn( "users[]" );
+		ViewElementFieldset fieldset = assemble( embedded, ViewElementMode.FORM_READ );
+		assertNotNull( fieldset );
+		assertSame( ViewElementFieldset.TEMPLATE_BODY_ONLY, fieldset.getTemplate() );
+	}
+
+	@Test
 	public void childPropertiesAreSelectedIfNoSelector() {
 		EntityPropertyDescriptor member = mock( EntityPropertyDescriptor.class );
 

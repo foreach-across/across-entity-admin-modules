@@ -16,34 +16,36 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import lombok.val;
+
+import java.util.Locale;
 
 /**
  * @author Steven Gentens
  * @since 2.2.0
  */
-public final class BooleanValueTextProcessor<T extends ConfigurableTextViewElement> implements ViewElementPostProcessor<T>
+public final class BooleanValueTextProcessor<T extends ConfigurableTextViewElement> extends AbstractValueTextPostProcessor<T>
 {
-	private final EntityPropertyDescriptor propertyDescriptor;
-
-	public BooleanValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
-		this.propertyDescriptor = propertyDescriptor;
+		public BooleanValueTextProcessor( EntityPropertyDescriptor propertyDescriptor ) {
+		super( propertyDescriptor );
 	}
 
-	@SuppressWarnings("unchecked")
-	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
-		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		ValueFetcher valueFetcher = getPropertyDescriptor().getValueFetcher();
+	@Override
+	protected String print( Object value, Locale locale, ViewElementBuilderContext builderContext ) {
+		return convert( builderContext, (Boolean) value );
+	}
 
-		if ( entity != null && valueFetcher != null ) {
-			Boolean propertyValue = (Boolean) valueFetcher.getValue( entity );
-			element.setText( convert( builderContext, propertyValue ) );
-		}
+	@Override
+	protected String print( Object value, Locale locale ) {
+		return null;
 	}
 
 	private String convert( ViewElementBuilderContext builderContext, Boolean propertyValue ) {
@@ -55,9 +57,5 @@ public final class BooleanValueTextProcessor<T extends ConfigurableTextViewEleme
 			return builderContext.resolveText( messageCodePath + "[true]}", "Yes" );
 		}
 		return builderContext.resolveText( messageCodePath + "[false]}", "No" );
-	}
-
-	public EntityPropertyDescriptor getPropertyDescriptor() {
-		return propertyDescriptor;
 	}
 }

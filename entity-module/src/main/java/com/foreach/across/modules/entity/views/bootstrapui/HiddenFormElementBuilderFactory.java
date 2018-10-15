@@ -19,14 +19,12 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.HiddenFormElementBuilder;
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -53,10 +51,6 @@ public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFac
 	private ConversionService conversionService;
 	private EntityRegistry entityRegistry;
 
-	public HiddenFormElementBuilderFactory() {
-		addProcessor( new FormControlNameBuilderProcessor<>() );
-	}
-
 	@Override
 	public boolean supports( String viewElementType ) {
 		return BootstrapUiElements.HIDDEN.equals( viewElementType );
@@ -67,7 +61,8 @@ public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFac
 	                                                         ViewElementMode viewElementMode, String viewElementType ) {
 		return BootstrapUiBuilders.hidden()
 		                          .name( propertyDescriptor.getName() )
-		                          .controlName( EntityAttributes.controlName( propertyDescriptor ) )
+		                          .controlName( propertyDescriptor.getName() )
+		                          .postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
 		                          .postProcessor(
 				                          new EntityPropertyValueHiddenPostProcessor(
 						                          entityRegistry, conversionService, propertyDescriptor

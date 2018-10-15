@@ -16,7 +16,9 @@
 
 package com.foreach.across.modules.entity.config.builders;
 
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -29,8 +31,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
@@ -48,7 +49,7 @@ public class TestEntityPropertyDescriptorBuilder
 		descriptor = null;
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void nameIsRequired() {
 		builder = new EntityPropertyDescriptorBuilder( null );
 	}
@@ -70,28 +71,45 @@ public class TestEntityPropertyDescriptorBuilder
 		assertNull( descriptor.getPropertyType() );
 		assertNull( descriptor.getPropertyTypeDescriptor() );
 		assertNull( descriptor.getPropertyRegistry() );
-		assertNull( descriptor.getValueFetcher() );
 		assertFalse( descriptor.isHidden() );
 		assertFalse( descriptor.isWritable() );
 		assertTrue( descriptor.isReadable() );
 		assertEquals( 1, descriptor.attributeMap().size() );
 		assertTrue( descriptor.hasAttribute( ViewElementLookupRegistry.class ) );
+		assertFalse( descriptor.isNestedProperty() );
+		assertNull( descriptor.getParentDescriptor() );
+		assertTrue( descriptor.getController() instanceof GenericEntityPropertyController );
+
+		GenericEntityPropertyController controller = (GenericEntityPropertyController) descriptor.getController();
+		assertNull( controller.getValueFetcher() );
 	}
 
 	@Test
-	public void descriptorWithParent() {
-		EntityPropertyDescriptor parent = mock( EntityPropertyDescriptor.class );
-		builder.parent( parent );
+	public void descriptorWithOriginal() {
+		EntityPropertyDescriptor original = mock( EntityPropertyDescriptor.class );
+		builder.original( original );
 
 		build();
 
-		when( parent.getDisplayName() ).thenReturn( "parentDisplayName" );
+		when( original.getDisplayName() ).thenReturn( "parentDisplayName" );
 
 		assertEquals( "myprop", descriptor.getName() );
 		assertEquals( "parentDisplayName", descriptor.getDisplayName() );
 	}
 
 	@Test
+	public void nestedDescriptor() {
+		EntityPropertyDescriptor parent = mock( EntityPropertyDescriptor.class );
+		builder.parent( parent );
+
+		build();
+
+		assertTrue( descriptor.isNestedProperty() );
+		assertSame( parent, descriptor.getParentDescriptor() );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
 	public void customProperties() {
 		ValueFetcher vf = mock( ValueFetcher.class );
 		ViewElementBuilder veb = mock( ViewElementBuilder.class );
@@ -106,7 +124,8 @@ public class TestEntityPropertyDescriptorBuilder
 		       .viewElementType( ViewElementMode.CONTROL, "testControl" )
 		       .viewElementBuilder( ViewElementMode.FORM_READ, veb )
 		       .viewElementModeCaching( ViewElementMode.FORM_READ, false )
-		       .attribute( "someAttribute", "someAttributeValue" );
+		       .attribute( "someAttribute", "someAttributeValue" )
+		       .controller( c -> c.order( 5 ) );
 
 		build();
 
@@ -115,7 +134,6 @@ public class TestEntityPropertyDescriptorBuilder
 		assertEquals( Long.class, descriptor.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( Long.class ), descriptor.getPropertyTypeDescriptor() );
 		assertNull( descriptor.getPropertyRegistry() );
-		assertSame( vf, descriptor.getValueFetcher() );
 		assertTrue( descriptor.isHidden() );
 		assertTrue( descriptor.isWritable() );
 		assertFalse( descriptor.isReadable() );
@@ -125,9 +143,14 @@ public class TestEntityPropertyDescriptorBuilder
 		assertEquals( "testControl", lookupRegistry.getViewElementType( ViewElementMode.CONTROL ) );
 		assertSame( veb, lookupRegistry.getViewElementBuilder( ViewElementMode.FORM_READ ) );
 		assertFalse( lookupRegistry.isCacheable( ViewElementMode.FORM_READ ) );
+
+		assertEquals( 5, descriptor.getController().getOrder() );
+		descriptor.getController().fetchValue( EntityPropertyBindingContext.forReading( "x" ) );
+		verify( vf ).getValue( "x" );
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void updateExistingDescriptor() {
 		SimpleEntityPropertyDescriptor existing = new SimpleEntityPropertyDescriptor( "otherprop" );
 		existing.setAttribute( "originalAttribute", "originalAttributeValue" );
@@ -155,7 +178,8 @@ public class TestEntityPropertyDescriptorBuilder
 		assertEquals( Long.class, existing.getPropertyType() );
 		assertEquals( TypeDescriptor.valueOf( Long.class ), existing.getPropertyTypeDescriptor() );
 		assertNull( existing.getPropertyRegistry() );
-		assertSame( vf, existing.getValueFetcher() );
+		existing.getPropertyValue( "x" );
+		verify( vf ).getValue( "x" );
 		assertTrue( existing.isHidden() );
 		assertTrue( existing.isWritable() );
 		assertFalse( existing.isReadable() );

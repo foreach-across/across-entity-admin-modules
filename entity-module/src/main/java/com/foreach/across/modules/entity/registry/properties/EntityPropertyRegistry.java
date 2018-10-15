@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.foreach.across.modules.entity.registry.properties;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -29,6 +31,24 @@ import java.util.function.Predicate;
  */
 public interface EntityPropertyRegistry
 {
+	/**
+	 * Suffix indicator that a property descriptor represents the specific member of a
+	 * the collection property (having the same name but without the indexer).
+	 */
+	String INDEXER = "[]";
+
+	/**
+	 * Suffix indicator that a property descriptor represents the key of a map property
+	 * (having the same name but without this suffix).
+	 */
+	String MAP_KEY = "[key]";
+
+	/**
+	 * Suffix indicator that a property descriptor represents the value of a map property
+	 * (having the same name but without this suffix).
+	 */
+	String MAP_VALUE = "[value]";
+
 	/**
 	 * Name of the label property.
 	 *
@@ -55,4 +75,44 @@ public interface EntityPropertyRegistry
 	Comparator<EntityPropertyDescriptor> getDefaultOrder();
 
 	Predicate<EntityPropertyDescriptor> getDefaultFilter();
+
+	/**
+	 * Check if a property represents an indexer property.
+	 *
+	 * @param descriptor property descriptor
+	 * @return true if indexer
+	 */
+	static boolean isIndexerPropertyDescriptor( EntityPropertyDescriptor descriptor ) {
+		return StringUtils.endsWith( descriptor.getName(), INDEXER );
+	}
+
+	/**
+	 * Check if a property represents a map key property.
+	 *
+	 * @param descriptor property descriptor
+	 * @return true if map key
+	 */
+	static boolean isMapKeyPropertyDescriptor( EntityPropertyDescriptor descriptor ) {
+		return StringUtils.endsWith( descriptor.getName(), MAP_KEY );
+	}
+
+	/**
+	 * Check if a property represents a map value property.
+	 *
+	 * @param descriptor property descriptor
+	 * @return true if map value
+	 */
+	static boolean isMapValuePropertyDescriptor( EntityPropertyDescriptor descriptor ) {
+		return StringUtils.endsWith( descriptor.getName(), MAP_VALUE );
+	}
+
+	/**
+	 * Check if a property represents a member type: either an indexer, map key or map value.
+	 *
+	 * @param descriptor property descriptor
+	 * @return true if member property descriptor
+	 */
+	static boolean isMemberPropertyDescriptor( EntityPropertyDescriptor descriptor ) {
+		return isIndexerPropertyDescriptor( descriptor ) || isMapKeyPropertyDescriptor( descriptor ) || isMapValuePropertyDescriptor( descriptor );
+	}
 }

@@ -17,12 +17,10 @@
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.CheckboxFormElementBuilderFactory;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
-import com.foreach.across.modules.entity.views.request.EntityViewCommand;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import org.junit.Test;
 
@@ -67,27 +65,10 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 
 	@Test
 	public void checkedFromEntity() {
-		when( properties.get( "primitive" ).getValueFetcher() ).thenReturn( new ValueFetcher()
-		{
-			@Override
-			public Object getValue( Object entity ) {
-				return true;
-			}
-		} );
-		when( properties.get( "object" ).getValueFetcher() ).thenReturn( new ValueFetcher()
-		{
-			@Override
-			public Object getValue( Object entity ) {
-				return Boolean.TRUE;
-			}
-		} );
-		when( properties.get( "atomic" ).getValueFetcher() ).thenReturn( new ValueFetcher()
-		{
-			@Override
-			public Object getValue( Object entity ) {
-				return new AtomicBoolean( true );
-			}
-		} );
+		EntityPropertyBindingContext bindingContext = EntityPropertyBindingContext.forReading( "entity" );
+		when( properties.get( "primitive" ).getController().fetchValue( bindingContext ) ).thenReturn( true );
+		when( properties.get( "object" ).getController().fetchValue( bindingContext ) ).thenReturn( Boolean.TRUE );
+		when( properties.get( "atomic" ).getController().fetchValue( bindingContext ) ).thenReturn( new AtomicBoolean( true ) );
 		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
 
 		CheckboxFormElement checkbox = assembleAndVerify( "primitive", false );
@@ -102,27 +83,10 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 
 	@Test
 	public void uncheckedFromEntity() {
-		when( properties.get( "primitive" ).getValueFetcher() ).thenReturn( new ValueFetcher()
-		{
-			@Override
-			public Object getValue( Object entity ) {
-				return false;
-			}
-		} );
-		when( properties.get( "object" ).getValueFetcher() ).thenReturn( new ValueFetcher()
-		{
-			@Override
-			public Object getValue( Object entity ) {
-				return null;
-			}
-		} );
-		when( properties.get( "atomic" ).getValueFetcher() ).thenReturn( new ValueFetcher()
-		{
-			@Override
-			public Object getValue( Object entity ) {
-				return new AtomicBoolean( false );
-			}
-		} );
+		EntityPropertyBindingContext bindingContext = EntityPropertyBindingContext.forReading( "entity" );
+		when( properties.get( "primitive" ).getController().fetchValue( bindingContext ) ).thenReturn( false );
+		when( properties.get( "object" ).getController().fetchValue( bindingContext ) ).thenReturn( null );
+		when( properties.get( "atomic" ).getController().fetchValue( bindingContext ) ).thenReturn( new AtomicBoolean( false ) );
 		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
 
 		CheckboxFormElement checkbox = assembleAndVerify( "primitive", false );

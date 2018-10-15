@@ -66,7 +66,7 @@ public class EntityQueryRequestValueFetcher implements ValueFetcher<EntityQueryR
 					return retrieveSingleRawValue( selectedProperty );
 				}
 				else if ( selectedProperty.hasNullValue() && !selectedProperty.hasTranslatedValues() ) {
-					return multiple ? Collections.singletonList( null ) : null;
+					return Collections.singletonList( null ); //multiple ? Collections.singletonList( null ) : null;
 				}
 			}
 			if ( selectedProperty.getRawConditionCount() > 0 ) {

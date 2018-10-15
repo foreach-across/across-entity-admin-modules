@@ -29,8 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Builder to customize a {@link com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry}.
@@ -42,7 +43,7 @@ public class EntityPropertyRegistryBuilder
 {
 	private final static Logger LOG = LoggerFactory.getLogger( EntityPropertyRegistryBuilder.class );
 
-	private final Map<String, PropertyDescriptorBuilder> builders = new HashMap<>();
+	private final Map<String, PropertyDescriptorBuilder> builders = new LinkedHashMap<>();
 	private String labelBaseProperty;
 
 	/**
@@ -72,6 +73,16 @@ public class EntityPropertyRegistryBuilder
 		}
 
 		return builder;
+	}
+
+	/**
+	 * Apply an additional consumer to the registry builder.
+	 *
+	 * @return registry builder
+	 */
+	public EntityPropertyRegistryBuilder and( @NonNull Consumer<EntityPropertyRegistryBuilder> consumer ) {
+		consumer.accept( this );
+		return this;
 	}
 
 	/**
@@ -108,6 +119,14 @@ public class EntityPropertyRegistryBuilder
 	                           PropertyDescriptorBuilder builder ) {
 		MutableEntityPropertyDescriptor existing = propertyRegistry.getProperty( propertyName );
 
+		if ( builder.parent != null ) {
+			MutableEntityPropertyDescriptor parentPropertyDescriptor = propertyRegistry.getProperty( builder.parent );
+			if ( parentPropertyDescriptor == null ) {
+				throw new IllegalArgumentException( "Cannot find parent property [" + builder.parent + "] on property: " + propertyName );
+			}
+			builder.parent( parentPropertyDescriptor );
+		}
+
 		if ( existing != null ) {
 			builder.apply( existing );
 		}
@@ -138,13 +157,14 @@ public class EntityPropertyRegistryBuilder
 	 */
 	public static class PropertyDescriptorBuilder extends EntityPropertyDescriptorBuilder
 	{
-		private final EntityPropertyRegistryBuilder parent;
+		private final EntityPropertyRegistryBuilder registryBuilder;
 
 		private Integer order;
+		private String parent;
 
-		PropertyDescriptorBuilder( EntityPropertyRegistryBuilder parent, String propertyName ) {
+		PropertyDescriptorBuilder( EntityPropertyRegistryBuilder registryBuilder, String propertyName ) {
 			super( propertyName );
-			this.parent = parent;
+			this.registryBuilder = registryBuilder;
 		}
 
 		/**
@@ -155,6 +175,16 @@ public class EntityPropertyRegistryBuilder
 		 */
 		public PropertyDescriptorBuilder order( int order ) {
 			this.order = order;
+			return this;
+		}
+
+		@Override
+		public PropertyDescriptorBuilder original( EntityPropertyDescriptor original ) {
+			return (PropertyDescriptorBuilder) super.original( original );
+		}
+
+		public PropertyDescriptorBuilder parent( String parent ) {
+			this.parent = parent;
 			return this;
 		}
 
@@ -219,6 +249,16 @@ public class EntityPropertyRegistryBuilder
 		}
 
 		@Override
+		public <U, V> PropertyDescriptorBuilder controller( Consumer<ConfigurableEntityPropertyController<U, V>> consumer ) {
+			return (PropertyDescriptorBuilder) super.controller( consumer );
+		}
+
+		@Override
+		public PropertyDescriptorBuilder controller( EntityPropertyController controller ) {
+			return (PropertyDescriptorBuilder) super.controller( controller );
+		}
+
+		@Override
 		public PropertyDescriptorBuilder viewElementModeCaching( ViewElementMode mode, boolean cacheable ) {
 			return (PropertyDescriptorBuilder) super.viewElementModeCaching( mode, cacheable );
 		}
@@ -245,7 +285,16 @@ public class EntityPropertyRegistryBuilder
 		 * @return parent registry builder
 		 */
 		public EntityPropertyRegistryBuilder and() {
-			return parent;
+			return registryBuilder;
+		}
+
+		/**
+		 * Apply an additional consumer to the registry builder, and return it.
+		 *
+		 * @return parent registry builder
+		 */
+		public EntityPropertyRegistryBuilder and( Consumer<EntityPropertyRegistryBuilder> consumer ) {
+			return registryBuilder.and( consumer );
 		}
 	}
 }

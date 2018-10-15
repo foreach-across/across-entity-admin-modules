@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
  */
 public class TestEQGroup
 {
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void nullValueNotAllowed() {
 		new EQGroup( (EQType[]) null );
 	}

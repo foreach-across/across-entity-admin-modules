@@ -32,8 +32,8 @@ import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.*;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.FormControlNameBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -65,10 +65,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	private EntityRegistry entityRegistry;
 	private ConversionService conversionService;
 
-	public OptionsFormElementBuilderFactory() {
-		addProcessor( new FormControlNameBuilderProcessor<>() );
-	}
-
 	@Override
 	public boolean supports( String viewElementType ) {
 		return StringUtils.equals( OPTIONS, viewElementType )
@@ -94,7 +90,8 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		OptionsFormElementBuilder options
 				= BootstrapUiBuilders.options()
 				                     .name( descriptor.getName() )
-				                     .controlName( EntityAttributes.controlName( descriptor ) );
+				                     .controlName( descriptor.getName() )
+				                     .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) );
 
 		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( typeDescriptor.getSimpleTargetType() );
 		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, typeDescriptor.getSimpleTargetType(), optionConfiguration, viewElementMode );
@@ -206,10 +203,6 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 		if ( consumer != null ) {
 			optionGenerator.setEnhancer( consumer );
-		}
-
-		if ( !optionGenerator.hasValueFetcher() ) {
-			optionGenerator.setValueFetcher( descriptor.getValueFetcher() );
 		}
 
 		if ( !optionGenerator.hasOptions() ) {
@@ -336,7 +329,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 	public void setEntityRegistry( EntityRegistry entityRegistry ) {
 		this.entityRegistry = entityRegistry;
 	}
-	
+
 	@Autowired
 	@Qualifier("mvcConversionService")
 	public void setConversionService( ConversionService conversionService ) {

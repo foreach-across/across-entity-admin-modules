@@ -38,7 +38,7 @@ public class TestEntityPropertyRegistryViewProcessor
 	@Mock
 	private ConfigurableEntityViewContext viewContext;
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void propertyRegistryIsRequired() {
 		new EntityPropertyRegistryViewProcessor( null );
 	}

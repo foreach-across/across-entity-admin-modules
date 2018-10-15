@@ -108,7 +108,7 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 
 	/**
 	 * Define the properties that should be rendered.
-	 * Defaults to all readable properties, a new selector will be combined with the default.  If the new selector
+	 * Defaults to all readable properties. A new selector will be combined with the default.  If the new selector
 	 * defines the {@link EntityPropertySelector#CONFIGURED} property, the selector will be considered an extension
 	 * of the previously registered selector.
 	 */
@@ -147,8 +147,12 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 					: containerBuilder;
 
 			try {
-				builderContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, true );
+				builderContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
+
 				propertyBuilders.forEach( ( propertyName, builder ) -> {
+					if ( builder == null ) {
+						throw new IllegalStateException( "No ViewElementBuilder was registered for property '" + propertyName + "'" );
+					}
 					propertiesContainerBuilder.add( builder.build( builderContext ) );
 				} );
 			}

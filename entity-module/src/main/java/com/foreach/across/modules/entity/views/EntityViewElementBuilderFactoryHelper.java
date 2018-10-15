@@ -19,12 +19,13 @@ package com.foreach.across.modules.entity.views;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.*;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.format.Printer;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +50,7 @@ public class EntityViewElementBuilderFactoryHelper
 	 * @param descriptor for which to create default post processor
 	 * @return default postprocessor
 	 */
-	public <V extends ConfigurableTextViewElement> ViewElementPostProcessor<V> createDefaultValueTextPostProcessor(
+	public <V extends ConfigurableTextViewElement> AbstractValueTextPostProcessor<V> createDefaultValueTextPostProcessor(
 			EntityPropertyDescriptor descriptor ) {
 		if ( descriptor.hasAttribute( Printer.class ) ) {
 			return new PrinterValueTextPostProcessor<>( descriptor, descriptor.getAttribute( Printer.class ) );
@@ -73,6 +74,19 @@ public class EntityViewElementBuilderFactoryHelper
 
 			if ( propertyType.isAssignableFrom( Boolean.class ) || propertyType.isAssignableFrom( boolean.class ) ) {
 				return new BooleanValueTextProcessor<>( descriptor );
+			}
+
+			TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+
+			if ( typeDescriptor.isArray() || typeDescriptor.isCollection() ) {
+				EntityPropertyRegistry propertyRegistry = descriptor.getPropertyRegistry();
+
+				if ( propertyRegistry != null ) {
+					EntityPropertyDescriptor memberDescriptor = propertyRegistry.getProperty( descriptor.getName() + EntityPropertyRegistry.INDEXER );
+					if ( memberDescriptor != null ) {
+						return new CollectionValueTextPostProcessor<>( descriptor, createDefaultValueTextPostProcessor( memberDescriptor ) );
+					}
+				}
 			}
 		}
 

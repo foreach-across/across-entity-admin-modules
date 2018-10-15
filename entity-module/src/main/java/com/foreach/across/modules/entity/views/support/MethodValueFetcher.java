@@ -25,6 +25,7 @@ public class MethodValueFetcher<T> implements ValueFetcher<T>
 	private final Method method;
 
 	public MethodValueFetcher( Method method ) {
+		method.setAccessible( true );
 		this.method = method;
 	}
 
