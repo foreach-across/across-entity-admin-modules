@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -37,6 +38,7 @@ import java.util.function.BiConsumer;
 @Getter
 @Builder
 @AllArgsConstructor
+@Accessors(chain = true)
 public final class EntityPropertyBindingContext
 {
 	private final Object entity;
@@ -68,6 +70,12 @@ public final class EntityPropertyBindingContext
 	 * The only way to create child contexts is by using {@link #getOrCreateChildContext(String, BiConsumer)}.
 	 */
 	private final Map<String, EntityPropertyBindingContext> childContexts = new LinkedHashMap<>();
+
+	/**
+	 * Resolves a {@link EntityPropertyBindingContext} based on a given name.
+	 */
+	@Setter
+	private ChildContextResolver childContextResolver;
 
 	/**
 	 * Get the original entity value.
@@ -127,6 +135,15 @@ public final class EntityPropertyBindingContext
 	public EntityPropertyBindingContext getOrCreateChildContext(
 			@NonNull String name, @NonNull BiConsumer<EntityPropertyBindingContext, EntityPropertyBindingContextBuilder> consumer
 	) {
+		if ( childContexts.containsKey( name ) ) {
+			return childContexts.get( name );
+		}
+		if ( childContextResolver != null ) {
+			EntityPropertyBindingContext resolvedContext = childContextResolver.resolve( name );
+			if ( resolvedContext != null ) {
+				return resolvedContext;
+			}
+		}
 		return childContexts.computeIfAbsent( name, contextName -> {
 			EntityPropertyBindingContextBuilder builder = builder().parent( this ).readonly( isReadonly() );
 			consumer.accept( this, builder );
