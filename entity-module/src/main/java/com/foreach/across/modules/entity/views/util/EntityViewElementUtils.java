@@ -198,9 +198,11 @@ public class EntityViewElementUtils
 			return ( (SingleEntityPropertyBinder) parent ).getProperties().getBindingContext();
 		}
 
-		return EntityPropertyBindingContext.forReading( currentEntity( builderContext ) )
-		                                   .setChildContextResolver(
-				                                   new DefaultChildContextResolver( builderContext.getAttribute( EntityPropertiesBinder.class ) ) );
+		EntityPropertyBindingContext propertyBindingContext = EntityPropertyBindingContext.forReading( currentEntity( builderContext ) );
+		return builderContext.hasAttribute( EntityPropertiesBinder.class )
+				? propertyBindingContext.setChildContextResolver(
+				new DefaultChildContextResolver( builderContext.getAttribute( EntityPropertiesBinder.class ) ) )
+				: propertyBindingContext;
 	}
 
 	/**
