@@ -20,10 +20,7 @@ import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.bind.SingleEntityPropertyBinder;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
+import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -201,7 +198,9 @@ public class EntityViewElementUtils
 			return ( (SingleEntityPropertyBinder) parent ).getProperties().getBindingContext();
 		}
 
-		return EntityPropertyBindingContext.forReading( currentEntity( builderContext ) );
+		return EntityPropertyBindingContext.forReading( currentEntity( builderContext ) )
+		                                   .setChildContextResolver(
+				                                   new DefaultChildContextResolver( builderContext.getAttribute( EntityPropertiesBinder.class ) ) );
 	}
 
 	/**
