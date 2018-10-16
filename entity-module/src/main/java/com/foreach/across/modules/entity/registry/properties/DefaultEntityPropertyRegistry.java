@@ -250,14 +250,6 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		return descriptor;
 	}
 
-	private String findChildProperty( String propertyName ) {
-		return StringUtils.defaultIfEmpty( StringUtils.substringAfter( propertyName, "." ), null );
-	}
-
-	private String findRootProperty( String propertyName ) {
-		return StringUtils.defaultIfEmpty( StringUtils.substringBefore( propertyName, "." ), null );
-	}
-
 	/**
 	 * Create a simple new registry based on property reflection of the class.
 	 *
