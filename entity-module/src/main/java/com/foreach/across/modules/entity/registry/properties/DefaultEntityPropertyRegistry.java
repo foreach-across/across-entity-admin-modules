@@ -85,20 +85,17 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 				return buildMemberDescriptor( propertyName, MAP_VALUE, this::resolveMapValueType );
 			}
 			else {
-				String rootProperty = findRootProperty( propertyName );
+				String longestPrefix = StringUtils.substringBeforeLast( propertyName, "." );
 
-				if ( rootProperty != null && !StringUtils.equals( rootProperty, propertyName ) ) {
-					EntityPropertyDescriptor rootDescriptor = getProperty( rootProperty );
+				if ( StringUtils.isNotEmpty( longestPrefix ) && !StringUtils.equals( longestPrefix, propertyName ) ) {
+					EntityPropertyDescriptor parentDescriptor = getProperty( longestPrefix );
+					EntityPropertyRegistry subRegistry = resolveRegistryForPropertyDescriptor( parentDescriptor );
 
-					if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
-						EntityPropertyRegistry subRegistry = resolveRegistryForPropertyDescriptor( rootDescriptor );
+					if ( subRegistry != null ) {
+						EntityPropertyDescriptor childDescriptor = subRegistry.getProperty( StringUtils.substringAfterLast( propertyName, "." ) );
 
-						if ( subRegistry != null ) {
-							EntityPropertyDescriptor childDescriptor = subRegistry.getProperty( findChildProperty( propertyName ) );
-
-							if ( childDescriptor != null ) {
-								descriptor = buildNestedDescriptor( propertyName, rootDescriptor, childDescriptor );
-							}
+						if ( childDescriptor != null ) {
+							descriptor = buildNestedDescriptor( propertyName, parentDescriptor, childDescriptor );
 						}
 					}
 				}
@@ -118,7 +115,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		if ( targetRegistry == null ) {
 			EntityPropertyRegistryProvider registryProvider = getRegistryProvider();
 
-			if ( registryProvider != null ) {
+			if ( registryProvider != null && descriptor.getPropertyType() != null ) {
 				targetRegistry = registryProvider.get( descriptor.getPropertyType() );
 			}
 		}
