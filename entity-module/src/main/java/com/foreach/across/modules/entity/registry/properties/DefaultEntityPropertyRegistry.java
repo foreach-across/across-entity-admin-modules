@@ -110,6 +110,10 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 	}
 
 	private EntityPropertyRegistry resolveRegistryForPropertyDescriptor( EntityPropertyDescriptor descriptor ) {
+		if ( descriptor == null ) {
+			return null;
+		}
+
 		EntityPropertyRegistry targetRegistry = descriptor.getAttribute( EntityPropertyRegistry.class );
 
 		if ( targetRegistry == null ) {
