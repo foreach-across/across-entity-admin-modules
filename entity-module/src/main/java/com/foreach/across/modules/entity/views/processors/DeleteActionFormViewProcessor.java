@@ -17,7 +17,9 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
@@ -27,6 +29,8 @@ import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,30 +50,47 @@ public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 	                       ViewElementBuilderMap builderMap,
 	                       ViewElementBuilderContext builderContext ) {
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
-		Object entity = entityViewContext.getEntity();
-		if ( entityViewContext.getEntityConfiguration().getAllowableActions( entity ).contains( AllowableAction.DELETE )
-				&& builderMap.containsKey( SingleEntityFormViewProcessor.FORM_BUTTONS ) ) {
+
+		if ( entityViewContext.getAllowableActions().contains( AllowableAction.DELETE ) ) {
 			ContainerViewElementBuilderSupport buttonsContainer = builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS,
 			                                                                      ContainerViewElementBuilderSupport.class );
-			EntityMessages messages = entityViewContext.getEntityMessages();
-			SingleEntityViewLinkBuilder links = entityViewContext.getLinkBuilder().forInstance( entity );
-			SingleEntityViewLinkBuilder linkToDeleteView = links.deleteView();
 
-			if ( entityViewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ) {
-				linkToDeleteView = linkToDeleteView.withFromUrl( links.updateView().toUriString() );
+			if ( buttonsContainer != null ) {
+				buttonsContainer.add( createDeleteButton( entityViewContext, entityViewRequest.getViewName() ).css( "pull-right" ) );
 			}
-			else if ( entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ) {
-				linkToDeleteView = linkToDeleteView.withFromUrl( links.toUriString() );
-			}
-
-			buttonsContainer.add(
-					BootstrapUiBuilders.button()
-					                   .name( "btn-delete" )
-					                   .css( "pull-right" )
-					                   .link( linkToDeleteView.toUriString() )
-					                   .style( Style.DANGER )
-					                   .text( messages.messageWithFallback( "buttons.delete" ) )
-			);
 		}
+	}
+
+	/**
+	 * Helper function to create a default delete button builder for a given entity.
+	 * Will generate a link to the delete view for that entity, taking the optional current view name into account to generate
+	 * an appropriate from url.
+	 * <p/>
+	 * By default the delete button is styled as an actual button with {@link Style#DANGER}.
+	 *
+	 * @param entityViewContext representing the current entity
+	 * @param currentViewName   current view being rendered - can be {@code null} but might impact from url if present
+	 * @return button builder
+	 */
+	public static ButtonViewElementBuilder createDeleteButton( @NonNull EntityViewContext entityViewContext, String currentViewName ) {
+		Object entity = entityViewContext.getEntity();
+
+		EntityMessages messages = entityViewContext.getEntityMessages();
+		SingleEntityViewLinkBuilder links = entityViewContext.getLinkBuilder().forInstance( entity );
+		SingleEntityViewLinkBuilder linkToDeleteView = links.deleteView();
+
+		if ( StringUtils.equals( EntityView.UPDATE_VIEW_NAME, currentViewName ) ) {
+			linkToDeleteView = linkToDeleteView.withFromUrl( links.updateView().toUriString() );
+		}
+		else if ( StringUtils.equals( EntityView.DETAIL_VIEW_NAME, currentViewName ) ) {
+			linkToDeleteView = linkToDeleteView.withFromUrl( links.toUriString() );
+		}
+
+		return BootstrapUiBuilders.button()
+		                          .name( "btn-delete" )
+		                          .link( linkToDeleteView.toUriString() )
+		                          .style( Style.DANGER )
+		                          .icon( new GlyphIcon( GlyphIcon.TRASH ) )
+		                          .title( messages.messageWithFallback( "buttons.delete" ) );
 	}
 }
