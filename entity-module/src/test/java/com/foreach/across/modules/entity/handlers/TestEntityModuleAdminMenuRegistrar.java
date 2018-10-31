@@ -84,7 +84,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		EntityMessageCodeResolver messageCodeResolver = mock( EntityMessageCodeResolver.class );
 		when( messageCodeResolver.getMessageWithFallback( eq( "adminMenu.general" ), anyString() ) ).thenReturn( "adminMenu.general" );
 		when( messageCodeResolver.getMessageWithFallback( eq( "menu.advanced" ), anyString() ) ).thenReturn( "menu.advanced" );
-		when( messageCodeResolver.getMessageWithFallback( eq( "menu.delete" ), anyString() ) ).thenReturn( "menu.delete" );
 		when( entityConfiguration.getEntityMessageCodeResolver() ).thenReturn( messageCodeResolver );
 		when( entityConfiguration.getViewNames() ).thenReturn( new String[0] );
 		when( entityConfiguration.getEntityType() ).thenReturn( Item.class );
@@ -115,7 +114,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		assertThat( menu.getItems() ).isNotEmpty();
 		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
-		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNotNull();
 
 	}
 
@@ -130,7 +128,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		assertThat( menu.getItems() ).isNotEmpty();
 		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNull();
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNotNull();
-		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNotNull();
 	}
 
 	@Test
@@ -141,9 +138,11 @@ public class TestEntityModuleAdminMenuRegistrar
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
 		Menu menu = menuBuilder.build();
 		assertThat( menu.getItems() ).isNotEmpty();
-		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
+		assertThat( menu.getItems().size() ).isEqualTo( 1 );
+		assertThat( menu.getItemWithPath( "/advanced-options" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/advanced-options" ).getItems() ).isEmpty();
+		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNull();
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
-		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNull();
 	}
 
 	@Test
@@ -158,7 +157,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		assertThat( menu.getItems() ).isNotEmpty();
 		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
-		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNotNull();
 	}
 
 	@Test
@@ -172,7 +170,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		assertThat( menu.getItems() ).isNotEmpty();
 		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
-		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNull();
 	}
 
 	@Test
@@ -188,7 +185,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		assertThat( menu.getItems() ).isNotEmpty();
 		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNull();
 		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNotNull();
-		assertThat( menu.getItemWithPath( "/advanced-options/delete" ) ).isNotNull();
 	}
 
 	@Test
@@ -198,9 +194,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-		Menu menu = menuBuilder.build();
-		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
-		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isTrue();
 	}
 
 	@Test
@@ -210,9 +203,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-		Menu menu = menuBuilder.build();
-		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
-		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isFalse();
 	}
 
 	@Test
@@ -223,10 +213,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( true );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-		Menu menu = menuBuilder.build();
-		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
-		assertThat( deleteItem ).isNotNull();
-		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isFalse();
 	}
 
 	@Test
@@ -237,10 +223,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-		Menu menu = menuBuilder.build();
-		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
-		assertThat( deleteItem ).isNotNull();
-		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isFalse();
 	}
 
 	@Test
@@ -251,10 +233,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		when( entityAdminMenuEvent.getViewContext() ).thenReturn( rootViewContext );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-		Menu menu = menuBuilder.build();
-		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
-		assertThat( deleteItem ).isNotNull();
-		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isTrue();
 	}
 
 	@Test
@@ -269,10 +247,6 @@ public class TestEntityModuleAdminMenuRegistrar
 		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( true );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-		Menu menu = menuBuilder.build();
-		Menu deleteItem = menu.getItemWithPath( "/advanced-options/delete" );
-		assertThat( deleteItem ).isNotNull();
-		assertThat( deleteItem.getUrl().endsWith( "/update" ) ).isFalse();
 	}
 
 	class Item
