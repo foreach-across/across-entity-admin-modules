@@ -470,6 +470,38 @@ public class TestEntityPropertyControlName
 	}
 
 	@Test
+	public void multiLevelChildDescriptors() {
+		SimpleEntityPropertyDescriptor userDescriptor = new SimpleEntityPropertyDescriptor( "user" );
+		userDescriptor.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER );
+		SimpleEntityPropertyDescriptor addressDescriptor = new SimpleEntityPropertyDescriptor( "user.address" );
+		addressDescriptor.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER );
+		addressDescriptor.setParentDescriptor( userDescriptor );
+		SimpleEntityPropertyDescriptor streetDescriptor = new SimpleEntityPropertyDescriptor( "user.address.street" );
+		streetDescriptor.setParentDescriptor( addressDescriptor );
+
+		EntityPropertyControlName user = forProperty( userDescriptor ).forHandlingType( EntityPropertyHandlingType.BINDER );
+		EntityPropertyControlName.ForProperty street = user.forChildProperty( streetDescriptor );
+
+		controlName( street ).is( "properties[user].properties[address].initializedValue.street" );
+		controlName( street.asProperty() ).is( "properties[user].properties[address].initializedValue.street" );
+		controlName( street.asBinderItem() ).is( "properties[user].properties[address].properties[street].value" );
+		controlName( street.asBinderItem().withValue() ).is( "properties[user].properties[address].properties[street].value" );
+		controlName( street.asBinderItem().withInitializedValue() ).is( "properties[user].properties[address].properties[street].initializedValue" );
+
+		SimpleEntityPropertyDescriptor numberDescriptor = new SimpleEntityPropertyDescriptor( "user.address.street.number" );
+		numberDescriptor.setParentDescriptor( streetDescriptor );
+
+		EntityPropertyControlName.ForProperty number = user.forChildProperty( numberDescriptor );
+
+		controlName( number ).is( "properties[user].properties[address].properties[street].initializedValue.number" );
+		controlName( number.asProperty() ).is( "properties[user].properties[address].properties[street].initializedValue.number" );
+		controlName( number.asBinderItem() ).is( "properties[user].properties[address].properties[street].properties[number].value" );
+		controlName( number.asBinderItem().withValue() ).is( "properties[user].properties[address].properties[street].properties[number].value" );
+		controlName( number.asBinderItem().withInitializedValue() ).is(
+				"properties[user].properties[address].properties[street].properties[number].initializedValue" );
+	}
+
+	@Test
 	public void rootControlNameImpactsSetsBinderPrefixAndDirectPrefix() {
 		EntityPropertyControlName root = EntityPropertyControlName.root( "entity" );
 		controlName( root ).is( "entity" );

@@ -233,18 +233,16 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 		return BootstrapUiBuilders
 				.container()
 				.name( "buttons" )
-				.add(
-						BootstrapUiBuilders.button()
-						                   .name( "btn-save" )
-						                   .style( Style.PRIMARY )
-						                   .submit()
-						                   .text( messages.messageWithFallback( "actions.save" ) )
+				.add( BootstrapUiBuilders.button()
+				                         .name( "btn-save" )
+				                         .style( Style.PRIMARY )
+				                         .submit()
+				                         .text( messages.messageWithFallback( "actions.save" ) )
 				)
-				.add(
-						BootstrapUiBuilders.button()
-						                   .name( "btn-cancel" )
-						                   .link( fromUrl )
-						                   .text( messages.messageWithFallback( "actions.cancel" ) )
+				.add( BootstrapUiBuilders.button()
+				                         .name( "btn-cancel" )
+				                         .link( fromUrl )
+				                         .text( messages.messageWithFallback( "actions.cancel" ) )
 				);
 	}
 

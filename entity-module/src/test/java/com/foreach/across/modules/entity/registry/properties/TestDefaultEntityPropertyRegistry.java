@@ -202,6 +202,12 @@ public class TestDefaultEntityPropertyRegistry
 	}
 
 	@Test
+	public void nestedPropertyFormatWithoutBeingNestedProperty() {
+		registry = new DefaultEntityPropertyRegistry( DefaultEntityPropertyRegistryProvider.INSTANCE );
+		assertNull( registry.getProperty( "some.property.value" ) );
+	}
+
+	@Test
 	public void defaultSharedRegistryProviderCreatesSampleControllers() {
 		MutableEntityPropertyRegistry registry = DefaultEntityPropertyRegistry.forClass( Scanned.class );
 		EntityPropertyDescriptor read = registry.getProperty( "read" );

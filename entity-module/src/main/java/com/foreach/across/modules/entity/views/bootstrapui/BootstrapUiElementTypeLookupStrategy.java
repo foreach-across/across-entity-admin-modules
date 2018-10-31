@@ -33,9 +33,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.Duration;
+import java.time.temporal.Temporal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -116,7 +115,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 				return BootstrapUiElements.NUMERIC;
 			}
 
-			if ( isDateType( propertyType ) ) {
+			if ( isTemporalType( propertyType ) ) {
 				return BootstrapUiElements.DATETIME;
 			}
 		}
@@ -133,6 +132,10 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 		if ( descriptor.isWritable() ) {
 			if ( propertyType != null ) {
+				if ( ClassUtils.isAssignable( propertyType, Duration.class )) {
+					return BootstrapUiElements.TEXTBOX;
+				}
+
 				TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
 
 				if ( typeDescriptor != null
@@ -197,10 +200,12 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		if ( ClassUtils.isPrimitiveOrWrapper( type ) ) {
 			return false;
 		}
-		if ( ClassUtils.isAssignable( type, Number.class ) ) {
+		if ( ClassUtils.isAssignable( type, Number.class )
+				|| ClassUtils.isAssignable( type, Temporal.class )
+				|| ClassUtils.isAssignable( type, Duration.class ) ) {
 			return false;
 		}
-		return !isDateType( type );
+		return !isTemporalType( type );
 	}
 
 	private boolean isSingularType( Class propertyType ) {
@@ -243,14 +248,13 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 	/**
 	 * Checks whether the given type is a supported date type.
-	 * Currently {@link Date}, {@link LocalDate}, {@link LocalTime} and {@link LocalDateTime} are supported.
+	 * Currently {@link Date}, {@link Temporal} are supported.
 	 *
 	 * @param propertyType to check
 	 * @return whether it is a supported date type
 	 */
-	private boolean isDateType( Class propertyType ) {
-		return ClassUtils.isAssignable( propertyType, Date.class ) || ClassUtils.isAssignable( propertyType, LocalDate.class )
-				|| ClassUtils.isAssignable( propertyType, LocalTime.class ) || ClassUtils.isAssignable( propertyType, LocalDateTime.class );
+	private boolean isTemporalType( Class propertyType ) {
+		return ClassUtils.isAssignable( propertyType, Date.class ) || ClassUtils.isAssignable( propertyType, Temporal.class );
 	}
 
 	/**

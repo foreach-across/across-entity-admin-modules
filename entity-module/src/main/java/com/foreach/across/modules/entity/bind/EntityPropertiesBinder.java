@@ -192,14 +192,16 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
 		EntityPropertyBindingType bindingType = EntityPropertyBindingType.forProperty( descriptor );
 
-		switch( bindingType ) {
+		switch ( bindingType ) {
 			case MAP:
 				val keyDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_KEY, typeDescriptor.getMapKeyTypeDescriptor() );
-				val valueDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_VALUE, typeDescriptor.getMapValueTypeDescriptor() );
+				val valueDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.MAP_VALUE,
+				                                             typeDescriptor.getMapValueTypeDescriptor() );
 
 				return new MapEntityPropertyBinder( this, descriptor, keyDescriptor, valueDescriptor );
 			case COLLECTION:
-				val memberDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.INDEXER, typeDescriptor.getElementTypeDescriptor() );
+				val memberDescriptor = getOrCreateDescriptor( descriptor.getName() + EntityPropertyRegistry.INDEXER,
+				                                              typeDescriptor.getElementTypeDescriptor() );
 
 				return new ListEntityPropertyBinder( this, descriptor, memberDescriptor );
 			default:
@@ -244,12 +246,23 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 			// nested property will lookup the child binding context
 			childBinder.setBindingContext( bindingContext );
 			String childContextName = parent.getTargetPropertyName();
+			if ( bindingContext.hasChildContext( childContextName ) ) {
+				// todo: refactor this? currently child context should be reset if creating a new one with an initialized value
+				EntityPropertyBindingContext existingChildContext = bindingContext.getOrCreateChildContext( childContextName, ( p, b ) -> {
+				} );
+
+				if ( existingChildContext.getTarget() == null && propertyValue != null ) {
+					bindingContext.removeChildContext( childContextName );
+				}
+			}
+
 			if ( !bindingContext.hasChildContext( childContextName ) ) {
 				bindingContext.getOrCreateChildContext(
 						childContextName,
 						( p, b ) -> b.controller( controller ).entity( propertyValue ).target( propertyValue )
 				);
 			}
+
 		}
 
 		return childBinder;

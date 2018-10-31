@@ -38,9 +38,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -120,6 +118,14 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	public void datetimeForReadonlyDateTimeValues() {
 		assertEquals( BootstrapUiElements.DATETIME, lookup( Date.class, ViewElementMode.VALUE ) );
 		assertEquals( BootstrapUiElements.DATETIME, lookup( Date.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDate.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDate.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalTime.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalTime.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDateTime.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDateTime.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( ZonedDateTime.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( ZonedDateTime.class, ViewElementMode.LIST_VALUE ) );
 	}
 
 	@Test
@@ -137,6 +143,15 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
+	public void textTypeForDuration() {
+		assertEquals( BootstrapUiElements.TEXT, lookup( Duration.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.TEXT, lookup( Duration.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Duration.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Duration.class, ViewElementMode.FILTER_CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Duration.class, ViewElementMode.LIST_CONTROL ) );
+	}
+
+	@Test
 	public void labelTypeForLabelModes() {
 		assertEquals( BootstrapUiElements.LABEL, lookup( String.class, ViewElementMode.LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( Integer.class, ViewElementMode.LABEL ) );
@@ -145,6 +160,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertEquals( BootstrapUiElements.LABEL, lookup( Long.class, ViewElementMode.LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( BigDecimal.class, ViewElementMode.LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( Date.class, ViewElementMode.LABEL ) );
+		assertEquals( BootstrapUiElements.LABEL, lookup( ZonedDateTime.class, ViewElementMode.LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( String.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( Integer.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( int.class, ViewElementMode.LIST_LABEL ) );
@@ -152,6 +168,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertEquals( BootstrapUiElements.LABEL, lookup( Long.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( BigDecimal.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( Date.class, ViewElementMode.LIST_LABEL ) );
+		assertEquals( BootstrapUiElements.LABEL, lookup( ZonedDateTime.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( String.class, ViewElementMode.LABEL.forMultiple() ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( String.class, ViewElementMode.LIST_LABEL.forMultiple() ) );
 	}
@@ -228,6 +245,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDate.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalTime.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDateTime.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( ZonedDateTime.class, ViewElementMode.CONTROL ) );
 	}
 
 	@Test

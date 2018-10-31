@@ -416,7 +416,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 		apply( configuration, true );
 	}
 
-	synchronized void apply( @NonNull MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
+	void apply( @NonNull MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
 		configurationBeingBuilt = configuration;
 
 		try {

@@ -50,6 +50,8 @@ import java.lang.annotation.Annotation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.time.chrono.ChronoLocalDate;
 import java.util.Date;
 import java.util.Map;
 
@@ -143,9 +145,9 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 	/**
 	 * Responsible for creating the actual control.
 	 */
-	private class ControlBuilderFactory extends EntityViewElementBuilderFactorySupport<DateTimeFormElementBuilder>
+	private static class ControlBuilderFactory extends EntityViewElementBuilderFactorySupport<DateTimeFormElementBuilder>
 	{
-		public ControlBuilderFactory() {
+		ControlBuilderFactory() {
 			addProcessor( new TemporalAnnotationProcessor() );
 			addProcessor( new PastAndFutureValidationProcessor() );
 		}
@@ -177,7 +179,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 				}
 				else {
 					Class<?> propertyType = propertyDescriptor.getPropertyType();
-					if ( LocalDate.class.isAssignableFrom( propertyType ) ) {
+					if ( ChronoLocalDate.class.isAssignableFrom( propertyType ) ) {
 						builder.format( Format.DATE );
 					}
 					else if ( LocalTime.class.isAssignableFrom( propertyType ) ) {
@@ -220,6 +222,9 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 									else if ( value instanceof LocalDateTime ) {
 										LocalDateTime propertyValue = (LocalDateTime) value;
 										datetime.setLocalDateTime( propertyValue );
+									}
+									else if ( value instanceof ZonedDateTime ) {
+										datetime.setLocalDateTime( ( (ZonedDateTime) value ).toLocalDateTime() );
 									}
 									else {
 										Date propertyValue = (Date) value;

@@ -188,7 +188,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	/**
 	 * In case of a {@link ViewElementMode#FILTER_CONTROL}, the {@link TextboxFormElementBuilder} must always be rendered as a single line {@link TextboxFormElement}.
 	 */
-	private class FilterControlProcessor implements EntityViewElementBuilderProcessor<TextboxFormElementBuilder>
+	private static class FilterControlProcessor implements EntityViewElementBuilderProcessor<TextboxFormElementBuilder>
 	{
 		@Override
 		public void process( EntityPropertyDescriptor propertyDescriptor,

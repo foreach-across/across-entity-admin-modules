@@ -25,7 +25,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.http.client.utils.CloneUtils;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -33,10 +32,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.format.Printer;
 import org.springframework.format.annotation.NumberFormat;
-import org.springframework.util.SerializationUtils;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -110,7 +110,8 @@ public class LibraryConfiguration implements EntityConfigurer
 		Publication publication = new Publication();
 		publication.setNumber( 1 );
 		publication.setListPrice( 22 );
-		publication.setPublicationDate( new Date() );
+		publication.setPublicationDate( ZonedDateTime.now() );
+		publication.setWritingDuration( Duration.ofDays( 100 ) );
 		book.setPublications( Collections.singletonList( publication ) );
 
 		library.setBooks( Collections.singletonList( book ) );
@@ -212,7 +213,9 @@ public class LibraryConfiguration implements EntityConfigurer
 		private Integer number;
 
 		@NotNull
-		private Date publicationDate;
+		private ZonedDateTime publicationDate;
+
+		private Duration writingDuration;
 
 		@NumberFormat(style = NumberFormat.Style.CURRENCY)
 		private Integer listPrice;
@@ -222,6 +225,7 @@ public class LibraryConfiguration implements EntityConfigurer
 			p.number = number;
 			p.publicationDate = publicationDate;
 			p.listPrice = listPrice;
+			p.writingDuration = writingDuration;
 			return p;
 		}
 	}

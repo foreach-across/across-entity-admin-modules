@@ -243,7 +243,15 @@ public abstract class EntityPropertyControlName
 		}
 
 		if ( descriptor.isNestedProperty() ) {
-			return forChildProperty( removePrefix( descriptor.getName(), resolvePathPrefix() ) );
+			String pathPrefix = resolvePathPrefix();
+			EntityPropertyDescriptor parent = descriptor.getParentDescriptor();
+
+			if ( parent.getName().length() > pathPrefix.length() ) {
+				return forChildProperty( parent ).forHandlingType( EntityPropertyHandlingType.forProperty( parent ) )
+				                                 .forChildProperty( descriptor );
+			}
+
+			return forChildProperty( removePrefix( descriptor.getName(), pathPrefix ) );
 		}
 
 		return forChildProperty( descriptor.getName() );
