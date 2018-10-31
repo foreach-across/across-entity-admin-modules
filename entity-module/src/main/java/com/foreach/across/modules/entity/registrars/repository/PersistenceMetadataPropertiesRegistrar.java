@@ -17,11 +17,11 @@
 package com.foreach.across.modules.entity.registrars.repository;
 
 import com.foreach.across.core.annotations.OrderInModule;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PersistentProperty;
@@ -35,7 +35,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.GeneratedValue;
 
 /**
- * Adds {@link org.springframework.data.mapping.PersistentProperty} and {@link PropertyPersistenceMetadata} attributes
+ * Adds {@link org.springframework.data.mapping.PersistentProperty} and related attributes
  * to entity properties, based on the configured {@link MappingContext}s.
  *
  * @author Arne Vandamme
@@ -80,12 +80,14 @@ public class PersistenceMetadataPropertiesRegistrar implements DefaultEntityProp
 	                                                  MutableEntityPropertyDescriptor mutable ) {
 		mutable.setAttribute( PersistentProperty.class, persistentProperty );
 
-		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
-		metadata.setEmbedded( isEmbedded( persistentProperty ) );
+		boolean embedded = isEmbedded( persistentProperty );
 
-		mutable.setAttribute( PropertyPersistenceMetadata.class, metadata );
+		if ( embedded ) {
+			// only explicitly set value if embedded
+			mutable.setAttribute( EntityAttributes.IS_EMBEDDED_OBJECT, true );
+		}
 
-		if ( mutable.isHidden() && mutable.isReadable() && metadata.isEmbedded() ) {
+		if ( mutable.isHidden() && mutable.isReadable() && embedded ) {
 			mutable.setHidden( false );
 		}
 

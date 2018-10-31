@@ -367,8 +367,19 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	@Override
-	public EntityConfigurationBuilder detailView() {
+	public EntityConfigurationBuilder<T> detailView() {
 		return (EntityConfigurationBuilder<T>) super.detailView();
+	}
+
+	/**
+	 * Apply an additional consumer to this builder.
+	 *
+	 * @param consumer to apply
+	 * @return current builder
+	 */
+	public EntityConfigurationBuilder<T> and( @NonNull Consumer<EntityConfigurationBuilder<T>> consumer ) {
+		consumer.accept( this );
+		return this;
 	}
 
 	/**
@@ -405,7 +416,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 		apply( configuration, true );
 	}
 
-	synchronized void apply( @NonNull MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
+	void apply( @NonNull MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
 		configurationBeingBuilt = configuration;
 
 		try {

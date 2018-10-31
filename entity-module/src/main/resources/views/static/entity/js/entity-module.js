@@ -13,6 +13,74 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var EmbeddedCollection = function( element ) {
+    var index = 0;
+
+    var wrapper = element;
+
+    var filter = function( results ) {
+        return results.filter( function( ix ) {
+            return $( this ).closest( '[data-item-format]' ).is( wrapper );
+        } );
+    };
+
+    var items = filter( wrapper.find( '[data-role=items]' ) ).first();
+    var editItemTemplate = filter( wrapper.find( '[data-role=edit-item-template]' ) ).first();
+
+    var templatePrefix = editItemTemplate.attr( 'data-template-prefix' );
+    var targetPrefix = wrapper.attr( 'data-item-format' );
+
+    var parentItem = wrapper.closest( '[data-item-prefix]' );
+
+    if ( parentItem.length ) {
+        var parentPrefix = parentItem.attr( 'data-item-prefix' );
+        var parentTemplate = parentItem.closest( '[data-item-format]' ).attr( 'data-item-format' );
+        targetPrefix = targetPrefix.replace( parentTemplate, parentPrefix );
+    }
+
+    index = items.find( '.form-group' ).length;
+
+    filter( items.find( '[data-action=remove-item]' ) )
+            .click( function( e ) {
+                e.preventDefault();
+                $( this ).closest( '[data-role=item]' ).remove();
+            } );
+
+    filter( wrapper.find( '[data-action=add-item]' ) )
+            .click( function() {
+                var id = 'item-' + index++;
+                var target = targetPrefix.replace( '{{key}}', id );
+
+                var template = $( BootstrapUiModule.refTarget( editItemTemplate ).html() );
+                template.attr( 'data-item-key', id );
+                template.attr( 'data-item-prefix', target );
+
+                template.find( '[name^="' + templatePrefix + '"]' ).each( function( node ) {
+                    $( this ).attr( 'name', $( this ).attr( 'name' ).replace( templatePrefix, target ) );
+                } );
+                template.find( '[name^="_' + templatePrefix + '"]' ).each( function( node ) {
+                    $( this ).attr( 'name', $( this ).attr( 'name' ).replace( '_' + templatePrefix, '_' + target ) );
+                } );
+                template.find( '[for^="' + templatePrefix + '"]' ).each( function( node ) {
+                    $( this ).attr( 'for', $( this ).attr( 'for' ).replace( templatePrefix, target ) );
+                } );
+                template.find( '[id^="' + templatePrefix + '"]' ).each( function( node ) {
+                    $( this ).attr( 'id', $( this ).attr( 'id' ).replace( templatePrefix, target ) );
+                } );
+
+                template.find( '[data-action=remove-item]' ).click( function( e ) {
+                    e.preventDefault();
+                    $( this ).closest( '[data-role=item]' ).remove();
+                } );
+
+                template.find( '[name="' + target + '.sortIndex"]' )
+                        .attr( 'value', 10 + index );
+
+                items.append( template );
+
+                EntityModule.initializeFormElements( template );
+            } );
+};
 
 // expose global var
 var EntityModule = (function( $ ) {
@@ -310,6 +378,13 @@ var EntityModule = (function( $ ) {
                 container.find( '.js-multi-value-item a' ).on( 'click', function() {
                     $( this ).closest( 'tr' ).remove();
                 } )
+            } );
+
+            /**
+             * Experimental: initialize embedded collections.
+             */
+            $( '.js-embedded-collection-form-group', node ).each( function() {
+                new EmbeddedCollection( $( this ) );
             } );
 
             /**

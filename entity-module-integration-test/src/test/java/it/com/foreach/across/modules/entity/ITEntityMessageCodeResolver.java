@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import com.foreach.across.testmodules.solr.business.Product;
 import com.foreach.across.testmodules.springdata.business.Client;
 import com.foreach.across.testmodules.springdata.business.Company;
@@ -33,7 +34,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Locale;
 
@@ -44,7 +44,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@WebAppConfiguration
+@AcrossWebAppConfiguration
 @ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
 @TestPropertySource(properties = "entityModule.messageCodes[SolrTestModule]=solr")
 public class ITEntityMessageCodeResolver

@@ -59,7 +59,7 @@ public class EntityQueryCondition implements EntityQueryExpression
 	}
 
 	public void setArguments( @NonNull Object[] arguments ) {
-		this.arguments = arguments;
+		this.arguments = arguments.clone();
 	}
 
 	public boolean hasArguments() {

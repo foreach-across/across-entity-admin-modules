@@ -85,6 +85,12 @@ public interface EntityAttributes
 	String OPTIONS_ENHANCER = OptionGenerator.class.getName() + ".enhancer";
 
 	/**
+	 * In case of a nested {@link EntityPropertyDescriptor}, this attribute can hold the original target {@link EntityPropertyDescriptor}
+	 * that was used, in combination with the parent descriptor, to build the nested property descriptor.
+	 */
+	String TARGET_DESCRIPTOR = EntityPropertyDescriptor.class.getName() + ".target";
+
+	/**
 	 * Can be set on either {@link com.foreach.across.modules.entity.views.EntityViewFactory} or {@link EntityPropertyDescriptor}.
 	 * Holds the suggested form enctype to submit a form holding a control for that property.
 	 *
@@ -100,12 +106,23 @@ public interface EntityAttributes
 	String LINK_TO_DETAIL_VIEW = EntityListActionsProcessor.class.getName() + ".linkToDetailView";
 
 	/**
+	 * Holds {@code true} if a property (or a target {@link com.foreach.across.modules.entity.registry.EntityConfiguration} represents
+	 * an embedded object instead of a related object. This will impact the control types being generated for this property.
+	 * An attribute value set on the {@link EntityPropertyDescriptor} will take precedence over the value on an
+	 * {@link com.foreach.across.modules.entity.registry.EntityConfiguration}.
+	 * <p/>
+	 * If not explicitly set, a strategy will be used to determine if a property should behave as an embedded object.
+	 */
+	String IS_EMBEDDED_OBJECT = EntityPropertyDescriptor.class.getName() + ".embedded";
+
+	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.
 	 * If an attribute {@link #CONTROL_NAME} is present, it will be used, else the regular name will be used.
 	 *
 	 * @param descriptor of the property
 	 * @return control name to use
 	 */
+	@Deprecated
 	static String controlName( EntityPropertyDescriptor descriptor ) {
 		return StringUtils.defaultString( descriptor.getAttribute( CONTROL_NAME, String.class ), descriptor.getName() );
 	}

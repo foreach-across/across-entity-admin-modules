@@ -18,7 +18,7 @@
 
 <!--/* Renders multi-value control */-->
 <div th:fragment="multi-value-control(component)" class="js-multi-value-control">
-    <input th:id="${component.htmlId}" type="text" class="form-control js-multi-value-input" th:placeholder="${component.placeholder}" />
+    <input th:id="${component.htmlId}" type="text" class="form-control js-multi-value-input" th:placeholder="${component.placeholder}"/>
     <table class="table table-striped">
         <tr class="js-multi-value-template hidden">
             <td class="js-multi-value-value">{{value}}</td>

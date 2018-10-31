@@ -241,7 +241,7 @@ public class TestPropertyRenderingViewProcessor
 		verify( containerBuilder ).add( elementTwo );
 
 		InOrder inOrder = inOrder( builderContext );
-		inOrder.verify( builderContext ).setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, true );
+		inOrder.verify( builderContext ).setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
 		inOrder.verify( builderContext ).removeAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES );
 	}
 

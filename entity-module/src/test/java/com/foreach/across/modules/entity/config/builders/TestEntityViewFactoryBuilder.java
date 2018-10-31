@@ -31,6 +31,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -60,6 +61,13 @@ public class TestEntityViewFactoryBuilder
 		when( beanFactory.createBean( DispatchingEntityViewFactory.class ) ).thenReturn( dispatchingViewFactory );
 
 		builder = new EntityViewFactoryBuilder( beanFactory ).factoryType( DispatchingEntityViewFactory.class );
+	}
+
+	@Test
+	public void andAppliesAdditionalConsumer() {
+		Consumer<EntityViewFactoryBuilder> consumer = mock( Consumer.class );
+		assertSame( builder, builder.and( consumer ) );
+		verify( consumer ).accept( builder );
 	}
 
 	@Test(expected = IllegalArgumentException.class)

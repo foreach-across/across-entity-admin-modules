@@ -19,14 +19,12 @@ package com.foreach.across.modules.entity.views.bootstrapui.options;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.web.ui.MutableViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Consumer;
 
 /**
@@ -54,20 +52,9 @@ public class FilterOptionGenerator extends OptionGenerator
 	private FilterOptionGenerator( @Builder.ObtainVia(method = "getEmptyOption") OptionFormElementBuilder emptyOption,
 	                               @Builder.ObtainVia(method = "getOptions") OptionIterableBuilder options,
 	                               @Builder.ObtainVia(method = "getSorted") Boolean sorted,
-	                               @Builder.ObtainVia(method = "getValueFetcher") ValueFetcher<Object> valueFetcher,
 	                               @Builder.ObtainVia(method = "isSelfOptionIncluded") boolean selfOptionIncluded,
 	                               @Builder.ObtainVia(method = "getEnhancer") Consumer<OptionFormElementBuilder> enhancer ) {
-		super( emptyOption, options, sorted, valueFetcher, selfOptionIncluded, enhancer );
-	}
-
-	@Override
-	protected Collection retrieveSelectedValues( Object entity ) {
-		if ( entity != null && getValueFetcher() != null ) {
-			Object selected = getValueFetcher().getValue( entity );
-			return selected != null ? super.retrieveSelectedValues( entity ) : null;
-		}
-
-		return Collections.emptyList();
+		super( emptyOption, options, sorted, selfOptionIncluded, enhancer );
 	}
 
 	@Override

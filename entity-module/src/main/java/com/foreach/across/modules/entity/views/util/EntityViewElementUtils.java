@@ -15,21 +15,33 @@
  */
 package com.foreach.across.modules.entity.views.util;
 
+import com.foreach.across.modules.bootstrapui.elements.FormInputElement;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
+import com.foreach.across.modules.entity.bind.SingleEntityPropertyBinder;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.IteratorViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import lombok.NonNull;
+import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Contains utility methods related to view elements and view building in an entity context.
  *
  * @author Arne Vandamme
  */
+@UtilityClass
 public class EntityViewElementUtils
 {
-	protected EntityViewElementUtils() {
-	}
-
 	/**
 	 * <p>Retrieve the current entity being processed in the builder context.  In case of a
 	 * {@link IteratorViewElementBuilderContext} the entity of the iterator will be returned,
@@ -44,6 +56,55 @@ public class EntityViewElementUtils
 	}
 
 	/**
+	 * Create a {@link ViewElementPostProcessor} that generates the {@link EntityPropertyControlName} for the given property descriptor
+	 * and sets it using {@link FormInputElement#setControlName(String)} on the generated control. This will update all {@link FormInputElement}
+	 * elements where the current control name is the same as {@link EntityPropertyDescriptor#getName()}.
+	 * <p/>
+	 * Any container will be searched for {@code FormInputElement} children that might get updated as well.
+	 *
+	 * @param descriptor property descriptor
+	 * @param <T>        form control element type
+	 * @return post processor
+	 */
+	public static <T extends ViewElement> ViewElementPostProcessor<T> controlNamePostProcessor( @NonNull EntityPropertyDescriptor descriptor ) {
+		return ( builderContext, element ) -> {
+			String controlName = controlName( descriptor, builderContext ).toString();
+
+			if ( element instanceof FormInputElement ) {
+				FormInputElement input = (FormInputElement) element;
+				if ( StringUtils.equals( descriptor.getName(), input.getControlName() ) ) {
+					input.setControlName( controlName );
+				}
+			}
+
+			if ( element instanceof ContainerViewElement ) {
+				( (ContainerViewElement) element )
+						.findAll( FormInputElement.class )
+						.filter( input -> StringUtils.equals( descriptor.getName(), input.getControlName() ) )
+						.forEach( input -> input.setControlName( controlName ) );
+			}
+		};
+	}
+
+	/**
+	 * Generate the right {@link EntityPropertyControlName} for the property represented by the descriptor. Inspect the {@link ViewElementBuilderContext}
+	 * and use a parent {@link EntityPropertyControlName} that might be set.
+	 * <p/>
+	 * The control name returned will be scoped to the {@link EntityPropertyHandlingType} resolved for the descriptor.
+	 *
+	 * @param descriptor     for the property
+	 * @param builderContext that might contain a parent {@link EntityPropertyControlName}
+	 * @return control name
+	 * @see EntityPropertyControlName
+	 */
+	public static EntityPropertyControlName controlName( @NonNull EntityPropertyDescriptor descriptor, @NonNull ViewElementBuilderContext builderContext ) {
+		EntityPropertyHandlingType handlingType = EntityPropertyHandlingType.forProperty( descriptor );
+		EntityPropertyControlName.ForProperty controlName = EntityPropertyControlName.forProperty( descriptor, builderContext );
+
+		return controlName.forHandlingType( handlingType );
+	}
+
+	/**
 	 * <p>Retrieve the current entity being processed in the builder context.  In case of a
 	 * {@link IteratorViewElementBuilderContext} the entity of the iterator will be returned,
 	 * in all other cases the attribute {@link EntityViewModel#ENTITY}.</p>
@@ -52,7 +113,7 @@ public class EntityViewElementUtils
 	 * @param builderContext current builder context
 	 * @return entity or null if none found or not of the expected type
 	 */
-	public static <U> U currentEntity( ViewElementBuilderContext builderContext, Class<U> expectedType ) {
+	public static <U> U currentEntity( @NonNull ViewElementBuilderContext builderContext, @NonNull Class<U> expectedType ) {
 		if ( builderContext == null ) {
 			return null;
 		}
@@ -82,12 +143,14 @@ public class EntityViewElementUtils
 	 * @see com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper
 	 * @see com.foreach.across.modules.entity.views.EntityViewElementBuilderService
 	 */
-	public static Object currentPropertyValue( ViewElementBuilderContext builderContext ) {
+	public static Object currentPropertyValue( @NonNull ViewElementBuilderContext builderContext ) {
 		return currentPropertyValue( builderContext, Object.class );
 	}
 
 	/**
 	 * Retrieve the current property value being rendered, if it is of the expected type.
+	 * Depending on the type of property, this will fetch the property directly from the entity,
+	 * or from the {@link EntityPropertiesBinder} that is present on the {@link ViewElementBuilderContext}.
 	 *
 	 * @param builderContext current builder context
 	 * @param expectedType   the property value should have
@@ -95,20 +158,84 @@ public class EntityViewElementUtils
 	 * @return property value or null if unable to determine or not of the expected type
 	 * @see #currentPropertyValue(ViewElementBuilderContext)
 	 */
-	public static <U> U currentPropertyValue( ViewElementBuilderContext builderContext, Class<U> expectedType ) {
-		if ( builderContext == null ) {
-			return null;
+	public static <U> U currentPropertyValue( @NonNull ViewElementBuilderContext builderContext, @NonNull Class<U> expectedType ) {
+		Object propertyValue;
+		EntityPropertyValue fixedValue = builderContext.getAttribute( EntityPropertyValue.class );
+
+		if ( fixedValue != null ) {
+			propertyValue = fixedValue.getNewValue();
+		}
+		else {
+			EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
+
+			if ( descriptor == null ) {
+				return null;
+			}
+
+			switch ( EntityPropertyHandlingType.forProperty( descriptor ) ) {
+				case BINDER:
+					EntityPropertyBinder propertyBinder = resolvePropertyBinder( builderContext, descriptor );
+					if ( propertyBinder != null ) {
+						propertyValue = propertyBinder.getValue();
+						break;
+					}
+				default:
+					propertyValue = descriptor.getController().fetchValue( resolveBindingContext( builderContext ) );
+					break;
+			}
 		}
 
+		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
+	}
+
+	private static EntityPropertyBindingContext resolveBindingContext( ViewElementBuilderContext builderContext ) {
+		EntityPropertyBindingContext bindingContext = builderContext.getAttribute( EntityPropertyBindingContext.class );
+
+		if ( bindingContext != null ) {
+			return bindingContext;
+		}
+
+		EntityPropertyBinder parent = builderContext.getAttribute( EntityPropertyBinder.class );
+
+		if ( parent instanceof SingleEntityPropertyBinder ) {
+			return ( (SingleEntityPropertyBinder) parent ).getProperties().getBindingContext();
+		}
+
+		return EntityPropertyBindingContext.forReading( currentEntity( builderContext ) );
+	}
+
+	/**
+	 * Retrieve a {@link EntityPropertyBinder} for the current property being rendered.
+	 * This required an {@link EntityPropertiesBinder} or a {@link EntityPropertyBinder} for the parent property
+	 * to be present.
+	 *
+	 * @param builderContext current builder context
+	 * @return binder for the property
+	 */
+	public static EntityPropertyBinder currentPropertyBinder( @NonNull ViewElementBuilderContext builderContext ) {
 		EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
 
 		if ( descriptor == null ) {
 			return null;
 		}
 
-		Object propertyValue = descriptor.getPropertyValue( currentEntity( builderContext ) );
+		return resolvePropertyBinder( builderContext, descriptor );
+	}
 
-		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
+	private static EntityPropertyBinder resolvePropertyBinder( ViewElementBuilderContext builderContext, EntityPropertyDescriptor descriptor ) {
+		EntityPropertyBinder parent = builderContext.getAttribute( EntityPropertyBinder.class );
+
+		if ( parent != null ) {
+			return parent.resolvePropertyBinder( descriptor );
+		}
+
+		EntityPropertiesBinder properties = builderContext.getAttribute( EntityPropertiesBinder.class );
+
+		if ( properties != null ) {
+			return properties.get( descriptor.getName() );
+		}
+
+		return null;
 	}
 
 	/**
@@ -119,14 +246,28 @@ public class EntityViewElementUtils
 	 * @see com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper
 	 * @see com.foreach.across.modules.entity.views.EntityViewElementBuilderService
 	 */
-	public static EntityPropertyDescriptor currentPropertyDescriptor( ViewElementBuilderContext builderContext ) {
+	public static EntityPropertyDescriptor currentPropertyDescriptor( @NonNull ViewElementBuilderContext builderContext ) {
 		return builderContext.getAttribute( EntityPropertyDescriptor.class );
 	}
 
 	/**
 	 * Set the current entity to the value specified.
 	 */
-	public static void setCurrentEntity( ViewElementBuilderContext builderContext, Object value ) {
+	public static void setCurrentEntity( @NonNull ViewElementBuilderContext builderContext, Object value ) {
 		builderContext.setAttribute( EntityViewModel.ENTITY, value );
+	}
+
+	/**
+	 * Set a fixed {@link EntityPropertyValue} on the builder context. Care should be taken when using this approach
+	 * as a property value set this way will take precedence over all other mechanisms. If a parent context contains
+	 * a fixed property value, it will be used by all child contexts.
+	 * <p/>
+	 * Especially useful for test scenarios.
+	 *
+	 * @param builderContext on which to set the property value
+	 * @param value          for the property
+	 */
+	public static void setCurrentPropertyValue( @NonNull ViewElementBuilderContext builderContext, Object value ) {
+		builderContext.setAttribute( EntityPropertyValue.class, EntityPropertyValue.of( value ) );
 	}
 }

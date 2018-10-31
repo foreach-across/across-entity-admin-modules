@@ -20,14 +20,13 @@ import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.NumericFormElementBuilderFactory;
-import com.foreach.across.modules.entity.views.request.EntityViewCommand;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -36,6 +35,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.format.Printer;
 import org.springframework.format.annotation.NumberFormat;
 
@@ -171,10 +171,9 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void valueOrderIsPrinterFormatNumericConfigurationAndConversionService() {
-		ValueFetcher valueFetcher = mock( ValueFetcher.class );
 		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
-		when( valueFetcher.getValue( any() ) ).thenReturn( 123L );
-		when( properties.get( "decimal" ).getValueFetcher() ).thenReturn( valueFetcher );
+		when( properties.get( "decimal" ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( 123L );
+		when( mvcConversionService.canConvert( any( TypeDescriptor.class ), any() ) ).thenReturn( true );
 		when( mvcConversionService.convert( eq( 123L ), any(), any() ) ).thenReturn( "fromConversionService" );
 
 		TextViewElement text = assembleValue( "decimal" );

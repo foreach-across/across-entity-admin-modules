@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import static com.foreach.across.modules.entity.views.ViewElementMode.CONTROL;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
@@ -89,6 +90,16 @@ public class TestEntityViewElementBuilderService
 		                                             .propertyType( TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( String.class ) ) )
 		                                             .attribute( ViewElementLookupRegistry.class, propertyLookupRegistry )
 		                                             .build();
+	}
+
+	@Test
+	public void exceptionIsThrownIfNoValidBuilderForElementType() {
+		when( lookupStrategy.findElementType( propertyDescriptor, CONTROL ) ).thenReturn( "resolvedType" );
+		when( builderFactory.supports( "resolvedType" ) ).thenReturn( false );
+
+		assertThatExceptionOfType( IllegalArgumentException.class )
+				.isThrownBy( () -> builderService.createElementBuilder( propertyDescriptor, CONTROL ) )
+				.withMessage( "Unknown ViewElement type 'resolvedType' for property 'property', CONTROL mode" );
 	}
 
 	@Test

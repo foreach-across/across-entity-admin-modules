@@ -124,9 +124,10 @@ public class EntityPropertySelectorExecutor
 
 	private List<EntityPropertyDescriptor> selectNestedProperties( String propertyName, String selectorString ) {
 		EntityPropertyDescriptor descriptor = current.getProperty( propertyName );
+		Class<?> propertyType = descriptor.getPropertyType();
 
-		if ( descriptor.getPropertyType() != null ) {
-			EntityPropertyRegistry registry = propertyRegistries.get( descriptor.getPropertyType() );
+		if ( propertyType != null ) {
+			EntityPropertyRegistry registry = propertyRegistries.get( propertyType );
 
 			List<EntityPropertyDescriptor> subProperties = registry.select(
 					new EntityPropertySelector( selectorString )

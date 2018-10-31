@@ -39,8 +39,7 @@ public class TestDefaultEntityPropertyRegistryProvider
 	private EntityPropertyDescriptorFactory descriptorFactory;
 
 	@Spy
-	private DefaultEntityPropertyRegistryProvider provider
-			= new DefaultEntityPropertyRegistryProvider( descriptorFactory );
+	private DefaultEntityPropertyRegistryProvider provider = new DefaultEntityPropertyRegistryProvider( descriptorFactory );
 
 	@Test
 	public void createDispatchesToPropertiesRegistrars() {

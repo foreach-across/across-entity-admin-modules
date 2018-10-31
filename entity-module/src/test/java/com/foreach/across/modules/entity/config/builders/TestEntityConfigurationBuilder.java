@@ -67,6 +67,13 @@ public class TestEntityConfigurationBuilder
 	}
 
 	@Test
+	public void andAppliesAdditionalConsumer() {
+		Consumer<EntityConfigurationBuilder<String>> consumer = mock( Consumer.class );
+		assertSame( builder, builder.and( consumer ) );
+		verify( consumer ).accept( builder );
+	}
+
+	@Test
 	@SuppressWarnings("unchecked")
 	public void propertiesAreAppliedInOrder() {
 		Consumer<EntityPropertyRegistryBuilder> one = mock( Consumer.class );

@@ -16,16 +16,18 @@
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
-import com.foreach.across.testmodules.springdata.business.Client;
-import com.foreach.across.testmodules.springdata.business.CompanyStatus;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
+import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionOrMapElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.MultiValueElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
+import com.foreach.across.testmodules.springdata.business.Client;
+import com.foreach.across.testmodules.springdata.business.CompanyStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,9 +38,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -118,6 +118,14 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	public void datetimeForReadonlyDateTimeValues() {
 		assertEquals( BootstrapUiElements.DATETIME, lookup( Date.class, ViewElementMode.VALUE ) );
 		assertEquals( BootstrapUiElements.DATETIME, lookup( Date.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDate.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDate.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalTime.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalTime.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDateTime.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDateTime.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( ZonedDateTime.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( ZonedDateTime.class, ViewElementMode.LIST_VALUE ) );
 	}
 
 	@Test
@@ -135,6 +143,15 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
+	public void textTypeForDuration() {
+		assertEquals( BootstrapUiElements.TEXT, lookup( Duration.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.TEXT, lookup( Duration.class, ViewElementMode.LIST_VALUE ) );
+		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Duration.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Duration.class, ViewElementMode.FILTER_CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXTBOX, lookup( Duration.class, ViewElementMode.LIST_CONTROL ) );
+	}
+
+	@Test
 	public void labelTypeForLabelModes() {
 		assertEquals( BootstrapUiElements.LABEL, lookup( String.class, ViewElementMode.LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( Integer.class, ViewElementMode.LABEL ) );
@@ -143,6 +160,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertEquals( BootstrapUiElements.LABEL, lookup( Long.class, ViewElementMode.LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( BigDecimal.class, ViewElementMode.LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( Date.class, ViewElementMode.LABEL ) );
+		assertEquals( BootstrapUiElements.LABEL, lookup( ZonedDateTime.class, ViewElementMode.LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( String.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( Integer.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( int.class, ViewElementMode.LIST_LABEL ) );
@@ -150,6 +168,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertEquals( BootstrapUiElements.LABEL, lookup( Long.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( BigDecimal.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( Date.class, ViewElementMode.LIST_LABEL ) );
+		assertEquals( BootstrapUiElements.LABEL, lookup( ZonedDateTime.class, ViewElementMode.LIST_LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( String.class, ViewElementMode.LABEL.forMultiple() ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( String.class, ViewElementMode.LIST_LABEL.forMultiple() ) );
 	}
@@ -177,23 +196,42 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 	@Test
 	public void fieldsetForEmbeddedTypesWhenFormElementsRequested() {
-		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
-		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
-
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( AtomicInteger.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( AtomicInteger.class, ViewElementMode.FORM_WRITE ) );
 
-		metadata.setEmbedded( true );
+		when( descriptor.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
 
 		assertEquals( BootstrapUiElements.FIELDSET, lookup( AtomicInteger.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FIELDSET, lookup( AtomicInteger.class, ViewElementMode.FORM_WRITE ) );
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
+	public void propertyIsEmbeddedIfTargetEntityConfigurationIsEmbedded() {
+		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
+		when( clientConfig.hasEntityModel() ).thenReturn( false );
+		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
+
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( Client.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( Client.class, ViewElementMode.FORM_WRITE ) );
+
+		when( clientConfig.hasEntityModel() ).thenReturn( true );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Client.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Client.class, ViewElementMode.FORM_WRITE ) );
+
+		when( clientConfig.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( Client.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( Client.class, ViewElementMode.FORM_WRITE ) );
+
+		when( clientConfig.hasEntityModel() ).thenReturn( false );
+		when( clientConfig.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Client.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( Client.class, ViewElementMode.FORM_WRITE ) );
+	}
+
+	@Test
 	public void labelForEmbeddedTypesWhenLabelRequested() {
-		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
-		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
-		metadata.setEmbedded( true );
+		when( descriptor.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
 
 		assertEquals( BootstrapUiElements.LABEL, lookup( AtomicInteger.class, ViewElementMode.LABEL ) );
 		assertEquals( BootstrapUiElements.LABEL, lookup( AtomicInteger.class, ViewElementMode.LIST_LABEL ) );
@@ -202,24 +240,12 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
-	public void nullForEmbeddedTypesIfNotAFormElement() {
-		PropertyPersistenceMetadata metadata = new PropertyPersistenceMetadata();
-		when( descriptor.getAttribute( PropertyPersistenceMetadata.class ) ).thenReturn( metadata );
-
-		assertEquals( BootstrapUiElements.NUMERIC, lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
-
-		metadata.setEmbedded( true );
-
-		assertNull( lookup( AtomicInteger.class, ViewElementMode.CONTROL ) );
-		assertNull( lookup( AtomicInteger.class, ViewElementMode.LIST_VALUE ) );
-	}
-
-	@Test
-	public void dateTypeForDates() throws Exception {
+	public void dateTypeForDates() {
 		assertEquals( BootstrapUiElements.DATETIME, lookup( Date.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDate.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalTime.class, ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.DATETIME, lookup( LocalDateTime.class, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.DATETIME, lookup( ZonedDateTime.class, ViewElementMode.CONTROL ) );
 	}
 
 	@Test
@@ -239,9 +265,16 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
+	public void enumValueShouldReturnValueForReadonly() {
+		assertEquals( BootstrapUiElements.TEXT, lookup( CompanyStatus.class, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.TEXT, lookup( CompanyStatus.class, ViewElementMode.LIST_VALUE ) );
+	}
+
+	@Test
 	@SuppressWarnings("unchecked")
 	public void singleEntityTypeShouldReturnSelectType() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
+		when( clientConfig.hasEntityModel() ).thenReturn( true );
 
 		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
 		when( entityRegistry.contains( Client.class ) ).thenReturn( true );
@@ -263,6 +296,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void stringSetsAreSupportedAsMultiValue() {
 		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
 		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
@@ -272,24 +306,87 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 		assertEquals( MultiValueElementBuilderFactory.ELEMENT_TYPE,
 		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+
+		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.LIST_VALUE ) );
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	public void collectionEnumShouldReturnOptions() {
-		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
-		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
-				Set.class, TypeDescriptor.valueOf( CompanyStatus.class )
-		);
-		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
+	public void collectionEnumShouldReturnOptionsForRegularControl() {
+		TypeDescriptor propertyType = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( CompanyStatus.class ) );
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, lookup( propertyType, ViewElementMode.CONTROL ) );
+	}
 
-		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+	@Test
+	public void collectionEnumShouldReturnSelectForFilterControl() {
+		TypeDescriptor propertyType = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( CompanyStatus.class ) );
+		assertEquals( BootstrapUiElements.SELECT, lookup( propertyType, ViewElementMode.FILTER_CONTROL ) );
+	}
+
+	@Test
+	public void collectionEnumShouldReturnTextForReadonly() {
+		TypeDescriptor propertyType = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( CompanyStatus.class ) );
+		assertEquals( BootstrapUiElements.TEXT, lookup( propertyType, ViewElementMode.VALUE ) );
+		assertEquals( BootstrapUiElements.TEXT, lookup( propertyType, ViewElementMode.LIST_VALUE ) );
 	}
 
 	@Test
 	public void unknownType() {
 		assertNull( lookup( ViewElementMode.CONTROL ) );
 		assertEquals( BootstrapUiElements.TEXT, lookup( ViewElementMode.VALUE ) );
+	}
+
+	@Test
+	public void specificDomainTypeShouldReturnTextboxControlIfMarkedAsNonEmbedded() {
+		when( descriptor.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
+		assertEquals( BootstrapUiElements.TEXTBOX, lookup( EmailType.class, ViewElementMode.CONTROL ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void collectionIsEmbeddedIfPropertyIsEmbeddedEvenIfTargetIsRelatedEntity() {
+		EntityPropertyDescriptor member = mock( EntityPropertyDescriptor.class );
+		EntityPropertyRegistry rootRegistry = mock( EntityPropertyRegistry.class );
+
+		when( descriptor.getName() ).thenReturn( "users" );
+		when( descriptor.getPropertyType() ).thenReturn( (Class) List.class );
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( List.class ) );
+		when( descriptor.getPropertyRegistry() ).thenReturn( rootRegistry );
+		when( rootRegistry.getProperty( "users[]" ) ).thenReturn( member );
+		when( member.getPropertyType() ).thenReturn( (Class) Client.class );
+
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
+
+		when( member.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
+
+		when( member.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
+
+		when( member.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( null );
+
+		EntityConfiguration memberConfiguration = mock( EntityConfiguration.class );
+		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( memberConfiguration );
+		when( memberConfiguration.hasEntityModel() ).thenReturn( true );
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
+
+		when( memberConfiguration.hasEntityModel() ).thenReturn( false );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
+
+		when( memberConfiguration.hasEntityModel() ).thenReturn( true );
+		when( memberConfiguration.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
+
+		when( memberConfiguration.hasEntityModel() ).thenReturn( false );
+		when( memberConfiguration.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
+		assertEquals( OptionsFormElementBuilderFactory.OPTIONS, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -299,8 +396,19 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		return strategy.findElementType( descriptor, mode );
 	}
 
+	@SuppressWarnings("unchecked")
+	private String lookup( TypeDescriptor propertyType, ViewElementMode mode ) {
+		when( descriptor.getPropertyType() ).thenReturn( (Class) propertyType.getObjectType() );
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( propertyType );
+		return strategy.findElementType( descriptor, mode );
+	}
+
 	private String lookup( ViewElementMode mode ) {
 		return strategy.findElementType( descriptor, mode );
+	}
+
+	private static class EmailType
+	{
 	}
 
 	@Configuration

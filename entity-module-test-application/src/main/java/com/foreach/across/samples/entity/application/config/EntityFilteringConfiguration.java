@@ -95,7 +95,7 @@ import static com.foreach.across.modules.web.ui.elements.support.ContainerViewEl
 public class EntityFilteringConfiguration implements EntityConfigurer
 {
 	@EventListener
-	void modifyGroupPageTitle( EntityPageStructureRenderedEvent<Group> page ) {
+	public void modifyGroupPageTitle( EntityPageStructureRenderedEvent<Group> page ) {
 		if ( page.isListView() ) {
 			page.getPageContentStructure().setPageTitle( "List view" );
 		}
@@ -123,85 +123,94 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		configuration.withType( Note.class )
 //		             .attribute( EntityAttributes.LINK_TO_DETAIL_VIEW, true )
                      .allowableActionsBuilder( new EntityConfigurationAllowableActionsBuilder()
-		             {
-			             @Override
-			             public AllowableActions getAllowableActions( EntityConfiguration<?> entityConfiguration ) {
-				             return FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS;
-			             }
+                     {
+	                     @Override
+	                     public AllowableActions getAllowableActions( EntityConfiguration<?> entityConfiguration ) {
+		                     return FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS;
+	                     }
 
-			             @Override
-			             public <V> AllowableActions getAllowableActions( EntityConfiguration<V> entityConfiguration, V entity ) {
-				             IdBasedEntity item = (IdBasedEntity) entity;
-				             AllowableActionSet allowableActions = new AllowableActionSet();
-				             if ( Math.floorMod( item.getId(), 2 ) == 0 ) {
-					             allowableActions.add( AllowableAction.READ );
-				             }
-				             if ( Math.floorMod( item.getId(), 4 ) == 0 ) {
-					             allowableActions.add( AllowableAction.UPDATE );
-				             }
-				             allowableActions.add( AllowableAction.DELETE );
-				             return allowableActions;
-			             }
-		             } )
-		             .properties( props -> props.property( "text" )
-		                                        .valueFetcher( entity -> "" )
-		                                        .propertyType( TypeDescriptor.valueOf( String.class ) )
-		                                        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.TEXTAREA )
-		                                        .attribute( EntityQueryConditionTranslator.class,
-		                                                    EntityQueryConditionTranslator.expandingOr( "name", "content" ) )
-		                                        .hidden( true )
+	                     @Override
+	                     public <V> AllowableActions getAllowableActions( EntityConfiguration<V> entityConfiguration, V entity ) {
+		                     IdBasedEntity item = (IdBasedEntity) entity;
+		                     AllowableActionSet allowableActions = new AllowableActionSet();
+		                     if ( Math.floorMod( item.getId(), 2 ) == 0 ) {
+			                     allowableActions.add( AllowableAction.READ );
+		                     }
+		                     if ( Math.floorMod( item.getId(), 4 ) == 0 ) {
+			                     allowableActions.add( AllowableAction.UPDATE );
+		                     }
+		                     allowableActions.add( AllowableAction.DELETE );
+		                     return allowableActions;
+	                     }
+                     } )
+                     .properties( props -> props.property( "text" )
+                                                .valueFetcher( entity -> "" )
+                                                .propertyType( TypeDescriptor.valueOf( String.class ) )
+                                                .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.TEXTAREA )
+                                                .attribute( EntityQueryConditionTranslator.class,
+                                                            EntityQueryConditionTranslator.expandingOr( "name", "content" ) )
+                                                .hidden( true )
 
-		             )
-		             .association( ab -> ab.name( "note.parent" )
-		                                   .targetEntityType( Note.class )
-		                                   .associationType( EntityAssociation.Type.EMBEDDED )
-		                                   .listView( "customListView",
-		                                              lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( Collections.emptyList(), pageable, 0L ) )
-		                                                        .postProcess( AssociationHeaderViewProcessor.class,
-		                                                                      p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE )
-		                                                                            .setAddEntityMenu( true ) )
-		                                   )
-		                                   .formView( "customView", basicSettings().adminMenu( "customView" )
-		                                                                           .andThen( formSettings().forExtension( false )
-		                                                                                                   .addFormButtons( true ) ) )
-		             )
-		             .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
-		                                  .entityQueryFilter( eqf -> eqf.showProperties( "text", "parent.content" )
-		                                                                .basicMode( true )
-		                                                                .advancedMode( true ) )
-		                                  .showOnlyItemsWithAction( AllowableAction.READ )
-		             )
+                     )
+                     .association( ab -> ab.name( "note.parent" )
+                                           .targetEntityType( Note.class )
+                                           .associationType( EntityAssociation.Type.EMBEDDED )
+                                           .listView( "customListView",
+                                                      lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( Collections.emptyList(), pageable, 0L ) )
+                                                                .postProcess( AssociationHeaderViewProcessor.class,
+                                                                              p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE )
+                                                                                    .setAddEntityMenu( true ) )
+                                           )
+                                           .formView( "customView", basicSettings().adminMenu( "customView" )
+                                                                                   .andThen( formSettings().forExtension( false )
+                                                                                                           .addFormButtons( true ) ) )
+                     )
+                     .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
+                                          .entityQueryFilter( eqf -> eqf.showProperties( "text", "parent.content" )
+                                                                        .basicMode( true )
+                                                                        .advancedMode( true ) )
+                                          .showOnlyItemsWithAction( AllowableAction.READ )
+                     )
 		;
+		/*configuration.withType( Client.class )
+		             .properties( props -> props.property( "phones" )
+		                                        .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER )
+		                                        .viewElementType( ViewElementMode.FORM_WRITE, EmbeddedCollectionOrMapElementBuilderFactory.ELEMENT_TYPE ) );
+*/
 		configuration.withType( User.class )
-		             .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate", "active" )
-		                                  .properties(
-				                                  props -> props.property( "id" )
-				                                                .attribute( Sort.Order.class, new Sort.Order( Sort.Direction.DESC, "name" ) )
-						                                  .<User>valueFetcher( user -> user.getId() + " - " + user.getName() )
-		                                  )
-		                                  .showResultNumber( false )
-		                                  .viewProcessor( new EntityViewProcessorAdapter()
-		                                  {
-			                                  @Override
-			                                  protected void registerWebResources( EntityViewRequest entityViewRequest,
-			                                                                       EntityView entityView,
-			                                                                       WebResourceRegistry webResourceRegistry ) {
-				                                  webResourceRegistry.add( WebResource.JAVASCRIPT_PAGE_END, "/static/entityModuleTest/js/test.js",
-				                                                           WebResource.VIEWS );
-			                                  }
-		                                  } )
-		                                  .entityQueryFilter( eqf -> eqf.showProperties( "name", "group", "active" )
-		                                                                .basicMode( true )
-		                                                                .advancedMode( true )
-		                                                                .multiValue( "group" )
-		                                                                .properties( props -> props
-				                                                                .property( "group" )
-				                                                                .attribute( EntityAttributes.OPTIONS_ENHANCER,
-				                                                                            EQLStringValueOptionEnhancer.create( Group::getName ) )
-		                                                                )
-		                                  )
-		             )
-		             .view( EntityView.SUMMARY_VIEW_NAME, vb -> vb.showProperties( "name", "group" ) );
+//		             .properties(
+//				             props -> props.property( "address" )
+//				                           .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.BINDER )
+//		             )
+                     .listView( lvb -> lvb.showProperties( "id", "group", "registrationDate", "active" )
+                                          .properties(
+		                                          props -> props.property( "id" )
+		                                                        .attribute( Sort.Order.class, new Sort.Order( Sort.Direction.DESC, "name" ) )
+				                                          .<User>valueFetcher( user -> user.getId() + " - " + user.getName() )
+                                          )
+                                          .showResultNumber( false )
+                                          .viewProcessor( new EntityViewProcessorAdapter()
+                                          {
+	                                          @Override
+	                                          protected void registerWebResources( EntityViewRequest entityViewRequest,
+	                                                                               EntityView entityView,
+	                                                                               WebResourceRegistry webResourceRegistry ) {
+		                                          webResourceRegistry.add( WebResource.JAVASCRIPT_PAGE_END, "/static/entityModuleTest/js/test.js",
+		                                                                   WebResource.VIEWS );
+	                                          }
+                                          } )
+                                          .entityQueryFilter( eqf -> eqf.showProperties( "name", "group", "active" )
+                                                                        .basicMode( true )
+                                                                        .advancedMode( true )
+                                                                        .multiValue( "group" )
+                                                                        .properties( props -> props
+		                                                                        .property( "group" )
+		                                                                        .attribute( EntityAttributes.OPTIONS_ENHANCER,
+		                                                                                    EQLStringValueOptionEnhancer.create( Group::getName ) )
+                                                                        )
+                                          )
+                     )
+                     .view( EntityView.SUMMARY_VIEW_NAME, vb -> vb.showProperties( "name", "group", "address" ) );
 
 		configuration.matching( c -> c.hasAttribute( EntityQueryExecutor.class ) )
 		             .listView( lvb -> lvb.entityQueryFilter( true ) );

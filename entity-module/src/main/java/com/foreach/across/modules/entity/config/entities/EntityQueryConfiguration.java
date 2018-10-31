@@ -70,8 +70,9 @@ class EntityQueryConfiguration
 
 		@Override
 		public void configure( EntitiesConfigurationBuilder all ) {
-			all.matching( e -> e.hasAttribute( EntityQueryExecutor.class ) && !e.hasAttribute( EntityQueryParser.class ) && !e
-					.hasAttribute( EntityQueryFacade.class ) )
+			all.matching(
+					e -> e.hasAttribute( EntityQueryExecutor.class ) && !e.hasAttribute( EntityQueryParser.class ) && !e.hasAttribute( EntityQueryFacade.class )
+			)
 			   .postProcessor(
 					   entityConfiguration -> {
 						   EntityPropertyRegistry propertyRegistry = entityConfiguration.getPropertyRegistry();

@@ -21,18 +21,17 @@ import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.Locale;
 
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -51,47 +50,28 @@ public class TestEnumValueTextPostProcessor
 	@Mock
 	private EntityMessageCodeResolver codeResolver;
 
-	@Mock
-	private ConfigurableTextViewElement text;
-
 	private EnumValueTextPostProcessor processor;
 
 	@Before
 	public void setUp() throws Exception {
 		processor = new EnumValueTextPostProcessor( descriptor, Counter.class );
-
-		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "123" );
-		ValueFetcher valueFetcher = mock( ValueFetcher.class );
-		when( descriptor.getValueFetcher() ).thenReturn( valueFetcher );
-		when( valueFetcher.getValue( "123" ) ).thenReturn( Counter.ONE );
-
-		LocaleContextHolder.setLocale( Locale.CANADA );
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		LocaleContextHolder.resetLocaleContext();
 	}
 
 	@Test
 	public void nullValueNotSet() {
-		when( descriptor.getValueFetcher().getValue( "123" ) ).thenReturn( null );
-		processor.postProcess( builderContext, text );
-		verifyNoMoreInteractions( text );
+		assertThat( processor.print( null, Locale.CANADA_FRENCH, builderContext ) ).isNull();
 	}
 
 	@Test
 	public void valueNameIfNoCodeResolver() {
-		processor.postProcess( builderContext, text );
-		verify( text ).setText( "ONE" );
+		assertThat( processor.print( Counter.ONE, Locale.CANADA_FRENCH, builderContext ) ).isEqualTo( "ONE" );
 	}
 
 	@Test
 	public void codeResolvedIfResolver() {
 		when( builderContext.getAttribute( EntityMessageCodeResolver.class ) ).thenReturn( codeResolver );
-		when( codeResolver.getMessageWithFallback( "enums.Counter.ONE", "One", Locale.CANADA ) ).thenReturn( "één" );
-		processor.postProcess( builderContext, text );
-		verify( text ).setText( "één" );
+		when( codeResolver.getMessageWithFallback( "enums.Counter.ONE", "One", Locale.CANADA_FRENCH ) ).thenReturn( "één" );
+		assertThat( processor.print( Counter.ONE, Locale.CANADA_FRENCH, builderContext ) ).isEqualTo( "één" );
 	}
 
 	enum Counter

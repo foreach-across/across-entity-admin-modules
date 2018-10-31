@@ -22,13 +22,13 @@ import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
-import com.foreach.across.modules.entity.registry.properties.meta.PropertyPersistenceMetadata;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
@@ -65,22 +65,35 @@ public class TestEmbeddedEntities extends AbstractViewElementTemplateTest
 	@Test
 	public void persistenceMetadataShouldBeSet() {
 		EntityPropertyRegistry registry = entityPropertyRegistryProvider.get( Company.class );
-		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "address" ) ) );
-		assertFalse( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "group" ) ) );
-		assertFalse( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "class" ) ) );
+		assertTrue( isEmbeddedProperty( registry.getProperty( "address" ) ) );
+		assertFalse( isEmbeddedProperty( registry.getProperty( "group" ) ) );
+		assertFalse( isEmbeddedProperty( registry.getProperty( "class" ) ) );
 
 		registry = entityPropertyRegistryProvider.get( ClientGroup.class );
-		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "id" ) ) );
+		assertTrue( isEmbeddedProperty( registry.getProperty( "id" ) ) );
 
 		registry = entityPropertyRegistryProvider.get( Client.class );
-		assertTrue( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "phones" ) ) );
+		assertTrue( isEmbeddedProperty( registry.getProperty( "phones" ) ) );
+	}
 
+	@Test
+	public void embeddedObjectAttributeShouldNotBeSetOnNonEmbeddedTypes() {
+		EntityPropertyRegistry registry = entityPropertyRegistryProvider.get( Company.class );
+		assertFalse( registry.getProperty( "group" ).hasAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) );
+		assertFalse( registry.getProperty( "class" ).hasAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) );
+
+		registry = entityPropertyRegistryProvider.get( Client.class );
+		assertFalse( registry.getProperty( "aliases" ).hasAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) );
 	}
 
 	@Test
 	public void primitiveTypesShouldBehaveAsNonEmbedded() {
 		EntityPropertyRegistry registry = entityPropertyRegistryProvider.get( Client.class );
-		assertFalse( PropertyPersistenceMetadata.isEmbeddedProperty( registry.getProperty( "aliases" ) ) );
+		assertFalse( isEmbeddedProperty( registry.getProperty( "aliases" ) ) );
+	}
+
+	private boolean isEmbeddedProperty( EntityPropertyDescriptor descriptor ) {
+		return Boolean.TRUE.equals( descriptor.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) );
 	}
 
 	@Test

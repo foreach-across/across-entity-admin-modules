@@ -190,6 +190,11 @@ public class EntityListViewFactoryBuilder extends EntityViewFactoryBuilder
 		return (EntityListViewFactoryBuilder) super.postProcess( postProcessor );
 	}
 
+	@Override
+	public EntityListViewFactoryBuilder and( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityListViewFactoryBuilder) super.and( consumer );
+	}
+
 	/**
 	 * Configures the {@link AllowableAction} that is required on an item before it is visible.
 	 *

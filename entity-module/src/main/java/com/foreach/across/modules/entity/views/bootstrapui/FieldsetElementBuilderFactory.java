@@ -84,7 +84,7 @@ public class FieldsetElementBuilderFactory extends EntityViewElementBuilderFacto
 				.name( propertyDescriptor.getName() );
 
 		fieldset.postProcessor( ( ctx, f ) -> {
-			Function<ViewElementFieldset, ? extends ViewElement> template = propertyDescriptor.getAttribute( ViewElementFieldset.TEMPLATE, Function.class );
+			Function<ViewElementFieldset, ? extends ViewElement> template = resolveTemplate( propertyDescriptor );
 
 			if ( template != null ) {
 				f.setTemplate( template );
@@ -116,6 +116,16 @@ public class FieldsetElementBuilderFactory extends EntityViewElementBuilderFacto
 		}
 
 		return fieldset;
+	}
+
+	private Function<ViewElementFieldset, ? extends ViewElement> resolveTemplate( EntityPropertyDescriptor descriptor ) {
+		Function<ViewElementFieldset, ? extends ViewElement> template = descriptor.getAttribute( ViewElementFieldset.TEMPLATE, Function.class );
+
+		if ( template == null ) {
+			return EntityPropertyRegistry.isMemberPropertyDescriptor( descriptor )
+					? ViewElementFieldset.TEMPLATE_BODY_ONLY : ViewElementFieldset.TEMPLATE_FIELDSET;
+		}
+		return template;
 	}
 
 	private EntityPropertySelector retrieveMembersSelector( EntityPropertyDescriptor descriptor ) {

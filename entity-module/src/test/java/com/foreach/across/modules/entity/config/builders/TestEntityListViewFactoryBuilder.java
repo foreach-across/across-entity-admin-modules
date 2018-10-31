@@ -40,10 +40,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
@@ -70,6 +70,13 @@ public class TestEntityListViewFactoryBuilder
 		when( beanFactory.createBean( DispatchingEntityViewFactory.class ) ).thenReturn( dispatchingViewFactory );
 
 		builder = new EntityListViewFactoryBuilder( beanFactory ).factoryType( DispatchingEntityViewFactory.class );
+	}
+
+	@Test
+	public void andAppliesAdditionalConsumer() {
+		Consumer<EntityViewFactoryBuilder> consumer = mock( Consumer.class );
+		assertSame( builder, builder.and( consumer ) );
+		verify( consumer ).accept( builder );
 	}
 
 	@Test

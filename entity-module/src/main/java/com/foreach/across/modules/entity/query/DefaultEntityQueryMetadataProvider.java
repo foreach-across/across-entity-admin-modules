@@ -36,14 +36,14 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
  */
 public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataProvider
 {
-	public static final EntityQueryOps[] STRING_OPS =
+	private static final EntityQueryOps[] STRING_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY, CONTAINS,
 			                       NOT_CONTAINS };
-	public static final EntityQueryOps[] NUMBER_OPS =
+	private static final EntityQueryOps[] NUMBER_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
-	public static final EntityQueryOps[] COLLECTION_OPS =
+	private static final EntityQueryOps[] COLLECTION_OPS =
 			new EntityQueryOps[] { CONTAINS, NOT_CONTAINS, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
-	public static final EntityQueryOps[] ENTITY_OPS =
+	private static final EntityQueryOps[] ENTITY_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
 
 	private static final TypeDescriptor EQ_GROUP_TYPE = TypeDescriptor.valueOf( EQGroup.class );
@@ -70,9 +70,6 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 
 	@Override
 	public boolean isValidValueForPropertyAndOperator( Object value, String property, EntityQueryOps operator ) {
-		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( property );
-		TypeDescriptor type = descriptor.getPropertyTypeDescriptor();
-//		Class<?> objectType = type.getObjectType();
 		TypeDescriptor valueType = TypeDescriptor.forObject( value );
 
 		if ( operator == CONTAINS || operator == NOT_CONTAINS ) {

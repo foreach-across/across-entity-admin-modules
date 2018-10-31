@@ -307,6 +307,17 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	}
 
 	/**
+	 * Apply an additional consumer to this builder.
+	 *
+	 * @param consumer to apply
+	 * @return current builder
+	 */
+	public EntityAssociationBuilder and( @NonNull Consumer<EntityAssociationBuilder> consumer ) {
+		consumer.accept( this );
+		return this;
+	}
+
+	/**
 	 * Apply the association builder to the configuration specified.  This will add or modify the association
 	 * represented by this builder.
 	 *

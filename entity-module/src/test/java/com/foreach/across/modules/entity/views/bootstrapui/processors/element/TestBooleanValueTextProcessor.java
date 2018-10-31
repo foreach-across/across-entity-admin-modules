@@ -17,23 +17,20 @@
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
-import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.support.MessageCodeSupportingLocalizedTextResolver;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.Locale;
 
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Steven Gentens
@@ -51,9 +48,6 @@ public class TestBooleanValueTextProcessor
 
 	private MessageCodeSupportingLocalizedTextResolver localizedTextResolver = new MessageCodeSupportingLocalizedTextResolver();
 
-	@Mock
-	private ConfigurableTextViewElement text;
-
 	private BooleanValueTextProcessor processor;
 
 	@Before
@@ -65,48 +59,24 @@ public class TestBooleanValueTextProcessor
 			return localizedTextResolver.resolveText( (String) args[0], (String) args[1] );
 		} );
 
-		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "123" );
-		ValueFetcher valueFetcher = mock( ValueFetcher.class );
-		when( descriptor.getValueFetcher() ).thenReturn( valueFetcher );
 		when( descriptor.getName() ).thenReturn( "myBoolean" );
-		LocaleContextHolder.setLocale( Locale.CANADA );
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		LocaleContextHolder.resetLocaleContext();
 	}
 
 	@Test
 	public void defaultValues() {
-		when( descriptor.getValueFetcher().getValue( "123" ) ).thenReturn( true );
-		processor.postProcess( builderContext, text );
-		verify( text ).setText( "Yes" );
-
-		when( descriptor.getValueFetcher().getValue( "123" ) ).thenReturn( false );
-		processor.postProcess( builderContext, text );
-		verify( text ).setText( "No" );
-
-		when( descriptor.getValueFetcher().getValue( "123" ) ).thenReturn( null );
-		processor.postProcess( builderContext, text );
-		verify( text ).setText( "" );
+		assertThat( processor.print( true, Locale.CANADA, builderContext ) ).isEqualTo( "Yes" );
+		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "No" );
+		assertThat( processor.print( null, Locale.CANADA, builderContext ) ).isEqualTo( "" );
 	}
 
 	@Test
 	public void resolvedMessageCode() {
-		when( descriptor.getValueFetcher().getValue( "123" ) ).thenReturn( true );
 		when( builderContext.resolveText( "#{properties.myBoolean.value[true]}", "Yes" ) ).thenReturn( "Active" );
-		processor.postProcess( builderContext, text );
-		verify( text ).setText( "Active" );
-
-		when( descriptor.getValueFetcher().getValue( "123" ) ).thenReturn( false );
 		when( builderContext.resolveText( "#{properties.myBoolean.value[false]}", "No" ) ).thenReturn( "Not active" );
-		processor.postProcess( builderContext, text );
-		verify( text ).setText( "Not active" );
-
-		when( descriptor.getValueFetcher().getValue( "123" ) ).thenReturn( null );
 		when( builderContext.resolveText( "#{properties.myBoolean.value[empty]}", "" ) ).thenReturn( "Not filled in" );
-		processor.postProcess( builderContext, text );
-		verify( text ).setText( "Not filled in" );
+
+		assertThat( processor.print( true, Locale.CANADA, builderContext ) ).isEqualTo( "Active" );
+		assertThat( processor.print( false, Locale.CANADA, builderContext ) ).isEqualTo( "Not active" );
+		assertThat( processor.print( null, Locale.CANADA, builderContext ) ).isEqualTo( "Not filled in" );
 	}
 }
