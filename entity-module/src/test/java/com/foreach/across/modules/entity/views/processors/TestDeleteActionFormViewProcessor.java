@@ -52,18 +52,23 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("unchecked")
 public class TestDeleteActionFormViewProcessor
 {
-	private DeleteActionFormViewProcessor deleteActionFormViewProcessor;
+	@Mock
+	private EntityViewContext entityViewContext;
 
 	@Mock
 	private EntityViewRequest entityViewRequest;
+
 	@Mock
 	private EntityView entityView;
+
 	@Mock
 	private ContainerViewElementBuilderSupport<?, ?> containerBuilder;
+
 	@Mock
 	private ViewElementBuilderMap builderMap;
+
+	private DeleteActionFormViewProcessor deleteActionFormViewProcessor;
 	private ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
-	private EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 	private Object entity = new Object();
 
 	@Before
@@ -72,18 +77,15 @@ public class TestDeleteActionFormViewProcessor
 
 		ContainerViewElementBuilderSupport buttonsContainer = BootstrapUiBuilders.container()
 		                                                                         .name( "buttons" );
-		when( builderMap.containsKey( SingleEntityFormViewProcessor.FORM_BUTTONS ) ).thenReturn( true );
 		when( builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS, ContainerViewElementBuilderSupport.class ) )
 				.thenReturn( buttonsContainer );
 
-		EntityViewContext entityViewContext = mock( EntityViewContext.class );
 		when( entityViewContext.getEntity() ).thenReturn( entity );
 		when( entityViewRequest.getEntityViewContext() ).thenReturn( entityViewContext );
 
-		entityConfiguration = mock( EntityConfiguration.class );
+		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 		when( entityConfiguration.getName() ).thenReturn( "item" );
 		when( entityConfiguration.getId( entity ) ).thenReturn( 1L );
-		when( entityViewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 
 		EntityViewLinks entityViewLinks = new EntityViewLinks( "/admin", mock( EntityRegistry.class ) );
 		EntityViewLinkBuilder.ForEntityConfiguration currentLink = entityViewLinks.linkTo( entityConfiguration );
@@ -95,7 +97,7 @@ public class TestDeleteActionFormViewProcessor
 
 	@Test
 	public void deleteButtonIsPresentForDeleteAction() {
-		when( entityConfiguration.getAllowableActions( entity ) ).thenReturn( new AllowableActionSet( AllowableAction.DELETE.getId() ) );
+		when( entityViewContext.getAllowableActions() ).thenReturn( new AllowableActionSet( AllowableAction.DELETE.getId() ) );
 		ContainerViewElementBuilderSupport buttonsContainer = builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS,
 		                                                                      ContainerViewElementBuilderSupport.class );
 		ContainerViewElement build = (ContainerViewElement) buttonsContainer.build( builderContext );
@@ -112,8 +114,8 @@ public class TestDeleteActionFormViewProcessor
 
 	@Test
 	public void deleteFromDetailView() {
-		when( entityViewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( true );
-		when( entityConfiguration.getAllowableActions( entity ) ).thenReturn( new AllowableActionSet( AllowableAction.DELETE.getId() ) );
+		when( entityViewRequest.getViewName() ).thenReturn( EntityView.DETAIL_VIEW_NAME );
+		when( entityViewContext.getAllowableActions() ).thenReturn( new AllowableActionSet( AllowableAction.DELETE.getId() ) );
 		ContainerViewElementBuilderSupport buttonsContainer = builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS,
 		                                                                      ContainerViewElementBuilderSupport.class );
 		ContainerViewElement build = (ContainerViewElement) buttonsContainer.build( builderContext );
@@ -132,8 +134,8 @@ public class TestDeleteActionFormViewProcessor
 
 	@Test
 	public void deleteFromUpdateView() {
-		when( entityViewRequest.isForView( EntityView.UPDATE_VIEW_NAME ) ).thenReturn( true );
-		when( entityConfiguration.getAllowableActions( entity ) ).thenReturn( new AllowableActionSet( AllowableAction.DELETE.getId() ) );
+		when( entityViewRequest.getViewName() ).thenReturn( EntityView.UPDATE_VIEW_NAME );
+		when( entityViewContext.getAllowableActions() ).thenReturn( new AllowableActionSet( AllowableAction.DELETE.getId() ) );
 		ContainerViewElementBuilderSupport buttonsContainer = builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS,
 		                                                                      ContainerViewElementBuilderSupport.class );
 		ContainerViewElement build = (ContainerViewElement) buttonsContainer.build( builderContext );
@@ -153,7 +155,7 @@ public class TestDeleteActionFormViewProcessor
 
 	@Test
 	public void deleteButtonIsNotPresentWithoutDeleteAction() {
-		when( entityConfiguration.getAllowableActions( entity ) ).thenReturn( new AllowableActionSet() );
+		when( entityViewContext.getAllowableActions() ).thenReturn( new AllowableActionSet() );
 		ContainerViewElementBuilderSupport buttonsContainer = builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS,
 		                                                                      ContainerViewElementBuilderSupport.class );
 		ContainerViewElement build = (ContainerViewElement) buttonsContainer.build( builderContext );
