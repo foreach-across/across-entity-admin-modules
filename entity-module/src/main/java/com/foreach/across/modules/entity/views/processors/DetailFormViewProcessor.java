@@ -20,6 +20,7 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -46,6 +47,7 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
  */
 @Component
 @Exposed
+@ConditionalOnAdminWeb
 public class DetailFormViewProcessor extends EntityViewProcessorAdapter
 {
 	@Override
