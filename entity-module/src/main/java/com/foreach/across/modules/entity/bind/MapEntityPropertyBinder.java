@@ -102,6 +102,19 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	}
 
 	@Override
+	public boolean isDirty() {
+		if ( entries != null ) {
+			for ( Item value : entries.values() ) {
+				if ( value.isDirty() ) {
+					return true;
+				}
+			}
+		}
+
+		return super.isDirty();
+	}
+
+	@Override
 	public Object getInitializedValue() {
 		initializedValuePathWasUsed = true;
 
@@ -126,7 +139,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 			entries = new Items();
 
 			if ( ( !bindingBusy || updateItemsOnBinding ) && collectionController != null ) {
-				setValue( originalValue );
+				setValueInternal( originalValue );
 			}
 		}
 
@@ -154,6 +167,11 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 	@Override
 	public void setValue( Object value ) {
+		markDirty();
+		setValueInternal( value );
+	}
+
+	private void setValueInternal( Object value ) {
 		itemsInitialized = true;
 
 		if ( entries == null ) {
@@ -272,6 +290,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 			if ( item == null ) {
 				item = createItem( itemKey );
+				markDirty();
 				super.put( itemKey, item );
 			}
 
@@ -313,6 +332,10 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 		public Object getEntryValue() {
 			return value.getValue();
+		}
+
+		private boolean isDirty() {
+			return key.isDirty() || value.isDirty();
 		}
 	}
 }

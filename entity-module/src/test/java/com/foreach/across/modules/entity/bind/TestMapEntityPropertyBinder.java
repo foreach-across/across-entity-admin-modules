@@ -176,6 +176,78 @@ public class TestMapEntityPropertyBinder
 	}
 
 	@Test
+	public void propertyNotDirtyIfValueIsBeingFetched() {
+		assertThat( property.getOriginalValue() ).isNotNull();
+		assertThat( property.getValue() ).isNotNull();
+		assertThat( property.getEntries() ).isNotEmpty();
+		assertThat( property.getTemplate() ).isNotNull();
+		assertThat( property.isDeleted() ).isFalse();
+		assertThat( property.isDirty() ).isFalse();
+
+		verify( binder, never() ).markDirty();
+	}
+
+	@Test
+	public void binderIsDirtyIfDeletedCalled() {
+		property.setDeleted( false );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder ).markDirty();
+	}
+
+	@Test
+	public void binderIsDirtyIfSetValueCalledWithAnyValue() {
+		property.setValue( Collections.emptyMap() );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder ).markDirty();
+	}
+
+	@Test
+	public void onlyApplyValueRemovesDirtyFlag() {
+		property.setValue( null );
+		assertThat( property.isDirty() ).isTrue();
+
+		property.applyValue();
+		assertThat( property.isDirty() ).isFalse();
+
+		property.setDeleted( true );
+		assertThat( property.isDirty() ).isTrue();
+
+		property.save();
+		assertThat( property.isDirty() ).isTrue();
+
+		property.validate( mock( Errors.class ) );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder, times( 2 ) ).markDirty();
+	}
+
+	@Test
+	public void addingAnItemMarksAsDirty() {
+		Map<String, MapEntityPropertyBinder.Item> items = property.getEntries();
+		assertThat( property.isDirty() ).isFalse();
+		assertThat( items.get( "newItem" ) ).isNotNull();
+		assertThat( property.isDirty() ).isTrue();
+	}
+
+	@Test
+	public void dirtyKeyOrValueMarksThePropertyDirty() {
+		assertThat( property.isDirty() ).isFalse();
+		assertThat( property.getEntries() ).isNotEmpty();
+		assertThat( property.isDirty() ).isFalse();
+
+		when( key.isDirty() ).thenReturn( true );
+		assertThat( property.isDirty() ).isTrue();
+
+		when( key.isDirty() ).thenReturn( false  );
+		assertThat( property.isDirty() ).isFalse();
+
+		when( value.isDirty() ).thenReturn( true );
+		assertThat( property.isDirty() ).isTrue();
+	}
+
+	@Test
 	public void valueIsInitializedEmptyIfNotIncrementalBindingAndBindingBusy() {
 		property.enableBinding( true );
 

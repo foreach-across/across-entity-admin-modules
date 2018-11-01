@@ -45,7 +45,6 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	private boolean bound;
 
 	@Getter
-	@Setter
 	private boolean deleted;
 
 	/**
@@ -61,6 +60,13 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 
 	@Setter
 	private String binderPath;
+
+	/**
+	 * Has the value that this property represents been modified since it has been applied.
+	 */
+	@Setter(AccessLevel.PACKAGE)
+	@Getter
+	private boolean dirty;
 
 	String getBinderPath( String target ) {
 		return binderPath + ( StringUtils.isNotEmpty( target ) ? "." + target : "" );
@@ -99,7 +105,9 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Override
 	public boolean applyValue() {
 		if ( controller != null ) {
-			return controller.applyValue( binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
+			boolean result = controller.applyValue( binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
+			setDirty( false );
+			return result;
 		}
 		return false;
 	}
@@ -110,6 +118,17 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 			return controller.save( binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
 		}
 		return false;
+	}
+
+	@Override
+	public void setDeleted( boolean deleted ) {
+		this.deleted = deleted;
+		markDirty();
+	}
+
+	void markDirty() {
+		dirty = true;
+		binder.markDirty();
 	}
 
 	@Override

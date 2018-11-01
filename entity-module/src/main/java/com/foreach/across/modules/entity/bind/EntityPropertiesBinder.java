@@ -63,6 +63,13 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	private Object entity;
 	private Object target;
 
+	/**
+	 * Have any property binders had their values updated?
+	 */
+	@Getter(value = AccessLevel.PACKAGE)
+	@Setter(value = AccessLevel.PACKAGE)
+	private boolean dirty;
+
 	@Getter(value = AccessLevel.PACKAGE)
 	@Setter(value = AccessLevel.PACKAGE)
 	private EntityPropertyDescriptor parentProperty;
@@ -265,6 +272,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return new EntityPropertiesBinderController( this );
 	}
 
+	void markDirty() {
+		dirty = true;
+	}
+
 	String getPropertyBinderPath( String propertyName ) {
 		return StringUtils.defaultIfEmpty( binderPrefix, "properties" ) + "[" + propertyName + "]";
 	}
@@ -353,12 +364,21 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		@Setter
 		private boolean useLocalBindingContext;
 
+		@Setter
+		private SingleEntityPropertyBinder owningPropertyBinder;
+
 		@Override
 		EntityPropertyBindingContext getValueBindingContext() {
 			if ( useLocalBindingContext ) {
 				return super.getValueBindingContext();
 			}
 			return EntityPropertiesBinder.this.getValueBindingContext();
+		}
+
+		@Override
+		void markDirty() {
+			super.markDirty();
+			owningPropertyBinder.markDirty();
 		}
 	}
 

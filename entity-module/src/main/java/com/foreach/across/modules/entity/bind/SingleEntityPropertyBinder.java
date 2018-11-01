@@ -82,6 +82,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 
 			ChildPropertyPropertiesBinder childBinder = binder.createChildPropertyPropertiesBinder();
 			childBinder.setParentProperty( descriptor );
+			childBinder.setOwningPropertyBinder( this );
 			childBinder.setUseLocalBindingContext( EntityPropertyDescriptorUtils.isMemberProperty( descriptor ) );
 			childBinder.setEntity( getOriginalValue() );
 			childBinder.setTarget( getInitializedValue() );
@@ -112,8 +113,8 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 			return null;
 		}
 
-		if ( properties != null ) {
-			properties.values().forEach( EntityPropertyBinder::applyValue );
+		if ( properties != null && isDirty() ) {
+			properties.createController().applyValues();
 		}
 
 		return value;
@@ -124,6 +125,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 		loadOriginalValue();
 
 		valueHasBeenSet = true;
+		markDirty();
 
 		Object newValue = value;
 

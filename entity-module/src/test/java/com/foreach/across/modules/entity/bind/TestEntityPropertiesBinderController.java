@@ -105,6 +105,8 @@ public class TestEntityPropertiesBinderController
 		inOrder.verify( callbackTwo ).run();
 		inOrder.verify( callbackOne ).run();
 		inOrder.verify( propOne ).save( any(), any() );
+
+		assertThat( binder.isDirty() ).isTrue();
 	}
 
 	@Test
@@ -126,11 +128,28 @@ public class TestEntityPropertiesBinderController
 		when( propOne.getOrder() ).thenReturn( AFTER_ENTITY );
 		when( propTwo.getOrder() ).thenReturn( BEFORE_ENTITY );
 
+		binder.setDirty( true );
 		binder.createController().applyValues();
 
 		inOrder = inOrder( propTwo, propOne );
 		inOrder.verify( propTwo ).applyValue( any(), any() );
 		inOrder.verify( propOne ).applyValue( any(), any() );
+
+		assertThat( binder.isDirty() ).isFalse();
+	}
+
+	@Test
+	public void applyValuesIsSkippedIfNotDirty() {
+		binder.get( "propOne" ).setValue( "one" );
+		binder.get( "propTwo" ).setValue( "two" );
+
+		binder.setDirty( false );
+		binder.createController().applyValues();
+
+		verify( propOne, never() ).applyValue( any(), any() );
+		verify( propTwo, never() ).applyValue( any(), any() );
+
+		assertThat( binder.isDirty() ).isFalse();
 	}
 
 	@Test
@@ -167,6 +186,8 @@ public class TestEntityPropertiesBinderController
 		inOrder.verify( errors ).pushNestedPath( "properties[propOne]" );
 		inOrder.verify( propOne ).validate( any(), any(), any() );
 		inOrder.verify( errors ).popNestedPath();
+
+		assertThat( binder.isDirty() ).isTrue();
 	}
 
 	@Test
@@ -206,6 +227,7 @@ public class TestEntityPropertiesBinderController
 		when( propOne.getOrder() ).thenReturn( AFTER_ENTITY );
 		when( propTwo.getOrder() ).thenReturn( BEFORE_ENTITY );
 
+		binder.setDirty( true );
 		assertThat( binder.createController().addEntityValidationCallback( callbackTwo, callbackOne ).applyValuesAndValidate( errors ) )
 				.isTrue();
 
@@ -220,6 +242,8 @@ public class TestEntityPropertiesBinderController
 		inOrder.verify( errors ).pushNestedPath( "properties[propOne]" );
 		inOrder.verify( propOne ).validate( any(), any(), any() );
 		inOrder.verify( errors ).popNestedPath();
+
+		assertThat( binder.isDirty() ).isFalse();
 	}
 }
 

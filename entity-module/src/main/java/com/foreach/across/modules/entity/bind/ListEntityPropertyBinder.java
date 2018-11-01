@@ -110,6 +110,19 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return isDeleted() || ( ( isBound() || itemsInitialized ) && !Objects.equals( loadOriginalValue(), getValue() ) );
 	}
 
+	@Override
+	public boolean isDirty() {
+		if ( items != null ) {
+			for ( EntityPropertyBinder value : items.values() ) {
+				if ( value.isDirty() ) {
+					return true;
+				}
+			}
+		}
+
+		return super.isDirty();
+	}
+
 	private AbstractEntityPropertyBinder createItem() {
 		return binder.createPropertyBinder( memberDescriptor );
 	}
@@ -121,7 +134,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			items = new Items();
 
 			if ( ( !bindingBusy || updateItemsOnBinding ) && collectionController != null ) {
-				setValue( originalValue );
+				setValueInternal( originalValue );
 			}
 		}
 
@@ -173,6 +186,11 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 	@Override
 	public void setValue( Object value ) {
+		markDirty();
+		setValueInternal( value );
+	}
+
+	private void setValueInternal( Object value ) {
 		itemsInitialized = true;
 
 		if ( items == null ) {
@@ -274,6 +292,8 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			if ( item == null ) {
 				AbstractEntityPropertyBinder itemBinder = createItem();
 				itemBinder.setBinderPath( getBinderPath( "items[" + itemKey + "]" ) );
+
+				markDirty();
 
 				item = itemBinder;
 				super.put( itemKey, item );

@@ -30,10 +30,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -231,6 +228,71 @@ public class TestListEntityPropertyBinder
 
 		assertThat( items.get( "1" ) ).isSameAs( itemTwo );
 		verify( itemTwo ).setValue( 2 );
+	}
+
+	@Test
+	public void propertyNotDirtyIfValueIsBeingFetched() {
+		assertThat( property.getOriginalValue() ).isNotNull();
+		assertThat( property.getValue() ).isNotNull();
+		assertThat( property.getItems() ).isNotEmpty();
+		assertThat( property.getItemList() ).isNotEmpty();
+		assertThat( property.isDeleted() ).isFalse();
+		assertThat( property.isDirty() ).isFalse();
+
+		verify( binder, never() ).markDirty();
+	}
+
+	@Test
+	public void binderIsDirtyIfDeletedCalled() {
+		property.setDeleted( false );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder ).markDirty();
+	}
+
+	@Test
+	public void binderIsDirtyIfSetValueCalledWithAnyValue() {
+		property.setValue( Collections.emptyList() );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder ).markDirty();
+	}
+
+	@Test
+	public void onlyApplyValueRemovesDirtyFlag() {
+		property.setValue( null );
+		assertThat( property.isDirty() ).isTrue();
+
+		property.applyValue();
+		assertThat( property.isDirty() ).isFalse();
+
+		property.setDeleted( true );
+		assertThat( property.isDirty() ).isTrue();
+
+		property.save();
+		assertThat( property.isDirty() ).isTrue();
+
+		property.validate( mock( Errors.class ) );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder, times( 2 ) ).markDirty();
+	}
+
+	@Test
+	public void addingAnItemMarksAsDirty() {
+		Map<String, EntityPropertyBinder> items = property.getItems();
+		assertThat( property.isDirty() ).isFalse();
+		assertThat( items.get( "newItem" ) ).isNotNull();
+		assertThat( property.isDirty() ).isTrue();
+	}
+
+	@Test
+	public void dirtyItemMarksThePropertyDirty() {
+		assertThat( property.isDirty() ).isFalse();
+		assertThat( property.getItems() ).isNotEmpty();
+		assertThat( property.isDirty() ).isFalse();
+		when( itemOne.isDirty() ).thenReturn( true );
+		assertThat( property.isDirty() ).isTrue();
 	}
 
 	@Test

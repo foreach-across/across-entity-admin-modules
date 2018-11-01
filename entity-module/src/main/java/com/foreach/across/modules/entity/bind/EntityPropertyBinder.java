@@ -127,6 +127,13 @@ public interface EntityPropertyBinder
 	boolean isModified();
 
 	/**
+	 * Check if this property has possibly been modified since the previous call to {@link #applyValue()}.
+	 *
+	 * @return true if the property is dirty
+	 */
+	boolean isDirty();
+
+	/**
 	 * Initialize a new value for this property.
 	 * Will not actually update the property value itself but will attempt to return a new instance that can be set as the value.
 	 *

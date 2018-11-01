@@ -20,9 +20,7 @@ import com.foreach.across.modules.entity.registry.properties.DefaultEntityProper
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.junit.Before;
 
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor.builder;
@@ -73,10 +71,22 @@ abstract class AbstractEntityPropertyBindingContextTest
 
 	@Data
 	@NoArgsConstructor
-	@AllArgsConstructor
+	@EqualsAndHashCode(exclude = "updateCount")
 	public static class Address
 	{
+		@Setter(value = AccessLevel.NONE)
+		private int updateCount;
+
 		private String street;
+
+		public Address( String street ) {
+			this.street = street;
+		}
+
+		public void setStreet( String street ) {
+			this.street = street;
+			updateCount++;
+		}
 	}
 
 	@Data

@@ -90,15 +90,19 @@ public final class EntityPropertiesBinderController
 	 */
 	@SuppressWarnings("unchecked")
 	public void applyValues() {
-		List<OrderedRunnable> actions = new ArrayList<>( propertiesBinder.size() );
+		if ( propertiesBinder.isDirty() ) {
+			List<OrderedRunnable> actions = new ArrayList<>( propertiesBinder.size() );
 
-		propertiesBinder.entrySet()
-		                .stream()
-		                .map( entry -> new OrderedRunnable( entry.getValue().getControllerOrder(), entry.getKey(), entry.getValue()::applyValue ) )
-		                .forEach( actions::add );
+			propertiesBinder.entrySet()
+			                .stream()
+			                .map( entry -> new OrderedRunnable( entry.getValue().getControllerOrder(), entry.getKey(), entry.getValue()::applyValue ) )
+			                .forEach( actions::add );
 
-		actions.sort( ORDERED_RUNNABLE_COMPARATOR );
-		actions.forEach( OrderedRunnable::run );
+			actions.sort( ORDERED_RUNNABLE_COMPARATOR );
+			actions.forEach( OrderedRunnable::run );
+
+			propertiesBinder.setDirty( false );
+		}
 	}
 
 	/**

@@ -31,8 +31,6 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
-import java.util.Collections;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -119,6 +117,52 @@ public class TestSingleEntityPropertyBinder
 		property.setValue( 123 );
 		assertThat( property.getOriginalValue() ).isEqualTo( 1 );
 		assertThat( property.getValue() ).isEqualTo( 123 );
+	}
+
+	@Test
+	public void propertyNotDirtyIfValueIsBeingFetched() {
+		assertThat( property.getOriginalValue() ).isEqualTo( 1 );
+		assertThat( property.getValue() ).isEqualTo( 1 );
+		assertThat( property.isDeleted() ).isFalse();
+		assertThat( property.isDirty() ).isFalse();
+
+		verify( binder, never() ).markDirty();
+	}
+
+	@Test
+	public void binderIsDirtyIfDeletedCalled() {
+		property.setDeleted( false );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder ).markDirty();
+	}
+
+	@Test
+	public void binderIsDirtyIfSetValueCalledWithAnyValue() {
+		property.setValue( 1 );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder ).markDirty();
+	}
+
+	@Test
+	public void onlyApplyValueRemovesDirtyFlag() {
+		property.setValue( null );
+		assertThat( property.isDirty() ).isTrue();
+
+		property.applyValue();
+		assertThat( property.isDirty() ).isFalse();
+
+		property.setDeleted( true );
+		assertThat( property.isDirty() ).isTrue();
+
+		property.save();
+		assertThat( property.isDirty() ).isTrue();
+
+		property.validate( mock( Errors.class ) );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder, times( 2 ) ).markDirty();
 	}
 
 	@Test
@@ -379,10 +423,8 @@ public class TestSingleEntityPropertyBinder
 	}
 
 	@Test
-	public void propertiesAreAppliedBeforeReturningValue() {
+	public void propertiesAreNotAppliedIfNotDirty() {
 		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
-		EntityPropertyBinder childValue = mock( EntityPropertyBinder.class );
-		when( childBinder.values() ).thenReturn( Collections.singleton( childValue ) );
 		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
 
 		assertThat( property.getValue() ).isEqualTo( 1 );
@@ -390,7 +432,23 @@ public class TestSingleEntityPropertyBinder
 
 		assertThat( property.getProperties() ).isSameAs( childBinder );
 		assertThat( property.getValue() ).isEqualTo( 1 );
-		verify( childValue ).applyValue();
+		verify( childBinder, never() ).createController();
+	}
+
+	@Test
+	public void propertiesAreAppliedBeforeReturningValueIfDirty() {
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		EntityPropertiesBinderController propertiesController = mock( EntityPropertiesBinderController.class );
+		when( childBinder.createController() ).thenReturn( propertiesController );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
+
+		property.markDirty();
+		assertThat( property.getValue() ).isEqualTo( 1 );
+		verifyZeroInteractions( childBinder );
+
+		assertThat( property.getProperties() ).isSameAs( childBinder );
+		assertThat( property.getValue() ).isEqualTo( 1 );
+		verify( propertiesController ).applyValues();
 	}
 
 	@Test

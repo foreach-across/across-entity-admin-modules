@@ -164,9 +164,11 @@ public class TestBindingContextPropertiesBinderResolving extends AbstractEntityP
 
 		// target has been updated as the values have been applied
 		assertThat( target.getAddress() ).isEqualTo( new Address( "updated street" ) );
+		assertThat( target.getAddress().getUpdateCount() ).isEqualTo( 1 );
 
 		// but the original should not be updated
 		assertThat( original.getAddress() ).isEqualTo( new Address( "some street" ) );
+		assertThat( original.getAddress().getUpdateCount() ).isEqualTo( 0 );
 	}
 
 	@Test
@@ -214,6 +216,11 @@ public class TestBindingContextPropertiesBinderResolving extends AbstractEntityP
 		// city binding context should also be resolved
 		assertBindingContext( addressContext.resolvePropertyBindingContext( addressCity ), null, new City( "Antwerp" ), false );
 		assertBindingContext( userContext.resolvePropertyBindingContext( userAddressCity ), null, new City( "Antwerp" ), false );
+	}
+
+	@Test
+	public void valuesAreOnlyAppliedWhenNecessary() {
+
 	}
 
 	// todo: fixme
