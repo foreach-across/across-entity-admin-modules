@@ -21,7 +21,6 @@ import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.ConversionNotSupportedException;
@@ -61,17 +60,13 @@ public class TestEntityPropertiesBinder
 	@Mock
 	private EntityPropertyRegistry registry;
 
-	private EntityPropertyBindingContext bindingContext;
-
-	@InjectMocks
 	private EntityPropertiesBinder binder;
 
 	@Before
 	public void before() {
-		bindingContext = EntityPropertyBindingContext.forReading( ENTITY );
-
+		binder = new EntityPropertiesBinder( registry );
 		binder.setConversionService( conversionService );
-		binder.setBindingContext( bindingContext );
+		binder.setEntity( ENTITY );
 
 		MutableEntityPropertyDescriptor singleValue = EntityPropertyDescriptor.builder( "id" )
 		                                                                      .propertyType( Long.class )
@@ -99,6 +94,56 @@ public class TestEntityPropertiesBinder
 //		when( registry.getProperty( "memberMap" ) ).thenReturn( mapValue );
 //		when( registry.getProperty( "memberMap[key]" ) ).thenReturn( singleValue );
 //		when( registry.getProperty( "memberMap[value]" ) ).thenReturn( singleValue );
+	}
+
+	@Test
+	public void bindingContextIsReadonlyIfOnlyEntity() {
+		EntityPropertyBindingContext bindingContext = binder.asBindingContext();
+		assertThat( bindingContext ).isNotNull();
+		assertThat( bindingContext.<String>getEntity() ).isEqualTo( ENTITY );
+		assertThat( bindingContext.<String>getTarget() ).isEqualTo( ENTITY );
+		assertThat( bindingContext.isReadonly() ).isTrue();
+
+		EntityPropertyBindingContext valueBindingContext = binder.getValueBindingContext();
+		assertThat( valueBindingContext ).isNotNull().isNotSameAs( bindingContext );
+		assertThat( valueBindingContext.<String>getEntity() ).isEqualTo( ENTITY );
+		assertThat( valueBindingContext.<String>getTarget() ).isEqualTo( ENTITY );
+		assertThat( valueBindingContext.isReadonly() ).isTrue();
+	}
+
+	@Test
+	public void bindingContextWithOnlyTarget() {
+		binder.setEntity( null );
+		binder.setTarget( "123" );
+
+		EntityPropertyBindingContext bindingContext = binder.asBindingContext();
+		assertThat( bindingContext ).isNotNull();
+		assertThat( bindingContext.<String>getEntity() ).isNull();
+		assertThat( bindingContext.<String>getTarget() ).isEqualTo( "123" );
+		assertThat( bindingContext.isReadonly() ).isFalse();
+
+		EntityPropertyBindingContext valueBindingContext = binder.getValueBindingContext();
+		assertThat( valueBindingContext ).isNotNull().isNotSameAs( bindingContext );
+		assertThat( valueBindingContext.<String>getEntity() ).isNull();
+		assertThat( valueBindingContext.<String>getTarget() ).isEqualTo( "123" );
+		assertThat( valueBindingContext.isReadonly() ).isFalse();
+	}
+
+	@Test
+	public void bindingContextWithEntityAndTarget() {
+		binder.setTarget( "123" );
+
+		EntityPropertyBindingContext bindingContext = binder.asBindingContext();
+		assertThat( bindingContext ).isNotNull();
+		assertThat( bindingContext.<String>getEntity() ).isEqualTo( ENTITY );
+		assertThat( bindingContext.<String>getTarget() ).isEqualTo( "123" );
+		assertThat( bindingContext.isReadonly() ).isFalse();
+
+		EntityPropertyBindingContext valueBindingContext = binder.getValueBindingContext();
+		assertThat( valueBindingContext ).isNotNull().isNotSameAs( bindingContext );
+		assertThat( valueBindingContext.<String>getEntity() ).isEqualTo( ENTITY );
+		assertThat( valueBindingContext.<String>getTarget() ).isEqualTo( "123" );
+		assertThat( valueBindingContext.isReadonly() ).isFalse();
 	}
 
 	@Test

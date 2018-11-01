@@ -33,14 +33,14 @@ import java.util.function.Supplier;
  */
 public class NestedEntityPropertyController implements EntityPropertyController, ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object>
 {
-	private final String contextName;
+	private final String parentPropertyName;
 	private final EntityPropertyController parent;
 	private final GenericEntityPropertyController child;
 
-	public NestedEntityPropertyController( @NonNull String requiredChildContextName,
+	public NestedEntityPropertyController( @NonNull String parentPropertyName,
 	                                       @NonNull EntityPropertyController parent,
 	                                       @NonNull EntityPropertyController child ) {
-		this.contextName = requiredChildContextName;
+		this.parentPropertyName = parentPropertyName;
 		this.parent = parent;
 		this.child = new GenericEntityPropertyController( child );
 	}
@@ -136,11 +136,7 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	private EntityPropertyBindingContext childContext( EntityPropertyBindingContext context ) {
-		return context.getOrCreateChildContext( contextName, ( parentContext, builder ) -> {
-			Object parentValue = parent.fetchValue( parentContext );
-
-			builder.controller( parent ).entity( parentValue ).target( parentValue );
-		} );
+		return context.resolvePropertyBindingContext( parentPropertyName, parent );
 	}
 
 	@Override

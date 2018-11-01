@@ -79,7 +79,7 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	}
 
 	Object fetchOriginalValue() {
-		return controller.fetchValue( binder.getBindingContext() );
+		return controller.fetchValue( binder.getValueBindingContext() );
 	}
 
 	/**
@@ -99,7 +99,7 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Override
 	public boolean applyValue() {
 		if ( controller != null ) {
-			return controller.applyValue( binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
+			return controller.applyValue( binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
 		}
 		return false;
 	}
@@ -107,7 +107,7 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Override
 	public boolean save() {
 		if ( controller != null ) {
-			return controller.save( binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
+			return controller.save( binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
 		}
 		return false;
 	}

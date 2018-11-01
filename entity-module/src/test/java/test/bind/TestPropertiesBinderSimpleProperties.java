@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Arne Vandamme
  * @since 3.2.0
  */
-public class TestSimpleManualPropertiesOnBlankEntity extends AbstractEntityPropertiesBinderTest
+public class TestPropertiesBinderSimpleProperties extends AbstractEntityPropertiesBinderTest
 {
 	@Override
 	protected Collection<EntityPropertyDescriptorBuilder> registeredProperties() {

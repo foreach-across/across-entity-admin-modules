@@ -74,7 +74,7 @@ public class TestListEntityPropertyBinder
 	public void resetMocks() {
 		reset( binder, collectionController, memberController );
 
-		when( binder.getBindingContext() ).thenReturn( BINDING_CONTEXT );
+		when( binder.getValueBindingContext() ).thenReturn( BINDING_CONTEXT );
 		when( collectionController.fetchValue( BINDING_CONTEXT ) ).thenReturn( ORIGINAL_VALUE );
 
 		doAnswer( i -> Arrays.asList( (Object[]) i.getArgument( 0 ) ) )
@@ -108,11 +108,8 @@ public class TestListEntityPropertyBinder
 				.thenReturn( itemTwo );
 		when( itemOne.getValue() ).thenReturn( 1 );
 		when( itemTwo.getValue() ).thenReturn( 2 );
-
-		itemOne.setSortIndex( 1 );
-		itemTwo.setSortIndex( 2 );
-		assertThat( itemOne.getSortIndex() ).isEqualTo( 1 );
-		assertThat( itemTwo.getSortIndex() ).isEqualTo( 2 );
+		when( itemOne.getSortIndex() ).thenReturn( 1 );
+		when( itemTwo.getSortIndex() ).thenReturn( 2 );
 
 		when( binder.getProperties() ).thenReturn( binder );
 		when( binder.get( "prop" ) ).thenReturn( property );
@@ -186,7 +183,7 @@ public class TestListEntityPropertyBinder
 
 	@Test
 	public void deletedItemsArePresentInTheItemsButNotInTheValueWhileBindingIsBusy() {
-		itemTwo.setDeleted( true );
+		when( itemTwo.isDeleted() ).thenReturn( true );
 
 		assertThat( property.getItemList() ).hasSize( 2 );
 		assertThat( property.getItems() ).hasSize( 2 );
@@ -195,7 +192,7 @@ public class TestListEntityPropertyBinder
 
 	@Test
 	public void deletedItemsAreRemovedWhenBindingIsDisabled() {
-		itemTwo.setDeleted( true );
+		when( itemTwo.isDeleted() ).thenReturn( true );
 		assertThat( property.getItems() ).hasSize( 2 );
 		property.enableBinding( false );
 
@@ -231,18 +228,16 @@ public class TestListEntityPropertyBinder
 
 		assertThat( items.get( "0" ) ).isSameAs( itemOne );
 		verify( itemOne ).setValue( 1 );
-		assertThat( itemOne.getSortIndex() ).isEqualTo( 0 );
 
 		assertThat( items.get( "1" ) ).isSameAs( itemTwo );
 		verify( itemTwo ).setValue( 2 );
-		assertThat( itemTwo.getSortIndex() ).isEqualTo( 1 );
 	}
 
 	@Test
 	public void valueSortsTheItems() {
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 
-		itemTwo.setSortIndex( -1 );
+		when( itemTwo.getSortIndex() ).thenReturn( -1 );
 		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 2, 1 ) );
 	}
 
@@ -253,7 +248,7 @@ public class TestListEntityPropertyBinder
 				.hasSize( 2 )
 				.isEqualTo( Arrays.asList( itemOne, itemTwo ) );
 
-		itemTwo.setSortIndex( -1 );
+		when( itemTwo.getSortIndex() ).thenReturn( -1 );
 		assertThat( property.getItemList() ).isEqualTo( Arrays.asList( itemTwo, itemOne ) );
 	}
 
@@ -368,8 +363,7 @@ public class TestListEntityPropertyBinder
 
 	@Test
 	public void createNewValueCreatesNewValueButDoesNotUpdatePropertyItself() {
-		when( binder.createValue( collectionController ) )
-				.thenReturn( Arrays.asList( 55, 66 ) );
+		when( binder.createValue( collectionController ) ).thenReturn( Arrays.asList( 55, 66 ) );
 		Object value = property.createNewValue();
 		assertThat( value ).isEqualTo( Arrays.asList( 55, 66 ) );
 

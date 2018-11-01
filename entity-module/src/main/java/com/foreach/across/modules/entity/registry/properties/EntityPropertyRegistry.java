@@ -82,6 +82,7 @@ public interface EntityPropertyRegistry
 	 * @param descriptor property descriptor
 	 * @return true if indexer
 	 */
+	@Deprecated
 	static boolean isIndexerPropertyDescriptor( EntityPropertyDescriptor descriptor ) {
 		return StringUtils.endsWith( descriptor.getName(), INDEXER );
 	}
@@ -92,6 +93,7 @@ public interface EntityPropertyRegistry
 	 * @param descriptor property descriptor
 	 * @return true if map key
 	 */
+	@Deprecated
 	static boolean isMapKeyPropertyDescriptor( EntityPropertyDescriptor descriptor ) {
 		return StringUtils.endsWith( descriptor.getName(), MAP_KEY );
 	}
@@ -102,6 +104,7 @@ public interface EntityPropertyRegistry
 	 * @param descriptor property descriptor
 	 * @return true if map value
 	 */
+	@Deprecated
 	static boolean isMapValuePropertyDescriptor( EntityPropertyDescriptor descriptor ) {
 		return StringUtils.endsWith( descriptor.getName(), MAP_VALUE );
 	}
@@ -112,6 +115,7 @@ public interface EntityPropertyRegistry
 	 * @param descriptor property descriptor
 	 * @return true if member property descriptor
 	 */
+	@Deprecated
 	static boolean isMemberPropertyDescriptor( EntityPropertyDescriptor descriptor ) {
 		return isIndexerPropertyDescriptor( descriptor ) || isMapKeyPropertyDescriptor( descriptor ) || isMapValuePropertyDescriptor( descriptor );
 	}

@@ -77,6 +77,21 @@ public interface EntityPropertyController<T> extends Ordered
 	}
 
 	/**
+	 * Create a DTO object for the property value. The default implementation returns the same instance.
+	 * This method can be used to create detached transfer objects that should be updated instead of
+	 * the existing instance. When available this should improve the reliability of {@link EntityPropertyValue#getOldValue()}
+	 * and {@link EntityPropertyValue#getNewValue()} as the former will hold the original property value,
+	 * and the latter the DTO.
+	 *
+	 * @param context binding context
+	 * @param value property value to create a DTO for
+	 * @return property value DTO
+	 */
+	default Object createDto( EntityPropertyBindingContext context, Object value ) {
+		return value != null ? value : createValue( context );
+	}
+
+	/**
 	 * Create a new value for the property on the owning entity.
 	 * This *only* creates a value instance but does not necessary assign the value to that property.
 	 * Useful for initializing complex object values.

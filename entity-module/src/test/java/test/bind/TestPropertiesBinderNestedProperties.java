@@ -23,7 +23,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
-import test.bind.TestSimpleManualPropertiesOnBlankEntity.Dummy;
+import test.bind.TestPropertiesBinderSimpleProperties.Dummy;
 
 import java.util.*;
 
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Arne Vandamme
  * @since 3.2.0
  */
-public class TestNestedManualPropertiesOnBlankEntity extends AbstractEntityPropertiesBinderTest
+public class TestPropertiesBinderNestedProperties extends AbstractEntityPropertiesBinderTest
 {
 	@Override
 	protected Collection<EntityPropertyDescriptorBuilder> registeredProperties() {

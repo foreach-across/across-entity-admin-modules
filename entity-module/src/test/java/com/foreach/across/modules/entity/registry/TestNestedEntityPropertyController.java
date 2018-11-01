@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindi
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import com.foreach.across.modules.entity.registry.properties.NestedEntityPropertyController;
-import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,63 +39,54 @@ import static org.mockito.Mockito.*;
 public class TestNestedEntityPropertyController
 {
 	@Mock
-	private EntityPropertyController user;
+	private EntityPropertyController<Object> user;
 
 	@Mock
-	private EntityPropertyController address;
+	private EntityPropertyController<Object> address;
+
+	@Mock
+	private EntityPropertyBindingContext pageBindingContext;
+
+	@Mock
+	private EntityPropertyBindingContext userBindingContext;
 
 	private NestedEntityPropertyController userAddress;
-
-	private EntityPropertyBindingContext originalContext;
-	private EntityPropertyBindingContext childContext;
-	private EntityPropertyBindingContext finalContext;
 
 	@Before
 	public void before() {
 		userAddress = new NestedEntityPropertyController( "user", user, address );
-
-		originalContext = EntityPropertyBindingContext.forReading( "page" );
-		when( user.fetchValue( originalContext ) ).thenReturn( 123L );
-
-		finalContext = EntityPropertyBindingContext.forReading( "page" );
-
-		childContext = finalContext.getOrCreateChildContext( "user", ( p, b ) -> b.entity( 123L ).target( 123L ).controller( user ) );
+		when( pageBindingContext.resolvePropertyBindingContext( "user", user ) ).thenReturn( userBindingContext );
 	}
 
 	@Test
 	public void fetchValue() {
-		when( address.fetchValue( childContext ) ).thenReturn( "address value" );
-		assertThat( userAddress.fetchValue( originalContext ) ).isEqualTo( "address value" );
-		verify( user ).fetchValue( originalContext );
-
-		assertThat( userAddress.fetchValue( originalContext ) ).isEqualTo( "address value" );
-		verify( user, times( 1 ) ).fetchValue( originalContext );
-
-		assertThat( originalContext ).isEqualTo( finalContext );
+		when( address.fetchValue( userBindingContext ) ).thenReturn( "address value" );
+		assertThat( userAddress.fetchValue( pageBindingContext ) ).isEqualTo( "address value" );
 	}
 
 	@Test
 	public void applyValue() {
-		EntityPropertyValue value = new EntityPropertyValue<>( "old", "new", false );
-		userAddress.applyValue( originalContext, value );
-		verify( address ).applyValue( childContext, value );
+		EntityPropertyValue<Object> value = new EntityPropertyValue<>( "old", "new", false );
+		userAddress.applyValue( pageBindingContext, value );
+		verify( address ).applyValue( userBindingContext, value );
 	}
 
 	@Test
 	public void createValue() {
-		userAddress.createValue( originalContext );
-		verify( address ).createValue( childContext );
+		userAddress.createValue( pageBindingContext );
+		verify( address ).createValue( userBindingContext );
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void save() {
-		EntityPropertyValue value = new EntityPropertyValue<>( "old", "new", false );
-		userAddress.save( originalContext, value );
-		verify( address ).save( childContext, value );
+		EntityPropertyValue<Object> value = new EntityPropertyValue<>( "old", "new", false );
+		userAddress.save( pageBindingContext, value );
+		verify( address ).save( userBindingContext, value );
 
-		val sf = mock( BiConsumer.class );
+		BiConsumer<EntityPropertyBindingContext, EntityPropertyValue<Object>> sf = mock( BiConsumer.class );
 		userAddress.saveConsumer( sf );
-		userAddress.save( originalContext, value );
-		verify( sf ).accept( childContext, value );
+		userAddress.save( pageBindingContext, value );
+		verify( sf ).accept( userBindingContext, value );
 	}
 }

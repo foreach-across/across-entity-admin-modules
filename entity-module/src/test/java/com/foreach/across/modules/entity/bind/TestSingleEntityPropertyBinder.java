@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.bind;
 
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder.ChildPropertyPropertiesBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -59,7 +60,7 @@ public class TestSingleEntityPropertyBinder
 	public void resetMocks() {
 		reset( binder, controller );
 
-		when( binder.getBindingContext() ).thenReturn( BINDING_CONTEXT );
+		when( binder.getValueBindingContext() ).thenReturn( BINDING_CONTEXT );
 		when( controller.fetchValue( BINDING_CONTEXT ) ).thenReturn( 1 );
 
 		doAnswer( i -> i.getArgument( 0 ) )
@@ -349,18 +350,19 @@ public class TestSingleEntityPropertyBinder
 
 		when( binder.createValue( controller ) )
 				.thenReturn( "hello" );
-		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( "hello" ) ) ).thenReturn( childBinder );
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
 
 		assertThat( property.getProperties() ).isSameAs( childBinder );
 		assertThat( property.getProperties() ).isSameAs( childBinder );
-		verify( binder, times( 1 ) ).createChildBinder( any(), any(), any() );
+		verify( binder, times( 1 ) ).createChildPropertyPropertiesBinder();
 	}
 
 	@Test
 	public void propertiesGetRecreatedIfValueHasChanged() {
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( mock( EntityPropertiesBinder.class ) );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 123 ) ) ).thenReturn( mock( EntityPropertiesBinder.class ) );
+		when( binder.createChildPropertyPropertiesBinder() )
+				.thenReturn( mock( ChildPropertyPropertiesBinder.class ) )
+				.thenReturn( mock( ChildPropertyPropertiesBinder.class ) );
 
 		val first = property.getProperties();
 		assertThat( property.getProperties() ).isNotNull().isSameAs( first );
@@ -368,18 +370,20 @@ public class TestSingleEntityPropertyBinder
 		property.setValue( 1 );
 		assertThat( property.getProperties() ).isSameAs( first );
 
-		verify( binder, times( 1 ) ).createChildBinder( any(), any(), any() );
+		verify( binder, times( 1 ) ).createChildPropertyPropertiesBinder();
 
 		property.setValue( 123 );
 		assertThat( property.getProperties() ).isNotNull().isNotSameAs( first );
+
+		verify( binder, times( 2 ) ).createChildPropertyPropertiesBinder();
 	}
 
 	@Test
 	public void propertiesAreAppliedBeforeReturningValue() {
-		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
 		EntityPropertyBinder childValue = mock( EntityPropertyBinder.class );
 		when( childBinder.values() ).thenReturn( Collections.singleton( childValue ) );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
 
 		assertThat( property.getValue() ).isEqualTo( 1 );
 		verifyZeroInteractions( childBinder );
@@ -391,8 +395,8 @@ public class TestSingleEntityPropertyBinder
 
 	@Test
 	public void propertyNoLongerDeletedIfPropertiesAccessed() {
-		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
 
 		property.setBound( true );
 		assertThat( property.isDeleted() ).isTrue();
@@ -403,8 +407,8 @@ public class TestSingleEntityPropertyBinder
 
 	@Test
 	public void resolveValidChildProperty() {
-		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
 
 		EntityPropertyDescriptor childDescriptor = mock( EntityPropertyDescriptor.class );
 		when( childDescriptor.isNestedProperty() ).thenReturn( true );
@@ -442,9 +446,9 @@ public class TestSingleEntityPropertyBinder
 		when( street.isNestedProperty() ).thenReturn( true );
 		when( street.getParentDescriptor() ).thenReturn( address );
 
-		EntityPropertiesBinder userBinder = mock( EntityPropertiesBinder.class );
+		ChildPropertyPropertiesBinder userBinder = mock( ChildPropertyPropertiesBinder.class );
 		SingleEntityPropertyBinder addressProperty = mock( SingleEntityPropertyBinder.class );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( userBinder );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( userBinder );
 		when( userBinder.get( "address" ) ).thenReturn( addressProperty );
 
 		EntityPropertyBinder streetProperty = mock( EntityPropertyBinder.class );

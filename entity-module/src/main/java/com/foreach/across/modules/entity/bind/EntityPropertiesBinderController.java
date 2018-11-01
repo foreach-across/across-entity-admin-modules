@@ -23,8 +23,6 @@ import lombok.*;
 import org.springframework.validation.Errors;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Controller for an {@link EntityPropertiesBinder} which will perform {@link EntityPropertyController}
@@ -99,8 +97,6 @@ public final class EntityPropertiesBinderController
 		                .map( entry -> new OrderedRunnable( entry.getValue().getControllerOrder(), entry.getKey(), entry.getValue()::applyValue ) )
 		                .forEach( actions::add );
 
-		addChildContextActions( actions, e -> e::applyValue );
-
 		actions.sort( ORDERED_RUNNABLE_COMPARATOR );
 		actions.forEach( OrderedRunnable::run );
 	}
@@ -163,29 +159,8 @@ public final class EntityPropertiesBinderController
 		                .map( entry -> new OrderedRunnable( entry.getValue().getControllerOrder(), entry.getKey(), entry.getValue()::save ) )
 		                .forEach( actions::add );
 
-		addChildContextActions( actions, e -> e::save );
-
 		actions.sort( ORDERED_RUNNABLE_COMPARATOR );
 		actions.forEach( OrderedRunnable::run );
-	}
-
-	private void addChildContextActions( List<OrderedRunnable> actions,
-	                                     Function<EntityPropertyController, BiFunction<EntityPropertyBindingContext, EntityPropertyValue, Boolean>> method ) {
-		propertiesBinder.getBindingContext()
-		                .getChildContexts()
-		                .entrySet()
-		                .stream()
-		                .filter( e -> !propertiesBinder.containsKey( e.getKey() ) )
-		                .filter( e -> e.getValue().getController() != null )
-		                .map( entry -> {
-			                EntityPropertyBindingContext childContext = entry.getValue();
-			                return new OrderedRunnable(
-					                childContext.getController().getOrder(),
-					                entry.getKey(),
-					                () -> method.apply( childContext.getController() ).apply( childContext.getParent(), childContext.toPropertyValue() )
-			                );
-		                } )
-		                .forEach( actions::add );
 	}
 
 	@RequiredArgsConstructor

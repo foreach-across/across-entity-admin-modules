@@ -206,7 +206,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 			try {
 				errors.pushNestedPath( initializedValuePathWasUsed ? "initializedValue" : "value" );
 				collectionController.validate(
-						binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ), errors, validationHints
+						binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ), errors, validationHints
 				);
 			}
 			finally {

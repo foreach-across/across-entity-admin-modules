@@ -33,16 +33,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Arne Vandamme
  * @since 3.2.0
  */
 @SuppressWarnings("unchecked")
-public class TestDirectUseOfEntityPropertiesBinder
+public class TestPropertiesBinderDirectUse
 {
 	private AtomicInteger counter = new AtomicInteger( 0 );
 	private BiConsumer<User, EntityPropertyValue<UserProperties>> consumer = mock( BiConsumer.class );
@@ -75,7 +73,7 @@ public class TestDirectUseOfEntityPropertiesBinder
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
 
 		User user = new User( "my name" );
-		binder.setBindingContext( EntityPropertyBindingContext.forReading( user ) );
+		binder.setEntity( user );
 
 		assertThat( binder.get( "name" ).getValue() ).isEqualTo( "my name" );
 		binder.get( "name" ).setValue( "other name" );
@@ -91,7 +89,7 @@ public class TestDirectUseOfEntityPropertiesBinder
 		User user = new User( "john.doe" );
 
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( userWithPropertiesRegistry );
-		binder.setBindingContext( EntityPropertyBindingContext.forReading( user ) );
+		binder.setEntity( user );
 
 		binder.get( "name" ).setValue( "jane.doe" );
 		assertThat( binder.get( "properties.id" ).getValue() ).isEqualTo( 1 );
@@ -111,7 +109,8 @@ public class TestDirectUseOfEntityPropertiesBinder
 		User user = new User( "john.doe" );
 
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( userWithPropertiesRegistry );
-		binder.setBindingContext( EntityPropertyBindingContext.forUpdating( user, user ) );
+		binder.setEntity( user );
+		binder.setTarget( user );
 
 		SingleEntityPropertyBinder props = (SingleEntityPropertyBinder) binder.get( "properties" );
 		props.getProperties().get( "email" ).setValue( "franz@localhost" );
@@ -133,7 +132,8 @@ public class TestDirectUseOfEntityPropertiesBinder
 		User user = new User( "john.doe" );
 
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( userWithPropertiesRegistry );
-		binder.setBindingContext( EntityPropertyBindingContext.forUpdating( user, user ) );
+		binder.setEntity( user );
+		binder.setTarget( user );
 
 		binder.get( "properties.email" ).setValue( "franz@localhost" );
 
@@ -154,7 +154,8 @@ public class TestDirectUseOfEntityPropertiesBinder
 		User user = new User( "john.doe" );
 
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( userWithPropertiesRegistry );
-		binder.setBindingContext( EntityPropertyBindingContext.forUpdating( user, user ) );
+		binder.setEntity( user );
+		binder.setTarget( user );
 
 		SingleEntityPropertyBinder props = (SingleEntityPropertyBinder) binder.get( "properties" );
 		props.getProperties().get( "id" ).setValue( 2 );
@@ -202,7 +203,7 @@ public class TestDirectUseOfEntityPropertiesBinder
 		UserProperties props = new UserProperties( 1, user, "" );
 
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
-		binder.setBindingContext( EntityPropertyBindingContext.forReading( props ) );
+		binder.setEntity( props );
 
 		SingleEntityPropertyBinder ownerProperty = (SingleEntityPropertyBinder) binder.get( "owner" );
 		ownerProperty.getProperties().get( "name" ).setValue( null );

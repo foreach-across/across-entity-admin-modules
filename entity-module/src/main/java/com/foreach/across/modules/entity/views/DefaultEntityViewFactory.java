@@ -21,7 +21,6 @@ import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.support.EntityViewMessageSource;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
@@ -167,7 +166,7 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 
 			if ( propertiesBinder == null ) {
 				propertiesBinder = new EntityPropertiesBinder( entityViewContext.getPropertyRegistry() );
-				propertiesBinder.setBindingContext( EntityPropertyBindingContext.forReading( entity ) );
+				propertiesBinder.setEntity( entity );
 				command.setProperties( propertiesBinder );
 			}
 		}

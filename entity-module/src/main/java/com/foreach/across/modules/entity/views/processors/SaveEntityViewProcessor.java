@@ -22,7 +22,10 @@ import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.EntityModel;
-import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.EntityViewPageHelper;
@@ -111,8 +114,8 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 	private EntityPropertiesBinder createPropertiesBinder( Object entity, Object dto, EntityPropertyRegistry propertyRegistry ) {
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
 		binder.setBinderPrefix( "properties" );
-		binder.setBindingContext( EntityPropertyBindingContext.forUpdating( entity, dto != null ? dto : entity )
-		                                                      .setChildContextResolver( new DefaultChildContextResolver( binder ) ) );
+		binder.setEntity( entity );
+		binder.setTarget( dto );
 		binder.setConversionService( conversionService );
 		return binder;
 	}

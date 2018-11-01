@@ -20,7 +20,6 @@ import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyDescriptorBuilder;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.MapAssert;
@@ -62,7 +61,8 @@ public abstract class AbstractEntityPropertiesBinderTest
 		propertyValues = new EntityPropertiesBinder( propertyRegistry );
 		propertyValues.setBinderPrefix( "properties" );
 		propertyValues.setConversionService( conversionService );
-		propertyValues.setBindingContext( EntityPropertyBindingContext.forReading( ENTITY ) );
+		propertyValues.setEntity( ENTITY );
+		propertyValues.setTarget( ENTITY );
 
 		dataBinder = new DataBinder( propertyValues );
 		dataBinder.setConversionService( conversionService );

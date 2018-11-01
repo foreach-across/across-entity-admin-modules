@@ -29,7 +29,9 @@ import org.springframework.core.convert.support.DefaultConversionService;
 
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
-import java.util.Optional;
+
+import static com.foreach.across.modules.entity.registry.properties.support.EntityPropertyDescriptorUtils.findDirectChild;
+import static com.foreach.across.modules.entity.registry.properties.support.EntityPropertyDescriptorUtils.getRootDescriptor;
 
 /**
  * Wrapper for binding values to custom properties. Much like a {@link org.springframework.beans.BeanWrapper}
@@ -54,13 +56,19 @@ import java.util.Optional;
  * @see EntityPropertyControlName
  * @since 3.2.0
  */
-@RequiredArgsConstructor
-public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder> implements EntityPropertyValues
+public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder>
 {
-	@NonNull
-	private final EntityPropertyRegistry propertyRegistry;
+	private final EntityPropertiesBinderAsBindingContext bindingContextMapper = new EntityPropertiesBinderAsBindingContext();
 
+	private Object entity;
+	private Object target;
+
+	@Getter(value = AccessLevel.PACKAGE)
+	@Setter(value = AccessLevel.PACKAGE)
 	private EntityPropertyDescriptor parentProperty;
+
+	@Setter(value = AccessLevel.PACKAGE)
+	protected EntityPropertyRegistry propertyRegistry;
 
 	/**
 	 * Prefix when the map is being used for data binding.
@@ -90,6 +98,38 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	private boolean bindingEnabled;
 
 	/**
+	 * This is the internal binding context that should be used for applying the actual values.
+	 * Note that this is different from the value of {@link #asBindingContext()}. The latter is meant
+	 * to be used outside the binder for value retrieval, the {@code valueBindingContext} is only
+	 * for internal use within the binder when applying the actual values.
+	 */
+	@Getter(value = AccessLevel.PACKAGE)
+	private final EntityPropertyBindingContext valueBindingContext = new EntityPropertiesBinderValueBindingContext();
+
+	public EntityPropertiesBinder( @NonNull EntityPropertyRegistry propertyRegistry ) {
+		this.propertyRegistry = propertyRegistry;
+	}
+
+	private EntityPropertiesBinder() {
+	}
+
+	/**
+	 * The original entity that this binder is attached to.
+	 * If only an {@code entity} but no {@code target} set, this binder will behave as readonly.
+	 */
+	public void setEntity( Object entity ) {
+		this.entity = entity;
+	}
+
+	/**
+	 * The target for binding. If not set values can be fetched but binding-related controller methods will fail:
+	 * applying values, validating and saving.
+	 */
+	public void setTarget( Object target ) {
+		this.target = target;
+	}
+
+	/**
 	 * Returns self so that this binder could be used as direct {@link org.springframework.validation.DataBinder} target.
 	 * The {@link #setBinderPrefix(String)} is usually set to {@code properties} in this case.
 	 *
@@ -100,12 +140,26 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	}
 
 	/**
-	 * Set the binding context for this binder.
+	 * @return always the exact {@link #valueBindingContext} field value
 	 */
-	@Setter
-	@Getter
-	private EntityPropertyBindingContext bindingContext;
+	private EntityPropertyBindingContext getLocalValueBindingContext() {
+		return valueBindingContext;
+	}
 
+	/**
+	 * @return a {@link EntityPropertyBindingContext} representing the target of this binder with changes applied
+	 */
+	public final EntityPropertyBindingContext asBindingContext() {
+		return bindingContextMapper;
+	}
+
+	/**
+	 * Get the property with the given name. The default value is ignored.
+	 *
+	 * @param key          property name
+	 * @param defaultValue ignored
+	 * @return property binder
+	 */
 	@Override
 	public EntityPropertyBinder getOrDefault( Object key, EntityPropertyBinder defaultValue ) {
 		return get( key );
@@ -117,35 +171,24 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	 * If there is no descriptor for that property, an {@link IllegalArgumentException} will be thrown.
 	 *
 	 * @param key property name
-	 * @return value holder
+	 * @return property binder
 	 */
 	@Override
 	public EntityPropertyBinder get( Object key ) {
 		EntityPropertyBinder valueHolder = super.get( key );
-		String propertyName = (String) key;
 
 		if ( valueHolder == null ) {
 			try {
+				String propertyName = (String) key;
 				String fqPropertyName = parentProperty != null ? parentProperty.getName() + "." + propertyName : propertyName;
+
 				val descriptor = propertyRegistry.getProperty( fqPropertyName );
+
 				if ( descriptor == null ) {
 					throw new IllegalArgumentException( "No such property descriptor: '" + fqPropertyName + "'" );
 				}
 
-				AbstractEntityPropertyBinder binder = createPropertyBinder( descriptor );
-				binder.setBinderPath( getPropertyBinderPath( propertyName ) );
-				binder.enableBinding( bindingEnabled );
-
-				// if there is a child binding context with the same name, assume it represents the same property and
-				// use the pre-loaded binding context for property values
-				Optional.ofNullable( bindingContext.getChildContexts().get( descriptor.getName() ) )
-				        .ifPresent( bindingContext -> {
-					        binder.setOriginalValue( bindingContext.getEntity() );
-					        binder.setValue( bindingContext.getTarget() );
-				        } );
-
-				valueHolder = binder;
-				put( propertyName, valueHolder );
+				return get( descriptor );
 			}
 			catch ( IllegalArgumentException iae ) {
 				if ( !StringUtils.isEmpty( binderPrefix ) ) {
@@ -157,6 +200,38 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		}
 
 		return valueHolder;
+	}
+
+	public EntityPropertyBinder get( @NonNull EntityPropertyDescriptor descriptor ) {
+		try {
+			if ( descriptor.isNestedProperty() ) {
+				EntityPropertyDescriptor firstChild = parentProperty != null ? findDirectChild( descriptor, parentProperty ) : getRootDescriptor( descriptor );
+
+				if ( firstChild == null ) {
+					throw new IllegalArgumentException( "No such property descriptor: " + descriptor.getName() );
+				}
+
+				return getBinder( firstChild.getTargetPropertyName(), firstChild ).resolvePropertyBinder( descriptor );
+			}
+
+			return getBinder( descriptor.getName(), descriptor );
+		}
+		catch ( IllegalArgumentException iae ) {
+			if ( !StringUtils.isEmpty( binderPrefix ) ) {
+				PropertyChangeEvent pce = new PropertyChangeEvent( this, binderPrefix + "[" + descriptor.getName() + "]", null, null );
+				throw new MethodInvocationException( pce, iae );
+			}
+			throw iae;
+		}
+	}
+
+	private EntityPropertyBinder getBinder( String propertyName, EntityPropertyDescriptor descriptor ) {
+		return computeIfAbsent( propertyName, p -> {
+			AbstractEntityPropertyBinder binder = createPropertyBinder( descriptor );
+			binder.setBinderPath( getPropertyBinderPath( propertyName ) );
+			binder.enableBinding( bindingEnabled );
+			return binder;
+		} );
 	}
 
 	/**
@@ -173,6 +248,12 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		this.bindingEnabled = bindingEnabled;
 
 		values().forEach( b -> b.enableBinding( bindingEnabled ) );
+	}
+
+	private void applyValuesIfNecessary() {
+		if ( target != null ) {
+			createController().applyValues();
+		}
 	}
 
 	/**
@@ -222,55 +303,17 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return descriptor;
 	}
 
-	// todo: cleanup
-	boolean shouldSetBinderPrefix() {
-		return StringUtils.isNotEmpty( binderPrefix );
-	}
-
-	EntityPropertiesBinder createChildBinder( EntityPropertyDescriptor parent, EntityPropertyController controller, Object propertyValue ) {
-		EntityPropertiesBinder childBinder = new EntityPropertiesBinder( propertyRegistry );
-		childBinder.parentProperty = parent;
+	ChildPropertyPropertiesBinder createChildPropertyPropertiesBinder() {
+		ChildPropertyPropertiesBinder childBinder = new ChildPropertyPropertiesBinder();
+		childBinder.setPropertyRegistry( propertyRegistry );
 		childBinder.setConversionService( conversionService );
 		childBinder.setBindingEnabled( bindingEnabled );
-
-		if ( EntityPropertyRegistry.isMemberPropertyDescriptor( parent ) ) {
-			childBinder.setBindingContext(
-					EntityPropertyBindingContext.builder()
-					                            .entity( propertyValue )
-					                            .target( propertyValue )
-					                            .readonly( bindingContext.isReadonly() )
-					                            .build()
-			);
-		}
-		else {
-			// nested property will lookup the child binding context
-			childBinder.setBindingContext( bindingContext );
-			String childContextName = parent.getTargetPropertyName();
-			if ( bindingContext.hasChildContext( childContextName ) ) {
-				// todo: refactor this? currently child context should be reset if creating a new one with an initialized value
-				EntityPropertyBindingContext existingChildContext = bindingContext.getOrCreateChildContext( childContextName, ( p, b ) -> {
-				} );
-
-				if ( existingChildContext.getTarget() == null && propertyValue != null ) {
-					bindingContext.removeChildContext( childContextName );
-				}
-			}
-
-			if ( !bindingContext.hasChildContext( childContextName ) ) {
-				bindingContext.getOrCreateChildContext(
-						childContextName,
-						( p, b ) -> b.controller( controller ).entity( propertyValue ).target( propertyValue )
-				);
-			}
-
-		}
-
 		return childBinder;
 	}
 
 	Object createValue( EntityPropertyController controller ) {
 		if ( controller != null ) {
-			return controller.createValue( getBindingContext() );
+			return controller.createValue( getValueBindingContext() );
 		}
 
 		return null;
@@ -299,6 +342,122 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 				throw new ConversionNotSupportedException( pce, typeToReport, cce );
 			}
 			throw cce;
+		}
+	}
+
+	/**
+	 * Represents a child property binder, accessible through {@link SingleEntityPropertyBinder#getProperties()}.
+	 */
+	class ChildPropertyPropertiesBinder extends EntityPropertiesBinder
+	{
+		@Setter
+		private boolean useLocalBindingContext;
+
+		@Override
+		EntityPropertyBindingContext getValueBindingContext() {
+			if ( useLocalBindingContext ) {
+				return super.getValueBindingContext();
+			}
+			return EntityPropertiesBinder.this.getValueBindingContext();
+		}
+	}
+
+	class EntityPropertiesBinderValueBindingContext implements EntityPropertyBindingContext
+	{
+		@Override
+		@SuppressWarnings("unchecked")
+		public <U> U getEntity() {
+			return (U) entity;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <U> U getTarget() {
+			return (U) ( target != null ? target : entity );
+		}
+
+		@Override
+		public boolean isReadonly() {
+			return target == null;
+		}
+
+		@Override
+		public EntityPropertyBindingContext resolvePropertyBindingContext( EntityPropertyDescriptor propertyDescriptor ) {
+			EntityPropertyBinder propertyBinder = get( propertyDescriptor );
+
+			if ( propertyBinder instanceof SingleEntityPropertyBinder ) {
+				return ( (SingleEntityPropertyBinder) propertyBinder ).getProperties().getLocalValueBindingContext();
+			}
+
+			return null;
+		}
+
+		@Override
+		public EntityPropertyBindingContext resolvePropertyBindingContext( String propertyName, EntityPropertyController controller ) {
+			EntityPropertyBinder propertyBinder = get( propertyName );
+
+			if ( propertyBinder instanceof SingleEntityPropertyBinder ) {
+				return ( (SingleEntityPropertyBinder) propertyBinder ).getProperties().getLocalValueBindingContext();
+			}
+
+			return null;
+		}
+	}
+
+	/**
+	 * Maps this binder as a valid {@link EntityPropertyBindingContext}. Using the binder as binding context
+	 * will ensure that values will be retrieved from the binder when available.
+	 */
+	class EntityPropertiesBinderAsBindingContext implements EntityPropertyBindingContext
+	{
+		@Override
+		@SuppressWarnings("unchecked")
+		public <U> U getEntity() {
+			return valueBindingContext.getEntity();
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <U> U getTarget() {
+			applyValuesIfNecessary();
+			return valueBindingContext.getTarget();
+		}
+
+		@Override
+		public boolean isReadonly() {
+			return valueBindingContext.isReadonly();
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <U> EntityPropertyValue<U> resolvePropertyValue( @NonNull EntityPropertyDescriptor propertyDescriptor ) {
+			applyValuesIfNecessary();
+			EntityPropertyBinder propertyBinder = get( propertyDescriptor );
+			return propertyBinder != null
+					? new EntityPropertyValue<U>( (U) propertyBinder.getOriginalValue(), (U) propertyBinder.getValue(), propertyBinder.isDeleted() )
+					: null;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <U> EntityPropertyValue<U> resolvePropertyValue( @NonNull String propertyName, EntityPropertyController<U> controller ) {
+			applyValuesIfNecessary();
+			EntityPropertyBinder propertyBinder = get( propertyName );
+			return propertyBinder != null
+					? new EntityPropertyValue<U>( (U) propertyBinder.getOriginalValue(), (U) propertyBinder.getValue(), propertyBinder.isDeleted() )
+					: null;
+		}
+
+		@Override
+		public EntityPropertyBindingContext resolvePropertyBindingContext( EntityPropertyDescriptor propertyDescriptor ) {
+			EntityPropertyBinder propertyBinder = get( propertyDescriptor );
+			return new EntityPropertyBinderBindingContext( this, propertyBinder );
+		}
+
+		@Override
+		public EntityPropertyBindingContext resolvePropertyBindingContext( String propertyName, EntityPropertyController controller ) {
+			EntityPropertyBinder propertyBinder = get( propertyName );
+			return new EntityPropertyBinderBindingContext( this, propertyBinder );
 		}
 	}
 }

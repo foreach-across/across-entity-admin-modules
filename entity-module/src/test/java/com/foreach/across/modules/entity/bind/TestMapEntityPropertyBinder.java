@@ -79,7 +79,7 @@ public class TestMapEntityPropertyBinder
 	public void resetMocks() {
 		reset( binder, collectionController, keyController, valueController );
 
-		when( binder.getBindingContext() ).thenReturn( BINDING_CONTEXT );
+		when( binder.getValueBindingContext() ).thenReturn( BINDING_CONTEXT );
 		when( collectionController.fetchValue( BINDING_CONTEXT ) ).thenReturn( ORIGINAL_VALUE );
 
 		doAnswer( i -> i.getArgument( 0 ) )
