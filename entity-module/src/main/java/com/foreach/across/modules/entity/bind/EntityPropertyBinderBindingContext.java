@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  * @since 3.2.0
  */
 @RequiredArgsConstructor
-public class EntityPropertyBinderBindingContext implements EntityPropertyBindingContext
+class EntityPropertyBinderBindingContext implements EntityPropertyBindingContext
 {
 	private final EntityPropertyBindingContext parentContext;
 	private final EntityPropertyBinder propertyBinder;
