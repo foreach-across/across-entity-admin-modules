@@ -23,6 +23,9 @@ import com.foreach.across.modules.entity.registry.properties.MutableEntityProper
 import lombok.*;
 import org.junit.Before;
 
+import java.util.List;
+import java.util.Map;
+
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor.builder;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,6 +39,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 	MutableEntityPropertyRegistry userProperties;
 	MutableEntityPropertyRegistry cityProperties;
 	MutableEntityPropertyRegistry cityAddressProperties;
+	MutableEntityPropertyRegistry collectionsProperties;
 
 	EntityPropertyDescriptor userAddress;
 	EntityPropertyDescriptor userAddressStreet;
@@ -55,6 +59,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 		userProperties = registryProvider.get( User.class );
 		cityProperties = registryProvider.get( City.class );
 		cityAddressProperties = registryProvider.get( CityAddress.class );
+		collectionsProperties = registryProvider.get( CollectionsHolder.class );
 
 		addressStreet = addressProperties.getProperty( "street" );
 		userAddress = userProperties.getProperty( "address" );
@@ -120,5 +125,17 @@ abstract class AbstractEntityPropertyBindingContextTest
 	public static class CityAddress
 	{
 		private City city;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class CollectionsHolder
+	{
+		private String name;
+
+		private List<City> cities;
+
+		private Map<String, Address> addressMap;
 	}
 }

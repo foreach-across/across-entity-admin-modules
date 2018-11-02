@@ -166,17 +166,24 @@ public class EntityViewElementUtils
 			propertyValue = fixedValue.getNewValue();
 		}
 		else {
-			EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
+			EntityPropertyBinder propertyBinder = currentPropertyBinder( builderContext );
 
-			if ( descriptor == null ) {
-				return null;
+			if ( propertyBinder != null ) {
+				propertyValue = propertyBinder.getValue();
 			}
+			else {
+				EntityPropertyDescriptor descriptor = currentPropertyDescriptor( builderContext );
 
-			EntityPropertyBindingContext bindingContext = resolveBindingContext( builderContext );
-			fixedValue = bindingContext.resolvePropertyValue( currentPropertyDescriptor( builderContext ) );
+				if ( descriptor == null ) {
+					return null;
+				}
 
-			if ( fixedValue != null ) {
-				propertyValue = fixedValue.getNewValue();
+				EntityPropertyBindingContext bindingContext = resolveBindingContext( builderContext );
+				fixedValue = bindingContext.resolvePropertyValue( currentPropertyDescriptor( builderContext ) );
+
+				if ( fixedValue != null ) {
+					propertyValue = fixedValue.getNewValue();
+				}
 			}
 		}
 

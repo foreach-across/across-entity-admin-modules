@@ -171,7 +171,9 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 			}
 		}
 
-		builderContext.setAttribute( EntityPropertiesBinder.class, propertiesBinder );
+		if ( propertiesBinder != null ) {
+			builderContext.setAttribute( EntityPropertiesBinder.class, propertiesBinder );
+		}
 
 		return builderContext;
 	}

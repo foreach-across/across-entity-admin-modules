@@ -185,6 +185,8 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 			for ( val entry : values.entrySet() ) {
 				String key = "" + index;
 				Entry item = new Entry( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
+				item.getKey().setOriginalValue( entry.getKey() );
+				item.getValue().setOriginalValue( entry.getValue() );
 				if ( super.isDirty() ) {
 					item.getKey().setValue( entry.getKey() );
 					item.getValue().setValue( entry.getValue() );

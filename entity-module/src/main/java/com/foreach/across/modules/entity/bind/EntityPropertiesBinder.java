@@ -63,7 +63,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	private final EntityPropertiesBinderAsBindingContext bindingContextMapper = new EntityPropertiesBinderAsBindingContext();
 	private final Map<String, EntityPropertyBinderHolder> proxyBinders = new HashMap<>();
 
+	@Getter
 	private Object entity;
+
+	@Getter
 	private Object target;
 
 	/**
@@ -204,7 +207,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return get( descriptor, true );
 	}
 
-	private EntityPropertyBinder get( Object key, boolean autoRegister ) {
+	EntityPropertyBinder get( Object key, boolean autoRegister ) {
 		EntityPropertyBinder valueHolder = super.get( key );
 
 		if ( valueHolder == null && !autoRegister ) {
@@ -341,7 +344,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		dirty = true;
 	}
 
-	boolean isReadonly() {
+	/**
+	 * @return true if the binder does not have a target set
+	 */
+	public boolean isReadonly() {
 		return valueBindingContext.isReadonly();
 	}
 

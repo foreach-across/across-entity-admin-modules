@@ -204,6 +204,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			for ( Object v : values ) {
 				String key = "" + index;
 				AbstractEntityPropertyBinder item = binder.createPropertyBinder( memberDescriptor );
+				item.setOriginalValue( v );
 				if ( super.isDirty() ) {
 					item.setValue( v );
 				}
