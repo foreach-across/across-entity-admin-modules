@@ -90,6 +90,7 @@ public final class EntityPropertiesBinderController
 	 */
 	@SuppressWarnings("unchecked")
 	public void applyValues() {
+		verifyNonReadOnly();
 		if ( propertiesBinder.isDirty() ) {
 			List<OrderedRunnable> actions = new ArrayList<>( propertiesBinder.size() );
 
@@ -118,6 +119,7 @@ public final class EntityPropertiesBinderController
 	 * @return true if validation was successful, no validation errors have been added
 	 */
 	public boolean validate( @NonNull Errors errors, Object... validationHints ) {
+		verifyNonReadOnly();
 		List<OrderedRunnable> actions = new ArrayList<>();
 		actions.add( new OrderedRunnable( 0, "", () -> entityValidationCallbacks.forEach( Runnable::run ) ) );
 
@@ -155,6 +157,7 @@ public final class EntityPropertiesBinderController
 	 */
 	@SuppressWarnings("unchecked")
 	public void save() {
+		verifyNonReadOnly();
 		List<OrderedRunnable> actions = new ArrayList<>();
 		actions.add( new OrderedRunnable( 0, "", () -> entitySaveCallbacks.forEach( Runnable::run ) ) );
 
@@ -165,6 +168,12 @@ public final class EntityPropertiesBinderController
 
 		actions.sort( ORDERED_RUNNABLE_COMPARATOR );
 		actions.forEach( OrderedRunnable::run );
+	}
+
+	private void verifyNonReadOnly() {
+		if ( propertiesBinder.isReadonly() ) {
+			throw new EntityPropertiesBinder.ReadonlyBindingContextException();
+		}
 	}
 
 	@RequiredArgsConstructor

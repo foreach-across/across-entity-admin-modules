@@ -31,6 +31,7 @@ import org.springframework.validation.Errors;
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyController.AFTER_ENTITY;
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyController.BEFORE_ENTITY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -136,6 +137,23 @@ public class TestEntityPropertiesBinderController
 		inOrder.verify( propOne ).applyValue( any(), any() );
 
 		assertThat( binder.isDirty() ).isFalse();
+	}
+
+	@Test
+	public void illegalStateExceptionsOnControllerInReadonlyMode() {
+		binder.setTarget( null );
+
+		assertThatExceptionOfType( IllegalStateException.class )
+				.isThrownBy( () -> binder.createController().validate( mock( Errors.class ) ) )
+				.withMessage( "Unable to perform EntityPropertiesBinderController actions - no target has been set" );
+
+		assertThatExceptionOfType( IllegalStateException.class )
+				.isThrownBy( () -> binder.createController().applyValues() )
+				.withMessage( "Unable to perform EntityPropertiesBinderController actions - no target has been set" );
+
+		assertThatExceptionOfType( IllegalStateException.class )
+				.isThrownBy( () -> binder.createController().save() )
+				.withMessage( "Unable to perform EntityPropertiesBinderController actions - no target has been set" );
 	}
 
 	@Test

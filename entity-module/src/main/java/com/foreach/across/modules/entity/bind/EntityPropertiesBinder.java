@@ -46,10 +46,10 @@ import static com.foreach.across.modules.entity.registry.properties.support.Enti
  * <p/>
  * When a {@link ConversionService} is specified, type conversion will occur when setting a property value.
  * <p/>
- * WARNING: How properties are accessed can be relevant in how they are treated.
- * You can access for example {@code properties[user].value.name} or {@code properties[user.name].value} and both might
- * have different access semantics because the latter uses an entirely separate {@link EntityPropertyDescriptor}
- * whereas in the former {@code name} is a direct bean path.
+ * WARNING: The current implementation has some limitations. Especially the fact that a single {@link EntityPropertiesBinder}
+ * is strongly attached to a single entity or target. You cannot use the same binder and apply its values to multiple targets.
+ * Resetting the binder is done manually by calling {@link #clear()}, or automatically by updating either {@link #setEntity(Object)}
+ * or {@link #setTarget(Object)}.
  *
  * @author Arne Vandamme
  * @see EntityPropertiesBinderController
@@ -123,17 +123,23 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	/**
 	 * The original entity that this binder is attached to.
 	 * If only an {@code entity} but no {@code target} set, this binder will behave as readonly.
+	 * <p/>
+	 * <strong>WARNING:</strong> Updating the entity will reset the entire binder as if for a new instance.
 	 */
 	public void setEntity( Object entity ) {
 		this.entity = entity;
+		clear();
 	}
 
 	/**
 	 * The target for binding. If not set values can be fetched but binding-related controller methods will fail:
 	 * applying values, validating and saving.
+	 * <p/>
+	 * <strong>WARNING:</strong> Updating the target will reset the entire binder as if for a new instance.
 	 */
 	public void setTarget( Object target ) {
 		this.target = target;
+		clear();
 	}
 
 	/**
@@ -272,8 +278,18 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return new EntityPropertiesBinderController( this );
 	}
 
+	@Override
+	public void clear() {
+		super.clear();
+		setDirty( false );
+	}
+
 	void markDirty() {
 		dirty = true;
+	}
+
+	boolean isReadonly() {
+		return valueBindingContext.isReadonly();
 	}
 
 	String getPropertyBinderPath( String propertyName ) {
@@ -380,6 +396,19 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 			super.markDirty();
 			owningPropertyBinder.markDirty();
 		}
+
+		@Override
+		public EntityPropertiesBinderController createController() {
+			if ( EntityPropertiesBinder.this.isReadonly() ) {
+				throw new ReadonlyBindingContextException();
+			}
+			return super.createController();
+		}
+
+	/*	@Override
+		boolean isReadonly() {
+			return EntityPropertiesBinder.this.isReadonly();
+		}*/
 	}
 
 	class EntityPropertiesBinderValueBindingContext implements EntityPropertyBindingContext
@@ -452,20 +481,27 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		@SuppressWarnings("unchecked")
 		public <U> EntityPropertyValue<U> resolvePropertyValue( @NonNull EntityPropertyDescriptor propertyDescriptor ) {
 			applyValuesIfNecessary();
-			EntityPropertyBinder propertyBinder = get( propertyDescriptor );
-			return propertyBinder != null
-					? new EntityPropertyValue<U>( (U) propertyBinder.getOriginalValue(), (U) propertyBinder.getValue(), propertyBinder.isDeleted() )
-					: null;
+			return createPropertyValue( get( propertyDescriptor ) );
 		}
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public <U> EntityPropertyValue<U> resolvePropertyValue( @NonNull String propertyName, EntityPropertyController<U> controller ) {
 			applyValuesIfNecessary();
-			EntityPropertyBinder propertyBinder = get( propertyName );
-			return propertyBinder != null
-					? new EntityPropertyValue<U>( (U) propertyBinder.getOriginalValue(), (U) propertyBinder.getValue(), propertyBinder.isDeleted() )
-					: null;
+			return createPropertyValue( get( propertyName ) );
+		}
+
+		@SuppressWarnings("unchecked")
+		private <U> EntityPropertyValue<U> createPropertyValue( EntityPropertyBinder propertyBinder ) {
+			if ( propertyBinder != null ) {
+				if ( isReadonly() ) {
+					U originalValue = (U) propertyBinder.getOriginalValue();
+					return new EntityPropertyValue<>( originalValue, originalValue, false );
+				}
+
+				return new EntityPropertyValue<>( (U) propertyBinder.getOriginalValue(), (U) propertyBinder.getValue(), propertyBinder.isDeleted() );
+			}
+
+			return null;
 		}
 
 		@Override
@@ -478,6 +514,13 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		public EntityPropertyBindingContext resolvePropertyBindingContext( String propertyName, EntityPropertyController controller ) {
 			EntityPropertyBinder propertyBinder = get( propertyName );
 			return new EntityPropertyBinderBindingContext( this, propertyBinder );
+		}
+	}
+
+	static class ReadonlyBindingContextException extends IllegalStateException
+	{
+		ReadonlyBindingContextException() {
+			super( "Unable to perform EntityPropertiesBinderController actions - no target has been set" );
 		}
 	}
 }

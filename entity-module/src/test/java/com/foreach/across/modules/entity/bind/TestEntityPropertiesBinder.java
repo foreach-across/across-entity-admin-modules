@@ -172,6 +172,43 @@ public class TestEntityPropertiesBinder
 	}
 
 	@Test
+	public void clearResetsMapAndDirtyStatus() {
+		assertThat( single( "id" ) ).isNotNull();
+		assertThat( binder.isDirty() ).isFalse();
+		assertThat( binder ).isNotEmpty();
+
+		binder.markDirty();
+		assertThat( binder.isDirty() ).isTrue();
+
+		binder.clear();
+
+		assertThat( binder ).isEmpty();
+		assertThat( binder.isDirty() ).isFalse();
+	}
+
+	@Test
+	public void updatingEntityResetsMapAndDirtyStatus() {
+		assertThat( single( "id" ) ).isNotNull();
+		binder.markDirty();
+		assertThat( binder.isDirty() ).isTrue();
+
+		binder.setEntity( null );
+		assertThat( binder ).isEmpty();
+		assertThat( binder.isDirty() ).isFalse();
+	}
+
+	@Test
+	public void updatingTargetResetsMapAndDirtyStatus() {
+		assertThat( single( "id" ) ).isNotNull();
+		binder.markDirty();
+		assertThat( binder.isDirty() ).isTrue();
+
+		binder.setTarget( null );
+		assertThat( binder ).isEmpty();
+		assertThat( binder.isDirty() ).isFalse();
+	}
+
+	@Test
 	public void singleValueHolderReturnedForExistingProperty() {
 		SingleEntityPropertyBinder holder = single( "id" );
 		assertThat( holder ).isNotNull();

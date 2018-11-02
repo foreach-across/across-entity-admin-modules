@@ -219,13 +219,60 @@ public class TestBindingContextPropertiesBinderResolving extends AbstractEntityP
 	}
 
 	@Test
-	public void valuesAreOnlyAppliedWhenNecessary() {
+	public void withoutTargetAllValueResolvingUsesOnlyOriginalValue() {
+		User original = new User( new Address( "some street" ) );
 
+		// create a properties binder for the user entity
+		EntityPropertiesBinder userBinder = new EntityPropertiesBinder( userProperties );
+		userBinder.setEntity( original );
+
+		// using the binder itself as binding context should return the address value
+		EntityPropertyBindingContext userContext = userBinder.asBindingContext();
+		assertPropertyValue( userContext.resolvePropertyValue( userAddress ), new Address( "some street" ), new Address( "some street" ), false );
+
+		// the equivalent binding context should be correct
+		EntityPropertyBindingContext addressContext = userContext.resolvePropertyBindingContext( userAddress );
+		assertBindingContext( addressContext, new Address( "some street" ), new Address( "some street" ), true );
+
+		// fetching the address and address.street values directly from the binder
+		SingleEntityPropertyBinder addressBinder = (SingleEntityPropertyBinder) userBinder.get( "address" );
+		assertThat( addressBinder.getValue() ).isEqualTo( new Address( "some street" ) );
+		assertThat( addressBinder.getProperties().get( "street" ).getValue() ).isEqualTo( "some street" );
+
+		// a binding context for street can be resolved either from the address context or from the user context using the right descriptor
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressStreet ), "some street", "some street", true );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddressStreet ), "some street", "some street", true );
+
+		// update the street property on the address binder
+		addressBinder.getProperties().get( "street" ).setValue( "updated street" );
+
+		// fetching the property from the binder should return the update value
+		assertThat( addressBinder.getProperties().get( "street" ).getOriginalValue() ).isEqualTo( "some street" );
+		assertThat( addressBinder.getProperties().get( "street" ).getValue() ).isEqualTo( "updated street" );
+
+		// but fetching the address should not, as values are not applied in readonly mode
+		assertThat( addressBinder.getValue() ).isEqualTo( new Address( "some street" ) );
+
+		// using the binder as binding context should however still return the original value
+		assertPropertyValue( addressContext.resolvePropertyValue( addressStreet ), "some street", "some street", false );
+
+		// the address reference should not be modified as values should not be applied upwards in readonly mode
+		assertBindingContext( addressContext, new Address( "some street" ), new Address( "some street" ), true );
+		assertPropertyValue( userContext.resolvePropertyValue( userAddress ), new Address( "some street" ), new Address( "some street" ), false );
+
+		// the singular street value should still hold the original value
+		assertPropertyValue( userContext.resolvePropertyValue( userAddressStreet ), "some street", "some street", false );
+
+		// street binding context should also be resolved with the original value
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressStreet ), "some street", "some street", true );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddressStreet ), "some street", "some street", true );
+
+		// and the original should not be updated
+		assertThat( original.getAddress() ).isEqualTo( new Address( "some street" ) );
+		assertThat( original.getAddress().getUpdateCount() ).isEqualTo( 0 );
 	}
 
 	// todo: fixme
-	// if no binder target set, values can never be applied or validated (?)
-	// and the binding context should ignore the current values
 	// in readonly, no dto should be created!
 
 	private void assertPropertyValue( EntityPropertyValue<?> propertyValue, Object oldValue, Object newValue, boolean deleted ) {

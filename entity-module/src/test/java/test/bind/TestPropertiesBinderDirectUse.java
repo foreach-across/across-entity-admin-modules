@@ -73,7 +73,7 @@ public class TestPropertiesBinderDirectUse
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
 
 		User user = new User( "my name" );
-		binder.setEntity( user );
+		binder.setTarget( user );
 
 		assertThat( binder.get( "name" ).getValue() ).isEqualTo( "my name" );
 		binder.get( "name" ).setValue( "other name" );
@@ -203,7 +203,7 @@ public class TestPropertiesBinderDirectUse
 		UserProperties props = new UserProperties( 1, user, "" );
 
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
-		binder.setEntity( props );
+		binder.setTarget( props );
 
 		SingleEntityPropertyBinder ownerProperty = (SingleEntityPropertyBinder) binder.get( "owner" );
 		ownerProperty.getProperties().get( "name" ).setValue( null );

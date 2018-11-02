@@ -42,7 +42,7 @@ class EntityPropertyBinderBindingContext implements EntityPropertyBindingContext
 	@Override
 	@SuppressWarnings("unchecked")
 	public <U> U getTarget() {
-		return (U) propertyBinder.getValue();
+		return isReadonly() ? getEntity() : (U) propertyBinder.getValue();
 	}
 
 	@Override
