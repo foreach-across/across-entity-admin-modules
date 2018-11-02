@@ -42,7 +42,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class TestSingleEntityPropertyBinder
 {
-	private static final EntityPropertyBindingContext BINDING_CONTEXT = EntityPropertyBindingContext.forReading( "entity" );
+	@Mock
+	private EntityPropertiesBinder.EntityPropertiesBinderValueBindingContext bindingContext;
 
 	@Mock
 	private EntityPropertiesBinder binder;
@@ -58,8 +59,12 @@ public class TestSingleEntityPropertyBinder
 	public void resetMocks() {
 		reset( binder, controller );
 
-		when( binder.getValueBindingContext() ).thenReturn( BINDING_CONTEXT );
-		when( controller.fetchValue( BINDING_CONTEXT ) ).thenReturn( 1 );
+		when( bindingContext.getEntity() ).thenReturn( "entity" );
+		when( bindingContext.getTarget() ).thenReturn( "entity" );
+		when( bindingContext.isReadonly() ).thenReturn( true );
+		when( binder.getValueBindingContext() ).thenReturn( bindingContext );
+
+		when( controller.fetchValue( bindingContext ) ).thenReturn( 1 );
 
 		doAnswer( i -> i.getArgument( 0 ) )
 				.when( binder )
@@ -101,7 +106,7 @@ public class TestSingleEntityPropertyBinder
 	@Test
 	public void updatingTheValueDoesNotUseTheController() {
 		property.setValue( 123 );
-		verify( controller ).fetchValue( BINDING_CONTEXT );
+		verify( controller ).fetchValue( bindingContext );
 
 		assertThat( property.getValue() ).isEqualTo( 123 );
 		verifyNoMoreInteractions( controller );
@@ -223,7 +228,7 @@ public class TestSingleEntityPropertyBinder
 	public void settingEmptyStringOnNonStringPropertyResultsInNullValue() {
 		property.setValue( "" );
 		assertThat( property.getValue() ).isNull();
-		verify( controller ).fetchValue( BINDING_CONTEXT );
+		verify( controller ).fetchValue( bindingContext );
 		verifyNoMoreInteractions( controller );
 	}
 
@@ -240,7 +245,7 @@ public class TestSingleEntityPropertyBinder
 		property.setValue( "" );
 		assertThat( property.getValue() ).isEqualTo( "" );
 
-		verify( controller ).fetchValue( BINDING_CONTEXT );
+		verify( controller ).fetchValue( bindingContext );
 		verifyNoMoreInteractions( controller );
 	}
 
@@ -271,38 +276,38 @@ public class TestSingleEntityPropertyBinder
 
 	@Test
 	public void applyValueFlushesToTheControllerWithTheOriginalValue() {
-		when( controller.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
+		when( controller.applyValue( bindingContext, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
 		assertThat( property.applyValue() ).isTrue();
 
 		property.setValue( 123 );
 		assertThat( property.applyValue() ).isFalse();
-		verify( controller ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 123, false ) );
+		verify( controller ).applyValue( bindingContext, new EntityPropertyValue<>( 1, 123, false ) );
 	}
 
 	@Test
 	public void applyValueAppliesNullIfDeleted() {
-		when( controller.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
+		when( controller.applyValue( bindingContext, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
 		property.setBound( true );
 		assertThat( property.applyValue() ).isTrue();
-		verify( controller ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) );
+		verify( controller ).applyValue( bindingContext, new EntityPropertyValue<>( 1, null, true ) );
 	}
 
 	@Test
 	public void saveFlushesToTheControllerWithTheOriginalValue() {
-		when( controller.save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
+		when( controller.save( bindingContext, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
 		assertThat( property.save() ).isTrue();
 
 		property.setValue( 123 );
 		assertThat( property.save() ).isFalse();
-		verify( controller ).save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 123, false ) );
+		verify( controller ).save( bindingContext, new EntityPropertyValue<>( 1, 123, false ) );
 	}
 
 	@Test
 	public void saveWithNullIfDeleted() {
-		when( controller.save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
+		when( controller.save( bindingContext, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
 		property.setBound( true );
 		assertThat( property.save() ).isTrue();
-		verify( controller ).save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) );
+		verify( controller ).save( bindingContext, new EntityPropertyValue<>( 1, null, true ) );
 	}
 
 	@Test
@@ -317,7 +322,7 @@ public class TestSingleEntityPropertyBinder
 
 		doAnswer( invocation -> {
 			EntityPropertyBindingContext bindingContext = invocation.getArgument( 0 );
-			assertThat( bindingContext ).isSameAs( BINDING_CONTEXT );
+			assertThat( bindingContext ).isSameAs( this.bindingContext );
 
 			EntityPropertyValue<Object> propertyValue = invocation.getArgument( 1 );
 			assertThat( propertyValue ).isEqualTo( new EntityPropertyValue<Object>( 1, 123, false ) );
@@ -360,7 +365,7 @@ public class TestSingleEntityPropertyBinder
 
 		doAnswer( invocation -> {
 			EntityPropertyBindingContext bindingContext = invocation.getArgument( 0 );
-			assertThat( bindingContext ).isSameAs( BINDING_CONTEXT );
+			assertThat( bindingContext ).isSameAs( this.bindingContext );
 
 			EntityPropertyValue<Object> propertyValue = invocation.getArgument( 1 );
 			assertThat( propertyValue ).isEqualTo( new EntityPropertyValue<Object>( 1, 123, false ) );

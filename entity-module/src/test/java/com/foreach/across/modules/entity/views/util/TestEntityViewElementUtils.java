@@ -99,7 +99,7 @@ public class TestEntityViewElementUtils
 
 	@Test
 	public void currentPropertyValueIsReturnValueOfControllerWithCurrentEntity() {
-		when( descriptor.getAttribute( EntityPropertyHandlingType.class ) ).thenReturn( EntityPropertyHandlingType.DIRECT );
+		when( descriptor.getName() ).thenReturn( "myprop" );
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
 		setCurrentEntity( builderContext, "my entity" );
 
@@ -119,10 +119,8 @@ public class TestEntityViewElementUtils
 		EntityPropertiesBinder propertiesBinder = mock( EntityPropertiesBinder.class );
 		builderContext.setAttribute( EntityPropertiesBinder.class, propertiesBinder );
 
-		when( descriptor.getName() ).thenReturn( "myprop" );
-
 		EntityPropertyBinder target = mock( EntityPropertyBinder.class );
-		when( propertiesBinder.get( "myprop" ) ).thenReturn( target );
+		when( propertiesBinder.get( descriptor ) ).thenReturn( target );
 
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
 
@@ -147,7 +145,7 @@ public class TestEntityViewElementUtils
 	@Test
 	public void currentPropertyValueIsNullIfNotOfCorrectType() {
 		builderContext.setAttribute( EntityPropertyDescriptor.class, descriptor );
-		when( descriptor.getAttribute( EntityPropertyHandlingType.class ) ).thenReturn( EntityPropertyHandlingType.DIRECT );
+		when( descriptor.getName() ).thenReturn( "myprop" );
 		setCurrentEntity( builderContext, "my entity" );
 
 		when( controller.fetchValue( EntityPropertyBindingContext.forReading( "my entity" ) ) ).thenReturn( 123L );

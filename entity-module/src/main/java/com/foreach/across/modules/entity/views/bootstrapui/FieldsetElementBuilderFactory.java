@@ -80,8 +80,7 @@ public class FieldsetElementBuilderFactory extends EntityViewElementBuilderFacto
 	                                                                        String viewElementType ) {
 		ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder( propertyDescriptor, ViewElementMode.LABEL );
 
-		FieldsetBuilder fieldset = new FieldsetBuilder()
-				.name( propertyDescriptor.getName() );
+		FieldsetBuilder fieldset = new FieldsetBuilder().name( propertyDescriptor.getName() );
 
 		fieldset.postProcessor( ( ctx, f ) -> {
 			Function<ViewElementFieldset, ? extends ViewElement> template = resolveTemplate( propertyDescriptor );

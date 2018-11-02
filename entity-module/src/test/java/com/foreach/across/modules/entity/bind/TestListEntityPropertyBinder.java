@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.entity.bind;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
@@ -43,10 +42,12 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({ "Duplicates", "unchecked" })
 public class TestListEntityPropertyBinder
 {
-	private static final EntityPropertyBindingContext BINDING_CONTEXT = EntityPropertyBindingContext.forReading( "entity" );
 	private static final TypeDescriptor COLLECTION = TypeDescriptor.collection( ArrayList.class, TypeDescriptor.valueOf( Integer.class ) );
 	private static final TypeDescriptor MEMBER = TypeDescriptor.valueOf( Integer.class );
 	private static final List<Integer> ORIGINAL_VALUE = Arrays.asList( 1, 2 );
+
+	@Mock
+	private EntityPropertiesBinder.EntityPropertiesBinderValueBindingContext bindingContext;
 
 	@Mock
 	private EntityPropertiesBinder binder;
@@ -71,8 +72,9 @@ public class TestListEntityPropertyBinder
 	public void resetMocks() {
 		reset( binder, collectionController, memberController );
 
-		when( binder.getValueBindingContext() ).thenReturn( BINDING_CONTEXT );
-		when( collectionController.fetchValue( BINDING_CONTEXT ) ).thenReturn( ORIGINAL_VALUE );
+		when( binder.getValueBindingContext() ).thenReturn( bindingContext );
+
+		when( collectionController.fetchValue( bindingContext ) ).thenReturn( ORIGINAL_VALUE );
 
 		doAnswer( i -> Arrays.asList( (Object[]) i.getArgument( 0 ) ) )
 				.when( binder )
@@ -330,7 +332,7 @@ public class TestListEntityPropertyBinder
 	@Test
 	public void updatingTheValueDoesNotUseTheController() {
 		property.setValue( Collections.singletonList( 3 ) );
-		verify( collectionController ).fetchValue( BINDING_CONTEXT );
+		verify( collectionController ).fetchValue( bindingContext );
 		verifyNoMoreInteractions( collectionController );
 	}
 
@@ -460,40 +462,40 @@ public class TestListEntityPropertyBinder
 
 	@Test
 	public void applyValueFlushesToTheControllerWithTheOriginalValue() {
-		when( collectionController.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( true );
+		when( collectionController.applyValue( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( true );
 		assertThat( property.applyValue() ).isTrue();
 
 		when( itemOne.getValue() ).thenReturn( 3 );
 		assertThat( property.applyValue() ).isFalse();
-		verify( collectionController ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Arrays.asList( 3, 2 ), false ) );
+		verify( collectionController ).applyValue( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Arrays.asList( 3, 2 ), false ) );
 	}
 
 	@Test
 	public void applyValueFlagsDelete() {
-		when( collectionController.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) ) )
+		when( collectionController.applyValue( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) ) )
 				.thenReturn( true );
 		property.setDeleted( true );
 		assertThat( property.applyValue() ).isTrue();
-		verify( collectionController ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) );
+		verify( collectionController ).applyValue( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) );
 	}
 
 	@Test
 	public void saveFlushesToTheControllerWithTheOriginalValue() {
-		when( collectionController.save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( true );
+		when( collectionController.save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( true );
 		assertThat( property.save() ).isTrue();
 
 		when( itemOne.getValue() ).thenReturn( 3 );
 		assertThat( property.save() ).isFalse();
-		verify( collectionController ).save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Arrays.asList( 3, 2 ), false ) );
+		verify( collectionController ).save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Arrays.asList( 3, 2 ), false ) );
 	}
 
 	@Test
 	public void saveWithNullIfDeleted() {
-		when( collectionController.save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) ) )
+		when( collectionController.save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) ) )
 				.thenReturn( true );
 		property.setDeleted( true );
 		assertThat( property.save() ).isTrue();
-		verify( collectionController ).save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) );
+		verify( collectionController ).save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) );
 	}
 
 	@Test

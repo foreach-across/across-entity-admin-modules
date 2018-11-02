@@ -332,6 +332,184 @@ public class TestBindingContextPropertiesBinderResolving extends AbstractEntityP
 		assertThat( original.getCity() ).isEqualTo( new City( "Antwerp" ) );
 	}
 
+	@Test
+	public void nativePropertyIsAlwaysFetchedFromTheTargetIfNotExplicitlyAccessedViaTheBinder() {
+		Address target = new Address( "some street" );
+
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( addressProperties );
+		binder.setTarget( target );
+
+		EntityPropertyBindingContext addressContext = binder.asBindingContext();
+		assertPropertyValue( addressContext.resolvePropertyValue( addressStreet ), "some street", "some street", false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressStreet ), "some street", "some street", false );
+
+		// because street is a native (DIRECT) property, no binder should have been created for resolving the property value
+		assertThat( binder.containsKey( "street" ) ).isFalse();
+
+		// update the backing target
+		target.setStreet( "updated street" );
+
+		// changes to the backing target are immediately visible
+		assertPropertyValue( addressContext.resolvePropertyValue( addressStreet ), "updated street", "updated street", false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressStreet ), "updated street", "updated street", false );
+		assertThat( binder.containsKey( "street" ) ).isFalse();
+
+		// create a binder for the street property
+		assertThat( binder.get( "street" ).getValue() ).isEqualTo( "updated street" );
+		assertThat( binder.containsKey( "street" ) ).isTrue();
+
+		// update the street directly on the original target
+		target.setStreet( "updated again" );
+
+		// the property value and binding context now use the binder property instead and changes in the underlying target are ignored
+		assertPropertyValue( addressContext.resolvePropertyValue( addressStreet ), "updated street", "updated street", false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressStreet ), "updated street", "updated street", false );
+
+		// because the binder is not dirty changes will not be applied to the target
+		binder.createController().applyValues();
+		assertThat( target.getStreet() ).isEqualTo( "updated again" );
+
+		// but if we update and apply, the target will be updated
+		binder.get( "street" ).setValue( "updated through binder" );
+		binder.createController().applyValues();
+		assertThat( target.getStreet() ).isEqualTo( "updated through binder" );
+
+		assertPropertyValue( addressContext.resolvePropertyValue( addressStreet ), "updated street", "updated through binder", false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressStreet ), "updated street", "updated through binder", false );
+	}
+
+	@Test
+	public void nestedNativePropertyIsAlwaysFetchedFromTheTargetIfNotExplicitlyAccessedViaTheBinder() {
+		User target = new User( new Address( "some street" ) );
+
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( userProperties );
+		binder.setTarget( target );
+
+		EntityPropertyBindingContext userContext = binder.asBindingContext();
+		assertPropertyValue( userContext.resolvePropertyValue( userAddressStreet ), "some street", "some street", false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddressStreet ), "some street", "some street", false );
+		assertPropertyValue( userContext.resolvePropertyValue( userAddress ), new Address( "some street" ), new Address( "some street" ), false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddress ), new Address( "some street" ), new Address( "some street" ), false );
+
+		assertThat( binder ).isEmpty();
+
+		target.getAddress().setStreet( "updated street" );
+
+		assertPropertyValue( userContext.resolvePropertyValue( userAddressStreet ), "updated street", "updated street", false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddressStreet ), "updated street", "updated street", false );
+		assertPropertyValue( userContext.resolvePropertyValue( userAddress ), new Address( "updated street" ), new Address( "updated street" ), false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddress ), new Address( "updated street" ), new Address( "updated street" ),
+		                      false );
+
+		target.setAddress( new Address( "updated again!" ) );
+
+		assertPropertyValue( userContext.resolvePropertyValue( userAddressStreet ), "updated again!", "updated again!", false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddressStreet ), "updated again!", "updated again!", false );
+		assertPropertyValue( userContext.resolvePropertyValue( userAddress ), new Address( "updated again!" ), new Address( "updated again!" ), false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddress ), new Address( "updated again!" ), new Address( "updated again!" ),
+		                      false );
+
+		assertThat( binder.get( "address" ).getValue() ).isEqualTo( new Address( "updated again!" ) );
+
+		assertPropertyValue( userContext.resolvePropertyValue( userAddressStreet ), "updated again!", "updated again!", false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddressStreet ), "updated again!", "updated again!", false );
+		assertPropertyValue( userContext.resolvePropertyValue( userAddress ), new Address( "updated again!" ), new Address( "updated again!" ), false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddress ), new Address( "updated again!" ), new Address( "updated again!" ),
+		                      false );
+
+		EntityPropertyBinder streetBinder = ( (SingleEntityPropertyBinder) binder.get( "address" ) ).getProperties().get( "street" );
+		assertThat( streetBinder.getValue() ).isEqualTo( "updated again!" );
+		target.getAddress().setStreet( "your street" );
+
+		assertPropertyValue( userContext.resolvePropertyValue( userAddressStreet ), "updated again!", "updated again!", false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddressStreet ), "updated again!", "updated again!", false );
+
+		// address is still the same reference, so is updated
+		assertPropertyValue( userContext.resolvePropertyValue( userAddress ), new Address( "your street" ), new Address( "your street" ), false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddress ), new Address( "your street" ), new Address( "your street" ),
+		                      false );
+
+		streetBinder.setValue( "my street" );
+		assertPropertyValue( userContext.resolvePropertyValue( userAddressStreet ), "updated again!", "my street", false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddressStreet ), "updated again!", "my street", false );
+		assertPropertyValue( userContext.resolvePropertyValue( userAddress ), new Address( "my street" ), new Address( "my street" ), false );
+		assertBindingContext( userContext.resolvePropertyBindingContext( userAddress ), new Address( "my street" ), new Address( "my street" ),
+		                      false );
+		assertThat( target.getAddress().getStreet() ).isEqualTo( "my street" );
+	}
+
+	@Test
+	public void nonNativePropertyIsAlwaysImmediatelyAddedToTheBinder() {
+		Address target = new Address( "some street" );
+
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( addressProperties );
+		binder.setTarget( target );
+
+		EntityPropertyBindingContext addressContext = binder.asBindingContext();
+		assertPropertyValue( addressContext.resolvePropertyValue( addressCity ), null, null, false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressCity ), null, null, false );
+
+		// because city is a custom (BINDER) property, a binder will have automatically been added
+		assertThat( binder.containsKey( "city" ) ).isTrue();
+
+		SingleEntityPropertyBinder cityBinder = (SingleEntityPropertyBinder) binder.get( "city" );
+
+		// update the city value
+		City city = new City( "Antwerp" );
+		cityBinder.setValue( city );
+
+		// city is the BINDER property
+		assertPropertyValue( addressContext.resolvePropertyValue( addressCity ), null, new City( "Antwerp" ), false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressCity ), null, new City( "Antwerp" ), false );
+
+		// city.name is a DIRECT property and as such resolved from the target
+		assertPropertyValue( addressContext.resolvePropertyValue( addressCityName ), "Antwerp", "Antwerp", false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressCityName ), "Antwerp", "Antwerp", false );
+
+		// no binder for the name property should be registered
+		assertThat( cityBinder.getProperties().containsKey( "name" ) ).isFalse();
+
+		// update name directly on the city value
+		city.setName( "Brussels" );
+
+		// city.name resolving immediately takes the updated city name
+		assertPropertyValue( addressContext.resolvePropertyValue( addressCityName ), "Brussels", "Brussels", false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressCityName ), "Brussels", "Brussels", false );
+		assertThat( cityBinder.getProperties().containsKey( "name" ) ).isFalse();
+
+		// the address binder is also updated as the same reference has been directly modified
+		assertPropertyValue( addressContext.resolvePropertyValue( addressCity ), null, new City( "Brussels" ), false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressCity ), null, new City( "Brussels" ), false );
+
+		// create a binder for the city name property
+		assertThat( cityBinder.getProperties().get( "name" ).getValue() ).isEqualTo( "Brussels" );
+		assertThat( cityBinder.getProperties().containsKey( "name" ) ).isTrue();
+
+		// update the city name directly on the original target
+		city.setName( "Ghent" );
+
+		// the property value and binding context now use the binder property instead and changes in the underlying target are ignored
+		assertPropertyValue( addressContext.resolvePropertyValue( addressCityName ), "Brussels", "Brussels", false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressCityName ), "Brussels", "Brussels", false );
+
+		// because the city name binder is not set as dirty (it was simply loaded), it will not be applied and the reference has been updated
+		assertPropertyValue( addressContext.resolvePropertyValue( addressCity ), null, new City( "Ghent" ), false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressCity ), null, new City( "Ghent" ), false );
+
+		// setting the city name through the binder
+		cityBinder.getProperties().get( "name" ).setValue( "Amsterdam" );
+
+		assertPropertyValue( addressContext.resolvePropertyValue( addressCityName ), "Brussels", "Amsterdam", false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressCityName ), "Brussels", "Amsterdam", false );
+
+		// because the city name binder is not set as dirty (it was simply loaded), it will not be applied and the reference has been updated
+		assertPropertyValue( addressContext.resolvePropertyValue( addressCity ), null, new City( "Amsterdam" ), false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( addressCity ), null, new City( "Amsterdam" ), false );
+
+		// and the city reference should be updated as well
+		assertThat( city.getName() ).isEqualTo( "Amsterdam" );
+	}
+
 	private void assertPropertyValue( EntityPropertyValue<?> propertyValue, Object oldValue, Object newValue, boolean deleted ) {
 		assertThat( propertyValue ).isNotNull();
 		assertThat( propertyValue.getOldValue() ).isEqualTo( oldValue );

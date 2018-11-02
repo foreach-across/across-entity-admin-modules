@@ -118,7 +118,7 @@ public class EntityViewElementUtils
 			return null;
 		}
 
-		Object value = null;
+		Object value;
 
 		if ( builderContext instanceof IteratorViewElementBuilderContext ) {
 			value = ( (IteratorViewElementBuilderContext) builderContext ).getItem();
@@ -159,7 +159,7 @@ public class EntityViewElementUtils
 	 * @see #currentPropertyValue(ViewElementBuilderContext)
 	 */
 	public static <U> U currentPropertyValue( @NonNull ViewElementBuilderContext builderContext, @NonNull Class<U> expectedType ) {
-		Object propertyValue;
+		Object propertyValue = null;
 		EntityPropertyValue fixedValue = builderContext.getAttribute( EntityPropertyValue.class );
 
 		if ( fixedValue != null ) {
@@ -172,23 +172,17 @@ public class EntityViewElementUtils
 				return null;
 			}
 
-			switch ( EntityPropertyHandlingType.forProperty( descriptor ) ) {
-				case BINDER:
-					EntityPropertyBinder propertyBinder = resolvePropertyBinder( builderContext, descriptor );
-					if ( propertyBinder != null ) {
-						propertyValue = propertyBinder.getValue();
-						break;
-					}
-				default:
-					propertyValue = descriptor.getController().fetchValue( resolveBindingContext( builderContext ) );
-					break;
+			EntityPropertyBindingContext bindingContext = resolveBindingContext( builderContext );
+			fixedValue = bindingContext.resolvePropertyValue( currentPropertyDescriptor( builderContext ) );
+
+			if ( fixedValue != null ) {
+				propertyValue = fixedValue.getNewValue();
 			}
 		}
 
 		return expectedType.isInstance( propertyValue ) ? expectedType.cast( propertyValue ) : null;
 	}
 
-	// todo: fixme
 	private static EntityPropertyBindingContext resolveBindingContext( ViewElementBuilderContext builderContext ) {
 		EntityPropertyBindingContext bindingContext = builderContext.getAttribute( EntityPropertyBindingContext.class );
 
@@ -202,15 +196,14 @@ public class EntityViewElementUtils
 			return ( (SingleEntityPropertyBinder) parent ).getProperties().asBindingContext();
 		}
 
-		EntityPropertyBindingContext propertyBindingContext = EntityPropertyBindingContext.forReading( currentEntity( builderContext ) );
 		return builderContext.hasAttribute( EntityPropertiesBinder.class )
 				? builderContext.getAttribute( EntityPropertiesBinder.class ).asBindingContext()
-				: propertyBindingContext;
+				: EntityPropertyBindingContext.forReading( currentEntity( builderContext ) );
 	}
 
 	/**
 	 * Retrieve a {@link EntityPropertyBinder} for the current property being rendered.
-	 * This required an {@link EntityPropertiesBinder} or a {@link EntityPropertyBinder} for the parent property
+	 * This requires an {@link EntityPropertiesBinder} or a {@link EntityPropertyBinder} for the parent property
 	 * to be present.
 	 *
 	 * @param builderContext current builder context
@@ -236,7 +229,7 @@ public class EntityViewElementUtils
 		EntityPropertiesBinder properties = builderContext.getAttribute( EntityPropertiesBinder.class );
 
 		if ( properties != null ) {
-			return properties.get( descriptor.getName() );
+			return properties.get( descriptor );
 		}
 
 		return null;

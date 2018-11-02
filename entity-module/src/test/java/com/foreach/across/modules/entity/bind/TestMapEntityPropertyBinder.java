@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.entity.bind;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
@@ -46,11 +45,13 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({ "Duplicates", "unchecked" })
 public class TestMapEntityPropertyBinder
 {
-	private static final EntityPropertyBindingContext BINDING_CONTEXT = EntityPropertyBindingContext.forReading( "entity" );
 	private static final TypeDescriptor KEY = TypeDescriptor.valueOf( String.class );
 	private static final TypeDescriptor VALUE = TypeDescriptor.valueOf( Integer.class );
 	private static final TypeDescriptor COLLECTION = TypeDescriptor.map( LinkedHashMap.class, KEY, VALUE );
 	private static final Map<String, Integer> ORIGINAL_VALUE = Collections.singletonMap( "one", 1 );
+
+	@Mock
+	private EntityPropertiesBinder.EntityPropertiesBinderValueBindingContext bindingContext;
 
 	@Mock
 	private EntityPropertiesBinder binder;
@@ -79,8 +80,9 @@ public class TestMapEntityPropertyBinder
 	public void resetMocks() {
 		reset( binder, collectionController, keyController, valueController );
 
-		when( binder.getValueBindingContext() ).thenReturn( BINDING_CONTEXT );
-		when( collectionController.fetchValue( BINDING_CONTEXT ) ).thenReturn( ORIGINAL_VALUE );
+		when( binder.getValueBindingContext() ).thenReturn( bindingContext );
+
+		when( collectionController.fetchValue( bindingContext ) ).thenReturn( ORIGINAL_VALUE );
 
 		doAnswer( i -> i.getArgument( 0 ) )
 				.when( binder )
@@ -243,7 +245,7 @@ public class TestMapEntityPropertyBinder
 		when( key.isDirty() ).thenReturn( true );
 		assertThat( property.isDirty() ).isTrue();
 
-		when( key.isDirty() ).thenReturn( false  );
+		when( key.isDirty() ).thenReturn( false );
 		assertThat( property.isDirty() ).isFalse();
 
 		when( value.isDirty() ).thenReturn( true );
@@ -382,7 +384,7 @@ public class TestMapEntityPropertyBinder
 	@Test
 	public void updatingTheValueDoesNotUseTheController() {
 		property.setValue( Collections.singletonMap( "two", 2 ) );
-		verify( collectionController ).fetchValue( BINDING_CONTEXT );
+		verify( collectionController ).fetchValue( bindingContext );
 		verifyZeroInteractions( collectionController );
 	}
 
@@ -508,40 +510,40 @@ public class TestMapEntityPropertyBinder
 
 	@Test
 	public void applyValueFlushesToTheControllerWithTheOriginalValue() {
-		when( collectionController.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( true );
+		when( collectionController.applyValue( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( true );
 		assertThat( property.applyValue() ).isTrue();
 
 		when( value.getValue() ).thenReturn( 3 );
 		assertThat( property.applyValue() ).isFalse();
-		verify( collectionController ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.singletonMap( "one", 3 ), false ) );
+		verify( collectionController ).applyValue( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.singletonMap( "one", 3 ), false ) );
 	}
 
 	@Test
 	public void applyValueFlagsDelete() {
-		when( collectionController.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) ) )
+		when( collectionController.applyValue( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) ) )
 				.thenReturn( true );
 		property.setDeleted( true );
 		assertThat( property.applyValue() ).isTrue();
-		verify( collectionController ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) );
+		verify( collectionController ).applyValue( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) );
 	}
 
 	@Test
 	public void saveFlushesToTheControllerWithTheOriginalValue() {
-		when( collectionController.save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( true );
+		when( collectionController.save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( true );
 		assertThat( property.save() ).isTrue();
 
 		when( value.getValue() ).thenReturn( 3 );
 		assertThat( property.save() ).isFalse();
-		verify( collectionController ).save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.singletonMap( "one", 3 ), false ) );
+		verify( collectionController ).save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.singletonMap( "one", 3 ), false ) );
 	}
 
 	@Test
 	public void saveWithNullIfDeleted() {
-		when( collectionController.save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) ) )
+		when( collectionController.save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) ) )
 				.thenReturn( true );
 		property.setDeleted( true );
 		assertThat( property.save() ).isTrue();
-		verify( collectionController ).save( BINDING_CONTEXT, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) );
+		verify( collectionController ).save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) );
 	}
 
 	@Test

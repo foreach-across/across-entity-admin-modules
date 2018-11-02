@@ -43,6 +43,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 	EntityPropertyDescriptor addressCity;
 	EntityPropertyDescriptor userAddressCity;
 	EntityPropertyDescriptor cityName;
+	EntityPropertyDescriptor addressCityName;
 	EntityPropertyDescriptor cityAddressCity;
 	EntityPropertyDescriptor cityAddressCityName;
 
@@ -68,6 +69,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 		addressProperties.register( builder( "city" ).propertyType( City.class ).build() );
 
 		addressCity = addressProperties.getProperty( "city" );
+		addressCityName = addressProperties.getProperty( "city.name" );
 		userAddressCity = userProperties.getProperty( "address.city" );
 		cityName = cityProperties.getProperty( "name" );
 		cityAddressCityName = cityAddressProperties.getProperty( "city.name" );

@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.registry.properties.binding.SimpleEntityPropertyBindingContext;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.ConversionNotSupportedException;
@@ -29,6 +30,7 @@ import org.springframework.core.convert.support.DefaultConversionService;
 
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
+import java.util.Map;
 
 import static com.foreach.across.modules.entity.registry.properties.support.EntityPropertyDescriptorUtils.findDirectChild;
 import static com.foreach.across.modules.entity.registry.properties.support.EntityPropertyDescriptorUtils.getRootDescriptor;
@@ -59,6 +61,7 @@ import static com.foreach.across.modules.entity.registry.properties.support.Enti
 public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder>
 {
 	private final EntityPropertiesBinderAsBindingContext bindingContextMapper = new EntityPropertiesBinderAsBindingContext();
+	private final Map<String, EntityPropertyBinderHolder> proxyBinders = new HashMap<>();
 
 	private Object entity;
 	private Object target;
@@ -111,7 +114,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	 * for internal use within the binder when applying the actual values.
 	 */
 	@Getter(value = AccessLevel.PACKAGE)
-	private final EntityPropertyBindingContext valueBindingContext = new EntityPropertiesBinderValueBindingContext();
+	private final EntityPropertiesBinderValueBindingContext valueBindingContext = new EntityPropertiesBinderValueBindingContext( true );
 
 	public EntityPropertiesBinder( @NonNull EntityPropertyRegistry propertyRegistry ) {
 		this.propertyRegistry = propertyRegistry;
@@ -188,7 +191,25 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	 */
 	@Override
 	public EntityPropertyBinder get( Object key ) {
+		return get( key, true );
+	}
+
+	/**
+	 * Get the property binder for the descriptor. This will automatically register the binder.
+	 *
+	 * @param descriptor property descriptor
+	 * @return property binder
+	 */
+	public EntityPropertyBinder get( @NonNull EntityPropertyDescriptor descriptor ) {
+		return get( descriptor, true );
+	}
+
+	private EntityPropertyBinder get( Object key, boolean autoRegister ) {
 		EntityPropertyBinder valueHolder = super.get( key );
+
+		if ( valueHolder == null && !autoRegister ) {
+			valueHolder = proxyBinders.get( key );
+		}
 
 		if ( valueHolder == null ) {
 			try {
@@ -201,7 +222,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 					throw new IllegalArgumentException( "No such property descriptor: '" + fqPropertyName + "'" );
 				}
 
-				return get( descriptor );
+				return get( descriptor, autoRegister );
 			}
 			catch ( IllegalArgumentException iae ) {
 				if ( !StringUtils.isEmpty( binderPrefix ) ) {
@@ -215,7 +236,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		return valueHolder;
 	}
 
-	public EntityPropertyBinder get( @NonNull EntityPropertyDescriptor descriptor ) {
+	private EntityPropertyBinder get( EntityPropertyDescriptor descriptor, boolean autoRegister ) {
 		try {
 			if ( descriptor.isNestedProperty() ) {
 				EntityPropertyDescriptor firstChild = parentProperty != null ? findDirectChild( descriptor, parentProperty ) : getRootDescriptor( descriptor );
@@ -224,10 +245,20 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 					throw new IllegalArgumentException( "No such property descriptor: " + descriptor.getName() );
 				}
 
-				return getBinder( firstChild.getTargetPropertyName(), firstChild ).resolvePropertyBinder( descriptor );
+				EntityPropertyBinder binder = getBinder( firstChild.getTargetPropertyName(), firstChild, autoRegister );
+
+				if ( firstChild == descriptor ) {
+					return binder;
+				}
+
+				if ( binder instanceof SingleEntityPropertyBinder ) {
+					return ( (SingleEntityPropertyBinder) binder ).getProperties().get( descriptor, autoRegister );
+				}
+
+				return binder.resolvePropertyBinder( descriptor );
 			}
 
-			return getBinder( descriptor.getName(), descriptor );
+			return getBinder( descriptor.getName(), descriptor, autoRegister );
 		}
 		catch ( IllegalArgumentException iae ) {
 			if ( !StringUtils.isEmpty( binderPrefix ) ) {
@@ -238,13 +269,35 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		}
 	}
 
-	private EntityPropertyBinder getBinder( String propertyName, EntityPropertyDescriptor descriptor ) {
-		return computeIfAbsent( propertyName, p -> {
-			AbstractEntityPropertyBinder binder = createPropertyBinder( descriptor );
-			binder.setBinderPath( getPropertyBinderPath( propertyName ) );
-			binder.enableBinding( bindingEnabled );
-			return binder;
-		} );
+	private EntityPropertyBinder getBinder( String propertyName, EntityPropertyDescriptor descriptor, boolean autoRegister ) {
+		EntityPropertyBinder propertyBinder = super.get( propertyName );
+
+		if ( propertyBinder == null ) {
+			if ( autoRegister || EntityPropertyHandlingType.forProperty( descriptor ) != EntityPropertyHandlingType.DIRECT ) {
+				AbstractEntityPropertyBinder binder = createPropertyBinder( descriptor );
+				binder.setBinderPath( getPropertyBinderPath( propertyName ) );
+				binder.enableBinding( bindingEnabled );
+				put( propertyName, binder );
+
+				EntityPropertyBinderHolder holder = proxyBinders.get( propertyName );
+
+				// upgrade a previously dealt out binder
+				if ( holder != null ) {
+					holder.setTarget( binder );
+					proxyBinders.remove( propertyName );
+				}
+
+				return binder;
+			}
+
+			return proxyBinders.computeIfAbsent( propertyName, p -> {
+				EntityPropertyBinderHolder holder = new EntityPropertyBinderHolder();
+				holder.setTarget( new DirectPropertyEntityPropertyBinder( getValueBindingContext().forDirectProperties(), descriptor ) );
+				return holder;
+			} );
+		}
+
+		return propertyBinder;
 	}
 
 	/**
@@ -384,7 +437,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		private SingleEntityPropertyBinder owningPropertyBinder;
 
 		@Override
-		EntityPropertyBindingContext getValueBindingContext() {
+		EntityPropertiesBinderValueBindingContext getValueBindingContext() {
 			if ( useLocalBindingContext ) {
 				return super.getValueBindingContext();
 			}
@@ -404,15 +457,13 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 			}
 			return super.createController();
 		}
-
-	/*	@Override
-		boolean isReadonly() {
-			return EntityPropertiesBinder.this.isReadonly();
-		}*/
 	}
 
+	@RequiredArgsConstructor
 	class EntityPropertiesBinderValueBindingContext implements EntityPropertyBindingContext
 	{
+		private final boolean autoRegisterPropertyBinders;
+
 		@Override
 		@SuppressWarnings("unchecked")
 		public <U> U getEntity() {
@@ -432,7 +483,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 
 		@Override
 		public EntityPropertyBindingContext resolvePropertyBindingContext( EntityPropertyDescriptor propertyDescriptor ) {
-			EntityPropertyBinder propertyBinder = get( propertyDescriptor );
+			EntityPropertyBinder propertyBinder = get( propertyDescriptor, autoRegisterPropertyBinders );
 
 			if ( propertyBinder instanceof SingleEntityPropertyBinder ) {
 				return ( (SingleEntityPropertyBinder) propertyBinder ).getProperties().getLocalValueBindingContext();
@@ -443,13 +494,25 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 
 		@Override
 		public EntityPropertyBindingContext resolvePropertyBindingContext( String propertyName, EntityPropertyController controller ) {
-			EntityPropertyBinder propertyBinder = get( propertyName );
+			EntityPropertyBinder propertyBinder = get( propertyName, autoRegisterPropertyBinders );
 
-			if ( propertyBinder instanceof SingleEntityPropertyBinder ) {
-				return ( (SingleEntityPropertyBinder) propertyBinder ).getProperties().getLocalValueBindingContext();
+			EntityPropertyBinder targetBinder = propertyBinder instanceof EntityPropertyBinderHolder
+					? ( (EntityPropertyBinderHolder) propertyBinder ).getTarget() : propertyBinder;
+
+			if ( targetBinder instanceof SingleEntityPropertyBinder ) {
+				return ( (SingleEntityPropertyBinder) targetBinder ).getProperties().getLocalValueBindingContext();
+			}
+			else if ( targetBinder instanceof DirectPropertyEntityPropertyBinder ) {
+				return SimpleEntityPropertyBindingContext.builder()
+				                                         .entity( propertyBinder.getValue() ).target( propertyBinder.getValue() ).readonly( isReadonly() )
+				                                         .build();
 			}
 
 			return null;
+		}
+
+		EntityPropertyBindingContext forDirectProperties() {
+			return new EntityPropertiesBinderValueBindingContext( false );
 		}
 	}
 
@@ -481,13 +544,13 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		@SuppressWarnings("unchecked")
 		public <U> EntityPropertyValue<U> resolvePropertyValue( @NonNull EntityPropertyDescriptor propertyDescriptor ) {
 			applyValuesIfNecessary();
-			return createPropertyValue( get( propertyDescriptor ) );
+			return createPropertyValue( get( propertyDescriptor, false ) );
 		}
 
 		@Override
 		public <U> EntityPropertyValue<U> resolvePropertyValue( @NonNull String propertyName, EntityPropertyController<U> controller ) {
 			applyValuesIfNecessary();
-			return createPropertyValue( get( propertyName ) );
+			return createPropertyValue( get( propertyName, false ) );
 		}
 
 		@SuppressWarnings("unchecked")
@@ -506,13 +569,13 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 
 		@Override
 		public EntityPropertyBindingContext resolvePropertyBindingContext( EntityPropertyDescriptor propertyDescriptor ) {
-			EntityPropertyBinder propertyBinder = get( propertyDescriptor );
+			EntityPropertyBinder propertyBinder = get( propertyDescriptor, false );
 			return new EntityPropertyBinderBindingContext( this, propertyBinder );
 		}
 
 		@Override
 		public EntityPropertyBindingContext resolvePropertyBindingContext( String propertyName, EntityPropertyController controller ) {
-			EntityPropertyBinder propertyBinder = get( propertyName );
+			EntityPropertyBinder propertyBinder = get( propertyName, false );
 			return new EntityPropertyBinderBindingContext( this, propertyBinder );
 		}
 	}
