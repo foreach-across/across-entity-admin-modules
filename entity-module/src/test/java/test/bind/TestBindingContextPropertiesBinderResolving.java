@@ -272,8 +272,65 @@ public class TestBindingContextPropertiesBinderResolving extends AbstractEntityP
 		assertThat( original.getAddress().getUpdateCount() ).isEqualTo( 0 );
 	}
 
-	// todo: fixme
-	// in readonly, no dto should be created!
+	@Test
+	public void nestedNativePropertyWithDto() {
+		CityAddress original = new CityAddress( new City( "Antwerp" ) );
+		CityAddress target = new CityAddress( new City( "Antwerp" ) );
+
+		assertThat( cityAddressCity.getPropertyValue( target ) ).isEqualTo( new City( "Antwerp" ) );
+		assertThat( cityName.getPropertyValue( target.getCity() ) ).isEqualTo( "Antwerp" );
+		assertThat( cityAddressCityName.getPropertyValue( target ) ).isEqualTo( "Antwerp" );
+
+		// create a properties binder for the user entity
+		EntityPropertiesBinder addressBinder = new EntityPropertiesBinder( cityAddressProperties );
+		addressBinder.setEntity( original );
+		addressBinder.setTarget( target );
+
+		// using the binder itself as binding context should return the address value
+		EntityPropertyBindingContext addressContext = addressBinder.asBindingContext();
+		assertPropertyValue( addressContext.resolvePropertyValue( cityAddressCity ), new City( "Antwerp" ), new City( "Antwerp" ), false );
+
+		// the equivalent binding context should be correct
+		EntityPropertyBindingContext cityContext = addressContext.resolvePropertyBindingContext( cityAddressCity );
+		assertBindingContext( cityContext, new City( "Antwerp" ), new City( "Antwerp" ), false );
+
+		// fetching the city and city.name values directly from the binder
+		SingleEntityPropertyBinder cityBinder = (SingleEntityPropertyBinder) addressBinder.get( "city" );
+		assertThat( cityBinder.getValue() ).isEqualTo( new City( "Antwerp" ) );
+		assertThat( cityBinder.getProperties().get( "name" ).getValue() ).isEqualTo( "Antwerp" );
+
+		// a binding context for name can be resolved either from the city context or from the address context using the right descriptor
+		assertBindingContext( cityContext.resolvePropertyBindingContext( cityName ), "Antwerp", "Antwerp", false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( cityAddressCityName ), "Antwerp", "Antwerp", false );
+
+		// update the street property on the address binder
+		cityBinder.getProperties().get( "name" ).setValue( "Brussels" );
+
+		// fetching the property from the binder should return the update value
+		assertThat( cityBinder.getProperties().get( "name" ).getOriginalValue() ).isEqualTo( "Antwerp" );
+		assertThat( cityBinder.getProperties().get( "name" ).getValue() ).isEqualTo( "Brussels" );
+		assertThat( cityBinder.getValue() ).isEqualTo( new City( "Brussels" ) );
+
+		// using the binder as binding context should also return the updated value
+		assertPropertyValue( cityContext.resolvePropertyValue( cityName ), "Antwerp", "Brussels", false );
+
+		// because the city property has a custom DTO method, the entity should refer to the original and the target to the updated DTO
+		assertBindingContext( cityContext, new City( "Antwerp" ), new City( "Brussels" ), false );
+		assertPropertyValue( addressContext.resolvePropertyValue( cityAddressCity ), new City( "Antwerp" ), new City( "Brussels" ), false );
+
+		// the singular name value should always hold the correct old value
+		assertPropertyValue( addressContext.resolvePropertyValue( cityAddressCityName ), "Antwerp", "Brussels", false );
+
+		// city name binding context should also be resolved
+		assertBindingContext( cityContext.resolvePropertyBindingContext( cityName ), "Antwerp", "Brussels", false );
+		assertBindingContext( addressContext.resolvePropertyBindingContext( cityAddressCityName ), "Antwerp", "Brussels", false );
+
+		// target has been updated as the values have been applied
+		assertThat( target.getCity() ).isEqualTo( new City( "Brussels" ) );
+
+		// but the original should not be updated
+		assertThat( original.getCity() ).isEqualTo( new City( "Antwerp" ) );
+	}
 
 	private void assertPropertyValue( EntityPropertyValue<?> propertyValue, Object oldValue, Object newValue, boolean deleted ) {
 		assertThat( propertyValue ).isNotNull();

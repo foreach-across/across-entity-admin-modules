@@ -30,6 +30,7 @@ import java.util.function.Supplier;
  * @see EntityPropertyController
  * @since 3.2.0
  */
+// todo: fixme
 public interface ConfigurableEntityPropertyController<T, U>
 {
 	/**
@@ -64,6 +65,22 @@ public interface ConfigurableEntityPropertyController<T, U>
 	 * @return self
 	 */
 	ConfigurableEntityPropertyController<T, U> createValueFunction( Function<T, U> function );
+
+	/**
+	 * Set the function that should be used to create a DTO (value for updating) of an existing property value.
+	 *
+	 * @param function that returns a new DTO
+	 * @return self
+	 */
+	ConfigurableEntityPropertyController<T, U> createDtoFunction( Function<U, U> function );
+
+	/**
+	 * Set the function that should be used to create a DTO (value for updating) of an existing property value.
+	 *
+	 * @param function that returns a new DTO
+	 * @return self
+	 */
+	ConfigurableEntityPropertyController<T, U> createDtoFunction( BiFunction<T, U, U> function );
 
 	/**
 	 * Set the consumer that should be called when applying the property value using {@link EntityPropertyController#applyValue(Object, Object, Object)}.

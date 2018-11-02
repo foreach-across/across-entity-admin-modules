@@ -68,6 +68,8 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Getter
 	private boolean dirty;
 
+	private boolean dtoAvailable;
+
 	String getBinderPath( String target ) {
 		return binderPath + ( StringUtils.isNotEmpty( target ) ? "." + target : "" );
 	}
@@ -75,6 +77,33 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Override
 	public Object getOriginalValue() {
 		return loadOriginalValue();
+	}
+
+	@Override
+	public Object getInitializedValue() {
+		Object currentValue = getValue();
+
+		if ( currentValue == null ) {
+			Object newValue = createNewValue();
+			if ( newValue != null ) {
+				setValue( newValue );
+				return newValue;
+			}
+		}
+		else if ( !dtoAvailable ) {
+			Object dto = controller.createDto( binder.getValueBindingContext(), currentValue );
+
+			if ( dto != null && dto != currentValue ) {
+				// only update to DTO if not null or same reference
+				setValue( dto );
+				currentValue = dto;
+			}
+			else {
+				dtoAvailable = true;
+			}
+		}
+
+		return currentValue;
 	}
 
 	final Object loadOriginalValue() {
@@ -100,6 +129,8 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Override
 	public final void setValue( Object value ) {
 		markDirty();
+		// explicitly set values always count as DTO
+		dtoAvailable = true;
 		setValueInternal( value );
 	}
 

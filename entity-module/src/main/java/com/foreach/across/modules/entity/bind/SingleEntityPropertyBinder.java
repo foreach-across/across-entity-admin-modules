@@ -138,6 +138,9 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 
 		if ( !Objects.equals( this.value, newValue ) ) {
 			modified = true;
+		}
+
+		if ( this.value != newValue ) {
 			this.value = newValue;
 			properties = null;
 		}

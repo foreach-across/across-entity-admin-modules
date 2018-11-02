@@ -66,6 +66,16 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	@Override
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> createDtoFunction( Function<Object, Object> function ) {
+		return child.createDtoFunction( function );
+	}
+
+	@Override
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> createDtoFunction( BiFunction<EntityPropertyBindingContext, Object, Object> function ) {
+		return child.createDtoFunction( function );
+	}
+
+	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> applyValueConsumer( BiConsumer<EntityPropertyBindingContext, EntityPropertyValue<Object>> valueWriter ) {
 		return child.applyValueConsumer( valueWriter );
 	}
@@ -118,6 +128,11 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	@Override
 	public Object createValue( EntityPropertyBindingContext context ) {
 		return child.createValue( childContext( context ) );
+	}
+
+	@Override
+	public Object createDto( EntityPropertyBindingContext context, Object value ) {
+		return child.createDto( childContext( context ), value );
 	}
 
 	@Override

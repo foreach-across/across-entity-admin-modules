@@ -56,6 +56,9 @@ public class GenericEntityPropertyController implements EntityPropertyController
 	private Function<EntityPropertyBindingContext, Object> createValueFunction;
 
 	@Getter
+	private BiFunction<EntityPropertyBindingContext, Object, Object> createDtoFunction;
+
+	@Getter
 	private BiFunction<EntityPropertyBindingContext, EntityPropertyValue<Object>, Boolean> applyValueFunction;
 
 	@Getter
@@ -93,6 +96,18 @@ public class GenericEntityPropertyController implements EntityPropertyController
 	@Override
 	public GenericEntityPropertyController createValueFunction( Function<EntityPropertyBindingContext, Object> function ) {
 		this.createValueFunction = function;
+		return this;
+	}
+
+	@Override
+	public GenericEntityPropertyController createDtoFunction( Function<Object, Object> function ) {
+		this.createDtoFunction = ( bindingContext, o ) -> function.apply( o );
+		return this;
+	}
+
+	@Override
+	public GenericEntityPropertyController createDtoFunction( BiFunction<EntityPropertyBindingContext, Object, Object> function ) {
+		this.createDtoFunction = function;
 		return this;
 	}
 
@@ -168,6 +183,14 @@ public class GenericEntityPropertyController implements EntityPropertyController
 			return createValueFunction.apply( context );
 		}
 		return original != null ? original.createValue( context ) : null;
+	}
+
+	@Override
+	public Object createDto( EntityPropertyBindingContext context, Object value ) {
+		if ( createDtoFunction != null ) {
+			return createDtoFunction.apply( context, value );
+		}
+		return original != null ? original.createDto( context, value ) : ( value != null ? value : createValue( context ) );
 	}
 
 	@Override

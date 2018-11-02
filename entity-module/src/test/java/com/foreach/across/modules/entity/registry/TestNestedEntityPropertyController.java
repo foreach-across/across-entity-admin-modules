@@ -78,6 +78,12 @@ public class TestNestedEntityPropertyController
 	}
 
 	@Test
+	public void createDto() {
+		userAddress.createDto( pageBindingContext, "123" );
+		verify( address ).createDto( userBindingContext, "123" );
+	}
+
+	@Test
 	@SuppressWarnings("unchecked")
 	public void save() {
 		EntityPropertyValue<Object> value = new EntityPropertyValue<>( "old", "new", false );

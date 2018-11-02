@@ -34,12 +34,17 @@ abstract class AbstractEntityPropertyBindingContextTest
 {
 	MutableEntityPropertyRegistry addressProperties;
 	MutableEntityPropertyRegistry userProperties;
+	MutableEntityPropertyRegistry cityProperties;
+	MutableEntityPropertyRegistry cityAddressProperties;
 
 	EntityPropertyDescriptor userAddress;
 	EntityPropertyDescriptor userAddressStreet;
 	EntityPropertyDescriptor addressStreet;
 	EntityPropertyDescriptor addressCity;
 	EntityPropertyDescriptor userAddressCity;
+	EntityPropertyDescriptor cityName;
+	EntityPropertyDescriptor cityAddressCity;
+	EntityPropertyDescriptor cityAddressCityName;
 
 	@Before
 	@SuppressWarnings("unchecked")
@@ -47,15 +52,25 @@ abstract class AbstractEntityPropertyBindingContextTest
 		EntityPropertyRegistryProvider registryProvider = DefaultEntityPropertyRegistryProvider.INSTANCE;
 		addressProperties = registryProvider.get( Address.class );
 		userProperties = registryProvider.get( User.class );
+		cityProperties = registryProvider.get( City.class );
+		cityAddressProperties = registryProvider.get( CityAddress.class );
 
 		addressStreet = addressProperties.getProperty( "street" );
 		userAddress = userProperties.getProperty( "address" );
 		userAddressStreet = userProperties.getProperty( "address.street" );
 
+		builder( "city" )
+				.controller( ctl -> ctl.withTarget( CityAddress.class, City.class ).createDtoFunction( city -> new City( city.name ) ) )
+				.apply( cityAddressProperties.getProperty( "city" ) );
+
+		cityAddressCity = cityAddressProperties.getProperty( "city" );
+
 		addressProperties.register( builder( "city" ).propertyType( City.class ).build() );
 
 		addressCity = addressProperties.getProperty( "city" );
 		userAddressCity = userProperties.getProperty( "address.city" );
+		cityName = cityProperties.getProperty( "name" );
+		cityAddressCityName = cityAddressProperties.getProperty( "city.name" );
 
 		assertThat( addressCity ).isNotNull();
 		assertThat( userAddressCity ).isNotNull();
@@ -95,5 +110,13 @@ abstract class AbstractEntityPropertyBindingContextTest
 	public static class City
 	{
 		private String name;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class CityAddress
+	{
+		private City city;
 	}
 }
