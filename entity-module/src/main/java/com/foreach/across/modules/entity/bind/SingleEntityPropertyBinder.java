@@ -121,11 +121,10 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 	}
 
 	@Override
-	public void setValue( Object value ) {
+	void setValueInternal( Object value ) {
 		loadOriginalValue();
 
 		valueHasBeenSet = true;
-		markDirty();
 
 		Object newValue = value;
 

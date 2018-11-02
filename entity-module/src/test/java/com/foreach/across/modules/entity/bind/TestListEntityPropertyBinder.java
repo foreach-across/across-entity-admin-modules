@@ -224,10 +224,10 @@ public class TestListEntityPropertyBinder
 				.hasSize( 2 );
 
 		assertThat( items.get( "0" ) ).isSameAs( itemOne );
-		verify( itemOne ).setValue( 1 );
+		verify( itemOne ).setValueInternal( 1 );
 
 		assertThat( items.get( "1" ) ).isSameAs( itemTwo );
-		verify( itemTwo ).setValue( 2 );
+		verify( itemTwo ).setValueInternal( 2 );
 	}
 
 	@Test
@@ -238,6 +238,9 @@ public class TestListEntityPropertyBinder
 		assertThat( property.getItemList() ).isNotEmpty();
 		assertThat( property.isDeleted() ).isFalse();
 		assertThat( property.isDirty() ).isFalse();
+
+		verify( itemOne, never() ).setValue( any() );
+		verify( itemTwo, never() ).setValue( any() );
 
 		verify( binder, never() ).markDirty();
 	}

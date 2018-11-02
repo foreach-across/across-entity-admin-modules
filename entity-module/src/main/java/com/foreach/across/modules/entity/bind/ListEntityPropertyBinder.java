@@ -185,12 +185,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	}
 
 	@Override
-	public void setValue( Object value ) {
-		markDirty();
-		setValueInternal( value );
-	}
-
-	private void setValueInternal( Object value ) {
+	void setValueInternal( Object value ) {
 		itemsInitialized = true;
 
 		if ( items == null ) {
@@ -208,8 +203,13 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			int index = 0;
 			for ( Object v : values ) {
 				String key = "" + index;
-				EntityPropertyBinder item = binder.createPropertyBinder( memberDescriptor );
-				item.setValue( v );
+				AbstractEntityPropertyBinder item = binder.createPropertyBinder( memberDescriptor );
+				if ( super.isDirty() ) {
+					item.setValue( v );
+				}
+				else {
+					item.setValueInternal( v );
+				}
 				item.setSortIndex( index++ );
 				items.put( key, item );
 			}

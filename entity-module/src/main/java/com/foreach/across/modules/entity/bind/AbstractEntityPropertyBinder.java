@@ -98,6 +98,14 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	}
 
 	@Override
+	public final void setValue( Object value ) {
+		markDirty();
+		setValueInternal( value );
+	}
+
+	abstract void setValueInternal( Object value );
+
+	@Override
 	public Object createNewValue() {
 		return binder.createValue( controller );
 	}
@@ -105,7 +113,8 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Override
 	public boolean applyValue() {
 		if ( controller != null ) {
-			boolean result = controller.applyValue( binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
+			boolean result = controller.applyValue( binder.getValueBindingContext(),
+			                                        new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
 			setDirty( false );
 			return result;
 		}

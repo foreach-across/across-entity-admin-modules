@@ -169,10 +169,10 @@ public class TestMapEntityPropertyBinder
 		assertThat( items.get( "0" ).getSortIndex() ).isEqualTo( 0 );
 
 		assertThat( items.get( "0" ).getKey() ).isSameAs( key );
-		verify( key ).setValue( "one" );
+		verify( key ).setValueInternal( "one" );
 
 		assertThat( items.get( "0" ).getValue() ).isSameAs( value );
-		verify( value ).setValue( 1 );
+		verify( value ).setValueInternal( 1 );
 	}
 
 	@Test
@@ -183,6 +183,9 @@ public class TestMapEntityPropertyBinder
 		assertThat( property.getTemplate() ).isNotNull();
 		assertThat( property.isDeleted() ).isFalse();
 		assertThat( property.isDirty() ).isFalse();
+
+		verify( key, never() ).setValue( any() );
+		verify( value, never() ).setValue( any() );
 
 		verify( binder, never() ).markDirty();
 	}
@@ -225,7 +228,7 @@ public class TestMapEntityPropertyBinder
 
 	@Test
 	public void addingAnItemMarksAsDirty() {
-		Map<String, MapEntityPropertyBinder.Item> items = property.getEntries();
+		Map<String, MapEntityPropertyBinder.Entry> items = property.getEntries();
 		assertThat( property.isDirty() ).isFalse();
 		assertThat( items.get( "newItem" ) ).isNotNull();
 		assertThat( property.isDirty() ).isTrue();
@@ -297,7 +300,7 @@ public class TestMapEntityPropertyBinder
 		property.getEntries().get( "random" ).getValue().setValue( 33 );
 
 		InOrder inOrder = inOrder( key, value );
-		inOrder.verify( key ).setValue( "random" );
+		inOrder.verify( key ).setValueInternal( "random" );
 		inOrder.verify( key ).setValue( "test" );
 		inOrder.verify( value ).setValue( 33 );
 
