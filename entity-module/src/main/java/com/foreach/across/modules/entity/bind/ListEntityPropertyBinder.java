@@ -110,6 +110,19 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return isDeleted() || ( ( isBound() || itemsInitialized ) && !Objects.equals( loadOriginalValue(), getValue() ) );
 	}
 
+	@Override
+	public boolean isDirty() {
+		if ( items != null ) {
+			for ( EntityPropertyBinder value : items.values() ) {
+				if ( value.isDirty() ) {
+					return true;
+				}
+			}
+		}
+
+		return super.isDirty();
+	}
+
 	private AbstractEntityPropertyBinder createItem() {
 		return binder.createPropertyBinder( memberDescriptor );
 	}
@@ -121,7 +134,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			items = new Items();
 
 			if ( ( !bindingBusy || updateItemsOnBinding ) && collectionController != null ) {
-				setValue( originalValue );
+				setValueInternal( originalValue );
 			}
 		}
 
@@ -172,7 +185,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	}
 
 	@Override
-	public void setValue( Object value ) {
+	void setValueInternal( Object value ) {
 		itemsInitialized = true;
 
 		if ( items == null ) {
@@ -190,8 +203,14 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			int index = 0;
 			for ( Object v : values ) {
 				String key = "" + index;
-				EntityPropertyBinder item = binder.createPropertyBinder( memberDescriptor );
-				item.setValue( v );
+				AbstractEntityPropertyBinder item = binder.createPropertyBinder( memberDescriptor );
+				item.setOriginalValue( v );
+				if ( super.isDirty() ) {
+					item.setValue( v );
+				}
+				else {
+					item.setValueInternal( v );
+				}
 				item.setSortIndex( index++ );
 				items.put( key, item );
 			}
@@ -217,7 +236,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			try {
 				errors.pushNestedPath( initializedValuePathWasUsed ? "initializedValue" : "value" );
 				collectionController.validate(
-						binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ), errors, validationHints
+						binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ), errors, validationHints
 				);
 			}
 			finally {
@@ -274,6 +293,8 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 			if ( item == null ) {
 				AbstractEntityPropertyBinder itemBinder = createItem();
 				itemBinder.setBinderPath( getBinderPath( "items[" + itemKey + "]" ) );
+
+				markDirty();
 
 				item = itemBinder;
 				super.put( itemKey, item );

@@ -80,25 +80,18 @@ public interface EntityPropertyBinder
 
 	/**
 	 * Get the current value or initialize a new value if it has not been set.
-	 * What initializing entails is context dependent but this method is useful
-	 * for intermediate bean paths where you want to ensure that the intermediate property value is set.
+	 * Use this method if you want to create intermediate bean paths because you want to update
+	 * underlying properties of the entity.
+	 * <p/>
+	 * Using {@code getInitializedValue()} will also delegate any existing value to
+	 * {@link EntityPropertyController#createDto(EntityPropertyBindingContext, Object)} for creating a DTO
+	 * object that can be safely updated without directly applying the changes to the underlying entity it possibly represents.
 	 *
 	 * @return the value and initialize a new value if necessary
 	 * @see #createNewValue()
+	 * @see EntityPropertyController#createDto(EntityPropertyBindingContext, Object)
 	 */
-	default Object getInitializedValue() {
-		Object currentValue = getValue();
-
-		if ( currentValue == null ) {
-			Object newValue = createNewValue();
-			if ( newValue != null ) {
-				setValue( newValue );
-				return newValue;
-			}
-		}
-
-		return currentValue;
-	}
+	Object getInitializedValue();
 
 	/**
 	 * Update the value.
@@ -125,6 +118,13 @@ public interface EntityPropertyBinder
 	 * @return true if the property has been modified, a deleted property is usually also considered modified
 	 */
 	boolean isModified();
+
+	/**
+	 * Check if this property has possibly been modified since the previous call to {@link #applyValue()}.
+	 *
+	 * @return true if the property is dirty
+	 */
+	boolean isDirty();
 
 	/**
 	 * Initialize a new value for this property.

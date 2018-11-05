@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.views.helpers;
 
 import com.foreach.across.core.support.ReadableAttributes;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -26,6 +27,7 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import lombok.Getter;
 import lombok.NonNull;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -36,6 +38,7 @@ import java.util.*;
  * for a number of properties of a certain {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry}.
  * <p>
  * The properties are determined by the selector assigned through {@link #setPropertySelector(EntityPropertySelector)}.
+ * Behind the scenes a {@link #getPropertiesBinder()} will be used for fetching the values.
  * <p>
  * Note: this class is not thread safe.
  *
@@ -53,6 +56,9 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 
 	private Map<String, Object> builderHints = Collections.emptyMap();
 
+	@Getter
+	private EntityPropertiesBinder propertiesBinder;
+
 	public EntityViewElementBatch( EntityViewElementBuilderService viewElementBuilderService ) {
 		super( false );
 		this.viewElementBuilderService = viewElementBuilderService;
@@ -60,6 +66,13 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 
 	public void setPropertyRegistry( EntityPropertyRegistry propertyRegistry ) {
 		this.propertyRegistry = propertyRegistry;
+		if ( propertyRegistry != null ) {
+			propertiesBinder = new EntityPropertiesBinder( propertyRegistry );
+			setAttribute( EntityPropertiesBinder.class, propertiesBinder );
+		}
+		else {
+			removeAttribute( EntityPropertiesBinder.class );
+		}
 	}
 
 	public void setParentViewElementBuilderContext( ViewElementBuilderContext viewElementBuilderContext ) {
@@ -86,6 +99,7 @@ public class EntityViewElementBatch<T> extends DefaultViewElementBuilderContext
 	 */
 	public void setEntity( T entity ) {
 		setAttribute( EntityViewModel.ENTITY, entity );
+		propertiesBinder.setEntity( entity );
 	}
 
 	/**

@@ -16,9 +16,11 @@
 
 package com.foreach.across.modules.entity.bind;
 
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder.ChildPropertyPropertiesBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
+import com.foreach.across.modules.entity.registry.properties.support.EntityPropertyDescriptorUtils;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
@@ -77,11 +79,17 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 			loadOriginalValue();
 
 			valueHasBeenSet = true;
-			properties = binder.createChildBinder( descriptor, controller, getInitializedValue() );
-// todo: cleanup
-//			if ( binder.shouldSetBinderPrefix() ) {
-//				binder.setBinderPrefix( getBinderPath( "properties" ) );
-//			}
+
+			ChildPropertyPropertiesBinder childBinder = binder.createChildPropertyPropertiesBinder();
+			childBinder.setParentProperty( descriptor );
+			childBinder.setOwningPropertyBinder( this );
+			childBinder.setUseLocalBindingContext( EntityPropertyDescriptorUtils.isMemberProperty( descriptor ) );
+			childBinder.setEntity( getOriginalValue() );
+			if ( !binder.isReadonly() ) {
+				childBinder.setTarget( getInitializedValue() );
+			}
+
+			properties = childBinder;
 		}
 
 		return properties;
@@ -107,15 +115,15 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 			return null;
 		}
 
-		if ( properties != null ) {
-			properties.values().forEach( EntityPropertyBinder::applyValue );
+		if ( properties != null && isDirty() && !binder.isReadonly() ) {
+			properties.createController().applyValues();
 		}
 
 		return value;
 	}
 
 	@Override
-	public void setValue( Object value ) {
+	void setValueInternal( Object value ) {
 		loadOriginalValue();
 
 		valueHasBeenSet = true;
@@ -130,6 +138,9 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 
 		if ( !Objects.equals( this.value, newValue ) ) {
 			modified = true;
+		}
+
+		if ( this.value != newValue ) {
 			this.value = newValue;
 			properties = null;
 		}
@@ -145,7 +156,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 			try {
 				errors.pushNestedPath( initializedValuePathWasUsed ? "initializedValue" : "value" );
 				controller.validate(
-						binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), value, isDeleted() ), errors, validationHints
+						binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), value, isDeleted() ), errors, validationHints
 				);
 			}
 			finally {
@@ -180,7 +191,7 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 			return this;
 		}
 
-		EntityPropertyDescriptor directChildProperty = findDirectChild( descriptor );
+		EntityPropertyDescriptor directChildProperty = EntityPropertyDescriptorUtils.findDirectChild( descriptor, this.descriptor );
 
 		if ( directChildProperty != null ) {
 			EntityPropertyBinder binder = getProperties().get( directChildProperty.getTargetPropertyName() );
@@ -190,18 +201,6 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 			else {
 				return binder;
 			}
-		}
-
-		return null;
-	}
-
-	private EntityPropertyDescriptor findDirectChild( EntityPropertyDescriptor descriptor ) {
-		if ( descriptor.isNestedProperty() ) {
-			EntityPropertyDescriptor parent = descriptor.getParentDescriptor();
-			if ( !StringUtils.equals( parent.getName(), this.descriptor.getName() ) ) {
-				return findDirectChild( parent );
-			}
-			return descriptor;
 		}
 
 		return null;

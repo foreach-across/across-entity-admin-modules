@@ -87,7 +87,7 @@ public class EntityViewCommandValidator implements SmartValidator
 
 		EntityPropertiesBinder properties = command.getProperties();
 
-		if ( properties != null ) {
+		if ( properties != null && !properties.isReadonly() ) {
 			properties.createController()
 			          .addEntityValidationCallback( validation )
 			          .applyValuesAndValidate( errors, validationHints );

@@ -16,6 +16,7 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.registry.properties.support.EntityPropertyDescriptorUtils;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import lombok.AccessLevel;
@@ -195,7 +196,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name, EntityPropertyDescriptor parent, EntityPropertyDescriptor child ) {
 		// todo: member descriptors should be registered differently (?)
-		boolean isMemberDescriptor = EntityPropertyRegistry.isMemberPropertyDescriptor( parent ) || StringUtils.contains( name, "[" );
+		boolean isMemberDescriptor = EntityPropertyDescriptorUtils.isMemberProperty( parent ) || StringUtils.contains( name, "[" );
 
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name );
 		descriptor.setParentDescriptor( parent );
@@ -208,7 +209,7 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		descriptor.setHidden( child.isHidden() );
 
 		if ( !isMemberDescriptor ) {
-			descriptor.setController( new NestedEntityPropertyController( parent.getTargetPropertyName(), parent.getController(), child.getController() ) );
+			descriptor.setController( new NestedEntityPropertyController( parent, child.getController() ) );
 		}
 		else {
 			descriptor.setController( new GenericEntityPropertyController( child.getController() ) );

@@ -45,7 +45,6 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	private boolean bound;
 
 	@Getter
-	@Setter
 	private boolean deleted;
 
 	/**
@@ -62,6 +61,15 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Setter
 	private String binderPath;
 
+	/**
+	 * Has the value that this property represents been modified since it has been applied.
+	 */
+	@Setter(AccessLevel.PACKAGE)
+	@Getter
+	private boolean dirty;
+
+	private boolean dtoAvailable;
+
 	String getBinderPath( String target ) {
 		return binderPath + ( StringUtils.isNotEmpty( target ) ? "." + target : "" );
 	}
@@ -69,6 +77,33 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Override
 	public Object getOriginalValue() {
 		return loadOriginalValue();
+	}
+
+	@Override
+	public Object getInitializedValue() {
+		Object currentValue = getValue();
+
+		if ( currentValue == null ) {
+			Object newValue = createNewValue();
+			if ( newValue != null ) {
+				setValue( newValue );
+				return newValue;
+			}
+		}
+		else if ( !dtoAvailable ) {
+			Object dto = controller.createDto( binder.getValueBindingContext(), currentValue );
+
+			if ( dto != null && dto != currentValue ) {
+				// only update to DTO if not null or same reference
+				setValue( dto );
+				currentValue = dto;
+			}
+			else {
+				dtoAvailable = true;
+			}
+		}
+
+		return currentValue;
 	}
 
 	final Object loadOriginalValue() {
@@ -79,7 +114,7 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	}
 
 	Object fetchOriginalValue() {
-		return controller.fetchValue( binder.getBindingContext() );
+		return controller.fetchValue( binder.getValueBindingContext() );
 	}
 
 	/**
@@ -92,6 +127,16 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	}
 
 	@Override
+	public final void setValue( Object value ) {
+		markDirty();
+		// explicitly set values always count as DTO
+		dtoAvailable = true;
+		setValueInternal( value );
+	}
+
+	abstract void setValueInternal( Object value );
+
+	@Override
 	public Object createNewValue() {
 		return binder.createValue( controller );
 	}
@@ -99,7 +144,10 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Override
 	public boolean applyValue() {
 		if ( controller != null ) {
-			return controller.applyValue( binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
+			boolean result = controller.applyValue( binder.getValueBindingContext(),
+			                                        new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
+			setDirty( false );
+			return result;
 		}
 		return false;
 	}
@@ -107,9 +155,20 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	@Override
 	public boolean save() {
 		if ( controller != null ) {
-			return controller.save( binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
+			return controller.save( binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ) );
 		}
 		return false;
+	}
+
+	@Override
+	public void setDeleted( boolean deleted ) {
+		this.deleted = deleted;
+		markDirty();
+	}
+
+	void markDirty() {
+		dirty = true;
+		binder.markDirty();
 	}
 
 	@Override

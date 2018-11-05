@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
+import com.foreach.across.modules.entity.registry.properties.support.EntityPropertyDescriptorUtils;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -80,8 +81,7 @@ public class FieldsetElementBuilderFactory extends EntityViewElementBuilderFacto
 	                                                                        String viewElementType ) {
 		ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder( propertyDescriptor, ViewElementMode.LABEL );
 
-		FieldsetBuilder fieldset = new FieldsetBuilder()
-				.name( propertyDescriptor.getName() );
+		FieldsetBuilder fieldset = new FieldsetBuilder().name( propertyDescriptor.getName() );
 
 		fieldset.postProcessor( ( ctx, f ) -> {
 			Function<ViewElementFieldset, ? extends ViewElement> template = resolveTemplate( propertyDescriptor );
@@ -122,7 +122,7 @@ public class FieldsetElementBuilderFactory extends EntityViewElementBuilderFacto
 		Function<ViewElementFieldset, ? extends ViewElement> template = descriptor.getAttribute( ViewElementFieldset.TEMPLATE, Function.class );
 
 		if ( template == null ) {
-			return EntityPropertyRegistry.isMemberPropertyDescriptor( descriptor )
+			return EntityPropertyDescriptorUtils.isMemberProperty( descriptor )
 					? ViewElementFieldset.TEMPLATE_BODY_ONLY : ViewElementFieldset.TEMPLATE_FIELDSET;
 		}
 		return template;

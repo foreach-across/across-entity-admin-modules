@@ -114,7 +114,8 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 	private EntityPropertiesBinder createPropertiesBinder( Object entity, Object dto, EntityPropertyRegistry propertyRegistry ) {
 		EntityPropertiesBinder binder = new EntityPropertiesBinder( propertyRegistry );
 		binder.setBinderPrefix( "properties" );
-		binder.setBindingContext( EntityPropertyBindingContext.forUpdating( entity, dto != null ? dto : entity ) );
+		binder.setEntity( entity );
+		binder.setTarget( dto );
 		binder.setConversionService( conversionService );
 		return binder;
 	}

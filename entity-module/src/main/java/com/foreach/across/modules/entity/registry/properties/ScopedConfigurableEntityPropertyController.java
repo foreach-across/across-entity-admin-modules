@@ -65,6 +65,20 @@ class ScopedConfigurableEntityPropertyController<T, U> implements ConfigurableEn
 	}
 
 	@Override
+	public ConfigurableEntityPropertyController<T, U> createDtoFunction( Function<U, U> function ) {
+		parent.createDtoFunction( (Function<Object, Object>) function );
+		return this;
+	}
+
+	@Override
+	public ConfigurableEntityPropertyController<T, U> createDtoFunction( BiFunction<T, U, U> function ) {
+		BiFunction<EntityPropertyBindingContext, Object, Object> wrapper = ( ctx, o )
+				-> function.apply( (T) bindingContextTranslator.apply( ctx ), (U) o );
+		parent.createDtoFunction( wrapper );
+		return this;
+	}
+
+	@Override
 	public ConfigurableEntityPropertyController<T, U> applyValueConsumer( BiConsumer<T, EntityPropertyValue<U>> valueWriter ) {
 		BiConsumer<EntityPropertyBindingContext, EntityPropertyValue<Object>> wrapper =
 				( ctx, value ) -> valueWriter.accept( (T) bindingContextTranslator.apply( ctx ), (EntityPropertyValue<U>) value );

@@ -16,68 +16,28 @@
 
 package com.foreach.across.modules.entity.registry.properties;
 
-import lombok.*;
-
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.function.BiConsumer;
+import com.foreach.across.modules.entity.registry.properties.binding.SimpleEntityPropertyBindingContext;
+import lombok.NonNull;
 
 /**
- * Holds the binding context information for an entity.
+ * Represents the binding context information for an entity.
  * Usually contains at least the owning entity (often the original entity), and
  * the target on which it should be bound (often a DTO of the original entity).
  *
  * @author Arne Vandamme
  * @see EntityPropertyController
- * @see com.foreach.across.modules.entity.bind.EntityPropertiesBinder
+ * @see SimpleEntityPropertyBindingContext
+ * @see com.foreach.across.modules.entity.registry.properties.binding.ChildEntityPropertyBindingContext
  * @since 3.2.0
  */
-@EqualsAndHashCode(exclude = "childContexts")
-@Getter
-@Builder
-@AllArgsConstructor
-public final class EntityPropertyBindingContext
+public interface EntityPropertyBindingContext
 {
-	private final Object entity;
-	private final Object target;
-
-	/**
-	 * Indicates if this binding context is meant solely for reading.
-	 * This can help property controllers to apply optimizations.
-	 */
-	private final boolean readonly;
-
-	/**
-	 * Represents the optional parent {@link EntityPropertyBindingContext}.
-	 * See also {@link #getParent()} and {@link #getOrCreateChildContext(String, BiConsumer)}.
-	 */
-	private final EntityPropertyBindingContext parent;
-
-	/**
-	 * If this binding context represents an intermediate property value,
-	 * the controller for the property can be attached. This is often the case
-	 * for child contexts which might then automatically be handled by
-	 * an {@link com.foreach.across.modules.entity.bind.EntityPropertiesBinder}.
-	 */
-	private final EntityPropertyController controller;
-
-	/**
-	 * List of child contexts registered. A child context represents an intermediate property value
-	 * for nested property descriptors and often has a value for {@link #getController()}.
-	 * The only way to create child contexts is by using {@link #getOrCreateChildContext(String, BiConsumer)}.
-	 */
-	private final Map<String, EntityPropertyBindingContext> childContexts = new LinkedHashMap<>();
-
 	/**
 	 * Get the original entity value.
 	 *
 	 * @return original entity cast to specific type
 	 */
-	@SuppressWarnings("unchecked")
-	public <U> U getEntity() {
-		return (U) entity;
-	}
+	<U> U getEntity();
 
 	/**
 	 * Get the target to which updates should be applied.
@@ -85,10 +45,7 @@ public final class EntityPropertyBindingContext
 	 *
 	 * @return target cast to specific type
 	 */
-	@SuppressWarnings("unchecked")
-	public <U> U getTarget() {
-		return (U) target;
-	}
+	<U> U getTarget();
 
 	/**
 	 * Convert this binding context to an equivalent {@link EntityPropertyValue}.
@@ -99,60 +56,39 @@ public final class EntityPropertyBindingContext
 	 *
 	 * @return entity property value
 	 */
-	public EntityPropertyValue toPropertyValue() {
-		return new EntityPropertyValue<>( entity, target, !readonly && ( target == null && entity != null ) );
+	default EntityPropertyValue toPropertyValue() {
+		Object entity = getEntity();
+		Object target = getTarget();
+		return new EntityPropertyValue<>( entity, target, !isReadonly() && ( target == null && entity != null ) );
 	}
 
 	/**
-	 * @return the collection of child contexts (immutable)
-	 */
-	public Map<String, EntityPropertyBindingContext> getChildContexts() {
-		return Collections.unmodifiableMap( childContexts );
-	}
-
-	/**
-	 * Retrieve the child {@link EntityPropertyBindingContext} with the given name.
-	 * If none is registered, create and register it.
-	 * This is the only way to register a child context.
-	 * <p/>
-	 * The second parameter is a {@link BiConsumer} to customize the {@link EntityPropertyBindingContextBuilder}
-	 * that should be used for the child context. The first argument is the current context. The child context
-	 * builder will be pre-initialized with the readonly flag of the parent.
+	 * Indicates if this binding context is meant solely for reading.
+	 * In this case {@link #getTarget()} will usually return the same as {@link #getEntity()}.
 	 *
-	 * @param name     of the child context
-	 * @param consumer to set entity & target on the child context builder
-	 * @return child context
+	 * @return true if readonly
 	 */
-	@SuppressWarnings("unchecked")
-	public EntityPropertyBindingContext getOrCreateChildContext(
-			@NonNull String name, @NonNull BiConsumer<EntityPropertyBindingContext, EntityPropertyBindingContextBuilder> consumer
-	) {
-		return childContexts.computeIfAbsent( name, contextName -> {
-			EntityPropertyBindingContextBuilder builder = builder().parent( this ).readonly( isReadonly() );
-			consumer.accept( this, builder );
-			return builder.build();
-		} );
+	boolean isReadonly();
+
+	/**
+	 * Resolve the property value for a given property.
+	 *
+	 * @param propertyDescriptor representing the property
+	 * @param <U>                type of the property
+	 * @return property value, {@code null} if not found
+	 */
+	default <U> EntityPropertyValue<U> resolvePropertyValue( @NonNull EntityPropertyDescriptor propertyDescriptor ) {
+		EntityPropertyBindingContext propertyBindingContext = resolvePropertyBindingContext( propertyDescriptor );
+		return propertyBindingContext != null ? propertyBindingContext.toPropertyValue() : null;
 	}
 
 	/**
-	 * Check if a child context with the given name is present.
+	 * Resolve a {@link EntityPropertyBindingContext} for a specific child property.
 	 *
-	 * @param name of the child context
-	 * @return {@code true} if child context is registered
+	 * @param propertyDescriptor representing the property
+	 * @return binding context for the property, {@code null} if not found
 	 */
-	public boolean hasChildContext( @NonNull String name ) {
-		return childContexts.containsKey( name );
-	}
-
-	/**
-	 * Remove the child context with the given name.
-	 *
-	 * @param name of the child context
-	 * @return child context removed or {@code null} if none
-	 */
-	public EntityPropertyBindingContext removeChildContext( @NonNull String name ) {
-		return childContexts.remove( name );
-	}
+	EntityPropertyBindingContext resolvePropertyBindingContext( @NonNull EntityPropertyDescriptor propertyDescriptor );
 
 	/**
 	 * Create a readonly binding context for an entity.
@@ -161,8 +97,8 @@ public final class EntityPropertyBindingContext
 	 * @param entity for the context
 	 * @return binding context
 	 */
-	public static EntityPropertyBindingContext forReading( Object entity ) {
-		return builder().entity( entity ).target( entity ).readonly( true ).build();
+	static EntityPropertyBindingContext forReading( Object entity ) {
+		return SimpleEntityPropertyBindingContext.builder().entity( entity ).target( entity ).readonly( true ).build();
 	}
 
 	/**
@@ -174,18 +110,7 @@ public final class EntityPropertyBindingContext
 	 * @param target for applying the updates to
 	 * @return binding context
 	 */
-	public static EntityPropertyBindingContext forUpdating( Object entity, Object target ) {
-		return builder().entity( entity ).target( target ).readonly( false ).build();
-	}
-
-	@SuppressWarnings("unused")
-	public static class EntityPropertyBindingContextBuilder
-	{
-		private EntityPropertyBindingContext parent;
-
-		private EntityPropertyBindingContextBuilder parent( EntityPropertyBindingContext parent ) {
-			this.parent = parent;
-			return this;
-		}
+	static EntityPropertyBindingContext forUpdating( Object entity, Object target ) {
+		return SimpleEntityPropertyBindingContext.builder().entity( entity ).target( target ).readonly( false ).build();
 	}
 }

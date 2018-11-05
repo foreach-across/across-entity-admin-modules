@@ -299,13 +299,10 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@SuppressWarnings("unchecked")
 	public void stringSetsAreSupportedAsMultiValue() {
 		when( descriptor.getPropertyType() ).thenReturn( (Class) Set.class );
-		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection(
-				Set.class, TypeDescriptor.valueOf( String.class )
-		);
+		TypeDescriptor collectionTypeDescriptor = TypeDescriptor.collection( Set.class, TypeDescriptor.valueOf( String.class ) );
 		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( collectionTypeDescriptor );
 
-		assertEquals( MultiValueElementBuilderFactory.ELEMENT_TYPE,
-		              strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
+		assertEquals( MultiValueElementBuilderFactory.ELEMENT_TYPE, strategy.findElementType( descriptor, ViewElementMode.CONTROL ) );
 
 		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.VALUE ) );
 		assertEquals( BootstrapUiElements.TEXT, strategy.findElementType( descriptor, ViewElementMode.LIST_VALUE ) );
@@ -344,7 +341,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void collectionIsEmbeddedIfPropertyIsEmbeddedEvenIfTargetIsRelatedEntity() {
+	public void collectionIsEmbeddedIfPropertyIsExplicitlyEmbeddedEvenIfTargetIsRelatedEntity() {
 		EntityPropertyDescriptor member = mock( EntityPropertyDescriptor.class );
 		EntityPropertyRegistry rootRegistry = mock( EntityPropertyRegistry.class );
 

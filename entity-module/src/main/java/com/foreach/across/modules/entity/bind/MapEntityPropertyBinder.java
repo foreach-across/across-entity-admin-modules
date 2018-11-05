@@ -55,8 +55,8 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	private boolean itemsInitialized;
 	private boolean initializedValuePathWasUsed;
 
-	private Item template;
-	private Map<String, Item> entries;
+	private Entry template;
+	private Map<String, Entry> entries;
 
 	/**
 	 * If set to {@code true}, the existing items will always be returned when performing data binding,
@@ -94,11 +94,24 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	 *
 	 * @return template item controller
 	 */
-	public Item getTemplate() {
+	public Entry getTemplate() {
 		if ( template == null ) {
 			template = createItem( "" );
 		}
 		return template;
+	}
+
+	@Override
+	public boolean isDirty() {
+		if ( entries != null ) {
+			for ( Entry value : entries.values() ) {
+				if ( value.isDirty() ) {
+					return true;
+				}
+			}
+		}
+
+		return super.isDirty();
 	}
 
 	@Override
@@ -119,14 +132,14 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return isDeleted() || ( ( isBound() || itemsInitialized ) && !Objects.equals( loadOriginalValue(), getValue() ) );
 	}
 
-	public Map<String, Item> getEntries() {
+	public Map<String, Entry> getEntries() {
 		if ( entries == null ) {
 			val originalValue = loadOriginalValue();
 
-			entries = new Items();
+			entries = new Entries();
 
 			if ( ( !bindingBusy || updateItemsOnBinding ) && collectionController != null ) {
-				setValue( originalValue );
+				setValueInternal( originalValue );
 			}
 		}
 
@@ -145,7 +158,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 					.values()
 					.stream()
 					.filter( e -> !e.isDeleted() )
-					.sorted( Comparator.comparingInt( Item::getSortIndex ) )
+					.sorted( Comparator.comparingInt( Entry::getSortIndex ) )
 					.forEach( item -> map.put( item.getEntryKey(), item.getEntryValue() ) );
 		}
 
@@ -153,12 +166,12 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	}
 
 	@Override
-	public void setValue( Object value ) {
+	void setValueInternal( Object value ) {
 		itemsInitialized = true;
 
 		if ( entries == null ) {
 			loadOriginalValue();
-			entries = new Items();
+			entries = new Entries();
 		}
 		entries.clear();
 
@@ -171,9 +184,17 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 			int index = 0;
 			for ( val entry : values.entrySet() ) {
 				String key = "" + index;
-				Item item = new Item( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
-				item.setEntryKey( entry.getKey() );
-				item.setEntryValue( entry.getValue() );
+				Entry item = new Entry( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
+				item.getKey().setOriginalValue( entry.getKey() );
+				item.getValue().setOriginalValue( entry.getValue() );
+				if ( super.isDirty() ) {
+					item.getKey().setValue( entry.getKey() );
+					item.getValue().setValue( entry.getValue() );
+				}
+				else {
+					item.getKey().setValueInternal( entry.getKey() );
+					item.getValue().setValueInternal( entry.getValue() );
+				}
 				item.setSortIndex( index++ );
 				entries.put( key, item );
 			}
@@ -206,7 +227,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 			try {
 				errors.pushNestedPath( initializedValuePathWasUsed ? "initializedValue" : "value" );
 				collectionController.validate(
-						binder.getBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ), errors, validationHints
+						binder.getValueBindingContext(), new EntityPropertyValue<>( loadOriginalValue(), getValue(), isDeleted() ), errors, validationHints
 				);
 			}
 			finally {
@@ -250,11 +271,11 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return null;
 	}
 
-	private Item createItem( String key ) {
-		Item item = new Item( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
+	private Entry createItem( String key ) {
+		Entry item = new Entry( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
 
 		if ( String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
-			item.setEntryKey( key );
+			item.getKey().setValueInternal( key );
 		}
 
 		return item;
@@ -263,15 +284,16 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	/**
 	 * Creates a new item for every key requested.
 	 */
-	class Items extends TreeMap<String, Item>
+	class Entries extends TreeMap<String, Entry>
 	{
 		@Override
-		public Item get( Object key ) {
+		public Entry get( Object key ) {
 			String itemKey = (String) key;
-			Item item = super.get( itemKey );
+			Entry item = super.get( itemKey );
 
 			if ( item == null ) {
 				item = createItem( itemKey );
+				markDirty();
 				super.put( itemKey, item );
 			}
 
@@ -283,7 +305,8 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	 * Single item.
 	 */
 	@RequiredArgsConstructor
-	public class Item
+	@SuppressWarnings("all")
+	public class Entry
 	{
 		@Getter
 		@Setter
@@ -294,10 +317,10 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		private int sortIndex;
 
 		@Getter
-		private final EntityPropertyBinder key;
+		private final AbstractEntityPropertyBinder key;
 
 		@Getter
-		private final EntityPropertyBinder value;
+		private final AbstractEntityPropertyBinder value;
 
 		public void setEntryKey( Object key ) {
 			this.key.setValue( key );
@@ -313,6 +336,10 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 		public Object getEntryValue() {
 			return value.getValue();
+		}
+
+		private boolean isDirty() {
+			return key.isDirty() || value.isDirty();
 		}
 	}
 }

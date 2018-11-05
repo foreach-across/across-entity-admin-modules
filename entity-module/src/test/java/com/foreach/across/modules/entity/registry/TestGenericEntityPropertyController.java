@@ -115,6 +115,43 @@ public class TestGenericEntityPropertyController
 	}
 
 	@Test
+	public void createDto() {
+		assertThat( controller.createDto( context, "123" ) ).isEqualTo( "123" );
+
+		// function
+		controller.createDtoFunction( value -> value + "-dto" );
+		assertThat( controller.createDto( context, "123" ) ).isEqualTo( "123-dto" );
+
+		controller.withEntity( String.class, Long.class )
+		          .createDtoFunction( e -> e * 10 );
+		assertThat( controller.createDto( context, 456L ) ).isEqualTo( 4560L );
+
+		controller.withTarget( BigDecimal.class, Long.class )
+		          .createDtoFunction( d -> d + 10 );
+		assertThat( controller.createDto( context, 456L ) ).isEqualTo( 466L );
+
+		controller.withBindingContext( Long.class )
+		          .createDtoFunction( d -> d + 20 );
+		assertThat( controller.createDto( context, 456L ) ).isEqualTo( 476L );
+
+		// biFunction
+		controller.createDtoFunction( ( ctx, value ) -> value + "-" + ctx.getEntity().toString() + "-dto" );
+		assertThat( controller.createDto( context, "123" ) ).isEqualTo( "123-123-dto" );
+
+		controller.withEntity( String.class, Long.class )
+		          .createDtoFunction( ( entity, prop ) -> Long.parseLong( entity ) * prop );
+		assertThat( controller.createDto( context, 10L ) ).isEqualTo( 1230L );
+
+		controller.withTarget( BigDecimal.class, Long.class )
+		          .createDtoFunction( ( target, prop ) -> target.longValue() * prop );
+		assertThat( controller.createDto( context, 10L ) ).isEqualTo( 100L );
+
+		controller.withBindingContext( Long.class )
+		          .createDtoFunction( ( ctx, prop ) -> ( Long.parseLong( ctx.getEntity() ) * ctx.<BigDecimal>getTarget().longValue() ) + prop );
+		assertThat( controller.createDto( context, 10L ) ).isEqualTo( 1240L );
+	}
+
+	@Test
 	public void applyValue() {
 		assertThat( controller.applyValue( context, propertyValue ) ).isFalse();
 

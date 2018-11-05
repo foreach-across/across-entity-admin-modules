@@ -33,7 +33,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentPropertyDescriptor;
@@ -262,7 +264,15 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 														.add( glyphIcon( GlyphIcon.REMOVE ) )
 										)
 								: null
-				);
+				)
+				.postProcessor( ( builderContext, element ) -> {
+					List<FormGroupElement> formGroups = element.findAll( FormGroupElement.class ).collect( Collectors.toList() );
+
+					if ( formGroups.size() == 1 ) {
+						element.addCssClass( "embedded-collection-item-style-compact" );
+						formGroups.get( 0 ).setLabel( null );
+					}
+				} );
 	}
 
 	private NodeViewElement addItemAction( ViewElementBuilderContext builderContext, String addItemMessage ) {

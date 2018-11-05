@@ -26,22 +26,19 @@ import java.util.function.Supplier;
 
 /**
  * {@link EntityPropertyController} implementation for a nested property, the property value
- * of the parent controller actually supplies the binding context of the child controller.
+ * of the parent {@link EntityPropertyDescriptor} actually supplies the binding context of
+ * the child controller.
  *
  * @author Arne Vandamme
  * @since 3.2.0
  */
 public class NestedEntityPropertyController implements EntityPropertyController, ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object>
 {
-	private final String contextName;
-	private final EntityPropertyController parent;
+	private final EntityPropertyDescriptor parentPropertyDescriptor;
 	private final GenericEntityPropertyController child;
 
-	public NestedEntityPropertyController( @NonNull String requiredChildContextName,
-	                                       @NonNull EntityPropertyController parent,
-	                                       @NonNull EntityPropertyController child ) {
-		this.contextName = requiredChildContextName;
-		this.parent = parent;
+	public NestedEntityPropertyController( @NonNull EntityPropertyDescriptor parentPropertyDescriptor, @NonNull EntityPropertyController child ) {
+		this.parentPropertyDescriptor = parentPropertyDescriptor;
 		this.child = new GenericEntityPropertyController( child );
 	}
 
@@ -63,6 +60,16 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	@Override
 	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> createValueFunction( Function<EntityPropertyBindingContext, Object> function ) {
 		return child.createValueFunction( function );
+	}
+
+	@Override
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> createDtoFunction( Function<Object, Object> function ) {
+		return child.createDtoFunction( function );
+	}
+
+	@Override
+	public ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object> createDtoFunction( BiFunction<EntityPropertyBindingContext, Object, Object> function ) {
+		return child.createDtoFunction( function );
 	}
 
 	@Override
@@ -121,6 +128,11 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	@Override
+	public Object createDto( EntityPropertyBindingContext context, Object value ) {
+		return child.createDto( childContext( context ), value );
+	}
+
+	@Override
 	public void validate( EntityPropertyBindingContext context, EntityPropertyValue propertyValue, Errors errors, Object... validationHints ) {
 		child.validate( childContext( context ), propertyValue, errors, validationHints );
 	}
@@ -136,11 +148,7 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	private EntityPropertyBindingContext childContext( EntityPropertyBindingContext context ) {
-		return context.getOrCreateChildContext( contextName, ( parentContext, builder ) -> {
-			Object parentValue = parent.fetchValue( parentContext );
-
-			builder.controller( parent ).entity( parentValue ).target( parentValue );
-		} );
+		return context.resolvePropertyBindingContext( parentPropertyDescriptor );
 	}
 
 	@Override

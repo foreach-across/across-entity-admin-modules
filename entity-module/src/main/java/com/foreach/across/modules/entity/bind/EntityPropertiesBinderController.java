@@ -23,8 +23,6 @@ import lombok.*;
 import org.springframework.validation.Errors;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Controller for an {@link EntityPropertiesBinder} which will perform {@link EntityPropertyController}
@@ -92,17 +90,20 @@ public final class EntityPropertiesBinderController
 	 */
 	@SuppressWarnings("unchecked")
 	public void applyValues() {
-		List<OrderedRunnable> actions = new ArrayList<>( propertiesBinder.size() );
+		verifyNonReadOnly();
+		if ( propertiesBinder.isDirty() ) {
+			List<OrderedRunnable> actions = new ArrayList<>( propertiesBinder.size() );
 
-		propertiesBinder.entrySet()
-		                .stream()
-		                .map( entry -> new OrderedRunnable( entry.getValue().getControllerOrder(), entry.getKey(), entry.getValue()::applyValue ) )
-		                .forEach( actions::add );
+			propertiesBinder.entrySet()
+			                .stream()
+			                .map( entry -> new OrderedRunnable( entry.getValue().getControllerOrder(), entry.getKey(), entry.getValue()::applyValue ) )
+			                .forEach( actions::add );
 
-		addChildContextActions( actions, e -> e::applyValue );
+			actions.sort( ORDERED_RUNNABLE_COMPARATOR );
+			actions.forEach( OrderedRunnable::run );
 
-		actions.sort( ORDERED_RUNNABLE_COMPARATOR );
-		actions.forEach( OrderedRunnable::run );
+			propertiesBinder.setDirty( false );
+		}
 	}
 
 	/**
@@ -118,6 +119,7 @@ public final class EntityPropertiesBinderController
 	 * @return true if validation was successful, no validation errors have been added
 	 */
 	public boolean validate( @NonNull Errors errors, Object... validationHints ) {
+		verifyNonReadOnly();
 		List<OrderedRunnable> actions = new ArrayList<>();
 		actions.add( new OrderedRunnable( 0, "", () -> entityValidationCallbacks.forEach( Runnable::run ) ) );
 
@@ -155,6 +157,7 @@ public final class EntityPropertiesBinderController
 	 */
 	@SuppressWarnings("unchecked")
 	public void save() {
+		verifyNonReadOnly();
 		List<OrderedRunnable> actions = new ArrayList<>();
 		actions.add( new OrderedRunnable( 0, "", () -> entitySaveCallbacks.forEach( Runnable::run ) ) );
 
@@ -163,29 +166,14 @@ public final class EntityPropertiesBinderController
 		                .map( entry -> new OrderedRunnable( entry.getValue().getControllerOrder(), entry.getKey(), entry.getValue()::save ) )
 		                .forEach( actions::add );
 
-		addChildContextActions( actions, e -> e::save );
-
 		actions.sort( ORDERED_RUNNABLE_COMPARATOR );
 		actions.forEach( OrderedRunnable::run );
 	}
 
-	private void addChildContextActions( List<OrderedRunnable> actions,
-	                                     Function<EntityPropertyController, BiFunction<EntityPropertyBindingContext, EntityPropertyValue, Boolean>> method ) {
-		propertiesBinder.getBindingContext()
-		                .getChildContexts()
-		                .entrySet()
-		                .stream()
-		                .filter( e -> !propertiesBinder.containsKey( e.getKey() ) )
-		                .filter( e -> e.getValue().getController() != null )
-		                .map( entry -> {
-			                EntityPropertyBindingContext childContext = entry.getValue();
-			                return new OrderedRunnable(
-					                childContext.getController().getOrder(),
-					                entry.getKey(),
-					                () -> method.apply( childContext.getController() ).apply( childContext.getParent(), childContext.toPropertyValue() )
-			                );
-		                } )
-		                .forEach( actions::add );
+	private void verifyNonReadOnly() {
+		if ( propertiesBinder.isReadonly() ) {
+			throw new EntityPropertiesBinder.ReadonlyBindingContextException();
+		}
 	}
 
 	@RequiredArgsConstructor

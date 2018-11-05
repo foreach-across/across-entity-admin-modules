@@ -25,9 +25,12 @@ import java.util.function.Supplier;
 
 /**
  * Builder-like interface for customizing a {@link GenericEntityPropertyController}.
+ * Allows strong-typing and scoping a controller using one of the {@link #withTarget(Class, Class)}, {@link #withEntity(Class, Class)}
+ * or {@link #withBindingContext(Class)} methods. This makes it easier to apply configuration with strong-typed parameters.
  *
  * @author Arne Vandamme
  * @see EntityPropertyController
+ * @see ScopedConfigurableEntityPropertyController
  * @since 3.2.0
  */
 public interface ConfigurableEntityPropertyController<T, U>
@@ -66,10 +69,25 @@ public interface ConfigurableEntityPropertyController<T, U>
 	ConfigurableEntityPropertyController<T, U> createValueFunction( Function<T, U> function );
 
 	/**
-	 * Set the consumer that should be called when applying the property value using {@link EntityPropertyController#applyValue(Object, Object, Object)}.
-	 * The return value of calling {@link EntityPropertyController#applyValue(Object, Object, Object)} will always be {@code true}
-	 * if you specify a {@link BiConsumer}. See {@link #applyValueFunction(BiFunction)} if you
-	 * want to control the return value.
+	 * Set the function that should be used to create a DTO (value for updating) of an existing property value.
+	 *
+	 * @param function that returns a new DTO
+	 * @return self
+	 */
+	ConfigurableEntityPropertyController<T, U> createDtoFunction( Function<U, U> function );
+
+	/**
+	 * Set the function that should be used to create a DTO (value for updating) of an existing property value.
+	 *
+	 * @param function that returns a new DTO
+	 * @return self
+	 */
+	ConfigurableEntityPropertyController<T, U> createDtoFunction( BiFunction<T, U, U> function );
+
+	/**
+	 * Set the consumer that should be called when applying the property value using {@link EntityPropertyController#applyValue(EntityPropertyBindingContext, EntityPropertyValue)}.
+	 * The return value of calling {@link EntityPropertyController#applyValue(EntityPropertyBindingContext, EntityPropertyValue)} will always be {@code true}
+	 * if you specify a {@link BiConsumer}. See {@link #applyValueFunction(BiFunction)} if you want to control the return value.
 	 *
 	 * @param valueWriter consumer for setting the value
 	 * @return self
@@ -77,7 +95,7 @@ public interface ConfigurableEntityPropertyController<T, U>
 	ConfigurableEntityPropertyController<T, U> applyValueConsumer( BiConsumer<T, EntityPropertyValue<U>> valueWriter );
 
 	/**
-	 * The function that should be called when setting the property value using {@link EntityPropertyController#applyValue(Object, Object, Object)}.
+	 * The function that should be called when setting the property value using {@link EntityPropertyController#applyValue(EntityPropertyBindingContext, EntityPropertyValue)}.
 	 * If the {@link BiFunction} returns {@code null}, this will be converted to {@code false}.
 	 *
 	 * @param valueWriter function for setting the value

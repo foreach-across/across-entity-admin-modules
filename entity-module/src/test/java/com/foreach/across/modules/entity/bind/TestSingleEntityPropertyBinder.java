@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.bind;
 
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder.ChildPropertyPropertiesBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -30,8 +31,6 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
-import java.util.Collections;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -43,7 +42,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class TestSingleEntityPropertyBinder
 {
-	private static final EntityPropertyBindingContext BINDING_CONTEXT = EntityPropertyBindingContext.forReading( "entity" );
+	@Mock
+	private EntityPropertiesBinder.EntityPropertiesBinderValueBindingContext bindingContext;
 
 	@Mock
 	private EntityPropertiesBinder binder;
@@ -59,8 +59,12 @@ public class TestSingleEntityPropertyBinder
 	public void resetMocks() {
 		reset( binder, controller );
 
-		when( binder.getBindingContext() ).thenReturn( BINDING_CONTEXT );
-		when( controller.fetchValue( BINDING_CONTEXT ) ).thenReturn( 1 );
+		when( bindingContext.getEntity() ).thenReturn( "entity" );
+		when( bindingContext.getTarget() ).thenReturn( "entity" );
+		when( bindingContext.isReadonly() ).thenReturn( true );
+		when( binder.getValueBindingContext() ).thenReturn( bindingContext );
+
+		when( controller.fetchValue( bindingContext ) ).thenReturn( 1 );
 
 		doAnswer( i -> i.getArgument( 0 ) )
 				.when( binder )
@@ -102,7 +106,7 @@ public class TestSingleEntityPropertyBinder
 	@Test
 	public void updatingTheValueDoesNotUseTheController() {
 		property.setValue( 123 );
-		verify( controller ).fetchValue( BINDING_CONTEXT );
+		verify( controller ).fetchValue( bindingContext );
 
 		assertThat( property.getValue() ).isEqualTo( 123 );
 		verifyNoMoreInteractions( controller );
@@ -118,6 +122,52 @@ public class TestSingleEntityPropertyBinder
 		property.setValue( 123 );
 		assertThat( property.getOriginalValue() ).isEqualTo( 1 );
 		assertThat( property.getValue() ).isEqualTo( 123 );
+	}
+
+	@Test
+	public void propertyNotDirtyIfValueIsBeingFetched() {
+		assertThat( property.getOriginalValue() ).isEqualTo( 1 );
+		assertThat( property.getValue() ).isEqualTo( 1 );
+		assertThat( property.isDeleted() ).isFalse();
+		assertThat( property.isDirty() ).isFalse();
+
+		verify( binder, never() ).markDirty();
+	}
+
+	@Test
+	public void binderIsDirtyIfDeletedCalled() {
+		property.setDeleted( false );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder ).markDirty();
+	}
+
+	@Test
+	public void binderIsDirtyIfSetValueCalledWithAnyValue() {
+		property.setValue( 1 );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder ).markDirty();
+	}
+
+	@Test
+	public void onlyApplyValueRemovesDirtyFlag() {
+		property.setValue( null );
+		assertThat( property.isDirty() ).isTrue();
+
+		property.applyValue();
+		assertThat( property.isDirty() ).isFalse();
+
+		property.setDeleted( true );
+		assertThat( property.isDirty() ).isTrue();
+
+		property.save();
+		assertThat( property.isDirty() ).isTrue();
+
+		property.validate( mock( Errors.class ) );
+		assertThat( property.isDirty() ).isTrue();
+
+		verify( binder, times( 2 ) ).markDirty();
 	}
 
 	@Test
@@ -178,7 +228,7 @@ public class TestSingleEntityPropertyBinder
 	public void settingEmptyStringOnNonStringPropertyResultsInNullValue() {
 		property.setValue( "" );
 		assertThat( property.getValue() ).isNull();
-		verify( controller ).fetchValue( BINDING_CONTEXT );
+		verify( controller ).fetchValue( bindingContext );
 		verifyNoMoreInteractions( controller );
 	}
 
@@ -195,7 +245,7 @@ public class TestSingleEntityPropertyBinder
 		property.setValue( "" );
 		assertThat( property.getValue() ).isEqualTo( "" );
 
-		verify( controller ).fetchValue( BINDING_CONTEXT );
+		verify( controller ).fetchValue( bindingContext );
 		verifyNoMoreInteractions( controller );
 	}
 
@@ -226,38 +276,38 @@ public class TestSingleEntityPropertyBinder
 
 	@Test
 	public void applyValueFlushesToTheControllerWithTheOriginalValue() {
-		when( controller.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
+		when( controller.applyValue( bindingContext, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
 		assertThat( property.applyValue() ).isTrue();
 
 		property.setValue( 123 );
 		assertThat( property.applyValue() ).isFalse();
-		verify( controller ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 123, false ) );
+		verify( controller ).applyValue( bindingContext, new EntityPropertyValue<>( 1, 123, false ) );
 	}
 
 	@Test
 	public void applyValueAppliesNullIfDeleted() {
-		when( controller.applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
+		when( controller.applyValue( bindingContext, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
 		property.setBound( true );
 		assertThat( property.applyValue() ).isTrue();
-		verify( controller ).applyValue( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) );
+		verify( controller ).applyValue( bindingContext, new EntityPropertyValue<>( 1, null, true ) );
 	}
 
 	@Test
 	public void saveFlushesToTheControllerWithTheOriginalValue() {
-		when( controller.save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
+		when( controller.save( bindingContext, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
 		assertThat( property.save() ).isTrue();
 
 		property.setValue( 123 );
 		assertThat( property.save() ).isFalse();
-		verify( controller ).save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, 123, false ) );
+		verify( controller ).save( bindingContext, new EntityPropertyValue<>( 1, 123, false ) );
 	}
 
 	@Test
 	public void saveWithNullIfDeleted() {
-		when( controller.save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
+		when( controller.save( bindingContext, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
 		property.setBound( true );
 		assertThat( property.save() ).isTrue();
-		verify( controller ).save( BINDING_CONTEXT, new EntityPropertyValue<>( 1, null, true ) );
+		verify( controller ).save( bindingContext, new EntityPropertyValue<>( 1, null, true ) );
 	}
 
 	@Test
@@ -272,7 +322,7 @@ public class TestSingleEntityPropertyBinder
 
 		doAnswer( invocation -> {
 			EntityPropertyBindingContext bindingContext = invocation.getArgument( 0 );
-			assertThat( bindingContext ).isSameAs( BINDING_CONTEXT );
+			assertThat( bindingContext ).isSameAs( this.bindingContext );
 
 			EntityPropertyValue<Object> propertyValue = invocation.getArgument( 1 );
 			assertThat( propertyValue ).isEqualTo( new EntityPropertyValue<Object>( 1, 123, false ) );
@@ -315,7 +365,7 @@ public class TestSingleEntityPropertyBinder
 
 		doAnswer( invocation -> {
 			EntityPropertyBindingContext bindingContext = invocation.getArgument( 0 );
-			assertThat( bindingContext ).isSameAs( BINDING_CONTEXT );
+			assertThat( bindingContext ).isSameAs( this.bindingContext );
 
 			EntityPropertyValue<Object> propertyValue = invocation.getArgument( 1 );
 			assertThat( propertyValue ).isEqualTo( new EntityPropertyValue<Object>( 1, 123, false ) );
@@ -349,18 +399,19 @@ public class TestSingleEntityPropertyBinder
 
 		when( binder.createValue( controller ) )
 				.thenReturn( "hello" );
-		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( "hello" ) ) ).thenReturn( childBinder );
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
 
 		assertThat( property.getProperties() ).isSameAs( childBinder );
 		assertThat( property.getProperties() ).isSameAs( childBinder );
-		verify( binder, times( 1 ) ).createChildBinder( any(), any(), any() );
+		verify( binder, times( 1 ) ).createChildPropertyPropertiesBinder();
 	}
 
 	@Test
 	public void propertiesGetRecreatedIfValueHasChanged() {
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( mock( EntityPropertiesBinder.class ) );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 123 ) ) ).thenReturn( mock( EntityPropertiesBinder.class ) );
+		when( binder.createChildPropertyPropertiesBinder() )
+				.thenReturn( mock( ChildPropertyPropertiesBinder.class ) )
+				.thenReturn( mock( ChildPropertyPropertiesBinder.class ) );
 
 		val first = property.getProperties();
 		assertThat( property.getProperties() ).isNotNull().isSameAs( first );
@@ -368,31 +419,47 @@ public class TestSingleEntityPropertyBinder
 		property.setValue( 1 );
 		assertThat( property.getProperties() ).isSameAs( first );
 
-		verify( binder, times( 1 ) ).createChildBinder( any(), any(), any() );
+		verify( binder, times( 1 ) ).createChildPropertyPropertiesBinder();
 
 		property.setValue( 123 );
 		assertThat( property.getProperties() ).isNotNull().isNotSameAs( first );
+
+		verify( binder, times( 2 ) ).createChildPropertyPropertiesBinder();
 	}
 
 	@Test
-	public void propertiesAreAppliedBeforeReturningValue() {
-		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		EntityPropertyBinder childValue = mock( EntityPropertyBinder.class );
-		when( childBinder.values() ).thenReturn( Collections.singleton( childValue ) );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
+	public void propertiesAreNotAppliedIfNotDirty() {
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
 
 		assertThat( property.getValue() ).isEqualTo( 1 );
 		verifyZeroInteractions( childBinder );
 
 		assertThat( property.getProperties() ).isSameAs( childBinder );
 		assertThat( property.getValue() ).isEqualTo( 1 );
-		verify( childValue ).applyValue();
+		verify( childBinder, never() ).createController();
+	}
+
+	@Test
+	public void propertiesAreAppliedBeforeReturningValueIfDirty() {
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		EntityPropertiesBinderController propertiesController = mock( EntityPropertiesBinderController.class );
+		when( childBinder.createController() ).thenReturn( propertiesController );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
+
+		property.markDirty();
+		assertThat( property.getValue() ).isEqualTo( 1 );
+		verifyZeroInteractions( childBinder );
+
+		assertThat( property.getProperties() ).isSameAs( childBinder );
+		assertThat( property.getValue() ).isEqualTo( 1 );
+		verify( propertiesController ).applyValues();
 	}
 
 	@Test
 	public void propertyNoLongerDeletedIfPropertiesAccessed() {
-		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
 
 		property.setBound( true );
 		assertThat( property.isDeleted() ).isTrue();
@@ -403,8 +470,8 @@ public class TestSingleEntityPropertyBinder
 
 	@Test
 	public void resolveValidChildProperty() {
-		EntityPropertiesBinder childBinder = mock( EntityPropertiesBinder.class );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( childBinder );
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
 
 		EntityPropertyDescriptor childDescriptor = mock( EntityPropertyDescriptor.class );
 		when( childDescriptor.isNestedProperty() ).thenReturn( true );
@@ -442,9 +509,9 @@ public class TestSingleEntityPropertyBinder
 		when( street.isNestedProperty() ).thenReturn( true );
 		when( street.getParentDescriptor() ).thenReturn( address );
 
-		EntityPropertiesBinder userBinder = mock( EntityPropertiesBinder.class );
+		ChildPropertyPropertiesBinder userBinder = mock( ChildPropertyPropertiesBinder.class );
 		SingleEntityPropertyBinder addressProperty = mock( SingleEntityPropertyBinder.class );
-		when( binder.createChildBinder( eq( descriptor ), any(), eq( 1 ) ) ).thenReturn( userBinder );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( userBinder );
 		when( userBinder.get( "address" ) ).thenReturn( addressProperty );
 
 		EntityPropertyBinder streetProperty = mock( EntityPropertyBinder.class );

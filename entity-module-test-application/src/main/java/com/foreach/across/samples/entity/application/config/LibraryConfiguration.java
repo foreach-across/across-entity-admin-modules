@@ -98,10 +98,11 @@ public class LibraryConfiguration implements EntityConfigurer
 		Library library = new Library();
 		library.setId( "example" );
 		library.setName( "Some library" );
+		library.setTypeOfBooks( EnumSet.of( TypeOfBooks.FICTION, TypeOfBooks.NON_FICTION ) );
 
 		Book book = new Book();
 		book.setTitle( "Lord of the Rings" );
-		book.setGenres( Collections.singletonList( EnumSet.of( Genre.FANTASY ) ) );
+		book.setGenres( Arrays.asList( EnumSet.of( Genre.FANTASY ), EnumSet.of( Genre.CRIME, Genre.ROMANCE ) ) );
 
 		Author author = new Author();
 		author.setName( "JRR Tolkien" );
@@ -166,6 +167,9 @@ public class LibraryConfiguration implements EntityConfigurer
 		@Length(max = 100)
 		private String name;
 
+		@NotNull
+		private Set<TypeOfBooks> typeOfBooks = Collections.emptySet();
+
 		@NotEmpty
 		public List<Book> books = Collections.emptyList();
 
@@ -174,6 +178,7 @@ public class LibraryConfiguration implements EntityConfigurer
 			l.id = id;
 			l.name = name;
 			l.setBooks( books.stream().map( Book::copy ).collect( Collectors.toList() ) );
+			l.setTypeOfBooks( new HashSet<>( typeOfBooks ) );
 			return l;
 		}
 	}
@@ -250,5 +255,11 @@ public class LibraryConfiguration implements EntityConfigurer
 		CRIME,
 		DRAMA,
 		ROMANCE
+	}
+
+	enum TypeOfBooks implements Serializable
+	{
+		FICTION,
+		NON_FICTION
 	}
 }
