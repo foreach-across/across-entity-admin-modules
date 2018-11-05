@@ -232,6 +232,27 @@ fieldset .help-block:last-child {
       color: red;
     }
   }
+
+  &.embedded-collection-item-style-compact {
+    > div {
+      padding-top: 5px;
+      border-top: none;
+    }
+
+    > div:first-child {
+      padding-top: 0;
+    }
+
+    .embedded-collection-item-data {
+      .form-group {
+        margin-bottom: 10px;
+      }
+    }
+
+    .embedded-collection-item-actions {
+      padding-top: 8px;
+    }
+  }
 }
 
 .embedded-collection-readonly {
@@ -256,11 +277,26 @@ fieldset .help-block:last-child {
     &:first-child > div {
       padding-top: 0;
     }
+
+    &.embedded-collection-item-style-compact {
+      &:first-child {
+        margin-top: -12px;
+      }
+    }
   }
 
   .embedded-collection-item-data {
     .form-group {
       margin-bottom: 12px;
+    }
+  }
+
+  .embedded-collection-item-style-compact {
+    .embedded-collection-item-data {
+      .form-group {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
     }
   }
 }

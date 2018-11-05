@@ -18,6 +18,8 @@ package com.foreach.across.modules.entity.registry.properties.binding;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,17 +39,27 @@ public class TestAbstractEntityPropertyBindingContext
 	@Mock
 	private EntityPropertyController controller;
 
+	@Mock
+	private EntityPropertyDescriptor descriptor;
+
 	@Spy
 	private AbstractEntityPropertyBindingContext bindingContext;
 
+	@Before
+	public void before() {
+		when( descriptor.getController() ).thenReturn( controller );
+		when( descriptor.getTargetPropertyName() ).thenReturn( "myprop" );
+	}
+
 	@Test
 	public void nullBindingContextIfNoController() {
-		assertThat( bindingContext.resolvePropertyBindingContext( "myprop", null ) ).isNull();
+		when( descriptor.getController() ).thenReturn( null );
+		assertThat( bindingContext.resolvePropertyBindingContext( descriptor ) ).isNull();
 	}
 
 	@Test
 	public void childBindingContextIsCreated() {
-		EntityPropertyBindingContext child = bindingContext.resolvePropertyBindingContext( "myprop", controller );
+		EntityPropertyBindingContext child = bindingContext.resolvePropertyBindingContext( descriptor );
 		assertThat( child ).isNotNull();
 		assertThat( child ).isInstanceOf( ChildEntityPropertyBindingContext.class );
 
@@ -57,11 +69,10 @@ public class TestAbstractEntityPropertyBindingContext
 
 	@Test
 	public void multipleCallsForSamePropertyReturnTheSameContext() {
-		EntityPropertyBindingContext child = bindingContext.resolvePropertyBindingContext( "myprop", controller );
+		EntityPropertyBindingContext child = bindingContext.resolvePropertyBindingContext( descriptor );
 		assertThat( child ).isNotNull();
 
-		assertThat( bindingContext.resolvePropertyBindingContext( "myprop", null ) ).isSameAs( child );
-		assertThat( bindingContext.resolvePropertyBindingContext( "myprop", controller ) ).isSameAs( child );
-		assertThat( bindingContext.resolvePropertyBindingContext( "otherprop", controller ) ).isNotNull().isNotSameAs( child );
+		assertThat( bindingContext.resolvePropertyBindingContext( descriptor ) ).isSameAs( child );
+		assertThat( bindingContext.resolvePropertyBindingContext( descriptor ) ).isSameAs( child );
 	}
 }

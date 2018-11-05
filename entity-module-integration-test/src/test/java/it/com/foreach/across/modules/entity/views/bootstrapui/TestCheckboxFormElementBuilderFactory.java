@@ -69,7 +69,8 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 		when( properties.get( "primitive" ).getController().fetchValue( bindingContext ) ).thenReturn( true );
 		when( properties.get( "object" ).getController().fetchValue( bindingContext ) ).thenReturn( Boolean.TRUE );
 		when( properties.get( "atomic" ).getController().fetchValue( bindingContext ) ).thenReturn( new AtomicBoolean( true ) );
-		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+
+		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
 
 		CheckboxFormElement checkbox = assembleAndVerify( "primitive", false );
 		assertTrue( checkbox.isChecked() );
@@ -87,7 +88,7 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 		when( properties.get( "primitive" ).getController().fetchValue( bindingContext ) ).thenReturn( false );
 		when( properties.get( "object" ).getController().fetchValue( bindingContext ) ).thenReturn( null );
 		when( properties.get( "atomic" ).getController().fetchValue( bindingContext ) ).thenReturn( new AtomicBoolean( false ) );
-		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
 
 		CheckboxFormElement checkbox = assembleAndVerify( "primitive", false );
 		assertFalse( checkbox.isChecked() );

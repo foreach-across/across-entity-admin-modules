@@ -20,6 +20,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindi
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
 import org.junit.Test;
 
+import static com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext.forReading;
+import static com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext.forUpdating;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -33,17 +35,48 @@ public class TestBindingContextPropertyControllers extends AbstractEntityPropert
 		User user = new User( new Address( "street one" ) );
 
 		Address otherAddress = new Address( "street two" );
-		assertThat( addressStreet.getController().fetchValue( EntityPropertyBindingContext.forReading( otherAddress ) ) ).isEqualTo( "street two" );
+		assertThat( addressStreet.getController().fetchValue( forReading( otherAddress ) ) ).isEqualTo( "street two" );
 		otherAddress.setStreet( "street updated" );
-		assertThat( addressStreet.getController().fetchValue( EntityPropertyBindingContext.forReading( otherAddress ) ) ).isEqualTo( "street updated" );
+		assertThat( addressStreet.getController().fetchValue( forReading( otherAddress ) ) ).isEqualTo( "street updated" );
 
-		assertThat( userAddress.getController().fetchValue( EntityPropertyBindingContext.forReading( user ) ) ).isEqualTo( new Address( "street one" ) );
+		assertThat( userAddress.getController().fetchValue( forReading( user ) ) ).isEqualTo( new Address( "street one" ) );
+	}
+
+	@Test
+	public void fetchNestedPropertyValue() {
+		City city = new City( "Brussels" );
+		CityAddress address = new CityAddress( city );
+		UserWithCityAddress user = new UserWithCityAddress( address );
+
+		assertThat( cityName.getController().fetchValue( forReading( city ) ) ).isEqualTo( "Brussels" );
+		assertThat( cityName.getController().fetchValue( EntityPropertyBindingContext.forUpdating( city, city ) ) ).isEqualTo( "Brussels" );
+		assertThat( cityName.getController().fetchValue( EntityPropertyBindingContext.forUpdating( null, city ) ) ).isEqualTo( "Brussels" );
+
+		assertThat( cityAddressCity.getController().fetchValue( forReading( address ) ) ).isEqualTo( city );
+		assertThat( cityAddressCity.getController().fetchValue( forUpdating( address, address ) ) ).isEqualTo( city );
+		assertThat( cityAddressCity.getController().fetchValue( forUpdating( null, address ) ) ).isEqualTo( city );
+		assertThat( cityAddressCityName.getController().fetchValue( forReading( address ) ) ).isEqualTo( "Brussels" );
+		assertThat( cityAddressCityName.getController().fetchValue( forUpdating( address, address ) ) ).isEqualTo( "Brussels" );
+		assertThat( cityAddressCityName.getController().fetchValue( forUpdating( null, address ) ) ).isEqualTo( "Brussels" );
+
+		EntityPropertyBindingContext userContext = forReading( user );
+		assertThat( userWithCityAddressCityAddress.getController().fetchValue( userContext ) ).isEqualTo( address );
+		assertThat( userWithCityAddressCityAddressCity.getController().fetchValue( userContext ) ).isEqualTo( city );
+		assertThat( userWithCityAddressCityAddressCityName.getController().fetchValue( userContext ) ).isEqualTo( "Brussels" );
+		userContext = forUpdating( user, user );
+		assertThat( userWithCityAddressCityAddress.getController().fetchValue( userContext ) ).isEqualTo( address );
+		assertThat( userWithCityAddressCityAddressCity.getController().fetchValue( userContext ) ).isEqualTo( city );
+		assertThat( userWithCityAddressCityAddressCityName.getController().fetchValue( userContext ) ).isEqualTo( "Brussels" );
+		userContext = forUpdating( null, user );
+		assertThat( userWithCityAddressCityAddress.getController().fetchValue( userContext ) ).isEqualTo( address );
+		assertThat( userWithCityAddressCityAddressCity.getController().fetchValue( userContext ) ).isEqualTo( city );
+		assertThat( userWithCityAddressCityAddressCityName.getController().fetchValue( userContext ) ).isEqualTo( "Brussels" );
 	}
 
 	@Test
 	public void childContextValueIsCachedIfReadonly() {
 		User user = new User( new Address( "street one" ) );
-		EntityPropertyBindingContext bindingContext = EntityPropertyBindingContext.forReading( user );
+		EntityPropertyBindingContext bindingContext = forReading( user );
 
 		assertThat( userAddressStreet.getController().fetchValue( bindingContext ) ).isEqualTo( "street one" );
 		user.setAddress( new Address( "modified" ) );
@@ -61,7 +94,7 @@ public class TestBindingContextPropertyControllers extends AbstractEntityPropert
 	}
 
 	@Test
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings("unchecked")
 	public void applyValueOfNestedProperty() {
 		User user = new User( new Address( "street one" ) );
 		assertThat( userAddressStreet.getController().applyValue( EntityPropertyBindingContext.forUpdating( user, user ),
@@ -69,5 +102,4 @@ public class TestBindingContextPropertyControllers extends AbstractEntityPropert
 
 		assertThat( user.getAddress().getStreet() ).isEqualTo( "modified" );
 	}
-
 }

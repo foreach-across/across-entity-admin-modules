@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -27,6 +28,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.element.En
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import com.foreach.across.modules.web.ui.ScopedAttributesViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
@@ -146,18 +148,15 @@ public class PropertyRenderingViewProcessor extends EntityViewProcessorAdapter
 					? builderMap.get( ATTRIBUTE_PROPERTIES_CONTAINER_BUILDER, ContainerViewElementBuilderSupport.class )
 					: containerBuilder;
 
-			try {
-				builderContext.setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
-
+			try (ScopedAttributesViewElementBuilderContext ignore = builderContext
+					.withAttributeOverride( EntityPropertyControlName.class, EntityPropertyControlName.root( "entity" ) )
+					.withAttributeOverride( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false )) {
 				propertyBuilders.forEach( ( propertyName, builder ) -> {
 					if ( builder == null ) {
 						throw new IllegalStateException( "No ViewElementBuilder was registered for property '" + propertyName + "'" );
 					}
 					propertiesContainerBuilder.add( builder.build( builderContext ) );
 				} );
-			}
-			finally {
-				builderContext.removeAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES );
 			}
 		}
 	}

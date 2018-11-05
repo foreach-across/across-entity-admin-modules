@@ -16,10 +16,7 @@
 
 package com.foreach.across.modules.entity.registry;
 
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
-import com.foreach.across.modules.entity.registry.properties.NestedEntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,10 +36,10 @@ import static org.mockito.Mockito.*;
 public class TestNestedEntityPropertyController
 {
 	@Mock
-	private EntityPropertyController<Object> user;
+	private EntityPropertyController<Object> address;
 
 	@Mock
-	private EntityPropertyController<Object> address;
+	private EntityPropertyDescriptor user;
 
 	@Mock
 	private EntityPropertyBindingContext pageBindingContext;
@@ -54,8 +51,8 @@ public class TestNestedEntityPropertyController
 
 	@Before
 	public void before() {
-		userAddress = new NestedEntityPropertyController( "user", user, address );
-		when( pageBindingContext.resolvePropertyBindingContext( "user", user ) ).thenReturn( userBindingContext );
+		userAddress = new NestedEntityPropertyController( user, address );
+		when( pageBindingContext.resolvePropertyBindingContext( user ) ).thenReturn( userBindingContext );
 	}
 
 	@Test

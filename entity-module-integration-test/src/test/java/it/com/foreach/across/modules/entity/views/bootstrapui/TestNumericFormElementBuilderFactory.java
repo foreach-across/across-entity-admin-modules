@@ -171,7 +171,7 @@ public class TestNumericFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void valueOrderIsPrinterFormatNumericConfigurationAndConversionService() {
-		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
 		when( properties.get( "decimal" ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( 123L );
 		when( mvcConversionService.canConvert( any( TypeDescriptor.class ), any() ) ).thenReturn( true );
 		when( mvcConversionService.convert( eq( 123L ), any(), any() ) ).thenReturn( "fromConversionService" );

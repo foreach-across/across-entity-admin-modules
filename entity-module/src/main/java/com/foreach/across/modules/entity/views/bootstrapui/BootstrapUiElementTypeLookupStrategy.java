@@ -132,7 +132,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 		if ( descriptor.isWritable() ) {
 			if ( propertyType != null ) {
-				if ( ClassUtils.isAssignable( propertyType, Duration.class )) {
+				if ( ClassUtils.isAssignable( propertyType, Duration.class ) ) {
 					return BootstrapUiElements.TEXTBOX;
 				}
 

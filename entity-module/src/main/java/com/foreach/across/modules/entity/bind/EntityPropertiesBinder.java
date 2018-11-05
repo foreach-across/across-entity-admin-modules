@@ -463,6 +463,11 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 			}
 			return super.createController();
 		}
+
+		@Override
+		public boolean isReadonly() {
+			return EntityPropertiesBinder.this.isReadonly();
+		}
 	}
 
 	@RequiredArgsConstructor
@@ -489,18 +494,13 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 
 		@Override
 		public EntityPropertyBindingContext resolvePropertyBindingContext( EntityPropertyDescriptor propertyDescriptor ) {
-			EntityPropertyBinder propertyBinder = get( propertyDescriptor, autoRegisterPropertyBinders );
+			EntityPropertyDescriptor parentProperty = getParentProperty();
 
-			if ( propertyBinder instanceof SingleEntityPropertyBinder ) {
-				return ( (SingleEntityPropertyBinder) propertyBinder ).getProperties().getLocalValueBindingContext();
+			if ( parentProperty != null && StringUtils.equals( parentProperty.getName(), propertyDescriptor.getName() ) ) {
+				return this;
 			}
 
-			return null;
-		}
-
-		@Override
-		public EntityPropertyBindingContext resolvePropertyBindingContext( String propertyName, EntityPropertyController controller ) {
-			EntityPropertyBinder propertyBinder = get( propertyName, autoRegisterPropertyBinders );
+			EntityPropertyBinder propertyBinder = get( propertyDescriptor, autoRegisterPropertyBinders );
 
 			EntityPropertyBinder targetBinder = propertyBinder instanceof EntityPropertyBinderHolder
 					? ( (EntityPropertyBinderHolder) propertyBinder ).getTarget() : propertyBinder;
@@ -517,6 +517,10 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 			return null;
 		}
 
+		/**
+		 * Create a new binding context that will not automatically register property binders, but can be
+		 * used to resolve a nested binding context for a direct property binder.
+		 */
 		EntityPropertyBindingContext forDirectProperties() {
 			return new EntityPropertiesBinderValueBindingContext( false );
 		}
@@ -553,12 +557,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 			return createPropertyValue( get( propertyDescriptor, false ) );
 		}
 
-		@Override
-		public <U> EntityPropertyValue<U> resolvePropertyValue( @NonNull String propertyName, EntityPropertyController<U> controller ) {
-			applyValuesIfNecessary();
-			return createPropertyValue( get( propertyName, false ) );
-		}
-
 		@SuppressWarnings("unchecked")
 		private <U> EntityPropertyValue<U> createPropertyValue( EntityPropertyBinder propertyBinder ) {
 			if ( propertyBinder != null ) {
@@ -576,12 +574,6 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		@Override
 		public EntityPropertyBindingContext resolvePropertyBindingContext( EntityPropertyDescriptor propertyDescriptor ) {
 			EntityPropertyBinder propertyBinder = get( propertyDescriptor, false );
-			return new EntityPropertyBinderBindingContext( this, propertyBinder );
-		}
-
-		@Override
-		public EntityPropertyBindingContext resolvePropertyBindingContext( String propertyName, EntityPropertyController controller ) {
-			EntityPropertyBinder propertyBinder = get( propertyName, false );
 			return new EntityPropertyBinderBindingContext( this, propertyBinder );
 		}
 	}

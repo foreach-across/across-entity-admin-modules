@@ -17,10 +17,7 @@
 package com.foreach.across.modules.entity.views.helpers;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import com.foreach.across.modules.web.ui.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -49,17 +46,10 @@ public final class PropertyViewElementBuilderWrapper<T extends ViewElement> impl
 
 	@Override
 	public T build( ViewElementBuilderContext builderContext ) {
-		EntityPropertyDescriptor previous = builderContext.getAttribute( EntityPropertyDescriptor.class );
-
-		try {
-			builderContext.setAttribute( EntityPropertyDescriptor.class, propertyDescriptor );
-
+		try (ScopedAttributesViewElementBuilderContext ignore = builderContext.withAttributeOverride( EntityPropertyDescriptor.class, propertyDescriptor )) {
 			T original = targetBuilder.build( builderContext );
 			postProcessors.forEach( pp -> pp.postProcess( builderContext, original ) );
 			return original;
-		}
-		finally {
-			builderContext.setAttribute( EntityPropertyDescriptor.class, previous );
 		}
 	}
 

@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.registry.properties.binding;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.NonNull;
 
 import java.util.HashMap;
@@ -36,8 +37,9 @@ abstract class AbstractEntityPropertyBindingContext implements EntityPropertyBin
 	private final Map<String, EntityPropertyBindingContext> propertyContextMap = new HashMap<>();
 
 	@Override
-	public final EntityPropertyBindingContext resolvePropertyBindingContext( @NonNull String propertyName, EntityPropertyController controller ) {
-		return propertyContextMap.computeIfAbsent( propertyName, key ->
+	public EntityPropertyBindingContext resolvePropertyBindingContext( @NonNull EntityPropertyDescriptor propertyDescriptor ) {
+		EntityPropertyController controller = propertyDescriptor.getController();
+		return propertyContextMap.computeIfAbsent( propertyDescriptor.getTargetPropertyName(), key ->
 				controller != null ? new ChildEntityPropertyBindingContext( this, controller ) : null
 		);
 	}

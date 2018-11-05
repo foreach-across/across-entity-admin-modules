@@ -37,6 +37,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 {
 	MutableEntityPropertyRegistry addressProperties;
 	MutableEntityPropertyRegistry userProperties;
+	MutableEntityPropertyRegistry userWithCityAddressProperties;
 	MutableEntityPropertyRegistry cityProperties;
 	MutableEntityPropertyRegistry cityAddressProperties;
 	MutableEntityPropertyRegistry collectionsProperties;
@@ -50,6 +51,9 @@ abstract class AbstractEntityPropertyBindingContextTest
 	EntityPropertyDescriptor addressCityName;
 	EntityPropertyDescriptor cityAddressCity;
 	EntityPropertyDescriptor cityAddressCityName;
+	EntityPropertyDescriptor userWithCityAddressCityAddress;
+	EntityPropertyDescriptor userWithCityAddressCityAddressCity;
+	EntityPropertyDescriptor userWithCityAddressCityAddressCityName;
 
 	@Before
 	@SuppressWarnings("unchecked")
@@ -60,6 +64,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 		cityProperties = registryProvider.get( City.class );
 		cityAddressProperties = registryProvider.get( CityAddress.class );
 		collectionsProperties = registryProvider.get( CollectionsHolder.class );
+		userWithCityAddressProperties = registryProvider.get( UserWithCityAddress.class );
 
 		addressStreet = addressProperties.getProperty( "street" );
 		userAddress = userProperties.getProperty( "address" );
@@ -78,6 +83,9 @@ abstract class AbstractEntityPropertyBindingContextTest
 		userAddressCity = userProperties.getProperty( "address.city" );
 		cityName = cityProperties.getProperty( "name" );
 		cityAddressCityName = cityAddressProperties.getProperty( "city.name" );
+		userWithCityAddressCityAddress = userWithCityAddressProperties.getProperty( "address" );
+		userWithCityAddressCityAddressCity = userWithCityAddressProperties.getProperty( "address.city" );
+		userWithCityAddressCityAddressCityName = userWithCityAddressProperties.getProperty( "address.city.name" );
 
 		assertThat( addressCity ).isNotNull();
 		assertThat( userAddressCity ).isNotNull();
@@ -125,6 +133,14 @@ abstract class AbstractEntityPropertyBindingContextTest
 	public static class CityAddress
 	{
 		private City city;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class UserWithCityAddress
+	{
+		private CityAddress address;
 	}
 
 	@Data

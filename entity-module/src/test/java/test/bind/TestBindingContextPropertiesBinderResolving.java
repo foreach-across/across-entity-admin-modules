@@ -510,6 +510,28 @@ public class TestBindingContextPropertiesBinderResolving extends AbstractEntityP
 		assertThat( city.getName() ).isEqualTo( "Amsterdam" );
 	}
 
+	@Test
+	public void fetchNestedPropertyValueUsingPropertiesBinderAsBindingContext() {
+		City city = new City( "Brussels" );
+		EntityPropertiesBinder cityBinder = new EntityPropertiesBinder( cityProperties );
+		cityBinder.setTarget( city );
+		assertThat( cityName.getController().fetchValue( cityBinder.asBindingContext() ) ).isEqualTo( "Brussels" );
+
+		CityAddress address = new CityAddress( city );
+		EntityPropertiesBinder addressBinder = new EntityPropertiesBinder( cityAddressProperties );
+		addressBinder.setTarget( address );
+		assertThat( cityAddressCity.getController().fetchValue( addressBinder.asBindingContext() ) ).isEqualTo( city );
+		assertThat( cityAddressCityName.getController().fetchValue( addressBinder.asBindingContext() ) ).isEqualTo( "Brussels" );
+
+		UserWithCityAddress user = new UserWithCityAddress( address );
+		EntityPropertiesBinder userBinder = new EntityPropertiesBinder( userWithCityAddressProperties );
+		userBinder.setTarget( user );
+		assertThat( userWithCityAddressCityAddress.getController().fetchValue( userBinder.asBindingContext() ) ).isEqualTo( address );
+		assertThat( userWithCityAddressCityAddressCity.getController().fetchValue( userBinder.asBindingContext() ) ).isEqualTo( city );
+		assertThat( userWithCityAddressCityAddressCityName.getController().fetchValue( userBinder.asBindingContext() ) )
+				.isEqualTo( "Brussels" );
+	}
+
 	private void assertPropertyValue( EntityPropertyValue<?> propertyValue, Object oldValue, Object newValue, boolean deleted ) {
 		assertThat( propertyValue ).isNotNull();
 		assertThat( propertyValue.getOldValue() ).isEqualTo( oldValue );

@@ -239,7 +239,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		LocaleContextHolder.setLocale( Locale.UK );
 
 		try {
-			when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+			builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
 			when( properties.get( "required" ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( PRINT_DATE );
 
 			TextViewElement text = assembleValue( "required" );
@@ -295,7 +295,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		LocaleContextHolder.setLocale( Locale.UK );
 
 		try {
-			when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+			builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
 			when( properties.get( name ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( value );
 			if ( format != null ) {
 				when( properties.get( name ).hasAttribute( Format.class ) ).thenReturn( true );

@@ -208,7 +208,7 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 		                                 any( TypeDescriptor.class ) ) )
 				.thenReturn( "converted-value" );
 
-		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
 
 		TextareaFormElement textarea = assembleAndVerify( "noValidator", false );
 		assertEquals( "converted-value", textarea.getText() );

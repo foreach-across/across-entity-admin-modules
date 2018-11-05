@@ -32,7 +32,7 @@ public class TestBindingContextSimpleResolving extends AbstractEntityPropertyBin
 		Address address = new Address( "some street" );
 		EntityPropertyBindingContext addressContext = EntityPropertyBindingContext.forReading( address );
 
-		EntityPropertyBindingContext streetContext = addressContext.resolvePropertyBindingContext( "street", addressStreet.getController() );
+		EntityPropertyBindingContext streetContext = addressContext.resolvePropertyBindingContext( addressStreet );
 		assertThat( streetContext ).isNotNull();
 		assertThat( streetContext.isReadonly() ).isTrue();
 		assertThat( streetContext.<String>getEntity() ).isEqualTo( "some street" );
@@ -45,13 +45,13 @@ public class TestBindingContextSimpleResolving extends AbstractEntityPropertyBin
 		User user = new User( new Address( "your street" ) );
 		EntityPropertyBindingContext userContext = EntityPropertyBindingContext.forUpdating( original, user );
 
-		EntityPropertyBindingContext addressContext = userContext.resolvePropertyBindingContext( "address", userAddress.getController() );
+		EntityPropertyBindingContext addressContext = userContext.resolvePropertyBindingContext( userAddress );
 		assertThat( addressContext ).isNotNull();
 		assertThat( addressContext.isReadonly() ).isFalse();
 		assertThat( addressContext.<Address>getEntity() ).isEqualTo( new Address( "your street" ) );
 		assertThat( addressContext.<Address>getTarget() ).isEqualTo( new Address( "your street" ) );
 
-		EntityPropertyBindingContext streetContext = addressContext.resolvePropertyBindingContext( "street", addressStreet.getController() );
+		EntityPropertyBindingContext streetContext = addressContext.resolvePropertyBindingContext( addressStreet );
 		assertThat( streetContext ).isNotNull();
 		assertThat( streetContext.isReadonly() ).isFalse();
 		assertThat( streetContext.<String>getEntity() ).isEqualTo( "your street" );

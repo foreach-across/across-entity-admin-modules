@@ -83,40 +83,12 @@ public interface EntityPropertyBindingContext
 	}
 
 	/**
-	 * Resolve the property value for a given property. Depending on the actual implementation
-	 * the {@link EntityPropertyController} passed in will be used to fetch the actual property value.
-	 *
-	 * @param propertyName name of the property
-	 * @param controller   to be used to fetch the property value
-	 * @param <U>          type of the property
-	 * @return property value, {@code null} if not found
-	 */
-	default <U> EntityPropertyValue<U> resolvePropertyValue( @NonNull String propertyName, EntityPropertyController<U> controller ) {
-		EntityPropertyBindingContext propertyBindingContext = resolvePropertyBindingContext( propertyName, controller );
-		return propertyBindingContext != null ? propertyBindingContext.toPropertyValue() : null;
-	}
-
-	/**
 	 * Resolve a {@link EntityPropertyBindingContext} for a specific child property.
 	 *
 	 * @param propertyDescriptor representing the property
 	 * @return binding context for the property, {@code null} if not found
 	 */
-	default EntityPropertyBindingContext resolvePropertyBindingContext( @NonNull EntityPropertyDescriptor propertyDescriptor ) {
-		return resolvePropertyBindingContext( propertyDescriptor.getName(), propertyDescriptor.getController() );
-	}
-
-	/**
-	 * Resolve a {@link EntityPropertyBindingContext} for a specific child property.
-	 * Depending on the actual implementation the {@link EntityPropertyController} passed in will be
-	 * used to fetch the actual property value. The value will then be used to create a
-	 * new binding context.
-	 *
-	 * @param propertyName name of the property
-	 * @param controller   to be used to fetch the property value
-	 * @return binding context for the property, {@code null} if not found
-	 */
-	EntityPropertyBindingContext resolvePropertyBindingContext( @NonNull String propertyName, EntityPropertyController controller );
+	EntityPropertyBindingContext resolvePropertyBindingContext( @NonNull EntityPropertyDescriptor propertyDescriptor );
 
 	/**
 	 * Create a readonly binding context for an entity.

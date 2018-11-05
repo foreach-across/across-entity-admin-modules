@@ -17,7 +17,7 @@
 package com.foreach.across.modules.entity.bind;
 
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.binding.SimpleEntityPropertyBindingContext;
 import lombok.RequiredArgsConstructor;
 
@@ -52,15 +52,15 @@ class EntityPropertyBinderBindingContext implements EntityPropertyBindingContext
 	}
 
 	@Override
-	public EntityPropertyBindingContext resolvePropertyBindingContext( String propertyName, EntityPropertyController controller ) {
+	public EntityPropertyBindingContext resolvePropertyBindingContext( EntityPropertyDescriptor propertyDescriptor ) {
 		EntityPropertyBinder targetBinder = propertyBinder instanceof EntityPropertyBinderHolder
 				? ( (EntityPropertyBinderHolder) propertyBinder ).getTarget() : propertyBinder;
 
 		if ( targetBinder instanceof SingleEntityPropertyBinder ) {
-			return ( (SingleEntityPropertyBinder) targetBinder ).getProperties().asBindingContext().resolvePropertyBindingContext( propertyName, controller );
+			return ( (SingleEntityPropertyBinder) targetBinder ).getProperties().asBindingContext().resolvePropertyBindingContext( propertyDescriptor );
 		}
 
 		return SimpleEntityPropertyBindingContext.builder().entity( getEntity() ).target( getTarget() ).readonly( isReadonly() ).build()
-		                                         .resolvePropertyBindingContext( propertyName, controller );
+		                                         .resolvePropertyBindingContext( propertyDescriptor );
 	}
 }

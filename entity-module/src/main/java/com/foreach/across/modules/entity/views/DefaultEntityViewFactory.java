@@ -20,7 +20,6 @@ import com.foreach.across.core.support.AttributeSupport;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.support.EntityViewMessageSource;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
@@ -158,7 +157,6 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 		builderContext.setAttribute( EntityViewCommand.class, command );
 
 		EntityPropertiesBinder propertiesBinder = command.getProperties();
-		builderContext.setAttribute( EntityPropertyControlName.class, EntityPropertyControlName.root( "entity" ) );
 
 		if ( entityViewContext.holdsEntity() ) {
 			Object entity = entityViewContext.getEntity();

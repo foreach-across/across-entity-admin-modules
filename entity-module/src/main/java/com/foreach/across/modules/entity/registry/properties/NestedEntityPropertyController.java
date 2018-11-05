@@ -26,22 +26,19 @@ import java.util.function.Supplier;
 
 /**
  * {@link EntityPropertyController} implementation for a nested property, the property value
- * of the parent controller actually supplies the binding context of the child controller.
+ * of the parent {@link EntityPropertyDescriptor} actually supplies the binding context of
+ * the child controller.
  *
  * @author Arne Vandamme
  * @since 3.2.0
  */
 public class NestedEntityPropertyController implements EntityPropertyController, ConfigurableEntityPropertyController<EntityPropertyBindingContext, Object>
 {
-	private final String parentPropertyName;
-	private final EntityPropertyController parent;
+	private final EntityPropertyDescriptor parentPropertyDescriptor;
 	private final GenericEntityPropertyController child;
 
-	public NestedEntityPropertyController( @NonNull String parentPropertyName,
-	                                       @NonNull EntityPropertyController parent,
-	                                       @NonNull EntityPropertyController child ) {
-		this.parentPropertyName = parentPropertyName;
-		this.parent = parent;
+	public NestedEntityPropertyController( @NonNull EntityPropertyDescriptor parentPropertyDescriptor, @NonNull EntityPropertyController child ) {
+		this.parentPropertyDescriptor = parentPropertyDescriptor;
 		this.child = new GenericEntityPropertyController( child );
 	}
 
@@ -151,7 +148,7 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	private EntityPropertyBindingContext childContext( EntityPropertyBindingContext context ) {
-		return context.resolvePropertyBindingContext( parentPropertyName, parent );
+		return context.resolvePropertyBindingContext( parentPropertyDescriptor );
 	}
 
 	@Override

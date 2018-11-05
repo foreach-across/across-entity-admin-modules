@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -27,10 +28,7 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
+import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import com.google.common.collect.ImmutableMap;
@@ -39,7 +37,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -54,8 +51,7 @@ import java.util.LinkedHashMap;
 import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_BUILDER;
 import static com.foreach.across.modules.entity.views.processors.PropertyRenderingViewProcessor.ATTRIBUTE_PROPERTY_DESCRIPTORS;
 import static org.assertj.core.api.Assertions.entry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -92,8 +88,7 @@ public class TestPropertyRenderingViewProcessor
 	@Mock
 	private ViewElementBuilder builderTwo;
 
-	@Mock
-	private ViewElementBuilderContext builderContext;
+	private ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
 
 	@InjectMocks
 	private PropertyRenderingViewProcessor processor;
@@ -233,16 +228,22 @@ public class TestPropertyRenderingViewProcessor
 		ViewElement elementOne = mock( ViewElement.class );
 		ViewElement elementTwo = mock( ViewElement.class );
 		when( builderOne.build( any() ) ).thenReturn( elementOne );
-		when( builderTwo.build( any() ) ).thenReturn( elementTwo );
+
+		doAnswer( invocationOnMock -> {
+			ViewElementBuilderContext builderContext = invocationOnMock.getArgument( 0 );
+			assertFalse( builderContext.getAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, Boolean.class ) );
+			assertNotNull( builderContext.getAttribute( EntityPropertyControlName.class ) );
+
+			return elementTwo;
+		} ).when( builderTwo ).build( any() );
 
 		processor.render( viewRequest, entityView );
 
 		verify( containerBuilder ).add( elementOne );
 		verify( containerBuilder ).add( elementTwo );
 
-		InOrder inOrder = inOrder( builderContext );
-		inOrder.verify( builderContext ).setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, false );
-		inOrder.verify( builderContext ).removeAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES );
+		assertFalse( builderContext.hasAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES ) );
+		assertFalse( builderContext.hasAttribute( EntityPropertyControlName.class ) );
 	}
 
 	@Test
