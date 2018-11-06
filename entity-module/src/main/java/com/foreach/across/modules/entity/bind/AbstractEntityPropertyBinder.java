@@ -55,7 +55,7 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 
 	@Getter
 	@Setter
-	private int sortIndex;
+	private long sortIndex;
 
 	@Setter
 	private String binderPath;

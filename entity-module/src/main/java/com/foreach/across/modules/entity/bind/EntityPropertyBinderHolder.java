@@ -37,12 +37,12 @@ final class EntityPropertyBinderHolder implements EntityPropertyBinder
 	private EntityPropertyBinder target;
 
 	@Override
-	public int getSortIndex() {
+	public long getSortIndex() {
 		return target.getSortIndex();
 	}
 
 	@Override
-	public void setSortIndex( int sortIndex ) {
+	public void setSortIndex( long sortIndex ) {
 		target.setSortIndex( sortIndex );
 	}
 

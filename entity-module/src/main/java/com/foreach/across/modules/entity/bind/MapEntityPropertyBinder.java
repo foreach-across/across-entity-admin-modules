@@ -158,7 +158,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 					.values()
 					.stream()
 					.filter( e -> !e.isDeleted() )
-					.sorted( Comparator.comparingInt( Entry::getSortIndex ) )
+					.sorted( Comparator.comparingLong( Entry::getSortIndex ) )
 					.forEach( item -> map.put( item.getEntryKey(), item.getEntryValue() ) );
 		}
 
@@ -314,7 +314,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 		@Getter
 		@Setter
-		private int sortIndex;
+		private long sortIndex;
 
 		@Getter
 		private final AbstractEntityPropertyBinder key;

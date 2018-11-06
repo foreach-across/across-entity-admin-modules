@@ -38,12 +38,12 @@ final class DirectPropertyEntityPropertyBinder implements EntityPropertyBinder
 	private final EntityPropertyDescriptor descriptor;
 
 	@Override
-	public int getSortIndex() {
+	public long getSortIndex() {
 		return 0;
 	}
 
 	@Override
-	public void setSortIndex( int sortIndex ) {
+	public void setSortIndex( long sortIndex ) {
 
 	}
 

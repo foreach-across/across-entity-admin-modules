@@ -107,8 +107,8 @@ public class TestListEntityPropertyBinder
 				.thenReturn( itemTwo );
 		when( itemOne.getValue() ).thenReturn( 1 );
 		when( itemTwo.getValue() ).thenReturn( 2 );
-		when( itemOne.getSortIndex() ).thenReturn( 1 );
-		when( itemTwo.getSortIndex() ).thenReturn( 2 );
+		when( itemOne.getSortIndex() ).thenReturn( 1L );
+		when( itemTwo.getSortIndex() ).thenReturn( 2L );
 
 		when( binder.getProperties() ).thenReturn( binder );
 		when( binder.get( "prop" ) ).thenReturn( property );
@@ -318,7 +318,7 @@ public class TestListEntityPropertyBinder
 	public void valueSortsTheItems() {
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 
-		when( itemTwo.getSortIndex() ).thenReturn( -1 );
+		when( itemTwo.getSortIndex() ).thenReturn( -1L );
 		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 2, 1 ) );
 	}
 
@@ -329,7 +329,7 @@ public class TestListEntityPropertyBinder
 				.hasSize( 2 )
 				.isEqualTo( Arrays.asList( itemOne, itemTwo ) );
 
-		when( itemTwo.getSortIndex() ).thenReturn( -1 );
+		when( itemTwo.getSortIndex() ).thenReturn( -1L );
 		assertThat( property.getItemList() ).isEqualTo( Arrays.asList( itemTwo, itemOne ) );
 	}
 

@@ -143,12 +143,12 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return items;
 	}
 
-	public Collection<EntityPropertyBinder> getItemList() {
+	public List<EntityPropertyBinder> getItemList() {
 		return Collections.unmodifiableList(
 				getItems()
 						.values()
 						.stream()
-						.sorted( Comparator.comparingInt( EntityPropertyBinder::getSortIndex ) )
+						.sorted( Comparator.comparingLong( EntityPropertyBinder::getSortIndex ) )
 						.collect( Collectors.toList() )
 		);
 	}
@@ -175,7 +175,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 					.values()
 					.stream()
 					.filter( b -> !b.isDeleted() )
-					.sorted( Comparator.comparingInt( EntityPropertyBinder::getSortIndex ) )
+					.sorted( Comparator.comparingLong( EntityPropertyBinder::getSortIndex ) )
 					.map( EntityPropertyBinder::getValue )
 					.toArray( size -> (Object[]) Array.newInstance( memberTypeDescriptor.getObjectType(), size ) );
 

@@ -40,14 +40,14 @@ public interface EntityPropertyBinder
 	/**
 	 * @return Sort index value, only relevant when the property value is part of a (sorted) collection.
 	 */
-	int getSortIndex();
+	long getSortIndex();
 
 	/**
 	 * Set the sort index of a property, only relevant when part of a sorted collection.
 	 *
 	 * @param sortIndex of this property
 	 */
-	void setSortIndex( int sortIndex );
+	void setSortIndex( long sortIndex );
 
 	/**
 	 * Set the value of this property as bound using a data binder.

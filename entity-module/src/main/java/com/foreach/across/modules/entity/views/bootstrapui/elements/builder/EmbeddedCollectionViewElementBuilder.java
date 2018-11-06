@@ -222,7 +222,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 	private NodeViewElementBuilder createItemRowBuilder( EntityPropertyControlName.ForProperty.BinderProperty propertyControlName,
 	                                                     String itemKey,
-	                                                     int sortIndex,
+	                                                     long sortIndex,
 	                                                     String removeItemMessage ) {
 		return div()
 				.data( ROLE, "item" )
