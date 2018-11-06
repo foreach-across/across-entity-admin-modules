@@ -125,6 +125,20 @@ public class TestSingleEntityPropertyBinder
 	}
 
 	@Test
+	public void settingBoundToTrueMarksAsDirty() {
+		assertThat( property.isDirty() ).isFalse();
+		property.setBound( true );
+		assertThat( property.isDirty() ).isTrue();
+	}
+
+	@Test
+	public void settingBoundToFalseDoesNotImpactDirty() {
+		assertThat( property.isDirty() ).isFalse();
+		property.setBound( false );
+		assertThat( property.isDirty() ).isFalse();
+	}
+
+	@Test
 	public void propertyNotDirtyIfValueIsBeingFetched() {
 		assertThat( property.getOriginalValue() ).isEqualTo( 1 );
 		assertThat( property.getValue() ).isEqualTo( 1 );
@@ -187,6 +201,7 @@ public class TestSingleEntityPropertyBinder
 	@Test
 	public void boundButNotSetValueModifies() {
 		property.setBound( true );
+		assertThat( property.isDirty() ).isTrue();
 		assertThat( property.isModified() ).isTrue();
 	}
 

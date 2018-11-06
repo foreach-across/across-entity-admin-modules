@@ -178,6 +178,20 @@ public class TestMapEntityPropertyBinder
 	}
 
 	@Test
+	public void settingBoundToTrueMarksAsDirty() {
+		assertThat( property.isDirty() ).isFalse();
+		property.setBound( true );
+		assertThat( property.isDirty() ).isTrue();
+	}
+
+	@Test
+	public void settingBoundToFalseDoesNotImpactDirty() {
+		assertThat( property.isDirty() ).isFalse();
+		property.setBound( false );
+		assertThat( property.isDirty() ).isFalse();
+	}
+
+	@Test
 	public void propertyNotDirtyIfValueIsBeingFetched() {
 		assertThat( property.getOriginalValue() ).isNotNull();
 		assertThat( property.getValue() ).isNotNull();
@@ -405,6 +419,7 @@ public class TestMapEntityPropertyBinder
 		property.enableBinding( true );
 		property.setBound( true );
 		assertThat( property.isModified() ).isTrue();
+		assertThat( property.isDirty() ).isTrue();
 
 		property.enableBinding( false );
 		assertThat( property.isModified() ).isTrue();
@@ -414,6 +429,7 @@ public class TestMapEntityPropertyBinder
 	@Test
 	public void boundButItemsFetchedDoesNotModify() {
 		property.setBound( true );
+		assertThat( property.isDirty() ).isTrue();
 		assertThat( property.getEntries() ).hasSize( 1 );
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 		assertThat( property.isModified() ).isFalse();

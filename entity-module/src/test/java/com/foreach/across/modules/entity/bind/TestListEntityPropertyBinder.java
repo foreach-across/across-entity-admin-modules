@@ -284,6 +284,20 @@ public class TestListEntityPropertyBinder
 	}
 
 	@Test
+	public void settingBoundToTrueMarksAsDirty() {
+		assertThat( property.isDirty() ).isFalse();
+		property.setBound( true );
+		assertThat( property.isDirty() ).isTrue();
+	}
+
+	@Test
+	public void settingBoundToFalseDoesNotImpactDirty() {
+		assertThat( property.isDirty() ).isFalse();
+		property.setBound( false );
+		assertThat( property.isDirty() ).isFalse();
+	}
+
+	@Test
 	public void addingAnItemMarksAsDirty() {
 		Map<String, EntityPropertyBinder> items = property.getItems();
 		assertThat( property.isDirty() ).isFalse();
@@ -352,6 +366,7 @@ public class TestListEntityPropertyBinder
 	public void boundButNotSetValueModifies() {
 		property.enableBinding( true );
 		property.setBound( true );
+		assertThat( property.isDirty() ).isTrue();
 		assertThat( property.isModified() ).isTrue();
 
 		property.enableBinding( false );
@@ -362,6 +377,7 @@ public class TestListEntityPropertyBinder
 	@Test
 	public void boundButItemsFetchedDoesNotModify() {
 		property.setBound( true );
+		assertThat( property.isDirty() ).isTrue();
 		assertThat( property.getItems() ).hasSize( 2 );
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 		assertThat( property.isModified() ).isFalse();

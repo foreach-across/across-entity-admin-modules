@@ -41,7 +41,6 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	private final EntityPropertyController controller;
 
 	@Getter
-	@Setter
 	private boolean bound;
 
 	@Getter
@@ -72,6 +71,14 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 
 	String getBinderPath( String target ) {
 		return binderPath + ( StringUtils.isNotEmpty( target ) ? "." + target : "" );
+	}
+
+	@Override
+	public final void setBound( boolean bound ) {
+		this.bound = bound;
+		if ( bound ) {
+			markDirty();
+		}
 	}
 
 	@Override
