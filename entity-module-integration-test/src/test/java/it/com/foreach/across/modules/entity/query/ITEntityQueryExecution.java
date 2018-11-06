@@ -175,7 +175,7 @@ public class ITEntityQueryExecution extends AbstractQueryTest
 	@Test
 	public void notContains() {
 		findCompanies( "representatives not contains " + john.getId(), three );
-		findCompanies( "representatives not contains (" + john.getId() + "," + joe.getId() + ")", one, three );
+		findCompanies( "representatives not contains (" + john.getId() + "," + joe.getId() + ")", three );
 		findCompanies( "representatives not contains (" + joe.getId() + "," + peter.getId() + ")", one, three );
 	}
 
