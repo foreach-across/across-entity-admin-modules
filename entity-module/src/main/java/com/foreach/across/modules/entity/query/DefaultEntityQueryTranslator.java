@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.entity.query;
 
+import com.foreach.across.modules.entity.query.support.ContainsEntityQueryConditionTranslator;
+import com.foreach.across.modules.entity.query.support.InEntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.util.EntityUtils;
@@ -26,6 +28,7 @@ import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -53,6 +56,10 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 
 	private EQTypeConverter typeConverter;
 	private EntityPropertyRegistry propertyRegistry;
+
+	private final Collection<EntityQueryConditionTranslator> defaultConditionTranslators = Arrays.asList(
+			ContainsEntityQueryConditionTranslator.INSTANCE, InEntityQueryConditionTranslator.INSTANCE
+	);
 
 	public void setPropertyRegistry( EntityPropertyRegistry propertyRegistry ) {
 		this.propertyRegistry = propertyRegistry;
@@ -118,9 +125,12 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 			throw new EntityQueryParsingException.IllegalField( condition.getProperty() );
 		}
 
-		if ( ( IN.equals( condition.getOperand() ) || NOT_IN.equals( condition.getOperand() ) )
-				&& collectionContainsNullValue( condition.getArguments() ) ) {
-			return expandCollectionExpressionWithNullValue( condition );
+		for ( EntityQueryConditionTranslator translator : defaultConditionTranslators ) {
+			EntityQueryExpression translated = translator.translate( condition );
+
+			if ( translated != condition ) {
+				return translated;
+			}
 		}
 
 		EntityQueryCondition translated = new EntityQueryCondition();
@@ -147,50 +157,9 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 			}
 		}
 
-		if ( ( CONTAINS.equals( condition.getOperand() ) || NOT_CONTAINS.equals( condition.getOperand() ) )
-				&& EQGroup.class.isAssignableFrom( condition.getFirstArgument().getClass() ) ) {
-			EntityQuery expression = EntityQuery.or();
-
-			Arrays.stream( ( (EQGroup) condition.getFirstArgument() ).getValues() )
-			      .map( arg -> new EntityQueryCondition( condition.getProperty(), condition.getOperand(), arg ) )
-			      .forEach( expression::add );
-
-			return expression;
-		}
-
 		convertTextContainsToLike( translated, expectedType );
 
 		return translated;
-	}
-
-	private boolean collectionContainsNullValue( Object[] arguments ) {
-		if ( arguments.length == 1 && arguments[0] instanceof EQGroup ) {
-			return collectionContainsNullValue( ( (EQGroup) arguments[0] ).getValues() );
-		}
-		return ArrayUtils.contains( arguments, EQValue.NULL ) || ArrayUtils.contains( arguments, null );
-	}
-
-	private EntityQueryExpression expandCollectionExpressionWithNullValue( EntityQueryCondition condition ) {
-		Object[] nonNullArguments = filterCollectionArguments( condition.getArguments() );
-
-		EntityQuery query = new EntityQuery( IN.equals( condition.getOperand() ) ? OR : AND );
-		if ( nonNullArguments.length > 0 ) {
-			query.add( new EntityQueryCondition( condition.getProperty(), condition.getOperand(), nonNullArguments ) );
-		}
-		query.add( new EntityQueryCondition( condition.getProperty(), IN.equals( condition.getOperand() ) ? IS_NULL : IS_NOT_NULL ) );
-
-		return query;
-	}
-
-	private Object[] filterCollectionArguments( Object[] arguments ) {
-		if ( arguments.length == 1 && arguments[0] instanceof EQGroup ) {
-			return new Object[] { new EQGroup(
-					Stream.of( filterCollectionArguments( ( (EQGroup) arguments[0] ).getValues() ) )
-					      .map( EQType.class::cast )
-					      .toArray( EQType[]::new )
-			) };
-		}
-		return Stream.of( arguments ).filter( arg -> !EQValue.NULL.equals( arg ) && arg != null ).toArray();
 	}
 
 	private EntityQueryOps findTypeSpecificOperand( EntityQueryOps operand, TypeDescriptor expectedType ) {

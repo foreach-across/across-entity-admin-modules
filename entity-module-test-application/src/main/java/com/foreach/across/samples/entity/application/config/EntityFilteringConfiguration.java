@@ -244,8 +244,13 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		             )
 		             .listView( lvb -> lvb.entityQueryPredicate( "name not like 'small people%'" )
 		                                  .showProperties( "name", "userCount" )
-		                                  .entityQueryFilter( eql -> eql.basicMode( true ).advancedMode( true ).properties(
-				                                  props -> props.property( "name" ).attribute( ENTITY_QUERY_OPERAND, EntityQueryOps.LIKE_IC ) ) ) )
+		                                  .entityQueryFilter( eql -> eql.basicMode( true )
+		                                                                .showProperties( "name", "users" )
+		                                                                .multiValue( "users" )
+		                                                                .advancedMode( true )
+		                                                                .properties( props -> props.property( "name" )
+		                                                                                           .attribute( ENTITY_QUERY_OPERAND,
+		                                                                                                       EntityQueryOps.LIKE_IC ) ) ) )
 		             .association(
 				             ab -> ab.name( "user.group" )
 				                     .associationType( EntityAssociation.Type.EMBEDDED )

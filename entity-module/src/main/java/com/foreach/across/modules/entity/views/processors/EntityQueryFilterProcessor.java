@@ -258,6 +258,8 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		          .map( MutableEntityPropertyDescriptor.class::cast )
 		          .peek( prop -> {
 			          if ( prop.getPropertyTypeDescriptor() != null ) {
+				          // ensure manual handling of EQL filtering properties
+				          prop.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.MANUAL );
 				          prop.setAttribute( EntityAttributes.CONTROL_NAME, "extensions[" + PARAM_PROPERTIES + "][" + prop.getName() + "]" );
 				          EntityQueryRequestValueFetcher valueFetcher = new EntityQueryRequestValueFetcher(
 						          prop, retrieveEntityQueryOperand( prop ), filterConfiguration.isMultiValue( prop.getName() )

@@ -72,14 +72,6 @@ public class EntityQueryRequestProperty
 		translatedValues.addAll( Arrays.asList( arguments ) );
 	}
 
-	public boolean hasSingleRawValue() {
-		return rawValues.size() == 1;
-	}
-
-	public Object getSingleRawValue() {
-		return hasSingleRawValue() ? rawValues.get( 0 ) : null;
-	}
-
 	/**
 	 * Checks whether there is a null value present.
 	 * If there is a single raw value that is an {@link EQGroup}, the values within the group will be searched.
@@ -89,6 +81,11 @@ public class EntityQueryRequestProperty
 	public boolean hasNullValue() {
 		if ( hasSingleRawValue() ) {
 			Object singleValue = getSingleRawValue();
+
+			if ( EQValue.NULL.equals( singleValue ) ) {
+				return true;
+			}
+
 			return singleValue instanceof EQGroup && ArrayUtils.contains( ( (EQGroup) singleValue ).getValues(), EQValue.NULL );
 		}
 
@@ -96,6 +93,14 @@ public class EntityQueryRequestProperty
 				isSingleConditionWithOperand( IS_EMPTY ) ||
 				rawValues.contains( EQValue.NULL );
 
+	}
+
+	public boolean hasSingleRawValue() {
+		return rawValues.size() == 1;
+	}
+
+	public Object getSingleRawValue() {
+		return hasSingleRawValue() ? rawValues.get( 0 ) : null;
 	}
 
 	public boolean hasSingleTranslatedValue() {

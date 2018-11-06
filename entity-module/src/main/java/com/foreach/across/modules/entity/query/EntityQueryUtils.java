@@ -16,6 +16,15 @@
 
 package com.foreach.across.modules.entity.query;
 
+import lombok.NonNull;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
 /**
  * @author Steven Gentens
  * @since 2.2.0
@@ -70,5 +79,90 @@ public abstract class EntityQueryUtils
 		}
 
 		return existing;
+	}
+
+	/**
+	 * Perform simple condition translation on an {@link EntityQuery}, for example to remove conditions.
+	 * For more complex translation scenarios, see the {@link EntityQueryTranslator} implementations.
+	 * <p/>
+	 * If no properties are specified all conditions will be translated. Else only conditions for the specified
+	 * properties will be passed to the translator.
+	 *
+	 * @param query      to translate
+	 * @param translator function, may return {@code null} to remove a condition entirely
+	 * @param properties optional a set of properties whose conditions should be translated, if empty all properties will be passed
+	 * @return new query instance - never {@code null}
+	 */
+	public static EntityQuery translateConditions( @NonNull EntityQuery query,
+	                                               @NonNull Function<EntityQueryCondition, EntityQueryExpression> translator,
+	                                               String... properties ) {
+		EntityQuery translated = new EntityQuery( query.getOperand() );
+		translated.setSort( query.getSort() );
+
+		query.getExpressions()
+		     .stream()
+		     .map(
+				     expression -> {
+					     if ( expression instanceof EntityQueryCondition ) {
+						     EntityQueryCondition condition = (EntityQueryCondition) expression;
+
+						     if ( properties.length == 0 || ArrayUtils.contains( properties, condition.getProperty() ) ) {
+							     return translator.apply( condition );
+						     }
+						     return condition;
+					     }
+					     return translateConditions( (EntityQuery) expression, translator, properties );
+				     }
+		     )
+		     .filter( Objects::nonNull )
+		     .forEach( translated::add );
+
+		return translated;
+	}
+
+	/**
+	 * Simplifies a query by removing useless levels (grouping of predicates).
+	 *
+	 * @param query to simplify
+	 * @return simplified
+	 */
+	public static EntityQuery simplify( @NonNull EntityQuery query ) {
+		EntityQuery simplified = new EntityQuery();
+		simplified.setSort( query.getSort() );
+		AtomicReference<EntityQueryOps> finalOperand = new AtomicReference<>();
+		simplify( finalOperand, query ).forEach( simplified::add );
+		simplified.setOperand( finalOperand.get() != null ? finalOperand.get() : query.getOperand() );
+		return simplified;
+	}
+
+	private static Stream<EntityQueryExpression> simplify( AtomicReference<EntityQueryOps> parentOperand, EntityQueryExpression expression ) {
+		if ( expression instanceof EntityQueryCondition ) {
+			return Stream.of( expression );
+		}
+
+		return simplify( parentOperand, (EntityQuery) expression );
+	}
+
+	private static Stream<EntityQueryExpression> simplify( AtomicReference<EntityQueryOps> parentOperand, EntityQuery query ) {
+		List<EntityQueryExpression> expressions = query.getExpressions();
+
+		if ( expressions.isEmpty() ) {
+			return Stream.empty();
+		}
+
+		if ( expressions.size() == 1 ) {
+			return simplify( parentOperand, expressions.get( 0 ) );
+		}
+
+		if ( parentOperand.get() == null ) {
+			parentOperand.set( query.getOperand() );
+		}
+
+		if ( query.getOperand() == parentOperand.get() ) {
+			return expressions.stream()
+			                  .flatMap( e -> simplify( parentOperand, e ) );
+		}
+
+		return Stream.of( query );
 	}
 }
