@@ -131,17 +131,17 @@ class ScopedConfigurableEntityPropertyController<T, U> implements ConfigurableEn
 	}
 
 	@Override
-	public <X, V> ConfigurableEntityPropertyController<X, V> withEntity( Class<X> entityType, Class<V> propertyType ) {
+	public <X, V> ConfigurableEntityPropertyController<X, V> withEntity( Class<? super X> entityType, Class<? super V> propertyType ) {
 		return parent.withEntity( entityType, propertyType );
 	}
 
 	@Override
-	public <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<X> targetType, Class<V> propertyType ) {
+	public <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<? super X> targetType, Class<? super V> propertyType ) {
 		return parent.withTarget( targetType, propertyType );
 	}
 
 	@Override
-	public <V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<V> propertyType ) {
+	public <V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<? super V> propertyType ) {
 		return parent.withBindingContext( propertyType );
 	}
 }

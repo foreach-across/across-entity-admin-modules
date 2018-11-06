@@ -103,17 +103,17 @@ public class NestedEntityPropertyController implements EntityPropertyController,
 	}
 
 	@Override
-	public <X, V> ConfigurableEntityPropertyController<X, V> withEntity( Class<X> entityType, Class<V> propertyType ) {
+	public <X, V> ConfigurableEntityPropertyController<X, V> withEntity( Class<? super X> entityType, Class<? super V> propertyType ) {
 		return child.withEntity( entityType, propertyType );
 	}
 
 	@Override
-	public <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<X> targetType, Class<V> propertyType ) {
+	public <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<? super X> targetType, Class<? super V> propertyType ) {
 		return child.withTarget( targetType, propertyType );
 	}
 
 	@Override
-	public <V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<V> propertyType ) {
+	public <V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<? super V> propertyType ) {
 		return child.withBindingContext( propertyType );
 	}
 

@@ -225,17 +225,17 @@ public class GenericEntityPropertyController implements EntityPropertyController
 	}
 
 	@Override
-	public <X, V> ConfigurableEntityPropertyController<X, V> withEntity( Class<X> entityType, Class<V> propertyType ) {
+	public <X, V> ConfigurableEntityPropertyController<X, V> withEntity( Class<? super X> entityType, Class<? super V> propertyType ) {
 		return new ScopedConfigurableEntityPropertyController<>( this, EntityPropertyBindingContext::getEntity );
 	}
 
 	@Override
-	public <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<X> entityType, Class<V> propertyType ) {
+	public <X, V> ConfigurableEntityPropertyController<X, V> withTarget( Class<? super X> entityType, Class<? super V> propertyType ) {
 		return new ScopedConfigurableEntityPropertyController<>( this, EntityPropertyBindingContext::getTarget );
 	}
 
 	@Override
-	public <V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<V> propertyType ) {
+	public <V> ConfigurableEntityPropertyController<EntityPropertyBindingContext, V> withBindingContext( Class<? super V> propertyType ) {
 		return new ScopedConfigurableEntityPropertyController<>( this, ctx -> ctx );
 	}
 }
