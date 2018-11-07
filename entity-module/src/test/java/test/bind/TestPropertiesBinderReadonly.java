@@ -16,10 +16,7 @@
 
 package test.bind;
 
-import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
-import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
-import com.foreach.across.modules.entity.bind.MapEntityPropertyBinder;
-import com.foreach.across.modules.entity.bind.SingleEntityPropertyBinder;
+import com.foreach.across.modules.entity.bind.*;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
@@ -63,6 +60,36 @@ public class TestPropertiesBinderReadonly extends AbstractEntityPropertyBindingC
 	}
 
 	@Test
+	public void listItemListAlwaysReturnsOrderedItems() {
+		CollectionsHolder collectionsHolder = new CollectionsHolder(
+				"testHolder",
+				Arrays.asList( new City( "Antwerp" ), new City( "Brussels" ) ),
+				Collections.emptyMap()
+		);
+
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( collectionsProperties );
+		binder.setEntity( collectionsHolder );
+
+		ListEntityPropertyBinder cities = (ListEntityPropertyBinder) binder.get( "cities" );
+		EntityPropertyBinder antwerp = cities.getItems().get( "0" );
+		assertThat( antwerp.getItemKey() ).isEqualTo( "0" );
+		EntityPropertyBinder brussels = cities.getItems().get( "1" );
+		assertThat( brussels.getItemKey() ).isEqualTo( "1" );
+
+		assertThat( antwerp.getSortIndex() ).isEqualTo( 0L );
+		assertThat( brussels.getSortIndex() ).isEqualTo( 1L );
+		assertThat( cities.getItemList() ).containsExactly( antwerp, brussels );
+
+		brussels.setSortIndex( -1L );
+		assertThat( cities.getItemList() ).containsExactly( brussels, antwerp );
+
+		EntityPropertyBinder newItem = cities.getItems().get( "AMS" );
+		assertThat( newItem.getItemKey() ).isEqualTo( "AMS" );
+		newItem.setSortIndex( -10L );
+		assertThat( cities.getItemList() ).containsExactly( newItem, brussels, antwerp );
+	}
+
+	@Test
 	public void mapEntryListAlwaysReturnsOrderedEntries() {
 		CollectionsHolder collectionsHolder = new CollectionsHolder(
 				"testHolder",
@@ -87,5 +114,10 @@ public class TestPropertiesBinderReadonly extends AbstractEntityPropertyBindingC
 
 		two.setSortIndex( -1L );
 		assertThat( addressMap.getEntryList() ).containsExactly( two, one );
+
+		MapEntityPropertyBinder.Entry newEntry = addressMap.getEntries().get( "3" );
+		assertThat( newEntry.getEntryKey() ).isEqualTo( "3" );
+		newEntry.setSortIndex( -10L );
+		assertThat( addressMap.getEntryList() ).containsExactly( newEntry, two, one );
 	}
 }

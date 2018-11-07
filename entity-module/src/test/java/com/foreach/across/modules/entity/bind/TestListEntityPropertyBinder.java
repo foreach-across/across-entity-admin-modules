@@ -234,8 +234,10 @@ public class TestListEntityPropertyBinder
 
 		verify( itemOne, never() ).setSortIndex( anyLong() );
 		verify( itemOne ).setSortIndexInternal( 0L );
+		verify( itemOne ).setItemKey( "0" );
 		verify( itemTwo, never() ).setSortIndex( anyLong() );
 		verify( itemTwo ).setSortIndexInternal( 1L );
+		verify( itemTwo ).setItemKey( "1" );
 	}
 
 	@Test
