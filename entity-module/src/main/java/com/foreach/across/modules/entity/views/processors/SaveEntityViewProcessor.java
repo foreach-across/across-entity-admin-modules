@@ -194,6 +194,9 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 					command.getProperties().createController().save();
 				}
 
+				// clear the binder to force properties to be reloaded, in case redirect does not happen
+				command.getProperties().clear();
+
 				entityViewPageHelper.addGlobalFeedbackAfterRedirect( entityViewRequest, Style.SUCCESS,
 				                                                     isNew ? "feedback.entityCreated" : "feedback.entityUpdated" );
 

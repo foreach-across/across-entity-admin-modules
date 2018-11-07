@@ -86,7 +86,7 @@ public class TestPropertiesBinderNestedProperties extends AbstractEntityProperti
 	public void bindingMapPropertyOnCustomTypeProperty() {
 		bind(
 				"properties[holder].properties[id].value=10",
-				"properties[holder].properties[dummies].entries[1].entryKey=x",
+				"properties[holder].properties[dummies].entries[1].key.value=x",
 				"properties[holder].properties[dummies].entries[1].value.value=1",
 				"properties[holder].properties[dummies].entries[2].key.value=y",
 				"properties[holder].properties[dummies].entries[2].value.properties[id].value=5",

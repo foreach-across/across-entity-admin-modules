@@ -127,6 +127,16 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return binder.createPropertyBinder( memberDescriptor );
 	}
 
+	/**
+	 * Get the map of items to bind on. This is the actual target for adding items.
+	 * Note that entries in this map are not sorted according to the {@link EntityPropertyBinder#getSortIndex()},
+	 * use {@link #getItemList()} if you want to iterate over the items in order. The item key is available
+	 * under {@link EntityPropertyBinder#getItemKey()}.
+	 * <p/>
+	 * Includes all items, including ones with {@link EntityPropertyBinder#isDeleted()} {@code true}.
+	 *
+	 * @return modifiable map
+	 */
 	public Map<String, EntityPropertyBinder> getItems() {
 		if ( items == null ) {
 			val originalValue = loadOriginalValue();
@@ -143,6 +153,14 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return items;
 	}
 
+	/**
+	 * Get an ordered - unmodifiable - list of all the items. These will be sorted according to the value of
+	 * {@link EntityPropertyBinder#getSortIndex()}.
+	 * <p/>
+	 * Includes all items, including ones with {@link EntityPropertyBinder#isDeleted()} {@code true}.
+	 *
+	 * @return unmodifiable list of all items in order
+	 */
 	public List<EntityPropertyBinder> getItemList() {
 		return Collections.unmodifiableList(
 				getItems()
@@ -211,7 +229,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 				else {
 					item.setValueInternal( v );
 				}
-				item.setSortIndex( index++ );
+				item.setSortIndexInternal( index++ );
 				items.put( key, item );
 			}
 		}
@@ -292,6 +310,7 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 			if ( item == null ) {
 				AbstractEntityPropertyBinder itemBinder = createItem();
+				itemBinder.setItemKey( itemKey );
 				itemBinder.setBinderPath( getBinderPath( "items[" + itemKey + "]" ) );
 
 				markDirty();

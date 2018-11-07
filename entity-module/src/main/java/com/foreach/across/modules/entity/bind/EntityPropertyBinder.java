@@ -38,6 +38,14 @@ import org.springframework.validation.Errors;
 public interface EntityPropertyBinder
 {
 	/**
+	 * Contains the item key for this property binder. Only set and relevant in case
+	 * the binder is a member of a collection, represented by a parent {@link ListEntityPropertyBinder}.
+	 *
+	 * @return item key - only set when part of a {@link ListEntityPropertyBinder}
+	 */
+	String getItemKey();
+
+	/**
 	 * @return Sort index value, only relevant when the property value is part of a (sorted) collection.
 	 */
 	long getSortIndex();

@@ -34,7 +34,6 @@ import org.springframework.http.MediaType;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
@@ -122,7 +121,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		String removeItemMessage = builderContext.getMessage( "properties." + propertyName + "[removeItem]", "" );
 		String addItemMessage = builderContext.getMessage( "properties." + propertyName + "[addItem]", "" );
 
-		Map<String, EntityPropertyBinder> items = binder.getItems();
+		List<EntityPropertyBinder> items = binder.getItemList();
 
 		if ( readonly && items.isEmpty() ) {
 			return paragraph().css( "form-control-static" ).build( builderContext );
@@ -179,6 +178,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 		return script( MediaType.TEXT_HTML )
 				.data( ROLE, "edit-item-template" )
+				.data( "next-item-index", System.currentTimeMillis() )
 				.data( "template-prefix", controlName.toItemPath() )
 				.add( createItemRowBuilder( controlName, null, Integer.MAX_VALUE, removeItemMessage ) )
 				.postProcessor(
@@ -191,29 +191,28 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 
 	private NodeViewElement itemRows( ViewElementBuilderContext builderContext,
 	                                  EntityPropertyControlName.ForProperty controlName,
-	                                  Map<String, EntityPropertyBinder> items,
+	                                  List<EntityPropertyBinder> items,
 	                                  String removeItemMessage ) {
 		NodeViewElement itemRows = new NodeViewElement( "div" );
 		itemRows.setAttribute( "data-role", "items" );
 		itemRows.addCssClass( "embedded-collection-items" );
 
-		int position = 0;
-		int total = items.size();
-
-		for ( Map.Entry<String, EntityPropertyBinder> entry : items.entrySet() ) {
+		int lastIndex = items.size() - 1;
+		for ( int i = 0; i < items.size(); i++ ) {
+			EntityPropertyBinder item = items.get( i );
 			EntityPropertyControlName.ForProperty.BinderProperty itemControlName = controlName.asCollectionItem()
-			                                                                                  .withIndex( position )
-			                                                                                  .withBinderItemKey( entry.getKey() )
+			                                                                                  .withIndex( i )
+			                                                                                  .withBinderItemKey( item.getItemKey() )
 			                                                                                  .asBinderItem();
 
-			IteratorItemStats<Object> itemStats = new IteratorItemStatsImpl<>( entry.getValue().getValue(), position, position < total );
+			IteratorItemStats<Object> itemStats = new IteratorItemStatsImpl<>( item.getValue(), i, i == lastIndex );
 			IteratorViewElementBuilderContext itemContext = new IteratorViewElementBuilderContext<>( itemStats );
 			itemContext.setAttribute( EntityPropertyControlName.class, itemControlName.withInitializedValue() );
-			itemContext.setAttribute( EntityPropertyBinder.class, entry.getValue() );
+			itemContext.setAttribute( EntityPropertyBinder.class, item );
 			itemContext.setParentContext( builderContext );
 
 			itemRows.addChild(
-					createItemRowBuilder( itemControlName, entry.getKey(), entry.getValue().getSortIndex(), removeItemMessage ).build( itemContext )
+					createItemRowBuilder( itemControlName, item.getItemKey(), item.getSortIndex(), removeItemMessage ).build( itemContext )
 			);
 		}
 

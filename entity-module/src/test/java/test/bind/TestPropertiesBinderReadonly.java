@@ -16,11 +16,15 @@
 
 package test.bind;
 
-import com.foreach.across.modules.entity.bind.*;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
+import com.foreach.across.modules.entity.bind.MapEntityPropertyBinder;
+import com.foreach.across.modules.entity.bind.SingleEntityPropertyBinder;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,8 +58,34 @@ public class TestPropertiesBinderReadonly extends AbstractEntityPropertyBindingC
 		assertThat( ( (SingleEntityPropertyBinder) cities.getItems().get( "0" ) ).getProperties().get( "name" ).getValue() ).isEqualTo( "Antwerp" );
 
 		MapEntityPropertyBinder addressMap = (MapEntityPropertyBinder) binder.get( "addressMap" );
-		assertThat( ( (EntityPropertyBinder) addressMap.getEntries().get( "0" ).getKey() ).getValue() ).isEqualTo( "one" );
-		assertThat( ( (EntityPropertyBinder) addressMap.getEntries().get( "0" ).getValue() ).getValue() ).isEqualTo( new Address( "street 1" ) );
+		assertThat( addressMap.getEntries().get( "0" ).getKey().getValue() ).isEqualTo( "one" );
+		assertThat( addressMap.getEntries().get( "0" ).getValue().getValue() ).isEqualTo( new Address( "street 1" ) );
+	}
 
+	@Test
+	public void mapEntryListAlwaysReturnsOrderedEntries() {
+		CollectionsHolder collectionsHolder = new CollectionsHolder(
+				"testHolder",
+				Collections.emptyList(),
+				ImmutableMap.of( "one", new Address( "street 1" ), "two", new Address( "street 2" ) )
+		);
+
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( collectionsProperties );
+		binder.setEntity( collectionsHolder );
+
+		MapEntityPropertyBinder addressMap = (MapEntityPropertyBinder) binder.get( "addressMap" );
+		MapEntityPropertyBinder.Entry one = addressMap.getEntries().get( "0" );
+		assertThat( one.getKey().getValue() ).isEqualTo( "one" );
+		assertThat( one.getEntryKey() ).isEqualTo( "0" );
+		MapEntityPropertyBinder.Entry two = addressMap.getEntries().get( "1" );
+		assertThat( two.getKey().getValue() ).isEqualTo( "two" );
+		assertThat( two.getEntryKey() ).isEqualTo( "1" );
+
+		assertThat( one.getSortIndex() ).isEqualTo( 0L );
+		assertThat( two.getSortIndex() ).isEqualTo( 1L );
+		assertThat( addressMap.getEntryList() ).containsExactly( one, two );
+
+		two.setSortIndex( -1L );
+		assertThat( addressMap.getEntryList() ).containsExactly( two, one );
 	}
 }

@@ -156,6 +156,7 @@ public class TestListEntityPropertyBinder
 
 		property.getItems().get( "random" ).setValue( 33 );
 		verify( random ).setValue( 33 );
+		verify( random ).setItemKey( "random" );
 		when( random.getValue() ).thenReturn( 33 );
 
 		assertThat( property.getValue() ).isEqualTo( Arrays.asList( 33, 1, 2 ) );
@@ -230,6 +231,11 @@ public class TestListEntityPropertyBinder
 
 		assertThat( items.get( "1" ) ).isSameAs( itemTwo );
 		verify( itemTwo ).setValueInternal( 2 );
+
+		verify( itemOne, never() ).setSortIndex( anyLong() );
+		verify( itemOne ).setSortIndexInternal( 0L );
+		verify( itemTwo, never() ).setSortIndex( anyLong() );
+		verify( itemTwo ).setSortIndexInternal( 1L );
 	}
 
 	@Test
@@ -295,6 +301,15 @@ public class TestListEntityPropertyBinder
 		assertThat( property.isDirty() ).isFalse();
 		property.setBound( false );
 		assertThat( property.isDirty() ).isFalse();
+	}
+
+	@Test
+	public void settingDifferentSortIndexMarksDirty() {
+		assertThat( property.isDirty() ).isFalse();
+		property.setSortIndex( 0 );
+		assertThat( property.isDirty() ).isFalse();
+		property.setSortIndex( 1 );
+		assertThat( property.isDirty() ).isTrue();
 	}
 
 	@Test

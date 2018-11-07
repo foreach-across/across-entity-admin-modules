@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 var EmbeddedCollection = function( element ) {
-    var index = 0;
-
     var wrapper = element;
 
     var filter = function( results ) {
@@ -28,6 +26,7 @@ var EmbeddedCollection = function( element ) {
     var editItemTemplate = filter( wrapper.find( '[data-role=edit-item-template]' ) ).first();
 
     var templatePrefix = editItemTemplate.attr( 'data-template-prefix' );
+    var nextItemIndex = editItemTemplate.data( 'next-item-index' );
     var targetPrefix = wrapper.attr( 'data-item-format' );
 
     var parentItem = wrapper.closest( '[data-item-prefix]' );
@@ -38,8 +37,6 @@ var EmbeddedCollection = function( element ) {
         targetPrefix = targetPrefix.replace( parentTemplate, parentPrefix );
     }
 
-    index = items.find( '.form-group' ).length;
-
     filter( items.find( '[data-action=remove-item]' ) )
             .click( function( e ) {
                 e.preventDefault();
@@ -48,7 +45,8 @@ var EmbeddedCollection = function( element ) {
 
     filter( wrapper.find( '[data-action=add-item]' ) )
             .click( function() {
-                var id = 'item-' + index++;
+                var sortIndex = nextItemIndex++;
+                var id = 'item-' + sortIndex;
                 var target = targetPrefix.replace( '{{key}}', id );
 
                 var template = $( BootstrapUiModule.refTarget( editItemTemplate ).html() );
@@ -74,7 +72,7 @@ var EmbeddedCollection = function( element ) {
                 } );
 
                 template.find( '[name="' + target + '.sortIndex"]' )
-                        .attr( 'value', 10 + index );
+                        .attr( 'value', sortIndex );
 
                 items.append( template );
 

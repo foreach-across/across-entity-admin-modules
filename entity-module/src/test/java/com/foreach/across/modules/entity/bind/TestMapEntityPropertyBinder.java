@@ -185,6 +185,27 @@ public class TestMapEntityPropertyBinder
 	}
 
 	@Test
+	public void deletingAnEntryMarksAsDirty() {
+		MapEntityPropertyBinder.Entry entry = property.getEntries().get( "0" );
+		assertThat( entry ).isNotNull();
+		assertThat( property.isDirty() ).isFalse();
+		entry.setDeleted( true );
+		assertThat( property.isDirty() ).isTrue();
+		assertThat( property.isDeleted() ).isFalse();
+	}
+
+	@Test
+	public void settingDifferentSortIndexMarksAsDirty() {
+		MapEntityPropertyBinder.Entry entry = property.getEntries().get( "0" );
+		assertThat( entry.getSortIndex() ).isEqualTo( 0 );
+		assertThat( property.isDirty() ).isFalse();
+		entry.setSortIndex( 0 );
+		assertThat( property.isDirty() ).isFalse();
+		entry.setSortIndex( 1 );
+		assertThat( property.isDirty() ).isTrue();
+	}
+
+	@Test
 	public void settingBoundToFalseDoesNotImpactDirty() {
 		assertThat( property.isDirty() ).isFalse();
 		property.setBound( false );
@@ -329,7 +350,7 @@ public class TestMapEntityPropertyBinder
 	@Test
 	public void valueIsInitializedWithOriginalValueWithIncrementalBinding() {
 		property.enableBinding( true );
-		property.setUpdateItemsOnBinding( true );
+		property.setUpdateEntriesOnBinding( true );
 
 		assertThat( property.getEntries() ).hasSize( 1 );
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
@@ -448,7 +469,7 @@ public class TestMapEntityPropertyBinder
 	public void boundDuringBindingButUpdatingDoesNotClearItems() {
 		property.enableBinding( true );
 		property.setBound( true );
-		property.setUpdateItemsOnBinding( true );
+		property.setUpdateEntriesOnBinding( true );
 		assertThat( property.isDeleted() ).isFalse();
 		assertThat( property.getValue() ).isEqualTo( ORIGINAL_VALUE );
 		assertThat( property.getEntries() ).hasSize( 1 );
@@ -570,7 +591,7 @@ public class TestMapEntityPropertyBinder
 		assertThat( property.validate( errors, "hint" ) ).isTrue();
 		assertThat( errors.getErrorCount() ).isEqualTo( 0 );
 
-		property.getEntries().get( "0" ).setEntryKey( "do nothing" );
+		property.getEntries().get( "0" ).getKey().setValue( "do nothing" );
 
 		doAnswer( invocation -> {
 			Errors err = invocation.getArgument( 0 );

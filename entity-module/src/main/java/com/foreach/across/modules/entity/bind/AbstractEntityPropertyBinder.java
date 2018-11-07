@@ -47,6 +47,14 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	private boolean deleted;
 
 	/**
+	 * Contains the item key for this property binder. Only set and relevant in case
+	 * the binder is a member of a collection, represented by a parent {@link ListEntityPropertyBinder}.
+	 */
+	@Getter
+	@Setter(value = AccessLevel.PACKAGE)
+	private String itemKey;
+
+	/**
 	 * The original value that was fetched when the property was initialized.
 	 * If {@code null} the original value has never been fetched.
 	 */
@@ -54,7 +62,6 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	private Optional<Object> originalValue;
 
 	@Getter
-	@Setter
 	private long sortIndex;
 
 	@Setter
@@ -142,6 +149,18 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 	}
 
 	abstract void setValueInternal( Object value );
+
+	@Override
+	public void setSortIndex( long sortIndex ) {
+		if ( sortIndex != this.sortIndex ) {
+			markDirty();
+			this.sortIndex = sortIndex;
+		}
+	}
+
+	void setSortIndexInternal( long sortIndex ) {
+		this.sortIndex = sortIndex;
+	}
 
 	@Override
 	public Object createNewValue() {

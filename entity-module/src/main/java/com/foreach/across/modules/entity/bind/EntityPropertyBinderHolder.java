@@ -37,6 +37,11 @@ final class EntityPropertyBinderHolder implements EntityPropertyBinder
 	private EntityPropertyBinder target;
 
 	@Override
+	public String getItemKey() {
+		return target.getItemKey();
+	}
+
+	@Override
 	public long getSortIndex() {
 		return target.getSortIndex();
 	}

@@ -214,11 +214,11 @@ public class TestPropertiesBinderSimpleProperties extends AbstractEntityProperti
 
 	@Test
 	public void mapWithSimpleKeyAndSimpleValueType() {
-		bind( "properties[stringLongMap].entries[x].entryValue=1",
-		      "properties[stringLongMap].entries[y].entryKey=hello",
-		      "properties[stringLongMap].entries[y].entryValue=2",
-		      "properties[stringLongMap].entries[z].entryKey=olleh",
-		      "properties[stringLongMap].entries[z].entryValue=",
+		bind( "properties[stringLongMap].entries[x].value.value=1",
+		      "properties[stringLongMap].entries[y].key.value=hello",
+		      "properties[stringLongMap].entries[y].value.value=2",
+		      "properties[stringLongMap].entries[z].key.value=olleh",
+		      "properties[stringLongMap].entries[z].value.value=",
 		      "properties[stringLongMap].entries[z].sortIndex=-1" );
 
 		assertMap( "stringLongMap" )
@@ -232,11 +232,11 @@ public class TestPropertiesBinderSimpleProperties extends AbstractEntityProperti
 
 	@Test
 	public void mapWithSimpleKeyAndCustomValueType() {
-		bind( "properties[longDummyMap].entries[x].entryKey=1",
-		      "properties[longDummyMap].entries[x].entryValue=1",
-		      "properties[longDummyMap].entries[y].entryKey=-1",
-		      "properties[longDummyMap].entries[y].entryValue=",
-		      "properties[longDummyMap].entries[z].entryKey=2",
+		bind( "properties[longDummyMap].entries[x].key.value=1",
+		      "properties[longDummyMap].entries[x].value.value=1",
+		      "properties[longDummyMap].entries[y].key.value=-1",
+		      "properties[longDummyMap].entries[y].value.value=",
+		      "properties[longDummyMap].entries[z].key.value=2",
 		      "properties[longDummyMap].entries[z].value.initializedValue.id=5",
 		      "properties[longDummyMap].entries[z].value.initializedValue.name=Hello" );
 

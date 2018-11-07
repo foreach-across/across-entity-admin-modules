@@ -28,6 +28,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.Errors;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents a property value that is a {@link java.util.Map} implementation.
@@ -52,20 +53,20 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	private final TypeDescriptor keyTypeDescriptor;
 
 	private boolean bindingBusy;
-	private boolean itemsInitialized;
+	private boolean entriesInitialized;
 	private boolean initializedValuePathWasUsed;
 
 	private Entry template;
 	private Map<String, Entry> entries;
 
 	/**
-	 * If set to {@code true}, the existing items will always be returned when performing data binding,
-	 * and every item separately can be removed/modified. If {@code false}, then it is expected that all
-	 * items are passed when data binding (replacing them). This is the default mode.
+	 * If set to {@code true}, the existing entries will always be returned when performing data binding,
+	 * and every entry separately can be removed/modified. If {@code false}, then it is expected that all
+	 * entries are passed when data binding (replacing them). The latter is the default mode.
 	 */
 	@Getter
 	@Setter
-	private boolean updateItemsOnBinding;
+	private boolean updateEntriesOnBinding;
 
 	MapEntityPropertyBinder( EntityPropertiesBinder binder,
 	                         EntityPropertyDescriptor collectionDescriptor,
@@ -89,14 +90,14 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	}
 
 	/**
-	 * Initialized template item for a single member of this map.
+	 * Initialized template entry for a single member of this map.
 	 * Not meant to be modified but can be used to create blank values for a new member.
 	 *
-	 * @return template item controller
+	 * @return template entry controller
 	 */
 	public Entry getTemplate() {
 		if ( template == null ) {
-			template = createItem( "" );
+			template = createEntry( "" );
 		}
 		return template;
 	}
@@ -120,7 +121,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 		Object originalValue = loadOriginalValue();
 
-		if ( !itemsInitialized && originalValue == null ) {
+		if ( !entriesInitialized && originalValue == null ) {
 			setValue( createNewValue() );
 		}
 
@@ -129,7 +130,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 	@Override
 	public boolean isModified() {
-		return isDeleted() || ( ( isBound() || itemsInitialized ) && !Objects.equals( loadOriginalValue(), getValue() ) );
+		return isDeleted() || ( ( isBound() || entriesInitialized ) && !Objects.equals( loadOriginalValue(), getValue() ) );
 	}
 
 	public Map<String, Entry> getEntries() {
@@ -138,14 +139,32 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 			entries = new Entries();
 
-			if ( ( !bindingBusy || updateItemsOnBinding ) && collectionController != null ) {
+			if ( ( !bindingBusy || updateEntriesOnBinding ) && collectionController != null ) {
 				setValueInternal( originalValue );
 			}
 		}
 
-		itemsInitialized = true;
+		entriesInitialized = true;
 
 		return entries;
+	}
+
+	/**
+	 * Get an ordered - unmodifiable - list of all the entries in the map.
+	 * These will be sorted according to the value of {@link Entry#getSortIndex()}.
+	 * <p/>
+	 * Includes all entries, including ones where {@link Entry#isDeleted()} is {@code true}.
+	 *
+	 * @return unmodifiable list of all entries in order
+	 */
+	public List<Entry> getEntryList() {
+		return Collections.unmodifiableList(
+				getEntries()
+						.values()
+						.stream()
+						.sorted( Comparator.comparingLong( Entry::getSortIndex ) )
+						.collect( Collectors.toList() )
+		);
 	}
 
 	@Override
@@ -159,7 +178,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 					.stream()
 					.filter( e -> !e.isDeleted() )
 					.sorted( Comparator.comparingLong( Entry::getSortIndex ) )
-					.forEach( item -> map.put( item.getEntryKey(), item.getEntryValue() ) );
+					.forEach( entry -> map.put( entry.getKey().getValue(), entry.getValue().getValue() ) );
 		}
 
 		return binder.convertIfNecessary( map, collectionTypeDescriptor, getBinderPath( "entries" ) );
@@ -167,7 +186,7 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 
 	@Override
 	void setValueInternal( Object value ) {
-		itemsInitialized = true;
+		entriesInitialized = true;
 
 		if ( entries == null ) {
 			loadOriginalValue();
@@ -182,21 +201,21 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 			                                                    getBinderPath( "value" ) );
 
 			int index = 0;
-			for ( val entry : values.entrySet() ) {
+			for ( val originalEntry : values.entrySet() ) {
 				String key = "" + index;
-				Entry item = new Entry( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
-				item.getKey().setOriginalValue( entry.getKey() );
-				item.getValue().setOriginalValue( entry.getValue() );
+				Entry newEntry = new Entry( key, binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
+				newEntry.getKeyInternal().setOriginalValue( originalEntry.getKey() );
+				newEntry.getValueInternal().setOriginalValue( originalEntry.getValue() );
 				if ( super.isDirty() ) {
-					item.getKey().setValue( entry.getKey() );
-					item.getValue().setValue( entry.getValue() );
+					newEntry.getKey().setValue( originalEntry.getKey() );
+					newEntry.getValue().setValue( originalEntry.getValue() );
 				}
 				else {
-					item.getKey().setValueInternal( entry.getKey() );
-					item.getValue().setValueInternal( entry.getValue() );
+					newEntry.getKeyInternal().setValueInternal( originalEntry.getKey() );
+					newEntry.getValueInternal().setValueInternal( originalEntry.getValue() );
 				}
-				item.setSortIndex( index++ );
-				entries.put( key, item );
+				newEntry.setSortIndexInternal( index++ );
+				entries.put( key, newEntry );
 			}
 		}
 	}
@@ -239,8 +258,8 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	}
 
 	/**
-	 * While binding is enabled, the items collection will not remove any (possibly) deleted items.
-	 * When explicitly disabling binding, the items will be cleared of any deleted items and will be
+	 * While binding is enabled, the entries collection will not remove any (possibly) deleted entries.
+	 * When explicitly disabling binding, the entries will be cleared of any deleted entries and will be
 	 * fully cleared if the property itself is deleted.
 	 *
 	 * @param enabled true if in binding mode, false if not expecting any more changes
@@ -271,75 +290,84 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return null;
 	}
 
-	private Entry createItem( String key ) {
-		Entry item = new Entry( binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
+	private Entry createEntry( String key ) {
+		Entry entry = new Entry( key, binder.createPropertyBinder( keyDescriptor ), binder.createPropertyBinder( valueDescriptor ) );
 
 		if ( String.class.equals( keyTypeDescriptor.getObjectType() ) ) {
-			item.getKey().setValueInternal( key );
+			entry.getKeyInternal().setValueInternal( key );
 		}
 
-		return item;
+		return entry;
 	}
 
 	/**
-	 * Creates a new item for every key requested.
+	 * Creates a new entry for every key requested.
 	 */
 	class Entries extends TreeMap<String, Entry>
 	{
 		@Override
 		public Entry get( Object key ) {
-			String itemKey = (String) key;
-			Entry item = super.get( itemKey );
+			String entryKey = (String) key;
+			Entry entry = super.get( entryKey );
 
-			if ( item == null ) {
-				item = createItem( itemKey );
+			if ( entry == null ) {
+				entry = createEntry( entryKey );
 				markDirty();
-				super.put( itemKey, item );
+				super.put( entryKey, entry );
 			}
 
-			return item;
+			return entry;
 		}
 	}
 
 	/**
-	 * Single item.
+	 * Single entry in a map property.
 	 */
 	@RequiredArgsConstructor
 	@SuppressWarnings("all")
 	public class Entry
 	{
 		@Getter
-		@Setter
+		private final String entryKey;
+
+		@Getter
 		private boolean deleted;
 
 		@Getter
-		@Setter
 		private long sortIndex;
 
 		@Getter
-		private final AbstractEntityPropertyBinder key;
+		private final EntityPropertyBinder key;
 
 		@Getter
-		private final AbstractEntityPropertyBinder value;
+		private final EntityPropertyBinder value;
 
-		public void setEntryKey( Object key ) {
-			this.key.setValue( key );
+		public void setDeleted( boolean deleted ) {
+			this.deleted = deleted;
+			markDirty();
 		}
 
-		public void setEntryValue( Object value ) {
-			this.value.setValue( value );
+		public void setSortIndex( long sortIndex ) {
+			if ( sortIndex != this.sortIndex ) {
+				this.sortIndex = sortIndex;
+				markDirty();
+			}
 		}
 
-		public Object getEntryKey() {
-			return key.getValue();
-		}
-
-		public Object getEntryValue() {
-			return value.getValue();
+		private void setSortIndexInternal( long sortIndex ) {
+			this.sortIndex = sortIndex;
 		}
 
 		private boolean isDirty() {
 			return key.isDirty() || value.isDirty();
+		}
+
+		private AbstractEntityPropertyBinder getKeyInternal() {
+			return (AbstractEntityPropertyBinder) key;
+		}
+
+		private AbstractEntityPropertyBinder getValueInternal() {
+			return (AbstractEntityPropertyBinder) value;
 		}
 	}
 }
