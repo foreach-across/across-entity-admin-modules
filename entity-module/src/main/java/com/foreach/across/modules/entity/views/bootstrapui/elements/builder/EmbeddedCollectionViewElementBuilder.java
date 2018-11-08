@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
@@ -136,7 +137,10 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		else {
 			list.addCssClass( "js-embedded-collection-form-group" );
 			list.setAttribute( "data-item-format", templateControlName.toItemPath() );
-			list.addChild( collectionErrorHolder( controlName.forHandlingType( EntityPropertyHandlingType.forProperty( propertyDescriptor ) ) ) );
+			list.addChild(
+					formGroupControl( controlName.forHandlingType( EntityPropertyHandlingType.forProperty( propertyDescriptor ) ),
+					                  EntityAttributes.isRequired( propertyDescriptor ) )
+			);
 		}
 
 		list.addChild( itemRows( builderContext, controlName, items, removeItemMessage ) );
@@ -153,11 +157,19 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		return list;
 	}
 
-	private ViewElement collectionErrorHolder( EntityPropertyControlName controlName ) {
+	/**
+	 * Represents the control that should be detected by a {@link FormGroupElement} for flagging the group
+	 * as required and detecting the binding errors.
+	 */
+	private ViewElement formGroupControl( EntityPropertyControlName controlName, boolean required ) {
 		HiddenFormElement hidden = new HiddenFormElement();
 		hidden.setControlName( controlName.toString() );
 		hidden.setDisabled( true );
-		return hidden.toFormControl();
+
+		FormControlElement control = hidden.toFormControl();
+		control.setRequired( required );
+
+		return control;
 	}
 
 	private ViewElement boundIndicator( EntityPropertyControlName.ForProperty controlName ) {
