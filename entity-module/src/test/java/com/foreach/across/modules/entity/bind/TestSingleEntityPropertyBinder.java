@@ -25,6 +25,7 @@ import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.TypeDescriptor;
@@ -308,24 +309,6 @@ public class TestSingleEntityPropertyBinder
 	}
 
 	@Test
-	public void saveFlushesToTheControllerWithTheOriginalValue() {
-		when( controller.save( bindingContext, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
-		assertThat( property.save() ).isTrue();
-
-		property.setValue( 123 );
-		assertThat( property.save() ).isFalse();
-		verify( controller ).save( bindingContext, new EntityPropertyValue<>( 1, 123, false ) );
-	}
-
-	@Test
-	public void saveWithNullIfDeleted() {
-		when( controller.save( bindingContext, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
-		property.setBound( true );
-		assertThat( property.save() ).isTrue();
-		verify( controller ).save( bindingContext, new EntityPropertyValue<>( 1, null, true ) );
-	}
-
-	@Test
 	public void validateOnValue() {
 		Errors errors = new BeanPropertyBindingResult( binder, "" );
 		errors.pushNestedPath( "properties[prop]" );
@@ -533,5 +516,64 @@ public class TestSingleEntityPropertyBinder
 		when( addressProperty.resolvePropertyBinder( street ) ).thenReturn( streetProperty );
 
 		assertThat( property.resolvePropertyBinder( street ) ).isSameAs( streetProperty );
+	}
+
+	@Test
+	public void saveFlushesToTheControllerWithTheOriginalValue() {
+		when( controller.save( bindingContext, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
+		assertThat( property.save() ).isTrue();
+
+		property.setValue( 123 );
+		assertThat( property.save() ).isFalse();
+		verify( controller ).save( bindingContext, new EntityPropertyValue<>( 1, 123, false ) );
+	}
+
+	@Test
+	public void saveWithNullIfDeleted() {
+		when( controller.save( bindingContext, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
+		property.setBound( true );
+		assertThat( property.save() ).isTrue();
+		verify( controller ).save( bindingContext, new EntityPropertyValue<>( 1, null, true ) );
+	}
+
+	@Test
+	public void ifNotDeletedAndPropertiesPresentControllerIsUsed() {
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		EntityPropertiesBinderController propertiesController = mock( EntityPropertiesBinderController.class );
+		when( childBinder.createController() ).thenReturn( propertiesController );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
+
+		assertThat( property.getProperties() ).isNotNull();
+
+		when( propertiesController.addEntitySaveCallback( any() ) ).thenReturn( propertiesController );
+
+		when( controller.save( bindingContext, new EntityPropertyValue<>( 1, 1, false ) ) ).thenReturn( true );
+
+		assertThat( property.save() ).isTrue();
+		verify( controller, never() ).save( any(), any() );
+
+		ArgumentCaptor<Runnable> runnable = ArgumentCaptor.forClass( Runnable.class );
+		verify( propertiesController ).addEntitySaveCallback( runnable.capture() );
+		verify( propertiesController ).save();
+
+		runnable.getValue().run();
+
+		verify( controller ).save( bindingContext, new EntityPropertyValue<>( 1, 1, false ) );
+	}
+
+	@Test
+	public void ifDeletedPresentPropertiesAreIgnoredForSave() {
+		ChildPropertyPropertiesBinder childBinder = mock( ChildPropertyPropertiesBinder.class );
+		when( binder.createChildPropertyPropertiesBinder() ).thenReturn( childBinder );
+
+		assertThat( property.getProperties() ).isNotNull();
+
+		when( controller.save( bindingContext, new EntityPropertyValue<>( 1, null, true ) ) ).thenReturn( true );
+
+		property.setDeleted( true );
+		assertThat( property.save() ).isTrue();
+
+		verify( childBinder, never() ).createController();
+		verify( controller ).save( bindingContext, new EntityPropertyValue<>( 1, null, true ) );
 	}
 }

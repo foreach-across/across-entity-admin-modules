@@ -240,10 +240,10 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 	public boolean validate( Errors errors, Object... validationHints ) {
 		int beforeValidate = errors.getErrorCount();
 
-		getItems()
-				.forEach( ( key, item ) -> {
+		getItemList()
+				.forEach( item -> {
 					try {
-						errors.pushNestedPath( "items[" + key + "]" );
+						errors.pushNestedPath( "items[" + item.getItemKey() + "]" );
 						item.validate( errors, validationHints );
 					}
 					finally {
@@ -264,6 +264,21 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		}
 
 		return beforeValidate >= errors.getErrorCount();
+	}
+
+	@Override
+	public boolean save() {
+		boolean saved = false;
+
+		if ( !isDeleted() ) {
+			for ( EntityPropertyBinder item : getItemList() ) {
+				saved |= item.save();
+			}
+		}
+
+		saved |= super.save();
+
+		return saved;
 	}
 
 	/**

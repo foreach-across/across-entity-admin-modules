@@ -23,6 +23,7 @@ import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.TypeDescriptor;
@@ -532,7 +533,34 @@ public class TestListEntityPropertyBinder
 	}
 
 	@Test
+	public void saveSavesIndividualItemsFirstIfNotDeleted() {
+		when( itemOne.save() ).thenReturn( true );
+		when( itemTwo.save() ).thenReturn( false );
+		when( collectionController.save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( false );
+
+		assertThat( property.save() ).isTrue();
+
+		InOrder inOrder = inOrder( itemOne, itemTwo, collectionController );
+		inOrder.verify( itemOne ).save();
+		inOrder.verify( itemTwo ).save();
+		inOrder.verify( collectionController ).save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) );
+	}
+
+	@Test
+	public void saveIgnoresIndividualItemsIfDeleted() {
+		when( collectionController.save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) ) )
+				.thenReturn( true );
+		property.setDeleted( true );
+		assertThat( property.save() ).isTrue();
+		verify( collectionController ).save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyList(), true ) );
+
+		verifyZeroInteractions( itemOne, itemTwo );
+	}
+
+	@Test
 	public void validate() {
+		when( itemOne.getItemKey() ).thenReturn( "0" );
+
 		Errors errors = new BeanPropertyBindingResult( binder, "" );
 		errors.pushNestedPath( "properties[prop]" );
 

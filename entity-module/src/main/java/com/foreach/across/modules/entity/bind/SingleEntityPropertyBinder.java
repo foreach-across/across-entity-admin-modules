@@ -175,6 +175,19 @@ public final class SingleEntityPropertyBinder extends AbstractEntityPropertyBind
 		return beforeValidate >= errors.getErrorCount();
 	}
 
+	@Override
+	public boolean save() {
+		if ( properties == null || isDeleted() ) {
+			return super.save();
+		}
+
+		properties.createController()
+		          .addEntitySaveCallback( super::save )
+		          .save();
+
+		return true;
+	}
+
 	/**
 	 * Resolve the {@link EntityPropertyBinder} for the property descriptor.
 	 * If the descriptor represents a nested property, intermediate binders might get initialized

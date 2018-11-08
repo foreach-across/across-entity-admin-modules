@@ -584,6 +584,30 @@ public class TestMapEntityPropertyBinder
 	}
 
 	@Test
+	public void saveSavesIndividualEntriesFirstIfNotDeleted() {
+		when( key.save() ).thenReturn( true );
+		when( value.save() ).thenReturn( false );
+		when( collectionController.save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) ) ).thenReturn( false );
+		assertThat( property.save() ).isTrue();
+
+		InOrder inOrder = inOrder( key, value, collectionController );
+		inOrder.verify( key ).save();
+		inOrder.verify( value ).save();
+		inOrder.verify( collectionController ).save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, ORIGINAL_VALUE, false ) );
+	}
+
+	@Test
+	public void saveIgnoresIndividualEntriesIfDeleted() {
+		when( collectionController.save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) ) )
+				.thenReturn( true );
+		property.setDeleted( true );
+		assertThat( property.save() ).isTrue();
+		verify( collectionController ).save( bindingContext, new EntityPropertyValue<>( ORIGINAL_VALUE, Collections.emptyMap(), true ) );
+
+		verifyZeroInteractions( key, value );
+	}
+
+	@Test
 	public void validate() {
 		Errors errors = new BeanPropertyBindingResult( binder, "" );
 		errors.pushNestedPath( "properties[prop]" );

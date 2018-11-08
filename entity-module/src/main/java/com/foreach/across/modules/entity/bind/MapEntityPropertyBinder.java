@@ -257,6 +257,22 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 		return beforeValidate >= errors.getErrorCount();
 	}
 
+	@Override
+	public boolean save() {
+		boolean saved = false;
+
+		if ( !isDeleted() ) {
+			for ( Entry entry : getEntryList() ) {
+				saved |= entry.getKey().save();
+				saved |= entry.getValue().save();
+			}
+		}
+
+		saved |= super.save();
+
+		return saved;
+	}
+
 	/**
 	 * While binding is enabled, the entries collection will not remove any (possibly) deleted entries.
 	 * When explicitly disabling binding, the entries will be cleared of any deleted entries and will be
