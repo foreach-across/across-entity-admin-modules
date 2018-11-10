@@ -188,10 +188,20 @@ public class EntityViewElementUtils
 					? attrPropertyValue.getValue().getNewValue() : attrPropertyBinder.getValue().getValue();
 		}
 
-		PriorityValue<EntityPropertyBindingContext> bindingContext = currentBindingContextValue( builderContext );
+		if ( attrPropertyValue.isLocalAttribute() ) {
+			return attrPropertyValue.getValue().getNewValue();
+		}
+
+		if ( attrPropertyBinder.isLocalAttribute() ) {
+			return Optional.ofNullable( attrPropertyBinder.getValue().resolvePropertyBinder( descriptor ) )
+			               .map( EntityPropertyBinder::getValue )
+			               .orElse( null );
+		}
 
 		int propertyValuePriority = attrPropertyValue.isEmpty() ? Integer.MAX_VALUE : attrPropertyValue.getAncestorLevel();
 		int propertyBinderPriority = attrPropertyBinder.isEmpty() ? Integer.MAX_VALUE : attrPropertyBinder.getAncestorLevel();
+
+		PriorityValue<EntityPropertyBindingContext> bindingContext = currentBindingContextValue( builderContext, false );
 		int bindingContextPriority = bindingContext.priority;
 
 		if ( propertyValuePriority <= propertyBinderPriority && propertyValuePriority <= bindingContextPriority ) {
@@ -212,10 +222,10 @@ public class EntityViewElementUtils
 	}
 
 	static EntityPropertyBindingContext currentBindingContext( @NonNull ViewElementBuilderContext builderContext ) {
-		return currentBindingContextValue( builderContext ).value;
+		return currentBindingContextValue( builderContext, true ).value;
 	}
 
-	private static PriorityValue<EntityPropertyBindingContext> currentBindingContextValue( ViewElementBuilderContext builderContext ) {
+	private static PriorityValue<EntityPropertyBindingContext> currentBindingContextValue( ViewElementBuilderContext builderContext, boolean alwaysResolve ) {
 		InheritedAttributeValue<EntityPropertyBindingContext> attrBindingContext = builderContext.findAttribute( EntityPropertyBindingContext.class );
 
 		if ( attrBindingContext.isLocalAttribute() ) {
@@ -226,6 +236,12 @@ public class EntityViewElementUtils
 		InheritedAttributeValue<EntityPropertyBinder> attrPropertyBinder = builderContext.findAttribute( EntityPropertyBinder.class );
 
 		if ( attrPropertyBinder.filter( SingleEntityPropertyBinder.class::isInstance ).isPresent() ) {
+
+			if ( !alwaysResolve ) {
+				// don't return the binding context, property binder should be used directly
+				return new PriorityValue<>( null, Integer.MAX_VALUE );
+			}
+
 			if ( attrPropertyBinder.isLocalAttribute() ) {
 				return new PriorityValue<>(
 						attrPropertyBinder.map( SingleEntityPropertyBinder.class::cast )

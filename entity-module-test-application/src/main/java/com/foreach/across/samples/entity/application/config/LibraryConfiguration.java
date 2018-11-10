@@ -16,6 +16,7 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
@@ -35,6 +36,7 @@ import org.springframework.format.annotation.NumberFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -77,6 +79,9 @@ public class LibraryConfiguration implements EntityConfigurer
 		        .properties(
 				        props -> props.property( "books[]" )
 				                      .attribute( Printer.class, ( book, locale ) -> ( (Book) book ).getTitle() )
+				                      .and()
+				                      .property( "discounts[]" )
+				                      .attribute( NumericFormElementConfiguration.class, NumericFormElementConfiguration.percent( 2, true ) )
 		        )
 		        .attribute(
 				        ( configuration, attributes ) ->
@@ -99,6 +104,7 @@ public class LibraryConfiguration implements EntityConfigurer
 		library.setId( "example" );
 		library.setName( "Some library" );
 		library.setTypeOfBooks( EnumSet.of( TypeOfBooks.FICTION, TypeOfBooks.NON_FICTION ) );
+		library.setDiscounts( Arrays.asList( new BigDecimal( "15.00" ), new BigDecimal( "12.5" ) ) );
 
 		Book book = new Book();
 		book.setTitle( "Lord of the Rings" );
@@ -110,7 +116,7 @@ public class LibraryConfiguration implements EntityConfigurer
 
 		Publication publication = new Publication();
 		publication.setNumber( 1 );
-		publication.setListPrice( 22 );
+		publication.setListPrice( new BigDecimal( "22" ) );
 		publication.setPublicationDate( ZonedDateTime.now() );
 		publication.setWritingDuration( Duration.ofDays( 100 ) );
 		book.setPublications( Collections.singletonList( publication ) );
@@ -167,6 +173,8 @@ public class LibraryConfiguration implements EntityConfigurer
 		@Length(max = 100)
 		private String name;
 
+		private List<BigDecimal> discounts = Collections.emptyList();
+
 		@NotNull
 		private Set<TypeOfBooks> typeOfBooks = Collections.emptySet();
 
@@ -177,6 +185,7 @@ public class LibraryConfiguration implements EntityConfigurer
 			Library l = new Library();
 			l.id = id;
 			l.name = name;
+			l.setDiscounts( new ArrayList<>( discounts ) );
 			l.setBooks( books.stream().map( Book::copy ).collect( Collectors.toList() ) );
 			l.setTypeOfBooks( new HashSet<>( typeOfBooks ) );
 			return l;
@@ -223,7 +232,7 @@ public class LibraryConfiguration implements EntityConfigurer
 		private Duration writingDuration;
 
 		@NumberFormat(style = NumberFormat.Style.CURRENCY)
-		private Integer listPrice;
+		private BigDecimal listPrice;
 
 		public Publication copy() {
 			Publication p = new Publication();
