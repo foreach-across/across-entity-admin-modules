@@ -172,7 +172,7 @@ class EntityModuleAdminMenuRegistrar
 	                                                                  EntityViewContext menuViewContext,
 	                                                                  AllowableActions allowableActions ) {
 		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
-		EntityConfiguration entityConfiguration = entityViewContext.getEntityConfiguration();
+		EntityConfiguration entityConfiguration = menuViewContext.getEntityConfiguration();
 		boolean shouldLinkToDetailView = Boolean.TRUE.equals( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) )
 				&& !entityViewRequest.isForView( EntityView.UPDATE_VIEW_NAME );
 		boolean isContextForDetailView = !allowableActions.contains( AllowableAction.UPDATE )

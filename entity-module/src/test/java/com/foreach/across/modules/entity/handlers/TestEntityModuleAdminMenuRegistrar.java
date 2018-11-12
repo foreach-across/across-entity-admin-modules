@@ -188,51 +188,19 @@ public class TestEntityModuleAdminMenuRegistrar
 	}
 
 	@Test
-	public void deleteShouldRedirectToUpdate() {
-		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
-				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
-		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
-
-		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-	}
-
-	@Test
-	public void deleteShouldRedirectToDetailNoUpdatePermission() {
-		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
-				.thenReturn( new AllowableActionSet( AllowableAction.READ.getId(), AllowableAction.DELETE.getId() ) );
-		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
-
-		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-	}
-
-	@Test
-	public void deleteShouldRedirectToDetail() {
-		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
-				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
-		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
-		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( true );
-
-		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-	}
-
-	@Test
-	public void deleteShouldLinkToDetailByDefault() {
-		when( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ).thenReturn( true );
-		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
-				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
-		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
-
-		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
-	}
-
-	@Test
 	public void updateForRootContext() {
+		when( entityConfiguration.getAttribute( EntityAttributes.LINK_TO_DETAIL_VIEW ) ).thenReturn( false );
 		when( entityConfiguration.getAllowableActions( entityAdminMenu.getEntity() ) )
 				.thenReturn( FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS );
 		when( entityAdminMenuEvent.isForUpdate() ).thenReturn( true );
 		when( entityAdminMenuEvent.getViewContext() ).thenReturn( rootViewContext );
+		when( rootViewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
+		Menu menu = menuBuilder.build();
+		assertThat( menu.getItems() ).isNotEmpty();
+		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNull();
+		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNotNull();
 	}
 
 	@Test
@@ -247,6 +215,10 @@ public class TestEntityModuleAdminMenuRegistrar
 		when( viewRequest.isForView( EntityView.DETAIL_VIEW_NAME ) ).thenReturn( true );
 
 		adminMenuRegistrar.entityMenu( entityAdminMenuEvent );
+		Menu menu = menuBuilder.build();
+		assertThat( menu.getItems() ).isNotEmpty();
+		assertThat( menu.getItemWithPath( "/admin/item/1" ) ).isNotNull();
+		assertThat( menu.getItemWithPath( "/admin/item/1/update" ) ).isNull();
 	}
 
 	class Item
