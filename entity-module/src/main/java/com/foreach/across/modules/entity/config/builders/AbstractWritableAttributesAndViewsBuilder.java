@@ -23,6 +23,7 @@ import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
+import com.foreach.across.modules.entity.views.builders.FormViewInitializer;
 import lombok.NonNull;
 
 import java.util.ArrayDeque;
@@ -39,14 +40,10 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractWritableAttributesAndViewsBuilder<T extends ReadableAttributes> extends AbstractWritableAttributesBuilder<T>
 {
-	private final Map<String, Collection<Consumer<EntityListViewFactoryBuilder>>> listViewConsumers
-			= new LinkedHashMap<>();
-	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> deleteViewConsumers
-			= new LinkedHashMap<>();
-	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> formViewConsumers
-			= new LinkedHashMap<>();
-	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> customViewConsumers
-			= new LinkedHashMap<>();
+	private final Map<String, Collection<Consumer<EntityListViewFactoryBuilder>>> listViewConsumers = new LinkedHashMap<>();
+	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> deleteViewConsumers = new LinkedHashMap<>();
+	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> formViewConsumers = new LinkedHashMap<>();
+	private final Map<String, Collection<Consumer<EntityViewFactoryBuilder>>> customViewConsumers = new LinkedHashMap<>();
 
 	/**
 	 * Configure a default list view builder for the entity being configured.
@@ -210,7 +207,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 
 	protected void applyViews( ConfigurableEntityViewRegistry viewRegistry ) {
 		registerViews( EntityListViewFactoryBuilder.class, EntityView.LIST_VIEW_NAME, listViewConsumers, viewRegistry );
-		registerViews( EntityViewFactoryBuilder.class, EntityView.UPDATE_VIEW_NAME, formViewConsumers, viewRegistry );
+		registerViews( EntityViewFactoryBuilder.class, FormViewInitializer.TEMPLATE, formViewConsumers, viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityView.DELETE_VIEW_NAME, deleteViewConsumers, viewRegistry );
 		registerViews( EntityViewFactoryBuilder.class, EntityView.GENERIC_VIEW_NAME, customViewConsumers, viewRegistry );
 	}

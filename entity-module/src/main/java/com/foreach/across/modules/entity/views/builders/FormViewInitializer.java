@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.views.builders;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilder;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -34,30 +35,32 @@ import org.springframework.stereotype.Component;
 import java.util.function.BiConsumer;
 
 /**
- * Configures a blank {@link EntityViewFactoryBuilder} for the {@link EntityView#UPDATE_VIEW_NAME}.
+ * Configures a blank {@link EntityViewFactoryBuilder} for the a generic form view.
  *
  * @author Arne Vandamme
- * @since 2.0.0
+ * @since 3.0.0
  */
 @Component
 @ConditionalOnAdminWeb
-final class UpdateViewInitializer extends AbstractViewInitializer<EntityViewFactoryBuilder>
+public final class FormViewInitializer extends AbstractViewInitializer<EntityViewFactoryBuilder>
 {
-	public UpdateViewInitializer( AutowireCapableBeanFactory beanFactory,
-	                              EntityPropertyRegistryProvider propertyRegistryProvider ) {
+	public final static String TEMPLATE = "formView";
+
+	public FormViewInitializer( AutowireCapableBeanFactory beanFactory,
+	                            EntityPropertyRegistryProvider propertyRegistryProvider ) {
 		super( beanFactory, propertyRegistryProvider );
 	}
 
 	@Override
 	protected String templateName() {
-		return EntityView.UPDATE_VIEW_NAME;
+		return TEMPLATE;
 	}
 
 	@Override
 	protected BiConsumer<EntityConfiguration<?>, EntityViewFactoryBuilder> createConfigurationInitializer() {
 		return ( entityConfiguration, builder ) -> {
 			builder.factoryType( DefaultEntityViewFactory.class )
-			       .messagePrefix( "views[" + templateName() + "]" )
+			       .messagePrefix( "views[" + EntityView.UPDATE_VIEW_NAME + "]" )
 			       .requiredAllowableAction( AllowableAction.UPDATE )
 			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
 			       .viewElementMode( ViewElementMode.FORM_WRITE )
@@ -78,12 +81,16 @@ final class UpdateViewInitializer extends AbstractViewInitializer<EntityViewFact
 			SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
 			formViewProcessor.setAddDefaultButtons( true );
 			formViewProcessor.setAddGlobalBindingErrors( true );
-			builder.viewProcessor( formViewProcessor )
-			       .viewProcessor( beanFactory.getBean( DeleteActionFormViewProcessor.class ) );
+			builder.viewProcessor( formViewProcessor );
 
 			SaveEntityViewProcessor saveEntityViewProcessor = beanFactory.createBean( SaveEntityViewProcessor.class );
 			builder.viewProcessor( saveEntityViewProcessor );
-
 		};
+	}
+
+	@Override
+	protected BiConsumer<EntityAssociation, EntityViewFactoryBuilder> createAssociationInitializer() {
+		return super.createAssociationInitializer()
+		            .andThen( ( association, builder ) -> builder.messagePrefix( "views[" + EntityView.UPDATE_VIEW_NAME + "]" ) );
 	}
 }
