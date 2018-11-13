@@ -31,7 +31,9 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.element.Fo
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupRequiredPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.FormGroupTooltipTextPostProcessor;
 import com.foreach.across.modules.entity.views.helpers.PropertyViewElementBuilderWrapper;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -79,9 +81,12 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 		// todo: clean this up, work with separate control (?) allow list value to be without link, but other to be with
 		if ( controlMode.equals( ViewElementMode.VALUE ) ) {
 			formGroup.postProcessor( ( builderContext, element ) -> {
-				StaticFormElement staticFormElement = new StaticFormElement();
-				staticFormElement.addChild( element.getControl() );
-				element.setControl( staticFormElement );
+				ViewElement control = element.getControl();
+				if ( !( control instanceof HtmlViewElement ) ) {
+					StaticFormElement staticFormElement = new StaticFormElement();
+					staticFormElement.addChild( control );
+					element.setControl( staticFormElement );
+				}
 			} );
 		}
 

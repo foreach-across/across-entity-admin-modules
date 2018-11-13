@@ -20,6 +20,8 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.test.AcrossWebAppConfiguration;
+import com.foreach.across.testmodules.springdata.business.Client;
 import it.com.foreach.across.modules.entity.repository.TestRepositoryEntityRegistrar;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +32,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import com.foreach.across.testmodules.springdata.business.Client;
 
 import java.util.Locale;
 
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@WebAppConfiguration
+@AcrossWebAppConfiguration
 @ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
 public class TestEntityMessages
 {

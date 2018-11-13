@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
  */
 public class TestTemplateViewProcessor
 {
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void templateIsRequired() {
 		new TemplateViewProcessor( null );
 	}

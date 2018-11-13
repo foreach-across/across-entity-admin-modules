@@ -24,6 +24,7 @@ import com.foreach.across.modules.entity.registry.properties.MutableEntityProper
 import com.foreach.across.modules.entity.views.DefaultEntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.builders.EntityViewFactoryBuilderInitializer;
+import com.foreach.across.modules.entity.views.builders.FormViewInitializer;
 import com.foreach.across.modules.entity.views.processors.TemplateViewProcessor;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +65,13 @@ public class TestEntityConfigurationBuilder
 	public void before() {
 		builder = spy( new EntityConfigurationBuilder<>( beanFactory ) );
 		when( beanFactory.getBean( EntityConfigurationProvider.class ) ).thenReturn( configurationProvider );
+	}
+
+	@Test
+	public void andAppliesAdditionalConsumer() {
+		Consumer<EntityConfigurationBuilder<String>> consumer = mock( Consumer.class );
+		assertSame( builder, builder.and( consumer ) );
+		verify( consumer ).accept( builder );
 	}
 
 	@Test
@@ -290,7 +298,7 @@ public class TestEntityConfigurationBuilder
 
 		verify( builderInitializer ).initialize( eq( "customView" ), eq( EntityView.GENERIC_VIEW_NAME ), eq( config ),
 		                                         isA( EntityViewFactoryBuilder.class ) );
-		verify( builderInitializer ).initialize( eq( "formView" ), eq( EntityView.UPDATE_VIEW_NAME ), eq( config ),
+		verify( builderInitializer ).initialize( eq( "formView" ), eq( FormViewInitializer.TEMPLATE ), eq( config ),
 		                                         isA( EntityViewFactoryBuilder.class ) );
 		verify( builderInitializer ).initialize( eq( "listView" ), eq( EntityView.LIST_VIEW_NAME ), eq( config ),
 		                                         isA( EntityListViewFactoryBuilder.class ) );

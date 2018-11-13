@@ -19,12 +19,12 @@ package com.foreach.across.modules.entity.views.request;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.validation.Validator;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Arne Vandamme
@@ -83,5 +83,28 @@ public class TestEntityViewCommand
 		val map = new HashMap<>();
 		command.addExtension( "my-extension", map );
 		command.getExtension( "my-extension", HashSet.class );
+	}
+
+	@Test
+	public void extensionValidatorsAlwaysReturnsCollection() {
+		assertEquals( Collections.emptyList(), command.getExtensionValidators( UUID.randomUUID().toString() ) );
+	}
+
+	@Test
+	public void extensionsWithValidators() {
+		val validatorOne = mock( Validator.class );
+		val validatorTwo = mock( Validator.class );
+
+		command.addExtension( "ext", null );
+		command.addExtensionValidator( "ext", validatorOne );
+
+		assertEquals( Collections.singletonList( validatorOne ), command.getExtensionValidators( "ext" ) );
+
+		command.addExtensionWithValidator( "other", null, validatorOne, validatorTwo );
+		assertEquals( Arrays.asList( validatorOne, validatorTwo ), command.getExtensionValidators( "other" ) );
+
+		command.removeExtension( "other" );
+		assertEquals( Collections.singletonList( validatorOne ), command.getExtensionValidators( "ext" ) );
+		assertEquals( Collections.emptyList(), command.getExtensionValidators( "other" ) );
 	}
 }

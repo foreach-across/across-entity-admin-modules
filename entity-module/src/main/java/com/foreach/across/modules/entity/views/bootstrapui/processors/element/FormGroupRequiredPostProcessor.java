@@ -23,7 +23,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 
 /**
- * Post-processor that will automatically set a {@link FormGroupElement} as required if the (optional) control inside
+ * Post-processor that will automatically set a {@link FormGroupElement} as required if the first control inside
  * it is required. This will only ever set the required status to {@code true} but will not set it back to
  * {@code false} in case the control is not required.
  * <p/>
@@ -38,7 +38,10 @@ public class FormGroupRequiredPostProcessor<T extends ViewElement> implements Vi
 	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
 		if ( element instanceof FormGroupElement ) {
 			FormGroupElement formGroup = (FormGroupElement) element;
-			boolean required = formGroup.findAll( FormControlElement.class ).anyMatch( FormControlElement::isRequired );
+			boolean required = formGroup.findAll( FormControlElement.class )
+			                            .findFirst()
+			                            .map( FormControlElement::isRequired )
+			                            .orElse( false );
 
 			if ( required ) {
 				formGroup.setRequired( true );

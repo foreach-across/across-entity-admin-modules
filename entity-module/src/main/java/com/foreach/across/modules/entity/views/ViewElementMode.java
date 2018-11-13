@@ -15,8 +15,8 @@
  */
 package com.foreach.across.modules.entity.views;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 
 import java.util.Objects;
 
@@ -81,8 +81,7 @@ public class ViewElementMode
 
 	private final String type;
 
-	public ViewElementMode( String type ) {
-		Assert.notNull( type, "type is required" );
+	public ViewElementMode( @NonNull String type ) {
 		this.type = type;
 	}
 
@@ -101,6 +100,11 @@ public class ViewElementMode
 	@Override
 	public int hashCode() {
 		return Objects.hash( type );
+	}
+
+	@Override
+	public String toString() {
+		return type;
 	}
 
 	/**

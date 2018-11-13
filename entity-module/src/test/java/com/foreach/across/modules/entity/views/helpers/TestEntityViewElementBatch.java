@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.helpers;
 
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
@@ -53,11 +54,11 @@ public class TestEntityViewElementBatch
 	@Mock
 	private LocalizedTextResolver textResolver;
 
-	private EntityViewElementBatch<?> batch;
+	private EntityViewElementBatch<Object> batch;
 
 	@Before
 	public void before() {
-		batch = new EntityViewElementBatch( builderService );
+		batch = new EntityViewElementBatch<>( builderService );
 		batch.setPropertyRegistry( propertyRegistry );
 
 		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
@@ -127,6 +128,18 @@ public class TestEntityViewElementBatch
 
 		assertThat( batch.resolveText( "batch" ) ).isEqualTo( "from-batch" );
 		assertText( "from-parent:from-batch:from-batch", batch.build() );
+	}
+
+	@Test
+	public void propertiesBinderIsAlwaysLocalAndAttachedToTheEntity() {
+		DefaultViewElementBuilderContext parent = new DefaultViewElementBuilderContext();
+		parent.setAttribute( EntityPropertiesBinder.class, mock( EntityPropertiesBinder.class ) );
+
+		batch.setParentViewElementBuilderContext( parent );
+		batch.setEntity( "123" );
+
+		assertThat( batch.getPropertiesBinder().getEntity() ).isEqualTo( "123" );
+		assertThat( (EntityPropertiesBinder) batch.getAttribute( EntityPropertiesBinder.class ) ).isSameAs( batch.getPropertiesBinder() );
 	}
 
 	@Test

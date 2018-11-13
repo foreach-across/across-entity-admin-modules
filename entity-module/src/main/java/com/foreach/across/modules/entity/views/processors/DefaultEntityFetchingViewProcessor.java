@@ -28,6 +28,7 @@ import lombok.Setter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
@@ -67,11 +68,19 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 	private String baseEqlPredicate;
 
 	@Override
-	protected Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
-		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+	protected Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Sort sort ) {
+		return fetchItems( entityViewRequest, entityView, null, sort );
+	}
 
-		String additionalPredicate = entityView.getAttribute( EQL_PREDICATE_ATTRIBUTE_NAME, String.class );
+	@Override
+	protected Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {
+		return fetchItems( entityViewRequest, entityView, pageable, null );
+	}
+
+	private Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable, Sort sort ) {
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
 		EntityQueryFacade entityQueryFacade = entityQueryFacadeResolver.forEntityViewRequest( entityViewRequest );
+		String additionalPredicate = entityView.getAttribute( EQL_PREDICATE_ATTRIBUTE_NAME, String.class );
 
 		// set to null so we would favour regular repository if no specific query necessary
 		EntityQuery entityQuery = null;
@@ -95,24 +104,33 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 			);
 		}
 
-		return fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), entityQueryFacade, entityQuery, pageable );
+		return fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), entityQueryFacade, entityQuery, pageable, sort );
 	}
 
 	@SuppressWarnings("unchecked")
 	private Iterable<Object> fetchItemsForEntityConfiguration( EntityConfiguration entityConfiguration,
 	                                                           EntityQueryFacade entityQueryFacade,
 	                                                           EntityQuery entityQuery,
-	                                                           Pageable pageable ) {
+	                                                           Pageable pageable,
+	                                                           Sort sort ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );
 
+		boolean shouldOnlySort = pageable == null;
 		if ( entityQuery == null ) {
 			if ( repository instanceof PagingAndSortingRepository ) {
+				if ( shouldOnlySort ) {
+					return ( (PagingAndSortingRepository) repository ).findAll( sort );
+				}
 				return ( (PagingAndSortingRepository) repository ).findAll( pageable );
 			}
 		}
 
 		if ( entityQueryFacade != null ) {
-			return entityQueryFacade.findAll( entityQuery != null ? entityQuery : EntityQuery.all(), pageable );
+			EntityQuery query = entityQuery != null ? entityQuery : EntityQuery.all();
+			if ( shouldOnlySort ) {
+				return entityQueryFacade.findAll( query, sort );
+			}
+			return entityQueryFacade.findAll( query, pageable );
 		}
 
 		if ( entityQuery != null ) {
@@ -121,7 +139,6 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 							.getName() );
 		}
 
-		// return all results - ignore paging
 		if ( repository instanceof CrudRepository ) {
 			return ( (CrudRepository) repository ).findAll();
 		}

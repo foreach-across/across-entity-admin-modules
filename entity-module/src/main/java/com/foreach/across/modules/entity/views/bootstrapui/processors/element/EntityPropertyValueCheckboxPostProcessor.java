@@ -17,7 +17,6 @@ package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
@@ -38,16 +37,9 @@ public class EntityPropertyValueCheckboxPostProcessor implements ViewElementPost
 	}
 
 	@Override
-	public void postProcess( ViewElementBuilderContext viewElementBuilderContext,
-	                         CheckboxFormElement checkbox ) {
-		Object entity = EntityViewElementUtils.currentEntity( viewElementBuilderContext );
-		ValueFetcher valueFetcher = propertyDescriptor.getValueFetcher();
-
-		if ( entity != null && valueFetcher != null ) {
-			Object propertyValue = valueFetcher.getValue( entity );
-
-			checkbox.setChecked( isChecked( propertyValue ) );
-		}
+	public void postProcess( ViewElementBuilderContext builderContext, CheckboxFormElement checkbox ) {
+		Object propertyValue = EntityViewElementUtils.currentPropertyValue( builderContext );
+		checkbox.setChecked( isChecked( propertyValue ) );
 	}
 
 	private boolean isChecked( Object value ) {

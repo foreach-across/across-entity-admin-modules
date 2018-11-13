@@ -91,7 +91,7 @@ public class EntityViewLinks
 	}
 
 	/**
-	 * Create a link builder for a single entity.
+	 * Create a link builder to the {@link com.foreach.across.modules.entity.views.EntityView#DETAIL_VIEW_NAME} view for a single entity.
 	 *
 	 * @param entity instance
 	 * @return link builder

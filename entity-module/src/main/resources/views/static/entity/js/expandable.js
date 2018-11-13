@@ -26,15 +26,15 @@ function makeExpandable( node ) {
             return true;
         }
         var target = $( this );
-        if ( lastTarget && lastTarget.context !== target.context ) {
-            lastTarget.next().fadeOut( {duration: fadeDuration} );
-        }
         if ( target.next().attr( 'data-summary' ) !== undefined ) {
-            target.next().fadeToggle( {
-                                          duration: fadeDuration, complete: function() {
-                    lastTarget = target;
-                }
-                                      } );
+            target.toggleClass('summary-expanded');
+            target.next().fadeToggle(
+                    {
+                        duration: fadeDuration, complete: function() {
+                            lastTarget = target;
+                        }
+                    }
+            );
         }
         else {
             var newTr = $( '<tr data-summary style="display:none"></tr>' );
@@ -45,12 +45,14 @@ function makeExpandable( node ) {
             target.after( newTr );
             if ( summaryUrl ) {
                 newTd.load( summaryUrl, null, function() {
+                    target.toggleClass('summary-expanded');
                     newTr.fadeIn( {duration: fadeDuration} );
                     lastTarget = target;
                 } );
             }
             else if ( entityId ) {
                 newTd.load( entityType + '/' + $( this ).attr( 'data-entity-id' ) + '?view=summary&_partial=content', null, function() {
+                    target.toggleClass('summary-expanded');
                     newTr.fadeIn( {duration: fadeDuration} );
                     lastTarget = target;
                 } );

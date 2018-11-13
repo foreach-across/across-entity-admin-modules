@@ -22,7 +22,6 @@ import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElemen
 import com.foreach.across.modules.entity.views.bootstrapui.options.FilterOptionGenerator;
 import com.foreach.across.modules.entity.views.bootstrapui.options.FixedOptionIterableBuilder;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -32,16 +31,15 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.setCurrentPropertyValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Steven Gentens
@@ -59,16 +57,12 @@ public class TestFilterOptionGenerator
 			new OptionFormElementBuilder().label( "aaa" ).rawValue( "2" )
 	);
 
-	@Mock
-	private ValueFetcher<String> valueFetcher;
-
 	@Before
 	public void before() {
 		generator = new FilterOptionGenerator();
 		options = new OptionsFormElementBuilder();
 
 		generator.setOptions( noneSelected );
-		generator.setValueFetcher( valueFetcher );
 
 		builderContext = new DefaultViewElementBuilderContext();
 		builderContext.setAttribute( OptionsFormElementBuilder.class, options );
@@ -93,24 +87,7 @@ public class TestFilterOptionGenerator
 	public void notSetOptionSelectedIfSelectedValuesContainsNull() {
 		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
 		generator.setValueNotSetOption( new OptionFormElementBuilder().label( "ccc" ).rawValue( "123" ) );
-		when( valueFetcher.getValue( "entity" ) ).thenReturn( Collections.singletonList( null ) );
-
-		List<AbstractNodeViewElement> generated = build();
-		assertEquals( 4, generated.size() );
-		assertEquals( "", ( (SelectFormElement.Option) generated.get( 0 ) ).getLabel() );
-		assertTrue( generated.get( 1 ) instanceof SelectFormElement.OptionGroup );
-		assertEquals( 1, generated.get( 1 ).getChildren().size() );
-		assertEquals( "ccc", ( (SelectFormElement.Option) generated.get( 1 ).getChildren().get( 0 ) ).getLabel() );
-		assertTrue( ( (SelectFormElement.Option) generated.get( 1 ).getChildren().get( 0 ) ).isSelected() );
-		assertEquals( "aaa", ( (SelectFormElement.Option) generated.get( 2 ) ).getLabel() );
-		assertEquals( "bbb", ( (SelectFormElement.Option) generated.get( 3 ) ).getLabel() );
-	}
-
-	@Test
-	public void notSetOptionSelectedIfSelectedValueIsNull() {
-		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
-		generator.setValueNotSetOption( new OptionFormElementBuilder().label( "ccc" ).rawValue( "123" ) );
-		when( valueFetcher.getValue( "entity" ) ).thenReturn( null );
+		setCurrentPropertyValue( builderContext, Collections.singletonList( null ) );
 
 		List<AbstractNodeViewElement> generated = build();
 		assertEquals( 4, generated.size() );

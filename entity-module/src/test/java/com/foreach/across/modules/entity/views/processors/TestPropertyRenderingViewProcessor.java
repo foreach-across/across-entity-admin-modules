@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -25,31 +26,32 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyControlNamePostProcessor;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
+import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
+import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
+import com.google.common.collect.ImmutableMap;
+import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_BUILDER;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static com.foreach.across.modules.entity.views.processors.PropertyRenderingViewProcessor.ATTRIBUTE_PROPERTY_DESCRIPTORS;
+import static org.assertj.core.api.Assertions.entry;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -86,41 +88,79 @@ public class TestPropertyRenderingViewProcessor
 	@Mock
 	private ViewElementBuilder builderTwo;
 
-	@Mock
-	private ViewElementBuilderContext builderContext;
+	private ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
 
 	@InjectMocks
 	private PropertyRenderingViewProcessor processor;
 
-	private Map<String, Object> model;
+	private ModelMap model;
 
 	@Before
 	public void setUp() throws Exception {
-		model = new HashMap<>();
+		model = new ModelMap();
 
 		ViewElementBuilderContextHolder.setViewElementBuilderContext( builderContext );
 
 		when( viewRequest.getEntityViewContext() ).thenReturn( viewContext );
 		when( viewRequest.getWebRequest() ).thenReturn( mock( NativeWebRequest.class ) );
+		when( viewRequest.getModel() ).thenReturn( model );
 		when( viewContext.getPropertyRegistry() ).thenReturn( propertyRegistry );
 
 		when( propOne.getName() ).thenReturn( "prop-one" );
 		when( propTwo.getName() ).thenReturn( "prop-two" );
 
+		when( entityView.getModel() ).thenReturn( model );
 		when( entityView.asMap() ).thenReturn( model );
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		ViewElementBuilderContextHolder.clearViewElementBuilderContext();
 	}
 
 	@Test
-	public void defaultPropertiesAndElementMode() {
+	@SuppressWarnings("unchecked")
+	public void propertyDescriptorsAreRegisteredEarlyOn() {
+		when( propertyRegistry.select( EntityPropertySelector.of( EntityPropertySelector.READABLE ) ) ).thenReturn( Arrays.asList( propOne, propTwo ) );
+
+		processor.initializeCommandObject( viewRequest, mock( EntityViewCommand.class ), mock( WebDataBinder.class ) );
+
+		Assertions.assertThat( (LinkedHashMap<String, EntityPropertyDescriptor>) viewRequest.getModel().get( ATTRIBUTE_PROPERTY_DESCRIPTORS ) )
+		          .containsExactly( entry( "prop-one", propOne ), entry( "prop-two", propTwo ) );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void customSelectorIsBeingUsed() {
+		when( propertyRegistry.select( EntityPropertySelector.of( "two", "one" ) ) ).thenReturn( Arrays.asList( propOne, propTwo ) );
+
+		processor.setSelector( EntityPropertySelector.of( "two", "one" ) );
+		processor.initializeCommandObject( viewRequest, mock( EntityViewCommand.class ), mock( WebDataBinder.class ) );
+
+		Assertions.assertThat( (LinkedHashMap<String, EntityPropertyDescriptor>) viewRequest.getModel().get( ATTRIBUTE_PROPERTY_DESCRIPTORS ) )
+		          .containsExactly( entry( "prop-one", propOne ), entry( "prop-two", propTwo ) );
+	}
+
+	@Test
+	public void noPropertyDescriptors() {
+		processor.preRender( viewRequest, entityView );
+
+		ViewElementBuilderMap expected = new ViewElementBuilderMap();
+
+		assertEquals( expected, model.get( PropertyRenderingViewProcessor.ATTRIBUTE_PROPERTY_BUILDERS ) );
+	}
+
+	@Test
+	public void defaultViewElementMode() {
 		when( builderService.getElementBuilder( propOne, ViewElementMode.FORM_READ ) ).thenReturn( builderOne );
 		when( builderService.getElementBuilder( propTwo, ViewElementMode.FORM_READ ) ).thenReturn( builderTwo );
 
-		when( propertyRegistry.select( EntityPropertySelector.of( EntityPropertySelector.READABLE ) ) ).thenReturn( Arrays.asList( propOne, propTwo ) );
+		ImmutableMap<String, EntityPropertyDescriptor> descriptorMap = ImmutableMap.<String, EntityPropertyDescriptor>builder()
+				.put( "prop-two", propTwo )
+				.put( "prop-one", propOne )
+				.build();
+
+		model.put( ATTRIBUTE_PROPERTY_DESCRIPTORS, descriptorMap );
 
 		processor.preRender( viewRequest, entityView );
 
@@ -132,12 +172,11 @@ public class TestPropertyRenderingViewProcessor
 	}
 
 	@Test
-	public void customPropertiesAndElementMode() {
+	public void customViewElementMode() {
 		when( builderService.getElementBuilder( propOne, ViewElementMode.VALUE ) ).thenReturn( builderOne );
 
-		when( propertyRegistry.select( EntityPropertySelector.of( "one" ) ) ).thenReturn( Collections.singletonList( propOne ) );
+		model.put( ATTRIBUTE_PROPERTY_DESCRIPTORS, Collections.singletonMap( "prop-one", propOne ) );
 
-		processor.setSelector( EntityPropertySelector.of( "one" ) );
 		processor.setViewElementMode( ViewElementMode.VALUE );
 		processor.preRender( viewRequest, entityView );
 
@@ -158,7 +197,12 @@ public class TestPropertyRenderingViewProcessor
 		when( builderService.getElementBuilder( propOne, ViewElementMode.FORM_READ ) ).thenReturn( builderOne );
 		when( builderService.getElementBuilder( propTwo, ViewElementMode.FORM_READ ) ).thenReturn( builderTwo );
 
-		when( propertyRegistry.select( EntityPropertySelector.of( EntityPropertySelector.READABLE ) ) ).thenReturn( Arrays.asList( propOne, propTwo ) );
+		ImmutableMap<String, EntityPropertyDescriptor> descriptorMap = ImmutableMap.<String, EntityPropertyDescriptor>builder()
+				.put( "prop-two", propTwo )
+				.put( "prop-one", propOne )
+				.build();
+
+		model.put( ATTRIBUTE_PROPERTY_DESCRIPTORS, descriptorMap );
 
 		processor.preRender( viewRequest, entityView );
 
@@ -184,16 +228,22 @@ public class TestPropertyRenderingViewProcessor
 		ViewElement elementOne = mock( ViewElement.class );
 		ViewElement elementTwo = mock( ViewElement.class );
 		when( builderOne.build( any() ) ).thenReturn( elementOne );
-		when( builderTwo.build( any() ) ).thenReturn( elementTwo );
+
+		doAnswer( invocationOnMock -> {
+			ViewElementBuilderContext builderContext = invocationOnMock.getArgument( 0 );
+			assertFalse( builderContext.getAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, Boolean.class ) );
+			assertNotNull( builderContext.getAttribute( EntityPropertyControlName.class ) );
+
+			return elementTwo;
+		} ).when( builderTwo ).build( any() );
 
 		processor.render( viewRequest, entityView );
 
 		verify( containerBuilder ).add( elementOne );
 		verify( containerBuilder ).add( elementTwo );
 
-		InOrder inOrder = inOrder( builderContext );
-		inOrder.verify( builderContext ).setAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES, true );
-		inOrder.verify( builderContext ).removeAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES );
+		assertFalse( builderContext.hasAttribute( EntityPropertyControlNamePostProcessor.PREFIX_CONTROL_NAMES ) );
+		assertFalse( builderContext.hasAttribute( EntityPropertyControlName.class ) );
 	}
 
 	@Test

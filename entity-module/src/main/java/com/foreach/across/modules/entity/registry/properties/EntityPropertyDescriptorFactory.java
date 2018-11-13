@@ -33,13 +33,14 @@ public interface EntityPropertyDescriptorFactory
 	MutableEntityPropertyDescriptor create( Property property );
 
 	/**
-	 * Create a new descriptor with the given name, using an existing instance as parent.
-	 * The new descriptor will inherit all attributes ans properties from the parent, but can
-	 * override them.
+	 * Create a new descriptor with the given name, using an existing instance as original.
+	 * The new descriptor will inherit all attributes and properties from the original,
+	 * but will shadow them. Any value set directly on the new descriptor will hide the value
+	 * from the original.
 	 *
 	 * @param name   the new name of the descriptor
 	 * @param parent descriptor
 	 * @return descriptor instance
 	 */
-	MutableEntityPropertyDescriptor createWithParent( String name, EntityPropertyDescriptor parent );
+	MutableEntityPropertyDescriptor createWithOriginal( String name, EntityPropertyDescriptor parent );
 }

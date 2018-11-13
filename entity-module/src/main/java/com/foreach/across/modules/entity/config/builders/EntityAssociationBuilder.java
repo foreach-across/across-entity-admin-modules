@@ -250,6 +250,11 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	}
 
 	@Override
+	public EntityAssociationBuilder detailView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityAssociationBuilder) super.detailView( consumer );
+	}
+
+	@Override
 	public EntityAssociationBuilder formView( String viewName,
 	                                          Consumer<EntityViewFactoryBuilder> consumer ) {
 		return (EntityAssociationBuilder) super.formView( viewName, consumer );
@@ -282,6 +287,11 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	}
 
 	@Override
+	public EntityAssociationBuilder detailView() {
+		return (EntityAssociationBuilder) super.detailView();
+	}
+
+	@Override
 	public EntityAssociationBuilder attribute( String name, Object value ) {
 		return (EntityAssociationBuilder) super.attribute( name, value );
 	}
@@ -294,6 +304,17 @@ public class EntityAssociationBuilder extends AbstractWritableAttributesAndViews
 	@Override
 	public EntityAssociationBuilder attribute( AttributeRegistrar<EntityAssociation> attributeRegistrar ) {
 		return (EntityAssociationBuilder) super.attribute( attributeRegistrar );
+	}
+
+	/**
+	 * Apply an additional consumer to this builder.
+	 *
+	 * @param consumer to apply
+	 * @return current builder
+	 */
+	public EntityAssociationBuilder and( @NonNull Consumer<EntityAssociationBuilder> consumer ) {
+		consumer.accept( this );
+		return this;
 	}
 
 	/**

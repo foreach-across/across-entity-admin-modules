@@ -20,7 +20,9 @@ import com.foreach.across.modules.entity.config.builders.EntityListViewFactoryBu
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -68,6 +70,21 @@ public class DelegatingEntityFetchingViewProcessor extends AbstractEntityFetchin
 		this.delegate = delegate;
 	}
 
+	/**
+	 * Fetches items for a single page with {@link Integer#MAX_VALUE} values based on the given sort.
+	 *
+	 * @see #fetchItems(EntityViewRequest, EntityView, Pageable).
+	 */
+	@Override
+	protected Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Sort sort ) {
+		return fetchItems( entityViewRequest, entityView, new PageRequest( 0, Integer.MAX_VALUE, sort ) );
+	}
+
+	/**
+	 * Fetches items for a given page request.
+	 *
+	 * @return an {@link Iterable} containing the resulting items.
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Iterable fetchItems( EntityViewRequest entityViewRequest, EntityView entityView, Pageable pageable ) {

@@ -15,11 +15,18 @@
  */
 package com.foreach.across.modules.entity.views.support;
 
+import java.util.function.Function;
+
 /**
  * @author Arne Vandamme
  */
 @FunctionalInterface
-public interface ValueFetcher<T>
+public interface ValueFetcher<T> extends Function<T, Object>
 {
+	@Override
+	default Object apply( T entity ) {
+		return getValue( entity );
+	}
+
 	Object getValue( T entity );
 }

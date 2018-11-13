@@ -24,6 +24,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Implementation of {@link AbstractValueTextPostProcessor} that uses a conversion service for
@@ -47,6 +48,10 @@ public class ConversionServiceValueTextPostProcessor<T extends ConfigurableTextV
 
 	@Override
 	protected String print( Object value, Locale locale ) {
+		if ( value instanceof String ) {
+			return (String) value;
+		}
+
 		TypeDescriptor sourceType = getPropertyDescriptor().getPropertyTypeDescriptor();
 
 		if ( sourceType == null || !sourceType.getType().isInstance( value ) ) {
@@ -54,12 +59,14 @@ public class ConversionServiceValueTextPostProcessor<T extends ConfigurableTextV
 		}
 
 		try {
-			return (String) conversionService.convert( value, sourceType, STRING_TYPE );
+			if ( conversionService.canConvert( sourceType, STRING_TYPE ) ) {
+				return (String) conversionService.convert( value, sourceType, STRING_TYPE );
+			}
 		}
 		catch ( ConversionException ce ) {
 			LOG.warn( "Unable to convert {} to string", sourceType, ce );
 		}
 
-		return "";
+		return Objects.toString( value, "" );
 	}
 }

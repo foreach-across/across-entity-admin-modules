@@ -19,8 +19,15 @@ package com.foreach.across.samples.entity.application.config;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.samples.entity.application.business.User;
+import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.context.annotation.Configuration;
+
+import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
+import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
 
 /**
  * @author Arne Vandamme
@@ -32,9 +39,80 @@ public class UserConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		entities.withType( User.class )
-		        .properties( props ->
-				                     // display name as not required
-				                     props.property( "name" ).attribute( EntityAttributes.PROPERTY_REQUIRED, false )
+		        .properties(
+				        props ->
+						        props.property( "name" ).attribute( EntityAttributes.PROPERTY_REQUIRED, false ).and()
+//						             .property( "profilePicture" )
+//						             .viewElementBuilder( ViewElementMode.CONTROL, BootstrapUiBuilders.file().controlName( "entity.profilePicture" ) )
+//						             .attribute( EntityAttributes.FORM_ENCTYPE, FormViewElement.ENCTYPE_MULTIPART )
+                                     // fieldset properties
+                                     .property( "fieldset" )
+                                     .propertyType( Owner.class )
+                                     .viewElementType( ViewElementMode.FORM_WRITE, ViewElementFieldset.ELEMENT_TYPE )
+                                     .and()
+                                     .property( "bodyOnly" )
+                                     .propertyType( Owner.class )
+                                     .viewElementType( ViewElementMode.FORM_WRITE, ViewElementFieldset.ELEMENT_TYPE )
+                                     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_BODY_ONLY )
+                                     .and()
+                                     .property( "sectionWithH1" )
+                                     .propertyType( Owner.class )
+                                     .viewElementType( ViewElementMode.FORM_WRITE, ViewElementFieldset.ELEMENT_TYPE )
+                                     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_SECTION_H1 )
+                                     .and()
+                                     .property( "sectionWithH2" )
+                                     .propertyType( Owner.class )
+                                     .viewElementType( ViewElementMode.FORM_WRITE, ViewElementFieldset.ELEMENT_TYPE )
+                                     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_SECTION_H2 )
+                                     .and()
+                                     .property( "sectionWithH3" )
+                                     .propertyType( Owner.class )
+                                     .viewElementType( ViewElementMode.FORM_WRITE, ViewElementFieldset.ELEMENT_TYPE )
+                                     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_SECTION_H3 )
+                                     .and()
+                                     .property( "panelDefault" )
+                                     .propertyType( Owner.class )
+                                     .viewElementType( ViewElementMode.FORM_WRITE, ViewElementFieldset.ELEMENT_TYPE )
+                                     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_PANEL_DEFAULT )
+                                     .and()
+                                     .property( "panelDanger" )
+                                     .propertyType( Owner.class )
+                                     .viewElementType( ViewElementMode.FORM_WRITE, ViewElementFieldset.ELEMENT_TYPE )
+                                     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_PANEL_DANGER )
+                                     .and()
+                                     .property( "panelPrimary" )
+                                     .propertyType( Owner.class )
+                                     .viewElementType( ViewElementMode.FORM_WRITE, ViewElementFieldset.ELEMENT_TYPE )
+                                     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_PANEL_PRIMARY )
+                                     .and()
+		        )
+		        .formView(
+				        "fieldsets",
+				        basicSettings()
+						        .adminMenu( "/fieldsets" )
+						        .andThen( formSettings().addFormButtons( false ) )
+						        .andThen( v -> v.showProperties( "fieldset", "bodyOnly",
+						                                         "sectionWithH1", "sectionWithH2", "sectionWithH3",
+						                                         "panelDefault", "panelDanger", "panelPrimary" ) )
+						        /*.andThen(
+								        layout()
+										        .setColumns( 3 )
+								                .withColumn( 1 )
+								                .addFieldset( dsjdisjds )
+								                .addToHeader("","")
+								                .withElements("", "", "", "")
+								                .showElements( "", "", "", "" )
+						        )*/
 		        );
+	}
+
+	@Data
+	@SuppressWarnings("all")
+	public static class Owner
+	{
+		@Length(max = 100)
+		private String name;
+
+		private int yearOfBirth;
 	}
 }

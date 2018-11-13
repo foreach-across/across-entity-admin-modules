@@ -153,7 +153,7 @@ public class TestEntityQueryRequestValueFetcher
 		);
 
 		Object value = valueFetcher.getValue( entityQueryRequest );
-		assertEquals( null, value );
+		assertEquals( Collections.singletonList( null ), value );
 	}
 
 	@Test

@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,6 +29,24 @@ import java.util.function.Predicate;
  */
 public interface EntityPropertyRegistry
 {
+	/**
+	 * Suffix indicator that a property descriptor represents the specific member of a
+	 * the collection property (having the same name but without the indexer).
+	 */
+	String INDEXER = "[]";
+
+	/**
+	 * Suffix indicator that a property descriptor represents the key of a map property
+	 * (having the same name but without this suffix).
+	 */
+	String MAP_KEY = "[key]";
+
+	/**
+	 * Suffix indicator that a property descriptor represents the value of a map property
+	 * (having the same name but without this suffix).
+	 */
+	String MAP_VALUE = "[value]";
+
 	/**
 	 * Name of the label property.
 	 *

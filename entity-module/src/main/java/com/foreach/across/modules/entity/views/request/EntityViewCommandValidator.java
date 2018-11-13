@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.request;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import lombok.NonNull;
@@ -72,17 +73,41 @@ public class EntityViewCommandValidator implements SmartValidator
 		EntityViewCommand command = (EntityViewCommand) target;
 		Object entity = command.getEntity();
 
-		if ( entity != null ) {
-			errors.pushNestedPath( "entity" );
-			validate( retrieveEntityValidator(), entity, errors, validationHints );
-			errors.popNestedPath();
+		Runnable validation = () -> {
+			if ( entity != null ) {
+				errors.pushNestedPath( "entity" );
+				try {
+					validate( retrieveEntityValidator(), entity, errors, validationHints );
+				}
+				finally {
+					errors.popNestedPath();
+				}
+			}
+		};
+
+		EntityPropertiesBinder properties = command.getProperties();
+
+		if ( properties != null && !properties.isReadonly() ) {
+			properties.createController()
+			          .addEntityValidationCallback( validation )
+			          .applyValuesAndValidate( errors, validationHints );
+		}
+		else {
+			validation.run();
 		}
 
 		command.getExtensions()
 		       .forEach( ( key, value ) -> {
 			       errors.pushNestedPath( "extensions[" + key + "]" );
-			       validate( fallbackValidator, value, errors, validationHints );
-			       errors.popNestedPath();
+			       try {
+				       validate( fallbackValidator, value, errors, validationHints );
+
+				       command.getExtensionValidators( key )
+				              .forEach( validator -> validate( validator, value, errors, validationHints ) );
+			       }
+			       finally {
+				       errors.popNestedPath();
+			       }
 		       } );
 	}
 

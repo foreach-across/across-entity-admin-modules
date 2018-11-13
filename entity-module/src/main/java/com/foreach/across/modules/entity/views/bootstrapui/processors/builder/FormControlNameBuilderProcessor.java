@@ -28,8 +28,10 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
  * @author Arne Vandamme
  * @see EntityPropertyControlNamePostProcessor
  * @since 2.0.0
+ * @deprecated use {@link com.foreach.across.modules.entity.bind.EntityPropertyControlName#root(String)} instead
  */
 @SuppressWarnings("unchecked")
+@Deprecated
 public class FormControlNameBuilderProcessor<T extends ViewElementBuilder> implements EntityViewElementBuilderProcessor<T>
 {
 	@Override

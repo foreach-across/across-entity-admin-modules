@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.util.Assert;
 
 import java.time.temporal.Temporal;
 import java.util.Date;
@@ -35,14 +36,14 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
  */
 public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataProvider
 {
-	public static final EntityQueryOps[] STRING_OPS =
+	private static final EntityQueryOps[] STRING_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY, CONTAINS,
 			                       NOT_CONTAINS };
-	public static final EntityQueryOps[] NUMBER_OPS =
+	private static final EntityQueryOps[] NUMBER_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, GT, GE, LT, LE, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
-	public static final EntityQueryOps[] COLLECTION_OPS =
+	private static final EntityQueryOps[] COLLECTION_OPS =
 			new EntityQueryOps[] { CONTAINS, NOT_CONTAINS, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
-	public static final EntityQueryOps[] ENTITY_OPS =
+	private static final EntityQueryOps[] ENTITY_OPS =
 			new EntityQueryOps[] { EQ, NEQ, IN, NOT_IN, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY };
 
 	private static final TypeDescriptor EQ_GROUP_TYPE = TypeDescriptor.valueOf( EQGroup.class );
@@ -62,14 +63,13 @@ public class DefaultEntityQueryMetadataProvider implements EntityQueryMetadataPr
 	@Override
 	public boolean isValidOperatorForProperty( EntityQueryOps operator, String property ) {
 		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( property );
-		return ArrayUtils.contains( retrieveOperandsForType( descriptor.getPropertyTypeDescriptor() ), operator );
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		Assert.notNull( typeDescriptor, "No type descriptor for property '" + property + "', unable to validate EntityQuery" );
+		return ArrayUtils.contains( retrieveOperandsForType( typeDescriptor ), operator );
 	}
 
 	@Override
 	public boolean isValidValueForPropertyAndOperator( Object value, String property, EntityQueryOps operator ) {
-		EntityPropertyDescriptor descriptor = propertyRegistry.getProperty( property );
-		TypeDescriptor type = descriptor.getPropertyTypeDescriptor();
-//		Class<?> objectType = type.getObjectType();
 		TypeDescriptor valueType = TypeDescriptor.forObject( value );
 
 		if ( operator == CONTAINS || operator == NOT_CONTAINS ) {

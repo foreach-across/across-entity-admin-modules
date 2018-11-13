@@ -22,14 +22,13 @@ import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfig
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.DateTimeFormElementBuilderFactory;
-import com.foreach.across.modules.entity.views.request.EntityViewCommand;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -240,10 +239,8 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		LocaleContextHolder.setLocale( Locale.UK );
 
 		try {
-			ValueFetcher valueFetcher = mock( ValueFetcher.class );
-			when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
-			when( valueFetcher.getValue( any() ) ).thenReturn( PRINT_DATE );
-			when( properties.get( "required" ).getValueFetcher() ).thenReturn( valueFetcher );
+			builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
+			when( properties.get( "required" ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( PRINT_DATE );
 
 			TextViewElement text = assembleValue( "required" );
 			assertEquals( "07-Aug-2015 10:31", text.getText() );
@@ -298,10 +295,8 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 		LocaleContextHolder.setLocale( Locale.UK );
 
 		try {
-			ValueFetcher valueFetcher = mock( ValueFetcher.class );
-			when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
-			when( valueFetcher.getValue( any() ) ).thenReturn( value );
-			when( properties.get( name ).getValueFetcher() ).thenReturn( valueFetcher );
+			builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
+			when( properties.get( name ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( value );
 			if ( format != null ) {
 				when( properties.get( name ).hasAttribute( Format.class ) ).thenReturn( true );
 				when( properties.get( name ).getAttribute( Format.class ) ).thenReturn( format );

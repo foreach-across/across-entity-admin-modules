@@ -20,12 +20,12 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>standard-module-bom</artifactId>
-		<version>3.1.0.RELEASE</version>
+		<version>3.1.1.RELEASE</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
 	<artifactId>entity-module-project</artifactId>
-	<version>3.1.0.RELEASE</version>
+	<version>3.2.0.RELEASE</version>
 	<packaging>pom</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -43,7 +43,6 @@
 	<developers>
 		<developer>
 			<name>Arne Vandamme</name>
-			<email>arne at foreach.be</email>
 			<organization>Foreach</organization>
 			<organizationUrl>http://www.foreach.be</organizationUrl>
 		</developer>
@@ -80,12 +79,12 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>bootstrap-ui-module</artifactId>
-				<version>2.1.0.RELEASE</version>
+				<version>2.1.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>admin-web-module</artifactId>
-				<version>3.0.1.RELEASE</version>
+				<version>3.1.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
@@ -105,7 +104,12 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>2.8.9</version>
+				<version>2.23.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>2.23.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
