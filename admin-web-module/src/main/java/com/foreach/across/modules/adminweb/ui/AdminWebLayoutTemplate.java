@@ -105,46 +105,48 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 	                           HttpServletResponse response,
 	                           Object handler,
 	                           ModelAndView modelAndView ) {
-		Map<String, Object> model = modelAndView.getModel();
-		AdminMenu adminMenu = (AdminMenu) request.getAttribute( AdminMenu.NAME );
+		if ( modelAndView != null ) {
+			Map<String, Object> model = modelAndView.getModel();
+			AdminMenu adminMenu = (AdminMenu) request.getAttribute( AdminMenu.NAME );
 
-		if ( adminMenu != null ) {
-			model.computeIfAbsent(
-					MODEL_ATTR_NAVBAR,
-					key -> bootstrapUiComponentFactory.nav( adminMenu )
-					                                  .navbar()
-					                                  .keepGroupsAsGroup( true )
-					                                  .replaceGroupBySelectedItem( false )
-					                                  .filter( navPosition( NAVBAR, true ) )
-					                                  .build()
-			);
-			model.computeIfAbsent(
-					MODEL_ATTR_NAVBAR_RIGHT,
-					key -> bootstrapUiComponentFactory.nav( adminMenu )
-					                                  .navbar()
-					                                  .css( "navbar-right" )
-					                                  .keepGroupsAsGroup( true )
-					                                  .replaceGroupBySelectedItem( false )
-					                                  .filter( navPosition( NAVBAR_RIGHT, false ) )
-					                                  .build()
-			);
-			model.computeIfAbsent(
-					MODEL_ATTR_SIDEBAR,
-					key -> bootstrapUiComponentFactory.panels( adminMenu )
-					                                  .keepGroupsAsGroup( true )
-					                                  .filter( navPosition( SIDEBAR, true ) )
-					                                  .build()
-			);
-			model.computeIfAbsent(
-					MODEL_ATTR_BREADCRUMB,
-					key -> bootstrapUiComponentFactory
-							.breadcrumb( adminMenu )
-							.filter( item -> !Boolean.FALSE.equals( item.getAttribute( AdminMenu.ATTR_BREADCRUMB ) ) )
-							.build()
-			);
+			if ( adminMenu != null ) {
+				model.computeIfAbsent(
+						MODEL_ATTR_NAVBAR,
+						key -> bootstrapUiComponentFactory.nav( adminMenu )
+						                                  .navbar()
+						                                  .keepGroupsAsGroup( true )
+						                                  .replaceGroupBySelectedItem( false )
+						                                  .filter( navPosition( NAVBAR, true ) )
+						                                  .build()
+				);
+				model.computeIfAbsent(
+						MODEL_ATTR_NAVBAR_RIGHT,
+						key -> bootstrapUiComponentFactory.nav( adminMenu )
+						                                  .navbar()
+						                                  .css( "navbar-right" )
+						                                  .keepGroupsAsGroup( true )
+						                                  .replaceGroupBySelectedItem( false )
+						                                  .filter( navPosition( NAVBAR_RIGHT, false ) )
+						                                  .build()
+				);
+				model.computeIfAbsent(
+						MODEL_ATTR_SIDEBAR,
+						key -> bootstrapUiComponentFactory.panels( adminMenu )
+						                                  .keepGroupsAsGroup( true )
+						                                  .filter( navPosition( SIDEBAR, true ) )
+						                                  .build()
+				);
+				model.computeIfAbsent(
+						MODEL_ATTR_BREADCRUMB,
+						key -> bootstrapUiComponentFactory
+								.breadcrumb( adminMenu )
+								.filter( item -> !Boolean.FALSE.equals( item.getAttribute( AdminMenu.ATTR_BREADCRUMB ) ) )
+								.build()
+				);
+			}
+
+			super.applyTemplate( request, response, handler, modelAndView );
 		}
-
-		super.applyTemplate( request, response, handler, modelAndView );
 	}
 
 	@SuppressWarnings("all")

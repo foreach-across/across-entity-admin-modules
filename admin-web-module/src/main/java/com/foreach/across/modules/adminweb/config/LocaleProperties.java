@@ -19,7 +19,7 @@ package com.foreach.across.modules.adminweb.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,7 +38,7 @@ public class LocaleProperties
 	/**
 	 * List of locales that can be selected on the login page.
 	 */
-	private List<Locale> options = Collections.emptyList();
+	private List<Locale> options = new ArrayList<>();
 
 	public Locale getDefaultLocale() {
 		return defaultLocale;
