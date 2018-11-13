@@ -31,6 +31,8 @@ import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBu
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.ViewElementGeneratorBuilder;
+import lombok.NonNull;
+import org.springframework.http.MediaType;
 
 /**
  * Static facade for {@link BootstrapUiFactory} and {@link com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory}.
@@ -265,5 +267,24 @@ public class BootstrapUiBuilders
 	 */
 	public static TooltipViewElementBuilder tooltip( String tooltipText ) {
 		return new TooltipViewElementBuilder().text( tooltipText );
+	}
+
+	/**
+	 * Create a new builder for a {@link ScriptViewElement} with the given media type.
+	 *
+	 * @param type of the script
+	 * @return builder
+	 */
+	public static ScriptViewElementBuilder script( @NonNull MediaType type ) {
+		return script().type( type );
+	}
+
+	/**
+	 * Create a new builder for a {@link ScriptViewElement}.
+	 *
+	 * @return builder
+	 */
+	public static ScriptViewElementBuilder script() {
+		return new ScriptViewElementBuilder();
 	}
 }
