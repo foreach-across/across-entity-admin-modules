@@ -35,6 +35,10 @@ public class TestHiddenFormElement extends AbstractBootstrapViewElementTest
 				hidden,
 				"<input type='hidden' />"
 		);
+		renderAndExpect(
+				hidden.toFormControl(),
+				"<input type='hidden' />"
+		);
 
 		assertNull( hidden.getValue() );
 	}
@@ -45,13 +49,19 @@ public class TestHiddenFormElement extends AbstractBootstrapViewElementTest
 		hidden.setControlName( "inputName" );
 		hidden.setValue( 123 );
 		hidden.setHtmlId( "_id" );
+		hidden.setDisabled( true );
 
 		renderAndExpect(
 				hidden,
-				"<input type='hidden' id='_id' name='inputName' value='123' />"
+				"<input type='hidden' id='_id' name='inputName' value='123' disabled='disabled' />"
 		);
 
 		assertEquals( Integer.valueOf( 123 ), hidden.getValue( Integer.class ) );
+
+		renderAndExpect(
+				hidden.toFormControl(),
+				"<input type='hidden' id='_id' name='inputName' value='123' disabled='disabled' />"
+		);
 	}
 
 	@Test
@@ -66,13 +76,34 @@ public class TestHiddenFormElement extends AbstractBootstrapViewElementTest
 		);
 
 		assertEquals( "two", hidden.getControlName() );
+
+		renderAndExpect(
+				hidden.toFormControl(),
+				"<input type='hidden' name='two' id='two' />"
+		);
 	}
 
 	@Test
 	public void updateControlNameThroughContainer() {
 		ContainerViewElement container = new ContainerViewElement();
-		FormInputElement control = new HiddenFormElement();
-		control.setControlName( "one" );
+		HiddenFormElement hidden = new HiddenFormElement();
+		hidden.setControlName( "one" );
+		render( hidden );
+		container.addChild( hidden );
+
+		BootstrapElementUtils.prefixControlNames( "prefix.", container );
+
+		renderAndExpect(
+				hidden,
+				"<input type='hidden' name='prefix.one' />"
+		);
+
+		assertEquals( "prefix.one", hidden.getControlName() );
+
+		container = new ContainerViewElement();
+		hidden = new HiddenFormElement();
+		hidden.setControlName( "one" );
+		FormControlElement control = hidden.toFormControl();
 		render( control );
 		container.addChild( control );
 
@@ -80,7 +111,7 @@ public class TestHiddenFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<input type='hidden' name='prefix.one' />"
+				"<input type='hidden' name='prefix.one' id='prefix.one' />"
 		);
 
 		assertEquals( "prefix.one", control.getControlName() );

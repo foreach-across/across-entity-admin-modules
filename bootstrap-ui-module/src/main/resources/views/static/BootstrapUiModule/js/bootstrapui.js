@@ -15,7 +15,7 @@
  */
 
 // Exposes infrastructure for form initialization logic
-var BootstrapUiModule = (function( $ ) {
+var BootstrapUiModule = (function ( $ ) {
     var bootstrapUiModule = {
         Controls: {},
 
@@ -29,7 +29,7 @@ var BootstrapUiModule = (function( $ ) {
          * @param callback function to execute
          * @param callIfAlreadyInitialized should the initializer execute immediately if document has been initialized already - defaults to true
          */
-        registerInitializer: function( callback, callIfAlreadyInitialized ) {
+        registerInitializer: function ( callback, callIfAlreadyInitialized ) {
             this.initializers.push( callback );
 
             var shouldExecute = (callIfAlreadyInitialized === undefined || true === callIfAlreadyInitialized) && this.documentInitialized;
@@ -44,7 +44,7 @@ var BootstrapUiModule = (function( $ ) {
          *
          * @param node optional parent to limit the scan
          */
-        initializeFormElements: function( node ) {
+        initializeFormElements: function ( node ) {
             if ( node === undefined && !this.documentInitialized ) {
                 this.documentInitialized = true;
             }
@@ -53,10 +53,34 @@ var BootstrapUiModule = (function( $ ) {
             for ( var i = 0; i < this.initializers.length; i++ ) {
                 this.initializers[i]( node );
             }
+        },
+
+        /**
+         * Retrieve a the target node that the current node represents.
+         * If the node passed in has a 'data-bum-ref-id' attribute,
+         * it will be replaced by the element having the same id as the attribute value.
+         *
+         * @param node
+         * @param recurse should the target in turn be checked for reference id
+         */
+        refTarget: function ( node, recurse ) {
+            if ( node ) {
+                var ref = this;
+                return $( node ).map( function ( ix, n ) {
+                    var candidate = $( n );
+                    var targetId = candidate.attr( 'data-bum-ref-id' );
+                    if ( targetId ) {
+                        var target = $( '#' + targetId );
+                        return recurse ? ref.refTarget( target, recurse ).get() : target.get();
+                    }
+                    return n;
+                } )
+            }
+            return node;
         }
     };
 
-    $( document ).ready( function() {
+    $( document ).ready( function () {
         bootstrapUiModule.initializeFormElements();
     } );
 

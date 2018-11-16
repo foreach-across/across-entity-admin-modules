@@ -15,7 +15,9 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
+import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.AbstractVoidNodeViewElementBuilder;
 
@@ -45,6 +47,13 @@ public class HiddenFormElementBuilder extends AbstractVoidNodeViewElementBuilder
 	public HiddenFormElementBuilder value( Object value ) {
 		this.value = value;
 		return this;
+	}
+
+	/**
+	 * @return a new builder that calls {@link HiddenFormElement#toFormControl()} when building
+	 */
+	public ViewElementBuilder<FormControlElement> mapToFormControl() {
+		return map( HiddenFormElement::toFormControl );
 	}
 
 	@Override

@@ -44,14 +44,15 @@ public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupp
 	/**
 	 * Sets the date based on the given {@link Date} object.
 	 * If a {@link LocalDateTime} is set, it will override the value.
+	 * Prefer the use of {@link #value(LocalDateTime)} instead.
 	 *
-	 * @deprecated prefer using {@link #value(LocalDateTime)}
 	 * @param value date to set
 	 * @return current builder
 	 */
-	@Deprecated
 	public DateTimeFormElementBuilder value( Date value ) {
-		this.value = value;
+		if ( value != null ) {
+			this.value = new Date( value.getTime() );
+		}
 		return this;
 	}
 

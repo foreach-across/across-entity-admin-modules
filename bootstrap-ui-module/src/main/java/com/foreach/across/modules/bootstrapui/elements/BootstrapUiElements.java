@@ -44,4 +44,5 @@ public interface BootstrapUiElements extends StandardViewElements
 	String LINK = "bootstrapLink";
 	String FILE_UPLOAD = "bootstrapFileUpload";
 	String AUTOSUGGEST = "bootstrapAutoSuggest";
+	String GENERIC_FORM_CONTROL = "bootstrapGenericFormControl";
 }

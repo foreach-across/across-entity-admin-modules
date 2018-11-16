@@ -23,7 +23,7 @@ import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElem
  * @author Arne Vandamme
  * @since 1.0.0
  */
-public abstract class FormControlElementModelWriter<T extends FormControlElementSupport>
+public class FormControlElementModelWriter<T extends FormControlElementSupport>
 		extends AbstractHtmlViewElementModelWriter<T>
 {
 	@Override
