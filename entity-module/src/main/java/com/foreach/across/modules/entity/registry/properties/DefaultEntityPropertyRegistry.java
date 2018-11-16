@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,11 +15,18 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.registry.properties.support.EntityPropertyDescriptorUtils;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
-import com.foreach.across.modules.entity.views.support.NestedValueFetcher;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Sort;
+
+import java.util.function.Function;
 
 /**
  * Default implementation of a {@link MutableEntityPropertyRegistry}.
@@ -39,6 +46,10 @@ import org.springframework.data.domain.Sort;
  */
 public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 {
+	@Setter
+	@Getter(AccessLevel.PROTECTED)
+	private EntityPropertyValidator defaultMemberValidator;
+
 	/**
 	 * Create a new detached entity property registry.  Only properties registered directly will be available,
 	 * no nested properties will be looked up.
@@ -62,24 +73,30 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 
 	@Override
 	public MutableEntityPropertyDescriptor getProperty( String propertyName ) {
-		MutableEntityPropertyDescriptor descriptor = super.getProperty( propertyName );
+		MutableEntityPropertyDescriptor descriptor = getLocalProperty( propertyName );
 
-		if ( descriptor == null && getRegistryProvider() != null ) {
-			String rootProperty = findRootProperty( propertyName );
+		if ( descriptor == null ) {
+			if ( propertyName.endsWith( INDEXER ) ) {
+				return buildMemberDescriptor( propertyName, INDEXER, this::resolveMemberType );
+			}
+			else if ( propertyName.endsWith( MAP_KEY ) ) {
+				return buildMemberDescriptor( propertyName, MAP_KEY, this::resolveMapKeyType );
+			}
+			else if ( propertyName.endsWith( MAP_VALUE ) ) {
+				return buildMemberDescriptor( propertyName, MAP_VALUE, this::resolveMapValueType );
+			}
+			else {
+				String longestPrefix = StringUtils.substringBeforeLast( propertyName, "." );
 
-			if ( rootProperty != null ) {
-				EntityPropertyDescriptor rootDescriptor = super.getProperty( rootProperty );
-
-				if ( rootDescriptor != null && rootDescriptor.getPropertyType() != null ) {
-					EntityPropertyRegistry subRegistry
-							= getRegistryProvider().get( rootDescriptor.getPropertyType() );
+				if ( StringUtils.isNotEmpty( longestPrefix ) && !StringUtils.equals( longestPrefix, propertyName ) ) {
+					EntityPropertyDescriptor parentDescriptor = getProperty( longestPrefix );
+					EntityPropertyRegistry subRegistry = resolveRegistryForPropertyDescriptor( parentDescriptor );
 
 					if ( subRegistry != null ) {
-						EntityPropertyDescriptor childDescriptor
-								= subRegistry.getProperty( findChildProperty( propertyName ) );
+						EntityPropertyDescriptor childDescriptor = subRegistry.getProperty( StringUtils.substringAfterLast( propertyName, "." ) );
 
 						if ( childDescriptor != null ) {
-							descriptor = buildNestedDescriptor( propertyName, rootDescriptor, childDescriptor );
+							descriptor = buildNestedDescriptor( propertyName, parentDescriptor, childDescriptor );
 						}
 					}
 				}
@@ -89,10 +106,101 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		return descriptor;
 	}
 
-	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name,
-	                                                               EntityPropertyDescriptor parent,
-	                                                               EntityPropertyDescriptor child ) {
+	protected final MutableEntityPropertyDescriptor getLocalProperty( String propertyName ) {
+		return super.getProperty( propertyName );
+	}
+
+	private EntityPropertyRegistry resolveRegistryForPropertyDescriptor( EntityPropertyDescriptor descriptor ) {
+		if ( descriptor == null ) {
+			return null;
+		}
+
+		EntityPropertyRegistry targetRegistry = descriptor.getAttribute( EntityPropertyRegistry.class );
+
+		if ( targetRegistry == null ) {
+			EntityPropertyRegistryProvider registryProvider = getRegistryProvider();
+
+			if ( registryProvider != null && descriptor.getPropertyType() != null ) {
+				targetRegistry = registryProvider.get( descriptor.getPropertyType() );
+			}
+		}
+
+		return targetRegistry;
+	}
+
+	/**
+	 * Create an indexed property descriptor. This descriptor represents the member type of the corresponding
+	 * parent descriptor. An indexed property descriptor does not have a wrapping value fetcher, as it has no
+	 * way to access a specific member. As such, when building a nested descriptor, the target value fetcher
+	 * of the member type will be used, meaning that it is up to the outer code to set the correct instance
+	 * of the specific member as the entity.
+	 */
+	private MutableEntityPropertyDescriptor buildMemberDescriptor( String propertyName,
+	                                                               String suffix,
+	                                                               Function<EntityPropertyDescriptor, TypeDescriptor> typeResolver ) {
+		String nonIndexedProperty = propertyName.substring( 0, propertyName.length() - suffix.length() );
+		MutableEntityPropertyDescriptor parent = getProperty( nonIndexedProperty );
+
+		if ( parent != null ) {
+			TypeDescriptor memberTypeDescriptor = typeResolver.apply( parent );
+
+			if ( memberTypeDescriptor != null ) {
+				SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( parent.getName() + suffix );
+				descriptor.setDisplayName( parent.getDisplayName() );
+				descriptor.setPropertyTypeDescriptor( memberTypeDescriptor );
+				descriptor.setReadable( true );
+				descriptor.setWritable( true );
+				descriptor.setHidden( true );
+				descriptor.setParentDescriptor( parent );
+
+				( (ConfigurableEntityPropertyController) descriptor.getController() )
+						.validator( defaultMemberValidator )
+						.order( EntityPropertyController.BEFORE_ENTITY );
+
+				register( descriptor );
+
+				return descriptor;
+			}
+		}
+
+		return null;
+	}
+
+	private TypeDescriptor resolveMapKeyType( EntityPropertyDescriptor descriptor ) {
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		if ( typeDescriptor != null && typeDescriptor.isMap() ) {
+			TypeDescriptor keyType = typeDescriptor.getMapKeyTypeDescriptor();
+			return keyType != null ? keyType : TypeDescriptor.valueOf( Object.class );
+		}
+		return null;
+	}
+
+	private TypeDescriptor resolveMapValueType( EntityPropertyDescriptor descriptor ) {
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		if ( typeDescriptor != null && typeDescriptor.isMap() ) {
+			TypeDescriptor keyType = typeDescriptor.getMapValueTypeDescriptor();
+			return keyType != null ? keyType : TypeDescriptor.valueOf( Object.class );
+		}
+		return null;
+	}
+
+	private TypeDescriptor resolveMemberType( EntityPropertyDescriptor descriptor ) {
+		TypeDescriptor typeDescriptor = descriptor.getPropertyTypeDescriptor();
+		if ( typeDescriptor != null && ( typeDescriptor.isCollection() || typeDescriptor.isArray() ) ) {
+			TypeDescriptor memberType = typeDescriptor.getElementTypeDescriptor();
+			return memberType != null ? memberType : TypeDescriptor.valueOf( Object.class );
+		}
+
+		return null;
+	}
+
+	private MutableEntityPropertyDescriptor buildNestedDescriptor( String name, EntityPropertyDescriptor parent, EntityPropertyDescriptor child ) {
+		// todo: member descriptors should be registered differently (?)
+		boolean isMemberDescriptor = EntityPropertyDescriptorUtils.isMemberProperty( parent ) || StringUtils.contains( name, "[" );
+
 		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name );
+		descriptor.setParentDescriptor( parent );
+
 		descriptor.setDisplayName( child.getDisplayName() );
 		descriptor.setPropertyType( child.getPropertyType() );
 		descriptor.setPropertyTypeDescriptor( child.getPropertyTypeDescriptor() );
@@ -100,10 +208,23 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 		descriptor.setWritable( child.isWritable() );
 		descriptor.setHidden( child.isHidden() );
 
-		if ( descriptor.isReadable() ) {
-			descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
+		if ( !isMemberDescriptor ) {
+			descriptor.setController( new NestedEntityPropertyController( parent, child.getController() ) );
+		}
+		else {
+			descriptor.setController( new GenericEntityPropertyController( child.getController() ) );
 		}
 
+		/*if ( descriptor.isReadable() ) {
+			val parentValueFetcher = parent.getValueFetcher();
+			if ( parentValueFetcher != null && !isIndexerChild ) {
+				descriptor.setValueFetcher( new NestedValueFetcher( parent.getValueFetcher(), child.getValueFetcher() ) );
+			}
+			else {
+				descriptor.setValueFetcher( child.getValueFetcher() );
+			}
+		}
+*/
 		// todo: fixme decently
 		ViewElementLookupRegistryImpl existingLookupRegistry = descriptor.getAttribute( ViewElementLookupRegistry.class );
 		ViewElementLookupRegistry lookupRegistry = new ViewElementLookupRegistryImpl();
@@ -127,16 +248,20 @@ public class DefaultEntityPropertyRegistry extends EntityPropertyRegistrySupport
 			descriptor.setAttribute( Sort.Order.class, nestedOrder );
 		}
 
+		descriptor.setAttribute( EntityAttributes.TARGET_DESCRIPTOR, child );
+
 		register( descriptor );
 
 		return descriptor;
 	}
 
-	private String findChildProperty( String propertyName ) {
-		return StringUtils.defaultIfEmpty( StringUtils.substringAfter( propertyName, "." ), null );
-	}
-
-	private String findRootProperty( String propertyName ) {
-		return StringUtils.defaultIfEmpty( StringUtils.substringBefore( propertyName, "." ), null );
+	/**
+	 * Create a simple new registry based on property reflection of the class.
+	 *
+	 * @param type class
+	 * @return registry
+	 */
+	public static MutableEntityPropertyRegistry forClass( Class<?> type ) {
+		return DefaultEntityPropertyRegistryProvider.INSTANCE.create( type );
 	}
 }

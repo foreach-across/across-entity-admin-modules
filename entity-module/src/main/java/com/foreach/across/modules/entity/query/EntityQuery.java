@@ -230,4 +230,27 @@ public class EntityQuery implements EntityQueryExpression
 
 		return query;
 	}
+
+	/**
+	 * @param eql eql statement
+	 * @return entity query
+	 * @see EntityQuery#parse(String)
+	 */
+	public static EntityQuery of( String eql ) {
+		return EntityQuery.parse( eql );
+	}
+
+	/**
+	 * Create a duplicate of an existing query. If the value passed in is {@code null}, a query instance for all values will be returned.
+	 * As such, this method can be used to return the default query if you have a null value.
+	 *
+	 * @param query to duplicate
+	 * @return query - never null
+	 */
+	public static EntityQuery of( EntityQuery query ) {
+		if ( query == null ) {
+			return EntityQuery.all();
+		}
+		return new EntityQuery( query );
+	}
 }

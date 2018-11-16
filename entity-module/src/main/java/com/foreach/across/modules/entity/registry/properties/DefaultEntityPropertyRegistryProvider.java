@@ -16,12 +16,14 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.core.annotations.RefreshableCollection;
+import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.registrars.repository.PersistenceMetadataPropertiesRegistrar;
 import com.foreach.across.modules.entity.registry.properties.registrars.DefaultPropertiesRegistrar;
 import com.foreach.across.modules.entity.registry.properties.registrars.LabelPropertiesRegistrar;
 import com.foreach.across.modules.entity.registry.properties.registrars.ValidationMetadataPropertiesRegistrar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.SmartValidator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,9 +43,20 @@ import java.util.function.BiConsumer;
 @Service
 public class DefaultEntityPropertyRegistryProvider implements EntityPropertyRegistryProvider
 {
+	/**
+	 * A shared global instance, supporting only simple class introspection.
+	 */
+	public static final EntityPropertyRegistryProvider INSTANCE = new DefaultEntityPropertyRegistryProvider( new EntityPropertyDescriptorFactoryImpl() );
+
+	static {
+		DefaultEntityPropertyRegistryProvider provider = (DefaultEntityPropertyRegistryProvider) INSTANCE;
+		provider.setPropertiesRegistrars( Collections.singleton( new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() ) ) );
+	}
+
 	private final EntityPropertyDescriptorFactory descriptorFactory;
 	private final Map<Class<?>, MutableEntityPropertyRegistry> registries = new HashMap<>();
 
+	private EntityPropertyValidator defaultMemberValidator;
 	private Collection<PropertiesRegistrar> propertiesRegistrars = Collections.emptyList();
 
 	@Autowired
@@ -56,6 +69,11 @@ public class DefaultEntityPropertyRegistryProvider implements EntityPropertyRegi
 		this.propertiesRegistrars = propertiesRegistrars;
 	}
 
+	@EntityValidator(required = false)
+	public void setDefaultMemberValidator( SmartValidator validator ) {
+		defaultMemberValidator = EntityPropertyValidator.of( validator );
+	}
+
 	@Override
 	public MutableEntityPropertyRegistry get( Class<?> entityType ) {
 		return registries.computeIfAbsent( entityType, this::create );
@@ -64,6 +82,7 @@ public class DefaultEntityPropertyRegistryProvider implements EntityPropertyRegi
 	@Override
 	public MutableEntityPropertyRegistry create( Class<?> entityType ) {
 		DefaultEntityPropertyRegistry newRegistry = new DefaultEntityPropertyRegistry( this );
+		newRegistry.setDefaultMemberValidator( defaultMemberValidator );
 		propertiesRegistrars.forEach( b -> b.accept( entityType, newRegistry ) );
 		return newRegistry;
 	}

@@ -19,13 +19,11 @@ package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.util.EntityUtils;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
-import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Converts enum value based on message code if a {@link com.foreach.across.modules.entity.support.EntityMessageCodeResolver} is available on the context.
@@ -43,27 +41,20 @@ public final class EnumValueTextPostProcessor<T extends ConfigurableTextViewElem
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public void postProcess( ViewElementBuilderContext builderContext, T element ) {
-		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		EntityMessageCodeResolver codeResolver = builderContext.getAttribute( EntityMessageCodeResolver.class );
-		ValueFetcher valueFetcher = getPropertyDescriptor().getValueFetcher();
-
-		if ( entity != null && valueFetcher != null ) {
-			Enum propertyValue = (Enum) valueFetcher.getValue( entity );
-
-			if ( propertyValue != null ) {
-				element.setText( convert( propertyValue, LocaleContextHolder.getLocale(), codeResolver ) );
-			}
-		}
+	protected String print( Object value, Locale locale, ViewElementBuilderContext builderContext ) {
+		return convert( (Enum) value, locale, builderContext.getAttribute( EntityMessageCodeResolver.class ) );
 	}
 
 	@Override
 	protected String print( Object value, Locale locale ) {
-		return null;
+		return print( value, locale, Objects.requireNonNull( ViewElementBuilderContext.retrieveGlobalBuilderContext().orElse( null ) ) );
 	}
 
 	private String convert( Enum value, Locale locale, EntityMessageCodeResolver codeResolver ) {
+		if ( value == null ) {
+			return null;
+		}
+
 		if ( codeResolver != null ) {
 			String messageCode = "enums." + enumType.getSimpleName() + "." + value.name();
 			String defaultLabel = EntityUtils.generateDisplayName( value.name() );

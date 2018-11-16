@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -81,10 +82,9 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 						        .entityFactory( new BooleanDummyEntityConfiguration.BooleanDummyEntityFactory() )
 						        .entityInformation( new BooleanDummyEntityConfiguration.BooleanDummyEntityInformation() )
 						        .labelPrinter( ( o, locale ) -> "" + o.getId() )
-						        .findOneMethod( id ->
-								                        booleanDummyRepository.stream()
-								                                              .filter( m -> id.equals( m.getId() ) )
-								                                              .findFirst().orElse( null ) )
+						        .findOneMethod( id -> booleanDummyRepository.stream()
+						                                                    .filter( m -> Objects.equals( m.getId(), Integer.valueOf( id.toString() ) ) )
+						                                                    .findFirst().orElse( null ) )
 						        .saveMethod(
 								        booleanDummy -> {
 									        Optional<BooleanDummy> existing = booleanDummyRepository

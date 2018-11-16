@@ -50,13 +50,13 @@ public class TestEntityQueryParser
 		parser.validateProperties();
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void validatePropertiesRequiresMetadataProvider() {
 		parser.setMetadataProvider( null );
 		parser.validateProperties();
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void validatePropertiesRequiresQueryTranslator() {
 		parser.setQueryTranslator( null );
 		parser.validateProperties();

@@ -20,7 +20,6 @@ import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.MutableViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -64,9 +63,6 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 	private Boolean sorted;
 
 	@Getter(AccessLevel.PROTECTED)
-	private ValueFetcher<Object> valueFetcher;
-
-	@Getter(AccessLevel.PROTECTED)
 	private boolean selfOptionIncluded;
 
 	@Getter
@@ -95,14 +91,6 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 	}
 
 	/**
-	 * @param valueFetcher to be used to auto-select values
-	 */
-	@SuppressWarnings("unchecked")
-	public void setValueFetcher( ValueFetcher valueFetcher ) {
-		this.valueFetcher = valueFetcher;
-	}
-
-	/**
 	 * In case of options that are the same type as the entity being built, should the entity
 	 * itself be provided as an option.  Default value is {@code false}.
 	 *
@@ -120,13 +108,6 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 	}
 
 	/**
-	 * @return true if a {@link ValueFetcher} has been set
-	 */
-	public boolean hasValueFetcher() {
-		return valueFetcher != null;
-	}
-
-	/**
 	 * @return true if an OptionsEnhancer has been set
 	 */
 	public boolean hasEnhancer() {
@@ -138,7 +119,7 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 	public ContainerViewElement build( ViewElementBuilderContext builderContext ) {
 		ContainerViewElement container = new ContainerViewElement();
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		Collection selectedValues = hasValueFetcher() ? retrieveSelectedValues( entity ) : null;
+		Collection selectedValues = retrieveSelectedValues( builderContext );
 
 		OptionsFormElementBuilder optionsBuilder = builderContext.getAttribute( OptionsFormElementBuilder.class );
 		Assert.notNull( optionsBuilder, "no optionsBuilder was found" );
@@ -225,24 +206,22 @@ public class OptionGenerator implements ViewElementBuilder<ContainerViewElement>
 		}
 	}
 
-	protected Collection retrieveSelectedValues( Object entity ) {
-		if ( entity != null && valueFetcher != null ) {
-			Object selected = valueFetcher.getValue( entity );
+	protected Collection retrieveSelectedValues( ViewElementBuilderContext builderContext ) {
+		Object selected = EntityViewElementUtils.currentPropertyValue( builderContext );
 
-			if ( selected != null ) {
-				if ( selected instanceof Collection ) {
-					return (Collection) selected;
-				}
-				else if ( selected.getClass().isArray() ) {
-					return CollectionUtils.arrayToList( selected );
-				}
-				else {
-					return Collections.singleton( selected );
-				}
+		if ( selected != null ) {
+			if ( selected instanceof Collection ) {
+				return (Collection) selected;
+			}
+			else if ( selected.getClass().isArray() ) {
+				return CollectionUtils.arrayToList( selected );
+			}
+			else {
+				return Collections.singleton( selected );
 			}
 		}
 
-		return Collections.emptyList();
+		return null;
 	}
 
 	@SuppressWarnings("unused")

@@ -16,6 +16,7 @@
 
 package it.com.foreach.across.modules.entity.query;
 
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import com.foreach.across.testmodules.springdata.business.Company;
 import com.foreach.across.testmodules.springdata.business.CompanyStatus;
 import com.foreach.across.testmodules.springdata.business.Group;
@@ -33,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -49,7 +49,7 @@ import java.util.function.Supplier;
 @Slf4j
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@WebAppConfiguration
+@AcrossWebAppConfiguration
 @ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
 public abstract class AbstractQueryTest
 {

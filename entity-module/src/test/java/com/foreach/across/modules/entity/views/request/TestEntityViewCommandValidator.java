@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.request;
 
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
+import lombok.val;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -95,17 +96,20 @@ public class TestEntityViewCommandValidator
 
 	@Test
 	public void extensionValidation() {
+		val customValidator = mock( Validator.class );
+
 		EntityViewCommand command = new EntityViewCommand();
 		command.addExtension( "someExtension", "123" );
-		command.addExtension( "other", "456" );
+		command.addExtensionWithValidator( "other", "456", customValidator );
 
 		validator.validate( command, errors );
-		InOrder ordered = inOrder( fallbackValidator, errors );
+		InOrder ordered = inOrder( fallbackValidator, errors, customValidator );
 		ordered.verify( errors ).pushNestedPath( "extensions[someExtension]" );
 		ordered.verify( fallbackValidator ).validate( "123", errors );
 		ordered.verify( errors ).popNestedPath();
 		ordered.verify( errors ).pushNestedPath( "extensions[other]" );
 		ordered.verify( fallbackValidator ).validate( "456", errors );
+		ordered.verify( customValidator ).validate( "456", errors );
 		ordered.verify( errors ).popNestedPath();
 	}
 }

@@ -31,6 +31,7 @@ import static org.apache.commons.lang3.time.FastDateFormat.getDateTimeInstance;
 /**
  * @author Andy Somers
  */
+@SuppressWarnings("findbugs:NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 public class DateFormatter extends org.springframework.format.datetime.DateFormatter
 {
 	private static List<FastDateFormat> dateFormats = new ArrayList<>();

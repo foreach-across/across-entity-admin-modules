@@ -54,7 +54,7 @@ import java.util.*;
 @ConditionalOnBootstrapUI
 @Component
 @Scope("prototype")
-public class SortableTableBuilder extends GlobalContextSupportingViewElementBuilder<ContainerViewElement>
+public class SortableTableBuilder implements ViewElementBuilder<ContainerViewElement>
 {
 	/**
 	 * Sets an 'odd' or 'even' class on a table row depending on the iterator index.

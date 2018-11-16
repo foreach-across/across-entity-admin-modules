@@ -17,10 +17,13 @@
 package com.foreach.across.modules.entity.views;
 
 import com.foreach.across.core.support.AttributeSupport;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.support.EntityViewMessageSource;
 import com.foreach.across.modules.entity.views.context.ConfigurableEntityViewContext;
+import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.TransactionalEntityViewProcessorRegistry;
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
@@ -115,7 +118,8 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 				ContainerViewElement container = actualContainerBuilder.build();
 				entityView.addAttribute( ATTRIBUTE_CONTAINER_ELEMENT, container );
 
-				entityViewRequest.getPageContentStructure().addFirstChild( container );
+				PageContentStructure page = entityViewRequest.getPageContentStructure();
+				page.addChild( container );
 
 				// perform render related post-processing
 				processorRegistry.dispatch( p -> p.postRender( entityViewRequest, entityView ) );
@@ -138,18 +142,36 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 	 * Create a custom {@link ViewElementBuilderContext} for the view request.
 	 */
 	protected ViewElementBuilderContext createViewElementBuilderContext( EntityViewRequest entityViewRequest ) {
+		EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+
 		ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( entityViewRequest.getModel() );
-		if ( entityViewRequest.getEntityViewContext().holdsEntity() ) {
-			Object entity = entityViewRequest.getEntityViewContext().getEntity();
-			entityViewRequest.getModel().addAttribute( EntityViewModel.ENTITY, entity );
-		}
-		EntityMessageCodeResolver messageCodeResolver = entityViewRequest.getEntityViewContext().getMessageCodeResolver();
+
+		EntityMessageCodeResolver messageCodeResolver = entityViewContext.getMessageCodeResolver();
 		builderContext.setAttribute( EntityMessageCodeResolver.class, messageCodeResolver );
 		EntityViewMessageSource viewMessageSource = new EntityViewMessageSource( messageCodeResolver );
 		builderContext.setAttribute( MessageSource.class, viewMessageSource );
 		builderContext.setAttribute( LocalizedTextResolver.class, new MessageCodeSupportingLocalizedTextResolver( viewMessageSource ) );
 		builderContext.setAttribute( EntityViewRequest.class, entityViewRequest );
-		builderContext.setAttribute( EntityViewCommand.class, entityViewRequest.getCommand() );
+
+		EntityViewCommand command = entityViewRequest.getCommand();
+		builderContext.setAttribute( EntityViewCommand.class, command );
+
+		EntityPropertiesBinder propertiesBinder = command.getProperties();
+
+		if ( entityViewContext.holdsEntity() ) {
+			Object entity = entityViewContext.getEntity();
+			entityViewRequest.getModel().addAttribute( EntityViewModel.ENTITY, entity );
+
+			if ( propertiesBinder == null ) {
+				propertiesBinder = new EntityPropertiesBinder( entityViewContext.getPropertyRegistry() );
+				propertiesBinder.setEntity( entity );
+				command.setProperties( propertiesBinder );
+			}
+		}
+
+		if ( propertiesBinder != null ) {
+			builderContext.setAttribute( EntityPropertiesBinder.class, propertiesBinder );
+		}
 
 		return builderContext;
 	}

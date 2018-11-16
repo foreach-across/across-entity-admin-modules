@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,11 +25,25 @@ import org.springframework.core.convert.TypeDescriptor;
 public interface MutableEntityPropertyDescriptor extends EntityPropertyDescriptor, WritableAttributes
 {
 	/**
+	 * Set the parent property descriptor for a nested property.
+	 *
+	 * @param descriptor parent
+	 */
+	void setParentDescriptor( EntityPropertyDescriptor descriptor );
+
+	/**
 	 * Set the registry this property descriptor belongs to.
 	 *
 	 * @param propertyRegistry instance
 	 */
 	void setPropertyRegistry( EntityPropertyRegistry propertyRegistry );
+
+	/**
+	 * Set the controller that should be used for managing this property in the context of an entity.
+	 *
+	 * @param controller to use
+	 */
+	void setController( EntityPropertyController controller );
 
 	void setDisplayName( String displayName );
 

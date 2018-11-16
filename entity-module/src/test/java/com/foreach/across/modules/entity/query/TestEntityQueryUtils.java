@@ -80,6 +80,83 @@ public class TestEntityQueryUtils
 		EntityQueryUtils.or( query, 123 );
 	}
 
+	@Test
+	public void simplify() {
+		assertEqlEquals(
+				"id = 1 and name like 'test'",
+				EntityQueryUtils.simplify( EntityQuery.parse( "id = 1 and name like 'test'" ) )
+		);
+
+		assertEqlEquals(
+				"id = 1 and name like 'test'",
+				EntityQueryUtils.simplify( EntityQuery.parse( "id = 1 and (name like 'test')" ) )
+		);
+
+		assertEqlEquals(
+				"id = 1 and name like 'test'",
+				EntityQueryUtils.simplify( EntityQuery.parse( "(id = 1 and name like 'test')" ) )
+		);
+
+		assertEqlEquals(
+				"id = 1 or name like 'test'",
+				EntityQueryUtils.simplify( EntityQuery.parse( "(id = 1 or name like 'test')" ) )
+		);
+
+		assertEqlEquals(
+				"id = 1 and name like 'test'",
+				EntityQueryUtils.simplify( EntityQuery.parse( "(id = 1 and (name like 'test'))" ) )
+		);
+
+		assertEqlEquals(
+				"id = 1 and name like 'test' order by x ASC, y DESC",
+				EntityQueryUtils.simplify( EntityQuery.parse( "((id = 1 and ((name like 'test')))) order by x asc, y desc" ) )
+		);
+
+		assertEqlEquals(
+				"id = 1 and name like 'test' and city contains X",
+				EntityQueryUtils.simplify( EntityQuery.parse( "(id = 1 and (name like 'test' and (city contains X)))" ) )
+		);
+
+		assertEqlEquals(
+				"id = 1 and (name like 'test' or city contains X)",
+				EntityQueryUtils.simplify( EntityQuery.parse( "(id = 1 and (name like 'test' or (city contains X)))" ) )
+		);
+
+		assertEqlEquals(
+				"id = 1 or (name like 'test' and (city contains X or y = z))",
+				EntityQueryUtils.simplify( EntityQuery.parse( "(id = 1 or (name like 'test' and (city contains X or (y = z))))" ) )
+		);
+
+		assertEqlEquals(
+				"(id = 1 or name like 'test') and (city contains X or y = z)",
+				EntityQueryUtils.simplify( EntityQuery.parse( "(id = 1 or name like 'test') and (city contains X or y = z)" ) )
+		);
+	}
+
+	@Test
+	public void translateConditions() {
+		EntityQuery query = EntityQuery.of( "id = 1 and x = y and (x = z or name contains 'test' or 1 = 2) order by name ASC" );
+
+		assertEqlEquals(
+				"id != 1 and x != y and (x != z or name != 'test' or 1 != 2) order by name ASC",
+				EntityQueryUtils.translateConditions( query, c -> new EntityQueryCondition( c.getProperty(), EntityQueryOps.NEQ, c.getArguments() ) )
+		);
+
+		assertEqlEquals(
+				"id = 1 and (name contains 'test' or 1 = 2) order by name ASC",
+				EntityQueryUtils.translateConditions( query, c -> null, "x" )
+		);
+
+		assertEqlEquals(
+				"id = 1 and (name contains 'test' or one = 2) order by name ASC",
+				EntityQueryUtils.translateConditions(
+						query,
+						c -> c.getProperty().equals( "x" ) ? null : new EntityQueryCondition( "one", c.getOperand(), c.getArguments() ),
+						"x", "1"
+				)
+		);
+	}
+
 	private void assertEqlEquals( String expectedEql, EntityQuery entityQuery ) {
 		assertEquals( expectedEql, entityQuery.toString() );
 	}

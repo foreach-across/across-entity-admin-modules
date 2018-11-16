@@ -16,8 +16,8 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
-import com.foreach.across.modules.bootstrapui.elements.FieldsetFormElement;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -46,7 +46,7 @@ public class TestFieldsetDescriptionTextPostProcessor
 	@Spy
 	private DefaultViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext();
 
-	private FieldsetFormElement fieldset = new FieldsetFormElement();
+	private ViewElementFieldset fieldset = new ViewElementFieldset();
 	private FieldsetDescriptionTextPostProcessor<ViewElement> postProcessor = new FieldsetDescriptionTextPostProcessor<>();
 
 	@Before
@@ -59,7 +59,7 @@ public class TestFieldsetDescriptionTextPostProcessor
 	public void textNotSetIfEmpty() {
 		when( builderContext.getMessage( "properties.myprop[description]", "" ) ).thenReturn( "" );
 		postProcessor.postProcess( builderContext, fieldset );
-		assertThat( fieldset.getChildren() ).isEmpty();
+		assertThat( fieldset.getHeader().getChildren() ).isEmpty();
 	}
 
 	@Test
@@ -67,8 +67,8 @@ public class TestFieldsetDescriptionTextPostProcessor
 		fieldset.addChild( TextViewElement.text( "body" ) );
 		when( builderContext.getMessage( "properties.myprop[description]", "" ) ).thenReturn( "description" );
 		postProcessor.postProcess( builderContext, fieldset );
-		assertThat( fieldset.getChildren() ).hasSize( 2 );
-		assertThat( (NodeViewElement) fieldset.getChildren().get( 0 ) )
+		assertThat( fieldset.getHeader().getChildren() ).hasSize( 1 );
+		assertThat( (NodeViewElement) fieldset.getHeader().getChildren().get( 0 ) )
 				.satisfies( node -> {
 					assertThat( node.hasCssClass( CSS_FORM_TEXT_DESCRIPTION ) ).isTrue();
 					TextViewElement text = node.findAll( TextViewElement.class )
@@ -85,8 +85,8 @@ public class TestFieldsetDescriptionTextPostProcessor
 		postProcessor = new FieldsetDescriptionTextPostProcessor<>( true );
 		when( builderContext.getMessage( "properties.myprop[description]", "" ) ).thenReturn( "description" );
 		postProcessor.postProcess( builderContext, fieldset );
-		assertThat( fieldset.getChildren() ).hasSize( 2 );
-		assertThat( (NodeViewElement) fieldset.getChildren().get( 0 ) )
+		assertThat( fieldset.getHeader().getChildren() ).hasSize( 1 );
+		assertThat( (NodeViewElement) fieldset.getHeader().getChildren().get( 0 ) )
 				.satisfies( node -> {
 					TextViewElement text = node.findAll( TextViewElement.class )
 					                           .findFirst()

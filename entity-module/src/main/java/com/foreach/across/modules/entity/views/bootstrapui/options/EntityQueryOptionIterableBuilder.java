@@ -23,11 +23,14 @@ import com.foreach.across.modules.entity.query.EntityQueryParser;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Generates {@link OptionFormElementBuilder}s for a particular entity type, where the list of options
@@ -43,6 +46,7 @@ import java.util.List;
  */
 public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 {
+	private ConversionService conversionService;
 	private EntityModel<Object, Serializable> entityModel;
 	private EntityQueryExecutor<Object> entityQueryExecutor;
 	private EntityQueryParser entityQueryParser;
@@ -56,6 +60,17 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 	public void setEntityModel( EntityModel entityModel ) {
 		Assert.notNull( entityModel, "entityModel is required" );
 		this.entityModel = entityModel;
+	}
+
+	/**
+	 * Sets an alternative {@link ConversionService} which is used to convert the Id of an entity.
+	 * If none is set, the {@link DefaultConversionService} will be used.
+	 *
+     * @author Marc Vanbrabant
+	 * @since 3.2.0
+	 */
+	public void setConversionService( ConversionService conversionService ) {
+		this.conversionService = conversionService;
 	}
 
 	/**
@@ -108,12 +123,16 @@ public class EntityQueryOptionIterableBuilder implements OptionIterableBuilder
 
 			option.rawValue( entityOption );
 			option.label( entityModel.getLabel( entityOption ) );
-			option.value( entityModel.getId( entityOption ) );
+			option.value( convertId( entityModel.getId( entityOption ) ) );
 
 			options.add( option );
 		}
 
 		return options;
+	}
+
+	private String convertId( Object value ) {
+		return Optional.ofNullable( conversionService ).orElseGet( DefaultConversionService::getSharedInstance ).convert( value, String.class );
 	}
 
 	private EntityQuery prepareEntityQuery() {

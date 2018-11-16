@@ -29,6 +29,7 @@ import lombok.NonNull;
  * @author Arne Vandamme
  * @since 3.0.0
  */
+@SuppressWarnings("findbugs:NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 public class EntityAdminMenu<T> extends com.foreach.across.modules.adminweb.menu.EntityAdminMenu<T>
 {
 	/**

@@ -35,7 +35,7 @@ import org.apache.commons.lang3.StringUtils;
  * Optionally specify a child element predicate.  If one is specified and the element is a {@link com.foreach.across.modules.web.ui.elements.ContainerViewElement},
  * all children matching the predicate in the entire element tree of the container will also be prefixed.
  * <p/>
- * Use the static {@link #registerForProperty(EntityPropertyDescriptor, ViewElementBuilde)} method to conditionally register the postprocessor
+ * Use the static {@link #registerForProperty(EntityPropertyDescriptor, ViewElementBuilder)} method to conditionally register the postprocessor
  * for entity properties.  Only registers the postprocessor if:
  * <ul>
  * <li>the builder supports postprocessors by extending {@link com.foreach.across.modules.web.ui.ViewElementBuilderSupport}</li>
@@ -45,7 +45,10 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Arne Vandamme
  * @since 2.0.0
+ * @deprecated prefer to use an {@link com.foreach.across.modules.entity.bind.EntityPropertyControlName#root(String)} for automatic prefixing based
+ * on property descriptors, or a {@link com.foreach.across.modules.bootstrapui.utils.ControlNamePrefixAdjuster} for actual post-processing
  */
+@Deprecated
 public final class EntityPropertyControlNamePostProcessor<T extends ViewElement> implements ViewElementPostProcessor<T>
 {
 	/**

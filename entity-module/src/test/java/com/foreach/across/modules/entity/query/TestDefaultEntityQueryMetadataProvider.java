@@ -32,7 +32,6 @@ import java.util.Collections;
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -71,16 +70,15 @@ public class TestDefaultEntityQueryMetadataProvider
 
 	@Test
 	public void allowedStringValues() {
-		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
 		expectedValidValue( new EQString( "text" ), EQ, NEQ, LIKE, NOT_LIKE );
 		expectedInvalidValue( new EQGroup( Collections.singleton( new EQString( "text" ) ) ), EQ, NEQ );
 		expectedValidValue( new EQGroup( Collections.singleton( new EQString( "text" ) ) ), IN, NOT_IN );
-		expectedValidValue( new EQFunction( "text" ), DefaultEntityQueryMetadataProvider.STRING_OPS );
+		expectedValidValue( new EQFunction( "text" ), EQ, NEQ, IN, NOT_IN, LIKE, NOT_LIKE, LIKE_IC, NOT_LIKE_IC, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY,
+		                    CONTAINS, NOT_CONTAINS );
 	}
 
 	@Test
 	public void inOperatorsRequireEQGroupOrFunctionReturningCollection() {
-		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( mock( TypeDescriptor.class ) );
 		expectedInvalidValue( new EQValue( "" ), EntityQueryOps.IN, EntityQueryOps.NOT_IN );
 		expectedInvalidValue( new EQString( "" ), EntityQueryOps.IN, EntityQueryOps.NOT_IN );
 		expectedValidValue( new EQGroup( Collections.emptyList() ), EntityQueryOps.IN, EntityQueryOps.NOT_IN );
@@ -89,7 +87,6 @@ public class TestDefaultEntityQueryMetadataProvider
 
 	@Test
 	public void groupOperatorIsAllowedForInAndContains() {
-		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( mock( TypeDescriptor.class ) );
 		expectedInvalidValue( new EQGroup( Collections.emptyList() ), EQ, NEQ, GT, GE, LT, LE, LIKE );
 	}
 

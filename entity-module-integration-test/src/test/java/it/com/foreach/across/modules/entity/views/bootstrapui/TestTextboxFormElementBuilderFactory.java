@@ -21,12 +21,12 @@ import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.TextboxFormElementBuilderFactory;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -201,19 +201,14 @@ public class TestTextboxFormElementBuilderFactory extends ViewElementBuilderFact
 
 	@Test
 	public void valueSetFromEntity() {
-		when( properties.get( "noValidator" ).getValueFetcher() ).thenReturn( new ValueFetcher()
-		{
-			@Override
-			public Object getValue( Object entity ) {
-				return "fetchedValue";
-			}
-		} );
+		when( properties.get( "noValidator" ).getController().fetchValue( EntityPropertyBindingContext.forReading( "entity" ) ) ).thenReturn( 123 );
 
-		when( conversionService.convert( eq( "fetchedValue" ), any( TypeDescriptor.class ),
+		when( conversionService.canConvert( any( TypeDescriptor.class ), any() ) ).thenReturn( true );
+		when( conversionService.convert( eq( 123 ), any( TypeDescriptor.class ),
 		                                 any( TypeDescriptor.class ) ) )
 				.thenReturn( "converted-value" );
 
-		when( builderContext.getAttribute( EntityViewModel.ENTITY ) ).thenReturn( "entity" );
+		builderContext.setAttribute( EntityViewModel.ENTITY, "entity" );
 
 		TextareaFormElement textarea = assembleAndVerify( "noValidator", false );
 		assertEquals( "converted-value", textarea.getText() );

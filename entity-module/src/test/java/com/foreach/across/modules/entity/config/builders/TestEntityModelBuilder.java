@@ -49,6 +49,13 @@ public class TestEntityModelBuilder
 	}
 
 	@Test
+	public void andAppliesAdditionalConsumer() {
+		Consumer<EntityModelBuilder<Object>> consumer = mock( Consumer.class );
+		assertSame( modelBuilder, modelBuilder.and( consumer ) );
+		verify( consumer ).accept( modelBuilder );
+	}
+
+	@Test
 	public void newEntityModel() {
 		Consumer delete = mock( Consumer.class );
 		EntityModel newModel = modelBuilder.deleteMethod( delete ).build();

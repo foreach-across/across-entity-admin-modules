@@ -21,12 +21,12 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.ObjectUtils;
 
 import javax.validation.groups.Default;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.util.Map;
 
 /**
@@ -70,7 +70,7 @@ public abstract class ValidationConstraintsBuilderProcessor<T extends ViewElemen
 	protected boolean hasDefaultGroup( Map<String, Object> annotationAttributes ) {
 		Object groupsValues = annotationAttributes.get( "groups" );
 
-		if ( groupsValues != null && groupsValues instanceof Array ) {
+		if ( groupsValues != null && ObjectUtils.isArray( groupsValues ) ) {
 			Object[] groups = (Object[]) groupsValues;
 
 			if ( groups.length != 0 ) {

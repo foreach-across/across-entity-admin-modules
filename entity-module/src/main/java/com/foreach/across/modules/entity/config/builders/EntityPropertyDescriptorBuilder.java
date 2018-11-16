@@ -17,9 +17,8 @@
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.*;
+import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistryImpl;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -29,9 +28,14 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import lombok.NonNull;
+import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * Builder for a configuring a single {@link SimpleEntityPropertyDescriptor}.  The builder can also be
@@ -45,13 +49,18 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	protected final Logger LOG = LoggerFactory.getLogger( getClass() );
 
 	private final ViewElementLookupRegistryImpl viewElementLookupRegistry = new ViewElementLookupRegistryImpl();
+	private final Collection<Consumer<ConfigurableEntityPropertyController<?, ?>>> controllerConsumers = new ArrayList<>();
 	private final String name;
 	private String displayName;
 	private ValueFetcher valueFetcher;
 	private Boolean hidden, writable, readable;
+	private EntityPropertyDescriptor original;
 	private EntityPropertyDescriptor parent;
 	private Class<?> propertyType;
 	private TypeDescriptor propertyTypeDescriptor;
+	private EntityPropertyController controller;
+
+	private boolean parentDescriptorSet;
 
 	/**
 	 * Create a new builder for the entity property with the given name.
@@ -64,13 +73,29 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	}
 
 	/**
-	 * Set the parent descriptor.  If set, all properties from the parent will be inherited
-	 * unless explicitly configured.
+	 * Set the original descriptor that the new one is shadowing.
+	 * If set, all properties from the original will be inherited unless explicitly configured.
+	 *
+	 * @param original descriptor
+	 * @return current builder
+	 */
+	public EntityPropertyDescriptorBuilder original( EntityPropertyDescriptor original ) {
+		this.original = original;
+		return this;
+	}
+
+	/**
+	 * Set a parent descriptor for this property. This turns the new descriptor into a nested property,
+	 * expected to be a child of the object that the parent property represents.
+	 * <p/>
+	 * When setting a parent descriptor, you may consider setting a {@link com.foreach.across.modules.entity.EntityAttributes#TARGET_DESCRIPTOR}
+	 * value as well referring to the original leaf descriptor that was the basis for a nested combination.
 	 *
 	 * @param parent descriptor
 	 * @return current builder
 	 */
 	public EntityPropertyDescriptorBuilder parent( EntityPropertyDescriptor parent ) {
+		parentDescriptorSet = true;
 		this.parent = parent;
 		return this;
 	}
@@ -166,6 +191,25 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	}
 
 	/**
+	 * @param consumer customize the generic controller
+	 * @return current builder
+	 */
+	@SuppressWarnings("unchecked")
+	public <U, V> EntityPropertyDescriptorBuilder controller( @NonNull Consumer<ConfigurableEntityPropertyController<U, V>> consumer ) {
+		controllerConsumers.add( (Consumer) consumer );
+		return this;
+	}
+
+	/**
+	 * @param controller to use for managing the property
+	 * @return current builder
+	 */
+	public EntityPropertyDescriptorBuilder controller( @NonNull EntityPropertyController controller ) {
+		this.controller = controller;
+		return this;
+	}
+
+	/**
 	 * Set the caching mode for a particular {@link ViewElementMode}.  By default caching is enabled.
 	 *
 	 * @param mode      to set the caching option for
@@ -223,12 +267,12 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 	 *
 	 * @return descriptor
 	 */
+	@SuppressWarnings("unchecked")
 	public MutableEntityPropertyDescriptor build() {
-		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name, parent );
+		SimpleEntityPropertyDescriptor descriptor = new SimpleEntityPropertyDescriptor( name, original );
 
-		if ( parent == null ) {
-			descriptor.setDisplayName( name );
-			descriptor.setValueFetcher( new SpelValueFetcher( name ) );
+		if ( original == null ) {
+			descriptor.setDisplayName( EntityUtils.generateDisplayName( name ) );
 			descriptor.setReadable( true );
 		}
 
@@ -246,6 +290,10 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 		if ( name != null && !name.equals( descriptor.getName() ) ) {
 			LOG.error( "Unable to change the name of an existing EntityPropertyDescriptor: {} to {}",
 			           descriptor.getName(), name );
+		}
+
+		if ( parentDescriptorSet ) {
+			descriptor.setParentDescriptor( parent );
 		}
 
 		// Update configured properties
@@ -275,6 +323,15 @@ public class EntityPropertyDescriptorBuilder extends AbstractWritableAttributesB
 		}
 		else if ( propertyType != null ) {
 			descriptor.setPropertyType( propertyType );
+		}
+
+		if ( controller != null ) {
+			descriptor.setController( controller );
+		}
+
+		val actualController = descriptor.getController();
+		if ( actualController instanceof ConfigurableEntityPropertyController ) {
+			controllerConsumers.forEach( c -> c.accept( (ConfigurableEntityPropertyController) actualController ) );
 		}
 
 		applyAttributes( descriptor, descriptor );

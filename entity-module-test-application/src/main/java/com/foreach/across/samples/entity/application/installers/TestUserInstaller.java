@@ -19,6 +19,7 @@ package com.foreach.across.samples.entity.application.installers;
 import com.foreach.across.core.annotations.Installer;
 import com.foreach.across.core.annotations.InstallerMethod;
 import com.foreach.across.core.installers.InstallerPhase;
+import com.foreach.across.samples.entity.application.business.Address;
 import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.business.User;
 import com.foreach.across.samples.entity.application.repositories.GroupRepository;
@@ -79,7 +80,15 @@ public class TestUserInstaller
 
 		cal.add( DAY_OF_MONTH, 5 );
 		cal.add( HOUR_OF_DAY, 1 );
-		cal.add( MINUTE, 15);
+		cal.add( MINUTE, 15 );
+
+		if ( user.isActive() ) {
+			user.getPhoneNumbers().add( "+32 4710 72.92.35" );
+			user.getPhoneNumbers().add( "0458/12.11.13" );
+
+			user.getAddress().add( Address.builder().addressType( Address.AddressType.PRIMARY ).street( "some street" ).city( "Brussels" ).build() );
+			user.getAddress().add( Address.builder().addressType( Address.AddressType.WORK ).street( "St Bartholomeusstraat 130" ).city( "Antwerp" ).build() );
+		}
 
 		userRepository.save( user );
 	}

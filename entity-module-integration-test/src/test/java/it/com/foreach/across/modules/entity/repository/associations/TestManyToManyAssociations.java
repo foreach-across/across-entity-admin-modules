@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import com.foreach.across.testmodules.springdata.business.Company;
 import com.foreach.across.testmodules.springdata.business.Representative;
 import com.foreach.across.testmodules.springdata.repositories.CompanyRepository;
@@ -35,7 +36,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@WebAppConfiguration
+@AcrossWebAppConfiguration
 @ContextConfiguration(classes = TestRepositoryEntityRegistrar.Config.class)
 public class TestManyToManyAssociations
 {

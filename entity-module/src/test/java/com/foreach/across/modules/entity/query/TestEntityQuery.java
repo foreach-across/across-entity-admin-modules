@@ -178,5 +178,17 @@ public class TestEntityQuery
 		String eql =
 				"name = 'john' and id > 10 and value is NULL and groups not in (A,B,'C') and date < tomorrow(+1) and year = years(2017,currentYear())";
 		assertEquals( eql, EntityQuery.parse( eql ).toString() );
+		assertEquals( eql, EntityQuery.of( eql ).toString() );
 	}
+
+	@Test
+	public void duplicateAllowsNull() {
+		EntityQuery query = EntityQuery.parse( "id = 1 and name contains 'x' order by x asc, z desc" );
+		EntityQuery duplicate = EntityQuery.of( query );
+		assertNotSame( duplicate, query );
+		assertEquals( duplicate, query );
+
+		assertEquals( EntityQuery.all(), EntityQuery.of( (EntityQuery) null ) );
+	}
+
 }

@@ -35,7 +35,6 @@ import java.util.function.BiConsumer;
 
 /**
  * Configures a blank {@link EntityViewFactoryBuilder} for the {@link EntityView#UPDATE_VIEW_NAME}.
- * This also serves as the template for generic form views.
  *
  * @author Arne Vandamme
  * @since 2.0.0
@@ -74,14 +73,17 @@ final class UpdateViewInitializer extends AbstractViewInitializer<EntityViewFact
 			pageStructureViewProcessor.setAddEntityMenu( true );
 			pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE );
 			builder.viewProcessor( pageStructureViewProcessor );
+			builder.postProcess( AssociationHeaderViewProcessor.class, p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE ) );
 
 			SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
 			formViewProcessor.setAddDefaultButtons( true );
 			formViewProcessor.setAddGlobalBindingErrors( true );
-			builder.viewProcessor( formViewProcessor );
+			builder.viewProcessor( formViewProcessor )
+			       .viewProcessor( beanFactory.getBean( DeleteActionFormViewProcessor.class ) );
 
 			SaveEntityViewProcessor saveEntityViewProcessor = beanFactory.createBean( SaveEntityViewProcessor.class );
 			builder.viewProcessor( saveEntityViewProcessor );
+
 		};
 	}
 }

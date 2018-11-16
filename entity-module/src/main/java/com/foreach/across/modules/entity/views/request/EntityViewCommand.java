@@ -16,14 +16,22 @@
 
 package com.foreach.across.modules.entity.views.request;
 
+import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.validation.Validator;
+
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents an entity view command object.  In case of a form view will usually hold the DTO of the
  * entity being created or updated.  Additionally extension objects can be registered that
  * will be bound and validated as well.
+ * <p/>
+ * Apart from the extension data itself, a list of custom validators for that extension can be added.
+ * <p/>
+ * This is the central object exchanged between the view and allows for form-binding.
  *
  * @author Arne Vandamme
  * @since 2.0.0
@@ -35,6 +43,15 @@ public class EntityViewCommand
 
 	@Valid
 	private final Map<String, Object> extensions = new HashMap<>();
+
+	/**
+	 * A binder object for custom property binding through {@link com.foreach.across.modules.entity.registry.properties.EntityPropertyController}.
+	 */
+	@Getter
+	@Setter
+	private EntityPropertiesBinder properties = null;
+
+	private final Map<String, Collection<Validator>> extensionValidators = new HashMap<>();
 
 	public EntityViewCommand() {
 	}
@@ -65,6 +82,18 @@ public class EntityViewCommand
 	}
 
 	/**
+	 * Shorthand for adding an extension with custom validators.
+	 *
+	 * @param extensionName name of the extension
+	 * @param extension     object
+	 * @param validators    for the extension
+	 */
+	public void addExtensionWithValidator( String extensionName, Object extension, Validator... validators ) {
+		addExtension( extensionName, extension );
+		addExtensionValidator( extensionName, validators );
+	}
+
+	/**
 	 * Add an extension object under the given key.  Will replace any previously registered extension.
 	 *
 	 * @param name      of the extension object
@@ -72,6 +101,17 @@ public class EntityViewCommand
 	 */
 	public void addExtension( String name, Object extension ) {
 		extensions.put( name, extension );
+	}
+
+	/**
+	 * Add one or more custom validators for an extension.
+	 *
+	 * @param extensionName name of the extension
+	 * @param validators    to add
+	 */
+	public void addExtensionValidator( String extensionName, Validator... validators ) {
+		extensionValidators.computeIfAbsent( extensionName, key -> new ArrayList<>() )
+		                   .addAll( Arrays.asList( validators ) );
 	}
 
 	/**
@@ -99,6 +139,17 @@ public class EntityViewCommand
 	}
 
 	/**
+	 * Get the collections of additional {@link Validator} instances that should
+	 * be applied when validating the extension data.
+	 *
+	 * @param extensionName name of the extension
+	 * @return collection of validators
+	 */
+	public Collection<Validator> getExtensionValidators( String extensionName ) {
+		return extensionValidators.getOrDefault( extensionName, Collections.emptyList() );
+	}
+
+	/**
 	 * @return {@code true} if an entity is set on this command
 	 */
 	public boolean holdsEntity() {
@@ -117,10 +168,12 @@ public class EntityViewCommand
 
 	/**
 	 * Remove the extension with that name.
+	 * This will also remove the validators for that extension.
 	 *
 	 * @param extensionName name of the extension
 	 */
 	public void removeExtension( String extensionName ) {
 		extensions.remove( extensionName );
+		extensionValidators.remove( extensionName );
 	}
 }

@@ -73,6 +73,8 @@ final class CreateViewInitializer extends AbstractViewInitializer<EntityViewFact
 			pageStructureViewProcessor.setAddEntityMenu( true );
 			pageStructureViewProcessor.setTitleMessageCode( EntityMessages.PAGE_TITLE_CREATE );
 			builder.viewProcessor( pageStructureViewProcessor );
+			builder.postProcess( AssociationHeaderViewProcessor.class, p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_CREATE )
+			                                                                 .setAddEntityMenu( false ) );
 
 			SingleEntityFormViewProcessor formViewProcessor = beanFactory.createBean( SingleEntityFormViewProcessor.class );
 			formViewProcessor.setAddDefaultButtons( true );

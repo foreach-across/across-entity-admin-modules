@@ -330,6 +330,11 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	}
 
 	@Override
+	public EntityConfigurationBuilder<T> detailView( Consumer<EntityViewFactoryBuilder> consumer ) {
+		return (EntityConfigurationBuilder<T>) super.detailView( consumer );
+	}
+
+	@Override
 	public EntityConfigurationBuilder<T> formView( String viewName,
 	                                               Consumer<EntityViewFactoryBuilder> consumer ) {
 		return (EntityConfigurationBuilder<T>) super.formView( viewName, consumer );
@@ -359,6 +364,22 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	@Override
 	public EntityConfigurationBuilder<T> deleteFormView() {
 		return (EntityConfigurationBuilder<T>) super.deleteFormView();
+	}
+
+	@Override
+	public EntityConfigurationBuilder<T> detailView() {
+		return (EntityConfigurationBuilder<T>) super.detailView();
+	}
+
+	/**
+	 * Apply an additional consumer to this builder.
+	 *
+	 * @param consumer to apply
+	 * @return current builder
+	 */
+	public EntityConfigurationBuilder<T> and( @NonNull Consumer<EntityConfigurationBuilder<T>> consumer ) {
+		consumer.accept( this );
+		return this;
 	}
 
 	/**
@@ -395,7 +416,7 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 		apply( configuration, true );
 	}
 
-	synchronized void apply( @NonNull MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
+	void apply( @NonNull MutableEntityConfiguration<T> configuration, boolean applyPostProcessors ) {
 		configurationBeingBuilt = configuration;
 
 		try {

@@ -39,10 +39,12 @@ public class TestEntityPropertyDescriptorFactory
 		SimpleEntityPropertyDescriptor one = new SimpleEntityPropertyDescriptor( "address" );
 		one.setDisplayName( "Address" );
 		one.setAttribute( Sort.Order.class, new Sort.Order( "address" ) );
+		( (GenericEntityPropertyController) one.getController() ).order( 1000 );
 
-		MutableEntityPropertyDescriptor merged = descriptorFactory.createWithParent( "street", one );
+		MutableEntityPropertyDescriptor merged = descriptorFactory.createWithOriginal( "street", one );
 		merged.setAttribute( Sort.Order.class, new Sort.Order( "street" ) );
 
+		assertEquals( 1000, merged.getController().getOrder() );
 		assertEquals( "street", merged.getName() );
 		assertEquals( "Address", merged.getDisplayName() );
 		assertEquals( new Sort.Order( "street" ), merged.getAttribute( Sort.Order.class ) );
@@ -51,14 +53,29 @@ public class TestEntityPropertyDescriptorFactory
 	@Test
 	public void readableAndWritableProperty() {
 		PropertyDescriptor nativeDescriptor = BeanUtils.getPropertyDescriptor( Instance.class, "name" );
-		EntityPropertyDescriptor descriptor = descriptorFactory.create(
-				nativeDescriptor, Instance.class
-		);
+		EntityPropertyDescriptor descriptor = descriptorFactory.create( nativeDescriptor, Instance.class );
 
 		assertTrue( descriptor.isReadable() );
 		assertTrue( descriptor.isWritable() );
 		assertFalse( descriptor.isHidden() );
 		assertSame( nativeDescriptor, descriptor.getAttribute( EntityAttributes.NATIVE_PROPERTY_DESCRIPTOR ) );
+
+		EntityPropertyController controller = descriptor.getController();
+		assertNotNull( controller );
+		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
+
+		Instance instance = new Instance();
+		EntityPropertyBindingContext context = EntityPropertyBindingContext.forReading( instance );
+
+		assertNull( instance.getName() );
+		assertNull( controller.fetchValue( context ) );
+		instance.setName( "original" );
+		assertEquals( "original", controller.fetchValue( context ) );
+		assertTrue( controller.applyValue( context, new EntityPropertyValue<>( null, "my name", false ) ) );
+		assertEquals( "my name", instance.getName() );
+		assertEquals( "my name", controller.fetchValue( context ) );
+
+		assertFalse( controller.applyValue( EntityPropertyBindingContext.forReading( null ), new EntityPropertyValue<>( null, "my name", false ) ) );
 	}
 
 	@Test
@@ -70,6 +87,21 @@ public class TestEntityPropertyDescriptorFactory
 		assertTrue( descriptor.isReadable() );
 		assertFalse( descriptor.isWritable() );
 		assertTrue( descriptor.isHidden() );
+
+		EntityPropertyController controller = descriptor.getController();
+		assertNotNull( controller );
+		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
+
+		Instance instance = new Instance();
+		EntityPropertyBindingContext context = EntityPropertyBindingContext.forReading( instance );
+
+		assertEquals( 0, instance.readonly );
+		assertEquals( Integer.valueOf( 0 ), controller.fetchValue( context ) );
+		assertFalse( controller.applyValue( context, new EntityPropertyValue<>( null, 123, false ) ) );
+		assertEquals( 0, instance.readonly );
+
+		instance.readonly = 456;
+		assertEquals( Integer.valueOf( 456 ), controller.fetchValue( context ) );
 	}
 
 	@Test
@@ -81,6 +113,21 @@ public class TestEntityPropertyDescriptorFactory
 		assertFalse( descriptor.isReadable() );
 		assertTrue( descriptor.isWritable() );
 		assertTrue( descriptor.isHidden() );
+
+		EntityPropertyController controller = descriptor.getController();
+		assertNotNull( controller );
+		assertEquals( EntityPropertyController.BEFORE_ENTITY, controller.getOrder() );
+
+		Date now = new Date();
+
+		Instance instance = new Instance();
+		EntityPropertyBindingContext context = EntityPropertyBindingContext.forReading( instance );
+
+		assertNull( instance.writeonly );
+		assertNull( controller.fetchValue( context ) );
+		assertTrue( controller.applyValue( context, new EntityPropertyValue<>( null, now, false ) ) );
+		assertNull( controller.fetchValue( context ) );
+		assertSame( now, instance.writeonly );
 	}
 
 	@SuppressWarnings("unused")
