@@ -139,13 +139,12 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	private Page buildPage( Iterable allItems, Pageable pageable ) {
 		Spliterator spliterator = allItems.spliterator();
 		long estimatedSize = spliterator.estimateSize();
-		PageableExecutionUtils.TotalSupplier totalSupplier = () -> estimatedSize;
 
 		List content = (List) StreamSupport.stream( spliterator, false )
 		                                   .skip( pageable.getOffset() )
 		                                   .limit( pageable.getPageSize() )
 		                                   .collect( Collectors.toList() );
 
-		return PageableExecutionUtils.getPage( content, pageable, totalSupplier );
+		return PageableExecutionUtils.getPage( content, pageable, () -> estimatedSize );
 	}
 }

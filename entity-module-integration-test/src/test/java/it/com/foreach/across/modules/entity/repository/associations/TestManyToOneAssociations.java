@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import com.foreach.across.testmodules.springdata.business.*;
 import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.testmodules.springdata.repositories.CompanyRepository;
@@ -33,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Arrays;
 import java.util.List;

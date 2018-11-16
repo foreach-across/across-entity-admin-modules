@@ -22,6 +22,7 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.views.EntityView;
+import com.foreach.across.test.AcrossWebAppConfiguration;
 import com.foreach.across.testmodules.springdata.business.*;
 import com.foreach.across.testmodules.springdata.repositories.ClientGroupRepository;
 import com.foreach.across.testmodules.springdata.repositories.ClientRepository;

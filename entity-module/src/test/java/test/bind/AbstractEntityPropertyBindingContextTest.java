@@ -100,7 +100,6 @@ abstract class AbstractEntityPropertyBindingContextTest
 	}
 
 	@Data
-	@NoArgsConstructor
 	@EqualsAndHashCode(exclude = "updateCount")
 	public static class Address
 	{

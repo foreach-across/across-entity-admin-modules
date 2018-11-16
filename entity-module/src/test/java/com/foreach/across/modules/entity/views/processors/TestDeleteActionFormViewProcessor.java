@@ -149,8 +149,7 @@ public class TestDeleteActionFormViewProcessor
 		assertThat( viewElement ).isInstanceOf( ButtonViewElement.class );
 		assertThat( viewElement.getName() ).isEqualTo( "btn-delete" );
 		ButtonViewElement buttonViewElement = (ButtonViewElement) viewElement;
-		assertThat( buttonViewElement.getUrl() ).contains( "from=" )
-		                                        .endsWith( "/update" );
+		assertThat( buttonViewElement.getUrl() ).contains( "from=" ).endsWith( "update" );
 	}
 
 	@Test
