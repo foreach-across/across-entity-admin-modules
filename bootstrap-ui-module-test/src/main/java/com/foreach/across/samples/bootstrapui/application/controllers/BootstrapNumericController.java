@@ -51,7 +51,7 @@ public class BootstrapNumericController
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String renderIcon( Model model, ViewElementBuilderContext builderContext, WebResourceRegistry webResourceRegistry ) {
+	public String render( Model model, ViewElementBuilderContext builderContext, WebResourceRegistry webResourceRegistry ) {
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();

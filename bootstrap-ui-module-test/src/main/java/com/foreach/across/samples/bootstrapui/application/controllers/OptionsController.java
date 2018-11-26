@@ -44,7 +44,7 @@ public class OptionsController
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String renderIcon( Model model, ViewElementBuilderContext builderContext, WebResourceRegistry webResourceRegistry ) {
+	public String render( Model model, ViewElementBuilderContext builderContext, WebResourceRegistry webResourceRegistry ) {
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
@@ -66,16 +66,9 @@ public class OptionsController
 	}
 
 	private AbstractNodeViewElement bootstrapSelectBuilder() {
-		SelectFormElementConfiguration configuration = new SelectFormElementConfiguration();
-		configuration.setDeselectAllText( null );
-		configuration.setSelectAllText( null );
-		configuration.setCountSelectedText( null );
-		configuration.setMaxOptionsText( null );
-		configuration.setNoneSelectedText( null );
-
 		return BootstrapUiBuilders
 				.options()
-				.select( configuration )
+				.select( SelectFormElementConfiguration.simple() )
 				.multiple()
 				.controlName( "boxName" )
 				.add( BootstrapUiBuilders.option().label( "Orange" ).value( "orange" ) )
