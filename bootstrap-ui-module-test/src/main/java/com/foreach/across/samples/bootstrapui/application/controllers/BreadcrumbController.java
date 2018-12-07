@@ -16,32 +16,37 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
+import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
+import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
+import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.menu.MenuSelector;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/static-form-element")
-public class StaticFormElementController
+@RequestMapping("/breadcrumb")
+public class BreadcrumbController
 {
 	@EventListener(condition = "#navMenu.menuName=='navMenu'")
 	public void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
-		       .item( "/test/form-elements/static-form-element", "Static form element", "/static-form-element" ).order( 21 );
+		       .item( "/test/form-elements/breadcrumb", "Breadcrumb", "/breadcrumb" ).order( 24 );
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -49,18 +54,38 @@ public class StaticFormElementController
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Static form element", simpleStaticFormElement() );
+		generatedElements.put( "Simple breadcrumb nav", simpleBreadCrumbNav() );
+		generatedElements.put( "Breadcrumb nav with icons", breadcrumbWithIcons() );
 
 		model.addAttribute( "generatedElements", generatedElements );
 
 		return "th/bootstrapUiTest/elementsRendering";
 	}
 
-	private StaticFormElement simpleStaticFormElement() {
-		StaticFormElement staticFormElement = new StaticFormElement();
-		staticFormElement.setText( "Static text" );
+	private NodeViewElement simpleBreadCrumbNav() {
+		Menu menu = new PathBasedMenuBuilder()
+				.item( "components", "Components" ).and()
+				.item( "components/breadcrumb", "Breadcrumb example" ).and().build();
 
-		return staticFormElement;
+		menu.select( MenuSelector.byTitle( "Breadcrumb example" ) );
+		menu.setTitle( "Bootstrap Ui Module" );
+
+		return BootstrapUiBuilders.breadcrumb( menu ).build();
+	}
+
+	private NodeViewElement breadcrumbWithIcons() {
+		Menu menu = new PathBasedMenuBuilder()
+				.item( "components", "Components" )
+				.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+				.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true ).and()
+				.item( "components/breadcrumb", "Breadcrumb example" )
+				.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.MUSIC ) )
+				.and().build();
+
+		menu.select( MenuSelector.byTitle( "Breadcrumb example" ) );
+		menu.setTitle( "Bootstrap Ui Module" );
+
+		return BootstrapUiBuilders.breadcrumb( menu ).build();
 	}
 
 }
