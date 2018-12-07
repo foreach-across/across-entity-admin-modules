@@ -17,9 +17,9 @@
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
+import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
-import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.Menu;
@@ -35,18 +35,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.ATTR_ICON;
+import static com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL;
+
 @Controller
-@RequestMapping("/breadcrumb")
-public class BreadcrumbController
+@RequestMapping("/panelnav")
+public class PanelNavController
 {
 	@EventListener(condition = "#navMenu.menuName=='navMenu'")
 	public void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
-		       .item( "/test/form-elements/breadcrumb", "Breadcrumb", "/breadcrumb" ).order( 24 );
+		       .item( "/test/form-elements/panelnav", "Panel nav", "/panelnav" ).order( 28 );
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -54,38 +56,74 @@ public class BreadcrumbController
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Simple breadcrumb nav", simpleBreadCrumbNav() );
-		generatedElements.put( "Breadcrumb nav with icons", breadcrumbWithIcons() );
+		generatedElements.put( "Simple panel nav", simplePanelNav() );
+		generatedElements.put( "Panel nav with group", panelNavWithGroupsAndIcons() );
+		generatedElements.put( "Panel nav with styling", panelNavWithStyling() );
+		generatedElements.put( "Panel nav group without panel", panelNavGroupNotAsPanel() );
 
 		model.addAttribute( "generatedElements", generatedElements );
 
 		return "th/bootstrapUiTest/elementsRendering";
 	}
 
-	private NodeViewElement simpleBreadCrumbNav() {
+	private NodeViewElement simplePanelNav() {
 		Menu menu = new PathBasedMenuBuilder()
-				.item( "components", "Components" ).and()
-				.item( "components/breadcrumb", "Breadcrumb example" ).and().build();
+				.item( "/one", "one" ).and()
+				.item( "/one/sub", "sub one" ).and()
+				.item( "/one/sub2", "sub one 2" ).and()
+				.item( "/two", "two" ).and()
+				.build();
 
-		menu.select( MenuSelector.byTitle( "Breadcrumb example" ) );
+		menu.select( MenuSelector.byTitle( "Panel example" ) );
 		menu.setTitle( "Bootstrap Ui Module" );
 
-		return BootstrapUiBuilders.breadcrumb( menu ).build();
+		return BootstrapUiBuilders.panels( menu ).build();
 	}
 
-	private NodeViewElement breadcrumbWithIcons() {
+	private NodeViewElement panelNavWithGroupsAndIcons() {
 		Menu menu = new PathBasedMenuBuilder()
-				.item( "components", "Components" )
-				.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.HOME ) )
-				.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true ).and()
-				.item( "components/breadcrumb", "Breadcrumb example" )
-				.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.HOURGLASS ) )
-				.and().build();
+				.item( "/one", "one" )
+				.attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+				.group( true ).and()
+				.item( "/one/sub", "sub one" ).and()
+				.item( "/one/sub2", "sub one 2" ).and()
+				.build();
 
-		menu.select( MenuSelector.byTitle( "Breadcrumb example" ) );
+		menu.select( MenuSelector.byTitle( "Panel example" ) );
 		menu.setTitle( "Bootstrap Ui Module" );
 
-		return BootstrapUiBuilders.breadcrumb( menu ).build();
+		return BootstrapUiBuilders.panels( menu ).build();
+	}
+
+
+	private NodeViewElement panelNavWithStyling() {
+		Menu menu = new PathBasedMenuBuilder()
+				.item( "/one", "" )
+				.group( true )
+				.attribute( PanelsNavComponentBuilder.ATTR_PANEL_STYLE, "panel-danger" ).and()
+				.item( "/one/sub", "sub one" ).and()
+				.item( "/one/sub2", "sub one 2" ).and()
+				.build();
+
+		menu.select( MenuSelector.byTitle( "Panel example" ) );
+		menu.setTitle( "Bootstrap Ui Module" );
+
+		return BootstrapUiBuilders.panels( menu ).build();
+	}
+	
+	private NodeViewElement panelNavGroupNotAsPanel() {
+		Menu menu = new PathBasedMenuBuilder()
+				.item( "/one", "one" )
+				.group( true )
+				.attribute( ATTR_RENDER_AS_PANEL, false ).and()
+				.item( "/one/sub", "sub one" ).and()
+				.item( "/one/sub2", "sub one 2" ).and()
+				.build();
+
+		menu.select( MenuSelector.byTitle( "Panel example" ) );
+		menu.setTitle( "Bootstrap Ui Module" );
+
+		return BootstrapUiBuilders.panels( menu ).build();
 	}
 
 }
