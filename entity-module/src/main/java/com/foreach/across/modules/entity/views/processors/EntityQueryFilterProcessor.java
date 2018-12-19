@@ -36,6 +36,8 @@ import com.foreach.across.modules.entity.views.processors.query.EntityQueryReque
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.web.ui.ScopedAttributesViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -201,44 +203,48 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		ContainerViewElement container = entityView.getAttribute( ATTRIBUTE_CONTAINER_ELEMENT, ContainerViewElement.class );
 		ViewElementBuilderContext builderContext = EntityViewProcessorAdapter.retrieveBuilderContext();
 
-		List<ViewElement> propertyFilters = buildFilterControls( entityViewRequest, builderContext );
-		EntityQueryFilterFormControlBuilder filterForm = new EntityQueryFilterFormControlBuilder()
-				.basicFilter( filterConfiguration.isBasicMode() )
-				.advancedFilter( filterConfiguration.isAdvancedMode() )
-				.basicControls( propertyFilters )
-				.eqlControlName( "extensions[" + PARAM + "]" )
-				.convertibleToBasicMode( queryRequest.isConvertibleToBasicMode() );
+		try (ScopedAttributesViewElementBuilderContext ignore = builderContext
+				.withAttributeOverride( EntityViewModel.ENTITY, null )
+				.withAttributeOverride( EntityPropertyBindingContext.class, EntityPropertyBindingContext.forReading( queryRequest ) )) {
+			List<ViewElement> propertyFilters = buildFilterControls( entityViewRequest, builderContext );
+			EntityQueryFilterFormControlBuilder filterForm = new EntityQueryFilterFormControlBuilder()
+					.basicFilter( filterConfiguration.isBasicMode() )
+					.advancedFilter( filterConfiguration.isAdvancedMode() )
+					.basicControls( propertyFilters )
+					.eqlControlName( "extensions[" + PARAM + "]" )
+					.convertibleToBasicMode( queryRequest.isConvertibleToBasicMode() );
 
-		if ( queryRequest.getRawQuery() != null ) {
-			filterForm.query( queryRequest.getRawQuery() );
-		}
-		else {
-			filterForm.query( command.getExtension( PARAM, String.class ) )
-			          .convertibleToBasicMode( false );
-		}
-
-		if ( queryRequest.isShowBasicFilter() ) {
-			filterForm.showBasicFilter();
-		}
-		else {
-			filterForm.showAdvancedFilter();
-		}
-
-		// move the original actions
-		Optional<ContainerViewElement> header = find( container, ListFormViewProcessor.DEFAULT_FORM_NAME + "-header", ContainerViewElement.class );
-		header.ifPresent( h -> {
-			h.addFirstChild( filterForm.build( builderContext ) );
-
-			String errorMessage = entityView.getAttribute( "filterError", String.class );
-
-			if ( !StringUtils.isBlank( errorMessage ) ) {
-				container.addChild(
-						alert().danger()
-						       .add( text( errorMessage ) )
-						       .build( builderContext )
-				);
+			if ( queryRequest.getRawQuery() != null ) {
+				filterForm.query( queryRequest.getRawQuery() );
 			}
-		} );
+			else {
+				filterForm.query( command.getExtension( PARAM, String.class ) )
+				          .convertibleToBasicMode( false );
+			}
+
+			if ( queryRequest.isShowBasicFilter() ) {
+				filterForm.showBasicFilter();
+			}
+			else {
+				filterForm.showAdvancedFilter();
+			}
+
+			// move the original actions
+			Optional<ContainerViewElement> header = find( container, ListFormViewProcessor.DEFAULT_FORM_NAME + "-header", ContainerViewElement.class );
+			header.ifPresent( h -> {
+				h.addFirstChild( filterForm.build( builderContext ) );
+
+				String errorMessage = entityView.getAttribute( "filterError", String.class );
+
+				if ( !StringUtils.isBlank( errorMessage ) ) {
+					container.addChild(
+							alert().danger()
+							       .add( text( errorMessage ) )
+							       .build( builderContext )
+					);
+				}
+			} );
+		}
 	}
 
 	private List<ViewElement> buildFilterControls( EntityViewRequest entityViewRequest, ViewElementBuilderContext builderContext ) {

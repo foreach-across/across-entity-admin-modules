@@ -32,6 +32,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -471,6 +472,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 	@Override
 	public ContainerViewElement build( ViewElementBuilderContext parentBuilderContext ) {
 		ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( parentBuilderContext );
+		EntityViewElementUtils.setCurrentEntity( builderContext, null );
 
 		if ( getEntityConfiguration() != null ) {
 			// todo: setting the message code this way is not optimal - find better approach
