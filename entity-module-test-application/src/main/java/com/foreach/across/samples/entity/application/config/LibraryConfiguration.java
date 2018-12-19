@@ -87,7 +87,7 @@ public class LibraryConfiguration implements EntityConfigurer
 				        ( configuration, attributes ) ->
 						        attributes.setAttribute(
 								        EntityQueryExecutor.class,
-								        new CollectionEntityQueryExecutor<>( libraries.values(), configuration.getPropertyRegistry() )
+								        new CollectionEntityQueryExecutor<>( libraries::values, configuration.getPropertyRegistry() )
 						        )
 		        )
 		        .detailView()

@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
@@ -36,6 +37,9 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
  * An {@link com.foreach.across.modules.entity.query.EntityQueryExecutor} implementation that executes
  * queries on a collection of custom objects, where a {@link EntityPropertyRegistry} is used to determine
  * the property type and actual value.
+ * <p/>
+ * The collection can be specified either as a static collection using {@link #CollectionEntityQueryExecutor(Collection, EntityPropertyRegistry)},
+ * or via a {@link Supplier} using {@link #CollectionEntityQueryExecutor(Supplier, EntityPropertyRegistry)}.
  *
  * @author Arne Vandamme
  * @since 3.1.0
@@ -43,8 +47,13 @@ import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 @RequiredArgsConstructor
 public class CollectionEntityQueryExecutor<T> extends AbstractEntityQueryExecutor<T>
 {
-	private final Collection<T> source;
+	private final Supplier<Collection<T>> source;
 	private final EntityPropertyRegistry propertyRegistry;
+
+	public CollectionEntityQueryExecutor( Collection<T> source, EntityPropertyRegistry propertyRegistry ) {
+		this.source = () -> source;
+		this.propertyRegistry = propertyRegistry;
+	}
 
 	@Override
 	protected Iterable<T> executeQuery( EntityQuery query ) {
@@ -62,7 +71,8 @@ public class CollectionEntityQueryExecutor<T> extends AbstractEntityQueryExecuto
 	}
 
 	private List<T> filterAndSort( EntityQuery query, Sort sort ) {
-		return source.stream()
+		return source.get()
+		             .stream()
 		             .map( item -> new CollectionEntityQueryItem<>( item, propertyRegistry ) )
 		             .filter( buildPredicate( query ) )
 		             .sorted( buildComparator( sort ) )
