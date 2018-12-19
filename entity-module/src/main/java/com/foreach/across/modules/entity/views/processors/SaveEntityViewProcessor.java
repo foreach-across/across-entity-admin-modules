@@ -211,7 +211,6 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 				else {
 					entityView.setRedirectUrl( entityViewContext.getLinkBuilder().forInstance( savedEntity ).updateView().toUriString() );
 				}
-
 			}
 			catch ( RuntimeException e ) {
 				entityViewPageHelper.throwOrAddExceptionFeedback( entityViewRequest, "feedback.entitySaveFailed", e );
