@@ -23,6 +23,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.core.convert.TypeDescriptor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -48,6 +51,7 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	public boolean accepts( String functionName, TypeDescriptor desiredType ) {
 		return ArrayUtils.contains( FUNCTION_NAMES, functionName ) && (
 				Date.class.equals( desiredType.getObjectType() )
+						|| LocalDateTime.class.equals( desiredType.getObjectType() )
 						|| Long.class.equals( desiredType.getObjectType() )
 		);
 	}
@@ -74,6 +78,10 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	private Object convertToDesiredType( Date date, Class<?> desiredType ) {
 		if ( Long.class.equals( desiredType ) ) {
 			return date.getTime();
+		}
+
+		if ( LocalDateTime.class.equals( desiredType ) ) {
+			return date.toInstant().atZone( ZoneId.systemDefault() ).toLocalDateTime();
 		}
 
 		return date;
