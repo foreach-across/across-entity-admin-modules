@@ -20,6 +20,7 @@ import {createSelectControl} from "./app/utils/controls/property-control-builder
 import {createDateControl} from "./app/utils/controls/property-control-builders/property-control-date";
 import {createCheckboxRadioControl} from "./app/utils/controls/property-control-builders/property-control-checkbox-radio";
 import EntityQueryFilterControl from "./app/utils/controls/entity-query-filter-control";
+import {createEmailControl} from "./app/utils/controls/property-control-builders/property-control-email";
 
 /**
  * Initializes an EntityQueryFilterControl for the given node.
@@ -75,6 +76,7 @@ EntityModule.registerInitializer( function( node ) {
   EntityQueryPropertyControlFactory.register( createDateControl, 1033 );
   EntityQueryPropertyControlFactory.register( createCheckboxRadioControl, 1066 );
   EntityQueryPropertyControlFactory.register( createTextControl, 1100 );
+  EntityQueryPropertyControlFactory.register( createEmailControl, 1100 );
 
   $( "[data-entity-query-filter-form]" ).each( function() {
     initializeEntityQueryForm( $( this ) );
