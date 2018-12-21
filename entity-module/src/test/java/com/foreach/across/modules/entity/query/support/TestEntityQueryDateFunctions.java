@@ -25,8 +25,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import java.util.Calendar;
 import java.util.Date;
 
-import static com.foreach.across.modules.entity.query.support.EntityQueryDateFunctions.NOW;
-import static com.foreach.across.modules.entity.query.support.EntityQueryDateFunctions.TODAY;
+import static com.foreach.across.modules.entity.query.support.EntityQueryDateFunctions.*;
 import static org.junit.Assert.*;
 
 /**
@@ -72,5 +71,46 @@ public class TestEntityQueryDateFunctions
 		assertEquals( today, functions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
 		assertEquals( today.getTime(),
 		              functions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( Long.class ), null ) );
+	}
+
+	@Test
+	public void startOfDay() {
+		Date startOfDay = DateUtils.truncate( new Date(), Calendar.DATE );
+		assertEquals( startOfDay, functions.apply( START_OF_DAY, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+	}
+
+	@Test
+	public void startOfWeek() {
+		Date startOfWeek = DateUtils.truncate( getWeekStartDate(), Calendar.DATE );
+		assertEquals( startOfWeek, functions.apply( START_OF_WEEK, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+	}
+
+	@Test
+	public void endOfWeek() {
+		Date endOfWeek = getWeekEndDate();
+		assertEquals( endOfWeek, functions.apply( END_OF_WEEK, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+	}
+
+	private static Date getWeekStartDate() {
+		Calendar calendar = Calendar.getInstance();
+		while ( calendar.get( Calendar.DAY_OF_WEEK ) != Calendar.MONDAY ) {
+			calendar.add( Calendar.DATE, -1 );
+		}
+		return calendar.getTime();
+	}
+
+	private static Date getWeekEndDate() {
+		Calendar calendar = Calendar.getInstance();
+		while ( calendar.get( Calendar.DAY_OF_WEEK ) != Calendar.MONDAY ) {
+			calendar.add( Calendar.DATE, 1 );
+		}
+		calendar.add( Calendar.DATE, -1 );
+
+		Date endOfWeek = calendar.getTime();
+		endOfWeek.setHours( 23 );
+		endOfWeek.setMinutes( 59 );
+		endOfWeek.setSeconds( 59 );
+
+		return endOfWeek;
 	}
 }

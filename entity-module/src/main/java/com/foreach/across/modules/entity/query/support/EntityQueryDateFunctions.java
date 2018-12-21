@@ -20,11 +20,11 @@ import com.foreach.across.modules.entity.query.EQType;
 import com.foreach.across.modules.entity.query.EQTypeConverter;
 import com.foreach.across.modules.entity.query.EntityQueryFunctionHandler;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.core.convert.TypeDescriptor;
 
-import java.util.Calendar;
+import java.time.*;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Provides date related functions to be used in entity queries.
@@ -42,12 +42,22 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	public static final String NOW = "now";
 	public static final String TODAY = "today";
 
+	public static final String END_OF_DAY = "endOfDay";
+	public static final String END_OF_WEEK = "endOfWeek";
+	public static final String END_OF_MONTH = "endOfMonth";
+	public static final String END_OF_YEAR = "endOfYear";
+	public static final String START_OF_DAY = "startOfDay";
+	public static final String START_OF_WEEK = "startOfWeek";
+	public static final String START_OF_MONTH = "startOfMonth";
+	public static final String START_OF_YEAR = "startOfYear";
+
 	private static final String[] FUNCTION_NAMES = new String[] { NOW, TODAY };
 
 	@Override
 	public boolean accepts( String functionName, TypeDescriptor desiredType ) {
 		return ArrayUtils.contains( FUNCTION_NAMES, functionName ) && (
 				Date.class.equals( desiredType.getObjectType() )
+						|| LocalDateTime.class.equals( desiredType.getObjectType() )
 						|| Long.class.equals( desiredType.getObjectType() )
 		);
 	}
@@ -57,23 +67,43 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	                     EQType[] arguments,
 	                     TypeDescriptor desiredType,
 	                     EQTypeConverter argumentConverter ) {
-		Date calculated = calculateDate( functionName );
+		LocalDateTime calculated = calculateDate( functionName );
 
 		return convertToDesiredType( calculated, desiredType.getObjectType() );
 	}
 
-	private Date calculateDate( String functionName ) {
+	private LocalDateTime calculateDate( String functionName ) {
 		switch ( functionName ) {
-			case "today":
-				return DateUtils.truncate( new Date(), Calendar.DATE );
+			case TODAY:
+				return LocalDate.now().atStartOfDay();
+			case START_OF_DAY:
+				return LocalDate.now().atStartOfDay();
+			case START_OF_WEEK:
+				return LocalDate.now().with( DayOfWeek.MONDAY ).atStartOfDay();
+			case START_OF_MONTH:
+				return LocalDate.now().withDayOfMonth( 1 ).atStartOfDay();
+			case START_OF_YEAR:
+				return LocalDate.now().withDayOfYear( 1 ).atStartOfDay();
+			case END_OF_DAY:
+				return LocalDate.now().atTime(LocalTime.MAX);
+			case END_OF_WEEK:
+				return LocalDate.now().with( DayOfWeek.SUNDAY ).atTime(LocalTime.MAX);
+			case END_OF_MONTH:
+				return LocalDate.now().withDayOfMonth( 1 ).atTime(LocalTime.MAX);
+			case END_OF_YEAR:
+				return LocalDate.now().withDayOfYear( 1 ).atTime(LocalTime.MAX);
 		}
 
-		return new Date();
+		return LocalDateTime.now();
 	}
 
-	private Object convertToDesiredType( Date date, Class<?> desiredType ) {
+	private Object convertToDesiredType( LocalDateTime date, Class<?> desiredType ) {
 		if ( Long.class.equals( desiredType ) ) {
-			return date.getTime();
+			return date.toInstant( ZoneOffset.ofTotalSeconds( 0 ) ).toEpochMilli();
+		}
+
+		if ( Date.class.equals( desiredType ) ) {
+			return Date.from( date.atZone( ZoneId.systemDefault() ).toInstant() );
 		}
 
 		return date;
