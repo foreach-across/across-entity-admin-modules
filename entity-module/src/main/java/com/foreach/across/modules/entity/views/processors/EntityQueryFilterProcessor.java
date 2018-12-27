@@ -283,6 +283,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 			          return formGroup( labelBuilder, control )
 					          .attribute( "data-entity-query-operand", retrieveEntityQueryOperand( property ).name() )
 					          .attribute( "data-entity-query-control", "marker" )
+					          .attribute( "data-entity-query-property-type", String.class.equals( property.getPropertyType() ) ? "text" : "value" )
 					          .attribute( "data-entity-query-property", property.getName() )
 					          .build( builderContext );
 		          } ).forEach( controls::add );
