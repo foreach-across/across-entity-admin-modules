@@ -15,11 +15,12 @@
  */
 /**
  * @author Steven Gentens
- * @since 2.2.0
+ * @since 3.3.0
  */
 import $ from "jquery";
 import {EntityQueryOps} from "../../entity-query/entity-query-ops";
 import EntityQueryCondition from "../../entity-query/entity-query-condition";
+import EQValue from "../../entity-query/eq-value";
 import EQString from "../../entity-query/eq-string";
 
 function setCondition( controlItem, control, filterControl, reset = true ) {
@@ -29,7 +30,8 @@ function setCondition( controlItem, control, filterControl, reset = true ) {
 
   if ( value.trim() !== "" ) {
     const operand = EntityQueryOps[$( controlItem ).data( "entity-query-operand" )];
-    condition = new EntityQueryCondition( property, operand, new EQString( `${value}` ) );
+    const eqValue = $( controlItem ).data( "entity-query-property-type" ) === "text" ? new EQString( `${value}` ) : new EQValue( `${value}` );
+    condition = new EntityQueryCondition( property, operand, eqValue );
   }
 
   filterControl.setPropertyCondition( property, condition, reset );
@@ -43,12 +45,9 @@ function setCondition( controlItem, control, filterControl, reset = true ) {
  * @param filterControl to receive the condition from the control
  * @returns {boolean} true if a control has been made.
  */
-export function createTextControl( node, control, filterControl ) {
-  if ( $( control ).is( "input[type=text]" ) ) {
-    setCondition( node, control, filterControl, false );
-    $( node ).change( {"formGroup": $( node ), "item": $( control ), "filter": filterControl},
-                      event => setCondition( event.data.formGroup, event.data.item, event.data.filter ) );
-    return true;
-  }
-  return false;
+export function createFallbackControl( node, control, filterControl ) {
+  setCondition( node, control, filterControl, false );
+  $( node ).change( {"formGroup": $( node ), "item": $( control ), "filter": filterControl},
+                    event => setCondition( event.data.formGroup, event.data.item, event.data.filter ) );
+  return true;
 }
