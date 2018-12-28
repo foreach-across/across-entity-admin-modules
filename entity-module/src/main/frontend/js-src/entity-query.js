@@ -16,10 +16,9 @@
 import {isNullOrUndefined} from "./app/utils/utilities";
 import EntityQueryPropertyControlFactory from "./app/utils/controls/entity-query-property-control-factory";
 import {createSelectControl} from "./app/utils/controls/property-control-builders/property-control-select";
-import {createDateControl} from "./app/utils/controls/property-control-builders/property-control-date";
 import {createCheckboxRadioControl} from "./app/utils/controls/property-control-builders/property-control-checkbox-radio";
 import EntityQueryFilterControl from "./app/utils/controls/entity-query-filter-control";
-import {createFallbackControl} from "./app/utils/controls/property-control-builders/property-control-fallback";
+import {createControl} from "./app/utils/controls/property-control-builders/property-control";
 
 /**
  * Initializes an EntityQueryFilterControl for the given node.
@@ -72,9 +71,8 @@ if ( !isNullOrUndefined( window ) ) {
  */
 EntityModule.registerInitializer( function( node ) {
   EntityQueryPropertyControlFactory.register( createSelectControl, 1000 );
-  EntityQueryPropertyControlFactory.register( createDateControl, 1033 );
   EntityQueryPropertyControlFactory.register( createCheckboxRadioControl, 1066 );
-  EntityQueryPropertyControlFactory.register( createFallbackControl, 1200 );
+  EntityQueryPropertyControlFactory.register( createControl, 1200 );
 
   $( "[data-entity-query-filter-form]" ).each( function() {
     initializeEntityQueryForm( $( this ) );

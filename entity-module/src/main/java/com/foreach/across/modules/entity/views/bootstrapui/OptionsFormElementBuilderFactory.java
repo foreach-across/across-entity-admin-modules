@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
@@ -33,7 +34,9 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySu
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.*;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -91,7 +94,21 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 				= BootstrapUiBuilders.options()
 				                     .name( descriptor.getName() )
 				                     .controlName( descriptor.getName() )
-				                     .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) );
+				                     .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) )
+				                     .postProcessor(
+						                     ( ( builderContext, element ) -> {
+							                     if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+								                     if ( SELECT.equals( actualType ) ) {
+									                     element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
+								                     }
+								                     else {
+									                     ContainerViewElementUtils.findAll( element, CheckboxFormElement.class )
+									                                              .forEach( cfe -> cfe.addCssClass(
+											                                              EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER ) );
+								                     }
+							                     }
+						                     } )
+				                     );
 
 		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( typeDescriptor.getSimpleTargetType() );
 		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, typeDescriptor.getSimpleTargetType(), optionConfiguration, viewElementMode );

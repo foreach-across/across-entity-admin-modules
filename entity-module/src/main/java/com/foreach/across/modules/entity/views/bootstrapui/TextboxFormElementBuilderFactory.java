@@ -29,6 +29,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderProcessor
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -84,7 +85,15 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 				)
 				.postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
 				.postProcessor( builderFactoryHelpers.createDefaultValueTextPostProcessor( propertyDescriptor ) )
-				.postProcessor( new PropertyPlaceholderTextPostProcessor<>() );
+				.postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
+				.postProcessor(
+						( ( builderContext, element ) -> {
+							if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+								element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
+							}
+						} )
+				)
+				;
 	}
 
 	@Autowired

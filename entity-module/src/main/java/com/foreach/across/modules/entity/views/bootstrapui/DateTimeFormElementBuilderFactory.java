@@ -19,9 +19,11 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
+import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
+import com.foreach.across.modules.entity.query.EQValue;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactoryHelper;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySupport;
@@ -32,6 +34,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.Va
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.DateTimeValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -54,6 +57,7 @@ import java.time.ZonedDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Arne Vandamme
@@ -227,7 +231,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 										datetime.setLocalDateTime( ( (ZonedDateTime) value ).toLocalDateTime() );
 									}
 									else {
-										Date propertyValue = (Date) value;
+										Date propertyValue = Objects.equals( value, EQValue.MISSING ) ? null : (Date) value;
 
 										if ( propertyValue != null ) {
 											datetime.setValue( propertyValue );
@@ -236,7 +240,15 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 
 								}
 							}
-					);
+					)
+					.postProcessor(
+							( ( builderContext, element ) -> {
+								if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+									element.getControl( FormControlElement.class ).addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
+								}
+							} )
+					)
+					;
 		}
 	}
 

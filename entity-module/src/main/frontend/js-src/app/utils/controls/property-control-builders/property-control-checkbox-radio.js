@@ -49,14 +49,15 @@ function setCondition( controlItem, control, filterControl, reset = true ) {
 /**
  * Allows creation of an EntityQueryPropertyCheckboxRadioControl for a given node and EntityQueryFilterControl
  * if the given node is a div and has inputs with type "checkbox" or "radio" as children.
+ *
  * @param node to create a control for
  * @param filterControl to receive the condition from the control
  * @returns {boolean} true if a control has been made.
  */
-export function createCheckboxRadioControl( node, control, filterControl ) {
-  if ( !(isEmptyArray( $( control ).is( "input[type=checkbox]" ) ) && isEmptyArray( $( control ).is( "input[type=radio]" ) )) ) {
-    setCondition( node, $( control ).parent(), filterControl, false );
-    $( node ).change( {"formGroup": $( node ), "item": $( $( control ).parent() ), "filter": filterControl},
+export function createCheckboxRadioControl( node, controls, filterControl ) {
+  if ( !(isEmptyArray( $( controls ).find( "input[type=checkbox]" ) ) && isEmptyArray( $( controls ).find( "input[type=radio]" ) )) ) {
+    setCondition( node, $( controls ).parent(), filterControl, false );
+    $( node ).change( {"formGroup": $( node ), "item": $( $( controls ).parent() ), "filter": filterControl},
                       event => setCondition( event.data.formGroup, event.data.item, event.data.filter ) );
     return true;
   }

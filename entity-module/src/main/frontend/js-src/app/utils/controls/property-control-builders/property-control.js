@@ -22,32 +22,40 @@ import {EntityQueryOps} from "../../entity-query/entity-query-ops";
 import EntityQueryCondition from "../../entity-query/entity-query-condition";
 import EQValue from "../../entity-query/eq-value";
 import EQString from "../../entity-query/eq-string";
+import {isEmptyArray} from "../../utilities";
 
 function setCondition( controlItem, control, filterControl, reset = true ) {
   const property = $( controlItem ).data( "entity-query-property" );
   const value = $( control ).val();
+  console.log( `received change: ${value} for ${property}` );
   let condition = null;
 
   if ( value.trim() !== "" ) {
     const operand = EntityQueryOps[$( controlItem ).data( "entity-query-operand" )];
-    const eqValue = $( controlItem ).data( "entity-query-property-type" ) === "text" ? new EQString( `${value}` ) : new EQValue( `${value}` );
-    condition = new EntityQueryCondition( property, operand, eqValue );
+    const queryValue = $( controlItem ).data( "entity-query-text-type" ) === true ? new EQString( `${value}` ) : new EQValue( `${value}` );
+    condition = new EntityQueryCondition( property, operand, queryValue );
   }
 
   filterControl.setPropertyCondition( property, condition, reset );
 }
 
 /**
- * Allows creation of an EntityQueryPropertyTextControl for a given node and EntityQueryFilterControl
- * if the given node is an input of type "text".
+ * Creates an EntityQueryControl for a given node.
+ *
  * @param node to create a control for
  * @param control containing the value
  * @param filterControl to receive the condition from the control
  * @returns {boolean} true if a control has been made.
  */
-export function createFallbackControl( node, control, filterControl ) {
-  setCondition( node, control, filterControl, false );
-  $( node ).change( {"formGroup": $( node ), "item": $( control ), "filter": filterControl},
-                    event => setCondition( event.data.formGroup, event.data.item, event.data.filter ) );
-  return true;
+export function createControl( node, control, filterControl ) {
+  if ( !isEmptyArray( control ) ) {
+    const eventName = $( node ).data( "entity-query-control-event" );
+    setCondition( node, control, filterControl, false );
+    console.log( `Binding to ${eventName} for ${$( node ).data( 'entity-query-property' )}` );
+    $( node ).on( eventName, {"formGroup": $( node ), "item": $( control ), "filter": filterControl},
+                  event => setCondition( event.data.formGroup, event.data.item, event.data.filter ) );
+    console.log( "Initialized basic property control" );
+    return true;
+  }
+  return false;
 }

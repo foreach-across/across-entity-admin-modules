@@ -31,6 +31,7 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.processors.AssociationHeaderViewProcessor;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.query.EQLStringValueOptionEnhancer;
@@ -166,9 +167,19 @@ public class EntityFilteringConfiguration implements EntityConfigurer
                                                                                                            .addFormButtons( true ) ) )
                      )
                      .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
-                                          .entityQueryFilter( eqf -> eqf.showProperties( "text", "parent.content" )
-                                                                        .basicMode( true )
-                                                                        .advancedMode( true ) )
+                                          .entityQueryFilter(
+		                                          eqf -> eqf.showProperties( "text", "parent.content", "lastModifiedDate" )
+		                                                    .properties(
+				                                                    props -> props.property( "lastModifiedDate" )
+				                                                                  .writable( true )
+				                                                                  .attribute( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_EVENT,
+				                                                                              "focusout" )
+				                                                                  .viewElementType( ViewElementMode.FILTER_CONTROL,
+				                                                                                    BootstrapUiElements.DATETIME )
+		                                                    )
+		                                                    .basicMode( true )
+		                                                    .advancedMode( true )
+                                          )
                                           .showOnlyItemsWithAction( AllowableAction.READ )
                      )
 		;
