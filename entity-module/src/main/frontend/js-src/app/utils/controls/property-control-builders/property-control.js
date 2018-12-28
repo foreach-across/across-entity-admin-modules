@@ -27,7 +27,6 @@ import {isEmptyArray} from "../../utilities";
 function setCondition( controlItem, control, filterControl, reset = true ) {
   const property = $( controlItem ).data( "entity-query-property" );
   const value = $( control ).val();
-  console.log( `received change: ${value} for ${property}` );
   let condition = null;
 
   if ( value.trim() !== "" ) {
@@ -51,10 +50,8 @@ export function createControl( node, control, filterControl ) {
   if ( !isEmptyArray( control ) ) {
     const eventName = $( node ).data( "entity-query-control-event" );
     setCondition( node, control, filterControl, false );
-    console.log( `Binding to ${eventName} for ${$( node ).data( 'entity-query-property' )}` );
     $( node ).on( eventName, {"formGroup": $( node ), "item": $( control ), "filter": filterControl},
                   event => setCondition( event.data.formGroup, event.data.item, event.data.filter ) );
-    console.log( "Initialized basic property control" );
     return true;
   }
   return false;
