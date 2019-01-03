@@ -22,8 +22,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import static com.foreach.across.modules.entity.query.support.EntityQueryDateFunctions.*;
 import static org.junit.Assert.*;
@@ -36,9 +38,95 @@ public class TestEntityQueryDateFunctions
 {
 	private EntityQueryDateFunctions functions;
 
+	private static Date getWeekStartDate() {
+		Calendar calendar = Calendar.getInstance();
+		while ( calendar.get( Calendar.DAY_OF_WEEK ) != Calendar.MONDAY ) {
+			calendar.add( Calendar.DATE, -1 );
+		}
+
+		return calendar.getTime();
+	}
+
+	private static Date getMonthStartDate() {
+		Calendar calendar = Calendar.getInstance();
+
+		calendar.set( Calendar.DAY_OF_MONTH, 1 );
+		calendar.set( Calendar.HOUR, 0 );
+		calendar.set( Calendar.MINUTE, 0 );
+		calendar.set( Calendar.SECOND, 0 );
+		calendar.set( Calendar.MILLISECOND, 0 );
+
+		return calendar.getTime();
+	}
+
+	private static Date getYearStartDate() {
+		Calendar calendar = Calendar.getInstance();
+
+		calendar.set( Calendar.DAY_OF_YEAR, 1 );
+		calendar.set( Calendar.MONTH, 1 );
+		calendar.set( Calendar.HOUR, 0 );
+		calendar.set( Calendar.MINUTE, 0 );
+		calendar.set( Calendar.SECOND, 0 );
+		calendar.set( Calendar.MILLISECOND, 0 );
+
+		return calendar.getTime();
+	}
+
+	private static Date getEndOfDay() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set( Calendar.HOUR, 23 );
+		calendar.set( Calendar.MINUTE, 59 );
+		calendar.set( Calendar.SECOND, 59 );
+		calendar.set( Calendar.MILLISECOND, 999 );
+
+		return calendar.getTime();
+	}
+
+	private static Date getWeekEndDate() {
+		Calendar calendar = Calendar.getInstance();
+		while ( calendar.get( Calendar.DAY_OF_WEEK ) != Calendar.MONDAY ) {
+			calendar.add( Calendar.DATE, 1 );
+		}
+
+		calendar.add( Calendar.DATE, -1 );
+		calendar.set( Calendar.HOUR, 23 );
+		calendar.set( Calendar.MINUTE, 59 );
+		calendar.set( Calendar.SECOND, 59 );
+		calendar.set( Calendar.MILLISECOND, 999 );
+
+		return calendar.getTime();
+	}
+
+	private static Date getMonthEndDate() {
+		Calendar calendar = Calendar.getInstance();
+		LocalDate today = LocalDate.now();
+
+		calendar.set( Calendar.DAY_OF_MONTH,  today.lengthOfMonth());
+		calendar.set( Calendar.HOUR, 23 );
+		calendar.set( Calendar.MINUTE, 59 );
+		calendar.set( Calendar.SECOND, 59 );
+		calendar.set( Calendar.MILLISECOND, 999 );
+
+		return calendar.getTime();
+	}
+
+	private static Date getYearEndDate() {
+		Calendar calendar = Calendar.getInstance();
+
+		calendar.set( Calendar.DAY_OF_YEAR, 365 );
+		calendar.set( Calendar.MONTH, 12 );
+		calendar.set( Calendar.HOUR, 23 );
+		calendar.set( Calendar.MINUTE, 59 );
+		calendar.set( Calendar.SECOND, 59 );
+		calendar.set( Calendar.MILLISECOND, 999 );
+
+		return calendar.getTime();
+	}
+
 	@Before
 	public void reset() {
 		functions = new EntityQueryDateFunctions();
+		Locale.setDefault( Locale.forLanguageTag( "nl" ) );
 	}
 
 	@Test
@@ -86,31 +174,46 @@ public class TestEntityQueryDateFunctions
 	}
 
 	@Test
+	public void startOfMonth() {
+		Date startOfMonth = DateUtils.truncate( getMonthStartDate(), Calendar.DATE );
+		assertEquals( startOfMonth, functions.apply( START_OF_MONTH, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+	}
+
+	@Test
+	public void startOfYear() {
+		Date startOfYear = DateUtils.truncate( getYearStartDate(), Calendar.DATE );
+		assertEquals( startOfYear, functions.apply( START_OF_YEAR, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+	}
+
+	@Test
+	public void endOfDay() {
+		Date endOfDay = getEndOfDay();
+		Date calculatedEndOfDay = (Date) functions.apply( END_OF_DAY, new EQType[0], TypeDescriptor.valueOf( Date.class ), null );
+
+		assertEquals( endOfDay.getTime(), calculatedEndOfDay.getTime() );
+	}
+
+	@Test
 	public void endOfWeek() {
 		Date endOfWeek = getWeekEndDate();
-		assertEquals( endOfWeek, functions.apply( END_OF_WEEK, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+		Date calculatedEndOfWeek = (Date) functions.apply( END_OF_WEEK, new EQType[0], TypeDescriptor.valueOf( Date.class ), null );
+
+		assertEquals( endOfWeek.getTime(), calculatedEndOfWeek.getTime() );
 	}
 
-	private static Date getWeekStartDate() {
-		Calendar calendar = Calendar.getInstance();
-		while ( calendar.get( Calendar.DAY_OF_WEEK ) != Calendar.MONDAY ) {
-			calendar.add( Calendar.DATE, -1 );
-		}
-		return calendar.getTime();
+	@Test
+	public void endOfMonth() {
+		Date endOfMonth = getMonthEndDate();
+		Date calculatedEndOfMonth = (Date) functions.apply( END_OF_MONTH, new EQType[0], TypeDescriptor.valueOf( Date.class ), null );
+
+		assertEquals( endOfMonth.getTime(), calculatedEndOfMonth.getTime() );
 	}
 
-	private static Date getWeekEndDate() {
-		Calendar calendar = Calendar.getInstance();
-		while ( calendar.get( Calendar.DAY_OF_WEEK ) != Calendar.MONDAY ) {
-			calendar.add( Calendar.DATE, 1 );
-		}
-		calendar.add( Calendar.DATE, -1 );
+	@Test
+	public void endOfYear() {
+		Date endOfMonth = getYearEndDate();
+		Date calculatedEndOfMonth = (Date) functions.apply( END_OF_YEAR, new EQType[0], TypeDescriptor.valueOf( Date.class ), null );
 
-		Date endOfWeek = calendar.getTime();
-		endOfWeek.setHours( 23 );
-		endOfWeek.setMinutes( 59 );
-		endOfWeek.setSeconds( 59 );
-
-		return endOfWeek;
+		assertEquals( endOfMonth.getTime(), calculatedEndOfMonth.getTime() );
 	}
 }

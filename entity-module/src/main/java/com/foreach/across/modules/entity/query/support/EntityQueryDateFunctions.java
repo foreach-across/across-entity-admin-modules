@@ -23,6 +23,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.*;
+import java.time.temporal.WeekFields;
 import java.util.Date;
 import java.util.Locale;
 
@@ -73,25 +74,32 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	}
 
 	private LocalDateTime calculateDate( String functionName ) {
+		LocalDate today = LocalDate.now();
+
 		switch ( functionName ) {
 			case TODAY:
-				return LocalDate.now().atStartOfDay();
+				return today.atStartOfDay();
 			case START_OF_DAY:
-				return LocalDate.now().atStartOfDay();
+				return today.atStartOfDay();
 			case START_OF_WEEK:
-				return LocalDate.now().with( DayOfWeek.MONDAY ).atStartOfDay();
+				DayOfWeek firstDayOfWeek = WeekFields.of( Locale.getDefault() ).getFirstDayOfWeek();
+
+				return today.with( firstDayOfWeek ).atStartOfDay();
 			case START_OF_MONTH:
-				return LocalDate.now().withDayOfMonth( 1 ).atStartOfDay();
+				return today.withDayOfMonth( 1 ).atStartOfDay();
 			case START_OF_YEAR:
-				return LocalDate.now().withDayOfYear( 1 ).atStartOfDay();
+				return today.withDayOfYear( 1 ).atStartOfDay();
 			case END_OF_DAY:
-				return LocalDate.now().atTime(LocalTime.MAX);
+				return today.atTime( LocalTime.MAX );
 			case END_OF_WEEK:
-				return LocalDate.now().with( DayOfWeek.SUNDAY ).atTime(LocalTime.MAX);
+				DayOfWeek firstDayOfThisWeek = WeekFields.of( Locale.getDefault() ).getFirstDayOfWeek();
+				DayOfWeek lastDayOfWeek = DayOfWeek.of( ( ( firstDayOfThisWeek.getValue() + 5 ) % DayOfWeek.values().length ) + 1 );
+
+				return today.with( lastDayOfWeek ).atTime( LocalTime.MAX );
 			case END_OF_MONTH:
-				return LocalDate.now().withDayOfMonth( 1 ).atTime(LocalTime.MAX);
+				return today.withDayOfMonth( today.lengthOfMonth() ).atTime( LocalTime.MAX );
 			case END_OF_YEAR:
-				return LocalDate.now().withDayOfYear( 1 ).atTime(LocalTime.MAX);
+				return today.withDayOfYear( today.lengthOfYear() ).atTime( LocalTime.MAX );
 		}
 
 		return LocalDateTime.now();
@@ -99,7 +107,7 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 
 	private Object convertToDesiredType( LocalDateTime date, Class<?> desiredType ) {
 		if ( Long.class.equals( desiredType ) ) {
-			return date.toInstant( ZoneOffset.ofTotalSeconds( 0 ) ).toEpochMilli();
+			return Date.from( date.atZone( ZoneId.systemDefault() ).toInstant() ).getTime();
 		}
 
 		if ( Date.class.equals( desiredType ) ) {
