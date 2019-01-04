@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.query.support;
 
+import com.foreach.across.modules.entity.query.EQString;
 import com.foreach.across.modules.entity.query.EQType;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
@@ -23,6 +24,7 @@ import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -51,7 +53,7 @@ public class TestEntityQueryDateFunctions
 		Calendar calendar = Calendar.getInstance();
 
 		calendar.set( Calendar.DAY_OF_MONTH, 1 );
-		calendar.set( Calendar.HOUR, 0 );
+		calendar.set( Calendar.HOUR_OF_DAY, 0 );
 		calendar.set( Calendar.MINUTE, 0 );
 		calendar.set( Calendar.SECOND, 0 );
 		calendar.set( Calendar.MILLISECOND, 0 );
@@ -64,7 +66,7 @@ public class TestEntityQueryDateFunctions
 
 		calendar.set( Calendar.DAY_OF_YEAR, 1 );
 		calendar.set( Calendar.MONTH, 1 );
-		calendar.set( Calendar.HOUR, 0 );
+		calendar.set( Calendar.HOUR_OF_DAY, 0 );
 		calendar.set( Calendar.MINUTE, 0 );
 		calendar.set( Calendar.SECOND, 0 );
 		calendar.set( Calendar.MILLISECOND, 0 );
@@ -74,7 +76,7 @@ public class TestEntityQueryDateFunctions
 
 	private static Date getEndOfDay() {
 		Calendar calendar = Calendar.getInstance();
-		calendar.set( Calendar.HOUR, 23 );
+		calendar.set( Calendar.HOUR_OF_DAY, 23 );
 		calendar.set( Calendar.MINUTE, 59 );
 		calendar.set( Calendar.SECOND, 59 );
 		calendar.set( Calendar.MILLISECOND, 999 );
@@ -89,7 +91,7 @@ public class TestEntityQueryDateFunctions
 		}
 
 		calendar.add( Calendar.DATE, -1 );
-		calendar.set( Calendar.HOUR, 23 );
+		calendar.set( Calendar.HOUR_OF_DAY, 23 );
 		calendar.set( Calendar.MINUTE, 59 );
 		calendar.set( Calendar.SECOND, 59 );
 		calendar.set( Calendar.MILLISECOND, 999 );
@@ -102,7 +104,7 @@ public class TestEntityQueryDateFunctions
 		LocalDate today = LocalDate.now();
 
 		calendar.set( Calendar.DAY_OF_MONTH,  today.lengthOfMonth());
-		calendar.set( Calendar.HOUR, 23 );
+		calendar.set( Calendar.HOUR_OF_DAY, 23 );
 		calendar.set( Calendar.MINUTE, 59 );
 		calendar.set( Calendar.SECOND, 59 );
 		calendar.set( Calendar.MILLISECOND, 999 );
@@ -115,7 +117,7 @@ public class TestEntityQueryDateFunctions
 
 		calendar.set( Calendar.DAY_OF_YEAR, 365 );
 		calendar.set( Calendar.MONTH, 12 );
-		calendar.set( Calendar.HOUR, 23 );
+		calendar.set( Calendar.HOUR_OF_DAY, 23 );
 		calendar.set( Calendar.MINUTE, 59 );
 		calendar.set( Calendar.SECOND, 59 );
 		calendar.set( Calendar.MILLISECOND, 999 );
@@ -151,6 +153,30 @@ public class TestEntityQueryDateFunctions
 		start = new Date();
 		long time = (Long) functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( Long.class ), null );
 		assertTrue( time >= start.getTime() && time < ( start.getTime() + 1000 ) );
+	}
+
+	@Test
+	public void nowModified() {
+		Date nextHour = DateUtils.addHours( new Date(), 1 );
+		EQType[] nextHourFunctionArguments = {new EQString( "1h" ) };
+
+		Date calculated = (Date) functions.apply( NOW, nextHourFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		assertNotNull( calculated );
+		assertTrue( calculated.getTime() >= nextHour.getTime() && calculated.getTime() < ( nextHour.getTime() + 1000 ) );
+
+		Date fiveMinutesAgo = DateUtils.addMinutes( new Date(), -5 );
+		EQType[] fiveMinutesAgoFunctionArguments = {new EQString( "-5m" ) };
+
+		calculated = (Date) functions.apply( NOW, fiveMinutesAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		assertNotNull( calculated );
+		assertTrue( calculated.getTime() >= fiveMinutesAgo.getTime() && calculated.getTime() < ( fiveMinutesAgo.getTime() + 1000 ) );
+
+		Date theDayAfterTomorrow = DateUtils.addDays( new Date(), 2 );
+		EQType[] theDayAfterTomorrowFunctionArguments = {new EQString( "2d" ) };
+
+		calculated = (Date) functions.apply( NOW, theDayAfterTomorrowFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		assertNotNull( calculated );
+		assertTrue( calculated.getTime() >= theDayAfterTomorrow.getTime() && calculated.getTime() < ( theDayAfterTomorrow.getTime() + 1000 ) );
 	}
 
 	@Test

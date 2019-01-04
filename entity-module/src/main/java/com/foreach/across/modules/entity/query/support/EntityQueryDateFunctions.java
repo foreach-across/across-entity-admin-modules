@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.entity.query.support;
 
+import com.foreach.across.modules.entity.converters.StringToDurationConverter;
+import com.foreach.across.modules.entity.query.EQString;
 import com.foreach.across.modules.entity.query.EQType;
 import com.foreach.across.modules.entity.query.EQTypeConverter;
 import com.foreach.across.modules.entity.query.EntityQueryFunctionHandler;
@@ -69,10 +71,17 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	                     TypeDescriptor desiredType,
 	                     EQTypeConverter argumentConverter ) {
 		LocalDateTime calculated = calculateDate( functionName );
+		calculated = addDateTimeModifiers( calculated, arguments );
 
 		return convertToDesiredType( calculated, desiredType.getObjectType() );
 	}
 
+	/**
+	 * Calculate the right localDateTime that is represented by the functionName
+	 *
+	 * @param functionName The name of the function
+	 * @return The resulting {@link LocalDateTime}
+	 */
 	private LocalDateTime calculateDate( String functionName ) {
 		LocalDate today = LocalDate.now();
 
@@ -105,15 +114,40 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 		return LocalDateTime.now();
 	}
 
-	private Object convertToDesiredType( LocalDateTime date, Class<?> desiredType ) {
+	/**
+	 * Parse all string arguments to {@link Duration} objects and modify the date
+	 *
+	 * @param dateTime  The calculated dateTime
+	 * @param arguments An array of modifiers represented by strings y|M|w|d|h|m e.g. +1d, -1y, ...
+	 * @return the modified calculated dateTime
+	 */
+	private LocalDateTime addDateTimeModifiers( LocalDateTime dateTime, EQType[] arguments ) {
+		for ( EQType argument : arguments ) {
+			if ( EQString.class.isAssignableFrom( argument.getClass() ) ) {
+				Duration duration = StringToDurationConverter.convertToDuration( ( (EQString) argument ).getValue() );
+				dateTime = dateTime.plus( duration );
+			}
+		}
+
+		return dateTime;
+	}
+
+	/**
+	 * Convert the calculated dateTime to the desired object type
+	 *
+	 * @param dateTime    The calculated dateTime
+	 * @param desiredType The type that is expected as output
+	 * @return An instance of the desiredType
+	 */
+	private Object convertToDesiredType( LocalDateTime dateTime, Class<?> desiredType ) {
 		if ( Long.class.equals( desiredType ) ) {
-			return Date.from( date.atZone( ZoneId.systemDefault() ).toInstant() ).getTime();
+			return Date.from( dateTime.atZone( ZoneId.systemDefault() ).toInstant() ).getTime();
 		}
 
 		if ( Date.class.equals( desiredType ) ) {
-			return Date.from( date.atZone( ZoneId.systemDefault() ).toInstant() );
+			return Date.from( dateTime.atZone( ZoneId.systemDefault() ).toInstant() );
 		}
 
-		return date;
+		return dateTime;
 	}
 }
