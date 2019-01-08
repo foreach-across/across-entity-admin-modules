@@ -46,20 +46,20 @@ public class StringToDurationWithPeriodConverter
 	private static final int SECONDS_INDEX = 20;
 
 	private static final String DURATION_PATTERN =
-			"(([-]?[\\d]*+)([y][a-z]*+))?(([-]?[\\d]*+)([M][a-z]*+))?(([-]?[\\d]*+)([w][a-z]*+))?(([-]?[\\d]*+)([d|t|j][a-z]*+))?(([-]?[\\d]*+)([h|u|:][a-z]*+))?(([-]?[\\d]*+)([m][a-z]*+))?(([-]?[\\d]*+)([s][a-z]*+))?";
+			"(([-|+]?[\\d]*+)([y|Y][a-z]*+))?(([-|+]?[\\d]*+)([M][a-z]*+))?(([-|+]?[\\d]*+)([w|w][a-z]*+))?(([-|+]?[\\d]*+)([D|d][a-z]*+))?(([-|+]?[\\d]*+)([H|h][a-z]*+))?(([-|+]?[\\d]*+)([m][a-z]*+))?(([-|+]?[\\d]*+)([s|S][a-z]*+))?";
 
 	/**
 	 * Converts a given text value to a representing duration and period.
-	 * <p>
 	 * The formatted string has to adhere to the following format:
-	 * * seconds are represented by an integer followed by (one or more) characters starting with 's'
-	 * * minutes are represented by an integer followed by (one or more) characters starting with 'm'
-	 * * hours are represented by an integer or decimal followed by (one or more) characters starting with 'h', 'u' or 'st', ':'
-	 * * days are represented by an integer or decimal followed by (one or more) characters starting with 'd', 't' or 'j'
-	 * * weeks are represented by an integer followed by (one or more) characters starting with 'w'
-	 * * months are represented by an integer followed by (one or more) characters starting with 'M'
-	 * * years are represented by an integer followed by (one or more) characters starting with 'y'
-	 * * contextual durations are represented by an integer with no further characters indicating the unit. This will use the provided defaultUnit
+	 * <ul>
+	 * <li> seconds are represented by an integer followed by (one or more) characters starting with 's', 'S'</li>
+	 * <li> minutes are represented by an integer followed by (one or more) characters starting with 'm'</li>
+	 * <li> hours are represented by an integer or decimal followed by (one or more) characters starting with 'h', 'u'</li>
+	 * <li> days are represented by an integer or decimal followed by (one or more) characters starting with 'd', 'D'</li>
+	 * <li> weeks are represented by an integer followed by (one or more) characters starting with 'w', 'W'</li>
+	 * <li> months are represented by an integer followed by (one or more) characters starting with 'M'</li>
+	 * <li> years are represented by an integer followed by (one or more) characters starting with 'y', 'Y'</li>
+	 * </ul>
 	 *
 	 * @param durationText text to convert
 	 * @return the actual duration

@@ -25,6 +25,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.*;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.Date;
 import java.util.Locale;
@@ -45,10 +47,18 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	public static final String NOW = "now";
 	public static final String TODAY = "today";
 
-	public static final String START_OF_DAY = "startOfDay";
-	public static final String START_OF_WEEK = "startOfWeek";
-	public static final String START_OF_MONTH = "startOfMonth";
-	public static final String START_OF_YEAR = "startOfYear";
+	public static final String MONDAY = "monday";
+	public static final String TUESDAY = "tuesday";
+	public static final String WEDNESDAY = "wednesday";
+	public static final String THURSDAY = "thursday";
+	public static final String FRIDAY = "friday";
+	public static final String SATURDAY = "saturday";
+	public static final String SUNDAY = "sunday";
+	public static final String DAY = "day";
+	public static final String WEEK = "week";
+	public static final String WEEK_NUMBER = "weekNumber";
+	public static final String MONTH = "month";
+	public static final String YEAR = "year";
 
 	private static final String[] FUNCTION_NAMES = new String[] { NOW, TODAY };
 
@@ -84,15 +94,31 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 		switch ( functionName ) {
 			case TODAY:
 				return today.atStartOfDay();
-			case START_OF_DAY:
+			case DAY:
 				return today.atStartOfDay();
-			case START_OF_WEEK:
+			case MONDAY:
+				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY) ).atStartOfDay();
+			case TUESDAY:
+				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.TUESDAY) ).atStartOfDay();
+			case WEDNESDAY:
+				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.WEDNESDAY) ).atStartOfDay();
+			case THURSDAY:
+				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.THURSDAY) ).atStartOfDay();
+			case FRIDAY:
+				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.FRIDAY) ).atStartOfDay();
+			case SATURDAY:
+				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.SATURDAY) ).atStartOfDay();
+			case SUNDAY:
+				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY) ).atStartOfDay();
+			case WEEK:
 				DayOfWeek firstDayOfWeek = WeekFields.of( Locale.getDefault() ).getFirstDayOfWeek();
 
 				return today.with( firstDayOfWeek ).atStartOfDay();
-			case START_OF_MONTH:
+			case WEEK_NUMBER:
+				break;
+			case MONTH:
 				return today.withDayOfMonth( 1 ).atStartOfDay();
-			case START_OF_YEAR:
+			case YEAR:
 				return today.withDayOfYear( 1 ).atStartOfDay();
 		}
 

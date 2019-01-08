@@ -181,39 +181,6 @@ public class TestStringToDurationWithPeriodConverter
 	}
 
 	@Test
-	public void hoursAndMinutesFullWordsTranslated() {
-		DurationWithPeriod result = StringToDurationWithPeriodConverter.of( "3 uur 45 minuten" );
-		Duration duration = result.getDuration();
-
-		assertEquals( 3, duration.toHours() );
-		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
-
-		result = StringToDurationWithPeriodConverter.of( "3uur 45minuten" );
-		assertEquals( 3, duration.toHours() );
-		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
-
-		result = StringToDurationWithPeriodConverter.of( "3uur45minuten" );
-		assertEquals( 3, duration.toHours() );
-		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
-
-		result = StringToDurationWithPeriodConverter.of( "3 uur 45minuten" );
-		assertEquals( 3, duration.toHours() );
-		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
-
-		result = StringToDurationWithPeriodConverter.of( "3uur 45 minuten" );
-		assertEquals( 3, duration.toHours() );
-		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
-
-		result = StringToDurationWithPeriodConverter.of( "3 uur45minuten" );
-		assertEquals( 3, duration.toHours() );
-		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
-
-		result = StringToDurationWithPeriodConverter.of( "3uur45 minuten" );
-		assertEquals( 3, duration.toHours() );
-		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
-	}
-
-	@Test
 	public void dayConvertsToHours() {
 		DurationWithPeriod result = StringToDurationWithPeriodConverter.of( "1d" );
 		Period period = result.getPeriod();
