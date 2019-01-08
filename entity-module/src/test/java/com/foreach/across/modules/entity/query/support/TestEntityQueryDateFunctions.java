@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -45,6 +44,10 @@ public class TestEntityQueryDateFunctions
 		while ( calendar.get( Calendar.DAY_OF_WEEK ) != Calendar.MONDAY ) {
 			calendar.add( Calendar.DATE, -1 );
 		}
+		calendar.set( Calendar.HOUR_OF_DAY, 0 );
+		calendar.set( Calendar.MINUTE, 0 );
+		calendar.set( Calendar.SECOND, 0 );
+		calendar.set( Calendar.MILLISECOND, 0 );
 
 		return calendar.getTime();
 	}
@@ -103,7 +106,7 @@ public class TestEntityQueryDateFunctions
 		Calendar calendar = Calendar.getInstance();
 		LocalDate today = LocalDate.now();
 
-		calendar.set( Calendar.DAY_OF_MONTH,  today.lengthOfMonth());
+		calendar.set( Calendar.DAY_OF_MONTH, today.lengthOfMonth() );
 		calendar.set( Calendar.HOUR_OF_DAY, 23 );
 		calendar.set( Calendar.MINUTE, 59 );
 		calendar.set( Calendar.SECOND, 59 );
@@ -157,26 +160,40 @@ public class TestEntityQueryDateFunctions
 
 	@Test
 	public void nowModified() {
-		Date nextHour = DateUtils.addHours( new Date(), 1 );
-		EQType[] nextHourFunctionArguments = {new EQString( "1h" ) };
+//		Date nextHour = DateUtils.addHours( new Date(), 1 );
+//		EQType[] nextHourFunctionArguments = { new EQString( "1h" ) };
+//
+//		Date calculated = (Date) functions.apply( NOW, nextHourFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+//		assertNotNull( calculated );
+//		assertTrue( calculated.getTime() >= nextHour.getTime() && calculated.getTime() < ( nextHour.getTime() + 1000 ) );
+//
+//		Date fiveMinutesAgo = DateUtils.addMinutes( new Date(), -5 );
+//		EQType[] fiveMinutesAgoFunctionArguments = { new EQString( "-5m" ) };
+//
+//		calculated = (Date) functions.apply( NOW, fiveMinutesAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+//		assertNotNull( calculated );
+//		assertTrue( calculated.getTime() >= fiveMinutesAgo.getTime() && calculated.getTime() < ( fiveMinutesAgo.getTime() + 1000 ) );
+//
+//		Date theDayAfterTomorrow = DateUtils.addDays( new Date(), 2 );
+//		EQType[] theDayAfterTomorrowFunctionArguments = { new EQString( "2d" ) };
+//
+//		calculated = (Date) functions.apply( NOW, theDayAfterTomorrowFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+//		assertNotNull( calculated );
+//		assertTrue( calculated.getTime() >= theDayAfterTomorrow.getTime() && calculated.getTime() < ( theDayAfterTomorrow.getTime() + 1000 ) );
+//
+//		theDayAfterTomorrowFunctionArguments[0] = new EQString( "2" );
+//
+//		calculated = (Date) functions.apply( NOW, theDayAfterTomorrowFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+//		assertNotNull( calculated );
+//		assertTrue( calculated.getTime() >= theDayAfterTomorrow.getTime() && calculated.getTime() < ( theDayAfterTomorrow.getTime() + 1000 ) );
 
-		Date calculated = (Date) functions.apply( NOW, nextHourFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		Date aYearAgo = DateUtils.addYears( new Date(), -1 );
+		EQType[] aYearAgoFunctionArguments = { new EQString( "-1y" ) };
+
+		Date calculated = (Date) functions.apply( NOW, aYearAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
 		assertNotNull( calculated );
-		assertTrue( calculated.getTime() >= nextHour.getTime() && calculated.getTime() < ( nextHour.getTime() + 1000 ) );
+		assertTrue( calculated.getTime() >= aYearAgo.getTime() && calculated.getTime() < ( aYearAgo.getTime() + 1000 ) );
 
-		Date fiveMinutesAgo = DateUtils.addMinutes( new Date(), -5 );
-		EQType[] fiveMinutesAgoFunctionArguments = {new EQString( "-5m" ) };
-
-		calculated = (Date) functions.apply( NOW, fiveMinutesAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
-		assertNotNull( calculated );
-		assertTrue( calculated.getTime() >= fiveMinutesAgo.getTime() && calculated.getTime() < ( fiveMinutesAgo.getTime() + 1000 ) );
-
-		Date theDayAfterTomorrow = DateUtils.addDays( new Date(), 2 );
-		EQType[] theDayAfterTomorrowFunctionArguments = {new EQString( "2d" ) };
-
-		calculated = (Date) functions.apply( NOW, theDayAfterTomorrowFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
-		assertNotNull( calculated );
-		assertTrue( calculated.getTime() >= theDayAfterTomorrow.getTime() && calculated.getTime() < ( theDayAfterTomorrow.getTime() + 1000 ) );
 	}
 
 	@Test
@@ -197,6 +214,13 @@ public class TestEntityQueryDateFunctions
 	public void startOfWeek() {
 		Date startOfWeek = DateUtils.truncate( getWeekStartDate(), Calendar.DATE );
 		assertEquals( startOfWeek, functions.apply( START_OF_WEEK, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+
+		Date twoWeeksAgo = DateUtils.addWeeks( getWeekStartDate(), -2 );
+		EQType[] twoWeeksAgoFunctionArguments = { new EQString( "-2w" ) };
+
+		Date calculated = (Date) functions.apply( START_OF_WEEK, twoWeeksAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		assertNotNull( calculated );
+		assertTrue( calculated.getTime() >= twoWeeksAgo.getTime() && calculated.getTime() < ( twoWeeksAgo.getTime() + 1000 ) );
 	}
 
 	@Test
@@ -209,37 +233,5 @@ public class TestEntityQueryDateFunctions
 	public void startOfYear() {
 		Date startOfYear = DateUtils.truncate( getYearStartDate(), Calendar.DATE );
 		assertEquals( startOfYear, functions.apply( START_OF_YEAR, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
-	}
-
-	@Test
-	public void endOfDay() {
-		Date endOfDay = getEndOfDay();
-		Date calculatedEndOfDay = (Date) functions.apply( END_OF_DAY, new EQType[0], TypeDescriptor.valueOf( Date.class ), null );
-
-		assertEquals( endOfDay.getTime(), calculatedEndOfDay.getTime() );
-	}
-
-	@Test
-	public void endOfWeek() {
-		Date endOfWeek = getWeekEndDate();
-		Date calculatedEndOfWeek = (Date) functions.apply( END_OF_WEEK, new EQType[0], TypeDescriptor.valueOf( Date.class ), null );
-
-		assertEquals( endOfWeek.getTime(), calculatedEndOfWeek.getTime() );
-	}
-
-	@Test
-	public void endOfMonth() {
-		Date endOfMonth = getMonthEndDate();
-		Date calculatedEndOfMonth = (Date) functions.apply( END_OF_MONTH, new EQType[0], TypeDescriptor.valueOf( Date.class ), null );
-
-		assertEquals( endOfMonth.getTime(), calculatedEndOfMonth.getTime() );
-	}
-
-	@Test
-	public void endOfYear() {
-		Date endOfMonth = getYearEndDate();
-		Date calculatedEndOfMonth = (Date) functions.apply( END_OF_YEAR, new EQType[0], TypeDescriptor.valueOf( Date.class ), null );
-
-		assertEquals( endOfMonth.getTime(), calculatedEndOfMonth.getTime() );
 	}
 }

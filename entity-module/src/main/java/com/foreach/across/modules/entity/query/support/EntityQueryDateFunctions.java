@@ -16,11 +16,11 @@
 
 package com.foreach.across.modules.entity.query.support;
 
-import com.foreach.across.modules.entity.converters.StringToDurationConverter;
 import com.foreach.across.modules.entity.query.EQString;
 import com.foreach.across.modules.entity.query.EQType;
 import com.foreach.across.modules.entity.query.EQTypeConverter;
 import com.foreach.across.modules.entity.query.EntityQueryFunctionHandler;
+import com.foreach.across.modules.entity.util.StringToDurationWithPeriodConverter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -45,10 +45,6 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	public static final String NOW = "now";
 	public static final String TODAY = "today";
 
-	public static final String END_OF_DAY = "endOfDay";
-	public static final String END_OF_WEEK = "endOfWeek";
-	public static final String END_OF_MONTH = "endOfMonth";
-	public static final String END_OF_YEAR = "endOfYear";
 	public static final String START_OF_DAY = "startOfDay";
 	public static final String START_OF_WEEK = "startOfWeek";
 	public static final String START_OF_MONTH = "startOfMonth";
@@ -70,10 +66,10 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	                     EQType[] arguments,
 	                     TypeDescriptor desiredType,
 	                     EQTypeConverter argumentConverter ) {
-		LocalDateTime calculated = calculateDate( functionName );
-		calculated = addDateTimeModifiers( calculated, arguments );
+		LocalDateTime calculatedDateTime = calculateDate( functionName );
+		calculatedDateTime = addDateTimeModifiers( calculatedDateTime, arguments );
 
-		return convertToDesiredType( calculated, desiredType.getObjectType() );
+		return convertToDesiredType( calculatedDateTime, desiredType.getObjectType() );
 	}
 
 	/**
@@ -98,17 +94,6 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 				return today.withDayOfMonth( 1 ).atStartOfDay();
 			case START_OF_YEAR:
 				return today.withDayOfYear( 1 ).atStartOfDay();
-			case END_OF_DAY:
-				return today.atTime( LocalTime.MAX );
-			case END_OF_WEEK:
-				DayOfWeek firstDayOfThisWeek = WeekFields.of( Locale.getDefault() ).getFirstDayOfWeek();
-				DayOfWeek lastDayOfWeek = DayOfWeek.of( ( ( firstDayOfThisWeek.getValue() + 5 ) % DayOfWeek.values().length ) + 1 );
-
-				return today.with( lastDayOfWeek ).atTime( LocalTime.MAX );
-			case END_OF_MONTH:
-				return today.withDayOfMonth( today.lengthOfMonth() ).atTime( LocalTime.MAX );
-			case END_OF_YEAR:
-				return today.withDayOfYear( today.lengthOfYear() ).atTime( LocalTime.MAX );
 		}
 
 		return LocalDateTime.now();
@@ -124,8 +109,9 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	private LocalDateTime addDateTimeModifiers( LocalDateTime dateTime, EQType[] arguments ) {
 		for ( EQType argument : arguments ) {
 			if ( EQString.class.isAssignableFrom( argument.getClass() ) ) {
-				Duration duration = StringToDurationConverter.convertToDuration( ( (EQString) argument ).getValue() );
-				dateTime = dateTime.plus( duration );
+				DurationWithPeriod durationWithPeriod = StringToDurationWithPeriodConverter.of( ( (EQString) argument ).getValue() );
+				dateTime = dateTime.plus( durationWithPeriod.getPeriod() );
+				dateTime = dateTime.plus( durationWithPeriod.getDuration() );
 			}
 		}
 
