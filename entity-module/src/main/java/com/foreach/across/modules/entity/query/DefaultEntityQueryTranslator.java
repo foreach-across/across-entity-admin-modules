@@ -17,11 +17,11 @@
 package com.foreach.across.modules.entity.query;
 
 import com.foreach.across.modules.entity.query.support.ContainsEntityQueryConditionTranslator;
+import com.foreach.across.modules.entity.query.support.EmptyStringEntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.query.support.InEntityQueryConditionTranslator;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.util.EntityUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
@@ -30,7 +30,6 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 
@@ -133,10 +132,18 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 			}
 		}
 
+		TypeDescriptor expectedType = descriptor.getPropertyTypeDescriptor();
+
+		if ( TypeDescriptor.valueOf( String.class ).equals( expectedType ) ) {
+			EntityQueryExpression translated = EmptyStringEntityQueryConditionTranslator.INSTANCE.translate( condition );
+
+			if ( translated != condition ) {
+				return translated;
+			}
+		}
+
 		EntityQueryCondition translated = new EntityQueryCondition();
 		translated.setProperty( descriptor.getName() );
-
-		TypeDescriptor expectedType = descriptor.getPropertyTypeDescriptor();
 
 		translated.setOperand( findTypeSpecificOperand( condition.getOperand(), expectedType ) );
 

@@ -186,13 +186,13 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 		        .updateFormView( fvb -> fvb.showProperties( "name", "manager", "brands", "stockCount" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
 		        .detailView(
-		        		// we currently can't put global properties inside a collection iteration as the property value context is different
+				        // we currently can't put global properties inside a collection iteration as the property value context is different
 				        // todo: make this possible in a future update?
 				        dvb -> dvb.properties(
 						        props -> props.property( "brands[]" )
 						                      .attribute(
 								                      EntityAttributes.FIELDSET_PROPERTY_SELECTOR,
-								                      EntityPropertySelector.of( "brands[].code", "brands[].name"/*, "id" */)
+								                      EntityPropertySelector.of( "brands[].code", "brands[].name"/*, "id" */ )
 						                      )
 				        )
 		        )
