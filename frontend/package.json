@@ -1,4 +1,8 @@
 {
+  "config": {
+    "scssOutputPath": "/build/resources/views/static/BootstrapUiModule/css",
+    "jsOutputPath": "/build/resources/views/static/BootstrapUiModule/js"
+  },
   "dependencies": {
     "jquery": "1.11.3",
     "lodash": "2.4.2"
@@ -36,15 +40,17 @@
     "karma-webpack": "^3.0.0",
     "minimist": "^1.2.0",
     "require-dir": "^1.0.0",
-    "webpack-stream": "^4.0.3",
+    "webpack": "4.28.4",
+    "webpack-cli": "3.2.1",
     "worker-loader": "^2.0.0"
   },
   "scripts": {
-    "js": "webpack --config webpack.config.js -d",
-    "js:watch": "webpack --config webpack.config.js -w",
-    "js:prod": "webpack --config webpack.config.js -p",
-    "scss": "node-sass -i scss -o /resources/views/static/BoostrapUiModule/css",
-    "scss:watch": "node-sass --watch scss -o /resources/views/static/BoostrapUiModule/css",
-    "scss:prod": "node-sass scss -o /resources/views/static/BoostrapUiModule/css --output-style compressed"
+    "build": "yarn run scss && yarn run js",
+    "js": "webpack --config merged-webpack.config.js -d",
+    "js:watch": "webpack --config merged-webpack.config.js -w",
+    "js:prod": "webpack --config merged-webpack.config.js -p",
+    "scss": "node-sass -i scss -o $npm_package_config_scssOutputPath",
+    "scss:watch": "node-sass --watch scss -o $npm_package_config_scssOutputPath",
+    "scss:prod": "node-sass scss -o $npm_package_config_scssOutputPath --output-style compressed"
   }
 }

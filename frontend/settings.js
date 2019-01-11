@@ -18,22 +18,20 @@
  * Main configuration file for frontend build parameters.
  */
 const path = require('path');
-
+const packageJsonFile = require('./package.json');
 /**
  * Global variables - base output directory.
  * Relative directories are relative to working directory, usually the directory containing this config.js.
  */
-const outputDir = './resources/views/static/BootstrapUiModule';
+const outputDir = packageJsonFile.config.jsOutputPath;
 
 /**
  * Export global configuration.
  */
 module.exports = {
-    "css": {
-        "outputDir": path.join( outputDir, '/css' )
-    },
+    "workingDirectory": process.env.INIT_CWD,
     "js": {
-        "outputDir": path.join( outputDir, '/js' ),
+        "outputDir": outputDir,
         "webpack": {
             //
             // Javascript files that should be bundled by webpack and copied to the output.

@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const path = require('path');
 
-const gulp = require('gulp');
-const gutil = require('gulp-util');
-require('./scss');
-require('./js');
+const settings = require('./settings');
+const webpackConfig = require('./webpack.config');
 
-gulp.task('default', gulp.series('scss', 'js'));
+
+settings.js.webpack.entries.map( file => webpackConfig.entry[file] = path.join( path.join( settings.workingDirectory, "src" ), file )  );
+
+
+module.exports = webpackConfig;

@@ -15,17 +15,19 @@
 */
 
 const webpack = require("webpack");
-const config = require( "./gulp/config");
 const argv = require( "minimist");
+const path = require( "path");
+const settings = require('./settings');
 
 const env = argv( process.argv.slice( 2 ) );
+
 
 module.exports = {
     //"mode": 'development',
     "cache": false,
     "entry": {/* determined by settings.js */},
     "output": {
-        "path": config.js.dest,
+        "path": path.join( settings.workingDirectory, settings.js.outputDir ),
         "publicPath": "/across/resources/static/theta/js/",
         "filename": "[name].js",
         "chunkFilename": "[name].chunk.[chunkhash].js"
@@ -48,7 +50,7 @@ module.exports = {
         "rules": [
             {
                 "test": /\.jsx?$/,
-                "include": config.js.src,
+                "include":  path.join( settings.workingDirectory, "src" ),
                 "loader": "babel-loader",
                 "enforce": "post",
                 "query": {
@@ -67,5 +69,11 @@ module.exports = {
             "window.jQuery": "jquery",
             _: "lodash"
         } )
-    ]
+    ],
+    "watchOptions": {
+        "ignored": "/node_modules/"
+    },
+    // "optimization": {
+    //     "minimize": false
+    // }
 };
