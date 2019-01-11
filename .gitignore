@@ -7,3 +7,13 @@ target
 
 frontend/node
 node_modules/
+
+#ignore all static frontend content but keep the already existing files
+bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/css/*
+!bootstrap-ui-module/src/main/resources/css/bootstrapui.css
+
+bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/js/*
+!bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/js/moment/locale-nl-BE.js
+!bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/js/autosize.min.js
+!bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/js/bootstrapui.js
+!bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/js/bootstrapui-formelements.js
