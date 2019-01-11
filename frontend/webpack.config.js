@@ -14,13 +14,14 @@
 * limitations under the License.
 */
 
-const webpack = require("webpack");
-const argv = require( "minimist");
-const path = require( "path");
-const settings = require('./settings');
+const webpack = require( "webpack" );
+const argv = require( "minimist" );
+const path = require( "path" );
+const settings = require( './settings' );
 
 const env = argv( process.argv.slice( 2 ) );
-
+const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
+const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 
 module.exports = {
     //"mode": 'development',
@@ -29,11 +30,10 @@ module.exports = {
     "output": {
         "path": path.join( settings.workingDirectory, settings.js.outputDir ),
         "publicPath": "/across/resources/static/theta/js/",
-        "filename": "[name].js",
-        "chunkFilename": "[name].chunk.[chunkhash].js"
+        "filename": "js/[name].js"
     },
     "resolve": {
-        "extensions": ['.js', '.jsx', '.ts', '.tsx'],
+        "extensions": ['.js', '.jsx', '.ts', '.tsx', '.scss'],
         "modules": [
             "node_modules",
             "lib/",
@@ -50,7 +50,7 @@ module.exports = {
         "rules": [
             {
                 "test": /\.jsx?$/,
-                "include":  path.join( settings.workingDirectory, "src" ),
+                "include": path.join( settings.workingDirectory, "src" ),
                 "loader": "babel-loader",
                 "enforce": "post",
                 "query": {
@@ -61,6 +61,15 @@ module.exports = {
                 "test": /\.tsx?$/,
                 "include": path.join( settings.workingDirectory, "src" ),
                 "use": "ts-loader"
+            },
+            {
+                "test": /\.scss$/,
+                "include": path.join( settings.workingDirectory, "scss" ),
+                "use": [
+                    MiniCssExtractPlugin.loader,
+                    "css-loader", // translates CSS into CommonJS
+                    "sass-loader" // compiles Sass to CSS, using Node Sass by default
+                ]
             }
         ]
     },
@@ -73,7 +82,11 @@ module.exports = {
             "$": "jquery",
             "window.jQuery": "jquery",
             _: "lodash"
-        } )
+        } ),
+        new FixStyleOnlyEntriesPlugin(),
+        new MiniCssExtractPlugin( {
+            filename: 'css/[name].css'
+        } ),
     ],
     "watchOptions": {
         "ignored": "/node_modules/"

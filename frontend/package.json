@@ -1,13 +1,15 @@
 {
-  "config": {
-    "scssOutputPath": "/build/resources/views/static/BootstrapUiModule/css",
-    "jsOutputPath": "/resources/views/static/BootstrapUiModule/js"
-  },
   "dependencies": {
     "jquery": "1.11.3",
     "lodash": "2.4.2"
   },
   "devDependencies": {
+    "style-loader": "^0.23.1",
+    "css-loader": "^2.1.0",
+    "sass-loader": "^7.1.0",
+    "node-sass":"^4.11.0",
+    "mini-css-extract-plugin":"^0.5.0",
+    "webpack-fix-style-only-entries":"^0.1.0",
     "ansi-colors": "^2.0.2",
     "babel-eslint": "^8.2.5",
     "babel-loader": "^7.1.5",
@@ -30,12 +32,8 @@
     "worker-loader": "^2.0.0"
   },
   "scripts": {
-    "build": "yarn run scss && yarn run js",
-    "js": "webpack --config merged-webpack.config.js -d",
-    "js:watch": "webpack --config merged-webpack.config.js -w",
-    "js:prod": "webpack --config merged-webpack.config.js -p",
-    "scss": "node-sass -i scss -o $npm_package_config_scssOutputPath",
-    "scss:watch": "node-sass --watch scss -o $npm_package_config_scssOutputPath",
-    "scss:prod": "node-sass scss -o $npm_package_config_scssOutputPath --output-style compressed"
+    "build": "webpack --config merged-webpack.config.js -d",
+    "build:watch": "webpack --config merged-webpack.config.js -w",
+    "build:prod": "webpack --config merged-webpack.config.js -p"
   }
 }
