@@ -4,3 +4,6 @@ target
 .idea/libraries
 .idea/template/template_variable_settings.xml
 *.iml
+
+frontend/node
+node_modules/
