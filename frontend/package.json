@@ -1,4 +1,8 @@
 {
+  "dependencies": {
+    "jquery": "1.11.3",
+    "lodash": "2.4.2"
+  },
   "devDependencies": {
     "ansi-colors": "^2.0.2",
     "axios": "^0.18.0",
@@ -31,17 +35,16 @@
     "karma-babel-preprocessor": "^7.0.0",
     "karma-webpack": "^3.0.0",
     "minimist": "^1.2.0",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
-    "react-helmet": "^5.2.0",
-    "react-intl": "^2.4.0",
-    "react-router": "^4.3.1",
-    "react-router-dom": "^4.3.1",
     "require-dir": "^1.0.0",
     "webpack-stream": "^4.0.3",
     "worker-loader": "^2.0.0"
   },
   "scripts": {
-    "js": "gulp js"
+    "js": "webpack --config webpack.config.js -d",
+    "js:watch": "webpack --config webpack.config.js -w",
+    "js:prod": "webpack --config webpack.config.js -p",
+    "scss": "node-sass -i scss -o /resources/views/static/BoostrapUiModule/css",
+    "scss:watch": "node-sass --watch scss -o /resources/views/static/BoostrapUiModule/css",
+    "scss:prod": "node-sass scss -o /resources/views/static/BoostrapUiModule/css --output-style compressed"
   }
 }

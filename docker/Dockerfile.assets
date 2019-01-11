@@ -1,4 +1,4 @@
-FROM beforeach/node:10
+FROM beforeach/node:8
 
 # Install project assets
 COPY frontend/package.json /build/package.json
