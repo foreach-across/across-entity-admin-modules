@@ -1,7 +1,7 @@
 {
   "config": {
     "scssOutputPath": "/build/resources/views/static/BootstrapUiModule/css",
-    "jsOutputPath": "/build/resources/views/static/BootstrapUiModule/js"
+    "jsOutputPath": "/resources/views/static/BootstrapUiModule/js"
   },
   "dependencies": {
     "jquery": "1.11.3",
@@ -40,6 +40,8 @@
     "karma-webpack": "^3.0.0",
     "minimist": "^1.2.0",
     "require-dir": "^1.0.0",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.2.2",
     "webpack": "4.28.4",
     "webpack-cli": "3.2.1",
     "worker-loader": "^2.0.0"

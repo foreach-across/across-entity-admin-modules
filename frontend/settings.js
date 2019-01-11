@@ -38,7 +38,8 @@ module.exports = {
             // Only use filename of files that are in the root src/js folder.
             //
             "entries": [
-                "test"
+                "test",
+                "test_typescript"
             ],
             //
             // List of Javascript files in the output directory that should be kept and never deleted

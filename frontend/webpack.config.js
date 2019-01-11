@@ -33,7 +33,7 @@ module.exports = {
         "chunkFilename": "[name].chunk.[chunkhash].js"
     },
     "resolve": {
-        "extensions": ['.js', '.jsx'],
+        "extensions": ['.js', '.jsx', '.ts', '.tsx'],
         "modules": [
             "node_modules",
             "lib/",
@@ -56,6 +56,11 @@ module.exports = {
                 "query": {
                     "presets": ["env"]
                 }
+            },
+            {
+                "test": /\.tsx?$/,
+                "include": path.join( settings.workingDirectory, "src" ),
+                "use": "ts-loader"
             }
         ]
     },
