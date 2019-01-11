@@ -1,0 +1,6 @@
+FROM beforeach/node:8
+
+# Install project assets
+COPY frontend/package.json /build/package.json
+COPY frontend/yarn.lock /build/yarn.lock
+RUN yarn --pure-lockfile --modules-folder /node_modules
