@@ -15,6 +15,9 @@ Libraries that are loaded externally | Configured by specifying a dependency to 
 
 ## Compilation
 
+First of all, the docker image needs to be created for compiling the frontend scripts.
+Execute `docker-compose build` to build the required image(s)
+
 Frontend files can be can be compiled in various manners.
 Builds can be compiled locally by running `build-local.sh`.
 An additional `build-prod.sh` is provided for build agents.

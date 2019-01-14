@@ -45,8 +45,9 @@ module.exports = {
             // Only use filename of files that are in the root src/js folder.
             //
             "entries": [
-                "test",
-                "test_typescript"
+                "bootstrapui",
+                "control-adapter/bootstrap-ui-control-adapter",
+                "bootstrapui-formelements"
             ],
             //
             // List of Javascript files in the output directory that should be kept and never deleted

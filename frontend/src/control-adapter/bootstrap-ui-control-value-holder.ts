@@ -14,4 +14,25 @@
  * limitations under the License.
  */
 
-alert('TEST');
+export function createControlValueHolder( label: string, value: any, context: any ): BootstrapUiControlValueHolder
+{
+    return {label, value, context}
+}
+
+export default interface BootstrapUiControlValueHolder
+{
+    /**
+     * Displayed representation of the value
+     */
+    readonly label: string;
+
+    /**
+     * Actual value of the displayed element
+     */
+    readonly value: any;
+
+    /**
+     * Context of the value, e.g. which element defined this value.
+     */
+    readonly context: any;
+}

@@ -14,39 +14,9 @@
  * limitations under the License.
  */
 
-class BootstrapUiControlAdapter
+enum BootstrapUiControlEvent
 {
-
-    private target: any;
-
-    public constructor( obj: any )
-    {
-        this.target = obj;
-    }
-
-    public getValue(): any
-    {
-        return this.target;
-    }
-
-    public selectValue(): any
-    {
-        return this.target;
-    }
-
-    public onValueChange(): any
-    {
-        return this.target;
-    }
-
-    public reset()
-    {
-
-    }
-
-    public getTarget(): any
-    {
-        return this.target;
-    }
-
+    CHANGE = 'bootstrapui.change', SUBMIT = 'bootsrapui.submit'
 }
+
+export default BootstrapUiControlEvent;

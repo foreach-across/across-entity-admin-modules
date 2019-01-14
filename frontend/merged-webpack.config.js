@@ -22,5 +22,8 @@ const webpackConfig = require('./webpack.config');
 settings.js.webpack.entries.map( file => webpackConfig.entry[file] = path.join( path.join( settings.workingDirectory, "src" ), file )  );
 settings.css.webpack.entries.map( file => webpackConfig.entry[file] = path.join( path.join( settings.workingDirectory, "scss" ), file )  );
 
+webpackConfig.externals = settings.js.webpack.externals;
+
+console.log( webpackConfig );
 
 module.exports = webpackConfig;
