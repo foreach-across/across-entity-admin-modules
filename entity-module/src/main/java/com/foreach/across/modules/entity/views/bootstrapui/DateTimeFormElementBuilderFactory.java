@@ -34,10 +34,12 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.Va
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.ConversionServiceValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.DateTimeValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
-import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils;
+import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils.FilterControlAttributes;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,8 @@ import java.time.chrono.ChronoLocalDate;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.foreach.across.modules.web.ui.ViewElementBuilderSupport.ElementOrBuilder.wrap;
 
 /**
  * @author Arne Vandamme
@@ -244,7 +248,9 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 					.postProcessor(
 							( ( builderContext, element ) -> {
 								if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
-									element.getControl( FormControlElement.class ).addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
+									ViewElementBuilderSupport.ElementOrBuilder wrapped = wrap( element.getControl( FormControlElement.class ) );
+									EntityQueryFilterControlUtils.configureControlSettings( wrapped, propertyDescriptor );
+									EntityQueryFilterControlUtils.setAttribute( wrapped, FilterControlAttributes.EVENT, "focusout" );
 								}
 							} )
 					)

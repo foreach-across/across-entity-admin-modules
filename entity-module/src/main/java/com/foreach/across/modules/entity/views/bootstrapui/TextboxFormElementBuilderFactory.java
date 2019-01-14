@@ -30,7 +30,9 @@ import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.builder.ValidationConstraintsBuilderProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.web.ui.ViewElementBuilderSupport.ElementOrBuilder;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +95,12 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 							}
 						} )
 				)
+				.postProcessor(
+						( ctx, element ) -> {
+							if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+								EntityQueryFilterControlUtils.configureControlSettings( ElementOrBuilder.wrap( element ), propertyDescriptor );
+							}
+						} )
 				;
 	}
 

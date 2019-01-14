@@ -294,6 +294,8 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				          EntityQueryRequestValueFetcher valueFetcher = new EntityQueryRequestValueFetcher(
 						          prop, retrieveEntityQueryOperand( prop ), filterConfiguration.isMultiValue( prop.getName() )
 				          );
+
+				          prop.setAttribute( ENTITY_QUERY_OPERAND, retrieveEntityQueryOperand( prop ) );
 				          prop.setValueFetcher( valueFetcher );
 			          }
 		          } )
@@ -308,12 +310,12 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 			          String event = StringUtils.defaultIfBlank( property.getAttribute( ENTITY_QUERY_CONTROL_EVENT, String.class ), "change" );
 
 			          return formGroup( labelBuilder, control )
-					          .attribute( "data-entity-query-operand", retrieveEntityQueryOperand( property ).name() )
-					          .attribute( "data-entity-query-control", "marker" )
-					          .attribute( "data-entity-query-control-event", event )
-					          .attribute( "data-entity-query-text-type", valueType )
-					          .attribute( "data-entity-query-property", property.getName() )
-					          .build( builderContext );
+//					          .data( "entity-query-operand", retrieveEntityQueryOperand( property ).name() )
+//					          .data( "entity-query-control", "marker" )
+//					          .data( "entity-query-control-event", event )
+//					          .data( "entity-query-text-type", valueType )
+//					          .data( "entity-query-property", property.getName() )
+.build( builderContext );
 		          } ).forEach( controls::add );
 
 		return controls;

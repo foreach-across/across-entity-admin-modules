@@ -78,9 +78,19 @@ class EntityQueryFilterControl {
   }
 
   initControlFactories( nodes ) {
-    for ( let i = 0; i < nodes.length; i++ ) {
-      EntityQueryPropertyControlFactory.createControl( nodes[i], this );
-    }
+    const nodesByProperty = new Map();
+    $( nodes ).each( function() {
+      const property = $( this ).data( 'entity-query-property' );
+      if ( nodesByProperty.has( property ) ) {
+        nodesByProperty.get( property ).push( this );
+      }
+      else {
+        nodesByProperty.set( property, [this] );
+      }
+    } );
+    nodesByProperty.forEach( ( controlNodes ) => {
+      EntityQueryPropertyControlFactory.createControl( controlNodes, this );
+    } );
   }
 }
 

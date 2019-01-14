@@ -23,6 +23,7 @@ import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElement
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
+import com.foreach.across.modules.entity.query.EQGroup;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -36,6 +37,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.options.*;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,8 @@ import java.util.function.Consumer;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.option;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.*;
 import static com.foreach.across.modules.entity.EntityAttributes.OPTIONS_ENHANCER;
+import static com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils.*;
+import static com.foreach.across.modules.web.ui.ViewElementBuilderSupport.ElementOrBuilder.wrap;
 
 /**
  * Builds a {@link OptionsFormElementBuilder} for a given {@link EntityPropertyDescriptor}.
@@ -99,12 +103,22 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 						                     ( ( builderContext, element ) -> {
 							                     if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
 								                     if ( SELECT.equals( actualType ) ) {
+									                     ViewElementBuilderSupport.ElementOrBuilder wrappedElement = wrap( element );
+									                     configureControlSettings( wrappedElement, descriptor );
+									                     setAttribute( wrappedElement, FilterControlAttributes.EVENT, "changed.bs.select" );
+									                     if ( viewElementMode.isForMultiple() ) {
+										                     setAttribute( wrappedElement, FilterControlAttributes.TYPE, EQGroup.class.getSimpleName() );
+									                     }
 									                     element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
 								                     }
 								                     else {
 									                     ContainerViewElementUtils.findAll( element, CheckboxFormElement.class )
-									                                              .forEach( cfe -> cfe.addCssClass(
-											                                              EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER ) );
+									                                              .forEach( cfe -> {
+										                                              configureControlSettings( wrap( cfe ),
+										                                                                        descriptor );
+										                                              cfe.addCssClass(
+												                                              EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
+									                                              } );
 								                     }
 							                     }
 						                     } )

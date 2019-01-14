@@ -68,7 +68,7 @@ class EntityQueryPropertyControlFactory {
    */
   createControl( node, queryFilterControl ) {
     for ( let i = 0; i < this.entityQueryPropertyControlBuilders.length; i++ ) {
-      const control = this.entityQueryPropertyControlBuilders[i].getControlBuilder()( node, $( node ).find( ".js-entity-query-control" ), queryFilterControl );
+      const control = this.entityQueryPropertyControlBuilders[i].getControlBuilder()( node, $( node ), queryFilterControl );
       if ( control ) {
         return true;
       }
