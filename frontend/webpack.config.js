@@ -21,7 +21,6 @@ const settings = require( './settings' );
 
 const env = argv( process.argv.slice( 2 ) );
 const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
-const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const FixStyleOnlyEntriesPlugin = require( "webpack-fix-style-only-entries" );
 
 module.exports = {
@@ -50,23 +49,44 @@ module.exports = {
     "module": {
         "rules": [
             {
-                "test": /\.jsx?$/,
-                "include": path.join( settings.workingDirectory, "src" ),
-                "loader": "babel-loader",
-                "enforce": "post",
-                "query": {
+                enforce: "pre",
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: "eslint-loader",
+                options: {
+                    failOnError: true,
+                }
+            },
+            {
+                test: /\.ts$/,
+                enforce: 'pre',
+                use: [
+                    {
+                        loader: 'tslint-loader',
+                        options: {
+                            failOnHint: true
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.jsx?$/,
+                include: path.join( settings.workingDirectory, "src" ),
+                loader: "babel-loader",
+                enforce: "post",
+                query: {
                     "presets": ["env"]
                 }
             },
             {
-                "test": /\.tsx?$/,
-                "include": path.join( settings.workingDirectory, "src" ),
-                "use": "ts-loader"
+                test: /\.tsx?$/,
+                include: path.join( settings.workingDirectory, "src" ),
+                use: "ts-loader"
             },
             {
-                "test": /\.scss$/,
-                "include": path.join( settings.workingDirectory, "scss" ),
-                "use": [
+                test: /\.scss$/,
+                include: path.join( settings.workingDirectory, "scss" ),
+                use: [
                     MiniCssExtractPlugin.loader,
                     "css-loader", // translates CSS into CommonJS
                     "sass-loader" // compiles Sass to CSS, using Node Sass by default
@@ -84,7 +104,6 @@ module.exports = {
             "window.jQuery": "jquery",
             _: "lodash"
         } ),
-        // new CopyWebpackPlugin( [{from: "src/bootstrapui-formelements.js", to: "js/bootstrapui-formelements.js"}], {debug: true} ),
         new FixStyleOnlyEntriesPlugin(),
         new MiniCssExtractPlugin( {
             filename: 'css/[name].css'
