@@ -22,8 +22,7 @@ export default abstract class BootstrapUiControlAdapter
 {
     private target: any;
 
-    constructor( target: any )
-    {
+    constructor( target: any ) {
         this.target = target;
     }
 
@@ -31,20 +30,17 @@ export default abstract class BootstrapUiControlAdapter
 
     public abstract selectValue( obj: any ): void;
 
-    public triggerChange(): void
-    {
+    public triggerChange(): void {
         $( this.getTarget() ).trigger( BootstrapUiControlEvent.CHANGE, [this] )
     }
 
-    public triggerSubmit(): void
-    {
+    public triggerSubmit(): void {
         $( this.getTarget() ).trigger( BootstrapUiControlEvent.SUBMIT, [this] )
     }
 
     public abstract reset(): void;
 
-    public getTarget(): any
-    {
+    public getTarget(): any {
         return this.target;
     }
 }
