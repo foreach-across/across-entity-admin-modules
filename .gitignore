@@ -11,3 +11,4 @@ node_modules/
 #ignore all static frontend content
 bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/css/*
 bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/js/*
+!bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/js/moment/locale-nl-BE.js

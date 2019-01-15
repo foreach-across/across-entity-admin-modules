@@ -53,8 +53,8 @@ public class BootstrapUiFormElementsWebResources extends SimpleWebResourcePackag
 				                 "https://cdn.jsdelivr.net/webjars/org.webjars.bower/autoNumeric/1.9.30/autoNumeric.js",
 				                 WebResource.EXTERNAL ),
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME + "-autosize",
-				                 "/static/" + BootstrapUiModule.NAME + "/js/autosize.min.js",
-				                 WebResource.VIEWS ),
+				                 "/webjars/autosize/3.0.20/dist/autosize.min.js",
+				                 WebResource.RELATIVE ),
 
 				// Bootstrap select
 				new WebResource( WebResource.JAVASCRIPT_PAGE_END, BootstrapUiModule.NAME + "-select",
