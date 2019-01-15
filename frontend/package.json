@@ -45,6 +45,12 @@
       ]
     }
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "postcommit": "git update-index --again"
+    }
+  },
   "scripts": {
     "build": "webpack --config merged-webpack.config.js -d",
     "build:watch": "webpack --config merged-webpack.config.js -w",
