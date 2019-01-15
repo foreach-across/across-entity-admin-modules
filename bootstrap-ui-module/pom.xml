@@ -52,6 +52,13 @@
 			<artifactId>jsoup</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>autosize</artifactId>
+			<version>3.0.20</version>
+		</dependency>
+
 	</dependencies>
 
 </project>

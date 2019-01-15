@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import BootstrapUiControlAdapter from "../bootstrap-ui-control-adapter";
-import BootstrapUiControlValueHolder, {createControlValueHolder} from "../bootstrap-ui-control-value-holder";
-import BootstrapUiControlEvent from "../bootstrap-ui-control-event";
+import BootstrapUiControlAdapter from "../support/bootstrap-ui-control-adapter";
+import BootstrapUiControlValueHolder, {createControlValueHolder} from "../support/bootstrap-ui-control-value-holder";
+import BootstrapUiControlEvent from "../support/bootstrap-ui-control-event";
 
 export default class BootstrapUiSelectControlAdapter extends BootstrapUiControlAdapter
 {
@@ -25,14 +25,27 @@ export default class BootstrapUiSelectControlAdapter extends BootstrapUiControlA
     constructor( target: any )
     {
         super( target );
-        console.log( target );
         this.initialValue = $( this.getTarget() ).val();
-        $( this ).on( 'changed.bs.select', event => this.triggerChange() );
-        $( this ).on( BootstrapUiControlEvent.CHANGE, ( event, adapter ) => {
+
+        $( target ).on( 'changed.bs.select', event => this.triggerChange() );
+        $( target ).on( BootstrapUiControlEvent.CHANGE, ( event, adapter ) => {
             console.log( `${BootstrapUiControlEvent.CHANGE} was triggered, received:` );
             console.log( {event, adapter} );
             console.log( adapter.getValue() );
-        } )
+        } );
+
+        // enter event to open
+        $( target ).closest( '.bootstrap-select' )
+            .find( 'button' )
+            .keypress( this, ( event ) => {
+                event.preventDefault();
+                this.triggerSubmit();
+            } );
+        $( target ).on( BootstrapUiControlEvent.SUBMIT, ( event, adapter ) => {
+            console.log( `${BootstrapUiControlEvent.SUBMIT} was triggered, received:` );
+            console.log( {event, adapter} );
+            console.log( adapter.getValue() );
+        } );
     }
 
     getValue(): BootstrapUiControlValueHolder

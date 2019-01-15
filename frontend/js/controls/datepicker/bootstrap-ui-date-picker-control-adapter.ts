@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import BootstrapUiControlAdapter from "../bootstrap-ui-control-adapter";
-import BootstrapUiControlValueHolder, {createControlValueHolder} from "../bootstrap-ui-control-value-holder";
+import BootstrapUiControlAdapter from "../support/bootstrap-ui-control-adapter";
+import BootstrapUiControlValueHolder, {createControlValueHolder} from "../support/bootstrap-ui-control-value-holder";
 import * as $ from "jquery";
-import BootstrapUiControlEvent from "../bootstrap-ui-control-event";
+import BootstrapUiControlEvent from "../support/bootstrap-ui-control-event";
 
 export default class BootstrapUiDatePickerControlAdapter extends BootstrapUiControlAdapter
 {

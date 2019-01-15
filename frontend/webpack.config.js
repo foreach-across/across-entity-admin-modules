@@ -15,78 +15,76 @@
 */
 
 const webpack = require( "webpack" );
-const argv = require( "minimist" );
 const path = require( "path" );
-const settings = require( './settings' );
+const workingDirectory = process.env.INIT_CWD;
 
-const env = argv( process.argv.slice( 2 ) );
+const cssEntries = [
+    "bootstrapui"
+];
+
+const jsEntries = [
+    "bootstrapui",
+    "bootstrapui-formelements"
+];
+
+const outputDir = "../resources/views/static/BootstrapUiModule";
+
+function resolveFileIdentifier( type, file ) {
+    switch ( type ) {
+        case "js":
+            return path.join( "js", file );
+        case "scss":
+            return path.join( "css", file );
+    }
+}
+
+function resolveFiles( obj, type, files ) {
+    files.map( file => obj[resolveFileIdentifier( type, file )] = path.join( path.join( workingDirectory, type ), file ) );
+}
+
+function resolveEntries() {
+    const entries = {};
+    resolveFiles( entries, "js", jsEntries );
+    resolveFiles( entries, "scss", cssEntries );
+    return entries;
+}
+
 const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
 const FixStyleOnlyEntriesPlugin = require( "webpack-fix-style-only-entries" );
 
 module.exports = {
-    //"mode": 'development',
     "cache": false,
-    "entry": {/* determined by settings.js */},
+    "entry": resolveEntries(),
     "output": {
-        "path": path.join( settings.workingDirectory, settings.js.outputDir ),
-        "publicPath": "/across/resources/static/theta/js/",
-        "filename": "js/[name].js"
+        "path": path.join( workingDirectory, outputDir ),
+        "filename": "[name].js"
     },
     "resolve": {
-        "extensions": ['.js', '.jsx', '.ts', '.tsx', '.scss'],
-        "modules": [
-            "node_modules",
-            "lib/",
-            "polyfills/",
-            "app/utils"
-        ],
-        "alias": {
-            // Bind version of jquery
-            "jquery": "jquery-1.12.0"
-        }
+        "extensions": ['.js', '.ts', '.tsx', '.scss'],
     },
-    "externals": {/* determined by settings.js */},
+    "externals": {
+        "jquery": "jQuery",
+    },
     "module": {
         "rules": [
             {
-                enforce: "pre",
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: "eslint-loader",
-                options: {
-                    failOnError: true,
-                }
-            },
-            {
-                test: /\.ts$/,
-                enforce: 'pre',
-                use: [
-                    {
-                        loader: 'tslint-loader',
-                        options: {
-                            failOnHint: true
-                        }
-                    }
-                ]
-            },
-            {
-                test: /\.jsx?$/,
-                include: path.join( settings.workingDirectory, "src" ),
-                loader: "babel-loader",
-                enforce: "post",
-                query: {
+                "test": /\.jsx?$/,
+                "include": path.join( workingDirectory, "js" ),
+                "loader": "babel-loader",
+                "enforce": "post",
+                "query": {
                     "presets": ["env"]
                 }
             },
             {
-                test: /\.tsx?$/,
-                include: path.join( settings.workingDirectory, "src" ),
-                use: "ts-loader"
+                "test": /\.tsx?$/,
+                "include": path.join( workingDirectory, "js" ),
+                "use": "ts-loader"
             },
             {
-                test: /\.scss$/,
-                include: path.join( settings.workingDirectory, "scss" ),
-                use: [
+                "test": /\.scss$/,
+                "include": path.join( workingDirectory, "scss" ),
+                "use": [
                     MiniCssExtractPlugin.loader,
                     "css-loader", // translates CSS into CommonJS
                     "sass-loader" // compiles Sass to CSS, using Node Sass by default
@@ -96,17 +94,13 @@ module.exports = {
     },
     "plugins": [
         new webpack.ProvidePlugin( {
-            // Automatically detect jQuery and $ as free var in modules
-            // and inject the jquery library
-            // This is required by many jquery plugins
             "jQuery": "jquery",
             "$": "jquery",
             "window.jQuery": "jquery",
-            _: "lodash"
         } ),
         new FixStyleOnlyEntriesPlugin(),
         new MiniCssExtractPlugin( {
-            filename: 'css/[name].css'
+            filename: '[name].css'
         } ),
     ],
     "watchOptions":
@@ -115,8 +109,6 @@ module.exports = {
                         "/node_modules/"
             }
     ,
-// "optimization": {
-//     "minimize": false
-// }
-}
-;
+};
+
+console.log( module.exports );

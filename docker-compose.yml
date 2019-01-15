@@ -5,8 +5,8 @@ services:
       context: .
       dockerfile: ./docker/Dockerfile.assets
     image: bootstrap-ui-module-assets
-    command: gulp
+    command: yarn run build
     container_name: bootstrap-ui-module-assets-builder
     volumes:
     - ./frontend:/build
-    - ./bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule:/build/resources/views/static/BootstrapUiModule
+    - ./bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule:/resources/views/static/BootstrapUiModule

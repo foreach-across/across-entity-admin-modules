@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import BootstrapUiDatePickerControlAdapter from "./control-adapter/elements/bootstrap-ui-date-picker-control-adapter";
-import BootstrapUiSelectControlAdapter from "./control-adapter/elements/bootstrap-ui-select-control-adapter";
+import BootstrapUiDatePickerControlAdapter from "./controls/datepicker/bootstrap-ui-date-picker-control-adapter";
+import BootstrapUiSelectControlAdapter from "./controls/select/bootstrap-ui-select-control-adapter";
 
 (function ( $ ) {
             const ADAPTER_ATTR = "bootstrapui-adapter";
