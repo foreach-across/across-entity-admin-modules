@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import BootstrapUiControlAdapter from "../support/bootstrap-ui-control-adapter";
-import BootstrapUiControlValueHolder, {createControlValueHolder} from "../support/bootstrap-ui-control-value-holder";
-import BootstrapUiControlEvent from "../support/bootstrap-ui-control-event";
+import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
+import BootstrapUiControlValueHolder, {createControlValueHolder} from '../support/bootstrap-ui-control-value-holder';
+import BootstrapUiControlEvent from '../support/bootstrap-ui-control-event';
 
 export default class BootstrapUiSelectControlAdapter extends BootstrapUiControlAdapter
 {
     private initialValue: any;
 
-    constructor( target: any )
-    {
+    constructor( target: any ) {
         super( target );
         this.initialValue = $( this.getTarget() ).val();
 
@@ -48,18 +47,15 @@ export default class BootstrapUiSelectControlAdapter extends BootstrapUiControlA
         } );
     }
 
-    getValue(): BootstrapUiControlValueHolder
-    {
+    getValue(): BootstrapUiControlValueHolder {
         return createControlValueHolder( '', $( this.getTarget() ).val(), '' );
     }
 
-    reset(): void
-    {
+    reset(): void {
         this.selectValue( this.initialValue );
     }
 
-    selectValue( obj: any ): void
-    {
+    selectValue( obj: any ): void {
         $( this.getTarget() ).val( obj );
     }
 
