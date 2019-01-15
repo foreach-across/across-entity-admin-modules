@@ -68,6 +68,27 @@ module.exports = {
     "module": {
         "rules": [
             {
+                enforce: "pre",
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: "eslint-loader",
+                options: {
+                    failOnError: true,
+                }
+            },
+            {
+                test: /\.ts$/,
+                enforce: 'pre',
+                use: [
+                    {
+                        loader: 'tslint-loader',
+                        options: {
+                            failOnHint: true
+                        }
+                    }
+                ]
+            },
+            {
                 "test": /\.jsx?$/,
                 "include": path.join( workingDirectory, "js" ),
                 "loader": "babel-loader",
