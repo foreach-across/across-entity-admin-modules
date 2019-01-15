@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import BootstrapUiControlValueHolder from "./bootstrap-ui-control-value-holder";
-import * as $ from "jquery";
-import BootstrapUiControlEvent from "./bootstrap-ui-control-event";
+import BootstrapUiControlValueHolder from './bootstrap-ui-control-value-holder';
+import * as $ from 'jquery';
+import BootstrapUiControlEvent from './bootstrap-ui-control-event';
 
 export default abstract class BootstrapUiControlAdapter
 {
@@ -31,11 +31,11 @@ export default abstract class BootstrapUiControlAdapter
     public abstract selectValue( obj: any ): void;
 
     public triggerChange(): void {
-        $( this.getTarget() ).trigger( BootstrapUiControlEvent.CHANGE, [this] )
+        $( this.getTarget() ).trigger( BootstrapUiControlEvent.CHANGE, [this] );
     }
 
     public triggerSubmit(): void {
-        $( this.getTarget() ).trigger( BootstrapUiControlEvent.SUBMIT, [this] )
+        $( this.getTarget() ).trigger( BootstrapUiControlEvent.SUBMIT, [this] );
     }
 
     public abstract reset(): void;

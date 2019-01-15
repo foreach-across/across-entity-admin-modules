@@ -15,7 +15,7 @@
  */
 
 export function createControlValueHolder( label: string, value: any, context: any ): BootstrapUiControlValueHolder {
-    return {label, value, context}
+    return {label, value, context};
 }
 
 export default interface BootstrapUiControlValueHolder

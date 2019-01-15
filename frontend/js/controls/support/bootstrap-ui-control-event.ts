@@ -16,7 +16,7 @@
 
 enum BootstrapUiControlEvent
 {
-    CHANGE = 'bootstrapui.change', SUBMIT = 'bootsrapui.submit'
+    CHANGE = 'bootstrapui.change', SUBMIT = 'bootsrapui.submit',
 }
 
 export default BootstrapUiControlEvent;

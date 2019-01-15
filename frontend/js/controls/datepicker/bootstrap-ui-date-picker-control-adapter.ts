@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import BootstrapUiControlAdapter from "../support/bootstrap-ui-control-adapter";
-import BootstrapUiControlValueHolder, {createControlValueHolder} from "../support/bootstrap-ui-control-value-holder";
-import * as $ from "jquery";
-import BootstrapUiControlEvent from "../support/bootstrap-ui-control-event";
+import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
+import BootstrapUiControlValueHolder, {createControlValueHolder} from '../support/bootstrap-ui-control-value-holder';
+import * as $ from 'jquery';
+import BootstrapUiControlEvent from '../support/bootstrap-ui-control-event';
 
 export default class BootstrapUiDatePickerControlAdapter extends BootstrapUiControlAdapter
 {
     private readonly exportFormat: string;
     private readonly initialValue: any;
 
-    constructor( target: any, exportFormat: string )
-    {
+    constructor( target: any, exportFormat: string ) {
         super( target );
         this.exportFormat = exportFormat;
         this.initialValue = this.getDateTimePicker().date();
@@ -37,25 +36,21 @@ export default class BootstrapUiDatePickerControlAdapter extends BootstrapUiCont
         } );
     }
 
-    getValue(): BootstrapUiControlValueHolder
-    {
-        let date = this.getDateTimePicker().date();
-        let formattedValue = date.format( this.exportFormat );
+    getValue(): BootstrapUiControlValueHolder {
+        const date = this.getDateTimePicker().date();
+        const formattedValue = date.format( this.exportFormat );
         return createControlValueHolder( formattedValue, [date], this.getTarget() );
     }
 
-    reset(): void
-    {
+    reset(): void {
         this.selectValue( this.initialValue );
     }
 
-    selectValue( obj: any ): void
-    {
+    selectValue( obj: any ): void {
         this.getDateTimePicker().date( obj );
     }
 
-    private getDateTimePicker(): any
-    {
+    private getDateTimePicker(): any {
         return this.getTarget().data( 'DateTimePicker' );
     }
 }
