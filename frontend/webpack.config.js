@@ -24,7 +24,7 @@ const cssEntries = [
 
 const jsEntries = [
     "bootstrapui",
-    "bootstrapui-formelements"
+    "bootstrapui-formelements",
 ];
 
 const outputDir = "../resources/views/static/BootstrapUiModule";
@@ -36,6 +36,7 @@ function resolveFileIdentifier( type, file ) {
         case "scss":
             return path.join( "css", file );
     }
+    return file;
 }
 
 function resolveFiles( obj, type, files ) {
