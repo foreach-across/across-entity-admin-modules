@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-export function createControlValueHolder( label: string, value: any, context: any ): BootstrapUiControlValueHolder
-{
+export function createControlValueHolder( label: string, value: any, context: any ): BootstrapUiControlValueHolder {
     return {label, value, context}
 }
 
