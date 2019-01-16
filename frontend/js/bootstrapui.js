@@ -15,8 +15,8 @@
  */
 
 // Exposes infrastructure for form initialization logic
-const BootstrapUiModule = (function ( $ ) {
-    let bootstrapUiModule = {
+var BootstrapUiModule = (function ( $ ) {
+    var bootstrapUiModule = {
         Controls: {},
 
         documentInitialized: false,
