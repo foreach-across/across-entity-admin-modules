@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-enum BootstrapUiControlEvent
-{
-    CHANGE = 'bootstrapui.change', SUBMIT = 'bootstrapui.submit',
+/**
+ * Initialize tooltips.
+ */
+function tooltipInitializer( node: any ): void {
+    $( '[data-toggle="tooltip"]', node ).tooltip();
 }
 
-export default BootstrapUiControlEvent;
+export default tooltipInitializer;

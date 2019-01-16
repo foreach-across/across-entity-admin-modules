@@ -15,7 +15,7 @@
  */
 
 // Exposes infrastructure for form initialization logic
-var BootstrapUiModule = (function ( $ ) {
+window.BootstrapUiModule = (function ( $ ) {
     var bootstrapUiModule = {
         Controls: {},
 

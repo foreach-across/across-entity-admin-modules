@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-enum BootstrapUiControlEvent
+enum BootstrapUiAttributes
 {
-    CHANGE = 'bootstrapui.change', SUBMIT = 'bootstrapui.submit',
+    CONTROL_ADAPTER = 'bootstrapui-adapter',
 }
 
-export default BootstrapUiControlEvent;
+export default BootstrapUiAttributes;

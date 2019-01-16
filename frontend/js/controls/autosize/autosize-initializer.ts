@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-enum BootstrapUiControlEvent
-{
-    CHANGE = 'bootstrapui.change', SUBMIT = 'bootstrapui.submit',
+/**
+ * Finds and activates autogrow textarea elements and disables resizing on textareas that do not allow line breaks.
+ */
+function autosizeInitializer( node: any ): void {
+    autosize( $( '.js-autosize', node ) );
+    $( '.js-disable-line-breaks.js-autosize' ).css( 'resize', 'none' );
 }
 
-export default BootstrapUiControlEvent;
+export default autosizeInitializer;

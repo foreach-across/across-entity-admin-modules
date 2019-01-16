@@ -18,20 +18,25 @@ export function createControlValueHolder( label: string, value: any, context: an
     return {label, value, context};
 }
 
+/**
+ * Represents the value of a {@link BootstrapUiControlAdapter}.
+ */
 export default interface BootstrapUiControlValueHolder
 {
     /**
-     * Displayed representation of the value
+     * Displayed representation of the value.
+     * E.g. 'John Doe' for an option element of which the actual value is 1.
      */
     readonly label: string;
 
     /**
      * Actual value of the displayed element
+     * E.g. 1 as the value for a selected option element.
      */
     readonly value: any;
 
     /**
-     * Context of the value, e.g. which element defined this value.
+     * Context of the value, e.g. which html element defined this value.
      */
     readonly context: any;
 }

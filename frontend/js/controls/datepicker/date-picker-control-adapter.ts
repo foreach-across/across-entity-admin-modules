@@ -19,7 +19,12 @@ import BootstrapUiControlValueHolder, {createControlValueHolder} from '../suppor
 import * as $ from 'jquery';
 import BootstrapUiControlEvent from '../support/bootstrap-ui-control-event';
 
-export default class BootstrapUiDatePickerControlAdapter extends BootstrapUiControlAdapter
+/**
+ * {@link BootstrapUiControlAdapter} for <a href="https://github.com/Eonasdan/bootstrap-datetimepicker">Eonasdan Bootstrap datepicker</a> elements.
+ *
+ * @see datePickerInitializer
+ */
+export default class DatePickerControlAdapter extends BootstrapUiControlAdapter
 {
     private readonly exportFormat: string;
     private readonly initialValue: any;

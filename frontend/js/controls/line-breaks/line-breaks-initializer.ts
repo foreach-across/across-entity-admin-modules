@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-enum BootstrapUiControlEvent
-{
-    CHANGE = 'bootstrapui.change', SUBMIT = 'bootstrapui.submit',
+/**
+ * Disable enter on all controls that should disable line breaks.
+ */
+function lineBreaksInitializer( node: any ): void {
+    $( '.js-disable-line-breaks', node ).on( 'keyup keypress', ( e ) => {
+        if ( e.which === 13 || e.which === 10 ) {
+            e.preventDefault();
+            return false;
+        }
+    } );
 }
 
-export default BootstrapUiControlEvent;
+export default lineBreaksInitializer;

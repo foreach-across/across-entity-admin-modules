@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-enum BootstrapUiControlEvent
+declare interface CBootstrapUiModule
 {
-    CHANGE = 'bootstrapui.change', SUBMIT = 'bootstrapui.submit',
+    Controls: any;
+    documentInitialized: boolean;
+    initializers: any[];
+
+    registerInitializer( callback: any, callIfAlreadyInitialized: any ): void;
+
+    initializeFormElements( node: any ): void;
+
+    refTarget( node: any, recurse: any ): void;
 }
 
-export default BootstrapUiControlEvent;
+declare const BootstrapUiModule: CBootstrapUiModule;
+
+declare const Bloodhound: any;
+declare const autosize: any;
+declare const moment: any;

@@ -18,7 +18,10 @@ import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 import BootstrapUiControlValueHolder, {createControlValueHolder} from '../support/bootstrap-ui-control-value-holder';
 import BootstrapUiControlEvent from '../support/bootstrap-ui-control-event';
 
-export default class BootstrapUiSelectControlAdapter extends BootstrapUiControlAdapter
+/**
+ * {@link BootstrapUiControlAdapter} for <a href="https://silviomoreto.github.io/bootstrap-select/">bootstrap-select</a> elements.
+ */
+export default class SelectControlAdapter extends BootstrapUiControlAdapter
 {
     private initialValue: any;
 

@@ -16,6 +16,7 @@
 
 const webpack = require( "webpack" );
 const path = require( "path" );
+
 const workingDirectory = process.env.INIT_CWD;
 
 const cssEntries = [
@@ -24,7 +25,7 @@ const cssEntries = [
 
 const jsEntries = [
     "bootstrapui",
-    "bootstrapui-formelements",
+    "bootstrapui-formelements"
 ];
 
 const outputDir = "../resources/views/static/BootstrapUiModule";
@@ -35,12 +36,13 @@ function resolveFileIdentifier( type, file ) {
             return path.join( "js", file );
         case "scss":
             return path.join( "css", file );
+        default:
     }
     return file;
 }
 
 function resolveFiles( obj, type, files ) {
-    files.map( file => obj[resolveFileIdentifier( type, file )] = path.join( path.join( workingDirectory, type ), file ) );
+    files.forEach( file => obj[resolveFileIdentifier( type, file )] = path.join( path.join( workingDirectory, type ), file ) );
 }
 
 function resolveEntries() {
@@ -61,30 +63,33 @@ module.exports = {
         "filename": "[name].js"
     },
     "resolve": {
-        "extensions": ['.js', '.ts', '.tsx', '.scss'],
+        "extensions": ['.js', '.ts', '.tsx', '.scss']
     },
     "externals": {
         "jquery": "jQuery",
+        "moment": "moment",
+        "autosize": "autosize",
+        "BootstrapUiModule": "BootstrapUiModule"
     },
     "module": {
         "rules": [
             {
-                enforce: "pre",
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: "eslint-loader",
-                options: {
-                    failOnError: true,
+                "enforce": "pre",
+                "test": /\.js$/,
+                "exclude": /node_modules/,
+                "loader": "eslint-loader",
+                "options": {
+                    "failOnError": true
                 }
             },
             {
-                test: /\.ts$/,
-                enforce: 'pre',
-                use: [
+                "test": /\.ts$/,
+                "enforce": 'pre',
+                "use": [
                     {
-                        loader: 'tslint-loader',
-                        options: {
-                            failOnHint: true
+                        "loader": 'tslint-loader',
+                        "options": {
+                            "failOnHint": true
                         }
                     }
                 ]
@@ -118,19 +123,18 @@ module.exports = {
         new webpack.ProvidePlugin( {
             "jQuery": "jquery",
             "$": "jquery",
-            "window.jQuery": "jquery",
+            "window.jQuery": "jquery"
         } ),
         new FixStyleOnlyEntriesPlugin(),
         new MiniCssExtractPlugin( {
-            filename: '[name].css'
-        } ),
+            "filename": "[name].css"
+        } )
     ],
     "watchOptions":
             {
                 "ignored":
                         "/node_modules/"
             }
-    ,
 };
 
 console.log( module.exports );
