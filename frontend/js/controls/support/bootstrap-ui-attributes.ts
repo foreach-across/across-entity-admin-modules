@@ -16,7 +16,7 @@
 
 enum BootstrapUiAttributes
 {
-    CONTROL_ADAPTER = 'bootstrapui-adapter',
+    CONTROL_ADAPTER = 'bootstrapui-adapter', CONTROL_ADAPTER_TYPE = 'bootstrapui-adapter-type',
 }
 
 export default BootstrapUiAttributes;

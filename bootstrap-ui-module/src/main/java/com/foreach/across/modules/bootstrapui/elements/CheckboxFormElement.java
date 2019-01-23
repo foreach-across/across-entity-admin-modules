@@ -34,6 +34,7 @@ public class CheckboxFormElement extends FormControlElementSupport implements Co
 
 	public CheckboxFormElement() {
 		super( ELEMENT_TYPE );
+		setAttribute( BootstrapUiAttributes.CONTROL_ADAPTER_TYPE, "checkbox" );
 	}
 
 	public boolean isChecked() {

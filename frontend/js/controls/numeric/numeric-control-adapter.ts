@@ -13,44 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/**
+ * @author Steven Gentens
+ * @since 2.2.0
+ */
 import BaseControlAdapter from '../support/base-control-adapter';
 import BootstrapUiControlValueHolder, {createControlValueHolder} from '../support/bootstrap-ui-control-value-holder';
 import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 /**
- * {@link BootstrapUiControlAdapter} for select elements.
+ * {@link BootstrapUiControlAdapter} for autonumeric elements.
+ *
+ * @see numericInitializer
  */
-export default class SelectControlAdapter extends BaseControlAdapter
+export default class NumericControlAdapter extends BaseControlAdapter
 {
     private readonly initialValue: any;
 
     constructor( target: any ) {
         super( target );
-        this.initialValue = $( this.getTarget() ).val();
-        this.initializeEventTriggers();
-    }
+        this.initialValue = $( this.getTarget() ).autoNumeric( 'get' );
 
-    initializeEventTriggers(): void {
-        $( this.getTarget() ).on( 'change', event => this.triggerChange() );
+        $( target ).on( 'change', event => this.triggerChange() );
 
         // prevent opening the element on enter, but see it as 'submitting' the value instead.
-        $( this.getTarget() ).keypress( this, ( event ) => {
+        $( target ).on( 'keypress', ( event ) => {
             if ( event.key === 'Enter' ) {
-                event.preventDefault();
                 this.triggerSubmit();
             }
         } );
     }
 
     getValue(): BootstrapUiControlValueHolder[] {
-        const selected: BootstrapUiControlValueHolder[] = [];
-        const selectedOptions: any = $( this.getTarget() ).find( 'option:checked' );
-        selectedOptions.each( function () {
-            const element = $( this );
-            selected.push( createControlValueHolder( element.html(), element.val(), this ) );
-        } );
-        return selected;
+        const label: string = $( this.getTarget() ).val().toString();
+        const value: any = $( this.getTarget() ).autoNumeric( 'get' );
+        return [createControlValueHolder( label, value, this.getTarget() )];
     }
 
     reset(): void {
@@ -58,15 +55,15 @@ export default class SelectControlAdapter extends BaseControlAdapter
     }
 
     selectValue( newValue: any ): void {
-        $( this.getTarget() ).val( newValue );
+        $( this.getTarget() ).autoNumeric( 'set', newValue );
     }
 }
 
 /**
- * Initializes a {@link SelectControlAdapter} for a given node.
+ * Initializes a {@link NumericControlAdapter} for a given node.
  *
  * @param node to initialize
  */
-export function createSelectControlAdapter( node: any ): BootstrapUiControlAdapter {
-    return new SelectControlAdapter( node );
+export function createNumericControlAdapter( node: any ): BootstrapUiControlAdapter {
+    return new NumericControlAdapter( node );
 }

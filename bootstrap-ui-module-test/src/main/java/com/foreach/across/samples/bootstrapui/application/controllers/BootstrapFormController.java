@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Currency;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -76,14 +77,25 @@ public class BootstrapFormController
 				.commandObject( data )
 				.add(
 						formGroup()
+								.label( "My bank account" )
+								.detectFieldErrors( true )
+								.control(
+										numeric().currency( Currency.getInstance( "EUR" ) )
+										         .controlName( "currency" )
+										         .value( data.getCurrency() )
+								)
+				)
+				.add(
+						formGroup()
 								.label( "My number" )
 								.tooltip( tooltip( "another tooltip" ) )
 								.required()
 								.detectFieldErrors( true )
 								.control(
-										textbox()
+										numeric()
+												.integer()
 												.controlName( "number" )
-												.text( "" + data.getNumber() )
+												.value( data.getNumber() )
 								)
 				)
 				.add(
@@ -108,5 +120,6 @@ public class BootstrapFormController
 	static class FormDto
 	{
 		int number;
+		double currency;
 	}
 }

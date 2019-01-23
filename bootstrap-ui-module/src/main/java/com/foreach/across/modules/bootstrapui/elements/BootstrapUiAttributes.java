@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Finds and activates autogrow textarea elements and disables resizing on textareas that do not allow line breaks.
- */
-function autosizeInitializer( node: any ): void {
-    autosize( $( '.js-autosize', node ) );
-    $( '.js-disable-line-breaks.js-autosize' ).css( 'resize', 'none' );
-}
 
-export default autosizeInitializer;
+package com.foreach.across.modules.bootstrapui.elements;
+
+/**
+ * @author Steven Gentens
+ * @since 2.2.0
+ */
+public interface BootstrapUiAttributes
+{
+	String CONTROL_ADAPTER_TYPE = "data-bootstrapui-adapter-type";
+}

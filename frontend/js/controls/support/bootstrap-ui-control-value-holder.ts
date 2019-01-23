@@ -19,7 +19,7 @@ export function createControlValueHolder( label: string, value: any, context: an
 }
 
 /**
- * Represents the value of a {@link BootstrapUiControlAdapter}.
+ * Represents the value of a {@link BaseControlAdapter}.
  */
 export default interface BootstrapUiControlValueHolder
 {

@@ -15,59 +15,44 @@
  */
 
 import BootstrapUiControlValueHolder from './bootstrap-ui-control-value-holder';
-import * as $ from 'jquery';
-import BootstrapUiControlEvent from './bootstrap-ui-control-event';
 
-/**
- *
- */
-export default abstract class BootstrapUiControlAdapter
+export default interface BootstrapUiControlAdapter
 {
-    private target: any;
-
-    constructor( target: any ) {
-        this.target = target;
-    }
-
     /**
-     * Returns the current value of the {@link BootstrapUiControlAdapter#getTarget} element.
+     * Returns the current value of the {@link BaseControlAdapter#getTarget} element.
      *
      * {BootstrapUiControlValueHolder}
      */
-    public abstract getValue(): BootstrapUiControlValueHolder;
+    getValue(): BootstrapUiControlValueHolder[];
 
     /**
-     * Sets the current value of the {@link BootstrapUiControlAdapter#getTarget} element.
-     * @param obj
+     * Sets the current value of the {@link BaseControlAdapter#getTarget} element.
+     *
+     * @param newValue
      */
-    public abstract selectValue( obj: any ): void;
+    selectValue( newValue: any ): void;
 
     /**
-     * Triggers a {@link BootstrapUiControlEvent#CHANGE} event for the current {@link BootstrapUiControlAdapter#getTarget}.
-     * This event should be triggered when the value of the {@link BootstrapUiControlAdapter#getTarget} element is actually changed.
+     * Triggers a {@link BootstrapUiControlEvent#CHANGE} event for the current {@link BaseControlAdapter#getTarget}.
+     * This event should be triggered when the value of the {@link BaseControlAdapter#getTarget} element is actually changed.
      */
-    public triggerChange(): void {
-        $( this.getTarget() ).trigger( BootstrapUiControlEvent.CHANGE, [this] );
-    }
+    triggerChange(): void;
 
     /**
-     * Triggers a {@link BootstrapUiControlEvent#SUBMIT} event for the current {@link BootstrapUiControlAdapter#getTarget}.
-     * This event should be triggered when the value of the {@link BootstrapUiControlAdapter#getTarget} element should be submitted.
+     * Triggers a {@link BootstrapUiControlEvent#SUBMIT} event for the current {@link BaseControlAdapter#getTarget}.
+     * This event should be triggered when the value of the {@link BaseControlAdapter#getTarget} element should be submitted.
      * (e.g. by pressing enter)
      */
-    public triggerSubmit(): void {
-        $( this.getTarget() ).trigger( BootstrapUiControlEvent.SUBMIT, [this] );
-    }
+    triggerSubmit(): void;
 
     /**
-     * Resets the value of the {@link BootstrapUiControlAdapter#getTarget} element to its initial value.
+     * Resets the value of the {@link BaseControlAdapter#getTarget} element to its initial value.
      */
-    public abstract reset(): void;
+    reset(): void;
 
     /**
-     * Returns the html element that this control handles.
+     * Returns the target element of the adapter.
+     * Which element is used specifically depends on the implementation.
      */
-    public getTarget(): any {
-        return this.target;
-    }
+    getTarget(): any;
 }

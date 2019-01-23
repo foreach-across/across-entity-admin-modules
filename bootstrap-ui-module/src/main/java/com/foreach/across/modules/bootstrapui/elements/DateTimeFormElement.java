@@ -48,6 +48,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 		setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
 		addCssClass( CSS_JS_CONTROL, CSS_DATE );
 		setAttribute( ATTRIBUTE_DATA_DATEPICKER, new DateTimeFormElementConfiguration() );
+		setAttribute( BootstrapUiAttributes.CONTROL_ADAPTER_TYPE, "datetime" );
 	}
 
 	public DateTimeFormElementConfiguration getConfiguration() {
@@ -126,7 +127,6 @@ public class DateTimeFormElement extends InputGroupFormElement
 
 		List<ViewElement> elements = new ArrayList<>( super.getChildren() );
 		elements.add( hidden );
-
 		return elements;
 	}
 }

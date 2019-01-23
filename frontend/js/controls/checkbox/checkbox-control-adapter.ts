@@ -13,60 +13,61 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/**
+ * @author Steven Gentens
+ * @since 2.2.0
+ */
 import BaseControlAdapter from '../support/base-control-adapter';
 import BootstrapUiControlValueHolder, {createControlValueHolder} from '../support/bootstrap-ui-control-value-holder';
 import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 /**
- * {@link BootstrapUiControlAdapter} for select elements.
+ * {@link BootstrapUiControlAdapter} for checkbox elements.
  */
-export default class SelectControlAdapter extends BaseControlAdapter
+export default class CheckboxControlAdapter extends BaseControlAdapter
 {
-    private readonly initialValue: any;
+    private readonly initialValue: boolean;
 
     constructor( target: any ) {
-        super( target );
-        this.initialValue = $( this.getTarget() ).val();
-        this.initializeEventTriggers();
-    }
-
-    initializeEventTriggers(): void {
-        $( this.getTarget() ).on( 'change', event => this.triggerChange() );
+        const element: any = $( target ).find( 'input[type=checkbox], input[type=radio]' );
+        super( element );
+        this.initialValue = this.isSelected();
+        $( element ).change( event => this.triggerChange() );
 
         // prevent opening the element on enter, but see it as 'submitting' the value instead.
-        $( this.getTarget() ).keypress( this, ( event ) => {
+        $( element ).keypress( this, ( event ) => {
             if ( event.key === 'Enter' ) {
-                event.preventDefault();
                 this.triggerSubmit();
             }
         } );
     }
 
     getValue(): BootstrapUiControlValueHolder[] {
-        const selected: BootstrapUiControlValueHolder[] = [];
-        const selectedOptions: any = $( this.getTarget() ).find( 'option:checked' );
-        selectedOptions.each( function () {
-            const element = $( this );
-            selected.push( createControlValueHolder( element.html(), element.val(), this ) );
-        } );
-        return selected;
+        const target = $( this.getTarget() );
+        if ( this.isSelected() ) {
+            return [createControlValueHolder( target.parent().text(), target.attr( 'value' ), this.getTarget() )];
+        }
+        return [];
     }
 
     reset(): void {
         this.selectValue( this.initialValue );
     }
 
-    selectValue( newValue: any ): void {
-        $( this.getTarget() ).val( newValue );
+    selectValue( select: boolean ): void {
+        $( this.getTarget() ).prop( 'checked', select );
+    }
+
+    isSelected(): boolean {
+        return $( this.getTarget() ).is( ':checked' );
     }
 }
 
 /**
- * Initializes a {@link SelectControlAdapter} for a given node.
+ * Initializes a {@link CheckboxControlAdapter} for a given node.
  *
  * @param node to initialize
  */
-export function createSelectControlAdapter( node: any ): BootstrapUiControlAdapter {
-    return new SelectControlAdapter( node );
+export function createCheckboxControlAdapter( node: any ): BootstrapUiControlAdapter {
+    return new CheckboxControlAdapter( node );
 }

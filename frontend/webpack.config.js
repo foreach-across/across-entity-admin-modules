@@ -66,10 +66,7 @@ module.exports = {
         "extensions": ['.js', '.ts', '.tsx', '.scss']
     },
     "externals": {
-        "jquery": "jQuery",
-        "moment": "moment",
-        "autosize": "autosize",
-        "BootstrapUiModule": "BootstrapUiModule"
+        "jquery": "jQuery"
     },
     "module": {
         "rules": [
@@ -136,5 +133,3 @@ module.exports = {
                         "/node_modules/"
             }
 };
-
-console.log( module.exports );

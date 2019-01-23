@@ -2,7 +2,13 @@
   "compilerOptions": {
     "noImplicitAny": true,
     "module": "es6",
-    "target": "es5"
+    "target": "es5",
+    "lib": [
+      "es6",
+      "dom",
+      "es5",
+      "scripthost"
+    ]
   },
   "exclude": [
     "node_modules"

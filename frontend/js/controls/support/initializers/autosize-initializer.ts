@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-declare interface CBootstrapUiModule
-{
-    Controls: any;
-    documentInitialized: boolean;
-    initializers: any[];
+declare const autosize: any;
 
-    registerInitializer( callback: any, callIfAlreadyInitialized: any ): void;
-
-    initializeFormElements( node: any ): void;
-
-    refTarget( node: any, recurse: any ): void;
+/**
+ * Finds and activates autogrow textarea elements and disables resizing on textareas that do not allow line breaks.
+ */
+function autosizeInitializer( node: any ): void {
+    autosize( $( '.js-autosize', node ) );
+    $( '.js-disable-line-breaks.js-autosize' ).css( 'resize', 'none' );
 }
 
-declare const BootstrapUiModule: CBootstrapUiModule;
-
-declare const Bloodhound: any;
-declare const autosize: any;
-declare const moment: any;
+export default autosizeInitializer;

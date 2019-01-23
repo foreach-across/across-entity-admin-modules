@@ -22,32 +22,32 @@ import BootstrapUiControlValueHolder, {createControlValueHolder} from '../suppor
 import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 /**
- * {@link BootstrapUiControlAdapter} for <a href="https://github.com/Eonasdan/bootstrap-datetimepicker">Eonasdan Bootstrap datepicker</a> elements.
+ * {@link BootstrapUiControlAdapter} for basic html elements.
+ * This adapter sets and retrieves the value using jquery's val method.
  *
  * @see datePickerInitializer
  */
-export default class DatePickerControlAdapter extends BaseControlAdapter
+export default class BasicControlAdapter extends BaseControlAdapter
 {
-    private readonly exportFormat: string;
     private readonly initialValue: any;
 
-    constructor( target: any, exportFormat: string ) {
+    constructor( target: any ) {
         super( target );
-        this.exportFormat = exportFormat;
-        this.initialValue = this.getDateTimePicker().date();
-        $( target ).on( 'dp.change', event => this.triggerChange() );
-        $( target ).find( 'input[type="text"]' ).keyup( this, ( event ) => {
+        this.initialValue = $( this.getTarget() ).val();
+
+        $( target ).on( 'change', event => this.triggerChange() );
+
+        // prevent opening the element on enter, but see it as 'submitting' the value instead.
+        $( target ).keypress( this, ( event ) => {
             if ( event.key === 'Enter' ) {
-                // event.preventDefault();
                 this.triggerSubmit();
             }
         } );
     }
 
     getValue(): BootstrapUiControlValueHolder[] {
-        const date = this.getDateTimePicker().date();
-        const formattedValue = date ? date.format( this.exportFormat ) : null;
-        return [createControlValueHolder( formattedValue, date, this.getTarget() )];
+        const value: any = $( this.getTarget() ).val();
+        return [createControlValueHolder( value, value, this.getTarget() )];
     }
 
     reset(): void {
@@ -55,22 +55,15 @@ export default class DatePickerControlAdapter extends BaseControlAdapter
     }
 
     selectValue( newValue: any ): void {
-        this.getDateTimePicker().date( newValue );
-    }
-
-    private getDateTimePicker(): any {
-        return $( this.getTarget() ).data( 'DateTimePicker' );
+        $( this.getTarget() ).val( newValue );
     }
 }
 
 /**
- * Initializes a {@link DatePickerControlAdapter} for a given node.
+ * Initializes a {@link BasicControlAdapter} for a given node.
  *
  * @param node to initialize
  */
-export function createDatePickerControlAdapter( node: any ): BootstrapUiControlAdapter {
-    const element = $( node );
-    const configuration = $( element ).data( 'bootstrapui-datetimepicker' );
-    const exportFormat = configuration.exportFormat;
-    return new DatePickerControlAdapter( node, exportFormat );
+export function createBasicControlAdapter( node: any ): BootstrapUiControlAdapter {
+    return new BasicControlAdapter( node );
 }

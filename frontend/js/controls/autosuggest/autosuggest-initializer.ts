@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * @author Steven Gentens
+ * @since 2.2.0
+ */
+declare const Bloodhound: any;
+
 function registerAutosuggestControl() {
     BootstrapUiModule.Controls['AutoSuggest'] = {
         /**
@@ -21,7 +28,6 @@ function registerAutosuggestControl() {
         create( node: any, configuration: any ) {
             const typeahead: any = node.find( '.js-typeahead' );
             const selectedValue: any = node.find( '.js-typeahead-value' );
-
             const translateUrl = function ( url: any ) {
                 return url.replace( '{{controlName}}', encodeURIComponent( selectedValue.attr( 'name' ) ) );
             };
@@ -90,7 +96,6 @@ function autosuggestInitializer( node: any ): void {
         const configuration = $( this ).data( 'bootstrapui-autosuggest' );
         BootstrapUiModule.Controls.AutoSuggest.create( $( this ), configuration );
     } );
-
 }
 
 export {registerAutosuggestControl};

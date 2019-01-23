@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import SelectControlAdapter from './select-control-adapter';
-import BootstrapUiAttributes from '../support/bootstrap-ui-attributes';
-
 /**
  * Find and activate all <a href="https://silviomoreto.github.io/bootstrap-select/">bootstrap-select</a> elements.
  */
@@ -24,9 +21,6 @@ function selectInitializer( node: any ): void {
     $( '[data-bootstrapui-select]', node ).each( function () {
         const configuration = $( this ).data( 'bootstrapui-select' );
         $( this ).selectpicker( configuration );
-
-        const controlAdapter = new SelectControlAdapter( $( this ) );
-        $( this ).data( BootstrapUiAttributes.CONTROL_ADAPTER, controlAdapter );
     } );
 }
 

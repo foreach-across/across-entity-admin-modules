@@ -18,7 +18,6 @@
 window.BootstrapUiModule = (function ( $ ) {
     var bootstrapUiModule = {
         Controls: {},
-
         documentInitialized: false,
         initializers: [],
 

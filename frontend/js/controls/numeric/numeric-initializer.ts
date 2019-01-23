@@ -16,6 +16,9 @@
 
 /**
  * Find an activate all autoNumeric form elements.
+ *
+ * @author Steven Gentens
+ * @since 2.2.0
  */
 function numericInitializer( node: any ): void {
     $( '[data-bootstrapui-numeric]', node ).each( function () {
