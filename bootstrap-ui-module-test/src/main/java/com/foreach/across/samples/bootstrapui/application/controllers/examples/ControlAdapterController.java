@@ -58,14 +58,14 @@ public class ControlAdapterController
 		generatedElements.put( "Group of checkboxes", optionElement().controlName( "ca-multi-checkbox" ).checkbox().build() );
 		generatedElements.put( "Single radiobutton", radio().text( "Once you go ... You can't go back!" ).value( "Male" ).controlName( "ca-radio" ).build() );
 		generatedElements.put( "Group of radiobuttons", optionElement().controlName( "ca-multi-radio" ).radio().build() );
-		generatedElements.put( "Select", optionElement().controlName( "ca-multi-radio" ).select().build() );
-		generatedElements.put( "Multi select", optionElement().controlName( "ca-multi-radio" ).select().multiple().build() );
+		generatedElements.put( "Select", optionElement().controlName( "ca-select" ).select().build() );
+		generatedElements.put( "Multi select", optionElement().controlName( "ca-multi-select" ).select().multiple().build() );
 		generatedElements.put( "Bootstrap select",
-		                       optionElement().controlName( "ca-multi-radio" )
+		                       optionElement().controlName( "ca-bootstrap-select" )
 		                                      .select( SelectFormElementConfiguration.liveSearch() )
 		                                      .build() );
 		generatedElements.put( "Bootstrap multi select",
-		                       optionElement().controlName( "ca-multi-radio" )
+		                       optionElement().controlName( "ca-bootstrap-multi-select" )
 		                                      .multiple()
 		                                      .select( SelectFormElementConfiguration.liveSearch() )
 		                                      .build() );

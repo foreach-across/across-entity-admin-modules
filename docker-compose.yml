@@ -8,5 +8,5 @@ services:
     command: yarn run build
     container_name: bootstrap-ui-module-assets-builder
     volumes:
-    - ./frontend:/build
+    - ./bootstrap-ui-module/src/main/frontend:/build
     - ./bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule:/resources/views/static/BootstrapUiModule
