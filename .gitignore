@@ -5,8 +5,9 @@ target
 .idea/template/template_variable_settings.xml
 *.iml
 
-frontend/node
-node_modules/
+bootstrap-ui-module/src/main/frontend/node_modules/
+end2end-tests/node_modules/
+end2end-tests/tests/cypress/out
 
 #ignore all static frontend content
 bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/css/*

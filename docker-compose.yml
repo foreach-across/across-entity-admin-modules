@@ -1,5 +1,6 @@
 version: "3.1"
 services:
+  # compiling frontend resources
   frontend:
     build:
       context: .
@@ -10,3 +11,43 @@ services:
     volumes:
     - ./bootstrap-ui-module/src/main/frontend:/build
     - ./bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule:/resources/views/static/BootstrapUiModule
+
+  # executing e2e tests
+  web:
+    ipc: host
+    # TTY doesn't show pretty in bamboo
+    tty: false
+    build:
+      context: .
+      dockerfile: end2end-tests/web/Dockerfile
+    ports:
+    - "8080:8080"
+    expose:
+    - "8080"
+    #    depends_on:
+    #      - gulp
+    volumes:
+    - ./bootstrap-ui-module-test/target:/web
+    networks:
+      default:
+        aliases:
+        - bootstrapui-test.dev.foreach.be
+  test:
+    ipc: host
+    # TTY doesn't show pretty in bamboo
+    tty: false
+    build:
+      context: .
+      dockerfile: end2end-tests/tests/Dockerfile
+    depends_on:
+    - web
+    command: bash -c "./wait-for-it.sh -t 360 web:8080 -- run; ./node_modules/.bin/cypress run --record --key 146240c5-1ff5-468a-80e8-a4057c04555d --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results.xml; chmod -R 777 ./cypress"
+    links:
+    - web
+    volumes:
+    - ./end2end-tests/tests:/cypress
+  cleanup:
+    image: busybox:latest
+    command: sh -c "echo Cleanup up /cypress/cypress/out; ls -al /cypress/cypress; rm -rf /cypress/cypress/out"
+    volumes:
+    - ./end2end-tests/tests:/cypress

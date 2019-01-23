@@ -1,0 +1,8 @@
+{
+  "baseUrl": "http://bootstrapui-test.dev.foreach.be:8080",
+  "screenshotsFolder": "cypress/out/screenshots",
+  "videosFolder": "cypress/out/videos",
+  "env": {
+  }
+}
+

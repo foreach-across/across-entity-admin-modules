@@ -53,7 +53,7 @@ public class ControlAdapterController
 	@GetMapping
 	public String render( Model model ) {
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Datetime", datetime().value( LocalDate.now() ).controlName( "ca-datetime" ).build() );
+		generatedElements.put( "Datetime", datetime().value( LocalDate.of( 2019, 1, 23 ) ).controlName( "ca-datetime" ).build() );
 		generatedElements.put( "Single checkbox", checkbox().text( "Alive" ).value( false ).controlName( "ca-checkbox" ).build() );
 		generatedElements.put( "Group of checkboxes", optionElement().controlName( "ca-multi-checkbox" ).checkbox().build() );
 		generatedElements.put( "Single radiobutton", radio().text( "Once you go ... You can't go back!" ).value( "Male" ).controlName( "ca-radio" ).build() );
