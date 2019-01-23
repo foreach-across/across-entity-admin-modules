@@ -23,6 +23,7 @@ import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 /**
  * {@link BootstrapUiControlAdapter} for <a href="https://github.com/Eonasdan/bootstrap-datetimepicker">Eonasdan Bootstrap datepicker</a> elements.
+ * The target of the control adapter is the node on which it is registered.
  *
  * @see datePickerInitializer
  */

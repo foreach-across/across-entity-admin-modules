@@ -20,6 +20,7 @@ import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 /**
  * {@link BootstrapUiControlAdapter} for select elements.
+ * The target of the control adapter is the node on which it is registered.
  */
 export default class SelectControlAdapter extends BaseControlAdapter
 {

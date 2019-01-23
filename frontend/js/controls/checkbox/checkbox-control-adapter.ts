@@ -22,7 +22,7 @@ import BootstrapUiControlValueHolder, {createControlValueHolder} from '../suppor
 import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 /**
- * {@link BootstrapUiControlAdapter} for checkbox elements.
+ * {@link BootstrapUiControlAdapter} for checkbox elements. The target of the control adapter is the input control.
  */
 export default class CheckboxControlAdapter extends BaseControlAdapter
 {

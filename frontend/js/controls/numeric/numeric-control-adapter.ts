@@ -23,6 +23,7 @@ import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 /**
  * {@link BootstrapUiControlAdapter} for autonumeric elements.
+ * The target of the control adapter is the node on which it is registered.
  *
  * @see numericInitializer
  */

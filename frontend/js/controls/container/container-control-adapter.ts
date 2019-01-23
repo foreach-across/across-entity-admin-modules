@@ -25,6 +25,11 @@ import {ControlAdapterFactory} from '../support/control-adapter-factory';
 
 /**
  * {@link BootstrapUiControlAdapter} for elements whose state depends on the state of its children.
+ * The target of the control adapter is the node on which the control adapter is registered.
+ *
+ * A container adapters state depends on the state of its nested {@link BootstrapUiControlAdapter}s.
+ * When registering event listeners on it is advised to check whether the currentTarget of the event is equal to the target of the control adapter
+ * as (some) events bubble up.
  */
 export default class ContainerControlAdapter extends BaseControlAdapter
 {
@@ -38,9 +43,7 @@ export default class ContainerControlAdapter extends BaseControlAdapter
                 const adapter = $( element ).data( BootstrapUiAttributes.CONTROL_ADAPTER );
                 controlElements.push( adapter );
 
-                $( adapter.getTarget() ).on( 'bootstrapui.change', ( event ) => {
-                    this.triggerChange();
-                } );
+                $( adapter.getTarget() ).on( 'bootstrapui.change', event => this.triggerChange() );
                 $( adapter.getTarget() ).on( 'bootstrapui.submit', event => this.triggerSubmit() );
             } );
         this.adapters = controlElements;

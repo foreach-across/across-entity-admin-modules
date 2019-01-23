@@ -69,11 +69,6 @@ export class ControlAdapterFactoryObject
             if ( !$( node ).data( BootstrapUiAttributes.CONTROL_ADAPTER ) || force ) {
                 const adapter: BootstrapUiControlAdapter = this.controlAdapterRegistrars.get( type )( node );
                 $( node ).data( BootstrapUiAttributes.CONTROL_ADAPTER, adapter );
-                if ( $( node ).data( BootstrapUiAttributes.CONTROL_ADAPTER_TYPE ) === 'container' ) {
-                    console.log( 'Initialized adapter on node' );
-                    console.log( adapter );
-                    console.log( node );
-                }
             }
         }
     }

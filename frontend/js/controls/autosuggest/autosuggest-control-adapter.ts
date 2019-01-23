@@ -30,6 +30,10 @@ interface AutosuggestValue
 
 /**
  * {@link BootstrapUiControlAdapter} for <a href="https://github.com/twitter/typeahead.js">typeahead</a> autosuggest elements.
+ * The target of the control adapter is the typeahead initialized node.
+ *
+ * To prevent a value being present when no value is effectively selected, the value of the control will be cleared when the suggestion list is shown.
+ * This will ensure that a {@link BootstrapUiControlAdapter#CHANGE} event is triggered without a value (but with a label), but not whilst the user is refining his search.
  *
  * @see autosuggestInitializer
  */
@@ -42,8 +46,11 @@ export default class AutosuggestControlAdapter extends BaseControlAdapter
         const typeahead = $( wrapper ).find( '.js-typeahead.tt-input' );
         super( typeahead[0] );
 
-        // triggering typeahead:change when input is cleared? currently only triggered on blur
         $( typeahead ).on( 'typeahead:change', event => this.triggerChange() );
+        $( typeahead ).on( 'typeahead:open', ( event ) => {
+            $( this.valueHolder ).val( null );
+            this.triggerChange();
+        } );
         $( typeahead ).on( 'typeahead:select', event => this.triggerChange() );
         $( typeahead ).keypress( this, ( event ) => {
             if ( event.key === 'Enter' ) {

@@ -24,6 +24,7 @@ import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 /**
  * {@link BootstrapUiControlAdapter} for basic html elements.
  * This adapter sets and retrieves the value using jquery's val method.
+ * The target of the control adapter is the node on which it is registered.
  *
  * @see datePickerInitializer
  */
