@@ -16,12 +16,11 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.NumericFormElementBuilder;
-import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.i18n.LocaleContextHolder;
 
-import java.math.BigDecimal;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
@@ -48,9 +47,11 @@ public class TestNumericFormElementBuilder
 
 	@Test
 	public void currencyNumeric() {
+		LocaleContextHolder.setLocale( new Locale( "en", "us" ) );
 		NumericFormElement numeric = numericFormElementBuilder.currency()
 		                                                      .build();
 
 		assertEquals( NumericFormElementConfiguration.Format.CURRENCY , numeric.getConfiguration().getFormat() );
+		LocaleContextHolder.resetLocaleContext();
 	}
 }
