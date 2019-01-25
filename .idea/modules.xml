@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/properties-module/properties-module.iml" filepath="$PROJECT_DIR$/properties-module/properties-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/properties-module/properties-module.iml" filepath="$PROJECT_DIR$/properties-module/properties-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/properties-module-project.iml" filepath="$PROJECT_DIR$/properties-module-project.iml" />
       <module fileurl="file://$PROJECT_DIR$/properties-module-project.iml" filepath="$PROJECT_DIR$/properties-module-project.iml" />
     </modules>
   </component>

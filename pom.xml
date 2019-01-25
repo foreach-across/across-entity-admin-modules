@@ -25,7 +25,7 @@
 
 	<groupId>com.foreach.across.modules</groupId>
 	<artifactId>properties-module-project</artifactId>
-	<version>1.1.1.RELEASE</version>
+	<version>1.1.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
