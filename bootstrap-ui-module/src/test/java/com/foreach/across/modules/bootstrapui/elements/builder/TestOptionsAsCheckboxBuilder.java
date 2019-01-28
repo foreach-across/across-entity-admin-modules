@@ -42,7 +42,7 @@ public class TestOptionsAsCheckboxBuilder extends AbstractBootstrapViewElementTe
 		builder.htmlId( "mybox" ).controlName( "boxName" );
 
 		expect(
-				"<div id='mybox' />"
+				"<div data-bootstrapui-adapter-type='container' id='mybox' />"
 		);
 	}
 
@@ -82,11 +82,11 @@ public class TestOptionsAsCheckboxBuilder extends AbstractBootstrapViewElementTe
 				);
 
 		expect(
-				"<div id='options-mybox'>" +
-						"<div class='one two checkbox' data-role='item'><label for='mybox'>" +
+				"<div id='options-mybox' data-bootstrapui-adapter-type='container'>" +
+						"<div class='one two checkbox' data-role='item' data-bootstrapui-adapter-type='checkbox'><label for='mybox'>" +
 						"<input type='checkbox' value='one' id='mybox' name='mybox' /> Inner text" +
 						"</label><input type='hidden' name='_mybox' value='on' /></div>" +
-						"<div class='checkbox disabled'><label for='mybox1'>" +
+						"<div class='checkbox disabled' data-bootstrapui-adapter-type='checkbox'><label for='mybox1'>" +
 						"<input type='checkbox' value='2' checked='checked' disabled='disabled' name='mybox' id='mybox1' /> Short two" +
 						"</label><input type='hidden' name='_mybox' value='on' disabled='disabled' /></div>" +
 						"</div>"

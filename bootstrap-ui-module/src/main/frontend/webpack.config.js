@@ -93,7 +93,7 @@ module.exports = {
             },
             {
                 "test": /\.jsx?$/,
-                "include": path.join( workingDirectory, "js" ),
+                "include": path.join( workingDirectory, "src/js" ),
                 "loader": "babel-loader",
                 "enforce": "post",
                 "query": {
@@ -102,12 +102,12 @@ module.exports = {
             },
             {
                 "test": /\.tsx?$/,
-                "include": path.join( workingDirectory, "js" ),
+                "include": path.join( workingDirectory, "src/js" ),
                 "use": "ts-loader"
             },
             {
                 "test": /\.scss$/,
-                "include": path.join( workingDirectory, "scss" ),
+                "include": path.join( workingDirectory, "src/scss" ),
                 "use": [
                     MiniCssExtractPlugin.loader,
                     "css-loader", // translates CSS into CommonJS
