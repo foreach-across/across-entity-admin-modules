@@ -33,7 +33,7 @@ export default class CheckboxControlAdapter extends BaseControlAdapter
     private readonly initialValue: boolean;
 
     constructor( target: any ) {
-        const element: any = isUnwrapped( target ) ? target : $( target ).find( 'input[type=checkbox], input[type=radio]' );
+        const element: any = isUnwrapped( target ) ? target : $( target ).find( 'input[type=checkbox], input[type=radio]' )[0];
         super( element );
         this.initialValue = this.isSelected();
         $( element ).change( event => this.triggerChange() );

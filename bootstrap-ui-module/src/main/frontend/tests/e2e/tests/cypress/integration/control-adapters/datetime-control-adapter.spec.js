@@ -31,8 +31,9 @@ describe( 'ControlAdapter - Datepicker', function () {
                     const adapter = datepicker.data( "bootstrapui-adapter" );
                     const exportFormat = datepicker.data( "bootstrapui-datetimepicker" ).exportFormat;
                     expect( adapter.getTarget() ).to.eq( datepicker[0] );
-                    expect( adapter.getValue() ).to.have.length( 1 );
-                    const currentValue = adapter.getValue()[0];
+                    const currentValues = adapter.getValue();
+                    expect( currentValues ).to.have.length( 1 );
+                    const currentValue = currentValues[0];
                     expect( currentValue ).to.have.property( 'label', "2019-01-23 00:00" );
                     expect( Cypress.moment( currentValue.value._d ).format( exportFormat ) ).to.eq( currentValue.label );
                 } );
@@ -57,28 +58,26 @@ describe( 'ControlAdapter - Datepicker', function () {
                 } );
     } );
 
-    describe( "Event handling", function () {
-        it( "Change event is fired on dp.change", function () {
-            cy.get( "[data-bootstrapui-adapter-type='datetime']" )
-                    .then( ( datepicker ) => {
-                        const adapter = datepicker.data( "bootstrapui-adapter" );
+    it( "bootstrapui.change event is fired on dp.change", function () {
+        cy.get( "[data-bootstrapui-adapter-type='datetime']" )
+                .then( ( datepicker ) => {
+                    const adapter = datepicker.data( "bootstrapui-adapter" );
 
-                        const obj = {
-                            handle( event, controlAdapter ) {
-                                return controlAdapter;
-                            }
-                        };
-                        const spy = cy.spy( obj, 'handle' );
+                    const obj = {
+                        handle( controlAdapter ) {
+                            return controlAdapter;
+                        }
+                    };
+                    const spy = cy.spy( obj, 'handle' );
 
-                        datepicker.on( "bootstrapui.change", function ( event, controlAdapter ) {
-                            obj.handle( event, controlAdapter );
-                        } );
-
-                        datepicker.trigger( 'dp.change' );
-
-                        expect( spy ).to.be.calledOnce;
-                        expect( spy ).to.have.returned( adapter );
+                    datepicker.on( "bootstrapui.change", function ( event, controlAdapter ) {
+                        obj.handle( controlAdapter );
                     } );
-        } );
+
+                    datepicker.trigger( 'dp.change' );
+
+                    expect( spy ).to.have.callCount( 1 );
+                    expect( spy ).to.have.returned( adapter );
+                } );
     } );
 } );
