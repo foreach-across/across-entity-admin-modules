@@ -53,7 +53,7 @@ describe( 'ControlAdapter - Datepicker', function () {
     it( "has no underlying control adapters", function () {
         cy.get( "[data-bootstrapui-adapter-type='datetime']" )
                 .then( ( datepicker ) => {
-                    expect( datepicker.find( "[data-bootstrapui-adapter-type]" ) ).to.be.empty;
+                    expect( datepicker.find( "[data-bootstrapui-adapter-type]" ).length ).to.eq( 0 );
                 } );
     } );
 

@@ -19,7 +19,7 @@ services:
     tty: false
     build:
       context: .
-      dockerfile: end2end-tests/web/Dockerfile
+      dockerfile: bootstrap-ui-module/src/main/frontend/tests/e2e/web/Dockerfile
     ports:
     - "8080:8080"
     expose:
@@ -38,16 +38,16 @@ services:
     tty: false
     build:
       context: .
-      dockerfile: end2end-tests/tests/Dockerfile
+      dockerfile: bootstrap-ui-module/src/main/frontend/tests/e2e/tests/Dockerfile
     depends_on:
     - web
     command: bash -c "./wait-for-it.sh -t 360 web:8080 -- run; ./node_modules/.bin/cypress run --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results.xml; chmod -R 777 ./cypress"
     links:
     - web
     volumes:
-    - ./end2end-tests/tests:/cypress
+    - ./bootstrap-ui-module/src/main/frontend/tests/e2e/tests:/cypress
   cleanup:
     image: busybox:latest
     command: sh -c "echo Cleanup up /cypress/cypress/out; ls -al /cypress/cypress; rm -rf /cypress/cypress/out"
     volumes:
-    - ./end2end-tests/tests:/cypress
+    - ./bootstrap-ui-module/src/main/frontend/tests/e2e/tests:/cypress

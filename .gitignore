@@ -7,7 +7,7 @@ target
 
 bootstrap-ui-module/src/main/frontend/node_modules/
 bootstrap-ui-module/src/main/frontend/tests/e2e/node_modules/
-bootstrap-ui-module/src/main/frontend/e2e/tests/cypress/out
+bootstrap-ui-module/src/main/frontend/tests/e2e/tests/cypress/out
 
 #ignore all static frontend content
 bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule/css/*
