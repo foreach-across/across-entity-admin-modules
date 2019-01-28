@@ -42,7 +42,7 @@ function resolveFileIdentifier( type, file ) {
 }
 
 function resolveFiles( obj, type, files ) {
-    files.forEach( file => obj[resolveFileIdentifier( type, file )] = path.join( path.join( workingDirectory, type ), file ) );
+    files.forEach( file => obj[resolveFileIdentifier( type, file )] = path.join( path.join( workingDirectory, "src/" + type ), file ) );
 }
 
 function resolveEntries() {
