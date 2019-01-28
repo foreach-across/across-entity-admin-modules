@@ -166,7 +166,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				control,
 				"<div class='radio' data-bootstrapui-adapter-type='checkbox'>"
-						+ "<input data-bootstrapui-adapter-type='checkbox' type='radio' id='two' name='two' />"
+						+ "<input type='radio' id='two' name='two' />"
 						+ "</div>"
 		);
 
