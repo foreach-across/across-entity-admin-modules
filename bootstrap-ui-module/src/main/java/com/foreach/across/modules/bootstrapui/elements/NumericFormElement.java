@@ -47,7 +47,7 @@ public class NumericFormElement extends FormControlElementSupport implements For
 		setElementType( ContainerViewElement.ELEMENT_TYPE );
 		addCssClass( CSS_NUMERIC );
 		addChild( textbox );
-		setAttribute( BootstrapUiAttributes.CONTROL_ADAPTER_TYPE, "numeric" );
+		setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "numeric" );
 	}
 
 	@Override

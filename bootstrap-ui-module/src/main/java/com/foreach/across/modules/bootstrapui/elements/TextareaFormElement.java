@@ -37,7 +37,7 @@ public class TextareaFormElement extends TextboxFormElement
 		setTagName( "textarea" );
 		setElementType( ELEMENT_TYPE );
 		setType( Type.TEXTAREA );
-		setAttribute( BootstrapUiAttributes.CONTROL_ADAPTER_TYPE, "textbox" );
+		setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "textbox" );
 	}
 
 	public int getRows() {

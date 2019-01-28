@@ -37,7 +37,7 @@ public class SelectFormElement extends FormControlElementSupport
 	public SelectFormElement() {
 		super( ELEMENT_TYPE );
 		setTagName( "select" );
-		addAttributes( Collections.singletonMap( BootstrapUiAttributes.CONTROL_ADAPTER_TYPE, "select" ) );
+		addAttributes( Collections.singletonMap( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "select" ) );
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class SelectFormElement extends FormControlElementSupport
 	public void setConfiguration( SelectFormElementConfiguration configuration ) {
 		setAttribute( ATTRIBUTE_DATA_SELECT, configuration );
 		if ( configuration != null ) {
-			setAttribute( BootstrapUiAttributes.CONTROL_ADAPTER_TYPE, "bootstrap-select" );
+			setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "bootstrap-select" );
 		}
 	}
 

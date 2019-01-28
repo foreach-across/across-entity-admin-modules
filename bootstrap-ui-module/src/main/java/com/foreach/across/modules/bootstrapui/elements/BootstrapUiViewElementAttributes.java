@@ -20,7 +20,7 @@ package com.foreach.across.modules.bootstrapui.elements;
  * @author Steven Gentens
  * @since 2.2.0
  */
-public interface BootstrapUiAttributes
+public interface BootstrapUiViewElementAttributes
 {
 	String CONTROL_ADAPTER_TYPE = "data-bootstrapui-adapter-type";
 }
