@@ -21,6 +21,10 @@ import BaseControlAdapter from '../support/base-control-adapter';
 import BootstrapUiControlValueHolder, {createControlValueHolder} from '../support/bootstrap-ui-control-value-holder';
 import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
+function isUnwrapped( target: any ): boolean {
+    return $( target ).is( 'input[type="checkbox"]' ) || $( target ).is( 'input[type="radio]' );
+}
+
 /**
  * {@link BootstrapUiControlAdapter} for checkbox elements. The target of the control adapter is the input control.
  */
@@ -29,7 +33,7 @@ export default class CheckboxControlAdapter extends BaseControlAdapter
     private readonly initialValue: boolean;
 
     constructor( target: any ) {
-        const element: any = $( target ).find( 'input[type=checkbox], input[type=radio]' );
+        const element: any = isUnwrapped( target ) ? target : $( target ).find( 'input[type=checkbox], input[type=radio]' );
         super( element );
         this.initialValue = this.isSelected();
         $( element ).change( event => this.triggerChange() );

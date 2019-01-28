@@ -18,7 +18,6 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.bootstrapui.elements.thymeleaf.TextboxFormElementModelWriter;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -35,19 +34,19 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='text' class='form-control' placeholder='Text input' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' placeholder='Text input' />"
 		);
 
 		box.setType( TextboxFormElement.Type.EMAIL );
 		renderAndExpect(
 				box,
-				"<input type='email' class='form-control' placeholder='Text input' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='email' class='form-control' placeholder='Text input' />"
 		);
 
 		box.setType( TextboxFormElement.Type.URL );
 		renderAndExpect(
 				box,
-				"<input type='url' class='form-control' placeholder='Text input' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='url' class='form-control' placeholder='Text input' />"
 		);
 	}
 
@@ -58,7 +57,7 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='text' class='form-control' value='some &quot;text&lt;/input&gt;' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' value='some &quot;text&lt;/input&gt;' />"
 		);
 	}
 
@@ -70,11 +69,11 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='text' class='form-control' value='bad value' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' value='bad value' />"
 		);
 		renderAndExpect(
 				box,
-				"<input type='text' class='form-control' value='text' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' value='text' />"
 		);
 	}
 
@@ -85,14 +84,14 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='text' id='internalName' class='form-control' name='internalName' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' id='internalName' class='form-control' name='internalName' />"
 		);
 
 		box.setControlName( "controlName" );
 
 		renderAndExpect(
 				box,
-				"<input type='text' id='controlName' class='form-control' name='controlName' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' id='controlName' class='form-control' name='controlName' />"
 		);
 	}
 
@@ -103,7 +102,7 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='text' class='form-control' maxlength='100' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' maxlength='100' />"
 		);
 	}
 
@@ -114,7 +113,7 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='text' class='form-control' disabled='disabled' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' disabled='disabled' />"
 		);
 
 		box.setDisabled( false );
@@ -122,14 +121,14 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='text' class='form-control' readonly='readonly' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' readonly='readonly' />"
 		);
 
 		box.setRequired( true );
 
 		renderAndExpect(
 				box,
-				"<input type='text' class='form-control' readonly='readonly' required='required' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' readonly='readonly' required='required' />"
 		);
 	}
 
@@ -141,7 +140,7 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 		control.setControlName( "two" );
 		renderAndExpect(
 				control,
-				"<input type='text' class='form-control' id='two' name='two' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' id='two' name='two' />"
 		);
 
 		assertEquals( "two", control.getControlName() );
@@ -159,7 +158,7 @@ public class TestTextboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<input type='text' class='form-control' id='prefix.one' name='prefix.one' />"
+				"<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' id='prefix.one' name='prefix.one' />"
 		);
 
 		assertEquals( "prefix.one", control.getControlName() );
