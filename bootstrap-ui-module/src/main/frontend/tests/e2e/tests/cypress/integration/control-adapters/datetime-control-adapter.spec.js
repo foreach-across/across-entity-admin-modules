@@ -20,11 +20,12 @@ describe( 'ControlAdapter - Datepicker', function () {
         cy.visit( "/control-adapters" );
     } );
 
-    it( "element exists", function () {
-        cy.get( "[data-bootstrapui-adapter-type='datetime']" ).should( "have.length", 1 );
+    it( "adapter exists", function () {
+        cy.get( "[data-bootstrapui-adapter-type='datetime']" )
+                .then( ( element ) => expect( element.data( 'bootstrapui-adapter' ) ).to.not.be.undefined );
     } );
 
-    it( "check current value", function () {
+    it( "value holds the formatted date (label), moment date (value) and datetimepicker (context)", function () {
         cy.get( "[data-bootstrapui-adapter-type='datetime']" )
                 .then( ( datepicker ) => {
                     const adapter = datepicker.data( "bootstrapui-adapter" );
@@ -38,7 +39,7 @@ describe( 'ControlAdapter - Datepicker', function () {
                 } );
     } );
 
-    it( "Modifying the value", function () {
+    it( "modifying the value", function () {
         cy.get( "[data-bootstrapui-adapter-type='datetime']" )
                 .then( ( datepicker ) => {
                     const adapter = datepicker.data( "bootstrapui-adapter" );

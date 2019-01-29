@@ -10,7 +10,7 @@ Navigate to `bootstrap-ui-module/src/main/frontend/e2e/tests`
 
 ## Open the Cypress Test Runner
 
-* Start the DynamicFormsTestApplication
+* Start the BootstrapUiTestApplication
 * `"../node_modules/.bin/cypress" open` (or `npx cypress open`) opens the GUI through which you can run all or specific tests 
 
 ## Running tests

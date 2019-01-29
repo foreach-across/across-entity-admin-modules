@@ -20,7 +20,7 @@ describe( 'ControlAdapter - Checkbox', function () {
         cy.visit( "/control-adapters" );
     } );
 
-    it( "element exists", function () {
+    it( "adapter exists", function () {
         cy.get( "#ca-checkbox" ).closest( "[data-bootstrapui-adapter-type]" )
                 .then( element => {
                     expect( element.data( 'bootstrapui-adapter-type' ) ).to.be.eq( "checkbox" );
@@ -28,7 +28,7 @@ describe( 'ControlAdapter - Checkbox', function () {
                 } );
     } );
 
-    it( "current value returns label if selected", function () {
+    it( "getValue holds label, value, and checkbox if selected", function () {
         cy.get( "#ca-checkbox" ).closest( "[data-bootstrapui-adapter-type]" )
                 .then( ( wrapper ) => {
                     const adapter = wrapper.data( "bootstrapui-adapter" );
@@ -42,7 +42,7 @@ describe( 'ControlAdapter - Checkbox', function () {
                     const currentValue = currentValues[0];
                     expect( currentValue ).to.have.property( 'label', 'Alive' );
                     expect( currentValue ).to.have.property( 'value', 'Yes' );
-
+                    //TODO check context object
                     adapter.reset();
                 } );
     } );

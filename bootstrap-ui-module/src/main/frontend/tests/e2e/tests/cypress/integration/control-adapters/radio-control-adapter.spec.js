@@ -20,7 +20,7 @@ describe( 'ControlAdapter - Radio', function () {
         cy.visit( "/control-adapters" );
     } );
 
-    it( "element exists", function () {
+    it( "adapter exists", function () {
         cy.get( "#ca-radio" ).closest( "[data-bootstrapui-adapter-type]" )
                 .then( element => {
                     expect( element.data( 'bootstrapui-adapter-type' ) ).to.be.eq( "checkbox" );
@@ -28,7 +28,7 @@ describe( 'ControlAdapter - Radio', function () {
                 } );
     } );
 
-    it( "current value returns label if selected", function () {
+    it( "value holds label, value attribute and radio button", function () {
         cy.get( "#ca-radio" ).closest( "[data-bootstrapui-adapter-type]" )
                 .then( ( wrapper ) => {
                     const adapter = wrapper.data( "bootstrapui-adapter" );

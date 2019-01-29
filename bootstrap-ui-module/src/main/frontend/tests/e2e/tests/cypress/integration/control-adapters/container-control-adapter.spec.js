@@ -20,7 +20,7 @@ describe( 'ControlAdapter - Container', function () {
         cy.visit( "/control-adapters" );
     } );
 
-    it( "element exists", function () {
+    it( "adapter exists", function () {
         cy.get( "#options-ca-multi-checkbox" )
                 .then( element => {
                     expect( element.data( 'bootstrapui-adapter-type' ) ).to.be.eq( "container" );
@@ -35,7 +35,7 @@ describe( 'ControlAdapter - Container', function () {
                 } );
     } );
 
-    it( "modifying value", function () {
+    it( "modifying value throws an error", function () {
         cy.get( "#options-ca-multi-checkbox" )
                 .then( ( wrapper ) => {
                     const adapter = wrapper.data( "bootstrapui-adapter" );
@@ -86,7 +86,7 @@ describe( 'ControlAdapter - Container', function () {
                 } );
     } );
 
-    it( "value is defined by values of underlying control adapters", function () {
+    it( "getValue holds values of underlying control adapters", function () {
         cy.get( '#options-ca-multi-checkbox' )
                 .find( '[type=checkbox]' )
                 .each( ( cb, idx ) => {
