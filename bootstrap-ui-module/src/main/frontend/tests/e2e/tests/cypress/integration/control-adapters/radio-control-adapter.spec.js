@@ -18,7 +18,6 @@ describe( 'ControlAdapter - Radio', function () {
 
     before( function () {
         cy.visit( "/control-adapters" );
-        cy.wait( 1000 );
     } );
 
     it( "element exists", function () {

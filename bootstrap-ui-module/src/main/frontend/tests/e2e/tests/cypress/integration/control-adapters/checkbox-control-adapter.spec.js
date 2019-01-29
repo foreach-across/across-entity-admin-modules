@@ -18,7 +18,6 @@ describe( 'ControlAdapter - Checkbox', function () {
 
     before( function () {
         cy.visit( "/control-adapters" );
-        cy.wait( 1000 );
     } );
 
     it( "element exists", function () {
@@ -42,7 +41,7 @@ describe( 'ControlAdapter - Checkbox', function () {
                     expect( currentValues ).to.have.length( 1 );
                     const currentValue = currentValues[0];
                     expect( currentValue ).to.have.property( 'label', 'Alive' );
-                    expect( currentValue ).to.have.property( 'value', 'false' );
+                    expect( currentValue ).to.have.property( 'value', 'Yes' );
 
                     adapter.reset();
                 } );
@@ -55,7 +54,7 @@ describe( 'ControlAdapter - Checkbox', function () {
                     expect( adapter.getValue() ).to.be.empty;
 
                     adapter.selectValue( true );
-                    expect( adapter.getValue()[0] ).to.have.property( 'value', 'false' );
+                    expect( adapter.getValue()[0] ).to.have.property( 'value', 'Yes' );
 
                     adapter.selectValue( false );
                     expect( adapter.getValue() ).to.be.empty;
