@@ -17,7 +17,7 @@
 import adapterUtils from "../../support/utils/control-adapters";
 
 describe( 'ControlAdapter - Basic', function () {
-    const basicControlAdapterTests = function ( selector, content ) {
+    const basicAdapterTests = function ( selector, content ) {
         afterEach( 'reset adapter', function () {
             cy.get( selector )
                     .then( ( element ) => {
@@ -71,16 +71,16 @@ describe( 'ControlAdapter - Basic', function () {
 
     describe( 'textbox', () => {
         const content = 'Winter wonderland';
-        basicControlAdapterTests( '#ca-textbox', content );
+        basicAdapterTests( '#ca-textbox', content );
     } );
 
     describe( 'autosizing textbox', () => {
         const content = "my life got flipped turned upside down and I'd like to take a minute just sit right there";
-        basicControlAdapterTests( '#ca-textbox-autosize', content );
+        basicAdapterTests( '#ca-textbox-autosize', content );
     } );
 
     describe( 'textarea', () => {
         const content = "Festive feasts\n\n\n\n\n!!";
-        basicControlAdapterTests( '#ca-textarea', content );
+        basicAdapterTests( '#ca-textarea', content );
     } );
 } );
