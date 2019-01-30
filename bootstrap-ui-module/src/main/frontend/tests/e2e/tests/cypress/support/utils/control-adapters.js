@@ -99,7 +99,7 @@ export default {
      * @param event
      * @returns {*}
      */
-    assertThatBootstrapUiChangeIsTriggered: function ( element, event ) {
+    assertThatBootstrapUiChangeIsTriggeredOn: function ( element, event ) {
         const adapter = this.getAdapterForElement( element );
 
         let targetNode;

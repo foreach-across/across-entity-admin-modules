@@ -22,111 +22,73 @@ describe( 'ControlAdapter - Select', function () {
     } );
 
     describe( 'single select', function () {
-        it( 'adapter exists', function () {
-            cy.get( '#ca-select' )
+        const id = '#ca-select';
+
+        afterEach( 'reset adapter', function () {
+            cy.get( id )
                     .then( ( select ) => {
-                        expect( select.data( 'bootstrapui-adapter' ) ).to.not.be.undefined;
-                    } );
+                        adapterUtils.getAdapterForElement( select ).reset();
+                    } )
+        } );
+        it( 'adapter exists', function () {
+            adapterUtils.assertThatAdapterExists( id );
         } );
 
         it( 'does not have underlying control adapters', function () {
-            cy.get( '#ca-select' )
-                    .then( ( select ) => {
-                        expect( Cypress.$( '[data-bootstrapui-adapter-type]', select ) ).to.have.property( 'length', 0 );
-                    } );
+            adapterUtils.assertHasUnderlyingControlAdapters( id, 0 );
         } );
 
         it( 'value holds option label, option value and option item', function () {
-            cy.get( '#ca-select' )
+            cy.get( id )
                     .then( ( select ) => {
-                        const adapter = select.data( 'bootstrapui-adapter' );
-                        const currentValues = adapter.getValue();
-                        expect( currentValues ).to.have.length( 1 );
-                        const currentValue = currentValues[0];
-                        expect( currentValue ).to.have.property( 'label', 'One' );
-                        expect( currentValue ).to.have.property( 'value', '1' );
-                        expect( currentValue ).to.have.property( 'context', Cypress.$( 'option:selected', select )[0] );
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1', Cypress.$( 'option:selected', select )[0] );
                     } );
         } );
 
         it( 'modifying value', function () {
-            cy.get( '#ca-select' )
-                    .then( ( select ) => {
-                        const adapter = select.data( 'bootstrapui-adapter' );
-                        let currentValues = adapter.getValue();
-                        expect( currentValues ).to.have.length( 1 );
-                        let currentValue = currentValues[0];
-                        expect( currentValue ).to.have.property( 'label', 'One' );
-                        expect( currentValue ).to.have.property( 'value', '1' );
-
-                        adapter.selectValue( 2 );
-                        currentValues = adapter.getValue();
-                        expect( currentValues ).to.have.length( 1 );
-                        currentValue = currentValues[0];
-                        expect( currentValue ).to.have.property( 'label', 'Two' );
-                        expect( currentValue ).to.have.property( 'value', '2' );
-                    } );
+            cy.get( id )
+                    .then( ( select ) => adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1' ) )
+                    .select( '2', {force: true} )
+                    .then( ( select ) => adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2' ) );
         } );
 
         it( 'reset selects initial value', function () {
-            cy.get( '#ca-select' )
+            cy.get( id )
                     .select( 'Three' )
                     .then( ( select ) => {
-                        const adapter = select.data( 'bootstrapui-adapter' );
-                        let currentValues = adapter.getValue();
-                        expect( currentValues ).to.have.length( 1 );
-                        let currentValue = currentValues[0];
-                        expect( currentValue ).to.have.property( 'label', '3' );
-                        expect( currentValue ).to.have.property( 'value', 'Three' );
-
-                        adapter.reset();
-
-                        currentValues = adapter.getValue();
-                        expect( currentValues ).to.have.length( 1 );
-                        currentValue = currentValues[0];
-                        expect( currentValue ).to.have.property( 'label', 'One' );
-                        expect( currentValue ).to.have.property( 'value', '1' );
-
+                        adapterUtils.assertAdapterValueSelected( select, 0, '3', 'Three' );
+                        adapterUtils.getAdapterForElement( select ).reset();
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1' );
                     } )
         } );
 
         it( 'bootstrapui.change is fired when a change event is emitted on the select', function () {
-            cy.get( '#ca-select' )
+            cy.get( id )
                     .then( ( select ) => {
-                        const adapter = select.data( "bootstrapui-adapter" );
-
-                        const obj = {
-                            handle( controlAdapter ) {
-                                return controlAdapter;
-                            }
-                        };
-                        const spy = cy.spy( obj, 'handle' );
-
-                        select.on( "bootstrapui.change", function ( event, controlAdapter ) {
-                            obj.handle( controlAdapter );
-                        } );
-
-                        Cypress.$( '#ca-select' ).trigger( 'change' );
-                        select.trigger( 'change' );
-
-                        expect( spy ).to.have.callCount( 1 );
-                        expect( spy ).to.have.returned( adapter );
+                        adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn( select, 'change' );
                     } )
         } );
     } );
 
     describe( 'multi select', function () {
-        it( 'adapter exists', function () {
-            adapterUtils.assertThatAdapterExists( '#ca-multi-select' );
+        const id = '#ca-multi-select';
 
+        afterEach( 'reset adapter', function () {
+            cy.get( id )
+                    .then( ( select ) => {
+                        adapterUtils.getAdapterForElement( select ).reset();
+                    } )
+        } );
+        it( 'adapter exists', function () {
+            adapterUtils.assertThatAdapterExists( id );
         } );
 
         it( 'does not have underlying control adapters', function () {
-            adapterUtils.assertHasUnderlyingControlAdapters( '#ca-multi-select', 0 );
+            adapterUtils.assertHasUnderlyingControlAdapters( id, 0 );
         } );
 
         it( 'value holds option label, option value and option item', function () {
-            cy.get( '#ca-multi-select' )
+            cy.get( id )
                     .select( '2' )
                     .then( ( select ) => {
                         adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2', select.find( 'option:selected' )[0] );
@@ -137,7 +99,7 @@ describe( 'ControlAdapter - Select', function () {
         } );
 
         it( 'modifying value', function () {
-            cy.get( '#ca-multi-select' )
+            cy.get( id )
                     .then( ( select ) => adapterUtils.assertAdapterNoValueSelected( select ) )
                     .select( ['1', '2'] )
                     .then( ( select ) => {
@@ -147,7 +109,7 @@ describe( 'ControlAdapter - Select', function () {
         } );
 
         it( 'reset selects initial value', function () {
-            cy.get( '#ca-multi-select' )
+            cy.get( id )
                     .select( ['2', 'Three'] )
                     .then( ( select ) => {
                         adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2' );
@@ -159,18 +121,118 @@ describe( 'ControlAdapter - Select', function () {
         } );
 
         it( 'bootstrapui.change is fired when a change event is emitted on the select', function () {
-            cy.get( '#ca-select' )
+            cy.get( id )
                     .then( ( select ) => {
-                        adapterUtils.assertThatBootstrapUiChangeIsTriggered( select, 'change' );
+                        adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn( select, 'change' );
                     } )
         } );
     } );
 
     describe( 'bootstrap select', function () {
+        const id = '#ca-bootstrap-select';
 
+        afterEach( 'reset adapter', function () {
+            cy.get( id )
+                    .then( ( select ) => {
+                        adapterUtils.getAdapterForElement( select ).reset();
+                    } )
+        } );
+
+        it( 'adapter exists', function () {
+            adapterUtils.assertThatAdapterExists( id );
+
+        } );
+
+        it( 'does not have underlying control adapters', function () {
+            adapterUtils.assertHasUnderlyingControlAdapters( id, 0 );
+        } );
+
+        it( 'value holds option label, option value and option item', function () {
+            cy.get( id )
+                    .then( ( select ) => {
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1', select.find( 'option:selected' )[0] );
+                    } );
+        } );
+
+        it( 'modifying value', function () {
+            cy.get( id )
+                    .then( ( select ) => adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1' ) )
+                    .select( '2', {force: true} )
+                    .then( ( select ) => adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2' ) );
+        } );
+
+        it( 'reset selects initial value', function () {
+            cy.get( id )
+                    .select( '2', {force: true} )
+                    .then( ( select ) => {
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2' );
+                        adapterUtils.getAdapterForElement( select ).reset();
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1' );
+                    } );
+        } );
+
+        it( 'bootstrapui.change is fired when a changed.bs.select event is emitted on the select', function () {
+            cy.get( id )
+                    .then( ( select ) => {
+                        adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn( select, 'changed.bs.select' );
+                    } )
+        } );
     } );
 
     describe( 'bootstrap multi select', function () {
+        const id = '#ca-bootstrap-multi-select';
 
+        afterEach( 'reset adapter', function () {
+            cy.get( id )
+                    .then( ( select ) => {
+                        adapterUtils.getAdapterForElement( select ).reset();
+                    } )
+        } );
+
+        it( 'adapter exists', function () {
+            adapterUtils.assertThatAdapterExists( id );
+
+        } );
+
+        it( 'does not have underlying control adapters', function () {
+            adapterUtils.assertHasUnderlyingControlAdapters( id, 0 );
+        } );
+
+        it( 'value holds option label, option value and option item', function () {
+            cy.get( id )
+                    .select( '2', {force: true} )
+                    .then( ( select ) => {
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2', select.find( 'option:selected' )[0] );
+                    } );
+        } );
+
+        it( 'modifying value', function () {
+            cy.get( id )
+                    .then( ( select ) => adapterUtils.assertAdapterNoValueSelected( select ) )
+                    .select( ['1', '2'], {force: true} )
+                    .then( ( select ) => {
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1' );
+                        adapterUtils.assertAdapterValueSelected( select, 1, 'Two', '2' );
+                    } );
+        } );
+
+        it( 'reset selects initial value', function () {
+            cy.get( id )
+                    .select( ['2', 'Three'], {force: true} )
+                    .then( ( select ) => {
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2' );
+                        adapterUtils.assertAdapterValueSelected( select, 1, '3', 'Three' );
+
+                        adapterUtils.getAdapterForElement( select ).reset();
+                        adapterUtils.assertAdapterNoValueSelected( select );
+                    } );
+        } );
+
+        it( 'bootstrapui.change is fired when a changed.bs.select event is emitted on the select', function () {
+            cy.get( id )
+                    .then( ( select ) => {
+                        adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn( select, 'changed.bs.select' );
+                    } )
+        } );
     } );
 } );
