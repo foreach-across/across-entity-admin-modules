@@ -16,12 +16,8 @@
 
 import adapterUtils from "../../support/utils/control-adapters";
 
-describe( 'ControlAdapter - Basic controls', function () {
-    before( function () {
-        cy.visit( "/control-adapters" );
-    } );
-
-    let basicControlAdapterTests = function ( selector, content ) {
+describe( 'ControlAdapter - Basic', function () {
+    const basicControlAdapterTests = function ( selector, content ) {
         afterEach( 'reset adapter', function () {
             cy.get( selector )
                     .then( ( element ) => {
@@ -69,8 +65,12 @@ describe( 'ControlAdapter - Basic controls', function () {
         } );
     };
 
+    before( function () {
+        cy.visit( "/control-adapters" );
+    } );
+
     describe( 'textbox', () => {
-        const content = 'now this is a story all about how';
+        const content = 'Winter wonderland';
         basicControlAdapterTests( '#ca-textbox', content );
     } );
 
@@ -80,7 +80,7 @@ describe( 'ControlAdapter - Basic controls', function () {
     } );
 
     describe( 'textarea', () => {
-        const content = "I'll tell you how I become the prince of a town called Bel Air\n\n\n\n\n!!";
+        const content = "Festive feasts\n\n\n\n\n!!";
         basicControlAdapterTests( '#ca-textarea', content );
     } );
 } );
