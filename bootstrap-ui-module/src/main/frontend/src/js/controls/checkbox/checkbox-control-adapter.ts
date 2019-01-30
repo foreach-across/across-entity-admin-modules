@@ -25,6 +25,10 @@ function isUnwrapped( target: any ): boolean {
     return $( target ).is( 'input[type="checkbox"]' ) || $( target ).is( 'input[type="radio]' );
 }
 
+function getLabelElement( target: any ): any {
+    return $( `label[for=${target.id}]` );
+}
+
 /**
  * {@link BootstrapUiControlAdapter} for checkbox elements. The target of the control adapter is the input control.
  */
@@ -49,7 +53,8 @@ export default class CheckboxControlAdapter extends BaseControlAdapter
     getValue(): BootstrapUiControlValueHolder[] {
         const target = $( this.getTarget() );
         if ( this.isSelected() ) {
-            return [createControlValueHolder( target.parent().text(), target.attr( 'value' ), this.getTarget() )];
+            const labelElement = getLabelElement( this.getTarget() );
+            return [createControlValueHolder( labelElement.length > 0 ? labelElement.text() : undefined, target.attr( 'value' ), this.getTarget() )];
         }
         return [];
     }

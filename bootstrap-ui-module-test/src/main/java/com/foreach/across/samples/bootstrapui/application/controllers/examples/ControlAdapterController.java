@@ -55,6 +55,13 @@ public class ControlAdapterController
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
 		generatedElements.put( "Datetime", datetime().value( LocalDate.of( 2019, 1, 23 ) ).controlName( "ca-datetime" ).build() );
 		generatedElements.put( "Single checkbox", checkbox().text( "Alive" ).value( "Yes" ).controlName( "ca-checkbox" ).build() );
+		generatedElements.put( "Unwrapped checkbox", checkbox().text( "Alive" ).unwrapped().value( "Yes" ).controlName( "ca-checkbox-unwrapped" ).build() );
+		generatedElements.put( "Unwrapped checkbox without label", checkbox().unwrapped().value( "Yes" ).controlName( "ca-checkbox-unwrapped-no-label" )
+		                                                                     .build() );
+		generatedElements.put( "Checkbox outside label", div()
+				.add( label().text( "Alive" ).target( "ca-checkbox-out-label" ) )
+				.add( checkbox().value( "Yes" ).controlName( "ca-checkbox-out-label" ) )
+				.build() );
 		generatedElements.put( "Group of checkboxes", optionElement().controlName( "ca-multi-checkbox" ).checkbox().build() );
 		generatedElements.put( "Single radiobutton", radio().text( "Once you go ... You can't go back!" ).value( "Male" ).controlName( "ca-radio" ).build() );
 		generatedElements.put( "Group of radiobuttons", optionElement().controlName( "ca-multi-radio" ).radio().build() );

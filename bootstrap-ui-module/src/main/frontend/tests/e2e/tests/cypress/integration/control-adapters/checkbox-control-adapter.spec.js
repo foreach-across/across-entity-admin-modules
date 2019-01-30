@@ -14,83 +14,104 @@
  * limitations under the License.
  */
 
+import adapterUtils from "../../support/utils/control-adapters";
+
 describe( 'ControlAdapter - Checkbox', function () {
+
+    const defaultElementFetcher = function ( selector ) {
+        return cy.get( selector );
+    };
+    const wrappedElementFetcher = function ( selector ) {
+        return cy.get( selector )
+                .closest( '[data-bootstrapui-adapter-type="checkbox"]' )
+    };
+
+    const checkboxTests = function ( selector, elementFetcher, label ) {
+        afterEach( 'reset adapter', function () {
+            elementFetcher( selector )
+                    .then( ( element ) => {
+                        console.log( element );
+                        console.log( element.data() );
+                        adapterUtils.getAdapterForElement( element ).reset();
+                    } )
+        } );
+
+        it( "adapter exists", function () {
+            elementFetcher( selector )
+                    .then( element => {
+                        expect( element.data( 'bootstrapui-adapter' ) ).to.not.be.undefined;
+                    } );
+        } );
+
+        it( "getValue holds label, value, and checkbox if selected", function () {
+            elementFetcher( selector )
+                    .then( ( wrapper ) => {
+                        const contextElement = wrapper.is( 'input[type=checkbox]' ) ? wrapper : wrapper.find( 'input[type=checkbox]' );
+                        const adapter = adapterUtils.getAdapterForElement( wrapper );
+                        adapter.selectValue( true );
+                        adapterUtils.assertAdapterValueSelected( wrapper, 0, label, 'Yes', contextElement[0] );
+                    } );
+        } );
+
+        it( 'value is empty array if checkbox is not selected', function () {
+            elementFetcher( selector )
+                    .then( ( wrapper ) => {
+                        adapterUtils.assertAdapterNoValueSelected( wrapper );
+                    } );
+        } );
+
+        it( "modifying value", function () {
+            elementFetcher( selector )
+                    .then( ( wrapper ) => {
+                        const adapter = adapterUtils.getAdapterForElement( wrapper );
+                        adapterUtils.assertAdapterNoValueSelected( wrapper );
+
+                        adapter.selectValue( true );
+                        adapterUtils.assertAdapterValueSelected( wrapper, 0, label, 'Yes' );
+
+                        adapter.selectValue( false );
+                        adapterUtils.assertAdapterNoValueSelected( wrapper );
+
+                        adapter.reset();
+                        adapterUtils.assertAdapterNoValueSelected( wrapper );
+                    } );
+        } );
+
+        it( "has no underlying control adapters", function () {
+            elementFetcher( selector )
+                    .then( ( wrapper ) => {
+                        expect( wrapper.find( "[data-bootstrapui-adapter-type]" ).length ).to.eq( 0 );
+                    } );
+        } );
+
+        it( "bootstrapui.change event is fired on change", function () {
+            elementFetcher( selector )
+                    .then( ( wrapper ) => {
+                        const adapter = adapterUtils.getAdapterForElement( wrapper );
+                        adapter.selectValue( true );
+                        adapterUtils.assertAdapterValueSelected( wrapper, 0, label, 'Yes' );
+                    } );
+        } );
+    };
+
     before( function () {
         cy.visit( "/control-adapters" );
     } );
 
-    it( "adapter exists", function () {
-        cy.get( "#ca-checkbox" ).closest( "[data-bootstrapui-adapter-type]" )
-                .then( element => {
-                    expect( element.data( 'bootstrapui-adapter-type' ) ).to.be.eq( "checkbox" );
-                    expect( element.data( 'bootstrapui-adapter' ) ).to.not.be.undefined;
-                } );
+    describe( 'checkbox', function () {
+        checkboxTests( '#ca-checkbox', wrappedElementFetcher, 'Alive' );
     } );
 
-    it( "getValue holds label, value, and checkbox if selected", function () {
-        cy.get( "#ca-checkbox" ).closest( "[data-bootstrapui-adapter-type]" )
-                .then( ( wrapper ) => {
-                    const adapter = wrapper.data( "bootstrapui-adapter" );
-                    expect( adapter.getTarget() ).to.eq( wrapper.find( '#ca-checkbox' )[0] );
-
-                    expect( adapter.getValue() ).to.be.empty;
-
-                    adapter.selectValue( true );
-                    const currentValues = adapter.getValue();
-                    expect( currentValues ).to.have.length( 1 );
-                    const currentValue = currentValues[0];
-                    expect( currentValue ).to.have.property( 'label', 'Alive' );
-                    expect( currentValue ).to.have.property( 'value', 'Yes' );
-                    //TODO check context object
-                    adapter.reset();
-                } );
+    describe( 'unwrapped checkbox', function () {
+        checkboxTests( '#ca-checkbox-unwrapped', wrappedElementFetcher, 'Alive' );
     } );
 
-    it( "modifying value", function () {
-        cy.get( "#ca-checkbox" ).closest( "[data-bootstrapui-adapter-type]" )
-                .then( ( wrapper ) => {
-                    const adapter = wrapper.data( "bootstrapui-adapter" );
-                    expect( adapter.getValue() ).to.be.empty;
-
-                    adapter.selectValue( true );
-                    expect( adapter.getValue()[0] ).to.have.property( 'value', 'Yes' );
-
-                    adapter.selectValue( false );
-                    expect( adapter.getValue() ).to.be.empty;
-
-                    adapter.reset();
-                    expect( adapter.getValue()[0] ).to.be.empty;
-                } );
+    describe( 'unwrapped checkbox without label', function () {
+        checkboxTests( '#ca-checkbox-unwrapped-no-label', defaultElementFetcher );
     } );
 
-    it( "has no underlying control adapters", function () {
-        cy.get( "#ca-checkbox" ).closest( "[data-bootstrapui-adapter-type]" )
-                .then( ( wrapper ) => {
-                    expect( wrapper.find( "[data-bootstrapui-adapter-type]" ).length ).to.eq( 0 );
-                } );
-    } );
-
-    it( "bootstrapui.change event is fired on change", function () {
-        cy.get( "#ca-checkbox" ).closest( "[data-bootstrapui-adapter-type]" )
-                .then( ( wrapper ) => {
-                    const adapter = wrapper.data( "bootstrapui-adapter" );
-
-                    const obj = {
-                        handle( controlAdapter ) {
-                            return controlAdapter;
-                        }
-                    };
-                    const spy = cy.spy( obj, 'handle' );
-
-                    wrapper.on( "bootstrapui.change", function ( event, controlAdapter ) {
-                        obj.handle( controlAdapter );
-                    } );
-
-                    wrapper.find( "#ca-checkbox" ).trigger( 'change' );
-
-                    expect( spy ).to.have.callCount( 1 );
-                    expect( spy ).to.have.returned( adapter );
-                } );
+    describe( 'wrapped checkbox outside label', function () {
+        checkboxTests( '#ca-checkbox-out-label', wrappedElementFetcher, 'Alive' )
     } );
 
 } );

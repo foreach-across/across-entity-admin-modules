@@ -13,30 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import adapterUtils from "../../support/utils/control-adapters";
 
 describe( 'ControlAdapter - Container', function () {
+    const selector = '#options-ca-multi-checkbox';
 
     before( function () {
         cy.visit( "/control-adapters" );
     } );
 
     it( "adapter exists", function () {
-        cy.get( "#options-ca-multi-checkbox" )
-                .then( element => {
-                    expect( element.data( 'bootstrapui-adapter-type' ) ).to.be.eq( "container" );
-                    expect( element.data( 'bootstrapui-adapter' ) ).to.not.be.undefined;
-                } );
+        adapterUtils.assertThatAdapterExists( selector );
     } );
 
     it( "has underlying control adapters", function () {
-        cy.get( "#options-ca-multi-checkbox" )
-                .then( ( wrapper ) => {
-                    expect( wrapper.find( "[data-bootstrapui-adapter-type]" ).length ).to.eq( 3 );
-                } );
+        adapterUtils.assertHasUnderlyingControlAdapters( selector, 3 );
     } );
 
     it( "modifying value throws an error", function () {
-        cy.get( "#options-ca-multi-checkbox" )
+        cy.get( selector )
                 .then( ( wrapper ) => {
                     const adapter = wrapper.data( "bootstrapui-adapter" );
                     expect( () => adapter.selectValue( "anything" ) ).to.throw( 'Selecting values is currently not support on ContainerControlAdapters.' );
@@ -44,7 +39,7 @@ describe( 'ControlAdapter - Container', function () {
     } );
 
     it( "bootstrapui.change event is fired if a child element is fired", function () {
-        cy.get( "#options-ca-multi-checkbox" )
+        cy.get( selector )
                 .then( ( wrapper ) => {
                     const adapter = wrapper.data( "bootstrapui-adapter" );
 
@@ -69,7 +64,7 @@ describe( 'ControlAdapter - Container', function () {
     } );
 
     it( "reset applies reset on underlying control adapters", function () {
-        cy.get( '#options-ca-multi-checkbox' )
+        cy.get( selector )
                 .find( '[type=checkbox]' )
                 .each( ( cb ) => {
                     cb.prop( 'checked', true );
@@ -87,7 +82,7 @@ describe( 'ControlAdapter - Container', function () {
     } );
 
     it( "getValue holds values of underlying control adapters", function () {
-        cy.get( '#options-ca-multi-checkbox' )
+        cy.get( selector )
                 .find( '[type=checkbox]' )
                 .each( ( cb, idx ) => {
                     if ( idx % 2 === 0 ) {
@@ -97,17 +92,8 @@ describe( 'ControlAdapter - Container', function () {
                 } )
                 .closest( '[data-bootstrapui-adapter-type="container"]' )
                 .then( ( container ) => {
-                    const adapter = container.data( 'bootstrapui-adapter' );
-                    const currentValues = adapter.getValue();
-                    expect( currentValues ).to.have.length( 2 );
-
-                    function checkValue( valueholder, label, value ) {
-                        expect( valueholder ).to.have.property( 'label', label );
-                        expect( valueholder ).to.have.property( 'value', value );
-                    }
-
-                    checkValue( currentValues[0], 'One', '1' );
-                    checkValue( currentValues[1], '3', 'Three' );
+                    adapterUtils.assertAdapterValueSelected( container, 0, 'One', '1' );
+                    adapterUtils.assertAdapterValueSelected( container, 1, '3', 'Three' );
                 } );
     } )
 

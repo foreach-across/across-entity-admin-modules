@@ -13,71 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import adapterUtils from "../../support/utils/control-adapters";
 
 describe( 'ControlAdapter - Datepicker', function () {
+    const selector = "[data-bootstrapui-adapter-type='datetime']";
+    const initialFormattedDate = '2019-01-23 00:00';
 
     before( function () {
         cy.visit( "/control-adapters" );
     } );
 
     it( "adapter exists", function () {
-        cy.get( "[data-bootstrapui-adapter-type='datetime']" )
-                .then( ( element ) => expect( element.data( 'bootstrapui-adapter' ) ).to.not.be.undefined );
+        adapterUtils.assertThatAdapterExists( selector );
     } );
 
     it( "value holds the formatted date (label), moment date (value) and datetimepicker (context)", function () {
-        cy.get( "[data-bootstrapui-adapter-type='datetime']" )
+        cy.get( selector )
                 .then( ( datepicker ) => {
                     const adapter = datepicker.data( "bootstrapui-adapter" );
                     const exportFormat = datepicker.data( "bootstrapui-datetimepicker" ).exportFormat;
-                    expect( adapter.getTarget() ).to.eq( datepicker[0] );
-                    const currentValues = adapter.getValue();
-                    expect( currentValues ).to.have.length( 1 );
-                    const currentValue = currentValues[0];
-                    expect( currentValue ).to.have.property( 'label', "2019-01-23 00:00" );
-                    expect( Cypress.moment( currentValue.value._d ).format( exportFormat ) ).to.eq( currentValue.label );
+
+                    adapterUtils.assertAdapterValueSelected( datepicker, 0, initialFormattedDate, undefined, datepicker[0] );
+                    const currentValue = adapter.getValue()[0];
+                    expect( Cypress.moment( currentValue.value._d ).format( exportFormat ) ).to.eq( initialFormattedDate );
                 } );
     } );
 
     it( "modifying the value", function () {
-        cy.get( "[data-bootstrapui-adapter-type='datetime']" )
+        cy.get( selector )
                 .then( ( datepicker ) => {
                     const adapter = datepicker.data( "bootstrapui-adapter" );
-                    expect( adapter.getValue()[0] ).to.have.property( 'label', "2019-01-23 00:00" );
+                    adapterUtils.assertAdapterValueSelected( datepicker, 0, initialFormattedDate );
+
                     adapter.selectValue( '2019-01-25 13:00' );
-                    expect( adapter.getValue()[0] ).to.have.property( 'label', "2019-01-25 13:00" );
+                    adapterUtils.assertAdapterValueSelected( datepicker, 0, "2019-01-25 13:00" );
+
                     adapter.reset();
-                    expect( adapter.getValue()[0] ).to.have.property( 'label', "2019-01-23 00:00" );
+                    adapterUtils.assertAdapterValueSelected( datepicker, 0, initialFormattedDate );
                 } );
     } );
 
     it( "has no underlying control adapters", function () {
-        cy.get( "[data-bootstrapui-adapter-type='datetime']" )
-                .then( ( datepicker ) => {
-                    expect( datepicker.find( "[data-bootstrapui-adapter-type]" ).length ).to.eq( 0 );
-                } );
+        adapterUtils.assertHasUnderlyingControlAdapters( selector, 0 );
     } );
 
     it( "bootstrapui.change event is fired on dp.change", function () {
-        cy.get( "[data-bootstrapui-adapter-type='datetime']" )
+        cy.get( selector )
                 .then( ( datepicker ) => {
-                    const adapter = datepicker.data( "bootstrapui-adapter" );
-
-                    const obj = {
-                        handle( controlAdapter ) {
-                            return controlAdapter;
-                        }
-                    };
-                    const spy = cy.spy( obj, 'handle' );
-
-                    datepicker.on( "bootstrapui.change", function ( event, controlAdapter ) {
-                        obj.handle( controlAdapter );
-                    } );
-
-                    datepicker.trigger( 'dp.change' );
-
-                    expect( spy ).to.have.callCount( 1 );
-                    expect( spy ).to.have.returned( adapter );
+                    adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn( datepicker, 'dp.change' );
                 } );
     } );
 } );
