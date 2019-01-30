@@ -15,7 +15,6 @@
  */
 
 describe( 'ControlAdapter - Checkbox', function () {
-
     before( function () {
         cy.visit( "/control-adapters" );
     } );
