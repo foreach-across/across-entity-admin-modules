@@ -43,6 +43,7 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 		this.textbox = textbox;
 		this.valueControl = valueControl;
 		this.setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "autosuggest" );
+		textbox.removeAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE );
 	}
 
 	@Override

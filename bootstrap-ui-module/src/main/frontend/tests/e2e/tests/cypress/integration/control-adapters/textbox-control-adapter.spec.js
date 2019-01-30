@@ -24,6 +24,7 @@ describe( 'ControlAdapter - Basic', function () {
                         adapterUtils.getAdapterForElement( element ).reset();
                     } )
         } );
+
         it( 'adapter exists', function () {
             adapterUtils.assertThatAdapterExists( selector );
         } );

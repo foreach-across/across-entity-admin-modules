@@ -70,7 +70,8 @@ public class ControlAdapterController
 		                                      .select( SelectFormElementConfiguration.liveSearch() )
 		                                      .build() );
 		generatedElements.put( "Autosuggest",
-		                       autosuggest().configuration( withDataSet( dataset -> dataset.remoteUrl( "/bootstrapAutosuggest/suggest?query={{query}}" ) ) )
+		                       autosuggest().controlName( "ca-autosuggest" )
+		                                    .configuration( withDataSet( dataset -> dataset.remoteUrl( "/bootstrapAutosuggest/suggest?query={{query}}" ) ) )
 		                                    .build() );
 		generatedElements.put( "Textbox", textbox().controlName( "ca-textbox" ).build() );
 		generatedElements.put( "Autosizing textbox", textbox().autoSize().controlName( "ca-textbox-autosize" ).build() );

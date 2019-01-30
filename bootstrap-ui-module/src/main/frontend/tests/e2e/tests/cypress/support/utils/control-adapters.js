@@ -104,16 +104,11 @@ export default {
 
         let targetNode;
         if ( element.is( adapter.getTarget() ) ) {
-            console.log( "I'm the target!" );
             targetNode = element;
         }
         else {
-            console.log( "Gonna look for the target!" );
             targetNode = element.find( adapter.getTarget() );
         }
-
-        console.log( "Target is:" );
-        console.log( targetNode );
 
         const obj = {
             handle( controlAdapter ) {
