@@ -93,7 +93,7 @@ public class TextboxFormElement extends FormControlElementSupport implements Con
 
 	public TextboxFormElement() {
 		super( ELEMENT_TYPE );
-		setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "textbox" );
+		setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "basic" );
 	}
 
 	@Override

@@ -42,7 +42,7 @@ import {createContainerControlAdapter} from "./controls/container/container-cont
             BootstrapUiModule.registerInitializer( function ( node ) {
                 ControlAdapterFactory.register( 'autosuggest', createAutosuggestControlAdapter );
                 ControlAdapterFactory.register( 'datetime', createDatePickerControlAdapter );
-                ControlAdapterFactory.register( 'textbox', createBasicControlAdapter );
+                ControlAdapterFactory.register( 'basic', createBasicControlAdapter );
                 ControlAdapterFactory.register( 'numeric', createNumericControlAdapter );
                 ControlAdapterFactory.register( 'bootstrap-select', createBootstrapSelectControlAdapter );
                 ControlAdapterFactory.register( 'select', createSelectControlAdapter );
