@@ -22,7 +22,7 @@ import BootstrapUiControlValueHolder, {createControlValueHolder} from '../suppor
 import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 function isUnwrapped( target: any ): boolean {
-    return $( target ).is( 'input[type="checkbox"]' ) || $( target ).is( 'input[type="radio]' );
+    return $( target ).is( 'input[type="checkbox"]' ) || $( target ).is( 'input[type="radio"]' );
 }
 
 function getLabelElement( target: any ): any {
@@ -63,8 +63,8 @@ export default class CheckboxControlAdapter extends BaseControlAdapter
         this.selectValue( this.initialValue );
     }
 
-    selectValue( select: boolean ): void {
-        $( this.getTarget() ).prop( 'checked', select );
+    selectValue( isChecked: boolean ): void {
+        $( this.getTarget() ).prop( 'checked', isChecked );
     }
 
     isSelected(): boolean {

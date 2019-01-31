@@ -17,6 +17,7 @@
 package com.foreach.across.samples.bootstrapui.application.controllers.examples;
 
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -54,16 +55,9 @@ public class ControlAdapterController
 	public String render( Model model ) {
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
 		generatedElements.put( "Datetime", datetime().value( LocalDate.of( 2019, 1, 23 ) ).controlName( "ca-datetime" ).build() );
-		generatedElements.put( "Single checkbox", checkbox().text( "Alive" ).value( "Yes" ).controlName( "ca-checkbox" ).build() );
-		generatedElements.put( "Unwrapped checkbox", checkbox().text( "Alive" ).unwrapped().value( "Yes" ).controlName( "ca-checkbox-unwrapped" ).build() );
-		generatedElements.put( "Unwrapped checkbox without label", checkbox().unwrapped().value( "Yes" ).controlName( "ca-checkbox-unwrapped-no-label" )
-		                                                                     .build() );
-		generatedElements.put( "Checkbox outside label", div()
-				.add( label().text( "Alive" ).target( "ca-checkbox-out-label" ) )
-				.add( checkbox().value( "Yes" ).controlName( "ca-checkbox-out-label" ) )
-				.build() );
+		addOptionFormElements( generatedElements, "checkbox" );
+		addOptionFormElements( generatedElements, "radio" );
 		generatedElements.put( "Group of checkboxes", optionElement().controlName( "ca-multi-checkbox" ).checkbox().build() );
-		generatedElements.put( "Single radiobutton", radio().text( "Once you go ... You can't go back!" ).value( "Male" ).controlName( "ca-radio" ).build() );
 		generatedElements.put( "Group of radiobuttons", optionElement().controlName( "ca-multi-radio" ).radio().build() );
 		generatedElements.put( "Select", optionElement().controlName( "ca-select" ).select().build() );
 		generatedElements.put( "Multi select", optionElement().controlName( "ca-multi-select" ).select().multiple().build() );
@@ -88,6 +82,26 @@ public class ControlAdapterController
 		model.addAttribute( "generatedElements", generatedElements );
 
 		return "th/bootstrapUiTest/elementsRendering";
+	}
+
+	private void addOptionFormElements( Map<String, ViewElement> generatedElements, String identifier ) {
+		generatedElements.put( "Single " + identifier, getOptionBuilder( identifier ).controlName( "ca-" + identifier ).text( "Alive" ).value( "Yes" )
+		                                                                             .build() );
+		generatedElements.put( "Unwrapped " + identifier, getOptionBuilder( identifier ).unwrapped().controlName( "ca-" + identifier + "-unwrapped" ).text(
+				"Alive" ).value( "Yes" )
+		                                                                                .build() );
+		generatedElements.put( "Unwrapped " + identifier + " without label", getOptionBuilder( identifier ).unwrapped().value( "Yes" )
+		                                                                                                   .controlName(
+				                                                                                                   "ca-" + identifier + "-unwrapped-no-label" )
+		                                                                                                   .build() );
+		generatedElements.put( identifier + " outside label", div()
+				.add( label().text( "Alive" ).target( "ca-" + identifier + "-out-label" ) )
+				.add( getOptionBuilder( identifier ).value( "Yes" ).controlName( "ca-" + identifier + "-out-label" ) )
+				.build() );
+	}
+
+	private OptionFormElementBuilder getOptionBuilder( String identifier ) {
+		return "checkbox".equals( identifier ) ? checkbox() : radio();
 	}
 
 	private OptionsFormElementBuilder optionElement() {

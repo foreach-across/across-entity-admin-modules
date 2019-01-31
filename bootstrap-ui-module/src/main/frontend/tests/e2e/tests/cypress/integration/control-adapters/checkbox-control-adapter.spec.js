@@ -18,7 +18,7 @@ import adapterUtils from "../../support/utils/control-adapters";
 
 describe( 'ControlAdapter - Checkbox', function () {
 
-    const defaultElementFetcher = function ( selector ) {
+    const unwrappedElementFetcher = function ( selector ) {
         return cy.get( selector );
     };
     const wrappedElementFetcher = function ( selector ) {
@@ -26,37 +26,85 @@ describe( 'ControlAdapter - Checkbox', function () {
                 .closest( '[data-bootstrapui-adapter-type="checkbox"]' )
     };
 
+    const unwrappedCheckboxTests = function ( selector, label ) {
+        it( "checking modifies the value", function () {
+            cy.get( selector )
+                    .should( 'not.be.checked' )
+                    .then( ( wrapper ) => adapterUtils.assertAdapterNoValueSelected( wrapper ) )
+                    .check().should( 'be.checked' )
+                    .then( ( wrapper ) => {
+                        adapterUtils.assertAdapterValueSelected( wrapper, 0, label, 'Yes' );
+
+                        const adapter = adapterUtils.getAdapterForElement( wrapper );
+                        adapter.selectValue( false );
+                        adapterUtils.assertAdapterNoValueSelected( wrapper );
+
+                        adapter.reset();
+                        adapterUtils.assertAdapterNoValueSelected( wrapper );
+                    } );
+        } );
+    };
+
+    const wrappedCheckboxTests = function ( selector, label ) {
+        it( "checking modifies the value", function () {
+            cy.get( selector )
+                    .should( 'not.be.checked' )
+                    .closest( '[data-bootstrapui-adapter-type="checkbox"]' )
+                    .then( ( wrapper ) => adapterUtils.assertAdapterNoValueSelected( wrapper ) )
+                    .find( selector )
+                    .check( {force: true} ).should( 'be.checked' )
+                    .closest( '[data-bootstrapui-adapter-type="checkbox"]' )
+                    .then( ( wrapper ) => {
+                        adapterUtils.assertAdapterValueSelected( wrapper, 0, label, 'Yes' );
+
+                        const adapter = adapterUtils.getAdapterForElement( wrapper );
+                        adapter.selectValue( false );
+                        adapterUtils.assertAdapterNoValueSelected( wrapper );
+
+                        adapter.reset();
+                        adapterUtils.assertAdapterNoValueSelected( wrapper );
+                    } );
+        } );
+    };
+
     const checkboxTests = function ( selector, elementFetcher, label ) {
         afterEach( 'reset adapter', function () {
+            console.log( elementFetcher );
             elementFetcher( selector )
                     .then( ( element ) => {
-                        console.log( element );
-                        console.log( element.data() );
                         adapterUtils.getAdapterForElement( element ).reset();
                     } )
         } );
 
-        it( "adapter exists", function () {
-            elementFetcher( selector )
-                    .then( element => {
-                        expect( element.data( 'bootstrapui-adapter' ) ).to.not.be.undefined;
-                    } );
-        } );
+        // it( "adapter exists", function () {
+        //     elementFetcher( selector )
+        //             .then( element => {
+        //                 expect( element.data( 'bootstrapui-adapter' ) ).to.not.be.undefined;
+        //             } );
+        // } );
+        //
+        // it( "has no underlying control adapters", function () {
+        //     elementFetcher( selector )
+        //             .then( ( wrapper ) => {
+        //                 expect( wrapper.find( "[data-bootstrapui-adapter-type]" ).length ).to.eq( 0 );
+        //             } );
+        // } );
+        //
+        // it( 'value is empty array if checkbox is not selected', function () {
+        //     elementFetcher( selector )
+        //             .then( ( wrapper ) => {
+        //                 adapterUtils.assertAdapterNoValueSelected( wrapper );
+        //             } );
+        // } );
 
         it( "getValue holds label, value, and checkbox if selected", function () {
             elementFetcher( selector )
                     .then( ( wrapper ) => {
-                        const contextElement = wrapper.is( 'input[type=checkbox]' ) ? wrapper : wrapper.find( 'input[type=checkbox]' );
+                        const contextElement = wrapper.is( 'input[type=checkbox], input[type=radio]' )
+                                ? wrapper : wrapper.find( 'input[type=checkbox],input[type=radio]' );
                         const adapter = adapterUtils.getAdapterForElement( wrapper );
                         adapter.selectValue( true );
                         adapterUtils.assertAdapterValueSelected( wrapper, 0, label, 'Yes', contextElement[0] );
-                    } );
-        } );
-
-        it( 'value is empty array if checkbox is not selected', function () {
-            elementFetcher( selector )
-                    .then( ( wrapper ) => {
-                        adapterUtils.assertAdapterNoValueSelected( wrapper );
                     } );
         } );
 
@@ -77,13 +125,6 @@ describe( 'ControlAdapter - Checkbox', function () {
                     } );
         } );
 
-        it( "has no underlying control adapters", function () {
-            elementFetcher( selector )
-                    .then( ( wrapper ) => {
-                        expect( wrapper.find( "[data-bootstrapui-adapter-type]" ).length ).to.eq( 0 );
-                    } );
-        } );
-
         it( "bootstrapui.change event is fired on change", function () {
             elementFetcher( selector )
                     .then( ( wrapper ) => {
@@ -98,20 +139,47 @@ describe( 'ControlAdapter - Checkbox', function () {
         cy.visit( "/control-adapters" );
     } );
 
-    describe( 'checkbox', function () {
-        checkboxTests( '#ca-checkbox', wrappedElementFetcher, 'Alive' );
+    describe( 'Checkbox tests', function () {
+        describe( 'checkbox', function () {
+            checkboxTests( '#ca-checkbox', wrappedElementFetcher, 'Alive' );
+            wrappedCheckboxTests( '#ca-checkbox', 'Alive' );
+        } );
+
+        describe( 'unwrapped checkbox', function () {
+            checkboxTests( '#ca-checkbox-unwrapped', wrappedElementFetcher, 'Alive' );
+            wrappedCheckboxTests( '#ca-checkbox-unwrapped', 'Alive' );
+        } );
+
+        describe( 'unwrapped checkbox without label', function () {
+            checkboxTests( '#ca-checkbox-unwrapped-no-label', unwrappedElementFetcher );
+            unwrappedCheckboxTests( '#ca-checkbox-unwrapped-no-label' );
+        } );
+
+        describe( 'wrapped checkbox outside label', function () {
+            checkboxTests( '#ca-checkbox-out-label', wrappedElementFetcher, 'Alive' );
+            wrappedCheckboxTests( '#ca-checkbox-out-label', 'Alive' );
+        } );
     } );
 
-    describe( 'unwrapped checkbox', function () {
-        checkboxTests( '#ca-checkbox-unwrapped', wrappedElementFetcher, 'Alive' );
-    } );
+    describe( 'Radio tests', function () {
+        describe( 'radio', function () {
+            checkboxTests( '#ca-radio', wrappedElementFetcher, 'Alive' );
+            wrappedCheckboxTests( '#ca-radio', 'Alive' );
+        } );
 
-    describe( 'unwrapped checkbox without label', function () {
-        checkboxTests( '#ca-checkbox-unwrapped-no-label', defaultElementFetcher );
-    } );
+        describe( 'unwrapped radio', function () {
+            checkboxTests( '#ca-radio-unwrapped', wrappedElementFetcher, 'Alive' );
+            wrappedCheckboxTests( '#ca-radio-unwrapped', 'Alive' );
+        } );
 
-    describe( 'wrapped checkbox outside label', function () {
-        checkboxTests( '#ca-checkbox-out-label', wrappedElementFetcher, 'Alive' )
-    } );
+        describe( 'unwrapped radio without label', function () {
+            checkboxTests( '#ca-radio-unwrapped-no-label', unwrappedElementFetcher );
+            unwrappedCheckboxTests( '#ca-radio-unwrapped-no-label' );
+        } );
 
+        describe( 'wrapped radio outside label', function () {
+            checkboxTests( '#ca-radio-out-label', wrappedElementFetcher, 'Alive' );
+            wrappedCheckboxTests( '#ca-radio-out-label', 'Alive' );
+        } );
+    } );
 } );
