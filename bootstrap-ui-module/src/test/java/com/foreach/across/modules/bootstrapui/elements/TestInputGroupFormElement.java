@@ -39,7 +39,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				inputGroup,
 				"<div class='input-group'>"
-						+ "<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' />"
+						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
 						+ "</div>"
 		);
 	}
@@ -71,7 +71,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 						+ "<span class='input-group-addon'>"
 						+ "<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>"
 						+ "</span>"
-						+ "<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' />"
+						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
 						+ "</div>"
 		);
 	}
@@ -88,7 +88,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				inputGroup,
 				"<div class='input-group'>"
-						+ "<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' />"
+						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
 						+ "<span class='input-group-addon'>"
 						+ "<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>"
 						+ "</span>"
@@ -108,7 +108,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 						+ "<span class='input-group-btn'>"
 						+ "<button type='button' class='btn btn-default' />"
 						+ "</span>"
-						+ "<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' />"
+						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
 						+ "<span class='input-group-addon'>"
 						+ "<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>"
 						+ "</span>"
@@ -128,7 +128,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 						+ "<span class='input-group-addon'>"
 						+ "<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>"
 						+ "</span>"
-						+ "<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' />"
+						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />"
 						+ "<span class='input-group-btn'>"
 						+ "<button type='button' class='btn btn-default' />"
 						+ "</span>"
@@ -145,7 +145,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				control,
 				"<div class='input-group'>"
-						+ "<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' name='two' id='two' />"
+						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='two' id='two' />"
 						+ "</div>"
 		);
 
@@ -165,7 +165,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				control,
 				"<div class='input-group'>"
-						+ "<input data-bootstrapui-adapter-type='textbox' type='text' class='form-control' name='prefix.one' id='prefix.one' />"
+						+ "<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='prefix.one' id='prefix.one' />"
 						+ "</div>"
 		);
 
