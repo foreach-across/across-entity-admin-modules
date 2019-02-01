@@ -86,7 +86,7 @@ public class ControlAdapterController
 		generatedElements.put( "Textbox", textbox().controlName( "ca-textbox" ).build() );
 		generatedElements.put( "Autosizing textbox", textbox().autoSize().controlName( "ca-textbox-autosize" ).build() );
 		generatedElements.put( "Textarea", textarea().controlName( "ca-textarea" ).build() );
-		generatedElements.put( "Numeric", numeric().currency( Currency.getInstance( "EUR" ) ).controlName( "ca-numeric" ).build() );
+		generatedElements.put( "Numeric", numeric().currency( Currency.getInstance( Locale.US ) ).controlName( "ca-numeric" ).build() );
 
 		model.addAttribute( "generatedElements", generatedElements );
 

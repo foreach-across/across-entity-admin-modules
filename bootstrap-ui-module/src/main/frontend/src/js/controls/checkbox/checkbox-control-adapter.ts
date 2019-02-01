@@ -26,7 +26,7 @@ function isUnwrapped( target: any ): boolean {
 }
 
 function getLabelElement( target: any ): any {
-    return $( `label[for=${target.id}]` );
+    return $( `label[for=${$.escapeSelector( target.id )}]` );
 }
 
 /**
