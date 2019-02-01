@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {AxiosInstance as axios} from "axios";
+
 var EmbeddedCollection = function( element ) {
     var wrapper = element;
 
@@ -116,9 +118,6 @@ var EntityModule = (function( $ ) {
         var currentSort = table.data( 'tbl-sort' );
         this.sort = currentSort != null ? currentSort : [];
 
-        this.sortables = $( "[data-tbl='" + id + "'][data-tbl-sort-property]", table );
-        this.sortables.removeClass( 'asc', 'desc' );
-
         for ( var i = 0; i < this.sort.length; i++ ) {
             var order = this.sort[i];
 
@@ -131,6 +130,7 @@ var EntityModule = (function( $ ) {
                     } );
         }
 
+        this.doesDataLoadWithAjax = table.data( 'tbl-ajax-load' );
         var pager = this;
 
         table.on( EVENT_MOVE_TO_PAGE, function( event, pageNumber ) {
@@ -175,16 +175,25 @@ var EntityModule = (function( $ ) {
                     }
                 } );
 
+        this.sortables = $( "[data-tbl='" + id + "'][data-tbl-sort-property]", table );
+        this.sortables.removeClass( 'asc', 'desc' );
+
         this.sortables.click( function( e ) {
             e.preventDefault();
             e.stopPropagation();
             table.trigger( EVENT_SORT, $( this ).data( 'tbl-sort-property' ) );
         } );
-
         jQuery.event.special[EVENT_LOAD_DATA] = {
             _default: function( event, params ) {
                 // fallback to default loading of paged data
                 pager.loadData( params );
+            }
+        };
+
+        jQuery.event.special[EVENT_PREPARE_DATA] = {
+            _default: function( event, params ) {
+                // fallback to default to prepare the paged data loading
+                pager.prepareData( params );
             }
         };
 
@@ -207,6 +216,33 @@ var EntityModule = (function( $ ) {
 
             table.trigger( EVENT_LOAD_DATA, params );
         };
+
+        this.loadDataWithAjax = function( params, form ) {
+            var allParams = {};
+            var itemTable = $(".pcs-body-section").find( '.panel-default' );
+
+            form.serializeArray().map( function( x ) {
+                allParams[x.name] = x.value;
+            } );
+
+            allParams = $.extend( allParams, params );
+
+            // $.get( '#', $.param( allParams, true ), function( data ) {
+            //     itemTable.replaceWith( data );
+            //     EntityModule.initializeFormElements( itemTable );
+            // } );
+
+            axios.get('#', allParams).then(function(data) {
+                itemTable.replaceWith( data );
+                EntityModule.initializeFormElements( itemTable );
+            });
+        }
+
+        this.prepareData = function( params ) {
+            if ( this.doesDataLoadWithAjax ) {
+                params['_partial'] = '::itemsTable';
+            }
+        }
 
         this.loadData = function( params ) {
             if ( this.formName ) {
@@ -237,7 +273,12 @@ var EntityModule = (function( $ ) {
                     requireHiddenElement( paramName, paramValue );
                 } );
 
-                form.submit();
+                if ( this.doesDataLoadWithAjax ) {
+                    this.loadDataWithAjax( params, form );
+                }
+                else {
+                    form.submit();
+                }
             }
             else {
                 var pathUrl = window.location.href.split( '?' )[0];
