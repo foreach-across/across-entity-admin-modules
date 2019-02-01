@@ -37,12 +37,14 @@ export default class DatePickerControlAdapter extends BaseControlAdapter
         this.exportFormat = exportFormat;
         this.initialValue = this.getDateTimePicker().date();
         $( target ).on( 'dp.change', event => this.triggerChange() );
-        $( target ).find( 'input[type="text"]' ).keyup( this, ( event ) => {
-            if ( event.key === 'Enter' ) {
-                // event.preventDefault();
-                this.triggerSubmit();
-            }
-        } );
+
+        // TODO configure 'bootstrapui.submit' event
+        // $( target ).find( 'input[type="text"]' ).keyup( this, ( event ) => {
+        //     if ( event.key === 'Enter' ) {
+        //         // event.preventDefault();
+        //         this.triggerSubmit();
+        //     }
+        // } );
     }
 
     getValue(): BootstrapUiControlValueHolder[] {
@@ -72,6 +74,9 @@ export default class DatePickerControlAdapter extends BaseControlAdapter
 export function createDatePickerControlAdapter( node: any ): BootstrapUiControlAdapter {
     const element = $( node );
     const configuration = $( element ).data( 'bootstrapui-datetimepicker' );
-    const exportFormat = configuration.exportFormat;
+    let exportFormat;
+    if ( configuration ) {
+        exportFormat = configuration.exportFormat;
+    }
     return new DatePickerControlAdapter( node, exportFormat );
 }

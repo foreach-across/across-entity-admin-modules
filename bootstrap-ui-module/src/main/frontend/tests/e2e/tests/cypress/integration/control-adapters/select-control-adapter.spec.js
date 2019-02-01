@@ -22,6 +22,7 @@ describe( 'ControlAdapter - Select', function () {
             cy.get( selector )
                     .select( '2', {force: true} )
                     .then( ( select ) => {
+                        adapterUtils.assertAdapterHoldsAmountOfValues( select, 1 );
                         adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2', select.find( 'option:selected' )[0] );
 
                         const adapter = adapterUtils.getAdapterForElement( select );
@@ -34,6 +35,7 @@ describe( 'ControlAdapter - Select', function () {
                     .then( ( select ) => adapterUtils.assertAdapterNoValueSelected( select ) )
                     .select( ['1', '2'], {force: true} )
                     .then( ( select ) => {
+                        adapterUtils.assertAdapterHoldsAmountOfValues( select, 2 );
                         adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1' );
                         adapterUtils.assertAdapterValueSelected( select, 1, 'Two', '2' );
                     } );

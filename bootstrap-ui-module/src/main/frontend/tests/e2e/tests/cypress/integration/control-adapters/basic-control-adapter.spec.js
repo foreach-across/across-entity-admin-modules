@@ -52,9 +52,11 @@ describe( 'ControlAdapter - Basic', function () {
             cy.get( selector )
                     .type( content )
                     .then( ( element ) => {
+                        adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 );
                         adapterUtils.assertAdapterValueSelected( element, 0, content );
                         adapterUtils.getAdapterForElement( element ).reset();
                         adapterUtils.assertAdapterValueSelected( element, 0, '' );
+                        adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 );
                     } )
         } );
 

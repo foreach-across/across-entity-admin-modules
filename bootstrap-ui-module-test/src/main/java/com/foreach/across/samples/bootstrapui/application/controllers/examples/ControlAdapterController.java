@@ -16,6 +16,7 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.examples;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiViewElementAttributes;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
@@ -59,6 +60,14 @@ public class ControlAdapterController
 		addOptionFormElements( generatedElements, "radio" );
 		generatedElements.put( "Group of checkboxes", optionElement().controlName( "ca-multi-checkbox" ).checkbox().build() );
 		generatedElements.put( "Group of radiobuttons", optionElement().controlName( "ca-multi-radio" ).radio().build() );
+		generatedElements.put( "Nested control adapters",
+		                       div().htmlId( "ca-nested-containers" )
+		                            .attribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "container" )
+		                            .add(
+				                            optionElement().controlName( "ca-nested-multi-checkbox" ).checkbox(),
+				                            optionElement().controlName( "ca-nested-multi-radio" ).radio()
+		                            ).build()
+		);
 		generatedElements.put( "Select", optionElement().controlName( "ca-select" ).select().build() );
 		generatedElements.put( "Multi select", optionElement().controlName( "ca-multi-select" ).select().multiple().build() );
 		generatedElements.put( "Bootstrap select",

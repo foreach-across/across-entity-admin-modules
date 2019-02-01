@@ -81,10 +81,12 @@ describe( 'ControlAdapter - Autosuggest', function () {
     it( 'reset elements initial value', function () {
         selectAutosuggestItem( selector )
                 .then( ( element ) => {
+                    adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 );
                     adapterUtils.assertAdapterValueSelected( element, 0, 'AAAlabel', '1' );
                     const adapter = adapterUtils.getAdapterForElement( element );
                     adapter.reset();
                     adapterUtils.assertAdapterValueSelected( element, 0, '', '' );
+                    adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 );
                 } );
     } );
 

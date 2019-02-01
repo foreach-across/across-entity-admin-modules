@@ -35,13 +35,14 @@ export default class SelectControlAdapter extends BaseControlAdapter
     initializeEventTriggers(): void {
         $( this.getTarget() ).on( 'change', event => this.triggerChange() );
 
+        // TODO configure 'bootstrapui.submit' event
         // prevent opening the element on enter, but see it as 'submitting' the value instead.
-        $( this.getTarget() ).keypress( this, ( event ) => {
-            if ( event.key === 'Enter' ) {
-                event.preventDefault();
-                this.triggerSubmit();
-            }
-        } );
+        // $( this.getTarget() ).keypress( this, ( event ) => {
+        //     if ( event.key === 'Enter' ) {
+        //         event.preventDefault();
+        //         this.triggerSubmit();
+        //     }
+        // } );
     }
 
     getValue(): BootstrapUiControlValueHolder[] {

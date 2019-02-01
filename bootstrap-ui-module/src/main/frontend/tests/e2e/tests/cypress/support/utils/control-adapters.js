@@ -85,6 +85,16 @@ export default {
         }
     },
     /**
+     * Checks whether an element currently holds a certain amount of values.
+     *
+     * @param element on which the adapter is registered
+     * @param amountOfValues to expect when calling {@link BootstrapUiControlAdapter#getValue}
+     */
+    assertAdapterHoldsAmountOfValues: function ( element, amountOfValues ) {
+        const adapter = this.getAdapterForElement( element );
+        expect( adapter.getValue() ).to.have.length( amountOfValues );
+    },
+    /**
      * Validates that the adapter holds no values.
      *
      * @param element jquery node on which the adapter is registered
@@ -94,9 +104,10 @@ export default {
         expect( adapter.getValue() ).to.have.length( 0 );
     },
     /**
+     * Checks whether the {@code bootstrapui.change} event is triggered when the specified event is executed
      *
-     * @param element
-     * @param event
+     * @param element that holds the adapter
+     * @param event name of the event that should trigger {@code bootstrapui.change}
      * @returns {*}
      */
     assertThatBootstrapUiChangeIsTriggeredOn: function ( element, event ) {

@@ -61,10 +61,13 @@ describe( 'ControlAdapter - Numeric', function () {
 
     it( 'adapter reset leaves currency descriptor', function () {
         cy.get( selector )
+                .then( ( element ) => adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 ) )
                 .type( content )
                 .then( ( element ) => {
+                    adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 );
                     adapterUtils.assertAdapterValueSelected( element, 0, label, content );
                     adapterUtils.getAdapterForElement( element ).reset();
+                    adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 );
                     adapterUtils.assertAdapterValueSelected( element, 0, '€', '' );
                 } );
 

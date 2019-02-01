@@ -51,9 +51,7 @@ describe( 'ControlAdapter - Container', function () {
                     const spy = cy.spy( obj, 'handle' );
 
                     wrapper.on( "bootstrapui.change", function ( event, controlAdapter ) {
-                        if ( event.target === adapter.getTarget() ) {
-                            obj.handle( controlAdapter );
-                        }
+                        obj.handle( controlAdapter );
                     } );
 
                     wrapper.find( "[type=checkbox]" ).first().trigger( 'change' );
@@ -73,10 +71,10 @@ describe( 'ControlAdapter - Container', function () {
                 .closest( '[data-bootstrapui-adapter-type="container"]' )
                 .then( ( container ) => {
                     const adapter = container.data( 'bootstrapui-adapter' );
-                    expect( adapter.getValue() ).to.have.length( 3 );
+                    adapterUtils.assertAdapterHoldsAmountOfValues( container, 3 );
 
                     adapter.reset();
-                    expect( adapter.getValue() ).to.have.length( 0 );
+                    adapterUtils.assertAdapterNoValueSelected( container );
                     expect( Cypress.$( ':checked', container ) ).to.have.property( 'length', 0 );
                 } );
     } );
@@ -94,7 +92,25 @@ describe( 'ControlAdapter - Container', function () {
                 .then( ( container ) => {
                     adapterUtils.assertAdapterValueSelected( container, 0, 'One', '1' );
                     adapterUtils.assertAdapterValueSelected( container, 1, '3', 'Three' );
+                    adapterUtils.assertAdapterHoldsAmountOfValues( container, 2 );
                 } );
-    } )
+    } );
 
+    it( 'Containers element with nested container elements also have a flattened value', function () {
+        cy.get( '#ca-nested-containers' )
+                .find( '[type=checkbox],[type=radio]' )
+                .each( ( cb, idx ) => {
+                    if ( idx % 2 === 0 ) {
+                        cb.prop( 'checked', true );
+                        expect( cb.is( ':checked' ) ).to.be.true;
+                    }
+                } )
+                .get( '#ca-nested-containers' )
+                .then( ( container ) => {
+                    adapterUtils.assertAdapterHoldsAmountOfValues( container, 3 );
+                    adapterUtils.assertAdapterValueSelected( container, 0, 'One', '1' );
+                    adapterUtils.assertAdapterValueSelected( container, 1, '3', 'Three' );
+                    adapterUtils.assertAdapterValueSelected( container, 2, 'Two', '2' );
+                } );
+    } );
 } );

@@ -39,19 +39,27 @@ export default class ContainerControlAdapter extends BaseControlAdapter
         super( target );
         const controlElements: BootstrapUiControlAdapter[] = [];
         $( target ).find( `[data-${BootstrapUiAttributes.CONTROL_ADAPTER_TYPE}]` )
+            .not( `[data-${BootstrapUiAttributes.CONTROL_ADAPTER_TYPE}="container"]` )
             .each( ( index, element ) => {
                 const adapter = $( element ).data( BootstrapUiAttributes.CONTROL_ADAPTER );
                 controlElements.push( adapter );
 
-                $( adapter.getTarget() ).on( 'bootstrapui.change', event => this.triggerChange() );
-                $( adapter.getTarget() ).on( 'bootstrapui.submit', event => this.triggerSubmit() );
+                $( adapter.getTarget() ).on( 'bootstrapui.change', ( event ) => {
+                    event.stopPropagation();
+                    this.triggerChange();
+                } );
+
+                // TODO configure 'bootstrapui.submit' event
+                // $( adapter.getTarget() ).on( 'bootstrapui.submit', ( event ) => {
+                //     event.stopPropagation();
+                //     this.triggerSubmit();
+                // } );
             } );
         this.adapters = controlElements;
     }
 
     getValue(): BootstrapUiControlValueHolder[] {
         return [].concat( [].concat( ...this.adapters.map( adapter => adapter.getValue() ) ) );
-        // return [createControlValueHolder( target.parent().text(), target.attr( 'value' ), this.getTarget() )];
     }
 
     reset(): void {

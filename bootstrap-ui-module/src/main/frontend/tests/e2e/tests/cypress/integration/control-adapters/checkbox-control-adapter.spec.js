@@ -55,6 +55,7 @@ describe( 'ControlAdapter - Checkbox', function () {
                     .check( {force: true} ).should( 'be.checked' )
                     .closest( '[data-bootstrapui-adapter-type="checkbox"]' )
                     .then( ( wrapper ) => {
+                        adapterUtils.assertAdapterHoldsAmountOfValues( wrapper, 1 );
                         adapterUtils.assertAdapterValueSelected( wrapper, 0, label, 'Yes' );
 
                         const adapter = adapterUtils.getAdapterForElement( wrapper );
@@ -76,26 +77,26 @@ describe( 'ControlAdapter - Checkbox', function () {
                     } )
         } );
 
-        // it( "adapter exists", function () {
-        //     elementFetcher( selector )
-        //             .then( element => {
-        //                 expect( element.data( 'bootstrapui-adapter' ) ).to.not.be.undefined;
-        //             } );
-        // } );
-        //
-        // it( "has no underlying control adapters", function () {
-        //     elementFetcher( selector )
-        //             .then( ( wrapper ) => {
-        //                 expect( wrapper.find( "[data-bootstrapui-adapter-type]" ).length ).to.eq( 0 );
-        //             } );
-        // } );
-        //
-        // it( 'value is empty array if checkbox is not selected', function () {
-        //     elementFetcher( selector )
-        //             .then( ( wrapper ) => {
-        //                 adapterUtils.assertAdapterNoValueSelected( wrapper );
-        //             } );
-        // } );
+        it( "adapter exists", function () {
+            elementFetcher( selector )
+                    .then( element => {
+                        expect( element.data( 'bootstrapui-adapter' ) ).to.not.be.undefined;
+                    } );
+        } );
+
+        it( "has no underlying control adapters", function () {
+            elementFetcher( selector )
+                    .then( ( wrapper ) => {
+                        expect( wrapper.find( "[data-bootstrapui-adapter-type]" ).length ).to.eq( 0 );
+                    } );
+        } );
+
+        it( 'value is empty array if checkbox is not selected', function () {
+            elementFetcher( selector )
+                    .then( ( wrapper ) => {
+                        adapterUtils.assertAdapterNoValueSelected( wrapper );
+                    } );
+        } );
 
         it( "getValue holds label, value, and checkbox if selected", function () {
             elementFetcher( selector )

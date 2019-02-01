@@ -46,9 +46,11 @@ describe( 'ControlAdapter - Datepicker', function () {
                     adapterUtils.assertAdapterValueSelected( datepicker, 0, initialFormattedDate );
 
                     adapter.selectValue( '2019-01-25 13:00' );
+                    adapterUtils.assertAdapterHoldsAmountOfValues( datepicker, 1 );
                     adapterUtils.assertAdapterValueSelected( datepicker, 0, "2019-01-25 13:00" );
 
                     adapter.reset();
+                    adapterUtils.assertAdapterHoldsAmountOfValues( datepicker, 1 );
                     adapterUtils.assertAdapterValueSelected( datepicker, 0, initialFormattedDate );
                 } );
     } );

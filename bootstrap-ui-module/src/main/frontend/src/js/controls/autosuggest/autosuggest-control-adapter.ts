@@ -52,12 +52,14 @@ export default class AutosuggestControlAdapter extends BaseControlAdapter
             this.triggerChange();
         } );
         $( typeahead ).on( 'typeahead:select', event => this.triggerChange() );
-        $( typeahead ).keypress( this, ( event ) => {
-            if ( event.key === 'Enter' ) {
-                // event.preventDefault();
-                this.triggerSubmit();
-            }
-        } );
+
+        // TODO configure 'bootstrapui.submit' event
+        // $( typeahead ).keypress( this, ( event ) => {
+        //     if ( event.key === 'Enter' ) {
+        //         // event.preventDefault();
+        //         this.triggerSubmit();
+        //     }
+        // } );
 
         const typeaheadValue = $( wrapper ).find( '.js-typeahead-value' );
         this.valueHolder = typeaheadValue[0];

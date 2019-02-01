@@ -37,12 +37,13 @@ export default class NumericControlAdapter extends BaseControlAdapter
 
         $( target ).on( 'change', event => this.triggerChange() );
 
+        // TODO configure 'bootstrapui.submit' event
         // prevent opening the element on enter, but see it as 'submitting' the value instead.
-        $( target ).on( 'keypress', ( event ) => {
-            if ( event.key === 'Enter' ) {
-                this.triggerSubmit();
-            }
-        } );
+        // $( target ).on( 'keypress', ( event ) => {
+        //     if ( event.key === 'Enter' ) {
+        //         this.triggerSubmit();
+        //     }
+        // } );
     }
 
     getValue(): BootstrapUiControlValueHolder[] {

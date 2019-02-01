@@ -33,15 +33,16 @@ export default class BootstrapSelectControlAdapter extends SelectControlAdapter
     public initializeEventTriggers(): void {
         $( this.getTarget() ).on( 'changed.bs.select', event => this.triggerChange() );
 
+        // TODO configure 'bootstrapui.submit' event
         // prevent opening the element on enter, but see it as 'submitting' the value instead.
-        $( this.getTarget() ).closest( '.bootstrap-select' )
-            .find( 'button' )
-            .keypress( this, ( event ) => {
-                if ( event.key === 'Enter' ) {
-                    // event.preventDefault();
-                    this.triggerSubmit();
-                }
-            } );
+        // $( this.getTarget() ).closest( '.bootstrap-select' )
+        //     .find( 'button' )
+        //     .keypress( this, ( event ) => {
+        //         if ( event.key === 'Enter' ) {
+        //             // event.preventDefault();
+        //             this.triggerSubmit();
+        //         }
+        //     } );
     }
 
     public selectValue( newValue: any ): void {
