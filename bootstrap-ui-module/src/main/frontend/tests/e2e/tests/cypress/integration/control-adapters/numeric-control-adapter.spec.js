@@ -19,7 +19,7 @@ import adapterUtils from "../../support/utils/control-adapters";
 describe( 'ControlAdapter - Numeric', function () {
     const selector = '#ca-numeric';
     const content = '7234.23';
-    const label = '€7,234.23';
+    const label = '$7,234.23';
 
     before( function () {
         cy.visit( "/control-adapters" );
@@ -68,7 +68,7 @@ describe( 'ControlAdapter - Numeric', function () {
                     adapterUtils.assertAdapterValueSelected( element, 0, label, content );
                     adapterUtils.getAdapterForElement( element ).reset();
                     adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 );
-                    adapterUtils.assertAdapterValueSelected( element, 0, '€', '' );
+                    adapterUtils.assertAdapterValueSelected( element, 0, '$', '' );
                 } );
 
     } );
