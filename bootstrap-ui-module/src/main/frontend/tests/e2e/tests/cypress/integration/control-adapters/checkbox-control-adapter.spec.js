@@ -32,8 +32,6 @@ describe( 'ControlAdapter - Checkbox', function () {
 
     const unwrappedCheckboxTests = function ( selector, withoutLabel ) {
         const label = getLabel( withoutLabel );
-        console.log( `withoutLabel: ${withoutLabel}` );
-        console.log( label );
 
         it( "checking modifies the value", function () {
             cy.get( selector )
@@ -82,7 +80,6 @@ describe( 'ControlAdapter - Checkbox', function () {
         const label = getLabel( withoutLabel );
 
         afterEach( 'reset adapter', function () {
-            console.log( elementFetcher );
             elementFetcher( selector )
                     .then( ( element ) => {
                         adapterUtils.getAdapterForElement( element ).reset();
