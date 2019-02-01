@@ -26,7 +26,15 @@ describe( 'ControlAdapter - Checkbox', function () {
                 .closest( '[data-bootstrapui-adapter-type="checkbox"]' )
     };
 
-    const unwrappedCheckboxTests = function ( selector, label ) {
+    const getLabel = function ( withoutLabel ) {
+        return withoutLabel ? undefined : 'Alive';
+    };
+
+    const unwrappedCheckboxTests = function ( selector, withoutLabel ) {
+        const label = getLabel( withoutLabel );
+        console.log( `withoutLabel: ${withoutLabel}` );
+        console.log( label );
+
         it( "checking modifies the value", function () {
             cy.get( selector )
                     .should( 'not.be.checked' )
@@ -45,7 +53,9 @@ describe( 'ControlAdapter - Checkbox', function () {
         } );
     };
 
-    const wrappedCheckboxTests = function ( selector, label ) {
+    const wrappedCheckboxTests = function ( selector, withoutLabel ) {
+        const label = getLabel( withoutLabel );
+
         it( "checking modifies the value", function () {
             cy.get( selector )
                     .should( 'not.be.checked' )
@@ -68,7 +78,9 @@ describe( 'ControlAdapter - Checkbox', function () {
         } );
     };
 
-    const checkboxTests = function ( selector, elementFetcher, label ) {
+    const checkboxTests = function ( selector, elementFetcher, withoutLabel ) {
+        const label = getLabel( withoutLabel );
+
         afterEach( 'reset adapter', function () {
             console.log( elementFetcher );
             elementFetcher( selector )
@@ -142,45 +154,45 @@ describe( 'ControlAdapter - Checkbox', function () {
 
     describe( 'Checkbox tests', function () {
         describe( 'checkbox', function () {
-            checkboxTests( '#ca-checkbox', wrappedElementFetcher, 'Alive' );
-            wrappedCheckboxTests( '#ca-checkbox', 'Alive' );
+            checkboxTests( '#ca-checkbox', wrappedElementFetcher );
+            wrappedCheckboxTests( '#ca-checkbox' );
         } );
 
         describe( 'unwrapped checkbox', function () {
-            checkboxTests( '#ca-checkbox-unwrapped', wrappedElementFetcher, 'Alive' );
-            wrappedCheckboxTests( '#ca-checkbox-unwrapped', 'Alive' );
+            checkboxTests( '#ca-checkbox-unwrapped', wrappedElementFetcher );
+            wrappedCheckboxTests( '#ca-checkbox-unwrapped' );
         } );
 
         describe( 'unwrapped checkbox without label', function () {
-            checkboxTests( '#ca-checkbox-unwrapped-no-label', unwrappedElementFetcher );
-            unwrappedCheckboxTests( '#ca-checkbox-unwrapped-no-label' );
+            checkboxTests( '#ca-checkbox-unwrapped-no-label', unwrappedElementFetcher, true );
+            unwrappedCheckboxTests( '#ca-checkbox-unwrapped-no-label', true );
         } );
 
         describe( 'wrapped checkbox outside label', function () {
-            checkboxTests( '#ca-checkbox-out-label', wrappedElementFetcher, 'Alive' );
-            wrappedCheckboxTests( '#ca-checkbox-out-label', 'Alive' );
+            checkboxTests( '#ca-checkbox-out-label', wrappedElementFetcher );
+            wrappedCheckboxTests( '#ca-checkbox-out-label' );
         } );
     } );
 
     describe( 'Radio tests', function () {
         describe( 'radio', function () {
-            checkboxTests( '#ca-radio', wrappedElementFetcher, 'Alive' );
-            wrappedCheckboxTests( '#ca-radio', 'Alive' );
+            checkboxTests( '#ca-radio', wrappedElementFetcher );
+            wrappedCheckboxTests( '#ca-radio' );
         } );
 
         describe( 'unwrapped radio', function () {
-            checkboxTests( '#ca-radio-unwrapped', wrappedElementFetcher, 'Alive' );
-            wrappedCheckboxTests( '#ca-radio-unwrapped', 'Alive' );
+            checkboxTests( '#ca-radio-unwrapped', wrappedElementFetcher );
+            wrappedCheckboxTests( '#ca-radio-unwrapped' );
         } );
 
         describe( 'unwrapped radio without label', function () {
-            checkboxTests( '#ca-radio-unwrapped-no-label', unwrappedElementFetcher );
-            unwrappedCheckboxTests( '#ca-radio-unwrapped-no-label' );
+            checkboxTests( '#ca-radio-unwrapped-no-label', unwrappedElementFetcher, true );
+            unwrappedCheckboxTests( '#ca-radio-unwrapped-no-label', true );
         } );
 
         describe( 'wrapped radio outside label', function () {
-            checkboxTests( '#ca-radio-out-label', wrappedElementFetcher, 'Alive' );
-            wrappedCheckboxTests( '#ca-radio-out-label', 'Alive' );
+            checkboxTests( '#ca-radio-out-label', wrappedElementFetcher );
+            wrappedCheckboxTests( '#ca-radio-out-label' );
         } );
     } );
 } );
