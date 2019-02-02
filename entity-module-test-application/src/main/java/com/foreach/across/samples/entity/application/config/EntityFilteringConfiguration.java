@@ -122,7 +122,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.withType( Note.class )
-//		             .attribute( EntityAttributes.LINK_TO_DETAIL_VIEW, true )
+		             .attribute( EntityAttributes.LINK_TO_DETAIL_VIEW, true )
                      .allowableActionsBuilder( new EntityConfigurationAllowableActionsBuilder()
                      {
 	                     @Override
@@ -172,8 +172,6 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                                    .properties(
 				                                                    props -> props.property( "lastModifiedDate" )
 				                                                                  .writable( true )
-				                                                                  .attribute( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_EVENT,
-				                                                                              "focusout" )
 				                                                                  .viewElementType( ViewElementMode.FILTER_CONTROL,
 				                                                                                    BootstrapUiElements.DATETIME )
 		                                                    )

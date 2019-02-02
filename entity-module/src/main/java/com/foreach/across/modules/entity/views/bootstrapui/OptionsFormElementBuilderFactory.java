@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
@@ -38,7 +37,6 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.element.Lo
 import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
-import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -102,24 +100,12 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 				                     .postProcessor(
 						                     ( ( builderContext, element ) -> {
 							                     if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
-								                     if ( SELECT.equals( actualType ) ) {
-									                     ViewElementBuilderSupport.ElementOrBuilder wrappedElement = wrap( element );
-									                     configureControlSettings( wrappedElement, descriptor );
-									                     setAttribute( wrappedElement, FilterControlAttributes.EVENT, "changed.bs.select" );
-									                     if ( viewElementMode.isForMultiple() ) {
-										                     setAttribute( wrappedElement, FilterControlAttributes.TYPE, EQGroup.class.getSimpleName() );
-									                     }
-									                     element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
+								                     ViewElementBuilderSupport.ElementOrBuilder wrappedElement = wrap( element );
+								                     configureControlSettings( wrappedElement, descriptor );
+								                     if ( viewElementMode.isForMultiple() ) {
+									                     setAttribute( wrappedElement, FilterControlAttributes.TYPE, EQGroup.class.getSimpleName() );
 								                     }
-								                     else {
-									                     ContainerViewElementUtils.findAll( element, CheckboxFormElement.class )
-									                                              .forEach( cfe -> {
-										                                              configureControlSettings( wrap( cfe ),
-										                                                                        descriptor );
-										                                              cfe.addCssClass(
-												                                              EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
-									                                              } );
-								                     }
+								                     element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
 							                     }
 						                     } )
 				                     );

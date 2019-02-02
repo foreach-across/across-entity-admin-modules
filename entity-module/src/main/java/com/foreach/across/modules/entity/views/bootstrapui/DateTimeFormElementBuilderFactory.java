@@ -19,7 +19,6 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
-import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
@@ -247,7 +246,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 					.postProcessor(
 							( ( builderContext, element ) -> {
 								if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
-									ViewElementBuilderSupport.ElementOrBuilder wrapped = wrap( element.getControl( FormControlElement.class ) );
+									ViewElementBuilderSupport.ElementOrBuilder wrapped = wrap( element );
 									EntityQueryFilterControlUtils.configureControlSettings( wrapped, propertyDescriptor );
 								}
 							} )
