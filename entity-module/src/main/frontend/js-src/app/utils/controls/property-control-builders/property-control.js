@@ -25,50 +25,6 @@ import EQString from "../../entity-query/eq-string";
 import {convertToTypedValue, isEmptyArray, isNullOrUndefined} from "../../utilities";
 import EQGroup from "../../entity-query/eq-group";
 
-function getPrettyValueMapping( control ) {
-  const holder = new Map();
-  if ( isEmptyArray( control ) ) {
-    const _this = $( control );
-    const prettyValue = _this.data( 'entity-query-pretty-value' );
-    if ( prettyValue ) {
-      holder.set( _this.val(), prettyValue );
-    }
-  }
-  else {
-    $( control ).each( function() {
-      const _this = $( this );
-      holder.set( _this.val(), _this.data( 'entity-query-pretty-value' ) );
-    } );
-  }
-  return holder;
-}
-
-function prettify( value, valueMap ) {
-  const trimmed = value.trim();
-  if ( valueMap.has( trimmed ) ) {
-    return valueMap.get( trimmed ).trim();
-  }
-  return trimmed;
-}
-
-/**
- * Fetches the values from the underlying control elements.
- * If multiple control elements are passed, the value of each element will be returned.
- * By specifying a {@code valueMap}, values can be converted to their prettified version.
- *
- * @param controlElements of which the value should be fetched
- * @param valueMap that holds the mapping for a value to it's prettified version
- * @returns {*} the actual value of the passed elements
- */
-function getValuesFromControlElements( controlElements, valueMap ) {
-  const values = $( controlElements ).val();
-  if ( Array.isArray( values ) ) {
-    return values.map( val => prettify( val, valueMap ) )
-      .filter( val => val !== '' );
-  }
-  return prettify( values, valueMap );
-}
-
 /**
  * Fetches the arguments for the control elements and transforms them to the specified {@code eqType}.
  *
@@ -77,14 +33,14 @@ function getValuesFromControlElements( controlElements, valueMap ) {
  * @param valueMap that holds the mapping of the value of the control element to its prettified version.
  * @returns {*} the query arguments.
  */
-function getConditionValue( eqType, controlElements, valueMap ) {
-  const valuesFromControlElements = getValuesFromControlElements( controlElements, valueMap );
+function getConditionValue( eqType, selectedValues ) {
+  const filteredValues = selectedValues.filter( val => val !== '' );
   if ( eqType === 'EQGroup' ) {
-    return new EQGroup( valuesFromControlElements.map( convertToTypedValue ) );
+    return new EQGroup( filteredValues.map( convertToTypedValue ) );
   }
 
-  if ( valuesFromControlElements.length !== 0 ) {
-    const converted = convertToTypedValue( valuesFromControlElements.toString() );
+  if ( filteredValues.length !== 0 ) {
+    const converted = convertToTypedValue( filteredValues.toString() );
     if ( eqType === 'EQString' && converted instanceof EQValue ) {
       return new EQString( converted.getValue() );
     }
@@ -95,19 +51,21 @@ function getConditionValue( eqType, controlElements, valueMap ) {
 
 function setCondition( controls, filterControl, reset = true ) {
   const property = $( controls ).data( "entity-query-property" );
-  const value = $( controls ).val();
-  const itemsWithPrettyValue = $( controls ).find( "[data-entity-query-pretty-value]" );
-  const valueMap = getPrettyValueMapping( itemsWithPrettyValue );
-  let condition = null;
-  console.log( `Updating condition for property ${property}` );
-  console.log( "values" );
-  console.log( value );
-  console.log( "valueMap" );
-  console.log( valueMap );
+  const adapter = $( controls ).data( "bootstrapui-adapter" );
 
-  if ( (Array.isArray( value ) && !isEmptyArray( value )) || (value && value.trim() !== "") ) {
-    const conditionArg = getConditionValue( $( controls ).data( "entity-query-type" ), controls, valueMap );
-    console.log( "arguments" );
+  const values = adapter.getValue()
+    .map( ( selectedVal ) => {
+      const context = $( selectedVal.context );
+      if ( context.is( '[data-entity-query-pretty-value]' ) ) {
+        return context.data( 'entity-query-pretty-value' );
+      }
+      return selectedVal.value;
+    } );
+
+  let condition = null;
+  if ( !isEmptyArray( values ) ) {
+    const conditionArg = getConditionValue( $( controls ).data( "entity-query-type" ), values );
+    console.log( "args" );
     console.log( conditionArg );
 
     if ( !isNullOrUndefined( conditionArg ) ) {
@@ -115,6 +73,7 @@ function setCondition( controls, filterControl, reset = true ) {
       condition = new EntityQueryCondition( property, operand, conditionArg );
     }
   }
+
   filterControl.setPropertyCondition( property, condition, reset );
 }
 
@@ -130,10 +89,12 @@ export function createDefaultControl( node, control, filterControl ) {
   if ( !isEmptyArray( control ) ) {
     const eventName = $( node ).data( "entity-query-event" );
     setCondition( control, filterControl, false );
-    $( node ).on( eventName, {"item": $( control ), "filter": filterControl},
-                  event => setCondition( event.data.item, event.data.filter ) );
-    console.log( "registered new property control" );
-    return true;
+    const controlAdapter = $( node ).data( 'bootstrapui-adapter' );
+    if ( controlAdapter ) {
+      $( controlAdapter.getTarget() ).on( eventName, {"item": $( control ), "adapter": controlAdapter, "filter": filterControl}
+        , event => setCondition( event.data.item, event.data.filter ) );
+      return true;
+    }
   }
   return false;
 }

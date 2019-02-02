@@ -86,7 +86,7 @@ public class EntityQueryFilterControlUtils
 	}
 
 	public static void setDOMEvent( ViewElementBuilderSupport.ElementOrBuilder elementOrBuilder, EntityPropertyDescriptor propertyDescriptor ) {
-		String domEvent = StringUtils.defaultIfBlank( propertyDescriptor.getAttribute( ENTITY_QUERY_CONTROL_EVENT, String.class ), "change" );
+		String domEvent = StringUtils.defaultIfBlank( propertyDescriptor.getAttribute( ENTITY_QUERY_CONTROL_EVENT, String.class ), "bootstrapui.change" );
 		setAttribute( elementOrBuilder, FilterControlAttributes.EVENT, domEvent );
 	}
 

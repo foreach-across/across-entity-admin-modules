@@ -35,7 +35,6 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.element.Co
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.DateTimeValueTextPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
 import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils;
-import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils.FilterControlAttributes;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -250,7 +249,6 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 								if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
 									ViewElementBuilderSupport.ElementOrBuilder wrapped = wrap( element.getControl( FormControlElement.class ) );
 									EntityQueryFilterControlUtils.configureControlSettings( wrapped, propertyDescriptor );
-									EntityQueryFilterControlUtils.setAttribute( wrapped, FilterControlAttributes.EVENT, "focusout" );
 								}
 							} )
 					)

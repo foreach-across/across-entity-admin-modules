@@ -15,7 +15,6 @@
  */
 import {isNullOrUndefined} from "./app/utils/utilities";
 import EntityQueryPropertyControlFactory from "./app/utils/controls/entity-query-property-control-factory";
-import {createCheckboxRadioControl} from "./app/utils/controls/property-control-builders/property-control-checkbox-radio";
 import EntityQueryFilterControl from "./app/utils/controls/entity-query-filter-control";
 import {createDefaultControl} from "./app/utils/controls/property-control-builders/property-control";
 
@@ -24,7 +23,7 @@ import {createDefaultControl} from "./app/utils/controls/property-control-builde
  * @param node a container containing an eql filter and controls to filter on.
  */
 function initializeEntityQueryForm( node ) {
-  const nodes = $( node ).find( ".js-entity-query-control" );
+  const nodes = $( node ).find( "[data-bootstrapui-adapter-type]" );
   const eqlFilter = $( node ).find( "input[name='extensions[eqFilter]']" );
   const entityQueryFilterControl = new EntityQueryFilterControl( nodes, eqlFilter );
 
@@ -69,7 +68,6 @@ if ( !isNullOrUndefined( window ) ) {
  * @see initializeEntityQueryForm
  */
 EntityModule.registerInitializer( function( node ) {
-  EntityQueryPropertyControlFactory.register( createCheckboxRadioControl, 1066 );
   EntityQueryPropertyControlFactory.register( createDefaultControl, 1200 );
 
   $( "[data-entity-query-filter-form]" ).each( function() {
