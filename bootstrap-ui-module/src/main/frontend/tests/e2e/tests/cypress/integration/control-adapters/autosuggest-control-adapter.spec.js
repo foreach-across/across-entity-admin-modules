@@ -22,7 +22,7 @@ describe( 'ControlAdapter - Autosuggest', function () {
         return cy.get( selector )
                 .find( '.js-typeahead.tt-input' )
                 .type( 'AAA' )
-                .wait( 400 )
+                .wait( 600 )
                 .type( '{downarrow}' )
                 .type( '{enter}' )
                 .closest( selector )
