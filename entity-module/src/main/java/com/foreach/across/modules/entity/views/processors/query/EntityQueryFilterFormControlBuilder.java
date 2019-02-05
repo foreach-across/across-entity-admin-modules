@@ -263,7 +263,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 			webResourceRegistry.addWithKey(
 					WebResource.JAVASCRIPT_PAGE_END,
 					ENTITY_QUERY_RESOURCE_KEY,
-					"/static/entity/js/entity-query.js",
+					"/static/entity/js/entity-query.ts",
 					WebResource.VIEWS
 			);
 		}

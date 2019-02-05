@@ -10,7 +10,7 @@ export default {
   "context": path.join( __dirname, config.js.src ),
   "entry": {
     // "main": ["./main"],
-    "entity-query.js": ["./entity-query"],
+    "entity-query.ts": ["./entity-query"],
     // "common": ["jquery"]
   },
   "output": {
