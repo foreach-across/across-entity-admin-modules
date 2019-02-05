@@ -15,7 +15,7 @@
  */
 
 import {EntityModule} from "./modules/EntityModule";
-import {SortableTable2} from "./components/SortableTable2";
+import {SortableTable} from "./components/SortableTable";
 
 const entityModule = new EntityModule();
 
@@ -31,7 +31,7 @@ window.EntityModule = entityModule;
 $.fn.emSortableTable = function () {
   return this.each( function () {
     if ( !this._emSortableTable ) {
-      this._emSortableTable = new SortableTable2( this );
+      this._emSortableTable = new SortableTable( this );
     }
   } );
 };

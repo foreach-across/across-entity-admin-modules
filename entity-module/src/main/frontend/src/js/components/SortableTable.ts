@@ -2,7 +2,7 @@ import {SortableTableEvent} from '../events/SortableTableEvent';
 import {EntityModule} from '../modules/EntityModule';
 import axios from 'axios';
 
-export class SortableTable2
+export class SortableTable
 {
     private page: number;
     private size: number;
