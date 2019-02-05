@@ -8,6 +8,8 @@
         "object-curly-spacing": false,
         "brace-style": [2, "stroustrup", { "allowSingleLine": true }],
         "prefer-template": false,
-        "object-literal-shorthand": [true, "never"]
+        "object-literal-shorthand": [true, "never"],
+        "no-increment-decrement": false,
+        "no-this-assignment": false
     }
 }

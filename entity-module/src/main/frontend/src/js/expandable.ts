@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-function makeExpandable( node ) {
+import * as EntityModule from './modules/EntityModule';
+
+function makeExpandable( node: JQuery )
+{
     let lastTarget;
     const fadeDuration = 200;
     const subscrTbl = $( 'table[data-tbl-entity-type]', node );
     const entityType = subscrTbl.data( 'tbl-entity-type' );
     const rows = subscrTbl.find( 'tbody tr[data-entity-id],tbody tr[data-summary-url]' );
-    rows.click( ( evt:JQueryEventObject ) => {
+    rows.click( ( evt: JQueryEventObject ) => {
         if ( $( evt.target ).closest( 'a' ).length > 0 ) {
             // bubble edit button
             return true;
         }
         const target = $( this );
         if ( target.next().attr( 'data-summary' ) !== undefined ) {
-            target.toggleClass('summary-expanded');
-            target.next().fadeToggle(
-                {
-                    duration: fadeDuration, complete: () => {
-                        lastTarget = target;
-                    }
-                }
-            );
+            target.toggleClass( 'summary-expanded' );
+            target.next().fadeToggle( {
+                duration: fadeDuration, complete: () => {
+                    lastTarget = target;
+                },
+            } );
         }
         else {
             const newTr = $( '<tr data-summary style="display:none"></tr>' );
@@ -45,14 +46,14 @@ function makeExpandable( node ) {
             target.after( newTr );
             if ( summaryUrl ) {
                 newTd.load( summaryUrl, null, () => {
-                    target.toggleClass('summary-expanded');
+                    target.toggleClass( 'summary-expanded' );
                     newTr.fadeIn( {duration: fadeDuration} );
                     lastTarget = target;
                 } );
             }
             else if ( entityId ) {
-                newTd.load( entityType + '/' + $( this ).attr( 'data-entity-id' ) + '?view=summary&_partial=content', null, function() {
-                    target.toggleClass('summary-expanded');
+                newTd.load( entityType + '/' + $( this ).attr( 'data-entity-id' ) + '?view=summary&_partial=content', null, () => {
+                    target.toggleClass( 'summary-expanded' );
                     newTr.fadeIn( {duration: fadeDuration} );
                     lastTarget = target;
                 } );
@@ -61,4 +62,4 @@ function makeExpandable( node ) {
     } );
 }
 
-EntityModule.registerInitializer( makeExpandable );
+(<any>window).EntityModule.registerInitializer( makeExpandable );

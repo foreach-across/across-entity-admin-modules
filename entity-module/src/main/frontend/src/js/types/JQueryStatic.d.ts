@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-import {EntityModule} from "./modules/EntityModule";
-import {SortableTable2} from "./components/SortableTable2";
-
-const entityModule = new EntityModule();
-
-$( document ).ready( function () {
-  entityModule.initializeFormElements( null );
-} );
-
-window.EntityModule = entityModule;
-
-/**
- * Expose JQuery plugin emSortableTable, creates a SortableTable when called.
- */
-$.fn.emSortableTable = function () {
-  return this.each( function () {
-    if ( !this._emSortableTable ) {
-      this._emSortableTable = new SortableTable2( this );
-    }
-  } );
-};
+interface JQueryStatic
+{
+    event: any;
+}

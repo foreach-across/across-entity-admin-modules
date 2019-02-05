@@ -10,10 +10,6 @@
             "scripthost"
         ]
     },
-    "typeRoots" : [
-        "node_modules/@types",
-        "node_modules/axios"
-    ],
     "exclude": [
         "node_modules"
     ]
