@@ -1,6 +1,6 @@
+import axios from 'axios';
 import {SortableTableEvent} from '../events/SortableTableEvent';
 import {EntityModule} from '../modules/EntityModule';
-import axios from 'axios';
 
 export class SortableTable
 {
@@ -11,8 +11,10 @@ export class SortableTable
     private totalPages: number;
     private formName: string;
     private sortables: any;
+    private form: JQuery;
     private table: JQuery;
     private entityModule: EntityModule;
+    private pageNumber: number;
 
     constructor( element: JQuery )
     {
@@ -26,6 +28,7 @@ export class SortableTable
         const id = $( element ).attr( 'data-tbl' );
         this.page = parseInt( this.table.attr( 'data-tbl-current-page' ), 10 );
         this.formName = $( element ).attr( 'data-tbl-form' );
+        this.form = $( 'form[name=' + this.formName + ']' );
 
         this.size = parseInt( this.table.attr( 'data-tbl-size' ), 10 );
         this.totalPages = parseInt( this.table.attr( 'data-tbl-total-pages' ), 10 );
@@ -37,29 +40,35 @@ export class SortableTable
             const order = this.sort[i];
 
             $( "[data-tbl='" + id + "'][data-tbl-sort-property='" + order.prop + "']", this.table )
-                .each( () => {
+                .each( ( index: number, item: any ) => {
                     if ( i === 0 ) {
-                        $( this ).addClass( order.dir === 'ASC' ? 'asc' : 'desc' );
+                        $( item ).addClass( order.dir === 'ASC' ? 'asc' : 'desc' );
                     }
-                    order.prop = $( this ).data( 'tbl-sort-property' );
+                    order.prop = $( item ).data( 'tbl-sort-property' );
                 } );
         }
 
         this.doesDataLoadWithAjax = this.table.data( 'tbl-ajax-load' );
 
-        this.table.on( SortableTableEvent.EVENT_MOVE_TO_PAGE, ( event: JQueryEventObject, pageNumber: number ) => {
+        this.table.on( SortableTableEvent.MOVE_TO_PAGE, ( event: JQueryEventObject, pageNumber: number ) => {
             this.moveToPage( pageNumber );
         } );
 
-        this.table.on( SortableTableEvent.EVENT_SORT, ( event: JQueryEventObject, propertyToSortOn: string ) => {
+        this.table.on( SortableTableEvent.SORT, ( event: JQueryEventObject, propertyToSortOn: string ) => {
             this.sortOnProperty( propertyToSortOn );
+        } );
+
+        this.form.on( 'submit', ( e: JQueryEventObject ) => {
+            e.preventDefault();
+
+            this.table.trigger( SortableTableEvent.MOVE_TO_PAGE, this.page );
         } );
 
         $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( ( e: any ) => {
             e.preventDefault();
             e.stopPropagation();
 
-            this.table.trigger( SortableTableEvent.EVENT_MOVE_TO_PAGE, parseInt( $( this ).attr( 'data-tbl-page' ), 10 ) );
+            this.table.trigger( SortableTableEvent.MOVE_TO_PAGE, parseInt( $( this ).attr( 'data-tbl-page' ), 10 ) );
         } );
 
         $( "input[type='text'][data-tbl='" + id + "'][data-tbl-page-selector]" )
@@ -84,7 +93,7 @@ export class SortableTable
                         else if ( pageNumber > this.totalPages ) {
                             pageNumber = this.totalPages;
                         }
-                        this.table.trigger( SortableTableEvent.EVENT_MOVE_TO_PAGE, pageNumber - 1 );
+                        this.table.trigger( SortableTableEvent.MOVE_TO_PAGE, pageNumber - 1 );
                     }
                 }
             } );
@@ -96,18 +105,18 @@ export class SortableTable
         this.sortables.click( ( e: JQueryEventObject ) => {
             e.preventDefault();
             e.stopPropagation();
-            this.table.trigger( SortableTableEvent.EVENT_SORT, $( this ).data( 'tbl-sort-property' ) );
+            this.table.trigger( SortableTableEvent.SORT, $( e.target ).data( 'tbl-sort-property' ) );
         } );
         const self = this;
 
-        jQuery.event.special[SortableTableEvent.EVENT_LOAD_DATA] = {
+        jQuery.event.special[SortableTableEvent.LOAD_DATA] = {
             _default: function ( event: JQueryEventObject, params: any ) {
                 // fallback to default loading of paged data
                 self.loadData( params );
             },
         };
 
-        jQuery.event.special[SortableTableEvent.EVENT_PREPARE_DATA] = {
+        jQuery.event.special[SortableTableEvent.PREPARE_DATA] = {
             _default: function ( event: JQueryEventObject, params: any ) {
                 // fallback to default to prepare the paged data loading
                 self.prepareData( params );
@@ -131,31 +140,33 @@ export class SortableTable
             params['sort'] = sortProperties;
         }
 
-        this.table.trigger( SortableTableEvent.EVENT_PREPARE_DATA, params ).bind(this);
+        this.table.trigger( SortableTableEvent.PREPARE_DATA, params );
 
-        this.table.trigger( SortableTableEvent.EVENT_LOAD_DATA, params ).bind(this);
+        this.table.trigger( SortableTableEvent.LOAD_DATA, params );
     }
 
-    loadDataWithAjax( params: any, form: any )
+    loadDataWithAjax( baseParams: any, form: any )
     {
-        let allParams: any = {};
-        const itemTable = $( '.pcs-body-section' ).find( '.panel-default' );
+        let params: any = {};
+        let itemTable = $( '.pcs-body-section' ).find( '.panel-default' );
 
         form.serializeArray().map( ( x: any ) => {
-            allParams[x.name] = x.value;
+            params[x.name] = x.value;
         } );
 
-        allParams = $.extend( allParams, params );
+        params = $.extend( params, baseParams );
 
-        // $.get( '#', $.param( allParams, true ), function( data ) {
-        //     itemTable.replaceWith( data );
-        //     EntityModule.initializeFormElements( itemTable );
-        // } );
-
-        axios.get( '#', allParams ).then( ( data: any ) => {
+        $.get( '#', $.param( params, true ), ( data ) => {
             itemTable.replaceWith( data );
+            itemTable = $( '.pcs-body-section' ).find( '.panel-default' );
+            this.table.trigger( SortableTableEvent.NEW_DATA_LOADED );
             this.entityModule.initializeFormElements( itemTable );
         } );
+
+        // axios.get( '', {params: params} ).then( ( data: any ) => {
+        //         //     itemTable.replaceWith( data );
+        //         //     this.entityModule.initializeFormElements( itemTable );
+        //         // } );
     }
 
     prepareData( params: any )

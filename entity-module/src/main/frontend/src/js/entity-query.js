@@ -21,6 +21,7 @@ import {createDateControl} from "./utils/controls/property-control-builders/prop
 import {createCheckboxRadioControl} from "./utils/controls/property-control-builders/property-control-checkbox-radio";
 import EntityQueryFilterControl from "./utils/controls/entity-query-filter-control";
 import {EntityModule} from "./modules/EntityModule";
+import {SortableTableEvent} from "./events/SortableTableEvent";
 
 /**
  * Initializes an EntityQueryFilterControl for the given node.
@@ -57,6 +58,8 @@ function initializeEntityQueryForm( node ) {
     }
     $( this ).find( 'span' ).removeClass( 'glyphicon glyphicon-search' ).addClass( 'fa fa-spin fa-spinner' );
   } );
+
+  $( node ).find( 'span' ).removeClass( 'fa fa-spin fa-spinner' ).addClass( 'glyphicon glyphicon-search' );
 }
 
 /**
@@ -67,9 +70,9 @@ if ( !isNullOrUndefined( window ) ) {
 }
 
 /** Initializes each container marked by "data-entity-query-filter" as an EntityQueryFilterControl
-* Registers base property control resolvers for control types.
-* @see initializeEntityQueryForm
-*/
+ * Registers base property control resolvers for control types.
+ * @see initializeEntityQueryForm
+ */
 window.EntityModule.registerInitializer( function( node ) {
   EntityQueryPropertyControlFactory.register( createSelectControl, 1000 );
   EntityQueryPropertyControlFactory.register( createDateControl, 1033 );

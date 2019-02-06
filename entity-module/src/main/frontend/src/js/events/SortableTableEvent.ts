@@ -19,22 +19,27 @@ export enum SortableTableEvent
     /**
      * Trigger this event with the page number as parameter.
      */
-    EVENT_MOVE_TO_PAGE = 'emSortableTable:moveToPage',
+    MOVE_TO_PAGE = 'emSortableTable:moveToPage',
 
     /**
      * Trigger this event with the new field name to sort on as parameter.
      */
-    EVENT_SORT = 'emSortableTable:sort',
+    SORT = 'emSortableTable:sort',
 
     /**
      * Subscribe to this event if you want to modify the parameters for loading the data.
      */
-    EVENT_PREPARE_DATA = 'emSortableTable:prepareData',
+    PREPARE_DATA = 'emSortableTable:prepareData',
 
     /**
      * Subscribe to this event if you want to modify the parameters for loading the data,
      * or if you want to implement custom data loading and rendering.
      * Prevent the default event handling in the latter case.
      */
-    EVENT_LOAD_DATA = 'emSortableTable:loadData',
+    LOAD_DATA = 'emSortableTable:loadData',
+
+    /**
+     * Subscribe to this event if you want to be notified if data new has been loaded
+     */
+    NEW_DATA_LOADED = 'emSortableTable:newDataLoaded',
 }

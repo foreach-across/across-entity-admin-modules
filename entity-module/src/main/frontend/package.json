@@ -17,6 +17,7 @@
         "babel-preset-es2015": "6.24.1",
         "babel-preset-stage-0": "^6.24.1",
         "babel-preset-stage-1": "^6.24.1",
+        "copy-webpack-plugin": "^4.6.0",
         "css-loader": "^2.1.0",
         "eslint": "3.19.0",
         "eslint-config-airbnb": "^15.0.2",
@@ -37,11 +38,10 @@
         "tslint-config-airbnb": "^5.11.1",
         "tslint-loader": "^3.5.4",
         "typescript": "^3.2.2",
-        "webpack": "4.28.4",
-        "webpack-cli": "3.2.1",
+        "webpack": "^4.29.1",
+        "webpack-cli": "^3.2.3",
         "webpack-fix-style-only-entries": "^0.1.0",
-        "worker-loader": "^2.0.0",
-        "copy-webpack-plugin": "^4.6.0"
+        "worker-loader": "^2.0.0"
     },
     "scripts": {
         "build": "webpack --config webpack.config.js -d --mode=development",
