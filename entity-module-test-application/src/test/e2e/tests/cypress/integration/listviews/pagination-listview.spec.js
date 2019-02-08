@@ -21,8 +21,6 @@ describe( 'Partner listview', () => {
     } );
 
     it( 'Pagination without sorting & filtering', () => {
-        cy.goToMenuItem( "Partner" );
-
         cy.visit( '/admin/entities/note?page=0&size=10' );
         cy.get( '.total-pages-link' ).contains( "3" );
 

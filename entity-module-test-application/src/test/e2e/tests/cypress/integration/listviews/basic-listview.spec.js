@@ -73,5 +73,13 @@ describe( 'Partner listview', () => {
             cy.get( '[data-tbl-field="name"]' ).first().contains( "sit" );
         } );
     } );
-    
+
+    it( 'Advanced filter has the correct terms', () => {
+        cy.goToMenuItem( "Note" );
+        cy.get( '[name="extensions[eqFilterProperties][text]"]' ).type( "co{enter}" );
+        cy.get('[data-entity-query-filter-form-link="advanced"]').click();
+        cy.get('#extensions\\[eqFilter\\]').should('be.visible')
+                .should("have.value","text contains 'co'");
+
+    });
 } );

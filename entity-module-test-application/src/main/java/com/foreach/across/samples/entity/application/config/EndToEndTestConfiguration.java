@@ -31,6 +31,7 @@ public class EndToEndTestConfiguration
 		adminMenu.builder()
 		         .group( "/e2e", "End to end tests" ).and()
 		         .changeItemPath( "/entities/EntityModuleTestApplicationModule/note" ,"/e2e/note" )
-		         .changeItemPath( "/entities/EntityModuleTestApplicationModule/partner" ,"/e2e/partner" );
+		         .changeItemPath( "/entities/EntityModuleTestApplicationModule/partner" ,"/e2e/partner" )
+		         .changeItemPath( "/entities/EntityModuleTestApplicationModule/user" ,"/e2e/user" );
 	}
 }
