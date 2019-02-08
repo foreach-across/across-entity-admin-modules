@@ -66,29 +66,29 @@ export class SortableTable
             }
         } );
 
-        $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( ( e: any ) => {
+        $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( ( e: JQueryEventObject ) => {
             e.preventDefault();
             e.stopPropagation();
 
-            this.table.trigger( SortableTableEvent.MOVE_TO_PAGE, parseInt( $( this ).attr( 'data-tbl-page' ), 10 ) );
+            this.table.trigger( SortableTableEvent.MOVE_TO_PAGE, parseInt( $( e.currentTarget ).attr( 'data-tbl-page' ), 10 ) );
         } );
 
         $( "input[type='text'][data-tbl='" + id + "'][data-tbl-page-selector]" )
             .click( ( event: JQueryEventObject ) => {
                 event.preventDefault();
-                $( this ).select();
+                $( event.currentTarget ).select();
             } )
             .keypress( ( event: JQueryEventObject ) => {
                 const keyCode = (event.keyCode ? event.keyCode : event.which);
                 if ( keyCode === 13 ) {
                     event.preventDefault();
-                    let pageNumber = parseInt( $( this ).val(), 10 );
+                    let pageNumber = parseInt( $( event.currentTarget ).val(), 10 );
 
                     if ( isNaN( pageNumber ) ) {
-                        $( this ).addClass( 'has-error' );
+                        $(  event.currentTarget ).addClass( 'has-error' );
                     }
                     else {
-                        $( this ).removeClass( 'has-error' );
+                        $(  event.currentTarget ).removeClass( 'has-error' );
                         if ( pageNumber < 1 ) {
                             pageNumber = 1;
                         }
@@ -147,10 +147,11 @@ export class SortableTable
         this.table.trigger( SortableTableEvent.LOAD_DATA, params );
     }
 
+    // Todo: the refind of the table is not ideal
     loadDataWithAjax( baseParams: any, form: any )
     {
         let params: any = {};
-        let itemTable = $( '.pcs-body-section' ).find( '.panel-default' );
+        const itemTable = $( '.pcs-body-section' ).find( '.panel-default' );
 
         form.serializeArray().map( ( x: any ) => {
             params[x.name] = x.value;
@@ -160,11 +161,11 @@ export class SortableTable
 
         $.get( '#', $.param( params, true ), ( data ) => {
             itemTable.replaceWith( data );
-            itemTable = $( '.pcs-body-section' ).find( '.panel-default' );
+            const loadedTable =  $('[data-tbl-type="paged"]');
+            this.init(loadedTable);
         } ).done(() => {
             this.dataIsLoading = false;
             this.table.trigger( SortableTableEvent.NEW_DATA_LOADED );
-            this.entityModule.initializeFormElements( itemTable );
         }).fail(() => {
             // Retry on fail
             this.loadDataWithAjax(baseParams, form);

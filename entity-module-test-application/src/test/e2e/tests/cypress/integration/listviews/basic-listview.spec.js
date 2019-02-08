@@ -27,6 +27,8 @@ describe( 'Partner listview', () => {
     } );
 
     it( 'After filtering we only see google', () => {
+        cy.server();
+        cy.route('/admin/entities/partner?*').as("listViewAjax");
         cy.goToMenuItem( "Partner" );
 
         cy.get( '#partner-name-filter' )
@@ -34,6 +36,7 @@ describe( 'Partner listview', () => {
                 .type( "Google" );
 
         cy.get( ".form > .btn" ).click();
+        cy.wait('@listViewAjax');
 
         cy.get( "tbody" ).within( () => {
             cy.get( '[data-tbl-field="name"]' ).first().contains( "Google" );
@@ -55,6 +58,8 @@ describe( 'Partner listview', () => {
     } );
 
     it( 'Filtering and sorting', () => {
+        cy.server();
+        cy.route('/admin/entities/note?*').as("listViewAjax");
         cy.goToMenuItem( "Note" );
 
         cy.get( "tbody" ).within( () => {
@@ -62,13 +67,16 @@ describe( 'Partner listview', () => {
         } );
 
         cy.get( '[name="extensions[eqFilterProperties][text]"]' ).type( "co{enter}" );
+        cy.wait('@listViewAjax');
         cy.assertListViewResults( 5 );
 
         cy.get( "tbody" ).within( () => {
             cy.get( '[data-tbl-field="name"]' ).first().contains( "consectetur" );
         } );
 
-        cy.get('[data-tbl-sort-property="name"]').click();
+        cy.get( '[data-tbl-sort-property="name"]' ).click();
+        cy.wait('@listViewAjax');
+
         cy.get( "tbody" ).within( () => {
             cy.get( '[data-tbl-field="name"]' ).first().contains( "sit" );
         } );
@@ -76,10 +84,14 @@ describe( 'Partner listview', () => {
 
     it( 'Advanced filter has the correct terms', () => {
         cy.goToMenuItem( "Note" );
+        cy.server();
+        cy.route('/admin/entities/note?*').as("listViewAjax");
         cy.get( '[name="extensions[eqFilterProperties][text]"]' ).type( "co{enter}" );
-        cy.get('[data-entity-query-filter-form-link="advanced"]').click();
-        cy.get('#extensions\\[eqFilter\\]').should('be.visible')
-                .should("have.value","text contains 'co'");
+        cy.get( '[data-entity-query-filter-form-link="advanced"]' ).click();
+        cy.wait('@listViewAjax');
 
-    });
+        cy.get( '#extensions\\[eqFilter\\]' ).should( 'be.visible' )
+                .should( "have.value", "text contains 'co'" );
+
+    } );
 } );

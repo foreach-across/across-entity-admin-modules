@@ -25,6 +25,7 @@ describe( 'Partner listview', () => {
 
         cy.get('[data-ax-dev-view-element="formGroup-name"] > .control-label').should("not.be.visible");
         cy.get('[data-summary-url]').first().click();
+
         cy.get('[data-ax-dev-view-element="formGroup-name"] > .control-label').should("be.visible");
     } );
 } );
