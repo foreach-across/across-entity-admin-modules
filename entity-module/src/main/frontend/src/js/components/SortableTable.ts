@@ -163,6 +163,15 @@ export class SortableTable
             this.entityModule.initializeFormElements( itemTable );
         } );
 
+        // axios.get( '?' + $.param( allParams, true ) )
+        //     .then( ( response: any ) => {
+        //         itemTable.replaceWith( response.data );
+        //         // Improve this
+        //         this.element = $('[data-tbl-type="paged"]');
+        //         this.init( );
+        //         // EntityModule.initializeFormElements( itemTable );
+        //     } );
+        
         // axios.get( '', {params: params} ).then( ( data: any ) => {
         //         //     itemTable.replaceWith( data );
         //         //     this.entityModule.initializeFormElements( itemTable );
