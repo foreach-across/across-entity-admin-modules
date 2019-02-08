@@ -15,6 +15,7 @@ export class SortableTable
     private table: JQuery;
     private entityModule: EntityModule;
     private pageNumber: number;
+    private dataIsLoading: boolean = false;
 
     constructor( element: JQuery )
     {
@@ -29,6 +30,7 @@ export class SortableTable
         this.page = parseInt( this.table.attr( 'data-tbl-current-page' ), 10 );
         this.formName = $( element ).attr( 'data-tbl-form' );
         this.form = $( 'form[name=' + this.formName + ']' );
+        this.doesDataLoadWithAjax = this.table.data( 'tbl-ajax-load' );
 
         this.size = parseInt( this.table.attr( 'data-tbl-size' ), 10 );
         this.totalPages = parseInt( this.table.attr( 'data-tbl-total-pages' ), 10 );
@@ -48,8 +50,6 @@ export class SortableTable
                 } );
         }
 
-        this.doesDataLoadWithAjax = this.table.data( 'tbl-ajax-load' );
-
         this.table.on( SortableTableEvent.MOVE_TO_PAGE, ( event: JQueryEventObject, pageNumber: number ) => {
             this.moveToPage( pageNumber );
         } );
@@ -59,9 +59,11 @@ export class SortableTable
         } );
 
         this.form.on( 'submit', ( e: JQueryEventObject ) => {
-            e.preventDefault();
-
-            this.table.trigger( SortableTableEvent.MOVE_TO_PAGE, this.page );
+            if ( this.doesDataLoadWithAjax && !this.dataIsLoading) {
+                e.preventDefault();
+                this.dataIsLoading = true;
+                this.table.trigger( SortableTableEvent.MOVE_TO_PAGE, this.page );
+            }
         } );
 
         $( "[data-tbl='" + id + "'][data-tbl-page]" ).click( ( e: any ) => {
@@ -159,23 +161,14 @@ export class SortableTable
         $.get( '#', $.param( params, true ), ( data ) => {
             itemTable.replaceWith( data );
             itemTable = $( '.pcs-body-section' ).find( '.panel-default' );
+        } ).done(() => {
+            this.dataIsLoading = false;
             this.table.trigger( SortableTableEvent.NEW_DATA_LOADED );
             this.entityModule.initializeFormElements( itemTable );
-        } );
-
-        // axios.get( '?' + $.param( allParams, true ) )
-        //     .then( ( response: any ) => {
-        //         itemTable.replaceWith( response.data );
-        //         // Improve this
-        //         this.element = $('[data-tbl-type="paged"]');
-        //         this.init( );
-        //         // EntityModule.initializeFormElements( itemTable );
-        //     } );
-        
-        // axios.get( '', {params: params} ).then( ( data: any ) => {
-        //         //     itemTable.replaceWith( data );
-        //         //     this.entityModule.initializeFormElements( itemTable );
-        //         // } );
+        }).fail(() => {
+            // Retry on fail
+            this.loadDataWithAjax(baseParams, form);
+        });
     }
 
     prepareData( params: any )
@@ -216,6 +209,7 @@ export class SortableTable
             } );
 
             if ( this.doesDataLoadWithAjax ) {
+                this.dataIsLoading = true;
                 this.loadDataWithAjax( params, form );
             }
             else {
