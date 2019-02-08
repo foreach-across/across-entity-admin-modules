@@ -60,7 +60,7 @@ Cypress.Commands.add( 'goToMenuItem', ( title ) => {
     } );
 } );
 
-Cypress.Commands.add( 'assertListViewResults', ( numberOfResults ) => {
-    cy.get( 'table tr' ).should( 'have.length', numberOfResults + 1 );
-    cy.get('.pcs-body-section > .panel > .panel-heading').contains(numberOfResults);
+Cypress.Commands.add( 'assertListViewResults', ( numberOfResultsOnPage, totalNumberOfResults = numberOfResultsOnPage ) => {
+    cy.get( 'table tr' ).should( 'have.length', numberOfResultsOnPage + 1 );
+    cy.get('.pcs-body-section > .panel > .panel-heading').contains(totalNumberOfResults);
 } );
