@@ -31,11 +31,13 @@ export default class DatePickerControlAdapter extends BaseControlAdapter
 {
     private readonly exportFormat: string;
     private readonly initialValue: any;
+    private readonly valueHolder: any;
 
     constructor( target: any, exportFormat: string ) {
         super( target );
         this.exportFormat = exportFormat;
         this.initialValue = this.getDateTimePicker().date();
+        this.valueHolder = $( 'input[type=hidden]', target )[0];
         $( target ).on( 'dp.change', event => this.triggerChange() );
 
         // TODO configure 'bootstrapui.submit' event
@@ -50,7 +52,8 @@ export default class DatePickerControlAdapter extends BaseControlAdapter
     getValue(): BootstrapUiControlValueHolder[] {
         const date = this.getDateTimePicker().date();
         const formattedValue = date ? date.format( this.exportFormat ) : null;
-        return [createControlValueHolder( formattedValue, date, this.getTarget() )];
+        const value = $( this.valueHolder ).val();
+        return [createControlValueHolder( formattedValue, value, this.getTarget() )];
     }
 
     reset(): void {

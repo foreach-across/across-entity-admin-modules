@@ -27,15 +27,11 @@ describe( 'ControlAdapter - Datepicker', function () {
         adapterUtils.assertThatAdapterExists( selector );
     } );
 
-    it( "value holds the formatted date (label), moment date (value) and datetimepicker (context)", function () {
+    it( "value holds the formatted date (label), hidden input date (value) and datetimepicker (context)", function () {
         cy.get( selector )
                 .then( ( datepicker ) => {
-                    const adapter = datepicker.data( "bootstrapui-adapter" );
-                    const exportFormat = datepicker.data( "bootstrapui-datetimepicker" ).exportFormat;
-
-                    adapterUtils.assertAdapterValueSelected( datepicker, 0, initialFormattedDate, undefined, datepicker[0] );
-                    const currentValue = adapter.getValue()[0];
-                    expect( Cypress.moment( currentValue.value._d ).format( exportFormat ) ).to.eq( initialFormattedDate );
+                    const value = datepicker.find( 'input[type=hidden]' ).val();
+                    adapterUtils.assertAdapterValueSelected( datepicker, 0, initialFormattedDate, value, datepicker[0] );
                 } );
     } );
 
@@ -47,11 +43,11 @@ describe( 'ControlAdapter - Datepicker', function () {
 
                     adapter.selectValue( '2019-01-25 13:00' );
                     adapterUtils.assertAdapterHoldsAmountOfValues( datepicker, 1 );
-                    adapterUtils.assertAdapterValueSelected( datepicker, 0, "2019-01-25 13:00" );
+                    adapterUtils.assertAdapterValueSelected( datepicker, 0, "2019-01-25 13:00", "2019-01-25 13:00" );
 
                     adapter.reset();
                     adapterUtils.assertAdapterHoldsAmountOfValues( datepicker, 1 );
-                    adapterUtils.assertAdapterValueSelected( datepicker, 0, initialFormattedDate );
+                    adapterUtils.assertAdapterValueSelected( datepicker, 0, initialFormattedDate, initialFormattedDate );
                 } );
     } );
 
