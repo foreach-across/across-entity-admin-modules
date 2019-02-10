@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.query;
 
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -40,4 +41,43 @@ public interface EntityQueryExecutor<T>
 	List<T> findAll( EntityQuery query, Sort sort );
 
 	Page<T> findAll( EntityQuery query, Pageable pageable );
+
+	/**
+	 * Can be implemented to check if this executor can actually work with this query.
+	 * Required to be implemented when using {@link #createFallbackExecutor(EntityQueryExecutor, EntityQueryExecutor)}.
+	 *
+	 * @param query to execute
+	 * @return true if the query can be executed by this executor
+	 */
+	default boolean canExecute( @NonNull EntityQuery query ) {
+		return true;
+	}
+
+	/**
+	 * Create a new executor that first tries an original executor and falls back to another one if the first
+	 * is not able to execute the query passed in.
+	 *
+	 * @param initial  executor to try
+	 * @param fallback to fall back to
+	 * @return executor
+	 */
+	static <U> EntityQueryExecutor<U> createFallbackExecutor( @NonNull EntityQueryExecutor<U> initial, @NonNull EntityQueryExecutor<U> fallback ) {
+		return new EntityQueryExecutor<U>()
+		{
+			@Override
+			public List<U> findAll( EntityQuery query ) {
+				return initial.canExecute( query ) ? initial.findAll( query ) : fallback.findAll( query );
+			}
+
+			@Override
+			public List<U> findAll( EntityQuery query, Sort sort ) {
+				return initial.canExecute( query ) ? initial.findAll( query, sort ) : fallback.findAll( query, sort );
+			}
+
+			@Override
+			public Page<U> findAll( EntityQuery query, Pageable pageable ) {
+				return initial.canExecute( query ) ? initial.findAll( query, pageable ) : fallback.findAll( query, pageable );
+			}
+		};
+	}
 }

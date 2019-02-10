@@ -24,9 +24,7 @@ import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
-import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
-import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -60,6 +58,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyController.AFTER_ENTITY;
+import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
 /**
  * Configures a dummy <strong>category</strong> entity.
@@ -197,10 +196,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 				        )
 		        )
 		        .show()
-		        .attribute( ( configuration, attributes ) ->
-				                    attributes.setAttribute( EntityQueryExecutor.class,
-				                                             new CollectionEntityQueryExecutor<>( categoryRepository, configuration.getPropertyRegistry() ) )
-		        );
+		        .and( registerEntityQueryExecutor( categoryRepository ) );
 	}
 
 	/**
