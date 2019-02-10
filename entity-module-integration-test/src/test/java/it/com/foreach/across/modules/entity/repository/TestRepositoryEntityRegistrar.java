@@ -103,9 +103,9 @@ public class TestRepositoryEntityRegistrar
 				.hasRepository()
 				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, HibernateJpaConfiguration.TRANSACTION_MANAGER )
 				.hasAssociation( "client.company", true ).from( null ).to( Client.class, "company" ).and()
-				.hasAssociation( "company.representatives", false ).from( "representatives" ).to( Representative.class );
+				.hasAssociation( "company.representatives", false ).from( "representatives" ).to( Representative.class ).and()
+				.hasAssociation( "car.company", true ).from( null ).to( Car.class, "company" );
 
-		// not a JpaSpecificationExecutor so associations can't be built
 		verify( Car.class )
 				.isVisible( true )
 				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, HibernateJpaConfiguration.TRANSACTION_MANAGER )

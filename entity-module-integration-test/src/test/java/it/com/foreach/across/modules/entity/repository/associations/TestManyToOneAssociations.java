@@ -152,14 +152,14 @@ public class TestManyToOneAssociations
 	}
 
 	@Test
-	public void companyShouldNotHaveAssociationToItsCarsAsTheRepositoryDoesNotSupportSpecifications() {
+	public void companyShouldHaveAssociationToCarsAsAndEntityQueryExecutorIsAvailable() {
 		EntityConfiguration company = entityRegistry.getEntityConfiguration( Company.class );
 		EntityConfiguration car = entityRegistry.getEntityConfiguration( Car.class );
 
 		assertNotNull( car );
 
 		EntityAssociation association = company.association( "car.company" );
-		assertNull( association );
+		assertNotNull( association );
 	}
 
 	@Test
