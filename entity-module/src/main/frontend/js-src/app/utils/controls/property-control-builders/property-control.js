@@ -26,14 +26,13 @@ import {convertToTypedValue, isEmptyArray, isNullOrUndefined} from "../../utilit
 import EQGroup from "../../entity-query/eq-group";
 
 /**
- * Fetches the arguments for the control elements and transforms them to the specified {@code eqType}.
+ * Fetches the arguments for the control elements and transforms them for the specified {@code eqType}.
  *
  * @param eqType of the property
- * @param controlElements holding the values for the property
- * @param valueMap that holds the mapping of the value of the control element to its prettified version.
+ * @param selectedValues for the property
  * @returns {*} the query arguments.
  */
-function getConditionValue( eqType, selectedValues ) {
+function convertToEQValue( eqType, selectedValues ) {
   const filteredValues = selectedValues.filter( val => val !== '' );
   if ( eqType === 'EQGroup' ) {
     return new EQGroup( filteredValues.map( convertToTypedValue ) );
@@ -49,10 +48,20 @@ function getConditionValue( eqType, selectedValues ) {
   return null;
 }
 
-function setCondition( controls, filterControl, reset = true ) {
-  const property = $( controls ).data( "entity-query-property" );
-  const adapter = $( controls ).data( "bootstrapui-adapter" );
+/**
+ * Sets the entity query condition for a specific property.
+ *
+ * @param controlElement that holds the entity query attributes as well as the control adapter
+ * @param filterControl that the condition should be applied on
+ * @param reset whether the filter control should be reset.
+ */
+function setCondition( controlElement, filterControl, reset = true ) {
+  console.log( controlElement );
+  console.log( $( controlElement ).data() );
+  const property = $( controlElement ).data( "entity-query-property" );
+  const adapter = $( controlElement ).data( "bootstrapui-adapter" );
 
+  console.log( adapter );
   const values = adapter.getValue()
     .map( ( selectedVal ) => {
       const context = $( selectedVal.context );
@@ -64,34 +73,29 @@ function setCondition( controls, filterControl, reset = true ) {
 
   let condition = null;
   if ( !isEmptyArray( values ) ) {
-    const conditionArg = getConditionValue( $( controls ).data( "entity-query-type" ), values );
-    console.log( "args" );
-    console.log( conditionArg );
+    const args = convertToEQValue( $( controlElement ).data( "entity-query-type" ), values );
 
-    if ( !isNullOrUndefined( conditionArg ) ) {
-      const operand = EntityQueryOps[$( controls ).data( "entity-query-operand" )];
-      condition = new EntityQueryCondition( property, operand, conditionArg );
+    if ( !isNullOrUndefined( args ) ) {
+      const operand = EntityQueryOps[$( controlElement ).data( "entity-query-operand" )];
+      condition = new EntityQueryCondition( property, operand, args );
     }
   }
-
   filterControl.setPropertyCondition( property, condition, reset );
 }
 
 /**
  * Creates an EntityQueryControl for a given node.
  *
- * @param node to create a control for
  * @param control containing the value
  * @param filterControl to receive the condition from the control
  * @returns {boolean} true if a control has been made.
  */
-export function createDefaultControl( node, control, filterControl ) {
+export function createDefaultControl( control, filterControl ) {
   if ( !isEmptyArray( control ) ) {
-    const eventName = $( node ).data( "entity-query-event" );
     setCondition( control, filterControl, false );
-    const controlAdapter = $( node ).data( 'bootstrapui-adapter' );
+    const controlAdapter = $( control ).data( 'bootstrapui-adapter' );
     if ( controlAdapter ) {
-      $( controlAdapter.getTarget() ).on( eventName, {"item": $( control ), "adapter": controlAdapter, "filter": filterControl}
+      $( controlAdapter.getTarget() ).on( 'bootstrapui.change', {"item": $( control ), "filter": filterControl}
         , event => setCondition( event.data.item, event.data.filter ) );
       return true;
     }

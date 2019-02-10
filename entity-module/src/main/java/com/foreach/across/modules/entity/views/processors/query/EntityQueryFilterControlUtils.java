@@ -49,15 +49,12 @@ public class EntityQueryFilterControlUtils
 		String OPERAND = "entity-query-operand";
 		String PROPERTY_NAME = "entity-query-property";
 		String TYPE = "entity-query-type";
-		String EVENT = "entity-query-event";
 	}
 
 	public static void configureControlSettings( ViewElementBuilderSupport.ElementOrBuilder elementOrBuilder, EntityPropertyDescriptor propertyDescriptor ) {
 		setOperand( elementOrBuilder, propertyDescriptor );
 		setPropertyName( elementOrBuilder, propertyDescriptor );
 		setEQType( elementOrBuilder, propertyDescriptor );
-		setDOMEvent( elementOrBuilder, propertyDescriptor );
-		setValueFunction( elementOrBuilder, propertyDescriptor );
 	}
 
 	public static void setOperand( ViewElementBuilderSupport.ElementOrBuilder elementOrBuilder, EntityPropertyDescriptor propertyDescriptor ) {
@@ -83,15 +80,6 @@ public class EntityQueryFilterControlUtils
 
 	private static boolean isTextType( EntityPropertyDescriptor propertyDescriptor ) {
 		return TEXT_VALUE_TYPES.stream().anyMatch( clazz -> clazz.equals( propertyDescriptor.getPropertyType() ) );
-	}
-
-	public static void setDOMEvent( ViewElementBuilderSupport.ElementOrBuilder elementOrBuilder, EntityPropertyDescriptor propertyDescriptor ) {
-		String domEvent = StringUtils.defaultIfBlank( propertyDescriptor.getAttribute( ENTITY_QUERY_CONTROL_EVENT, String.class ), "bootstrapui.change" );
-		setAttribute( elementOrBuilder, FilterControlAttributes.EVENT, domEvent );
-	}
-
-	public static void setValueFunction( ViewElementBuilderSupport.ElementOrBuilder elementOrBuilder, EntityPropertyDescriptor propertyDescriptor ) {
-
 	}
 
 	public static void setAttribute( ViewElementBuilderSupport.ElementOrBuilder wrapper, String attribute, Object value ) {

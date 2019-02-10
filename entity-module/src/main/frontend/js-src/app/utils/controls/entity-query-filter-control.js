@@ -78,18 +78,8 @@ class EntityQueryFilterControl {
   }
 
   initControlFactories( nodes ) {
-    const nodesByProperty = new Map();
-    $( nodes ).each( function() {
-      const property = $( this ).data( 'entity-query-property' );
-      if ( nodesByProperty.has( property ) ) {
-        nodesByProperty.get( property ).push( this );
-      }
-      else {
-        nodesByProperty.set( property, [this] );
-      }
-    } );
-    nodesByProperty.forEach( ( controlNodes ) => {
-      EntityQueryPropertyControlFactory.createControl( controlNodes, this );
+    nodes.each( ( index, controlNode ) => {
+      EntityQueryPropertyControlFactory.createControl( controlNode, this );
     } );
   }
 }

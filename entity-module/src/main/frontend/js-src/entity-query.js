@@ -23,7 +23,7 @@ import {createDefaultControl} from "./app/utils/controls/property-control-builde
  * @param node a container containing an eql filter and controls to filter on.
  */
 function initializeEntityQueryForm( node ) {
-  const nodes = $( node ).find( "[data-bootstrapui-adapter-type]" );
+  const nodes = $( node ).find( "[data-entity-query-property]" );
   const eqlFilter = $( node ).find( "input[name='extensions[eqFilter]']" );
   const entityQueryFilterControl = new EntityQueryFilterControl( nodes, eqlFilter );
 
@@ -68,7 +68,7 @@ if ( !isNullOrUndefined( window ) ) {
  * @see initializeEntityQueryForm
  */
 EntityModule.registerInitializer( function( node ) {
-  EntityQueryPropertyControlFactory.register( createDefaultControl, 1200 );
+  EntityQueryPropertyControlFactory.register( createDefaultControl, 1000 );
 
   $( "[data-entity-query-filter-form]" ).each( function() {
     initializeEntityQueryForm( $( this ) );
