@@ -17,10 +17,8 @@
 package it.com.foreach.across.modules.entity.query;
 
 import com.foreach.across.test.AcrossWebAppConfiguration;
-import com.foreach.across.testmodules.springdata.business.Company;
-import com.foreach.across.testmodules.springdata.business.CompanyStatus;
-import com.foreach.across.testmodules.springdata.business.Group;
-import com.foreach.across.testmodules.springdata.business.Representative;
+import com.foreach.across.testmodules.springdata.business.*;
+import com.foreach.across.testmodules.springdata.repositories.CarRepository;
 import com.foreach.across.testmodules.springdata.repositories.CompanyRepository;
 import com.foreach.across.testmodules.springdata.repositories.GroupRepository;
 import com.foreach.across.testmodules.springdata.repositories2.RepresentativeRepository;
@@ -58,6 +56,7 @@ public abstract class AbstractQueryTest
 	protected static Company one, two, three;
 	protected static Representative john, joe, peter, weirdo;
 	protected static Group groupOne, groupTwo;
+	protected static Car carOne, carTwo;
 
 	@Autowired
 	protected RepresentativeRepository representativeRepository;
@@ -67,6 +66,9 @@ public abstract class AbstractQueryTest
 
 	@Autowired
 	protected GroupRepository groupRepository;
+
+	@Autowired
+	protected CarRepository carRepository;
 
 	@Before
 	public void insertTestData() {
@@ -100,6 +102,10 @@ public abstract class AbstractQueryTest
 			two.setRepresentatives( new HashSet<>( Arrays.asList( john, joe, peter ) ) );
 
 			companyRepository.save( Arrays.asList( one, two, three ) );
+
+			carOne = new Car( "one", one, true );
+			carTwo = new Car( "two", two, true );
+			carRepository.save( Arrays.asList( carOne, carTwo ) );
 		}
 	}
 
