@@ -97,6 +97,11 @@ public class TestEntityPropertiesBinder
 	}
 
 	@Test
+	public void defaultTemplateValueResolverIsRegistered() {
+		assertThat( binder.getTemplateValueResolver() ).isNotNull().isInstanceOf( DefaultEntityPropertyTemplateValueResolver.class );
+	}
+
+	@Test
 	public void bindingContextIsReadonlyIfOnlyEntity() {
 		EntityPropertyBindingContext bindingContext = binder.asBindingContext();
 		assertThat( bindingContext ).isNotNull();

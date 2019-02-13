@@ -90,6 +90,17 @@ public class TestPropertiesBinderReadonly extends AbstractEntityPropertyBindingC
 	}
 
 	@Test
+	public void listItemTemplateReturnsTemplateValueIfSet() {
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( collectionsProperties );
+		binder.setEntity( null );
+
+		ListEntityPropertyBinder cities = (ListEntityPropertyBinder) binder.get( "cities" );
+		EntityPropertyBinder itemTemplate = cities.getItemTemplate();
+
+		assertThat( itemTemplate.getValue() ).isEqualTo( new City( "Some city" ) );
+	}
+
+	@Test
 	public void mapEntryListAlwaysReturnsOrderedEntries() {
 		CollectionsHolder collectionsHolder = new CollectionsHolder(
 				"testHolder",
@@ -119,5 +130,16 @@ public class TestPropertiesBinderReadonly extends AbstractEntityPropertyBindingC
 		assertThat( newEntry.getEntryKey() ).isEqualTo( "3" );
 		newEntry.setSortIndex( -10L );
 		assertThat( addressMap.getEntryList() ).containsExactly( newEntry, two, one );
+	}
+
+	@Test
+	public void mapEntryTemplateReturnsTemplateValuesIfSet() {
+		EntityPropertiesBinder binder = new EntityPropertiesBinder( collectionsProperties );
+		binder.setEntity( null );
+
+		MapEntityPropertyBinder addressMap = (MapEntityPropertyBinder) binder.get( "addressMap" );
+		MapEntityPropertyBinder.Entry template = addressMap.getTemplate();
+		assertThat( template.getKey().getValue() ).isEqualTo( "some key" );
+		assertThat( template.getValue().getValue() ).isEqualTo( new Address() );
 	}
 }
