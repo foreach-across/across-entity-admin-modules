@@ -59,7 +59,9 @@ function initializeEntityQueryForm( node ) {
     $( this ).find( 'span' ).removeClass( 'glyphicon glyphicon-search' ).addClass( 'fa fa-spin fa-spinner' );
   } );
 
-  $( node ).find( 'span' ).removeClass( 'fa fa-spin fa-spinner' ).addClass( 'glyphicon glyphicon-search' );
+  // After submit ajax
+
+  // $( node ).find( 'span' ).removeClass( 'fa fa-spin fa-spinner' ).addClass( 'glyphicon glyphicon-search' );
 }
 
 /**

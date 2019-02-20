@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {SortableTableEvent} from '../events/SortableTableEvent';
 import {EntityModule} from '../modules/EntityModule';
 
@@ -147,7 +146,7 @@ export class SortableTable
         this.table.trigger( SortableTableEvent.LOAD_DATA, params );
     }
 
-    // Todo: the refind of the table is not ideal
+    // Todo: the find of the table is not ideal
     loadDataWithAjax( baseParams: any, form: any )
     {
         let params: any = {};
