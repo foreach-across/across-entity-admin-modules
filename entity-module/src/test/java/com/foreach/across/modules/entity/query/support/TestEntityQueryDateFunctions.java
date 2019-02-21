@@ -16,17 +16,23 @@
 
 package com.foreach.across.modules.entity.query.support;
 
+import com.foreach.across.modules.entity.query.EQFunction;
 import com.foreach.across.modules.entity.query.EQString;
 import com.foreach.across.modules.entity.query.EQType;
+import com.foreach.across.modules.entity.query.EQTypeConverter;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.format.support.DefaultFormattingConversionService;
 
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 
 import static com.foreach.across.modules.entity.query.support.EntityQueryDateFunctions.*;
 import static org.junit.Assert.*;
@@ -37,7 +43,9 @@ import static org.junit.Assert.*;
  */
 public class TestEntityQueryDateFunctions
 {
-	private EntityQueryDateFunctions functions;
+	private EntityQueryDateFunctions entityQueryDateFunctions;
+
+	private EQTypeConverter typeConverter;
 
 	private static Date getWeekStartDate() {
 		Calendar calendar = Calendar.getInstance();
@@ -130,67 +138,71 @@ public class TestEntityQueryDateFunctions
 
 	@Before
 	public void reset() {
-		functions = new EntityQueryDateFunctions();
+		entityQueryDateFunctions = new EntityQueryDateFunctions();
 		Locale.setDefault( Locale.forLanguageTag( "nl" ) );
+
+		typeConverter = new EQTypeConverter();
+		typeConverter.setConversionService( new DefaultFormattingConversionService() );
+		typeConverter.setFunctionHandlers( Arrays.asList( entityQueryDateFunctions ) );
 	}
 
 	@Test
 	public void accepts() {
-		assertTrue( functions.accepts( "now", TypeDescriptor.valueOf( Date.class ) ) );
-		assertTrue( functions.accepts( "now", TypeDescriptor.valueOf( Long.class ) ) );
-		assertTrue( functions.accepts( "today", TypeDescriptor.valueOf( Date.class ) ) );
-		assertTrue( functions.accepts( "today", TypeDescriptor.valueOf( Long.class ) ) );
+		assertTrue( entityQueryDateFunctions.accepts( "now", TypeDescriptor.valueOf( Date.class ) ) );
+		assertTrue( entityQueryDateFunctions.accepts( "now", TypeDescriptor.valueOf( Long.class ) ) );
+		assertTrue( entityQueryDateFunctions.accepts( "today", TypeDescriptor.valueOf( Date.class ) ) );
+		assertTrue( entityQueryDateFunctions.accepts( "today", TypeDescriptor.valueOf( Long.class ) ) );
 
-		assertFalse( functions.accepts( "unknown", TypeDescriptor.valueOf( Date.class ) ) );
-		assertFalse( functions.accepts( "now", TypeDescriptor.valueOf( String.class ) ) );
+		assertFalse( entityQueryDateFunctions.accepts( "unknown", TypeDescriptor.valueOf( Date.class ) ) );
+		assertFalse( entityQueryDateFunctions.accepts( "now", TypeDescriptor.valueOf( String.class ) ) );
 	}
 
 	@Test
 	public void now() {
 		Date start = new Date();
 
-		Date calculated = (Date) functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( Date.class ), null );
+		Date calculated = (Date) entityQueryDateFunctions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( Date.class ), typeConverter );
 		assertNotNull( calculated );
 		assertTrue( calculated.getTime() >= start.getTime() && calculated.getTime() < ( start.getTime() + 1000 ) );
 
 		start = new Date();
-		long time = (Long) functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( Long.class ), null );
+		long time = (Long) entityQueryDateFunctions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( Long.class ), typeConverter );
 		assertTrue( time >= start.getTime() && time < ( start.getTime() + 1000 ) );
 	}
 
 	@Test
-	public void nowModified() {
+	public void nowWithPeriod() {
 		Date nextHour = DateUtils.addHours( new Date(), 1 );
 		EQType[] nextHourFunctionArguments = { new EQString( "1h" ) };
 
-		Date calculated = (Date) functions.apply( NOW, nextHourFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		Date calculated = (Date) entityQueryDateFunctions.apply( NOW, nextHourFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter );
 		assertNotNull( calculated );
 		assertTrue( calculated.getTime() >= nextHour.getTime() && calculated.getTime() < ( nextHour.getTime() + 1000 ) );
 
 		Date fiveMinutesAgo = DateUtils.addMinutes( new Date(), -5 );
 		EQType[] fiveMinutesAgoFunctionArguments = { new EQString( "-5m" ) };
 
-		calculated = (Date) functions.apply( NOW, fiveMinutesAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		calculated = (Date) entityQueryDateFunctions.apply( NOW, fiveMinutesAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter );
 		assertNotNull( calculated );
 		assertTrue( calculated.getTime() >= fiveMinutesAgo.getTime() && calculated.getTime() < ( fiveMinutesAgo.getTime() + 1000 ) );
 
 		Date theDayAfterTomorrow = DateUtils.addDays( new Date(), 2 );
 		EQType[] theDayAfterTomorrowFunctionArguments = { new EQString( "2d" ) };
 
-		calculated = (Date) functions.apply( NOW, theDayAfterTomorrowFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		calculated = (Date) entityQueryDateFunctions.apply( NOW, theDayAfterTomorrowFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter );
 		assertNotNull( calculated );
 		assertTrue( calculated.getTime() >= theDayAfterTomorrow.getTime() && calculated.getTime() < ( theDayAfterTomorrow.getTime() + 1000 ) );
 
 		theDayAfterTomorrowFunctionArguments[0] = new EQString( "+2d" );
 
-		calculated = (Date) functions.apply( NOW, theDayAfterTomorrowFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		calculated = (Date) entityQueryDateFunctions.apply( NOW, theDayAfterTomorrowFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter );
 		assertNotNull( calculated );
 		assertTrue( calculated.getTime() >= theDayAfterTomorrow.getTime() && calculated.getTime() < ( theDayAfterTomorrow.getTime() + 1000 ) );
 
 		Date aYearAgo = DateUtils.addYears( new Date(), -1 );
 		EQType[] aYearAgoFunctionArguments = { new EQString( "-1y" ) };
 
-		calculated = (Date) functions.apply( NOW, aYearAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		calculated = (Date) entityQueryDateFunctions.apply( NOW, aYearAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter );
 		assertNotNull( calculated );
 		assertTrue( calculated.getTime() >= aYearAgo.getTime() && calculated.getTime() < ( aYearAgo.getTime() + 1000 ) );
 
@@ -199,39 +211,92 @@ public class TestEntityQueryDateFunctions
 	@Test
 	public void today() {
 		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
-		assertEquals( today, functions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+		assertEquals( today, entityQueryDateFunctions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( Date.class ), typeConverter ) );
 		assertEquals( today.getTime(),
-		              functions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( Long.class ), null ) );
+		              entityQueryDateFunctions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( Long.class ), typeConverter ) );
+	}
+
+	@Test
+	public void todayWithPeriod() {
+		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
+		Date nextHour = DateUtils.addHours( today, 1 );
+		EQType[] nextHourFunctionArguments = { new EQString( "1h" ) };
+
+		assertEquals( nextHour, entityQueryDateFunctions.apply( TODAY, nextHourFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter ) );
+		assertEquals( nextHour.getTime(),
+		              entityQueryDateFunctions.apply( TODAY, nextHourFunctionArguments, TypeDescriptor.valueOf( Long.class ), typeConverter ) );
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void startOfDayWithoutArgumentsThrowsException() {
+		Date startOfDay = DateUtils.truncate( new Date(), Calendar.DATE );
+		entityQueryDateFunctions.apply( START_OF_DAY, new EQType[0], TypeDescriptor.valueOf( Date.class ), typeConverter );
 	}
 
 	@Test
 	public void startOfDay() {
+		EQType[] nowFunctionArguments = { new EQFunction( "now" ) };
+
 		Date startOfDay = DateUtils.truncate( new Date(), Calendar.DATE );
-		assertEquals( startOfDay, functions.apply( DAY, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+		assertEquals( startOfDay, entityQueryDateFunctions.apply( START_OF_DAY, nowFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter ) );
+	}
+
+	@Test
+	public void startOfDayWithTemporal() {
+		EQType[] nowFunctionArguments = { new EQFunction( "now", Collections.singletonList( new EQString( "1d" ) ) ) };
+
+		Date startOfDay = DateUtils.truncate( DateUtils.addDays( new Date(), 1 ), Calendar.DATE );
+		assertEquals( startOfDay, entityQueryDateFunctions.apply( START_OF_DAY, nowFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter ) );
+	}
+
+	@Test
+	public void startOfDayWithPeriodAndTemporal() {
+		EQType[] nowFunctionArguments = { new EQFunction( "now", Collections.singletonList( new EQString( "1d" ) ) ), new EQString( "1d" ) };
+
+		Date startOfDay = DateUtils.truncate( DateUtils.addDays( new Date(), 2 ), Calendar.DATE );
+		assertEquals( startOfDay, entityQueryDateFunctions.apply( START_OF_DAY, nowFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter ) );
 	}
 
 	@Test
 	public void startOfWeek() {
 		Date startOfWeek = DateUtils.truncate( getWeekStartDate(), Calendar.DATE );
-		assertEquals( startOfWeek, functions.apply( WEEK, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+		assertEquals( startOfWeek, entityQueryDateFunctions.apply( START_OF_WEEK, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
 
 		Date twoWeeksAgo = DateUtils.addWeeks( getWeekStartDate(), -2 );
 		EQType[] twoWeeksAgoFunctionArguments = { new EQString( "-2w" ) };
 
-		Date calculated = (Date) functions.apply( WEEK, twoWeeksAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
+		Date calculated = (Date) entityQueryDateFunctions.apply( START_OF_WEEK, twoWeeksAgoFunctionArguments, TypeDescriptor.valueOf( Date.class ), null );
 		assertNotNull( calculated );
 		assertTrue( calculated.getTime() >= twoWeeksAgo.getTime() && calculated.getTime() < ( twoWeeksAgo.getTime() + 1000 ) );
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void startOfMonth() {
 		Date startOfMonth = DateUtils.truncate( getMonthStartDate(), Calendar.DATE );
-		assertEquals( startOfMonth, functions.apply( MONTH, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+		assertEquals( startOfMonth, entityQueryDateFunctions.apply( START_OF_MONTH, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+	}
+
+	@Test
+	public void startOfMonthWithTemporal() {
+		EQType[] nowFunctionArguments = { new EQFunction( "now", Collections.singletonList( new EQString( "1M" ) ) ) };
+
+		Date startOfMonth = DateUtils.truncate( DateUtils.addMonths( getMonthStartDate(), 1 ), Calendar.DATE );
+		assertEquals( startOfMonth,
+		              entityQueryDateFunctions.apply( START_OF_MONTH, nowFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter ) );
+	}
+
+	@Test
+	public void startOfMonthWithTemporalAndPeriod() {
+		EQType[] nowFunctionArguments = { new EQFunction( "now", Collections.singletonList( new EQString( "1M" ) ) ), new EQString( "2M" ) };
+
+		Date startOfMonth = DateUtils.truncate( DateUtils.addMonths( getMonthStartDate(), 3 ), Calendar.DATE );
+		assertEquals( startOfMonth,
+		              entityQueryDateFunctions.apply( START_OF_MONTH, nowFunctionArguments, TypeDescriptor.valueOf( Date.class ), typeConverter ) );
 	}
 
 	@Test
 	public void startOfYear() {
 		Date startOfYear = DateUtils.truncate( getYearStartDate(), Calendar.DATE );
-		assertEquals( startOfYear, functions.apply( YEAR, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
+		assertEquals( startOfYear, entityQueryDateFunctions.apply( START_OF_YEAR, new EQType[0], TypeDescriptor.valueOf( Date.class ), null ) );
 	}
 }

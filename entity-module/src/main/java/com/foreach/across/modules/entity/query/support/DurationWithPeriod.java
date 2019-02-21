@@ -16,14 +16,12 @@
 
 package com.foreach.across.modules.entity.query.support;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Duration;
 import java.time.Period;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor

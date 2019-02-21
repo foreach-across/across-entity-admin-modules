@@ -36,7 +36,6 @@ import java.util.stream.Stream;
 @Slf4j
 public class StringToDurationWithPeriodConverter
 {
-	public static final int DAYS_TO_HOURS = 24;
 	private static final int YEAR_INDEX = 2;
 	private static final int MONTH_INDEX = 5;
 	private static final int WEEK_INDEX = 8;

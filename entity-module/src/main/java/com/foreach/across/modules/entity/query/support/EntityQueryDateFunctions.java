@@ -16,16 +16,12 @@
 
 package com.foreach.across.modules.entity.query.support;
 
-import com.foreach.across.modules.entity.query.EQString;
-import com.foreach.across.modules.entity.query.EQType;
-import com.foreach.across.modules.entity.query.EQTypeConverter;
-import com.foreach.across.modules.entity.query.EntityQueryFunctionHandler;
+import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.util.StringToDurationWithPeriodConverter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.*;
-import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.Date;
@@ -45,6 +41,7 @@ import java.util.Locale;
 public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 {
 	public static final String NOW = "now";
+
 	public static final String TODAY = "today";
 
 	public static final String MONDAY = "monday";
@@ -54,13 +51,13 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	public static final String FRIDAY = "friday";
 	public static final String SATURDAY = "saturday";
 	public static final String SUNDAY = "sunday";
-	public static final String DAY = "day";
-	public static final String WEEK = "week";
-	public static final String WEEK_NUMBER = "weekNumber";
-	public static final String MONTH = "month";
-	public static final String YEAR = "year";
 
-	private static final String[] FUNCTION_NAMES = new String[] { NOW, TODAY };
+	public static final String START_OF_DAY = "startOfDay";
+	public static final String START_OF_WEEK = "startOfWeek";
+	public static final String START_OF_MONTH = "startOfMonth";
+	public static final String START_OF_YEAR = "startOfYear";
+
+	private static final String[] FUNCTION_NAMES = new String[] { NOW, TODAY, START_OF_DAY };
 
 	@Override
 	public boolean accepts( String functionName, TypeDescriptor desiredType ) {
@@ -76,10 +73,8 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	                     EQType[] arguments,
 	                     TypeDescriptor desiredType,
 	                     EQTypeConverter argumentConverter ) {
-		LocalDateTime calculatedDateTime = calculateDate( functionName );
-		calculatedDateTime = addDateTimeModifiers( calculatedDateTime, arguments );
 
-		return convertToDesiredType( calculatedDateTime, desiredType.getObjectType() );
+		return convertToDesiredType( calculateDate( functionName, arguments, argumentConverter ), desiredType.getObjectType() );
 	}
 
 	/**
@@ -88,60 +83,106 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	 * @param functionName The name of the function
 	 * @return The resulting {@link LocalDateTime}
 	 */
-	private LocalDateTime calculateDate( String functionName ) {
+	private LocalDateTime calculateDate( String functionName, EQType[] arguments, EQTypeConverter argumentConverter ) {
 		LocalDate today = LocalDate.now();
+		DurationWithPeriod durationWithPeriod;
 
 		switch ( functionName ) {
-			case TODAY:
-				return today.atStartOfDay();
-			case DAY:
-				return today.atStartOfDay();
-			case MONDAY:
-				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY) ).atStartOfDay();
-			case TUESDAY:
-				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.TUESDAY) ).atStartOfDay();
-			case WEDNESDAY:
-				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.WEDNESDAY) ).atStartOfDay();
-			case THURSDAY:
-				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.THURSDAY) ).atStartOfDay();
-			case FRIDAY:
-				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.FRIDAY) ).atStartOfDay();
-			case SATURDAY:
-				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.SATURDAY) ).atStartOfDay();
-			case SUNDAY:
-				return today.with( TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY) ).atStartOfDay();
-			case WEEK:
-				DayOfWeek firstDayOfWeek = WeekFields.of( Locale.getDefault() ).getFirstDayOfWeek();
+			case NOW:
+				durationWithPeriod = validateAndGetPeriodWithDurationFromArguments( arguments, 0, functionName );
+				return addDurationWithPeriodTooDateTime( LocalDateTime.now(), durationWithPeriod );
+			case START_OF_DAY:
+				return addTemporalAndPeriodModifiers( functionName, arguments, argumentConverter ).toLocalDate().atStartOfDay();
+			case START_OF_WEEK:
+				addTemporalAndPeriodModifiers( functionName, arguments, argumentConverter ).toLocalDate().atStartOfDay();
+				validateAndGetFirstDayOfTheWeekParamter( arguments, 2, functionName );
 
+				DayOfWeek firstDayOfWeek = validateAndGetFirstDayOfTheWeekParamter( arguments, 2, functionName );
 				return today.with( firstDayOfWeek ).atStartOfDay();
-			case WEEK_NUMBER:
-				break;
-			case MONTH:
-				return today.withDayOfMonth( 1 ).atStartOfDay();
-			case YEAR:
+			case START_OF_MONTH:
+				return addTemporalAndPeriodModifiers( functionName, arguments, argumentConverter ).withDayOfMonth( 1 ).toLocalDate().atStartOfDay();
+			case START_OF_YEAR:
 				return today.withDayOfYear( 1 ).atStartOfDay();
+
+			case TODAY:
+				durationWithPeriod = validateAndGetPeriodWithDurationFromArguments( arguments, 0, functionName );
+				return addDurationWithPeriodTooDateTime( LocalDate.now().atStartOfDay(), durationWithPeriod );
+			case MONDAY:
+				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.MONDAY ) ).atStartOfDay();
+			case TUESDAY:
+				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.TUESDAY ) ).atStartOfDay();
+			case WEDNESDAY:
+				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.WEDNESDAY ) ).atStartOfDay();
+			case THURSDAY:
+				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.THURSDAY ) ).atStartOfDay();
+			case FRIDAY:
+				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.FRIDAY ) ).atStartOfDay();
+			case SATURDAY:
+				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.SATURDAY ) ).atStartOfDay();
+			case SUNDAY:
+				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.SUNDAY ) ).atStartOfDay();
 		}
 
 		return LocalDateTime.now();
 	}
 
-	/**
-	 * Parse all string arguments to {@link Duration} objects and modify the date
-	 *
-	 * @param dateTime  The calculated dateTime
-	 * @param arguments An array of modifiers represented by strings y|M|w|d|h|m e.g. +1d, -1y, ...
-	 * @return the modified calculated dateTime
-	 */
-	private LocalDateTime addDateTimeModifiers( LocalDateTime dateTime, EQType[] arguments ) {
-		for ( EQType argument : arguments ) {
-			if ( EQString.class.isAssignableFrom( argument.getClass() ) ) {
-				DurationWithPeriod durationWithPeriod = StringToDurationWithPeriodConverter.of( ( (EQString) argument ).getValue() );
-				dateTime = dateTime.plus( durationWithPeriod.getPeriod() );
-				dateTime = dateTime.plus( durationWithPeriod.getDuration() );
-			}
+	private DayOfWeek validateAndGetFirstDayOfTheWeekParamter( EQType[] arguments, int argumentIndex, String functionName ) {
+		if ( arguments.length <= argumentIndex ) {
+			return WeekFields.of( Locale.getDefault() ).getFirstDayOfWeek();
 		}
 
-		return dateTime;
+		if ( !EQString.class.isAssignableFrom( arguments[argumentIndex].getClass() ) ) {
+			throw new IllegalArgumentException( "Invalid first day of week argument specified for the function '" + functionName + "'." );
+		}
+
+		EQString dayOfWeek = (EQString) arguments[argumentIndex];
+
+		// todo: implement
+		return DayOfWeek.MONDAY;
+	}
+
+	private DurationWithPeriod validateAndGetPeriodWithDurationFromArguments( EQType[] arguments, Integer argumentIndex, String functionName ) {
+		if ( arguments.length <= argumentIndex ) {
+			return DurationWithPeriod.builder().period( Period.ZERO ).duration( Duration.ZERO ).build();
+		}
+
+		if ( !EQString.class.isAssignableFrom( arguments[argumentIndex].getClass() ) ) {
+			throw new IllegalArgumentException( "Invalid period argument specified for the function '" + functionName + "'." );
+		}
+
+		EQString period = (EQString) arguments[argumentIndex];
+		return StringToDurationWithPeriodConverter.of( ( (EQString) period ).getValue() );
+	}
+
+	private LocalDateTime addDurationWithPeriodTooDateTime( LocalDateTime localDateTime, DurationWithPeriod durationWithPeriod ) {
+		localDateTime = localDateTime.plus( durationWithPeriod.getPeriod() );
+		localDateTime = localDateTime.plus( durationWithPeriod.getDuration() );
+
+		return localDateTime;
+	}
+
+	private LocalDate addDurationWithPeriodTooDate( LocalDate localDate, DurationWithPeriod durationWithPeriod ) {
+		localDate = localDate.plus( durationWithPeriod.getPeriod() );
+		localDate = localDate.plus( durationWithPeriod.getDuration() );
+
+		return localDate;
+	}
+
+	private LocalDateTime addTemporalAndPeriodModifiers( String functionName, EQType[] arguments, EQTypeConverter argumentConverter ) {
+		if ( arguments.length < 1 ) {
+			throw new IllegalArgumentException( "Invalid arguments specified for the function '" + functionName + "'." );
+		}
+		if ( !EQFunction.class.isAssignableFrom( arguments[0].getClass() ) ) {
+			throw new IllegalArgumentException( "Invalid temporal argument specified for the function '" + functionName + "'." );
+		}
+		DurationWithPeriod durationWithPeriod = validateAndGetPeriodWithDurationFromArguments( arguments, 1, functionName );
+
+		EQFunction temporal = (EQFunction) arguments[0];
+		LocalDateTime localDateTimeFromEQFunction = (LocalDateTime) argumentConverter.convert( TypeDescriptor.valueOf( LocalDateTime.class ),
+		                                                                                       temporal );
+		localDateTimeFromEQFunction = addDurationWithPeriodTooDateTime( localDateTimeFromEQFunction, durationWithPeriod );
+
+		return localDateTimeFromEQFunction;
 	}
 
 	/**

@@ -44,6 +44,11 @@ public class TestStringToDurationWithPeriodConverter
 		assertEquals( 5, result.getDuration().toHours() );
 		assertEquals( 0, result.getDuration().minusHours( result.getDuration().toHours() ).toMinutes() );
 
+		result = StringToDurationWithPeriodConverter.of( "5 hour" );
+		assertEquals( 5, result.getDuration().toHours() );
+		assertEquals( 0, result.getDuration().minusHours( result.getDuration().toHours() ).toMinutes() );
+
+
 		result = StringToDurationWithPeriodConverter.of( "-5h" );
 		Duration duration = result.getDuration();
 		assertEquals( -5, duration.toHours() );
@@ -54,6 +59,12 @@ public class TestStringToDurationWithPeriodConverter
 	public void minutes() {
 		DurationWithPeriod result = StringToDurationWithPeriodConverter.of( "20m" );
 		Duration duration = result.getDuration();
+
+		assertEquals( 0, duration.toHours() );
+		assertEquals( 20, duration.minusHours( duration.toHours() ).toMinutes() );
+
+		result = StringToDurationWithPeriodConverter.of( "20 minutes" );
+		duration = result.getDuration();
 
 		assertEquals( 0, duration.toHours() );
 		assertEquals( 20, duration.minusHours( duration.toHours() ).toMinutes() );
@@ -72,6 +83,12 @@ public class TestStringToDurationWithPeriodConverter
 
 		assertEquals( 2, duration.toMinutes() );
 		assertEquals( 120, duration.getSeconds() );
+
+		result = StringToDurationWithPeriodConverter.of( "-40 seconds" );
+		duration = result.getDuration();
+
+		assertEquals( 0, duration.toMinutes() );
+		assertEquals( -40, duration.getSeconds() );
 
 		result = StringToDurationWithPeriodConverter.of( "-40s" );
 		duration = result.getDuration();
