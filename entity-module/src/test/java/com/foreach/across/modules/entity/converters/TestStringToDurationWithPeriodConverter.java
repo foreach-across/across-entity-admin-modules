@@ -139,10 +139,12 @@ public class TestStringToDurationWithPeriodConverter
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
 		result = StringToDurationWithPeriodConverter.of( "3 h 45m" );
+		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
 		result = StringToDurationWithPeriodConverter.of( "3h 45 m" );
+		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 	}
@@ -156,26 +158,32 @@ public class TestStringToDurationWithPeriodConverter
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
 		result = StringToDurationWithPeriodConverter.of( "3hours 45minutes" );
+		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
 		result = StringToDurationWithPeriodConverter.of( "3hours45minutes" );
+		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
 		result = StringToDurationWithPeriodConverter.of( "3 hours 45minutes" );
+		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
 		result = StringToDurationWithPeriodConverter.of( "3hours 45 minutes" );
+		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
 		result = StringToDurationWithPeriodConverter.of( "3 hours45minutes" );
+		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
 		result = StringToDurationWithPeriodConverter.of( "3hours45 minutes" );
+		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 	}
