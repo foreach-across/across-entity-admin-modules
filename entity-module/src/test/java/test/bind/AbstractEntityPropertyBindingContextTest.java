@@ -16,6 +16,7 @@
 
 package test.bind;
 
+import com.foreach.across.modules.entity.bind.EntityPropertyTemplateValueResolver;
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
@@ -64,6 +65,11 @@ abstract class AbstractEntityPropertyBindingContextTest
 		cityProperties = registryProvider.get( City.class );
 		cityAddressProperties = registryProvider.get( CityAddress.class );
 		collectionsProperties = registryProvider.get( CollectionsHolder.class );
+
+		collectionsProperties.getProperty( "cities[]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> new City( "Some city" ) );
+		collectionsProperties.getProperty( "addressMap[key]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> "some key" );
+		collectionsProperties.getProperty( "addressMap[value]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> new Address() );
+
 		userWithCityAddressProperties = registryProvider.get( UserWithCityAddress.class );
 
 		addressStreet = addressProperties.getProperty( "street" );

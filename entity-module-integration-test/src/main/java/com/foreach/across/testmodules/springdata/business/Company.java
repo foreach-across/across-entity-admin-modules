@@ -16,6 +16,7 @@
 
 package com.foreach.across.testmodules.springdata.business;
 
+import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.domain.Persistable;
@@ -31,6 +32,7 @@ import java.util.Set;
  * @author Arne Vandamme
  */
 @Entity
+@EqualsAndHashCode(of = "id")
 public class Company implements Persistable<String>
 {
 	@Transient
@@ -45,8 +47,8 @@ public class Company implements Persistable<String>
 	@Column
 	private CompanyStatus status;
 
-	@Min( 0 )
-	@Max( 1000 )
+	@Min(0)
+	@Max(1000)
 	@Column(name = "company_number")
 	private int number;
 
@@ -140,28 +142,5 @@ public class Company implements Persistable<String>
 
 	public void setCreated( Date created ) {
 		this.created = created;
-	}
-
-	@Override
-	public boolean equals( Object o ) {
-		if ( this == o ) {
-			return true;
-		}
-		if ( o == null || getClass() != o.getClass() ) {
-			return false;
-		}
-
-		Company company = (Company) o;
-
-		if ( id != null ? !id.equals( company.id ) : company.id != null ) {
-			return false;
-		}
-
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		return id != null ? id.hashCode() : 0;
 	}
 }

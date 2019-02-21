@@ -42,6 +42,8 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.foreach.across.modules.entity.EntityAttributeRegistrars.templateValue;
+
 /**
  * Test configuration for an entity with embedded collections.
  *
@@ -57,6 +59,16 @@ public class LibraryConfiguration implements EntityConfigurer
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		Library example = createExampleLibrary();
 		libraries.put( example.id, example );
+
+		Author authorTemplate = new Author();
+		authorTemplate.setName( "John Doe" );
+
+		Author bookTemplateAuthor = new Author();
+		bookTemplateAuthor.setName( "Fred Astaire" );
+
+		Book bookTemplate = new Book();
+		bookTemplate.setTitle( "My Book" );
+		bookTemplate.setAuthors( Collections.singletonList( bookTemplateAuthor ) );
 
 		entities.create()
 		        .as( Library.class )
@@ -79,6 +91,10 @@ public class LibraryConfiguration implements EntityConfigurer
 		        .properties(
 				        props -> props.property( "books[]" )
 				                      .attribute( Printer.class, ( book, locale ) -> ( (Book) book ).getTitle() )
+				                      .attribute( templateValue( bookTemplate ) )
+				                      .and()
+				                      .property( "books[].authors[]" )
+				                      .attribute( templateValue( () -> authorTemplate ) )
 				                      .and()
 				                      .property( "discounts[]" )
 				                      .attribute( NumericFormElementConfiguration.class, NumericFormElementConfiguration.percent( 2, true ) )
