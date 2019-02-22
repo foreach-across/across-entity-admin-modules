@@ -44,14 +44,6 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 
 	public static final String TODAY = "today";
 
-	public static final String MONDAY = "monday";
-	public static final String TUESDAY = "tuesday";
-	public static final String WEDNESDAY = "wednesday";
-	public static final String THURSDAY = "thursday";
-	public static final String FRIDAY = "friday";
-	public static final String SATURDAY = "saturday";
-	public static final String SUNDAY = "sunday";
-
 	public static final String START_OF_DAY = "startOfDay";
 	public static final String START_OF_WEEK = "startOfWeek";
 	public static final String START_OF_MONTH = "startOfMonth";
@@ -89,6 +81,7 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 
 		switch ( functionName ) {
 			case NOW:
+				return WithPeriod.of( this::now );
 				durationWithPeriod = validateAndGetPeriodWithDurationFromArguments( arguments, 0, functionName );
 				return addDurationWithPeriodTooDateTime( LocalDateTime.now(), durationWithPeriod );
 			case START_OF_DAY:
@@ -107,25 +100,36 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 			case TODAY:
 				durationWithPeriod = validateAndGetPeriodWithDurationFromArguments( arguments, 0, functionName );
 				return addDurationWithPeriodTooDateTime( LocalDate.now().atStartOfDay(), durationWithPeriod );
-			case MONDAY:
-				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.MONDAY ) ).atStartOfDay();
-			case TUESDAY:
-				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.TUESDAY ) ).atStartOfDay();
-			case WEDNESDAY:
-				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.WEDNESDAY ) ).atStartOfDay();
-			case THURSDAY:
-				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.THURSDAY ) ).atStartOfDay();
-			case FRIDAY:
-				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.FRIDAY ) ).atStartOfDay();
-			case SATURDAY:
-				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.SATURDAY ) ).atStartOfDay();
-			case SUNDAY:
-				return today.with( TemporalAdjusters.previousOrSame( DayOfWeek.SUNDAY ) ).atStartOfDay();
+
 		}
 
 		return LocalDateTime.now();
 	}
 
+	LocalDateTime now( DurationWithPeriod period ) {
+		return LocalDateTime.now();
+	}
+
+	WithPeriod withPeriod( WithPeriod wp) {
+		return wp;
+	}
+
+	interface TemporalFunction {
+		LocalDateTime call( Object[] arguments, EQTypeConverter argumentConverter );
+	}
+	@FunctionalInterface
+	interface WithPeriod extends TemporalFunction {
+		@Override
+		default LocalDateTime call( Object[] arguments, EQTypeConverter argumentConverter ) {
+			return execute( null );
+		}
+
+		static WithPeriod of( WithPeriod wp ) {
+			return wp;
+		}
+
+		LocalDateTime execute( DurationWithPeriod period );
+	}
 	private DayOfWeek validateAndGetFirstDayOfTheWeekParamter( EQType[] arguments, int argumentIndex, String functionName ) {
 		if ( arguments.length <= argumentIndex ) {
 			return WeekFields.of( Locale.getDefault() ).getFirstDayOfWeek();
@@ -204,3 +208,6 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 		return dateTime;
 	}
 }
+
+
+
