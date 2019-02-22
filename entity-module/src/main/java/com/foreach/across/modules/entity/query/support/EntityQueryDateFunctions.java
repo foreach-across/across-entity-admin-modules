@@ -40,13 +40,25 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 {
 	private static final String NOW = "now";
 	private static final String OFFSET = "offset";
-	private static final String TODAY = "today";
 	private static final String START_OF_DAY = "startOfDay";
 	private static final String START_OF_WEEK = "startOfWeek";
 	private static final String START_OF_MONTH = "startOfMonth";
 	private static final String START_OF_YEAR = "startOfYear";
 
-	private static final String[] FUNCTION_NAMES = new String[] { NOW, OFFSET, TODAY, START_OF_DAY, START_OF_WEEK, START_OF_MONTH, START_OF_YEAR };
+	private static final String TODAY = "today";
+	private static final String THIS_YEAR = "thisYear";
+	private static final String NEXT_YEAR = "nextYear";
+	private static final String LAST_YEAR = "lastYear";
+	private static final String THIS_MONTH = "thisMonth";
+	private static final String NEXT_MONTH = "nextMonth";
+	private static final String LAST_MONTH = "lastMonth";
+	private static final String THIS_WEEK = "thisWeek";
+	private static final String NEXT_WEEK = "nextWeek";
+	private static final String LAST_WEEK = "lastWeek";
+
+	private static final String[] FUNCTION_NAMES =
+			new String[] { NOW, OFFSET, TODAY, START_OF_DAY, START_OF_WEEK, START_OF_MONTH, START_OF_YEAR, THIS_YEAR, THIS_MONTH, THIS_WEEK, NEXT_MONTH,
+			               NEXT_WEEK, NEXT_YEAR, LAST_MONTH, LAST_WEEK, LAST_YEAR };
 
 	@Override
 	public boolean accepts( String functionName, TypeDescriptor desiredType ) {
@@ -81,47 +93,88 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 		switch ( functionName ) {
 			case NOW:
 				return WithPeriod.of( this::now ).call( arguments, argumentConverter, 0 );
-			case OFFSET:
-				return WithTemporalAndPeriod.of( this::offset ).call( arguments, argumentConverter );
 			case START_OF_DAY:
 				return WithTemporalAndPeriod.of( this::startOfDay ).call( arguments, argumentConverter );
-			case START_OF_WEEK:
-				DayOfWeek firstDayOfWeek = validateAndGetFirstDayOfTheWeekParameter( arguments, 2 );
-				return today.with( firstDayOfWeek ).atStartOfDay();
+
 			case START_OF_MONTH:
 				return WithTemporalAndPeriod.of( this::startOfMonth ).call( arguments, argumentConverter );
 			case START_OF_YEAR:
 				return WithTemporalAndPeriod.of( this::startOfYear ).call( arguments, argumentConverter );
 
 			case TODAY:
-				return WithPeriod.of( this::today ).call( arguments, argumentConverter,0 );
-
+				return WithPeriod.of( this::today ).call( arguments, argumentConverter, 0 );
+			case THIS_YEAR:
+				return WithPeriod.of( this::thisYear ).call( arguments, argumentConverter, 0 );
+			case NEXT_YEAR:
+				return WithPeriod.of( this::nextYear ).call( arguments, argumentConverter, 0 );
+			case LAST_YEAR:
+				return WithPeriod.of( this::lastYear ).call( arguments, argumentConverter, 0 );
+			case THIS_MONTH:
+				return WithPeriod.of( this::thisMonth ).call( arguments, argumentConverter, 0 );
+			case NEXT_MONTH:
+				return WithPeriod.of( this::nextMonth ).call( arguments, argumentConverter, 0 );
+			case LAST_MONTH:
+				return WithPeriod.of( this::lastMonth ).call( arguments, argumentConverter, 0 );
+			//TODO: implement
+			case OFFSET:
+				return WithTemporalAndPeriod.of( this::offset ).call( arguments, argumentConverter );
+			//TODO: Implement
+			case START_OF_WEEK:
+			case THIS_WEEK:
+			case NEXT_WEEK:
+			case LAST_WEEK:
+				//DayOfWeek firstDayOfWeek = validateAndGetFirstDayOfTheWeekParameter( arguments, 2 );
+				//return today.with( firstDayOfWeek ).atStartOfDay();
 		}
 
 		return LocalDateTime.now();
 	}
 
-	LocalDateTime now( DurationWithPeriod period ) {
+	private LocalDateTime now( DurationWithPeriod period ) {
 		return addDurationWithPeriodTooDateTime( LocalDateTime.now(), period );
 	}
 
-	LocalDateTime offset( LocalDateTime temporal, DurationWithPeriod period ) {
+	private LocalDateTime offset( LocalDateTime temporal, DurationWithPeriod period ) {
 		return addDurationWithPeriodTooDateTime( temporal, period ).toLocalDate().atStartOfDay();
 	}
 
-	LocalDateTime today( DurationWithPeriod period ) {
+	private LocalDateTime today( DurationWithPeriod period ) {
 		return addDurationWithPeriodTooDateTime( LocalDateTime.now().toLocalDate().atStartOfDay(), period );
 	}
 
-	LocalDateTime startOfDay( LocalDateTime temporal, DurationWithPeriod period ) {
+	private LocalDateTime thisYear( DurationWithPeriod period ) {
+		return addDurationWithPeriodTooDateTime( LocalDateTime.now().withDayOfYear( 1 ).toLocalDate().atStartOfDay(), period );
+	}
+
+	private LocalDateTime nextYear( DurationWithPeriod period ) {
+		return addDurationWithPeriodTooDateTime( LocalDateTime.now().plusYears( 1 ).withDayOfYear( 1 ).toLocalDate().atStartOfDay(), period );
+	}
+
+	private LocalDateTime lastYear( DurationWithPeriod period ) {
+		return addDurationWithPeriodTooDateTime( LocalDateTime.now().plusYears( -1 ).withDayOfYear( 1 ).toLocalDate().atStartOfDay(), period );
+	}
+
+	private LocalDateTime thisMonth( DurationWithPeriod period ) {
+		return addDurationWithPeriodTooDateTime( LocalDateTime.now().withDayOfMonth( 1 ).toLocalDate().atStartOfDay(), period );
+	}
+
+	private LocalDateTime nextMonth( DurationWithPeriod period ) {
+		return addDurationWithPeriodTooDateTime( LocalDateTime.now().plusMonths( 1 ).withDayOfYear( 1 ).toLocalDate().atStartOfDay(), period );
+	}
+
+	private LocalDateTime lastMonth( DurationWithPeriod period ) {
+		return addDurationWithPeriodTooDateTime( LocalDateTime.now().plusMonths( -1 ).withDayOfYear( 1 ).toLocalDate().atStartOfDay(), period );
+	}
+
+	private LocalDateTime startOfDay( LocalDateTime temporal, DurationWithPeriod period ) {
 		return addDurationWithPeriodTooDateTime( temporal, period ).toLocalDate().atStartOfDay();
 	}
 
-	LocalDateTime startOfMonth( LocalDateTime temporal, DurationWithPeriod period ) {
+	private LocalDateTime startOfMonth( LocalDateTime temporal, DurationWithPeriod period ) {
 		return addDurationWithPeriodTooDateTime( temporal, period ).withDayOfMonth( 1 ).toLocalDate().atStartOfDay();
 	}
 
-	LocalDateTime startOfYear( LocalDateTime temporal, DurationWithPeriod period ) {
+	private LocalDateTime startOfYear( LocalDateTime temporal, DurationWithPeriod period ) {
 		return addDurationWithPeriodTooDateTime( temporal, period ).withDayOfYear( 1 ).toLocalDate().atStartOfDay();
 	}
 
