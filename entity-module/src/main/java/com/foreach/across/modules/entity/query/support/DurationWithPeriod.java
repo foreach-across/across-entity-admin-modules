@@ -49,7 +49,9 @@ public class DurationWithPeriod
 	private static final int SECONDS_INDEX = 20;
 
 	private static final String DURATION_PATTERN =
-			"(([-|+]?[\\d]+?)([y|Y][a-z]*+))?(([-|+]?[\\d]+?)([M][a-z]*+))?(([-|+]?[\\d]+?)([W|w][a-z]*+))?(([-|+]?[\\d]+?)([D|d][a-z]*+))?(([-|+]?[\\d]+?)([H|h][a-z]*+))?(([-|+]?[\\d]+?)([m][a-z]*+))?(([-|+]?[\\d]+?)([s|S][a-z]*+))?";
+			"(([-|+]?[\\d]+?)([y|Y][a-z]*+))?(([-|+]?[\\d]+?)([M][a-z]*+))?" +
+					"(([-|+]?[\\d]+?)([W|w][a-z]*+))?(([-|+]?[\\d]+?)([D|d][a-z]*+))?(([-|+]?[\\d]+?)([H|h][a-z]*+))?" +
+					"(([-|+]?[\\d]+?)([m][a-z]*+))?(([-|+]?[\\d]+?)([s|S][a-z]*+))?(([-|+]?[\\d]+?)([at]*+))?";
 
 	/**
 	 * Converts a given text value to a representing duration and period.
@@ -73,6 +75,7 @@ public class DurationWithPeriod
 
 		Pattern pattern = Pattern.compile( DURATION_PATTERN );
 		String durationFromUser = period.replaceAll( ",", "." )
+		                                .replaceAll( " at ", "+at" )
 		                                .replaceAll( " [\\d]+?", "+$0" )
 		                                .replaceAll( " ", "" );
 
@@ -111,22 +114,6 @@ public class DurationWithPeriod
 		} );
 
 		return durationWithPeriod;
-	}
-
-	private static String convertEQTypeToString( EQType period ) {
-		String durationText;
-		if ( EQString.class.isAssignableFrom( period.getClass() ) ) {
-			durationText = ( (EQString) period ).getValue();
-		}
-		else {
-			if ( EQValue.class.isAssignableFrom( period.getClass() ) ) {
-				durationText = ( (EQValue) period ).getValue();
-			}
-			else {
-				throw new IllegalArgumentException( "Invalid period argument specified: '" + period + "'." );
-			}
-		}
-		return durationText;
 	}
 
 	private static Period calculatePeriod( String number, ChronoUnit unit, Character sign ) {

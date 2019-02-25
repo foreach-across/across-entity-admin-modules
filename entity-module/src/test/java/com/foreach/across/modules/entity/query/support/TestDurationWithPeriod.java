@@ -248,6 +248,17 @@ public class TestDurationWithPeriod
 	}
 
 	@Test
+	public void timeStamp(){
+		DurationWithPeriod result = DurationWithPeriod.from( "1d at 15:20" );
+		Period period = result.getPeriod();
+		Duration duration = result.getDuration();
+		assertEquals( 1, period.getDays() );
+
+		assertEquals( 15, duration.toHours() );
+		assertEquals( 20, duration.minusHours( duration.toHours() ).toMinutes() );
+	}
+
+	@Test
 	public void convertToDuration() {
 		assertThat( DurationWithPeriod.from( "7h25m" ).getDuration().toMinutes() ).isEqualTo( 7 * 60 + 25 );
 		assertThat( DurationWithPeriod.from( "20m" ).getDuration().toMinutes() ).isEqualTo( 20 );

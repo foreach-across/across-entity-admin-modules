@@ -270,9 +270,16 @@ public class TestEntityQueryDateFunctions
 		Date twoWeeksAgo = DateUtils.addWeeks( getWeekStartDate(), -2 );
 	}
 
+	@Test
 	public void atTimestamp() {
-		Date expectedDate = DateUtils.truncate( getYearStartDate(), Calendar.DATE );
-		assertThat( eqf( "today('+1d at 15:00')", Date.class ) )
+		Calendar calendar = Calendar.getInstance();
+		calendar.set( Calendar.HOUR_OF_DAY, 15 );
+		calendar.set( Calendar.MINUTE, 20 );
+		calendar.set( Calendar.SECOND, 0 );
+		calendar.set( Calendar.MILLISECOND, 0 );
+		Date expectedDate = DateUtils.addDays( calendar.getTime(), 1 );
+
+		assertThat( eqf( "today('+1s at 15:20')", Date.class ) )
 				.isEqualTo( expectedDate );
 	}
 
