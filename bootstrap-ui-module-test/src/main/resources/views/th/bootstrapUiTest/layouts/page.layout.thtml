@@ -21,11 +21,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<title>BootstrapUiModule test application</title>
 
-	<script th:each="javascript : ${webResourceRegistry.getResources('javascript')}" th:src="@{${javascript.data}}"
-	        th:if="${javascript.location != 'inline'}"></script>
-
-	<link rel="stylesheet" type="text/css" th:each="css : ${webResourceRegistry.getResources('css')}"
-	      th:href="@{${css.data}}"/>
+    <across:web-resources bucket="head" />
+    <across:web-resources bucket="javascript" />
+    <across:web-resources bucket="css" />
 </head>
 <body>
 <div>
@@ -44,9 +42,7 @@
 	</div>
 </div>
 
-<script th:each="javascript : ${webResourceRegistry.getResources('javascript-page-end')}" th:src="@{${javascript.data}}"
-        th:if="${javascript.location != 'inline'}"></script>
-
+<across:web-resources bucket="javascript-page-end" />
 
 </body>
 </html>
