@@ -115,8 +115,6 @@ public interface EntityAttributes
 	 */
 	String IS_EMBEDDED_OBJECT = EntityPropertyDescriptor.class.getName() + ".embedded";
 
-	String ITEM_TEMPLATE_VALUE_RESOLVER = "";
-
 	/**
 	 * Retrieve the control name to use for a {@link EntityPropertyDescriptor}.
 	 * If an attribute {@link #CONTROL_NAME} is present, it will be used, else the regular name will be used.

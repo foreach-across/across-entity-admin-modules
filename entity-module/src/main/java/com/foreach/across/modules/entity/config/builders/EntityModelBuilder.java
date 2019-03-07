@@ -69,6 +69,16 @@ public class EntityModelBuilder<T>
 	}
 
 	/**
+	 * Set the label printer for this model as a function.
+	 *
+	 * @param labelFunction to use as
+	 * @return current builder
+	 */
+	public EntityModelBuilder<T> labelPrinter( Function<T, String> labelFunction ) {
+		return labelPrinter( ( e, l ) -> labelFunction.apply( e ) );
+	}
+
+	/**
 	 * Set the label printer for this model.
 	 *
 	 * @param labelPrinter to set
