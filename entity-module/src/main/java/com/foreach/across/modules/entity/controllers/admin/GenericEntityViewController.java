@@ -20,6 +20,7 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
@@ -40,6 +41,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpMethod;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -88,6 +91,7 @@ public class GenericEntityViewController
 	private EntityViewContextLoader entityViewContextLoader;
 	private WebAppPathResolver webAppPathResolver;
 	private EntityViewLinks entityViewLinks;
+	private ConversionService mvcConversionService;
 
 	/**
 	 * Responsible for building the initial {@link com.foreach.across.modules.entity.views.context.EntityViewContext}
@@ -189,7 +193,7 @@ public class GenericEntityViewController
 			DefaultEntityViewContext parentViewContext = new DefaultEntityViewContext();
 			entityViewContextLoader.loadForEntityConfiguration( parentViewContext, entityName );
 			EntityConfiguration parentEntityConfiguration = parentViewContext.getEntityConfiguration();
-			parentViewContext.setEntity( parentEntityConfiguration.getEntityModel().findOne( entityId ) );
+			parentViewContext.setEntity( findEntity( entityId, parentEntityConfiguration.getEntityModel() ) );
 
 			EntityAssociation association = parentEntityConfiguration.association( associationName );
 			entityViewContextLoader.loadForEntityConfiguration( entityViewContext, association.getTargetEntityConfiguration() );
@@ -204,16 +208,23 @@ public class GenericEntityViewController
 			}
 
 			if ( isPossibleEntityId( associatedEntityId ) ) {
-				entityViewContext.setEntity( entityViewContext.getEntityModel().findOne( associatedEntityId ) );
+				entityViewContext.setEntity( findEntity( entityId, entityViewContext.getEntityModel() ) );
 			}
 		}
 		else {
 			entityViewContextLoader.loadForEntityConfiguration( entityViewContext, entityName );
 
 			if ( isPossibleEntityId( entityId ) ) {
-				entityViewContext.setEntity( entityViewContext.getEntityModel().findOne( entityId ) );
+				entityViewContext.setEntity( findEntity( entityId, entityViewContext.getEntityModel() ) );
 			}
 		}
+	}
+
+	private Object findEntity( Serializable entityId, EntityModel<Object, Serializable> entityModel ) {
+		if ( mvcConversionService.canConvert( entityId.getClass(), entityModel.getIdType() ) ) {
+			return entityModel.findOne( mvcConversionService.convert( entityId, entityModel.getIdType() ) );
+		}
+		return entityModel.findOne( entityId );
 	}
 
 	private boolean isPossibleEntityId( Serializable candidate ) {
@@ -267,6 +278,12 @@ public class GenericEntityViewController
 	@Autowired
 	void setEntityViewLinks( EntityViewLinks entityViewLinks ) {
 		this.entityViewLinks = entityViewLinks;
+	}
+
+	@Autowired
+	@Qualifier("mvcConversionService")
+	void setMvcConversionService( ConversionService conversionService ) {
+		this.mvcConversionService = conversionService;
 	}
 
 	/**
