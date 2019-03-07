@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBu
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
@@ -46,6 +47,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		installData();
 
 		configureBooks( entities );
+		configureAuthors( entities );
 	}
 
 	private void configureBooks( EntitiesConfigurationBuilder entities ) {
@@ -78,6 +80,36 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        .show();
 	}
 
+	private void configureAuthors( EntitiesConfigurationBuilder entities ) {
+		entities.create()
+		        .name( "author2" )
+		        .displayName( "Author" )
+		        .entityType( Author.class, true )
+		        .as( Author.class )
+		        .properties( props -> props.property( "id" ).hidden( true ) )
+		        .entityModel(
+				        model -> model.entityFactory( EntityFactory.of( Author::new ) )
+				                      .entityInformation( new ReflectionEntityInformation<>( Author.class ) )
+				                      .findOneMethod( authors::get )
+				                      .labelPrinter( Author::getName )
+				                      .saveMethod( author -> {
+					                      if ( author.getId() == null ) {
+						                      author.setId( AuthorId.from( System.currentTimeMillis() ) );
+					                      }
+					                      authors.put( author.getId(), author );
+					                      return author;
+				                      } )
+				                      .deleteByIdMethod( authors::remove )
+		        )
+		        .and( registerEntityQueryExecutor( authors::values ) )
+		        .detailView()
+		        .listView()
+		        .createFormView()
+		        .updateFormView()
+		        .deleteFormView()
+		        .show();
+	}
+
 	private void installData() {
 		Book book = new Book();
 		book.setId( 1L );
@@ -101,6 +133,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		@Id
 		private Long id;
 
+		@NotBlank
 		@Length(max = 255)
 		private String title;
 
@@ -112,14 +145,17 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 	@EqualsAndHashCode(of = "id")
 	public static class Author
 	{
+		@Id
 		private AuthorId id;
+
+		@NotBlank
+		@Length(max = 255)
 		private String name;
 	}
 
 	@Getter
 	@EqualsAndHashCode
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-	@ToString
 	public static class AuthorId implements Serializable
 	{
 		private static final long serialVersionUID = 42L;
@@ -132,6 +168,11 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 
 		public static AuthorId from( String id ) {
 			return from( Long.parseLong( id ) );
+		}
+
+		@Override
+		public String toString() {
+			return "" + id;
 		}
 	}
 }

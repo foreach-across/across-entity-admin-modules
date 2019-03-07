@@ -37,6 +37,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -117,6 +118,7 @@ public class TestGenericEntityViewController
 		                         } )
 		                         .build();
 
+		when( entityModel.getIdType() ).thenReturn( String.class );
 		when( entityModel.findOne( "123" ) ).thenReturn( "some entity" );
 		when( viewContext.getEntityModel() ).thenReturn( entityModel );
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
@@ -129,6 +131,8 @@ public class TestGenericEntityViewController
 		when( viewFactory.createView( viewRequest ) ).thenReturn( entityView );
 		when( viewFactory.attributeMap() ).thenReturn( new HashMap<>() );
 		when( entityView.getTemplate() ).thenReturn( "view-template" );
+
+		controller.setMvcConversionService( new DefaultConversionService() );
 	}
 
 	@Test
