@@ -18,29 +18,19 @@ package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.query.EntityQueryCondition;
-import com.foreach.across.modules.entity.query.EntityQueryConditionTranslator;
-import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityFactory;
-import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
+import com.foreach.across.modules.entity.support.EntityPropertyRegistrationHelper;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
@@ -56,7 +46,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 	private final Map<Serializable, Author> authors = new HashMap<>();
 
 	private final EntityRegistry entityRegistry;
-	private final ConversionService mvcConversionService;
+	private final EntityPropertyRegistrationHelper propertyRegistrars;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
@@ -64,7 +54,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 
 		configureBooks( entities );
 		configureAuthors( entities );
-		configureAuthorOnBook( entities );
+		configureAuthorsOnBook( entities );
 	}
 
 	private void configureBooks( EntitiesConfigurationBuilder entities ) {
@@ -127,73 +117,15 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        .show();
 	}
 
-	private void configureAuthorOnBook( EntitiesConfigurationBuilder entities ) {
-		// and( registerShadowProperty( "author", Author.class, "authorId" )
+	private void configureAuthorsOnBook( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Book.class )
 		        .properties(
-				        props -> props//.property( entityIdProxy( "author", Author.class ).forTargetProperty("authorId" ) ).and()
-				                      .property( "authorId" ).hidden( true ).and()
-				                      .property( "author" )
-				                      .propertyType( Author.class )
-				                      .readable( true )
-				                      .writable( true )
-				                      .hidden( false )
-				                      // and( registerProxyProperty("author", "authorId").propertyType(Author.class)
-				                      /*.controller(
-						                      ctl -> ctl.withTarget( Book.class, Author.class )
-						                                .valueFetcher( book -> authors.get( book.getAuthorId() ) )
-				                      )*/
-				                      .controller(
-						                      ctl -> ctl.withTarget( Book.class, Author.class )
-						                                .valueFetcher( book -> {
-							                                EntityConfiguration source = entityRegistry.getEntityConfiguration( Book.class );
-							                                EntityPropertyDescriptor sourceProperty = source.getPropertyRegistry().getProperty( "authorId" );
-
-							                                EntityConfiguration target = entityRegistry.getEntityConfiguration( Author.class );
-							                                EntityModel entityModel = target.getEntityModel();
-
-							                                Serializable targetId = (Serializable) sourceProperty.getPropertyValue( book );
-							                                return (Author) entityModel.findOne( targetId );
-						                                } )
-						                                .applyValueConsumer( ( book, author ) -> {
-							                                EntityConfiguration target = entityRegistry.getEntityConfiguration( Author.class );
-							                                EntityModel entityModel = target.getEntityModel();
-
-							                                EntityConfiguration source = entityRegistry.getEntityConfiguration( Book.class );
-							                                EntityPropertyDescriptor sourceProperty = source.getPropertyRegistry().getProperty( "authorId" );
-
-							                                Serializable targetId = (Serializable) entityModel.getId( author.getNewValue() );
-							                                sourceProperty.getController().applyValue(
-									                                EntityPropertyBindingContext.forUpdating( book, book ),
-									                                EntityPropertyValue.of( targetId )
-							                                );
-						                                } )
-				                      )
-				                      .controller( ctl -> ctl.withTarget( Object.class, Author.class )
-				                                             .contextualValidator( ( object, property, errors, hints ) -> {
-					                                             if ( property == null ) {
-						                                             errors.rejectValue( "", "NotNull" );
-					                                             }
-				                                             } ) )
-				                      .attribute(
-						                      EntityQueryConditionTranslator.class,
-						                      condition -> {
-							                      Object[] args = condition.getArguments();
-
-							                      EntityConfiguration target = entityRegistry.getEntityConfiguration( Author.class );
-							                      EntityModel<Object, Serializable> entityModel = target.getEntityModel();
-
-							                      Object[] idArgs = new Object[args.length];
-
-							                      for ( int i = 0; i < args.length; i++ ) {
-								                      idArgs[i] = entityModel.getId( args[i] );
-							                      }
-
-							                      return new EntityQueryCondition( "authorId", condition.getOperand(), idArgs );
-						                      }
-				                      )
+				        props -> props.property( propertyRegistrars.entityIdProxy( "author" ).entityType( Author.class ).targetPropertyName( "authorId" ) )
+				                      .and()
+				                      .property( propertyRegistrars.entityIdProxy( "reviewers" )
+				                                                   .entityType( Author.class )
+				                                                   .targetPropertyName( "reviewerIds" ) )
 		        );
-
 	}
 
 	private void installData() {
@@ -202,12 +134,23 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		book.setTitle( "My Book" );
 		books.put( book.getId(), book );
 
-		Author author = new Author();
-		author.setId( AuthorId.from( 1L ) );
-		author.setName( "John Doe" );
-		authors.put( author.getId(), author );
+		Author john = new Author();
+		john.setId( AuthorId.from( 1L ) );
+		john.setName( "John Doe" );
+		authors.put( john.getId(), john );
 
-		book.setAuthorId( author.getId() );
+		Author jane = new Author();
+		jane.setId( AuthorId.from( 2L ) );
+		jane.setName( "Jane Doe" );
+		authors.put( jane.getId(), jane );
+
+		Author fred = new Author();
+		fred.setId( AuthorId.from( 3L ) );
+		fred.setName( "Fred Astaire" );
+		authors.put( fred.getId(), fred );
+
+		book.setAuthorId( john.getId() );
+		book.setReviewerIds( Arrays.asList( jane.getId(), fred.getId() ) );
 	}
 
 	@Data
@@ -226,6 +169,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		@NotNull
 		private AuthorId authorId;
 
+		@NotNull
 		@Builder.Default
 		private List<AuthorId> reviewerIds = new ArrayList<>();
 	}
