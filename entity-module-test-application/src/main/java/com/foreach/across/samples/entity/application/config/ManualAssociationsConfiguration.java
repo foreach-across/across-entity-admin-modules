@@ -19,7 +19,6 @@ package com.foreach.across.samples.entity.application.config;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityFactory;
-import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityPropertyRegistrationHelper;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -45,7 +44,6 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 	private final Map<Serializable, Book> books = new HashMap<>();
 	private final Map<Serializable, Author> authors = new HashMap<>();
 
-	private final EntityRegistry entityRegistry;
 	private final EntityPropertyRegistrationHelper propertyRegistrars;
 
 	@Override
@@ -80,7 +78,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        )
 		        .and( registerEntityQueryExecutor( books::values ) )
 		        .detailView()
-		        .listView()
+		        .listView( lvb -> lvb.entityQueryFilter( eqf -> eqf.showProperties( "author", "reviewers" ).multiValue( "reviewers" ) ) )
 		        .createFormView()
 		        .updateFormView()
 		        .deleteFormView()
