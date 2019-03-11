@@ -16,6 +16,8 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
@@ -62,54 +64,21 @@ public class AutoSuggestFormController
 	public String showElements( ModelMap model, ViewElementBuilderContext builderContext ) {
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
 
-		//AutoSuggestFormElementConfiguration.withDataSet( dataset -> dataset.endpoint( "bla" ) ).showHint( true );
-
-		generatedElements.put( "Simple autosuggest with default settings", defaultAutoSuggest().build( builderContext ) );
-
-//		AutoSuggestFormElementConfiguration configuration = AutoSuggestFormElementConfiguration.withDataSet(
-//				dataSet -> dataSet.remoteUrl( "/bootstrapAutosuggest/suggest" ) );
-//		generatedElements.put( "autosuggest2", autosuggest()
-//				.configuration( configuration )
-//				.idProperty( "id" )
-//				.properties( "label", "other" )
-//				.prefill( Arrays.asList( createPrefill( "abc" ),
-//				                         createPrefill( "def" ) )
-//				)
-//				.build() );
-//
-//		NodeViewElement container = new NodeViewElementBuilder( "ul" )
-//				.css( CSS_PREFILL_TABLE )
-//				.build( new DefaultViewElementBuilderContext() );
-//		NodeViewElement item = new NodeViewElementBuilder( "ul" )
-//				.add( node( "li" )
-//						      .css( AutoSuggestFormElementBuilder.CSS_ITEM_TEMPLATE )
-//						      .add( div()
-//								            .attribute( AutoSuggestFormElementBuilder.ATTRIBUTE_DATA_PROPERTY,
-//								                        "label" )
-//						      )
-//				)
-//				.build( new DefaultViewElementBuilderContext() );
-//		generatedElements.put( "autosuggest3", autosuggest()
-//				.configuration( configuration )
-//				.itemTemplate( container, item )
-//				.build() );
+		generatedElements.put( "Simple autosuggest with default settings", defaultAutoSuggest() );
 
 		model.addAttribute( "generatedElements", generatedElements );
 
 		return "th/bootstrapUiTest/elementsRendering";
 	}
 
-	private ViewElementBuilder defaultAutoSuggest() {
-		return autosuggest().configuration(
-				AutoSuggestFormElementConfiguration.withDataSet( dataset -> dataset.remoteUrl( "/bootstrapAutosuggest/suggest?query={{query}}" ) )
-		);
-	}
-
-	private Map<String, Object> createPrefill( String description ) {
-		HashMap<String, Object> item = new HashMap<>();
-		item.put( "label", description );
-		item.put( "other", "qksmjdfmlqsj" );
-		return item;
+	private AutoSuggestFormElement defaultAutoSuggest() {
+		return BootstrapUiBuilders
+				.autosuggest()
+				.configuration(
+						AutoSuggestFormElementConfiguration.withDataSet(
+								dataSet -> dataSet.remoteUrl( "/bootstrapAutosuggest/suggest?query={{query}}" )
+						)
+				).build();
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/suggest", produces = "application/json; charset=UTF-8")

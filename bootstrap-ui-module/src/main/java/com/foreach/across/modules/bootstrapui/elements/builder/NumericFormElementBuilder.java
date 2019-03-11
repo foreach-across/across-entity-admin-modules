@@ -45,13 +45,13 @@ public class NumericFormElementBuilder extends FormControlElementBuilderSupport<
 	public NumericFormElementBuilder percent() {
 		NumericFormElementConfiguration configuration = new NumericFormElementConfiguration();
 		configuration.setFormat( NumericFormElementConfiguration.Format.PERCENT );
-		return this;
+		return configuration( configuration );
 	}
 
 	public NumericFormElementBuilder currency() {
 		NumericFormElementConfiguration configuration = new NumericFormElementConfiguration();
 		configuration.setFormat( NumericFormElementConfiguration.Format.CURRENCY );
-		return this;
+		return configuration( configuration );
 	}
 
 	public NumericFormElementBuilder decimal( int fractionDigits ) {
