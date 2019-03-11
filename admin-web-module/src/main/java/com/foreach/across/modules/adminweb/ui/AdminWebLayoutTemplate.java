@@ -24,6 +24,7 @@ import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.template.LayoutTemplateProcessorAdapterBean;
 import com.foreach.across.modules.web.template.WebTemplateRegistry;
 import org.apache.commons.lang3.ArrayUtils;
@@ -91,8 +92,10 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 
 	@Override
 	protected void registerWebResources( WebResourceRegistry registry ) {
-		registry.addPackage( AdminWebWebResources.NAME );
-		registry.addWithKey( WebResource.CSS, AdminWeb.MODULE, AdminWeb.LAYOUT_TEMPLATE_CSS, WebResource.VIEWS );
+		registry.apply(
+				WebResourceRule.addPackage( AdminWebWebResources.NAME ),
+				WebResourceRule.add( WebResource.css( "@static:/adminweb/css/adminweb.css" ) ).withKey( AdminWeb.MODULE ).toBucket( WebResource.CSS )
+		);
 	}
 
 	@Override

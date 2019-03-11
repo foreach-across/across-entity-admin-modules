@@ -16,4 +16,4 @@ adminWebModule:
 
 acrossModule:
   AdminWebModule:
-    resources: admin-web-module/src/main/resources
+    resources: ../admin-web-module/src/main/resources

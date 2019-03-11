@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-
 <!--
   ~ Copyright 2014 the original author or authors
   ~
@@ -15,22 +13,18 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
+<!DOCTYPE html>
+
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title th:text="${@adminWeb.title}">Administration</title>
-    <script th:each="javascript :${webResourceRegistry.getResources('javascript')}" type="text/javascript"
-            th:if="${javascript.location == 'data'}" th:inline="javascript">
-        (function( Across ) {
-            Across[ [[${javascript.key}]] ] = [[${javascript.data}]];
-        })( window.Across = window.Across || {} );
-    </script>
-    <script th:each="javascript : ${webResourceRegistry.getResources('javascript')}" th:src="@{${javascript.data}}"
-            th:if="${javascript.location != 'inline' and javascript.location != 'data'}"></script>
-    <link rel="stylesheet" type="text/css" th:each="css : ${webResourceRegistry.getResources('css')}"
-          th:href="@{${css.data}}"/>
+    <across:web-resources bucket="head" />
+    <across:web-resources bucket="javascript" />
+    <across:web-resources bucket="css" />
 </head>
 <body>
 <div sec:authorize="!isAnonymous()" th:unless="${isLoginPage}">
@@ -76,8 +70,7 @@
     <div th:replace="${childPage} :: content"></div>
 </div>
 
-<script th:each="javascript : ${webResourceRegistry.getResources('javascript-page-end')}" th:src="@{${javascript.data}}"
-        th:if="${javascript.location != 'inline'}"></script>
+<across:web-resources bucket="javascript-page-end" />
 
 <th:block th:fragment="bottom-scripts(scripts)" th:if="${scripts}">
     <th:block th:insert="${scripts}"/>
