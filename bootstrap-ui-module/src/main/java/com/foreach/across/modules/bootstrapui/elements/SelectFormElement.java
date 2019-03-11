@@ -18,6 +18,8 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 
+import java.util.Collections;
+
 /**
  * Represents a HTML select element.  Supports both a default HTML select, and the more advanced bootstrap-select.
  * The latter is activated by setting a {@link SelectFormElementConfiguration} using {@link #setConfiguration(SelectFormElementConfiguration)}.
@@ -35,6 +37,7 @@ public class SelectFormElement extends FormControlElementSupport
 	public SelectFormElement() {
 		super( ELEMENT_TYPE );
 		setTagName( "select" );
+		addAttributes( Collections.singletonMap( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "select" ) );
 	}
 
 	/**
@@ -54,6 +57,9 @@ public class SelectFormElement extends FormControlElementSupport
 	 */
 	public void setConfiguration( SelectFormElementConfiguration configuration ) {
 		setAttribute( ATTRIBUTE_DATA_SELECT, configuration );
+		if ( configuration != null ) {
+			setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "bootstrap-select" );
+		}
 	}
 
 	public boolean isMultiple() {

@@ -35,7 +35,7 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<textarea class='form-control js-autosize' placeholder='Text input' rows='3'>" +
+				"<textarea data-bootstrapui-adapter-type='basic' class='form-control js-autosize' placeholder='Text input' rows='3'>" +
 						"some &lt;strong class=&quot;test&quot;&gt;html&lt;/strong&gt;" +
 						"</textarea>"
 		);
@@ -49,11 +49,11 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<textarea class='form-control js-autosize' rows='3'>bad value</textarea>"
+				"<textarea data-bootstrapui-adapter-type='basic' class='form-control js-autosize' rows='3'>bad value</textarea>"
 		);
 		renderAndExpect(
 				box,
-				"<textarea class='form-control js-autosize' rows='3'>text</textarea>"
+				"<textarea data-bootstrapui-adapter-type='basic' class='form-control js-autosize' rows='3'>text</textarea>"
 		);
 	}
 
@@ -65,13 +65,13 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<textarea id='internalName' class='form-control' rows='3' name='internalName' />"
+				"<textarea data-bootstrapui-adapter-type='basic' id='internalName' class='form-control' rows='3' name='internalName' />"
 		);
 
 		box.setControlName( "controlName" );
 		renderAndExpect(
 				box,
-				"<textarea id='controlName' class='form-control' rows='3' name='controlName' />"
+				"<textarea data-bootstrapui-adapter-type='basic' id='controlName' class='form-control' rows='3' name='controlName' />"
 		);
 	}
 
@@ -82,7 +82,7 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<textarea class='form-control js-autosize' rows='3' disabled='disabled' />"
+				"<textarea data-bootstrapui-adapter-type='basic' class='form-control js-autosize' rows='3' disabled='disabled' />"
 		);
 
 		box.setDisabled( false );
@@ -90,7 +90,7 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<textarea class='form-control js-autosize' rows='3' readonly='readonly' />"
+				"<textarea data-bootstrapui-adapter-type='basic' class='form-control js-autosize' rows='3' readonly='readonly' />"
 		);
 	}
 
@@ -102,7 +102,7 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 		control.setControlName( "two" );
 		renderAndExpect(
 				control,
-				"<textarea class='form-control js-autosize' rows='3' id='two' name='two' />"
+				"<textarea data-bootstrapui-adapter-type='basic' class='form-control js-autosize' rows='3' id='two' name='two' />"
 		);
 
 		assertEquals( "two", control.getControlName() );
@@ -120,7 +120,7 @@ public class TestTextareaFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<textarea class='form-control js-autosize' rows='3' id='prefix.one' name='prefix.one' />"
+				"<textarea data-bootstrapui-adapter-type='basic' class='form-control js-autosize' rows='3' id='prefix.one' name='prefix.one' />"
 		);
 
 		assertEquals( "prefix.one", control.getControlName() );

@@ -44,7 +44,7 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 		builder.htmlId( "mybox" ).controlName( "boxName" );
 
 		expect(
-				"<select name='boxName' id='mybox' class='form-control' />"
+				"<select name='boxName' id='mybox' class='form-control' data-bootstrapui-adapter-type='select'/>"
 		);
 	}
 
@@ -53,7 +53,7 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 		builder.multiple();
 
 		expect(
-				"<select class='form-control' multiple='multiple' />"
+				"<select class='form-control' multiple='multiple' data-bootstrapui-adapter-type='select'/>"
 		);
 	}
 
@@ -69,7 +69,7 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 		builder.select( configuration ).multiple().htmlId( "mybox" ).controlName( "boxName" );
 
 		expect(
-				"<select name='boxName' id='mybox' multiple='multiple' class='form-control' data-bootstrapui-select='{&quot;dropupAuto&quot;:false}' />"
+				"<select name='boxName' id='mybox' multiple='multiple' class='form-control' data-bootstrapui-select='{&quot;dropupAuto&quot;:false}' data-bootstrapui-adapter-type='bootstrap-select'/>"
 		);
 	}
 
@@ -78,13 +78,13 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 		builder.disabled();
 
 		expect(
-				"<select class='form-control' disabled='disabled' />"
+				"<select class='form-control' disabled='disabled' data-bootstrapui-adapter-type='select'/>"
 		);
 
 		builder.disabled( false ).readonly();
 
 		expect(
-				"<select class='form-control' readonly='readonly' />"
+				"<select class='form-control' readonly='readonly' data-bootstrapui-adapter-type='select'/>"
 		);
 	}
 
@@ -96,7 +96,7 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 				.add( new OptionFormElementBuilder().label( "Short two" ).text( "Some text" ).selected().disabled() );
 
 		expect(
-				"<select class='form-control'>" +
+				"<select class='form-control' data-bootstrapui-adapter-type='select'>" +
 						"<option class='one two' data-role='item' value='one'>Inner text</option>" +
 						"<option value='123'>Only label</option>" +
 						"<option label='Short two' selected='selected' disabled='disabled'>Some text</option>" +

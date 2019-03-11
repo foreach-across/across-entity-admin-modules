@@ -50,7 +50,7 @@ public class TestFieldsetFormElement extends AbstractBootstrapViewElementTest
 				fieldset,
 				"<fieldset>" +
 						"line 1" +
-						"<input type='text' class='form-control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />" +
 						"</fieldset>"
 		);
 	}
@@ -144,7 +144,7 @@ public class TestFieldsetFormElement extends AbstractBootstrapViewElementTest
 				"<fieldset>" +
 						"<legend>legend text<button type='button' class='btn btn-default' /></legend>" +
 						"line 1" +
-						"<input type='text' class='form-control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' />" +
 						"</fieldset>"
 		);
 	}
