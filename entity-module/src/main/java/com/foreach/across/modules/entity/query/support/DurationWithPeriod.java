@@ -16,9 +16,6 @@
 
 package com.foreach.across.modules.entity.query.support;
 
-import com.foreach.across.modules.entity.query.EQString;
-import com.foreach.across.modules.entity.query.EQType;
-import com.foreach.across.modules.entity.query.EQValue;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,11 +44,14 @@ public class DurationWithPeriod
 	private static final int HOURS_INDEX = 14;
 	private static final int MINUTES_INDEX = 17;
 	private static final int SECONDS_INDEX = 20;
+	private static final int TIMESTAMP_HOURS_INDEX = 24;
+	private static final int TIMESTAMP_MINUTES_INDEX = 25;
+	private static final int TIMESTAMP_SECONDS_INDEX = 27;
 
 	private static final String DURATION_PATTERN =
 			"(([-|+]?[\\d]+?)([y|Y][a-z]*+))?(([-|+]?[\\d]+?)([M][a-z]*+))?" +
 					"(([-|+]?[\\d]+?)([W|w][a-z]*+))?(([-|+]?[\\d]+?)([D|d][a-z]*+))?(([-|+]?[\\d]+?)([H|h][a-z]*+))?" +
-					"(([-|+]?[\\d]+?)([m][a-z]*+))?(([-|+]?[\\d]+?)([s|S][a-z]*+))?(([-|+]?[\\d]+?)([at]*+))?";
+					"(([-|+]?[\\d]+?)([m][a-z]*+))?(([-|+]?[\\d]+?)([s|S][a-z]*+))?(([-|+]?at)([0-9]{1,2}):([0-9]{1,2})(:?([0-9]{0,2}))+?)?";
 
 	/**
 	 * Converts a given text value to a representing duration and period.
@@ -76,6 +76,7 @@ public class DurationWithPeriod
 		Pattern pattern = Pattern.compile( DURATION_PATTERN );
 		String durationFromUser = period.replaceAll( ",", "." )
 		                                .replaceAll( " at ", "+at" )
+		                                .replaceAll( "at ", "+at" )
 		                                .replaceAll( " [\\d]+?", "+$0" )
 		                                .replaceAll( " ", "" );
 
@@ -93,13 +94,16 @@ public class DurationWithPeriod
 			if ( m.matches() ) {
 				Stream.of(
 						calculateDuration( m.group( SECONDS_INDEX ), ChronoUnit.SECONDS, sign ),
+						calculateDuration( m.group( TIMESTAMP_SECONDS_INDEX ), ChronoUnit.SECONDS, sign ),
 						calculateDuration( m.group( MINUTES_INDEX ), ChronoUnit.MINUTES, sign ),
+						calculateDuration( m.group( TIMESTAMP_MINUTES_INDEX ), ChronoUnit.MINUTES, sign ),
 						calculateDuration( m.group( HOURS_INDEX ), ChronoUnit.HOURS, sign ),
+						calculateDuration( m.group( TIMESTAMP_HOURS_INDEX ), ChronoUnit.HOURS, sign ),
 						calculatePeriod( m.group( DAYS_INDEX ), ChronoUnit.DAYS, sign ),
 						calculatePeriod( m.group( WEEK_INDEX ), ChronoUnit.WEEKS, sign ),
 						calculatePeriod( m.group( MONTH_INDEX ), ChronoUnit.MONTHS, sign ),
 						calculatePeriod( m.group( YEAR_INDEX ), ChronoUnit.YEARS, sign )
-				).forEach( ( temporalAmount -> {
+						).forEach( ( temporalAmount -> {
 					if ( temporalAmount instanceof Period && !( (Period) temporalAmount ).isZero() ) {
 						durationWithPeriod.setPeriod( durationWithPeriod.getPeriod().plus( (Period) temporalAmount ) );
 					}

@@ -18,9 +18,11 @@ package com.foreach.across.modules.entity.query.support;
 
 import com.foreach.across.modules.entity.query.*;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.Date;
 import java.util.Locale;
@@ -100,7 +102,6 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 				return WithTemporalAndPeriod.of( this::startOfMonth ).call( arguments, argumentConverter );
 			case START_OF_YEAR:
 				return WithTemporalAndPeriod.of( this::startOfYear ).call( arguments, argumentConverter );
-
 			case TODAY:
 				return WithPeriod.of( this::today ).call( arguments, argumentConverter, 0 );
 			case THIS_YEAR:
@@ -115,11 +116,11 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 				return WithPeriod.of( this::nextMonth ).call( arguments, argumentConverter, 0 );
 			case LAST_MONTH:
 				return WithPeriod.of( this::lastMonth ).call( arguments, argumentConverter, 0 );
-			//TODO: implement
 			case OFFSET:
 				return WithTemporalAndPeriod.of( this::offset ).call( arguments, argumentConverter );
 			//TODO: Implement
 			case START_OF_WEEK:
+				return WithTemporalPeriodAndFirstDayOfWeek.of( this::startOfWeek ).call( arguments, argumentConverter );
 			case THIS_WEEK:
 			case NEXT_WEEK:
 			case LAST_WEEK:
@@ -135,7 +136,7 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	}
 
 	private LocalDateTime offset( LocalDateTime temporal, DurationWithPeriod period ) {
-		return addDurationWithPeriodTooDateTime( temporal, period ).toLocalDate().atStartOfDay();
+		return addDurationWithPeriodTooDateTime( temporal, period );
 	}
 
 	private LocalDateTime today( DurationWithPeriod period ) {
@@ -178,6 +179,10 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 		return addDurationWithPeriodTooDateTime( temporal, period ).withDayOfYear( 1 ).toLocalDate().atStartOfDay();
 	}
 
+	private LocalDateTime startOfWeek( LocalDateTime temporal, DurationWithPeriod period, DayOfWeek firstDayOfWeek ) {
+		return addDurationWithPeriodTooDateTime( temporal, period ).with( firstDayOfWeek ).toLocalDate().atStartOfDay();
+	}
+
 	@FunctionalInterface
 	interface WithPeriod
 	{
@@ -192,6 +197,28 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 		}
 
 		LocalDateTime execute( DurationWithPeriod period );
+	}
+
+	@FunctionalInterface
+	interface WithTemporalPeriodAndFirstDayOfWeek
+	{
+		default LocalDateTime call( EQType[] arguments, EQTypeConverter argumentConverter ) {
+			LocalDateTime localDateTimeFromEQFunction = validateAndGetTemporalFromArguments( arguments, argumentConverter );
+			DurationWithPeriod durationWithPeriod = validateAndGetPeriodWithDurationFromArguments( arguments, argumentConverter, 1 );
+			DayOfWeek firstDayOfWeek = validateAndGetFirstDayOfWeekFromArguments( arguments, argumentConverter );
+
+			return execute(
+					localDateTimeFromEQFunction,
+					durationWithPeriod,
+					firstDayOfWeek
+			);
+		}
+
+		static WithTemporalPeriodAndFirstDayOfWeek of( WithTemporalPeriodAndFirstDayOfWeek withTemporalPeriodAndFirstDayOfWeek ) {
+			return withTemporalPeriodAndFirstDayOfWeek;
+		}
+
+		LocalDateTime execute( LocalDateTime temporal, DurationWithPeriod period, DayOfWeek firstDayOfWeek );
 	}
 
 	@FunctionalInterface
@@ -225,15 +252,15 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	private static DurationWithPeriod validateAndGetPeriodWithDurationFromArguments( EQType[] arguments,
 	                                                                                 EQTypeConverter argumentConverter,
 	                                                                                 Integer argumentIndex ) {
-		if ( arguments.length <= argumentIndex ) {
-			return DurationWithPeriod.builder().period( Period.ZERO ).duration( Duration.ZERO ).build();
+		if ( arguments.length > 0 && argumentIndex < arguments.length ) {
+			return (DurationWithPeriod) argumentConverter.convert( TypeDescriptor.valueOf( DurationWithPeriod.class ), arguments[argumentIndex] );
 		}
 
-		return (DurationWithPeriod) argumentConverter.convert( TypeDescriptor.valueOf( DurationWithPeriod.class ), arguments[argumentIndex] );
+		return DurationWithPeriod.builder().period( Period.ZERO ).duration( Duration.ZERO ).build();
 	}
 
 	/**
-	 * Get the argument according to the argumentIndex provided and convert it into a {@link DurationWithPeriod}
+	 * Convert the first argument into a {@link DurationWithPeriod}
 	 * If no period argument is specified return {@link DurationWithPeriod} with no period nor duration
 	 *
 	 * @param arguments to parse trough
@@ -245,26 +272,78 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 		if ( arguments.length <= 0 ) {
 			return LocalDateTime.now();
 		}
-		if ( !EQFunction.class.isAssignableFrom( arguments[0].getClass() ) ) {
-			throw new IllegalArgumentException( "Invalid temporal argument specified: '" + arguments[0].toString() + "'." );
+
+		if ( EQFunction.class.isAssignableFrom( arguments[0].getClass() ) ) {
+			EQFunction temporal = (EQFunction) arguments[0];
+			return (LocalDateTime) argumentConverter.convert( TypeDescriptor.valueOf( LocalDateTime.class ), temporal );
 		}
-		EQFunction temporal = (EQFunction) arguments[0];
-		return (LocalDateTime) argumentConverter.convert( TypeDescriptor.valueOf( LocalDateTime.class ), temporal );
+		else {
+			if ( EQValue.class.isAssignableFrom( arguments[0].getClass() ) ) {
+				try {
+					LocalDate tryParseDate = LocalDate.parse( arguments[0].toString(), DateTimeFormatter.ISO_DATE );
+					return tryParseDate.atStartOfDay();
+				}
+				catch ( Exception ex ) {
+					throw new IllegalArgumentException( "Invalid temporal argument specified: '" + arguments[0].toString() + "'." );
+				}
+			}
+			else {
+				// No EQString allowed for a Temporal
+				throw new IllegalArgumentException( "Invalid temporal argument specified: '" + arguments[0].toString() + "'." );
+			}
+		}
 	}
 
-	private static DayOfWeek validateAndGetFirstDayOfTheWeekParameter( EQType[] arguments, int argumentIndex ) {
-		if ( arguments.length <= argumentIndex ) {
-			return WeekFields.of( Locale.getDefault() ).getFirstDayOfWeek();
+	/**
+	 * Convert the third argument into a {@link DayOfWeek}
+	 * If no first day of week argument is specified, use the configured {@link Locale} to determine the first {@link DayOfWeek} that will be used.
+	 *
+	 * @param arguments to parse trough
+	 * @return a {@link DurationWithPeriod}
+	 */
+	private static DayOfWeek validateAndGetFirstDayOfWeekFromArguments( EQType[] arguments, EQTypeConverter argumentConverter ) {
+		DayOfWeek firstDayOfWeek;
+
+		if ( arguments.length < 3 ) {
+			Locale locale = LocaleContextHolder.getLocale();
+			firstDayOfWeek = WeekFields.of( locale ).getFirstDayOfWeek();
+		}
+		else {
+			switch ( arguments[2].toString().toLowerCase() ) {
+				case "monday":
+				case "mon":
+					firstDayOfWeek = DayOfWeek.MONDAY;
+					break;
+				case "tue":
+				case "tuesday":
+					firstDayOfWeek = DayOfWeek.TUESDAY;
+					break;
+				case "wed":
+				case "wednesday":
+					firstDayOfWeek = DayOfWeek.WEDNESDAY;
+					break;
+				case "thu":
+				case "thursday":
+					firstDayOfWeek = DayOfWeek.THURSDAY;
+					break;
+				case "fri":
+				case "friday":
+					firstDayOfWeek = DayOfWeek.FRIDAY;
+					break;
+				case "sat":
+				case "saturday":
+					firstDayOfWeek = DayOfWeek.SATURDAY;
+					break;
+				case "sun":
+				case "sunday":
+					firstDayOfWeek = DayOfWeek.SUNDAY;
+					break;
+				default:
+					firstDayOfWeek = DayOfWeek.MONDAY;
+			}
 		}
 
-		if ( !EQString.class.isAssignableFrom( arguments[argumentIndex].getClass() ) ) {
-			throw new IllegalArgumentException( "Invalid first day of week argument specified:  '" + arguments[argumentIndex].toString() + "'." );
-		}
-
-		EQString dayOfWeek = (EQString) arguments[argumentIndex];
-
-		// todo: implement
-		return DayOfWeek.MONDAY;
+		return firstDayOfWeek;
 	}
 
 	private LocalDateTime addDurationWithPeriodTooDateTime( LocalDateTime localDateTime, DurationWithPeriod durationWithPeriod ) {

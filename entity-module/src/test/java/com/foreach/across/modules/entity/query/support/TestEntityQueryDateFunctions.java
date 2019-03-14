@@ -265,32 +265,79 @@ public class TestEntityQueryDateFunctions
 				.isEqualTo( expectedDate );
 	}
 
-	public void startOfWeek() {
-		Date startOfWeek = DateUtils.truncate( getWeekStartDate(), Calendar.DATE );
-		Date twoWeeksAgo = DateUtils.addWeeks( getWeekStartDate(), -2 );
-	}
-
 	@Test
 	public void atTimestamp() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set( Calendar.HOUR_OF_DAY, 15 );
 		calendar.set( Calendar.MINUTE, 20 );
+		calendar.set( Calendar.SECOND, 1 );
+		calendar.set( Calendar.MILLISECOND, 0 );
+
+		assertThat( eqf( "today('+1s at 15:20')", Date.class ) )
+				.isEqualTo( calendar.getTime() );
+	}
+
+	@Test
+	public void atTimestampWithSeconds() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set( Calendar.HOUR_OF_DAY, 15 );
+		calendar.set( Calendar.MINUTE, 20 );
+		calendar.set( Calendar.SECOND, 3 );
+		calendar.set( Calendar.MILLISECOND, 0 );
+
+		assertThat( eqf( "today('+1s at 15:20:02')", Date.class ) )
+				.isEqualTo( calendar.getTime() );
+	}
+
+	@Test
+	public void offsetWithFunctionAndModifier() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set( Calendar.HOUR_OF_DAY, 15 );
+		calendar.set( Calendar.MINUTE, 0 );
 		calendar.set( Calendar.SECOND, 0 );
 		calendar.set( Calendar.MILLISECOND, 0 );
 		Date expectedDate = DateUtils.addDays( calendar.getTime(), 1 );
 
-		assertThat( eqf( "today('+1s at 15:20')", Date.class ) )
-				.isEqualTo( expectedDate );
-	}
-
-	public void offset() {
-		Date expectedDate = DateUtils.truncate( getYearStartDate(), Calendar.DATE );
 		assertThat( eqf( "offset(today(), '+1d at 15:00')", Date.class ) )
 				.isEqualTo( expectedDate );
+	}
 
-		assertThat( eqf( "offset('2019-01-01', 'at 15:00')", Date.class ) )
+	@Test
+	public void offsetWithDateTimestamp() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set( Calendar.YEAR, 2019 );
+		calendar.set( Calendar.MONTH, 2 );
+		calendar.set( Calendar.DAY_OF_MONTH, 2 );
+		calendar.set( Calendar.HOUR_OF_DAY, 15 );
+		calendar.set( Calendar.MINUTE, 5 );
+		calendar.set( Calendar.SECOND, 0 );
+		calendar.set( Calendar.MILLISECOND, 0 );
+
+		assertThat( eqf( "offset(2019-03-02, 'at 15:05')", Date.class ) )
+				.isEqualTo( calendar.getTime() );
+	}
+
+	@Test
+	public void startOfWeek() {
+		Date expectedDate = DateUtils.truncate( getWeekStartDate(), Calendar.DATE );
+
+		assertThat( eqf( "startOfWeek()", Date.class ) )
 				.isEqualTo( expectedDate );
 	}
 
+	@Test
+	public void startOfWeekWithFirstDayOfWeekOnFriday() {
+		Date expectedDate = DateUtils.truncate( DateUtils.addDays( getWeekStartDate(), 4 ), Calendar.DATE );
 
+		assertThat( eqf( "startOfWeek(now(), +1d, fri )", Date.class ) )
+				.isEqualTo( expectedDate );
+	}
+
+	@Test
+	public void twoWeeksAgo() {
+		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), -2 );
+
+		assertThat( eqf( "startOfWeek(now(), -2w)", Date.class ) )
+				.isEqualTo( expectedDate );
+	}
 }
