@@ -208,7 +208,7 @@ public class GenericEntityViewController
 			}
 
 			if ( isPossibleEntityId( associatedEntityId ) ) {
-				entityViewContext.setEntity( findEntity( entityId, entityViewContext.getEntityModel() ) );
+				entityViewContext.setEntity( findEntity( associatedEntityId, entityViewContext.getEntityModel() ) );
 			}
 		}
 		else {
