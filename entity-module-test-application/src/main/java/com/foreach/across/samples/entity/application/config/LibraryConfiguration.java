@@ -70,7 +70,6 @@ public class LibraryConfiguration implements EntityConfigurer
 		bookTemplate.setAuthors( Collections.singletonList( bookTemplateAuthor ) );
 
 		entities.create()
-		        .as( Library.class )
 		        .entityType( Library.class, true )
 		        .displayName( "Library" )
 		        .entityModel(
