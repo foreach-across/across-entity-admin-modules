@@ -18,6 +18,7 @@ package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.support.EntityPropertyRegistrationHelper;
 import lombok.*;
@@ -53,6 +54,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		configureBooks( entities );
 		configureAuthors( entities );
 		configureAuthorsOnBook( entities );
+		configureBooksOnAuthor( entities );
 	}
 
 	private void configureBooks( EntitiesConfigurationBuilder entities ) {
@@ -60,7 +62,6 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        .name( "book2" )
 		        .displayName( "Book" )
 		        .entityType( Book.class, true )
-		        .as( Book.class )
 		        .properties( props -> props.property( "id" ).hidden( true ) )
 		        .entityModel(
 				        model -> model.entityFactory( EntityFactory.of( Book::new ) )
@@ -90,7 +91,6 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        .name( "author2" )
 		        .displayName( "Author" )
 		        .entityType( Author.class, true )
-		        .as( Author.class )
 		        .properties( props -> props.property( "id" ).hidden( true ) )
 		        .entityModel(
 				        model -> model.entityFactory( EntityFactory.of( Author::new ) )
@@ -123,6 +123,54 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 				                      .property( propertyRegistrars.entityIdProxy( "reviewers" )
 				                                                   .entityType( Author.class )
 				                                                   .targetPropertyName( "reviewerIds" ) )
+		        );
+	}
+
+	private void configureBooksOnAuthor( EntitiesConfigurationBuilder entities ) {
+		entities.withType( Author.class )
+		        .association(
+				        as -> as.name( "booksAuthored" )
+				                .targetEntityType( Book.class )
+				                .targetProperty( "author" )
+				                .listView()
+				                .createFormView()
+				                .updateFormView()
+				                .deleteFormView()
+				                .show()
+		        )
+		        .association(
+				        as -> as.name( "booksReviewed" )
+				                .sourceProperty( "id" )
+				                .targetEntityType( Book.class )
+				                .targetProperty( "reviewerIds" )
+				                .listView()
+				                .createFormView()
+				                .updateFormView()
+				                .deleteFormView()
+				                .show()
+		        )
+		        .association(
+				        as -> as.name( "booksAuthoredEmbedded" )
+				                .targetEntityType( Book.class )
+				                .targetProperty( "author" )
+				                .associationType( EntityAssociation.Type.EMBEDDED )
+				                .listView()
+				                .createFormView()
+				                .updateFormView()
+				                .deleteFormView()
+				                .show()
+		        )
+		        .association(
+				        as -> as.name( "booksReviewedEmbedded" )
+				                .sourceProperty( "id" )
+				                .targetEntityType( Book.class )
+				                .targetProperty( "reviewerIds" )
+				                .associationType( EntityAssociation.Type.EMBEDDED )
+				                .listView()
+				                .createFormView()
+				                .updateFormView()
+				                .deleteFormView()
+				                .show()
 		        );
 	}
 

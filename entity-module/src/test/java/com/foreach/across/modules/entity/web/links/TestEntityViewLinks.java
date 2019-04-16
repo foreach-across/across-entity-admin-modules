@@ -20,6 +20,7 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.hibernate.business.IdBasedEntity;
 import com.foreach.across.modules.spring.security.infrastructure.business.SecurityPrincipal;
@@ -86,7 +87,12 @@ public class TestEntityViewLinks
 		when( entityAssociation.getAssociationType() ).thenReturn( EntityAssociation.Type.EMBEDDED );
 		when( entityAssociation.isHidden() ).thenReturn( true );
 		when( entityAssociation.getTargetEntityConfiguration() ).thenReturn( targetConfiguration );
-		when( entityAssociation.getTargetProperty() ).thenReturn( EntityPropertyDescriptor.builder( "backRef" ).build() );
+		when( entityAssociation.getTargetProperty() )
+				.thenReturn(
+						EntityPropertyDescriptor.builder( "backRef" )
+						                        .attribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.DIRECT )
+						                        .build()
+				);
 
 		when( targetConfiguration.getName() ).thenReturn( "targetEntity" );
 
