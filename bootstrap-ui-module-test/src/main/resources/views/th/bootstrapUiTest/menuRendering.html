@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2014 the original author or authors
+  ~ Copyright 2019 the original author or authors
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 <html xmlns:th="http://www.thymeleaf.org" xmlns:across="http://across.foreach.be">
 <head>
-	<title>Bootstrap rendering demo page</title>
+	<title>Bootstrap menu rendering demo page</title>
 </head>
 <body th:fragment="content">
 
-<div class="row" th:each="generatedElement : ${generatedElements}">
-	<div class="col-md-6">
-		<h2 th:text="${generatedElement.key}">Title</h2>
-		<across:view element="${generatedElement.value}"/>
+<div class="row" th:each="generatedMenu : ${generatedMenus}">
+	<div class="col-md-8">
+		<h2 th:text="${generatedMenu.key}">Menu description</h2>
+		<across:view element="${generatedMenu.value}"/>
 	</div>
 </div>
 
