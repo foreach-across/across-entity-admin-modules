@@ -17,6 +17,7 @@
 package com.foreach.across.modules.bootstrapui.styles;
 
 import com.foreach.across.modules.bootstrapui.styles.components.*;
+import com.foreach.across.modules.bootstrapui.styles.content.*;
 import com.foreach.across.modules.bootstrapui.styles.utilities.*;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
@@ -107,4 +108,15 @@ public class BootstrapStyles
 	public final ProgressStyleRule progress = new ProgressStyleRule();
 	public final SpinnerStyleRule spinner = new SpinnerStyleRule();
 	public final ToastStyleRule toast = new ToastStyleRule();
+
+	// content
+	public final HeadingStyleRule heading = new HeadingStyleRule();
+	public final BootstrapStyleRule mark = of( "mark" );
+	public final BootstrapStyleRule small = of( "small" );
+	public final BootstrapStyleRule initialism = of( "initialism" );
+	public final BlockQuoteStyleRule blockQuote = new BlockQuoteStyleRule();
+	public final ListStyleRule list = new ListStyleRule();
+	public final ImageStyleRule image = new ImageStyleRule();
+	public final TableStyleRule table = new TableStyleRule();
+	public final FigureStyleRule figure = new FigureStyleRule();
 }
