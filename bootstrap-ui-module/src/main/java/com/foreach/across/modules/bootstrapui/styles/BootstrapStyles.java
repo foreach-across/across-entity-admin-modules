@@ -16,10 +16,22 @@
 
 package com.foreach.across.modules.bootstrapui.styles;
 
+import com.foreach.across.modules.bootstrapui.styles.components.*;
+import com.foreach.across.modules.bootstrapui.styles.utilities.*;
+
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
 
 /**
+ * Contains strong typed accessors for all common Bootstrap CSS classes.
+ * Structure based on the documentation and css class format.
+ * This can be a more explanatory approach for determining the css classes to use.
+ * <p/>
+ * Deliberately implemented as final instance fields, to have a fluent, readable
+ * but not too "intrusive" effect.
+ * Example: <code>BootstrapStyles.css.margin.horizontal.auto</code>
+ * <p/>
  * https://getbootstrap.com/docs/4.3/utilities/
+ * https://getbootstrap.com/docs/4.3/components/
  *
  * @author Arne Vandamme
  * @since 2.3.0
@@ -29,8 +41,15 @@ public class BootstrapStyles
 {
 	public final static BootstrapStyles css = new BootstrapStyles();
 
+	// utilities
 	public final BootstrapStyleRule clearfix = of( "clearfix" );
 	public final BootstrapStyleRule close = of( "close" );
+	public final BootstrapStyleRule fade = of( "fade" );
+	public final BootstrapStyleRule show = of( "show" );
+	public final BootstrapStyleRule active = of( "active" );
+	public final BootstrapStyleRule disabled = of( "disabled" );
+	public final BootstrapStyleRule slide = of( "slide" );
+	public final BootstrapStyleRule lead = of( "lead" );
 	public final BorderStyleRule border = new BorderStyleRule();
 	public final RoundedStyleRule rounded = new RoundedStyleRule();
 	public final TextStyleRule text = new TextStyleRule();
@@ -55,4 +74,37 @@ public class BootstrapStyles
 	public final BootstrapStyleRule invisible = of( "invisible" );
 	public final PaddingStyleRule padding = new PaddingStyleRule();
 	public final MarginStyleRule margin = new MarginStyleRule();
+
+	// components
+	public final AlertStyleRule alert = new AlertStyleRule();
+	public final BadgeStyleRule badge = new BadgeStyleRule();
+	public final BreadcrumbStyleRule breadcrumb = new BreadcrumbStyleRule();
+	public final ButtonStyleRule button = new ButtonStyleRule();
+	public final CardStyleRule card = new CardStyleRule();
+	public final CarouselStyleRule carousel = new CarouselStyleRule();
+	public final BootstrapStyleRule collapse = of( "collapse" );
+	public final BootstrapStyleRule collapsing = of( "collapsing" );
+	public final BootstrapStyleRule accordion = of( "accordion" );
+	public final DropdownStyleRule dropdown = new DropdownStyleRule();
+	public final BootstrapStyleRule dropUp = dropdown.direction.up;
+	public final BootstrapStyleRule dropRight = dropdown.direction.right;
+	public final BootstrapStyleRule dropLeft = dropdown.direction.left;
+	public final FormStyleRule form = new FormStyleRule();
+	public final FormStyleRule.Custom custom = form.custom;
+	public final ValidationStyleRule validation = new ValidationStyleRule();
+	public final ValidationStyleRule.State valid = validation.valid;
+	public final ValidationStyleRule.State invalid = validation.invalid;
+	public final InputGroupStyleRule inputGroup = new InputGroupStyleRule();
+	public final JumbotronStyleRule jumbotron = new JumbotronStyleRule();
+	public final ListGroupStyleRule listGroup = new ListGroupStyleRule();
+	public final TabStyleRule tab = new TabStyleRule();
+	public final MediaStyleRule media = new MediaStyleRule();
+	public final ModalStyleRule modal = new ModalStyleRule();
+	public final NavStyleRule nav = new NavStyleRule();
+	public final NavbarStyleRule navbar = new NavbarStyleRule();
+	public final PaginationStyleRule pagination = new PaginationStyleRule();
+	public final PaginationStyleRule.Page page = pagination.page;
+	public final ProgressStyleRule progress = new ProgressStyleRule();
+	public final SpinnerStyleRule spinner = new SpinnerStyleRule();
+	public final ToastStyleRule toast = new ToastStyleRule();
 }
