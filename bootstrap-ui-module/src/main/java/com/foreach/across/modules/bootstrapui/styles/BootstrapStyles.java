@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.styles;
 
 import com.foreach.across.modules.bootstrapui.styles.components.*;
 import com.foreach.across.modules.bootstrapui.styles.content.*;
+import com.foreach.across.modules.bootstrapui.styles.layout.GridStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.utilities.*;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
@@ -119,4 +120,7 @@ public class BootstrapStyles
 	public final ImageStyleRule image = new ImageStyleRule();
 	public final TableStyleRule table = new TableStyleRule();
 	public final FigureStyleRule figure = new FigureStyleRule();
+
+	// layout
+	public final GridStyleRule grid = new GridStyleRule();
 }

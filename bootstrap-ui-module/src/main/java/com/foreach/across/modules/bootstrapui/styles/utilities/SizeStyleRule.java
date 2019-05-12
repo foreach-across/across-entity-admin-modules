@@ -27,7 +27,6 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.o
  * @author Arne Vandamme
  * @since 2.3.0
  */
-@SuppressWarnings("WeakerAccess")
 public class SizeStyleRule
 {
 	public final BootstrapStyleRule width25 = width( 25 );
@@ -57,6 +56,7 @@ public class SizeStyleRule
 		return height( "" + size );
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public BootstrapStyleRule height( @NonNull String size ) {
 		return of( "h-" + size );
 	}

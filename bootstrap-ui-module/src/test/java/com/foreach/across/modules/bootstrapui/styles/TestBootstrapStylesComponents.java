@@ -198,8 +198,8 @@ class TestBootstrapStylesComponents
 
 		// menu alignment
 		assertStyle( css.dropdown.menu.right ).is( "dropdown-menu", "dropdown-menu-right" );
-		assertStyle( css.dropdown.menu.right.onLarge() ).is( "dropdown-menu", "dropdown-menu-lg-right" );
-		assertStyle( css.dropdown.menu.left.onSmall() ).is( "dropdown-menu", "dropdown-menu-sm-left" );
+		assertStyle( css.dropdown.menu.right.onLargeAndUp() ).is( "dropdown-menu", "dropdown-menu-lg-right" );
+		assertStyle( css.dropdown.menu.left.onSmallAndUp() ).is( "dropdown-menu", "dropdown-menu-sm-left" );
 
 		// menu content
 		assertStyle( css.dropdown.header ).is( "dropdown-header" );
@@ -356,10 +356,10 @@ class TestBootstrapStylesComponents
 
 		// expand
 		assertStyle( css.navbar.expand ).is( "navbar-expand" );
-		assertStyle( css.navbar.expand.onSmall() ).is( "navbar-expand-sm" );
-		assertStyle( css.navbar.expand.onMedium() ).is( "navbar-expand-md" );
-		assertStyle( css.navbar.expand.onLarge() ).is( "navbar-expand-lg" );
-		assertStyle( css.navbar.expand.onExtraLarge() ).is( "navbar-expand-xl" );
+		assertStyle( css.navbar.expand.onSmallAndUp() ).is( "navbar-expand-sm" );
+		assertStyle( css.navbar.expand.onMediumAndUp() ).is( "navbar-expand-md" );
+		assertStyle( css.navbar.expand.onLargeAndUp() ).is( "navbar-expand-lg" );
+		assertStyle( css.navbar.expand.onExtraLargeAndUp() ).is( "navbar-expand-xl" );
 	}
 
 	@Test

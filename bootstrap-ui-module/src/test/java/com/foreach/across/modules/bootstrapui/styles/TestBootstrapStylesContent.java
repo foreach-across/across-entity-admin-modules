@@ -91,10 +91,10 @@ class TestBootstrapStylesContent
 
 		// reponsive
 		assertStyle( css.table.reponsive ).is( "table-responsive" );
-		assertStyle( css.table.reponsive.onSmall() ).is( "table-responsive-sm" );
-		assertStyle( css.table.reponsive.onMedium() ).is( "table-responsive-md" );
-		assertStyle( css.table.reponsive.onLarge() ).is( "table-responsive-lg" );
-		assertStyle( css.table.reponsive.onExtraLarge() ).is( "table-responsive-xl" );
+		assertStyle( css.table.reponsive.onSmallAndUp() ).is( "table-responsive-sm" );
+		assertStyle( css.table.reponsive.onMediumAndUp() ).is( "table-responsive-md" );
+		assertStyle( css.table.reponsive.onLargeAndUp() ).is( "table-responsive-lg" );
+		assertStyle( css.table.reponsive.onExtraLargeAndUp() ).is( "table-responsive-xl" );
 	}
 
 	@Test

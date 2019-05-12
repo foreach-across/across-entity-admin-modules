@@ -24,6 +24,7 @@ import java.util.stream.Stream;
  * @author Arne Vandamme
  * @since 2.3.0
  */
+@FunctionalInterface
 public interface BootstrapStyleRule
 {
 	String[] toCssClasses();

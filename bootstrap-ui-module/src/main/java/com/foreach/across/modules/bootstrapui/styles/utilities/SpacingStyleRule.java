@@ -22,7 +22,6 @@ package com.foreach.across.modules.bootstrapui.styles.utilities;
  * @author Arne Vandamme
  * @since 2.3.0
  */
-@SuppressWarnings("WeakerAccess")
 public class SpacingStyleRule
 {
 	public final BreakpointStyleRule none;
@@ -63,7 +62,7 @@ public class SpacingStyleRule
 		public final BreakpointStyleRule auto;
 		public final SpacingStyleRule negative;
 
-		public WithNegative( String prefix ) {
+		WithNegative( String prefix ) {
 			super( prefix );
 			this.negative = new SpacingStyleRule( prefix, "n" );
 			this.auto = new SimpleBreakpointStyleRule( prefix, "auto" );

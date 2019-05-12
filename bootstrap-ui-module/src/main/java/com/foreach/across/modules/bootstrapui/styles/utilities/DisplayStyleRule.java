@@ -24,7 +24,6 @@ import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
  * @author Arne Vandamme
  * @since 2.3.0
  */
-@SuppressWarnings("WeakerAccess")
 public class DisplayStyleRule
 {
 	public final DisplayPropertyStyleRule none = new DisplayPropertyStyleRule( "none" );
@@ -39,7 +38,7 @@ public class DisplayStyleRule
 
 	public static class DisplayPropertyStyleRule extends SimpleBreakpointStyleRule
 	{
-		public DisplayPropertyStyleRule( String display ) {
+		private DisplayPropertyStyleRule( String display ) {
 			super( "d", display );
 		}
 

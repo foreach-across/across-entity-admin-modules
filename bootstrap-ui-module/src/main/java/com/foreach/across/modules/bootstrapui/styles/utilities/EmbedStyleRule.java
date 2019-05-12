@@ -17,7 +17,9 @@
 package com.foreach.across.modules.bootstrapui.styles.utilities;
 
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
@@ -33,6 +35,7 @@ public class EmbedStyleRule
 	public final Responsive responsive = new Responsive();
 	public final BootstrapStyleRule responsiveItem = of( "embed-responsive-item" );
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class Responsive implements BootstrapStyleRule
 	{
 		public BootstrapStyleRule aspectRatio( @NonNull String aspectRatio ) {

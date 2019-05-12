@@ -155,15 +155,15 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.display.flex ).is( "d-flex" );
 		assertStyle( css.display.inlineFlex ).is( "d-inline-flex" );
 
-		assertStyle( css.display.none.onSmall() ).is( "d-sm-none" );
-		assertStyle( css.display.inline.onSmall() ).is( "d-sm-inline" );
-		assertStyle( css.display.inlineBlock.onMedium() ).is( "d-md-inline-block" );
-		assertStyle( css.display.block.onMedium() ).is( "d-md-block" );
-		assertStyle( css.display.table.onLarge() ).is( "d-lg-table" );
-		assertStyle( css.display.tableCell.onLarge() ).is( "d-lg-table-cell" );
-		assertStyle( css.display.tableRow.onExtraLarge() ).is( "d-xl-table-row" );
-		assertStyle( css.display.flex.onExtraLarge() ).is( "d-xl-flex" );
-		assertStyle( css.display.inlineFlex.onExtraLarge() ).is( "d-xl-inline-flex" );
+		assertStyle( css.display.none.onSmallAndUp() ).is( "d-sm-none" );
+		assertStyle( css.display.inline.onSmallAndUp() ).is( "d-sm-inline" );
+		assertStyle( css.display.inlineBlock.onMediumAndUp() ).is( "d-md-inline-block" );
+		assertStyle( css.display.block.onMediumAndUp() ).is( "d-md-block" );
+		assertStyle( css.display.table.onLargeAndUp() ).is( "d-lg-table" );
+		assertStyle( css.display.tableCell.onLargeAndUp() ).is( "d-lg-table-cell" );
+		assertStyle( css.display.tableRow.onExtraLargeAndUp() ).is( "d-xl-table-row" );
+		assertStyle( css.display.flex.onExtraLargeAndUp() ).is( "d-xl-flex" );
+		assertStyle( css.display.inlineFlex.onExtraLargeAndUp() ).is( "d-xl-inline-flex" );
 
 		// print
 		assertStyle( css.display.none.onPrint() ).is( "d-print-none" );
@@ -190,12 +190,12 @@ class TestBootstrapStylesUtilities
 	void flex() {
 		assertStyle( css.flex.row ).is( "flex-row" );
 		assertStyle( css.flex.row.reverse ).is( "flex-row-reverse" );
-		assertStyle( css.flex.row.onSmall() ).is( "flex-sm-row" );
-		assertStyle( css.flex.row.reverse.onSmall() ).is( "flex-sm-row-reverse" );
-		assertStyle( css.flex.column.onLarge() ).is( "flex-lg-column" );
-		assertStyle( css.flex.column.reverse.onMedium() ).is( "flex-md-column-reverse" );
-		assertStyle( css.flex.row.onExtraLarge() ).is( "flex-xl-row" );
-		assertStyle( css.flex.column.reverse.onExtraLarge() ).is( "flex-xl-column-reverse" );
+		assertStyle( css.flex.row.onSmallAndUp() ).is( "flex-sm-row" );
+		assertStyle( css.flex.row.reverse.onSmallAndUp() ).is( "flex-sm-row-reverse" );
+		assertStyle( css.flex.column.onLargeAndUp() ).is( "flex-lg-column" );
+		assertStyle( css.flex.column.reverse.onMediumAndUp() ).is( "flex-md-column-reverse" );
+		assertStyle( css.flex.row.onExtraLargeAndUp() ).is( "flex-xl-row" );
+		assertStyle( css.flex.column.reverse.onExtraLargeAndUp() ).is( "flex-xl-column-reverse" );
 
 		// justify content
 		assertStyle( css.justifyContent.start ).is( "justify-content-start" );
@@ -203,11 +203,11 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.justifyContent.center ).is( "justify-content-center" );
 		assertStyle( css.justifyContent.between ).is( "justify-content-between" );
 		assertStyle( css.justifyContent.around ).is( "justify-content-around" );
-		assertStyle( css.justifyContent.start.onSmall() ).is( "justify-content-sm-start" );
-		assertStyle( css.justifyContent.end.onMedium() ).is( "justify-content-md-end" );
-		assertStyle( css.justifyContent.center.onLarge() ).is( "justify-content-lg-center" );
-		assertStyle( css.justifyContent.between.onExtraLarge() ).is( "justify-content-xl-between" );
-		assertStyle( css.justifyContent.around.onMedium() ).is( "justify-content-md-around" );
+		assertStyle( css.justifyContent.start.onSmallAndUp() ).is( "justify-content-sm-start" );
+		assertStyle( css.justifyContent.end.onMediumAndUp() ).is( "justify-content-md-end" );
+		assertStyle( css.justifyContent.center.onLargeAndUp() ).is( "justify-content-lg-center" );
+		assertStyle( css.justifyContent.between.onExtraLargeAndUp() ).is( "justify-content-xl-between" );
+		assertStyle( css.justifyContent.around.onMediumAndUp() ).is( "justify-content-md-around" );
 
 		// align items
 		assertStyle( css.align.items.start ).is( "align-items-start" );
@@ -215,10 +215,10 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.align.items.center ).is( "align-items-center" );
 		assertStyle( css.align.items.baseline ).is( "align-items-baseline" );
 		assertStyle( css.align.items.stretch ).is( "align-items-stretch" );
-		assertStyle( css.align.items.start.onSmall() ).is( "align-items-sm-start" );
-		assertStyle( css.align.items.end.onMedium() ).is( "align-items-md-end" );
-		assertStyle( css.align.items.center.onLarge() ).is( "align-items-lg-center" );
-		assertStyle( css.align.items.baseline.onExtraLarge() ).is( "align-items-xl-baseline" );
+		assertStyle( css.align.items.start.onSmallAndUp() ).is( "align-items-sm-start" );
+		assertStyle( css.align.items.end.onMediumAndUp() ).is( "align-items-md-end" );
+		assertStyle( css.align.items.center.onLargeAndUp() ).is( "align-items-lg-center" );
+		assertStyle( css.align.items.baseline.onExtraLargeAndUp() ).is( "align-items-xl-baseline" );
 
 		// align self
 		assertStyle( css.align.self.start ).is( "align-self-start" );
@@ -226,45 +226,45 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.align.self.center ).is( "align-self-center" );
 		assertStyle( css.align.self.baseline ).is( "align-self-baseline" );
 		assertStyle( css.align.self.stretch ).is( "align-self-stretch" );
-		assertStyle( css.align.self.start.onSmall() ).is( "align-self-sm-start" );
-		assertStyle( css.align.self.end.onMedium() ).is( "align-self-md-end" );
-		assertStyle( css.align.self.center.onLarge() ).is( "align-self-lg-center" );
-		assertStyle( css.align.self.baseline.onExtraLarge() ).is( "align-self-xl-baseline" );
+		assertStyle( css.align.self.start.onSmallAndUp() ).is( "align-self-sm-start" );
+		assertStyle( css.align.self.end.onMediumAndUp() ).is( "align-self-md-end" );
+		assertStyle( css.align.self.center.onLargeAndUp() ).is( "align-self-lg-center" );
+		assertStyle( css.align.self.baseline.onExtraLargeAndUp() ).is( "align-self-xl-baseline" );
 
 		// fill
 		assertStyle( css.flex.fill ).is( "flex-fill" );
-		assertStyle( css.flex.fill.onSmall() ).is( "flex-sm-fill" );
-		assertStyle( css.flex.fill.onMedium() ).is( "flex-md-fill" );
-		assertStyle( css.flex.fill.onLarge() ).is( "flex-lg-fill" );
-		assertStyle( css.flex.fill.onExtraLarge() ).is( "flex-xl-fill" );
+		assertStyle( css.flex.fill.onSmallAndUp() ).is( "flex-sm-fill" );
+		assertStyle( css.flex.fill.onMediumAndUp() ).is( "flex-md-fill" );
+		assertStyle( css.flex.fill.onLargeAndUp() ).is( "flex-lg-fill" );
+		assertStyle( css.flex.fill.onExtraLargeAndUp() ).is( "flex-xl-fill" );
 
 		// grow and shrink
 		assertStyle( css.flex.grow.enabled ).is( "flex-grow-1" );
 		assertStyle( css.flex.grow.disabled ).is( "flex-grow-0" );
 		assertStyle( css.flex.shrink.enabled ).is( "flex-shrink-1" );
 		assertStyle( css.flex.shrink.disabled ).is( "flex-shrink-0" );
-		assertStyle( css.flex.grow.enabled.onSmall() ).is( "flex-sm-grow-1" );
-		assertStyle( css.flex.grow.disabled.onMedium() ).is( "flex-md-grow-0" );
-		assertStyle( css.flex.shrink.enabled.onLarge() ).is( "flex-lg-shrink-1" );
-		assertStyle( css.flex.shrink.disabled.onExtraLarge() ).is( "flex-xl-shrink-0" );
+		assertStyle( css.flex.grow.enabled.onSmallAndUp() ).is( "flex-sm-grow-1" );
+		assertStyle( css.flex.grow.disabled.onMediumAndUp() ).is( "flex-md-grow-0" );
+		assertStyle( css.flex.shrink.enabled.onLargeAndUp() ).is( "flex-lg-shrink-1" );
+		assertStyle( css.flex.shrink.disabled.onExtraLargeAndUp() ).is( "flex-xl-shrink-0" );
 
 		// wrap
 		assertStyle( css.flex.wrap ).is( "flex-wrap" );
 		assertStyle( css.flex.wrap.reverse ).is( "flex-wrap-reverse" );
 		assertStyle( css.flex.wrap.none ).is( "flex-nowrap" );
 		assertStyle( css.flex.nowrap ).is( "flex-nowrap" );
-		assertStyle( css.flex.wrap.onSmall() ).is( "flex-sm-wrap" );
-		assertStyle( css.flex.wrap.reverse.onMedium() ).is( "flex-md-wrap-reverse" );
-		assertStyle( css.flex.wrap.none.onLarge() ).is( "flex-lg-nowrap" );
-		assertStyle( css.flex.nowrap.onExtraLarge() ).is( "flex-xl-nowrap" );
+		assertStyle( css.flex.wrap.onSmallAndUp() ).is( "flex-sm-wrap" );
+		assertStyle( css.flex.wrap.reverse.onMediumAndUp() ).is( "flex-md-wrap-reverse" );
+		assertStyle( css.flex.wrap.none.onLargeAndUp() ).is( "flex-lg-nowrap" );
+		assertStyle( css.flex.nowrap.onExtraLargeAndUp() ).is( "flex-xl-nowrap" );
 
 		// order
 		assertStyle( css.order.first ).is( "order-first" );
 		assertStyle( css.order.last ).is( "order-last" );
 		assertStyle( css.order.position( 5 ) ).is( "order-5" );
-		assertStyle( css.order.first.onSmall() ).is( "order-sm-first" );
-		assertStyle( css.order.last.onMedium() ).is( "order-md-last" );
-		assertStyle( css.order.position( 11 ).onLarge() ).is( "order-lg-11" );
+		assertStyle( css.order.first.onSmallAndUp() ).is( "order-sm-first" );
+		assertStyle( css.order.last.onMediumAndUp() ).is( "order-md-last" );
+		assertStyle( css.order.position( 11 ).onLargeAndUp() ).is( "order-lg-11" );
 
 		// align content
 		assertStyle( css.align.content.start ).is( "align-content-start" );
@@ -273,12 +273,12 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.align.content.between ).is( "align-content-between" );
 		assertStyle( css.align.content.around ).is( "align-content-around" );
 		assertStyle( css.align.content.stretch ).is( "align-content-stretch" );
-		assertStyle( css.align.content.start.onSmall() ).is( "align-content-sm-start" );
-		assertStyle( css.align.content.end.onMedium() ).is( "align-content-md-end" );
-		assertStyle( css.align.content.center.onLarge() ).is( "align-content-lg-center" );
-		assertStyle( css.align.content.between.onExtraLarge() ).is( "align-content-xl-between" );
-		assertStyle( css.align.content.around.onSmall() ).is( "align-content-sm-around" );
-		assertStyle( css.align.content.stretch.onMedium() ).is( "align-content-md-stretch" );
+		assertStyle( css.align.content.start.onSmallAndUp() ).is( "align-content-sm-start" );
+		assertStyle( css.align.content.end.onMediumAndUp() ).is( "align-content-md-end" );
+		assertStyle( css.align.content.center.onLargeAndUp() ).is( "align-content-lg-center" );
+		assertStyle( css.align.content.between.onExtraLargeAndUp() ).is( "align-content-xl-between" );
+		assertStyle( css.align.content.around.onSmallAndUp() ).is( "align-content-sm-around" );
+		assertStyle( css.align.content.stretch.onMediumAndUp() ).is( "align-content-md-stretch" );
 	}
 
 	@Test
@@ -286,9 +286,9 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.cssFloat.left ).is( "float-left" );
 		assertStyle( css.cssFloat.right ).is( "float-right" );
 		assertStyle( css.cssFloat.none ).is( "float-none" );
-		assertStyle( css.cssFloat.left.onMedium() ).is( "float-md-left" );
-		assertStyle( css.cssFloat.right.onLarge() ).is( "float-lg-right" );
-		assertStyle( css.cssFloat.none.onExtraLarge() ).is( "float-xl-none" );
+		assertStyle( css.cssFloat.left.onMediumAndUp() ).is( "float-md-left" );
+		assertStyle( css.cssFloat.right.onLargeAndUp() ).is( "float-lg-right" );
+		assertStyle( css.cssFloat.none.onExtraLargeAndUp() ).is( "float-xl-none" );
 	}
 
 	@Test
@@ -360,10 +360,10 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.text.left ).is( "text-left" );
 		assertStyle( css.text.center ).is( "text-center" );
 		assertStyle( css.text.right ).is( "text-right" );
-		assertStyle( css.text.left.onSmall() ).is( "text-sm-left" );
-		assertStyle( css.text.center.onMedium() ).is( "text-md-center" );
-		assertStyle( css.text.right.onLarge() ).is( "text-lg-right" );
-		assertStyle( css.text.right.onExtraLarge() ).is( "text-xl-right" );
+		assertStyle( css.text.left.onSmallAndUp() ).is( "text-sm-left" );
+		assertStyle( css.text.center.onMediumAndUp() ).is( "text-md-center" );
+		assertStyle( css.text.right.onLargeAndUp() ).is( "text-lg-right" );
+		assertStyle( css.text.right.onExtraLargeAndUp() ).is( "text-xl-right" );
 
 		// wrap
 		assertStyle( css.text.wrap ).is( "text-wrap" );
@@ -431,9 +431,9 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.padding.extraLarge ).is( "p-5" );
 		assertStyle( css.padding.size( 6 ) ).is( "p-6" );
 
-		assertStyle( css.padding.none.onSmall() ).is( "p-sm-0" );
-		assertStyle( css.padding.s1.onLarge() ).is( "p-lg-1" );
-		assertStyle( css.padding.extraLarge.onMedium() ).is( "p-md-5" );
+		assertStyle( css.padding.none.onSmallAndUp() ).is( "p-sm-0" );
+		assertStyle( css.padding.s1.onLargeAndUp() ).is( "p-lg-1" );
+		assertStyle( css.padding.extraLarge.onMediumAndUp() ).is( "p-md-5" );
 
 		assertStyle( css.padding.top.s1 ).is( "pt-1" );
 		assertStyle( css.padding.bottom.none ).is( "pb-0" );
@@ -441,8 +441,8 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.padding.right.s3 ).is( "pr-3" );
 		assertStyle( css.padding.horizontal.large ).is( "px-4" );
 		assertStyle( css.padding.vertical.s5 ).is( "py-5" );
-		assertStyle( css.padding.vertical.s3.onSmall() ).is( "py-sm-3" );
-		assertStyle( css.padding.bottom.none.onMedium() ).is( "pb-md-0" );
+		assertStyle( css.padding.vertical.s3.onSmallAndUp() ).is( "py-sm-3" );
+		assertStyle( css.padding.bottom.none.onMediumAndUp() ).is( "pb-md-0" );
 
 		// margin
 		assertStyle( css.margin.none ).is( "m-0" );
@@ -458,9 +458,9 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.margin.extraLarge ).is( "m-5" );
 		assertStyle( css.margin.size( 6 ) ).is( "m-6" );
 
-		assertStyle( css.margin.none.onSmall() ).is( "m-sm-0" );
-		assertStyle( css.margin.s1.onLarge() ).is( "m-lg-1" );
-		assertStyle( css.margin.extraLarge.onMedium() ).is( "m-md-5" );
+		assertStyle( css.margin.none.onSmallAndUp() ).is( "m-sm-0" );
+		assertStyle( css.margin.s1.onLargeAndUp() ).is( "m-lg-1" );
+		assertStyle( css.margin.extraLarge.onMediumAndUp() ).is( "m-md-5" );
 
 		assertStyle( css.margin.top.s1 ).is( "mt-1" );
 		assertStyle( css.margin.bottom.none ).is( "mb-0" );
@@ -468,19 +468,19 @@ class TestBootstrapStylesUtilities
 		assertStyle( css.margin.right.s3 ).is( "mr-3" );
 		assertStyle( css.margin.horizontal.large ).is( "mx-4" );
 		assertStyle( css.margin.vertical.s5 ).is( "my-5" );
-		assertStyle( css.margin.vertical.s3.onSmall() ).is( "my-sm-3" );
-		assertStyle( css.margin.bottom.none.onMedium() ).is( "mb-md-0" );
+		assertStyle( css.margin.vertical.s3.onSmallAndUp() ).is( "my-sm-3" );
+		assertStyle( css.margin.bottom.none.onMediumAndUp() ).is( "mb-md-0" );
 
 		assertStyle( css.margin.negative.medium ).is( "m-n3" );
 		assertStyle( css.margin.top.negative.s1 ).is( "mt-n1" );
-		assertStyle( css.margin.vertical.negative.s2.onMedium() ).is( "my-md-n2" );
+		assertStyle( css.margin.vertical.negative.s2.onMediumAndUp() ).is( "my-md-n2" );
 
 		assertStyle( css.margin.auto ).is( "m-auto" );
-		assertStyle( css.margin.auto.onLarge() ).is( "m-lg-auto" );
+		assertStyle( css.margin.auto.onLargeAndUp() ).is( "m-lg-auto" );
 		assertStyle( css.margin.top.auto ).is( "mt-auto" );
-		assertStyle( css.margin.right.auto.onMedium() ).is( "mr-md-auto" );
+		assertStyle( css.margin.right.auto.onMediumAndUp() ).is( "mr-md-auto" );
 		assertStyle( css.margin.horizontal.auto ).is( "mx-auto" );
-		assertStyle( css.margin.horizontal.auto.onLarge() ).is( "mx-lg-auto" );
+		assertStyle( css.margin.horizontal.auto.onLargeAndUp() ).is( "mx-lg-auto" );
 	}
 
 	static StyleMatcher assertStyle( @NonNull BootstrapStyleRule rule ) {
