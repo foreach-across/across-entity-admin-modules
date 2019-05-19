@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2014 the original author or authors
+  ~ Copyright 2019 the original author or authors
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,18 +14,30 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.foreach.across.modules</groupId>
-        <artifactId>bootstrap-ui-module-project</artifactId>
-	    <version>2.2.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>com.foreach.across.modules</groupId>
+		<artifactId>bootstrap-ui-module-project</artifactId>
+		<version>2.2.0-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>bootstrap-ui-module</artifactId>
+	<artifactId>bootstrap-ui-module</artifactId>
 
-    <name>${project.groupId}:${project.artifactId}</name>
+	<name>${project.groupId}:${project.artifactId}</name>
+
+	<properties>
+		<webjars.jquery>1.11.3</webjars.jquery>
+		<webjars.bootstrap>3.3.7</webjars.bootstrap>
+		<webjars.autosize>3.0.20</webjars.autosize>
+		<webjars.autonumeric>1.9.30</webjars.autonumeric>
+		<webjars.momentjs>2.10.6</webjars.momentjs>
+		<webjars.eonasdan-bootstrap-datetimepicker>4.14.30</webjars.eonasdan-bootstrap-datetimepicker>
+		<webjars.bootstrap-select>1.12.2</webjars.bootstrap-select>
+		<webjars.typeaheadjs>0.11.1</webjars.typeaheadjs>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -52,13 +64,52 @@
 			<artifactId>jsoup</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery</artifactId>
+			<version>${webjars.jquery}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>${webjars.bootstrap}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.webjars.bower</groupId>
 			<artifactId>autosize</artifactId>
-			<version>3.0.20</version>
+			<version>${webjars.autosize}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>momentjs</artifactId>
+			<version>${webjars.momentjs}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>autoNumeric</artifactId>
+			<version>${webjars.autonumeric}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>jquery</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>Eonasdan-bootstrap-datetimepicker</artifactId>
+			<version>${webjars.eonasdan-bootstrap-datetimepicker}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap-select</artifactId>
+			<version>${webjars.bootstrap-select}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>typeaheadjs</artifactId>
+			<version>${webjars.typeaheadjs}</version>
+		</dependency>
 	</dependencies>
 
 </project>
