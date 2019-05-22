@@ -63,12 +63,9 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 		registry.apply(
 				addPackage( BootstrapUiWebResources.NAME ),
 
-				// momentjs with custom nl-BE locale
+				// momentjs with locales
 				add( WebResource.javascript( "@webjars:/momentjs/" + MOMENT_VERSION + "/min/moment-with-locales" + minified( ".js" ) ) )
 						.withKey( MOMENTJS )
-						.toBucket( JAVASCRIPT_PAGE_END ),
-				add( WebResource.javascript( "@static:/" + BootstrapUiModule.NAME + "/js/moment/locale-nl-BE.js" ) )
-						.withKey( MOMENTJS + "-nl-BE" )
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
 				// Eonasdan - datetimepicker
