@@ -69,7 +69,7 @@ public class TestOptionsAsSelectBuilder extends AbstractBootstrapViewElementTest
 		builder.select( configuration ).multiple().htmlId( "mybox" ).controlName( "boxName" );
 
 		expect(
-				"<select name='boxName' id='mybox' multiple='multiple' class='form-control' data-bootstrapui-select='{&quot;dropupAuto&quot;:false}' data-bootstrapui-adapter-type='bootstrap-select'/>"
+				"<select data-bootstrapui-select='{&quot;dropupAuto&quot;:false}' data-bootstrapui-adapter-type='bootstrap-select' name='boxName' multiple='multiple' id='mybox' class='form-control'></select><input name='_boxName' type='hidden' value=''></input>"
 		);
 	}
 
