@@ -70,10 +70,10 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 
 				// Eonasdan - datetimepicker
 				add( WebResource.javascript(
-						"@webjars:/Eonasdan-bootstrap-datetimepicker/" + EONASDAN_VERSION + "/bootstrap-datetimepicker" + minified( ".js" ) ) )
+						"@webjars:/Eonasdan-bootstrap-datetimepicker/" + EONASDAN_VERSION + "/bootstrap-datetimepicker.min.js" ) )
 						.withKey( EONASDAN_DATETIME )
 						.toBucket( JAVASCRIPT_PAGE_END ),
-				add( WebResource.css( "@webjars:/Eonasdan-bootstrap-datetimepicker/" + EONASDAN_VERSION + "/bootstrap-datetimepicker" + minified( ".css" ) ) )
+				add( WebResource.css( "@webjars:/Eonasdan-bootstrap-datetimepicker/" + EONASDAN_VERSION + "/bootstrap-datetimepicker.min.css" ) )
 						.withKey( EONASDAN_DATETIME )
 						.toBucket( CSS ),
 
