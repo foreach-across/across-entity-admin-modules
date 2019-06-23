@@ -33,6 +33,7 @@ import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import lombok.Setter;
@@ -166,7 +167,10 @@ public class SortableTableRenderingViewProcessor extends EntityViewProcessorAdap
 	@Override
 	protected void registerWebResources( EntityViewRequest entityViewRequest, EntityView entityView, WebResourceRegistry webResourceRegistry ) {
 		if ( hasSummaryView( entityViewRequest.getEntityViewContext() ) ) {
-			webResourceRegistry.add( WebResource.JAVASCRIPT_PAGE_END, "/static/entity/js/expandable.js", WebResource.VIEWS );
+			webResourceRegistry.apply(
+					WebResourceRule.add( WebResource.javascript( "@static:/entity/js/expandable.js" ) )
+					               .toBucket( WebResource.JAVASCRIPT_PAGE_END )
+			);
 		}
 	}
 
