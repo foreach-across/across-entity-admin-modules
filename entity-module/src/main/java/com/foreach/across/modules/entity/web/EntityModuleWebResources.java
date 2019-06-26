@@ -17,8 +17,13 @@
 package com.foreach.across.modules.entity.web;
 
 import com.foreach.across.modules.entity.EntityModule;
-import com.foreach.across.modules.web.resource.SimpleWebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourcePackage;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
+
+import static com.foreach.across.modules.web.resource.WebResource.css;
+import static com.foreach.across.modules.web.resource.WebResource.javascript;
+import static com.foreach.across.modules.web.resource.WebResourceRule.add;
 
 /**
  * Contains the web resources for the entity module administration UI.
@@ -26,15 +31,16 @@ import com.foreach.across.modules.web.resource.WebResource;
  * @author Arne Vandamme
  * @since 2.0.0
  */
-public final class EntityModuleWebResources extends SimpleWebResourcePackage
+public final class EntityModuleWebResources implements WebResourcePackage
 {
 	public static final String NAME = "entity-module-admin";
 
-	public EntityModuleWebResources() {
-		setWebResources(
-				new WebResource( WebResource.CSS, EntityModule.NAME, "/static/entity/css/entity-module.css", WebResource.VIEWS ),
-				new WebResource( WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME + "-dependson", "/static/entity/js/dependson.js", WebResource.VIEWS ),
-				new WebResource( WebResource.JAVASCRIPT_PAGE_END, EntityModule.NAME, "/static/entity/js/entity-module.js", WebResource.VIEWS )
+	@Override
+	public void install( WebResourceRegistry registry ) {
+		registry.apply(
+				add( css( "@static:/entity/css/entity-module.css" ) ).withKey( EntityModule.NAME ).toBucket( WebResource.CSS ),
+				add( javascript( "@static:/entity/js/dependson.js" ) ).withKey( EntityModule.NAME + "-dependson" ).toBucket( WebResource.JAVASCRIPT_PAGE_END ),
+				add( javascript( "@static:/entity/js/entity-module.js" ) ).withKey( EntityModule.NAME ).toBucket( WebResource.JAVASCRIPT_PAGE_END )
 		);
 	}
 }

@@ -132,12 +132,14 @@ class EntityModuleAdminMenuRegistrar
 					if ( !association.isHidden() ) {
 						EntityConfiguration associated = association.getTargetEntityConfiguration();
 
-						String itemTitle = messageCodeResolver.getMessageWithFallback(
-								"adminMenu." + association.getName(),
-								associated.getEntityMessageCodeResolver().getNamePlural()
-						);
+						if ( associated.getAllowableActions().contains( AllowableAction.READ ) ) {
+							String itemTitle = messageCodeResolver.getMessageWithFallback(
+									"adminMenu." + association.getName(),
+									associated.getEntityMessageCodeResolver().getNamePlural()
+							);
 
-						builder.item( association.getName(), itemTitle, currentEntityLink.association( association.getName() ).listView().toString() );
+							builder.item( association.getName(), itemTitle, currentEntityLink.association( association.getName() ).listView().toString() );
+						}
 					}
 				}
 			}

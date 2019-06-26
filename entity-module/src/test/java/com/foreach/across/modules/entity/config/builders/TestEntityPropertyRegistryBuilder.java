@@ -17,10 +17,7 @@
 package com.foreach.across.modules.entity.config.builders;
 
 import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder.PropertyDescriptorBuilder;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistrySupport;
-import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyDescriptor;
-import com.foreach.across.modules.entity.registry.properties.SimpleEntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.*;
 import com.foreach.across.modules.entity.views.ViewElementLookupRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.support.ValueFetcher;
@@ -102,6 +99,24 @@ public class TestEntityPropertyRegistryBuilder
 
 		InOrder inOrder = inOrder( registry );
 		inOrder.verify( registry ).getProperty( "manager" );
+		inOrder.verify( registry ).getProperty( "manager.email" );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void processConsumersHappenBetweenProperties() {
+		Consumer<MutableEntityPropertyRegistry> consumer = mock( Consumer.class );
+
+		builder.property( "manager" )
+		       .and()
+		       .processRegistry( consumer )
+		       .property( "manager.email" );
+
+		build();
+
+		InOrder inOrder = inOrder( registry, consumer );
+		inOrder.verify( registry ).getProperty( "manager" );
+		inOrder.verify( consumer ).accept( registry );
 		inOrder.verify( registry ).getProperty( "manager.email" );
 	}
 

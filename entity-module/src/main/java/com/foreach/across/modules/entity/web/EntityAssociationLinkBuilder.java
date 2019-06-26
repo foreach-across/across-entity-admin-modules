@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.entity.web;
 
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import org.apache.commons.lang3.StringUtils;
@@ -72,7 +73,8 @@ public class EntityAssociationLinkBuilder extends EntityConfigurationLinkBuilder
 			EntityPropertyDescriptor targetProperty = association.getTargetProperty();
 			if ( targetProperty != null && sourceEntity != null ) {
 				uri.queryParam(
-						"entity." + targetProperty.getName(),
+						EntityPropertyControlName.root( "entity" ).forChildProperty( targetProperty ).toString(),
+						//"entity." + targetProperty.getName(),
 						getIdAsString( association.getSourceEntityConfiguration(), sourceEntity )
 				);
 			}
