@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package admin;import com.foreach.across.config.AcrossApplication;
+package admin;
+
+import com.foreach.across.config.AcrossApplication;
 import com.foreach.across.modules.adminweb.AdminWebModule;
 import org.springframework.boot.SpringApplication;
 

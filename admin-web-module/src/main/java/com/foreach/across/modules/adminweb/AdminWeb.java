@@ -25,6 +25,7 @@ public final class AdminWeb extends PrefixingPathContext
 
 	public static final String MODULE = "AdminWebModule";
 
+	@Deprecated
 	public static final String LAYOUT_TEMPLATE_CSS = "/static/adminweb/css/adminweb.css";
 	public static final String LAYOUT_TEMPLATE = "th/adminweb/layouts/adminPage";
 
