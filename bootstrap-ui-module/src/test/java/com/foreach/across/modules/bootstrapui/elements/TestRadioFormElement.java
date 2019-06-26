@@ -35,7 +35,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='radio'><label for='boxName'>" +
+				"<div class='radio' data-bootstrapui-adapter-type='checkbox'><label for='boxName'>" +
 						"<input type='radio' id='boxName' name='boxName' value='123' />label text" +
 						"</label></div>"
 		);
@@ -51,7 +51,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<label for='boxName'>" +
+				"<label data-bootstrapui-adapter-type='checkbox' for='boxName'>" +
 						"<input type='radio' id='boxName' name='boxName' value='123' />label text" +
 						"</label>"
 		);
@@ -66,7 +66,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='radio' id='boxName' name='boxName' value='123' />"
+				"<input data-bootstrapui-adapter-type='checkbox' type='radio' id='boxName' name='boxName' value='123' />"
 		);
 	}
 
@@ -78,7 +78,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='radio'>" +
+				"<div class='radio' data-bootstrapui-adapter-type='checkbox'>" +
 						"<input type='radio' value='true' checked='checked' />" +
 						"</div>"
 		);
@@ -92,7 +92,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='radio disabled'>" +
+				"<div class='radio disabled' data-bootstrapui-adapter-type='checkbox'>" +
 						"<input type='radio' value='on' disabled='disabled' />" +
 						"</div>"
 		);
@@ -102,7 +102,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='radio'>" +
+				"<div class='radio' data-bootstrapui-adapter-type='checkbox'>" +
 						"<input type='radio' value='on' readonly='readonly' />" +
 						"</div>"
 		);
@@ -119,7 +119,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='one two radio' data-role='item'><label for='boxName'>" +
+				"<div class='one two radio' data-role='item' data-bootstrapui-adapter-type='checkbox'><label for='boxName'>" +
 						"<input type='radio' id='boxName' name='boxName' value='123' />label text</label>" +
 						"</div>"
 		);
@@ -137,7 +137,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<label for='boxName' class='one two' data-role='item'>" +
+				"<label data-bootstrapui-adapter-type='checkbox' for='boxName' class='one two' data-role='item'>" +
 						"<input type='radio' id='boxName' name='boxName' value='123' />label text</label>"
 		);
 	}
@@ -153,7 +153,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input type='radio' id='boxName' name='boxName' class='one two' data-role='item' value='123' />"
+				"<input data-bootstrapui-adapter-type='checkbox' type='radio' id='boxName' name='boxName' class='one two' data-role='item' value='123' />"
 		);
 	}
 
@@ -165,7 +165,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 		control.setControlName( "two" );
 		renderAndExpect(
 				control,
-				"<div class='radio'>"
+				"<div class='radio' data-bootstrapui-adapter-type='checkbox'>"
 						+ "<input type='radio' id='two' name='two' />"
 						+ "</div>"
 		);
@@ -185,7 +185,7 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<div class='radio'>"
+				"<div class='radio' data-bootstrapui-adapter-type='checkbox'>"
 						+ "<input type='radio' id='prefix.one' name='prefix.one' />"
 						+ "</div>"
 		);

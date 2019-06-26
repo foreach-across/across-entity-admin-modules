@@ -66,4 +66,23 @@ public class SelectFormElementModelWriter extends FormControlElementModelWriter<
 		model.addAttributeValue( "class", "form-control" );
 		model.addBooleanAttribute( "multiple", control.isMultiple() );
 	}
+
+	@Override
+	protected void writeCloseElement( SelectFormElement control, ThymeleafModelBuilder model ) {
+		super.writeCloseElement( control, model );
+
+		// write hidden value for form post
+		if ( control.getControlName() != null && control.isMultiple() ) {
+			model.addOpenElement( "input" );
+			model.addAttribute( "type", "hidden" );
+			model.addAttribute( "name", "_" + control.getControlName() );
+			model.addAttribute( "value", "" );
+
+			if ( control.isDisabled() || control.hasAttribute( "disabled" ) ) {
+				model.addBooleanAttribute( "disabled", true );
+			}
+
+			model.addCloseElement();
+		}
+	}
 }

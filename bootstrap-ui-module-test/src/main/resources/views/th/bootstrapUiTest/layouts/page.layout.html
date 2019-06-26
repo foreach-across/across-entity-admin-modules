@@ -1,0 +1,49 @@
+<!--
+  ~ Copyright 2019 the original author or authors
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>BootstrapUiModule test application</title>
+
+    <across:web-resources bucket="head" />
+    <across:web-resources bucket="javascript" />
+    <across:web-resources bucket="css" />
+</head>
+<body>
+<div>
+	<!--/* Content body */-->
+	<div th:if="${childPage}" class="content for-navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-2 sidebar no-padding">
+					<div th:replace="th/bootstrap/menu :: panels (${navMenu})" th:if="${navMenu}"></div>
+				</div>
+				<div class="col-sm-10 main">
+					<div th:replace="${childPage} :: content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<across:web-resources bucket="javascript-page-end" />
+
+</body>
+</html>

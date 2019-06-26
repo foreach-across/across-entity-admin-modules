@@ -16,14 +16,18 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
+import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.thymeleaf.SelectFormElementModelWriter;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.context.event.EventListener;
@@ -62,8 +66,8 @@ public class BootstrapSelectController
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 
 		Map<String, ViewElement> generatedSelects = new LinkedHashMap<>();
-		generatedSelects.put( "Simple select", simpleSelect() );
-		generatedSelects.put( "Multi select", multiSelect() );
+		generatedSelects.put( "Simple select", simpleSelect().build() );
+		generatedSelects.put( "Multi select", multiSelect().build() );
 		generatedSelects.put( "Simple select - bootstrap-select", simpleBootstrapSelect() );
 		generatedSelects.put( "Multi select - bootstrap-select", multiBootstrapSelect() );
 
@@ -73,58 +77,46 @@ public class BootstrapSelectController
 	}
 
 	private SelectFormElement simpleBootstrapSelect() {
-		val simple = simpleSelect();
-		simple.setConfiguration( SelectFormElementConfiguration.simple() );
-		return simple;
+		return (SelectFormElement) simpleSelect().select( SelectFormElementConfiguration.simple() ).build();
 	}
 
 	private SelectFormElement multiBootstrapSelect() {
-		val simple = multiSelect();
-		simple.setConfiguration( SelectFormElementConfiguration.liveSearch() );
-		return simple;
+		return (SelectFormElement) multiSelect().select( SelectFormElementConfiguration.liveSearch() ).build();
 	}
 
-	private SelectFormElement simpleSelect() {
-		SelectFormElement box = new SelectFormElement();
-		box.setName( "internalName" );
-		box.setControlName( "controlName" );
-		box.setReadonly( false );
-
-		SelectFormElement.Option one = new SelectFormElement.Option();
-		one.setValue( "one" );
-		one.setText( "Inner text" );
-
-		SelectFormElement.Option two = new SelectFormElement.Option();
-		two.setLabel( "Short two" );
-		two.setText( "Some text" );
-
-		box.addChild( one );
-		box.addChild( two );
-
-		return box;
+	private OptionsFormElementBuilder simpleSelect() {
+		return BootstrapUiBuilders.options()
+		                          .select()
+		                          .controlName( "controlName" )
+		                          .name( "internalName" )
+		                          .readonly( false )
+		                          .add( BootstrapUiBuilders.option().value( "one" ).text( "Inner text" ) )
+		                          .add( BootstrapUiBuilders.option().value( "two" ).text( "Inner text 2" )
+				);
 	}
 
-	private SelectFormElement multiSelect() {
-		SelectFormElement box = new SelectFormElement();
-		box.setMultiple( true );
-		box.setName( "internalName" );
-		box.setControlName( "controlName" );
-
+	private OptionsFormElementBuilder multiSelect() {
 		SelectFormElement.OptionGroup group = new SelectFormElement.OptionGroup();
 		group.setLabel( "Group label" );
-		SelectFormElement.Option one = new SelectFormElement.Option();
-		one.setValue( "one" );
-		one.setText( "Inner text" );
+		group.addChild(
+				BootstrapUiBuilders.option()
+				                   .value( "two" )
+				                   .text( "Inner text 2" )
+				                   .build()
+		);
+		group.addChild(
+				BootstrapUiBuilders.option()
+				                   .value( "Short two" )
+				                   .text( "Some text" )
+				                   .build()
+		);
 
-		SelectFormElement.Option two = new SelectFormElement.Option();
-		two.setLabel( "Short two" );
-		two.setText( "Some text" );
-
-		group.addChild( one );
-		group.addChild( two );
-
-		box.addChild( group );
-
-		return box;
+		return BootstrapUiBuilders.options()
+		                          .select()
+		                          .add( group )
+		                          .multiple( true )
+		                          .controlName( "controlName" )
+		                          .name( "internalName" )
+		                          .readonly( false );
 	}
 }

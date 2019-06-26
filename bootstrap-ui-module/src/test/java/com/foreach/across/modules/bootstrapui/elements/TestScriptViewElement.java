@@ -121,7 +121,7 @@ public class TestScriptViewElement extends AbstractBootstrapViewElementTest
 	}
 
 	private void expectContent( String actual, String expected ) {
-		String pattern = "<?xml version=\"1.0\"?><root xmlns:across='http://across.foreach.be'>%s</root>";
+		String pattern = "<?xml version=\"1.0\"?><root xmlns:across='https://across.dev'>%s</root>";
 
 		try {
 			( new XmlExpectationsHelper() ).assertXmlEqual( String.format( pattern, expected ), String.format( pattern, actual ) );
