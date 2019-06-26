@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 import com.foreach.across.modules.bootstrapui.elements.ScriptViewElement;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElementModelWriter;
-import liquibase.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.NamedThreadLocal;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IOpenElementTag;
@@ -65,7 +65,7 @@ public class ScriptViewElementModelWriter extends AbstractHtmlViewElementModelWr
 
 				String refTagName = viewElement.getRefTagName();
 
-				if ( !StringUtils.isEmpty(refTagName)) {
+				if ( !StringUtils.isEmpty( refTagName ) ) {
 					model.addOpenElement( viewElement.getRefTagName() );
 					model.addAttribute( "style", "display: none; visibility: hidden;" );
 					model.addAttribute( "id", model.retrieveHtmlId( viewElement ) );
