@@ -53,7 +53,9 @@ public class DefaultPropertiesRegistrar implements DefaultEntityPropertyRegistry
 		Map<String, PropertyDescriptor> scannedDescriptors = new HashMap<>();
 
 		for ( PropertyDescriptor descriptor : BeanUtils.getPropertyDescriptors( entityType ) ) {
-			registry.register( propertyDescriptorFactory.create( descriptor, entityType ) );
+			if ( descriptor.getReadMethod() != null || descriptor.getWriteMethod() != null ) {
+				registry.register( propertyDescriptorFactory.create( descriptor, entityType ) );
+			}
 			scannedDescriptors.put( descriptor.getName(), descriptor );
 		}
 

@@ -29,6 +29,8 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.processors.support.ViewElementBuilderMap;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourcePackageManager;
+import com.foreach.across.modules.web.resource.WebResourceReference;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContextHolder;
@@ -45,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -201,7 +204,7 @@ public class TestSortableTableRenderingViewProcessor
 
 	@Test
 	public void webResourcesRegisteredForConfiguration() {
-		WebResourceRegistry registry = mock( WebResourceRegistry.class );
+		WebResourceRegistry registry = new WebResourceRegistry( mock( WebResourcePackageManager.class ) );
 		EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
 		when( viewContext.getEntityConfiguration() ).thenReturn( entityConfiguration );
 		when( entityConfiguration.hasView( "summary-view-name" ) ).thenReturn( true );
@@ -209,12 +212,16 @@ public class TestSortableTableRenderingViewProcessor
 		processor.setSummaryViewName( "summary-view-name" );
 		processor.registerWebResources( viewRequest, entityView, registry );
 
-		verify( registry ).add( WebResource.JAVASCRIPT_PAGE_END, "/static/entity/js/expandable.js", WebResource.VIEWS );
+		WebResourceReference webResourceReference = registry.getResourcesForBucket( WebResource.JAVASCRIPT_PAGE_END )
+		                                                    .iterator()
+		                                                    .next();
+
+		assertThat( webResourceReference.getKey() ).isEqualTo( "@static:/entity/js/expandable.js" );
 	}
 
 	@Test
 	public void webResourcesRegisteredForAssociation() {
-		WebResourceRegistry registry = mock( WebResourceRegistry.class );
+		WebResourceRegistry registry = new WebResourceRegistry( mock( WebResourcePackageManager.class ) );
 		when( viewContext.isForAssociation() ).thenReturn( true );
 		EntityAssociation entityAssociation = mock( EntityAssociation.class );
 		when( viewContext.getEntityAssociation() ).thenReturn( entityAssociation );
@@ -223,6 +230,10 @@ public class TestSortableTableRenderingViewProcessor
 		processor.setSummaryViewName( "summary-view-name" );
 		processor.registerWebResources( viewRequest, entityView, registry );
 
-		verify( registry ).add( WebResource.JAVASCRIPT_PAGE_END, "/static/entity/js/expandable.js", WebResource.VIEWS );
+		WebResourceReference webResourceReference = registry.getResourcesForBucket( WebResource.JAVASCRIPT_PAGE_END )
+		                                                    .iterator()
+		                                                    .next();
+
+		assertThat( webResourceReference.getKey() ).isEqualTo( "@static:/entity/js/expandable.js" );
 	}
 }

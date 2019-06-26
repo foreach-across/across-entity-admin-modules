@@ -123,12 +123,6 @@ public class TestDefaultEntityFetchingViewProcessor
 		verifyItems();
 	}
 
-	@Test(expected = IllegalStateException.class)
-	public void exceptionIsThrownIfAssociationButNoAssociatedEntityQueryExecutor() {
-		when( viewContext.isForAssociation() ).thenReturn( true );
-		verifyItems();
-	}
-
 	@Test
 	public void associatedEntityQueryExecutorIsUsedWithParentEntity() {
 		when( viewContext.isForAssociation() ).thenReturn( true );

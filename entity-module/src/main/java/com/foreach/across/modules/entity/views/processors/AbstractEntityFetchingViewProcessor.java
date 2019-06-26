@@ -124,7 +124,7 @@ public abstract class AbstractEntityFetchingViewProcessor extends SimpleEntityVi
 	@SuppressWarnings("unchecked")
 	private Iterable filterAccessibleItems( Iterable entities, EntityConfiguration configuration, Pageable pageable ) {
 		Iterable result = entities;
-		if ( showOnlyItemsWithAction != null ) {
+		if ( showOnlyItemsWithAction != null && result != null) {
 			result = (List) StreamSupport.stream( entities.spliterator(), false )
 			                             .filter( entity -> configuration.getAllowableActions( entity ).contains( showOnlyItemsWithAction ) )
 			                             .collect( Collectors.toList() );

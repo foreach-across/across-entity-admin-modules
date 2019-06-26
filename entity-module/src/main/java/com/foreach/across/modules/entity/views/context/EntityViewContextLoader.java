@@ -37,7 +37,7 @@ public class EntityViewContextLoader
 	private EntityRegistry entityRegistry;
 
 	/**
-	 * Load the properties of {@param context} based on the entity configuration available for the entity.
+	 * Load the properties of {@code context} based on the entity configuration available for the entity.
 	 * Will throw an exception if the entity is null.
 	 *
 	 * @param context to set the properties on
@@ -48,7 +48,7 @@ public class EntityViewContextLoader
 	}
 
 	/**
-	 * Load the properties of {@param context} based on the entity configuration with the given name.
+	 * Load the properties of {@code context} based on the entity configuration with the given name.
 	 * Will throw an exception if either name or the resulting entity configuration is null.
 	 *
 	 * @param context    to set the properties on
@@ -59,7 +59,7 @@ public class EntityViewContextLoader
 	}
 
 	/**
-	 * Load the properties of {@param context} based on the entity configuration value.
+	 * Load the properties of {@code context} based on the entity configuration value.
 	 * Will throw an exception if the entity configuration is null.
 	 *
 	 * @param context             to set the properties on

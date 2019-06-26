@@ -22,16 +22,12 @@ import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registry.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
-import com.foreach.across.testmodules.solr.SolrTestModule;
-import com.foreach.across.testmodules.solr.business.Product;
-import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
-import com.foreach.across.testmodules.springdata.business.*;
-import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.EntityViewFactoryAttributes;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
@@ -40,6 +36,11 @@ import com.foreach.across.modules.spring.security.SpringSecurityModule;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.test.AcrossTestConfiguration;
 import com.foreach.across.test.AcrossWebAppConfiguration;
+import com.foreach.across.testmodules.solr.SolrTestModule;
+import com.foreach.across.testmodules.solr.business.Product;
+import com.foreach.across.testmodules.springdata.SpringDataJpaModule;
+import com.foreach.across.testmodules.springdata.business.*;
+import com.foreach.across.testmodules.springdata.repositories.ClientRepository;
 import it.com.foreach.across.modules.entity.utils.EntityPropertyDescriptorVerifier;
 import it.com.foreach.across.modules.entity.utils.EntityVerifier;
 import org.junit.Test;
@@ -52,6 +53,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
 import org.springframework.test.annotation.DirtiesContext;
@@ -101,9 +103,9 @@ public class TestRepositoryEntityRegistrar
 				.hasRepository()
 				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, HibernateJpaConfiguration.TRANSACTION_MANAGER )
 				.hasAssociation( "client.company", true ).from( null ).to( Client.class, "company" ).and()
-				.hasAssociation( "company.representatives", false ).from( "representatives" ).to( Representative.class );
+				.hasAssociation( "company.representatives", false ).from( "representatives" ).to( Representative.class ).and()
+				.hasAssociation( "car.company", true ).from( null ).to( Car.class, "company" );
 
-		// not a JpaSpecificationExecutor so associations can't be built
 		verify( Car.class )
 				.isVisible( true )
 				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, HibernateJpaConfiguration.TRANSACTION_MANAGER )
@@ -361,6 +363,16 @@ public class TestRepositoryEntityRegistrar
 
 		assertNotNull( queryExecutor );
 		assertTrue( queryExecutor instanceof EntityQueryQueryDslExecutor );
+	}
+
+	@Test
+	public void carShouldHaveAFallbackEntityQueryExecutor() {
+		EntityConfiguration<Car> car = entityRegistry.getEntityConfiguration( Car.class );
+		EntityQueryExecutor<Car> queryExecutor = car.getAttribute( EntityQueryExecutor.class );
+
+		assertNotNull( queryExecutor );
+		assertFalse( queryExecutor instanceof PagingAndSortingRepository );
+		assertFalse( queryExecutor instanceof CollectionEntityQueryExecutor );
 	}
 
 	@Test

@@ -101,7 +101,11 @@ public final class ListEntityPropertyBinder extends AbstractEntityPropertyBinder
 		if ( itemTemplate == null ) {
 			itemTemplate = createItem();
 			itemTemplate.setBinderPath( getBinderPath( "itemTemplate" ) );
+
+			Object originalValue = binder.getTemplateValueResolver().resolveTemplateValue( binder.asBindingContext(), memberDescriptor );
+			itemTemplate.setOriginalValue( originalValue );
 		}
+
 		return itemTemplate;
 	}
 
