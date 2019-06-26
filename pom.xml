@@ -27,7 +27,7 @@
 
 	<groupId>com.foreach.across.modules</groupId>
 	<artifactId>admin-web-module-project</artifactId>
-	<version>3.1.1-SNAPSHOT</version>
+	<version>3.1.1.RELEASE</version>
 	<packaging>pom</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
