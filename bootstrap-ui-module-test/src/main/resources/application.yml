@@ -15,7 +15,7 @@
 #
 across:
   development:
-    active: false
+    active: true
 
 acrossModule:
   BootstrapUiModule:
