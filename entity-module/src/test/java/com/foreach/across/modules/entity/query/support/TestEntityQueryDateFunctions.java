@@ -22,8 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -66,13 +65,52 @@ public class TestEntityQueryDateFunctions
 		assertTrue( calculated.getTime() >= start.getTime() && calculated.getTime() < ( start.getTime() + 1000 ) );
 
 		start = new Date();
-		long time = (Long) functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( Long.class ), null );
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( Long.class ), null );
+		assertTrue( result instanceof Long );
+		Long time = (Long) result;
 		assertTrue( time >= start.getTime() && time < ( start.getTime() + 1000 ) );
+	}
 
-		LocalDateTime startLocalDateTime = LocalDateTime.now();
-		LocalDateTime calculatedLocalDateTime = (LocalDateTime) functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null );
+	@Test
+	public void nowWithLocalDateAsReturnType() {
+		LocalDate startLocalDate = LocalDate.now();
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalDate.class ), null );
+		assertTrue( result instanceof LocalDate );
+
+		LocalDate calculatedLocalDate = (LocalDate) result;
+		assertEquals( calculatedLocalDate.getDayOfYear(), startLocalDate.getDayOfYear() );
+	}
+
+	@Test
+	public void nowWithLocalTimeAsReturnType() {
+		LocalTime startLocalTime = LocalTime.now();
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalTime.class ), null );
+		assertTrue( result instanceof LocalTime );
+
+		LocalTime calculatedLocalTime = (LocalTime) result;
+		assertTrue( startLocalTime.getNano() <= calculatedLocalTime.getNano() );
+	}
+
+	@Test
+	public void nowWithZoneDateTimeAsReturnType() {
+		ZonedDateTime start = ZonedDateTime.now();
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( ZonedDateTime.class ), null );
+		assertTrue( result instanceof ZonedDateTime );
+
+		ZonedDateTime calculatedLocalTime = (ZonedDateTime) result;
+		assertTrue( start.getNano() <= calculatedLocalTime.getNano()  );
+	}
+
+	@Test
+	public void nowWithLocalDateTimeAsReturnType() {
+		LocalDateTime start = LocalDateTime.now();
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null );
+		assertTrue( result instanceof LocalDateTime );
+
+		LocalDateTime calculatedLocalDateTime = (LocalDateTime) result;
 		assertNotNull( calculatedLocalDateTime );
-		assertTrue( calculatedLocalDateTime.getNano() >= startLocalDateTime.getNano() );
+
+		assertTrue( start.getNano() <= calculatedLocalDateTime.getNano()  );
 
 	}
 
@@ -85,5 +123,46 @@ public class TestEntityQueryDateFunctions
 
 		LocalDateTime todayLocalDateTime = today.toInstant().atZone( ZoneId.systemDefault() ).toLocalDateTime();
 		assertEquals( todayLocalDateTime, functions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null ) );
+	}
+
+	@Test
+	public void todayWithLocalDateAsReturnType() {
+		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
+		Object result = functions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( LocalDate.class ), null );
+
+		assertTrue( result instanceof LocalDate );
+
+		LocalDate calculatedLocalDate = (LocalDate) result;
+		assertEquals( calculatedLocalDate.getDayOfWeek().getValue(), today.getDay() );
+	}
+
+	@Test
+	public void todayWithLocalTimeAsReturnType() {
+		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalTime.class ), null );
+		assertTrue( result instanceof LocalTime );
+	}
+
+	@Test
+	public void todayWithZoneDateTimeAsReturnType() {
+		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( ZonedDateTime.class ), null );
+		assertTrue( result instanceof ZonedDateTime );
+
+		ZonedDateTime calculatedLocalTime = (ZonedDateTime) result;
+		assertEquals( today.getDay(), calculatedLocalTime.getDayOfWeek().getValue() );
+	}
+
+	@Test
+	public void todayWithLocalDateTimeAsReturnType() {
+		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null );
+
+		assertTrue( result instanceof LocalDateTime );
+
+		LocalDateTime calculatedLocalDateTime = (LocalDateTime) result;
+		assertNotNull( calculatedLocalDateTime );
+
+		assertEquals( today.getDay(), calculatedLocalDateTime.getDayOfWeek().getValue() );
 	}
 }
