@@ -47,6 +47,7 @@ import com.foreach.across.modules.spring.security.actions.AllowableActionSet;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TemplateViewElement;
@@ -109,7 +110,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	}
 
 	@EventListener
-	void modifyAssociationMenu( EntityAdminMenuEvent<Note> menuEvent ) {
+	public void modifyAssociationMenu( EntityAdminMenuEvent<Note> menuEvent ) {
 		if ( menuEvent.getViewContext().isForAssociation() ) {
 			if ( menuEvent.isForUpdate() ) {
 				SingleEntityViewLinkBuilder linkBuilder = menuEvent.getLinkBuilder().forInstance( menuEvent.getEntity() );
@@ -204,8 +205,10 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	                                          protected void registerWebResources( EntityViewRequest entityViewRequest,
 	                                                                               EntityView entityView,
 	                                                                               WebResourceRegistry webResourceRegistry ) {
-		                                          webResourceRegistry.add( WebResource.JAVASCRIPT_PAGE_END, "/static/entityModuleTest/js/test.js",
-		                                                                   WebResource.VIEWS );
+		                                          webResourceRegistry.apply(
+				                                          WebResourceRule.add( WebResource.javascript( "@static:/entityModuleTest/js/test.js" ) )
+				                                                         .toBucket( WebResource.JAVASCRIPT_PAGE_END )
+		                                          );
 	                                          }
                                           } )
                                           .entityQueryFilter( eqf -> eqf.showProperties( "name", "group", "active" )

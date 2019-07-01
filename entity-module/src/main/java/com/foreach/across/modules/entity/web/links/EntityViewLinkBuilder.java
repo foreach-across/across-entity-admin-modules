@@ -16,11 +16,14 @@
 
 package com.foreach.across.modules.entity.web.links;
 
+import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyHandlingType;
 import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -169,9 +172,20 @@ public abstract class EntityViewLinkBuilder extends EntityViewLinkBuilderSupport
 					                                                .createView()
 					                                                .withFromUrl( toUriString() );
 					EntityPropertyDescriptor targetProperty = entityAssociation.getTargetProperty();
-					return targetProperty != null
-							? linkBuilder.withQueryParam( "entity." + targetProperty.getName(), parentEntityId )
-							: linkBuilder;
+
+					if ( targetProperty != null ) {
+						String targetPropertyName = EntityPropertyControlName.root( "entity" )
+						                                                     .forChildProperty( targetProperty )
+						                                                     .forHandlingType( EntityPropertyHandlingType.forProperty( targetProperty ) )
+						                                                     .toString();
+						// todo: fix actual query parameter encoding
+						return linkBuilder.withQueryParam(
+								StringUtils.replaceEach( targetPropertyName, new String[] { "[", "]" }, new String[] { "%5B", "%5D" } ),
+								parentEntityId
+						);
+					}
+
+					return linkBuilder;
 				default:
 					return super.createView();
 			}

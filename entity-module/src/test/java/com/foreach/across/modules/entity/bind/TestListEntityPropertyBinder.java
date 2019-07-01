@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.bind;
 
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyValue;
@@ -65,6 +66,9 @@ public class TestListEntityPropertyBinder
 	@Mock
 	private AbstractEntityPropertyBinder itemTwo;
 
+	@Mock
+	private EntityPropertyTemplateValueResolver templateValueResolver;
+
 	private EntityPropertyDescriptor collectionDescriptor;
 	private EntityPropertyDescriptor memberDescriptor;
 	private ListEntityPropertyBinder property;
@@ -97,6 +101,7 @@ public class TestListEntityPropertyBinder
 						.builder( "member" )
 						.controller( memberController )
 						.propertyType( MEMBER )
+						.attribute( "memberInitializer", EntityPropertyBindingContext.forReading( 99 ) )
 						.build()
 		);
 
@@ -113,6 +118,8 @@ public class TestListEntityPropertyBinder
 
 		when( binder.getProperties() ).thenReturn( binder );
 		when( binder.get( "prop" ) ).thenReturn( property );
+
+		when( binder.getTemplateValueResolver() ).thenReturn( templateValueResolver );
 	}
 
 	@Test
@@ -208,9 +215,11 @@ public class TestListEntityPropertyBinder
 		AbstractEntityPropertyBinder template = mock( AbstractEntityPropertyBinder.class );
 
 		when( binder.createPropertyBinder( memberDescriptor ) ).thenReturn( template );
+		when( templateValueResolver.resolveTemplateValue( any(), eq( memberDescriptor ) ) ).thenReturn( 123 );
 
 		assertThat( property.getItemTemplate() ).isSameAs( template );
 		assertThat( property.getItemTemplate() ).isSameAs( template );
+		verify( template ).setOriginalValue( 123 );
 		verify( binder, times( 1 ) ).createPropertyBinder( any() );
 	}
 

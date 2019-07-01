@@ -47,46 +47,14 @@ class RepositoryEntityPropertyRegistryBuilder
 
 		setBeanDescriptor( entityConfiguration );
 
-		// add @Embedded
-		//PersistentEntity<?, ?> persistentEntity = repositoryFactoryInformation.getPersistentEntity();
-
-		configureDefaultFilter( /*entityType,*/ registry );
-		//configureKnownDescriptors( entityType, registry );
+		configureDefaultFilter( registry );
 
 		entityConfiguration.setPropertyRegistry( registry );
 	}
 
-	private void configureDefaultFilter( /*Class<?> entityType,*/ MutableEntityPropertyRegistry registry ) {
-//		if ( registry.getDefaultFilter() == null ) {
-////			List<String> excludedProps = new LinkedList<>();
-////			excludedProps.add( "class" );
-//
-////			if ( Persistable.class.isAssignableFrom( entityType ) ) {
-////				excludedProps.add( "new" );
-////			}
-////
-////			if ( SettableIdBasedEntity.class.isAssignableFrom( entityType ) ) {
-////				excludedProps.add( "newEntityId" );
-////			}
-//
-//			//registry.setDefaultFilter( EntityPropertyFilters.exclude( excludedProps ) );
-//		}
-
+	private void configureDefaultFilter( MutableEntityPropertyRegistry registry ) {
 		registry.getProperty( "class" ).setHidden( true );
 	}
-
-//	private void configureKnownDescriptors( Class<?> entityType, MutableEntityPropertyRegistry registry ) {
-//
-////		if ( Persistable.class.isAssignableFrom( entityType ) ) {
-////			registry.getMutableProperty( "id" ).setHidden( true );
-////		}
-////
-////		if ( SettableIdBasedEntity.class.isAssignableFrom( entityType ) ) {
-////			MutableEntityPropertyDescriptor mutable = registry.getMutableProperty( "newEntityId" );
-////			mutable.setReadable( false );
-////			mutable.setHidden( true );
-////		}
-//	}
 
 	private void setBeanDescriptor( MutableEntityConfiguration<?> entityConfiguration ) {
 		BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass(

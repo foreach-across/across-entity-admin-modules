@@ -19,6 +19,8 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.bind.EntityPropertiesBinder;
+import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
+import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.EntityModel;
@@ -37,18 +39,16 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -131,17 +131,21 @@ public class SaveEntityViewProcessor extends EntityViewProcessorAdapter
 			else {
 				Object newDto = entityFactory.createNew();
 
-				BeanWrapper beanWrapper = new BeanWrapperImpl( newDto );
-				EntityPropertyDescriptor propertyDescriptor = entityViewContext.getEntityAssociation().getTargetProperty();
+				EntityPropertiesBinder propertiesBinder = createPropertiesBinder( null, newDto,
+				                                                                  entityAssociation.getTargetEntityConfiguration().getPropertyRegistry() );
+				EntityPropertyDescriptor sourceProperty = entityAssociation.getSourceProperty();
+				Object parent = entityViewContext.getParentContext().getEntity();
+				Object valueToSet = sourceProperty != null ? sourceProperty.getPropertyValue( parent ) : parent;
+				EntityPropertyBinder entityPropertyBinder = propertiesBinder.get( entityAssociation.getTargetProperty() );
 
-				Object parentEntity = entityViewContext.getParentContext().getEntity();
-				Object valueToSet = parentEntity != null
-						? conversionService.convert( parentEntity, TypeDescriptor.forObject( parentEntity ), propertyDescriptor.getPropertyTypeDescriptor() )
-						: null;
-
-				if ( propertyDescriptor != null ) {
-					beanWrapper.setPropertyValue( propertyDescriptor.getName(), valueToSet );
+				if ( entityPropertyBinder instanceof ListEntityPropertyBinder ) {
+					entityPropertyBinder.setValue( Collections.singletonList( valueToSet ) );
 				}
+				else {
+					entityPropertyBinder.setValue( valueToSet );
+				}
+
+				propertiesBinder.createController().applyValues();
 
 				return newDto;
 			}

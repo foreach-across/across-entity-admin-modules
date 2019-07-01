@@ -71,6 +71,9 @@ public class TestMapEntityPropertyBinder
 	@Mock
 	private AbstractEntityPropertyBinder value;
 
+	@Mock
+	private EntityPropertyTemplateValueResolver templateValueResolver;
+
 	private EntityPropertyDescriptor collectionDescriptor;
 	private EntityPropertyDescriptor keyDescriptor;
 	private EntityPropertyDescriptor valueDescriptor;
@@ -127,6 +130,8 @@ public class TestMapEntityPropertyBinder
 
 		when( binder.getProperties() ).thenReturn( binder );
 		when( binder.get( "prop" ) ).thenReturn( property );
+
+		when( binder.getTemplateValueResolver() ).thenReturn( templateValueResolver );
 	}
 
 	@Test
@@ -145,6 +150,9 @@ public class TestMapEntityPropertyBinder
 
 	@Test
 	public void templateGetsLazilyCreatedOnce() {
+		when( templateValueResolver.resolveTemplateValue( any(), eq( keyDescriptor ) ) ).thenReturn( "key-val" );
+		when( templateValueResolver.resolveTemplateValue( any(), eq( valueDescriptor ) ) ).thenReturn( "value-val" );
+
 		AbstractEntityPropertyBinder templateKey = mock( AbstractEntityPropertyBinder.class );
 		AbstractEntityPropertyBinder templateValue = mock( AbstractEntityPropertyBinder.class );
 
@@ -153,6 +161,9 @@ public class TestMapEntityPropertyBinder
 
 		assertThat( property.getTemplate().getKey() ).isSameAs( templateKey );
 		assertThat( property.getTemplate().getValue() ).isSameAs( templateValue );
+
+		verify( templateKey ).setOriginalValue( "key-val" );
+		verify( templateValue ).setOriginalValue( "value-val" );
 	}
 
 	@Test

@@ -16,18 +16,23 @@
 
 package com.foreach.across.modules.entity;
 
+import com.foreach.across.core.support.ReadableAttributes;
+import com.foreach.across.modules.entity.bind.EntityPropertyTemplateValueResolver;
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewFactory;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuAttributeRegistrar;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import lombok.NonNull;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Contains common {@link com.foreach.across.modules.entity.config.AttributeRegistrar} returning functions
- * for things like {@link EntityConfiguration}, {@link EntityViewFactory} etc.
+ * for things like {@link EntityConfiguration}, {@link EntityPropertyDescriptor}, {@link EntityViewFactory} etc.
  *
  * @author Arne Vandamme
  * @see com.foreach.across.modules.entity.views.EntityViewFactoryAttributes
@@ -66,5 +71,41 @@ public interface EntityAttributeRegistrars
 	 */
 	static <S> AttributeRegistrar<EntityViewFactory> adminMenu( Consumer<EntityAdminMenuEvent<S>> menuEventConsumer ) {
 		return EntityAdminMenuAttributeRegistrar.adminMenu( menuEventConsumer );
+	}
+
+	/**
+	 * Register a fixed value as the value that should be used for a template control of a property.
+	 * Mainly relevant for indexer property descriptors: list member, map key or map value.
+	 *
+	 * @param value to use
+	 * @param <U>   attribute target
+	 * @return attribute registrar
+	 */
+	static <U extends ReadableAttributes> AttributeRegistrar<U> templateValue( Object value ) {
+		return templateValue( ( bindingContext, descriptor ) -> value );
+	}
+
+	/**
+	 * Register a value supplier that should be used when fetching the value for a template control of a property.
+	 * Mainly relevant for indexer property descriptors: list member, map key or map value.
+	 *
+	 * @param supplier to call
+	 * @param <U>      attribute target
+	 * @return attribute registrar
+	 */
+	static <U extends ReadableAttributes> AttributeRegistrar<U> templateValue( @NonNull Supplier<Object> supplier ) {
+		return templateValue( ( bindingContext, descriptor ) -> supplier.get() );
+	}
+
+	/**
+	 * Register a {@link EntityPropertyTemplateValueResolver} that should be used to resolve the value for a template control of a property.
+	 * Mainly relevant for indexer property descriptors: list member, map key or map value.
+	 *
+	 * @param resolver to use
+	 * @param <U>      attribute target
+	 * @return attribute registrar
+	 */
+	static <U extends ReadableAttributes> AttributeRegistrar<U> templateValue( @NonNull EntityPropertyTemplateValueResolver resolver ) {
+		return ( o, attributes ) -> attributes.setAttribute( EntityPropertyTemplateValueResolver.class, resolver );
 	}
 }

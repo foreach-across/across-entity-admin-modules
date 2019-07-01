@@ -127,10 +127,10 @@ public class EntityConfigurationBuilder<T> extends AbstractWritableAttributesAnd
 	 * @param registerForClass true if the property registry should be the main registry for that class
 	 * @return current builder
 	 */
-	public EntityConfigurationBuilder<T> entityType( Class<? extends T> entityType, boolean registerForClass ) {
+	public <U extends T> EntityConfigurationBuilder<U> entityType( Class<U> entityType, boolean registerForClass ) {
 		this.entityType = entityType;
 		this.registerForClass = registerForClass;
-		return this;
+		return as( entityType );
 	}
 
 	/**
