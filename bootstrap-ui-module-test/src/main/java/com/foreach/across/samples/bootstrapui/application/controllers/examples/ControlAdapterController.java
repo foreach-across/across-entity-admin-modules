@@ -17,6 +17,7 @@
 package com.foreach.across.samples.bootstrapui.application.controllers.examples;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiViewElementAttributes;
+import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
@@ -47,7 +48,7 @@ public class ControlAdapterController
 	 * Register the section in the administration menu.
 	 */
 	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	protected void registerMenuItems( BuildMenuEvent navMenu ) {
+	public void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
 		       .item( "/examples/control-adapters", "Control adapters", "/control-adapters" ).order( 3 );
 	}
@@ -86,7 +87,12 @@ public class ControlAdapterController
 		generatedElements.put( "Textbox", textbox().controlName( "ca-textbox" ).build() );
 		generatedElements.put( "Autosizing textbox", textbox().autoSize().controlName( "ca-textbox-autosize" ).build() );
 		generatedElements.put( "Textarea", textarea().controlName( "ca-textarea" ).build() );
-		generatedElements.put( "Numeric", numeric().currency( Currency.getInstance( Locale.US ) ).controlName( "ca-numeric" ).build() );
+
+		NumericFormElementConfiguration numericFormElementConfiguration = new NumericFormElementConfiguration( Locale.US );
+		numericFormElementConfiguration.setLocalizeOutputFormat( false );
+		numericFormElementConfiguration.setLocalizeDecimalSymbols( false );
+		generatedElements.put( "Numeric", numeric().configuration( numericFormElementConfiguration ).controlName( "ca-numeric" ).build() );
+		generatedElements.put( "Numeric without formatting", numeric().controlName( "ca-numeric-noformat" ).build() );
 
 		model.addAttribute( "generatedElements", generatedElements );
 
