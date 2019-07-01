@@ -261,8 +261,16 @@ public class TestEntityQueryDateFunctions
 	@Test
 	public void startOfYear() {
 		Date expectedDate = DateUtils.truncate( getYearStartDate(), Calendar.DATE );
+		Date towMonthsLater = DateUtils.addMonths( expectedDate, 2);
+
 		assertThat( eqf( "startOfYear()", Date.class ) )
 				.isEqualTo( expectedDate );
+
+		assertThat( eqf( "startOfYear(now(), 2M)", Date.class ) )
+				.isEqualTo( towMonthsLater );
+
+		assertThat( eqf( "thisYear('2M')", Date.class ) )
+				.isEqualTo( towMonthsLater );
 	}
 
 	@Test
@@ -329,7 +337,7 @@ public class TestEntityQueryDateFunctions
 	public void startOfWeekWithFirstDayOfWeekOnFriday() {
 		Date expectedDate = DateUtils.truncate( DateUtils.addDays( getWeekStartDate(), 4 ), Calendar.DATE );
 
-		assertThat( eqf( "startOfWeek(now(), +1d, fri )", Date.class ) )
+		assertThat( eqf( "startOfWeek(now(), +0m, fri )", Date.class ) )
 				.isEqualTo( expectedDate );
 	}
 
@@ -338,6 +346,39 @@ public class TestEntityQueryDateFunctions
 		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), -2 );
 
 		assertThat( eqf( "startOfWeek(now(), -2w)", Date.class ) )
+				.isEqualTo( expectedDate );
+	}
+
+	@Test
+	public void thisWeekPlusTwoWeeks() {
+		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), 2 );
+
+		assertThat( eqf( "thisWeek(+2w)", Date.class ) )
+				.isEqualTo( expectedDate );
+	}
+
+	@Test
+	public void thisWeekPlusTwoWeeksWhenWeeksStartOnSunday() {
+		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), 2 );
+		expectedDate = DateUtils.truncate( DateUtils.addDays( expectedDate, 6 ), Calendar.DATE );
+
+		assertThat( eqf( "thisWeek(+2w, sun)", Date.class ) )
+				.isEqualTo( expectedDate );
+	}
+
+	@Test
+	public void nextWeek(){
+		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), 1 );
+
+		assertThat( eqf( "nextWeek()", Date.class ) )
+				.isEqualTo( expectedDate );
+	}
+
+	@Test
+	public void lastWeek(){
+		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), -1 );
+
+		assertThat( eqf( "lastWeek()", Date.class ) )
 				.isEqualTo( expectedDate );
 	}
 }

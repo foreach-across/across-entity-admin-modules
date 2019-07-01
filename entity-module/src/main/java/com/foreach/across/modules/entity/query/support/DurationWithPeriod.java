@@ -48,6 +48,8 @@ public class DurationWithPeriod
 	private static final int TIMESTAMP_MINUTES_INDEX = 25;
 	private static final int TIMESTAMP_SECONDS_INDEX = 27;
 
+	private static final String signPattern = "(?=[-+])";
+
 	private static final String DURATION_PATTERN =
 			"(([-|+]?[\\d]+?)([y|Y][a-z]*+))?(([-|+]?[\\d]+?)([M][a-z]*+))?" +
 					"(([-|+]?[\\d]+?)([W|w][a-z]*+))?(([-|+]?[\\d]+?)([D|d][a-z]*+))?(([-|+]?[\\d]+?)([H|h][a-z]*+))?" +
@@ -80,12 +82,13 @@ public class DurationWithPeriod
 		                                .replaceAll( " [\\d]+?", "+$0" )
 		                                .replaceAll( " ", "" );
 
+		// The default sign is +
 		if ( !durationFromUser.startsWith( "-" ) && !durationFromUser.startsWith( "+" ) ) {
 			durationFromUser = "+" + durationFromUser;
 		}
 
 		// Split in groups for each sign
-		Arrays.stream( durationFromUser.split( "(?=[-+])" ) ).forEach( periodPart -> {
+		Arrays.stream( durationFromUser.split( signPattern ) ).forEach( periodPart -> {
 			Character sign = periodPart.charAt( 0 );
 			String periodExpression = periodPart.substring( 1 );
 
@@ -103,10 +106,13 @@ public class DurationWithPeriod
 						calculatePeriod( m.group( WEEK_INDEX ), ChronoUnit.WEEKS, sign ),
 						calculatePeriod( m.group( MONTH_INDEX ), ChronoUnit.MONTHS, sign ),
 						calculatePeriod( m.group( YEAR_INDEX ), ChronoUnit.YEARS, sign )
-						).forEach( ( temporalAmount -> {
+				).forEach( ( temporalAmount -> {
+					// Add the period to the existing period
 					if ( temporalAmount instanceof Period && !( (Period) temporalAmount ).isZero() ) {
 						durationWithPeriod.setPeriod( durationWithPeriod.getPeriod().plus( (Period) temporalAmount ) );
 					}
+
+					// Add the duration to the existing period
 					else if ( temporalAmount instanceof Duration && !( (Duration) temporalAmount ).isZero() ) {
 						durationWithPeriod.setDuration( durationWithPeriod.getDuration().plus( (Duration) temporalAmount ) );
 					}
@@ -125,7 +131,7 @@ public class DurationWithPeriod
 			int valueToUse = sign.equals( '-' ) ? -Integer.parseInt( number ) : Integer.parseInt( number );
 			switch ( unit ) {
 				case YEARS:
-					return Period.ofYears( valueToUse ); // What about 1.5 years
+					return Period.ofYears( valueToUse );
 				case MONTHS:
 					return Period.ofMonths( valueToUse );
 				case WEEKS:

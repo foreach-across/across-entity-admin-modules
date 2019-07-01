@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.time.Period;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.setRemoveAssertJRelatedElementsFromStackTrace;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.junit.Assert.assertEquals;
 
@@ -92,6 +93,15 @@ public class TestDurationWithPeriod
 
 		assertEquals( 0, duration.toMinutes() );
 		assertEquals( -40, duration.getSeconds() );
+	}
+
+	@Test
+	public void yearsAndMonths(){
+		DurationWithPeriod durationWithPeriod = DurationWithPeriod.from( "1y6M" );
+		Period period = durationWithPeriod.getPeriod();
+
+		assertEquals( 1, period.getYears() );
+		assertEquals( 6, period.getMonths() );
 	}
 
 	@Test
