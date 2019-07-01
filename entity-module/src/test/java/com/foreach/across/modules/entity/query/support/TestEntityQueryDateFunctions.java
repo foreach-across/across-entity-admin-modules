@@ -48,9 +48,15 @@ public class TestEntityQueryDateFunctions
 		assertTrue( functions.accepts( "now", TypeDescriptor.valueOf( Date.class ) ) );
 		assertTrue( functions.accepts( "now", TypeDescriptor.valueOf( Long.class ) ) );
 		assertTrue( functions.accepts( "now", TypeDescriptor.valueOf( LocalDateTime.class ) ) );
+		assertTrue( functions.accepts( "now", TypeDescriptor.valueOf( LocalDate.class ) ) );
+		assertTrue( functions.accepts( "now", TypeDescriptor.valueOf( LocalTime.class ) ) );
+		assertTrue( functions.accepts( "now", TypeDescriptor.valueOf( ZonedDateTime.class ) ) );
 		assertTrue( functions.accepts( "today", TypeDescriptor.valueOf( Date.class ) ) );
 		assertTrue( functions.accepts( "today", TypeDescriptor.valueOf( Long.class ) ) );
 		assertTrue( functions.accepts( "today", TypeDescriptor.valueOf( LocalDateTime.class ) ) );
+		assertTrue( functions.accepts( "today", TypeDescriptor.valueOf( LocalDate.class ) ) );
+		assertTrue( functions.accepts( "today", TypeDescriptor.valueOf( LocalTime.class ) ) );
+		assertTrue( functions.accepts( "today", TypeDescriptor.valueOf( ZonedDateTime.class ) ) );
 
 		assertFalse( functions.accepts( "unknown", TypeDescriptor.valueOf( Date.class ) ) );
 		assertFalse( functions.accepts( "now", TypeDescriptor.valueOf( String.class ) ) );
