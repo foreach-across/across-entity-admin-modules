@@ -16,9 +16,18 @@
 
 package com.foreach.across.modules.entity.query;
 
+import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import org.junit.Test;
+import org.springframework.core.convert.TypeDescriptor;
 
+import java.util.List;
+
+import static com.foreach.across.modules.entity.query.EntityQueryUtils.createAssociationPredicate;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Steven Gentens
@@ -157,8 +166,37 @@ public class TestEntityQueryUtils
 		);
 	}
 
+	@Test
+	public void associationPredicate() {
+		EntityAssociation association = mock( EntityAssociation.class );
+
+		EntityPropertyDescriptor targetProperty = mock( EntityPropertyDescriptor.class );
+		when( targetProperty.getName() ).thenReturn( "ownerId" );
+		when( targetProperty.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
+		when( association.getTargetProperty() ).thenReturn( targetProperty );
+
+		assertThat( createAssociationPredicate( association, "parent" ) )
+				.isEqualTo( new EntityQueryCondition( "ownerId", EntityQueryOps.EQ, "parent" ) );
+
+		EntityPropertyDescriptor sourceProperty = mock( EntityPropertyDescriptor.class );
+		when( sourceProperty.getName() ).thenReturn( "id" );
+		when( sourceProperty.getPropertyValue( "parent" ) ).thenReturn( 123 );
+		when( association.getSourceProperty() ).thenReturn( sourceProperty );
+
+		assertThat( createAssociationPredicate( association, "parent" ) )
+				.isEqualTo( new EntityQueryCondition( "ownerId", EntityQueryOps.EQ, 123 ) );
+
+		when( targetProperty.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.array( TypeDescriptor.valueOf( String.class ) ) );
+		assertThat( createAssociationPredicate( association, "parent" ) )
+				.isEqualTo( new EntityQueryCondition( "ownerId", EntityQueryOps.CONTAINS, 123 ) );
+
+		when( targetProperty.getPropertyTypeDescriptor() ).thenReturn(
+				TypeDescriptor.array( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( String.class ) ) ) );
+		assertThat( createAssociationPredicate( association, "parent" ) )
+				.isEqualTo( new EntityQueryCondition( "ownerId", EntityQueryOps.CONTAINS, 123 ) );
+	}
+
 	private void assertEqlEquals( String expectedEql, EntityQuery entityQuery ) {
 		assertEquals( expectedEql, entityQuery.toString() );
 	}
-
 }

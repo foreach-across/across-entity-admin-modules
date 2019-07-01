@@ -19,8 +19,6 @@ package com.foreach.across.samples.entity.application.config;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.query.EntityQueryExecutor;
-import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -43,6 +41,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.entity.EntityAttributeRegistrars.templateValue;
+import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
 /**
  * Test configuration for an entity with embedded collections.
@@ -71,7 +70,6 @@ public class LibraryConfiguration implements EntityConfigurer
 		bookTemplate.setAuthors( Collections.singletonList( bookTemplateAuthor ) );
 
 		entities.create()
-		        .as( Library.class )
 		        .entityType( Library.class, true )
 		        .displayName( "Library" )
 		        .entityModel(
@@ -99,20 +97,13 @@ public class LibraryConfiguration implements EntityConfigurer
 				                      .property( "discounts[]" )
 				                      .attribute( NumericFormElementConfiguration.class, NumericFormElementConfiguration.percent( 2, true ) )
 		        )
-		        .attribute(
-				        ( configuration, attributes ) ->
-						        attributes.setAttribute(
-								        EntityQueryExecutor.class,
-								        new CollectionEntityQueryExecutor<>( libraries::values, configuration.getPropertyRegistry() )
-						        )
-		        )
+		        .and( registerEntityQueryExecutor( libraries::values ) )
 		        .detailView()
 		        .listView()
 		        .createFormView()
 		        .updateFormView()
 		        .deleteFormView()
 		        .show();
-
 	}
 
 	private Library createExampleLibrary() {

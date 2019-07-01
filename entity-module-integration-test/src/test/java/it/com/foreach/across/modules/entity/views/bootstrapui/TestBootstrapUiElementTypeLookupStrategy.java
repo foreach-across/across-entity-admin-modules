@@ -19,6 +19,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
+import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -28,10 +29,11 @@ import com.foreach.across.modules.entity.views.bootstrapui.MultiValueElementBuil
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
 import com.foreach.across.testmodules.springdata.business.Client;
 import com.foreach.across.testmodules.springdata.business.CompanyStatus;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.annotation.Configuration;
@@ -58,7 +60,6 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	@Mock
 	private EntityRegistry entityRegistry;
 
-	@InjectMocks
 	private BootstrapUiElementTypeLookupStrategy strategy;
 
 	private EntityConfiguration entityConfiguration = mock( EntityConfiguration.class );
@@ -66,6 +67,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 	@Before
 	public void resetMocks() {
+		strategy = new BootstrapUiElementTypeLookupStrategy( entityRegistry, DefaultEntityPropertyRegistryProvider.INSTANCE );
 		reset( entityConfiguration, descriptor );
 
 		when( descriptor.isWritable() ).thenReturn( true );
@@ -210,6 +212,7 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	public void propertyIsEmbeddedIfTargetEntityConfigurationIsEmbedded() {
 		EntityConfiguration clientConfig = mock( EntityConfiguration.class );
 		when( clientConfig.hasEntityModel() ).thenReturn( false );
+		when( clientConfig.getPropertyRegistry() ).thenReturn( DefaultEntityPropertyRegistryProvider.INSTANCE.get( Client.class ) );
 		when( entityRegistry.getEntityConfiguration( Client.class ) ).thenReturn( clientConfig );
 
 		assertEquals( BootstrapUiElements.FIELDSET, lookup( Client.class, ViewElementMode.FORM_READ ) );
@@ -334,9 +337,23 @@ public class TestBootstrapUiElementTypeLookupStrategy
 	}
 
 	@Test
-	public void specificDomainTypeShouldReturnTextboxControlIfMarkedAsNonEmbedded() {
-		when( descriptor.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( false );
+	public void specificDomainTypeShouldReturnTextboxControlIfNoProperties() {
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( EmailType.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( EmailType.class, ViewElementMode.FORM_WRITE ) );
 		assertEquals( BootstrapUiElements.TEXTBOX, lookup( EmailType.class, ViewElementMode.CONTROL ) );
+	}
+
+	@Test
+	public void specificDomainTypeShouldReturnEmbeddedIfProperties() {
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( TypeWithProps.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( TypeWithProps.class, ViewElementMode.FORM_WRITE ) );
+	}
+
+	@Test
+	public void specificDomainTypeShouldReturnEmbeddedIfMarkedAsEmbedded() {
+		when( descriptor.getAttribute( EntityAttributes.IS_EMBEDDED_OBJECT ) ).thenReturn( true );
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( EmailType.class, ViewElementMode.FORM_READ ) );
+		assertEquals( BootstrapUiElements.FIELDSET, lookup( EmailType.class, ViewElementMode.FORM_WRITE ) );
 	}
 
 	@Test
@@ -406,6 +423,13 @@ public class TestBootstrapUiElementTypeLookupStrategy
 
 	private static class EmailType
 	{
+	}
+
+	private static class TypeWithProps
+	{
+		@Getter
+		@Setter
+		private String value;
 	}
 
 	@Configuration

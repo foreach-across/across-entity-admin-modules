@@ -226,8 +226,8 @@ public abstract class EntityViewProcessorAdapter implements EntityViewProcessor
 	}
 
 	/**
-	 * Build the general structure to render by adding the builders from {@param builderMap} to the {@param containerBuilder} in the right hierarchy.
-	 * The {@param containerBuilder} represents the main body content.
+	 * Build the general structure to render by adding the builders from {@code builderMap} to the {@code containerBuilder} in the right hierarchy.
+	 * The {@code containerBuilder} represents the main body content.
 	 *
 	 * @param entityViewRequest view request
 	 * @param entityView        view generated

@@ -29,9 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.TypeDescriptor;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Builder to customize a {@link com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry}.
@@ -44,6 +47,8 @@ public class EntityPropertyRegistryBuilder
 	private final static Logger LOG = LoggerFactory.getLogger( EntityPropertyRegistryBuilder.class );
 
 	private final Map<String, PropertyDescriptorBuilder> builders = new LinkedHashMap<>();
+	private final List<Consumer<MutableEntityPropertyRegistry>> orderedConsumers = new ArrayList<>();
+
 	private String labelBaseProperty;
 
 	/**
@@ -70,13 +75,35 @@ public class EntityPropertyRegistryBuilder
 		if ( builder == null ) {
 			builder = new PropertyDescriptorBuilder( this, name );
 			builders.put( name, builder );
+
+			final PropertyDescriptorBuilder builderRef = builder;
+
+			if ( !EntityPropertyRegistry.LABEL.equals( name ) ) {
+				orderedConsumers.add( registry -> this.applyBuilder( registry, name, builderRef ) );
+			}
 		}
 
 		return builder;
 	}
 
 	/**
-	 * Apply an additional consumer to the registry builder.
+	 * Apply a factory function which adapts the current registry (much like {@link #and(Consumer)}) but returns a single
+	 * {@link PropertyDescriptorBuilder} which can then be customized further. Added for fluent API extensions with more
+	 * complex property registration.
+	 * <p/>
+	 * Comparison: {@code and(Consumer)} would be the equivalent of {@code property(Function).and()}.
+	 *
+	 * @param factory function to apply
+	 * @return descriptor builder
+	 */
+	public synchronized PropertyDescriptorBuilder property( @NonNull Function<EntityPropertyRegistryBuilder, PropertyDescriptorBuilder> factory ) {
+		return factory.apply( this );
+	}
+
+	/**
+	 * Apply an additional consumer to the registry builder. If your consumer registers a single property you can consider
+	 * using {@link #property(Function)} instead, which allows you to return a descriptor builder for the property which
+	 * can then allow further customization.
 	 *
 	 * @return registry builder
 	 */
@@ -86,16 +113,25 @@ public class EntityPropertyRegistryBuilder
 	}
 
 	/**
+	 * Apply an intermediate {@link MutableEntityPropertyRegistry} processor. This consumer will receive
+	 * an instance to the property registry currently being created, with only the previous property
+	 * descriptor builders and registry consumers applied.
+	 *
+	 * @param consumer to process the registry
+	 * @return registry builder
+	 */
+	public EntityPropertyRegistryBuilder processRegistry( @NonNull Consumer<MutableEntityPropertyRegistry> consumer ) {
+		orderedConsumers.add( consumer );
+		return this;
+	}
+
+	/**
 	 * Apply the configured builder to the registry.
 	 *
 	 * @param propertyRegistry to modify
 	 */
 	public void apply( MutableEntityPropertyRegistry propertyRegistry ) {
-		builders.entrySet().forEach( builder -> {
-			if ( !EntityPropertyRegistry.LABEL.equals( builder.getKey() ) ) {
-				applyBuilder( propertyRegistry, builder.getKey(), builder.getValue() );
-			}
-		} );
+		orderedConsumers.forEach( c -> c.accept( propertyRegistry ) );
 
 		// Set the base property for the label
 		if ( labelBaseProperty != null ) {

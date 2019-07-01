@@ -314,8 +314,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	/**
 	 * Signal that actual binding is enabled, this allows individual property binders to determine how they
 	 * should interpret the current value. For example: if binding is enabled and a list value is requested,
-	 * the list will only return the items that have been bound before, disregarding the possible currently
-	 * stored value.
+	 * the list will only return the items that have been bound before, disregarding the currently stored value.
 	 * <p/>
 	 * In readonly mode this property will usually be kept {@code false}, simply returning the property values.
 	 *
