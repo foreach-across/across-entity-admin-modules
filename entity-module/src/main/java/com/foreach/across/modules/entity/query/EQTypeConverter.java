@@ -121,10 +121,11 @@ public class EQTypeConverter
 		if ( value instanceof EQGroup ) {
 			EQGroup group = (EQGroup) value;
 			Object[] converted = new Object[group.getValues().length];
+			TypeDescriptor elementType = expectedType.isCollection() ? expectedType.getElementTypeDescriptor() : expectedType;
 			for ( int i = 0; i < converted.length; i++ ) {
-				converted[i] = convert( expectedType, group.getValues()[i] );
+				converted[i] = convert( elementType, group.getValues()[i] );
 			}
-			return converted;
+			return expectedType.isCollection() ? conversionService.convert( converted, TypeDescriptor.forObject( converted ), expectedType ) : converted;
 		}
 
 		if ( value instanceof EQFunction ) {
