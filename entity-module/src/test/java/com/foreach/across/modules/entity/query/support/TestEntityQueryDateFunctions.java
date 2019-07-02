@@ -84,6 +84,16 @@ public class TestEntityQueryDateFunctions
 		return calendar.getTime();
 	}
 
+	private static Date getStartOfDay() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set( Calendar.HOUR_OF_DAY, 0 );
+		calendar.set( Calendar.MINUTE, 0 );
+		calendar.set( Calendar.SECOND, 0 );
+		calendar.set( Calendar.MILLISECOND, 0 );
+
+		return calendar.getTime();
+	}
+
 	private static Date getEndOfDay() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set( Calendar.HOUR_OF_DAY, 23 );
@@ -178,11 +188,20 @@ public class TestEntityQueryDateFunctions
 	@Test
 	public void nowWithPeriod() {
 		Date nextHourWithThreeMinutes = DateUtils.addMinutes( DateUtils.addHours( new Date(), 1 ), 3 );
+		Date moreThenOneHourAgo = DateUtils.addSeconds(DateUtils.addMinutes( DateUtils.addHours( new Date(), -1 ), -3 ), 5);
 
 		assertThat( eqf( "now('1h 3m')", Date.class ) )
 				.isBefore( DateUtils.addSeconds( nextHourWithThreeMinutes, 1 ) )
 				.isAfterOrEqualsTo( nextHourWithThreeMinutes );
 
+		assertThat( eqf( "now('+1h +3m')", Date.class ) )
+				.isBefore( DateUtils.addSeconds( nextHourWithThreeMinutes, 1 ) )
+				.isAfterOrEqualsTo( nextHourWithThreeMinutes );
+
+
+		assertThat( eqf( "now('-1h3m 5s')", Date.class ) )
+				.isBefore( DateUtils.addSeconds( moreThenOneHourAgo, 1 ) )
+				.isAfterOrEqualsTo( moreThenOneHourAgo );
 	}
 
 	@Test
@@ -201,8 +220,31 @@ public class TestEntityQueryDateFunctions
 		calendar.set( Calendar.MILLISECOND, 0 );
 		Date yesterdayAt2300 = DateUtils.addDays( calendar.getTime(), -1 );
 
+		Date yesterday = DateUtils.addDays( getStartOfDay(), -1 );
+		Date tomorrow = DateUtils.addDays( getStartOfDay(), 1 );
+
+		Date withSpecialPeriod = DateUtils.addDays( getStartOfDay(), 7 );
+		withSpecialPeriod = DateUtils.addHours( withSpecialPeriod, 13 );
+		withSpecialPeriod = DateUtils.addMinutes( withSpecialPeriod, 30 );
+
+
 		assertThat( eqf( "today('-1h')", Date.class ) )
 				.isEqualTo( yesterdayAt2300 );
+
+		assertThat( eqf( "today('-1d')", Date.class ) )
+				.isEqualTo( yesterday );
+
+		assertThat( eqf( "today('1d')", Date.class ) )
+				.isEqualTo( tomorrow );
+
+		assertThat( eqf( "today('+7d +13h +30m')", Date.class ) )
+				.isEqualTo( withSpecialPeriod );
+
+		assertThat( eqf( "today('+7d at 13:30')", Date.class ) )
+				.isEqualTo( withSpecialPeriod );
+
+		assertThat( eqf( "today('+7d at 13:30')", Date.class ) )
+				.isEqualTo( withSpecialPeriod );
 	}
 
 	@Test
@@ -237,6 +279,12 @@ public class TestEntityQueryDateFunctions
 		Date expectedDate = DateUtils.truncate( getMonthStartDate(), Calendar.DATE );
 		assertThat( eqf( "startOfMonth()", Date.class ) )
 				.isEqualTo( expectedDate );
+
+		assertThat( eqf( "startOfMonth(now())", Date.class ) )
+				.isEqualTo( expectedDate );
+
+		assertThat( eqf( "thisMonth()", Date.class ) )
+				.isEqualTo( expectedDate );
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -261,7 +309,7 @@ public class TestEntityQueryDateFunctions
 	@Test
 	public void startOfYear() {
 		Date expectedDate = DateUtils.truncate( getYearStartDate(), Calendar.DATE );
-		Date towMonthsLater = DateUtils.addMonths( expectedDate, 2);
+		Date towMonthsLater = DateUtils.addMonths( expectedDate, 2 );
 
 		assertThat( eqf( "startOfYear()", Date.class ) )
 				.isEqualTo( expectedDate );
@@ -334,18 +382,19 @@ public class TestEntityQueryDateFunctions
 	}
 
 	@Test
-	public void startOfWeekWithFirstDayOfWeekOnFriday() {
-		Date expectedDate = DateUtils.truncate( DateUtils.addDays( getWeekStartDate(), 4 ), Calendar.DATE );
-
-		assertThat( eqf( "startOfWeek(now(), +0m, fri )", Date.class ) )
-				.isEqualTo( expectedDate );
-	}
-
-	@Test
 	public void twoWeeksAgo() {
 		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), -2 );
 
 		assertThat( eqf( "startOfWeek(now(), -2w)", Date.class ) )
+				.isEqualTo( expectedDate );
+
+	}
+
+	@Test
+	public void nestedWeekFunctions() {
+		Date expectedDate = DateUtils.addDays( DateUtils.addWeeks( getWeekStartDate(), +1 ), -2 );
+
+		assertThat( eqf( "startOfWeek(nextWeek(), +1D, fri )", Date.class ) )
 				.isEqualTo( expectedDate );
 	}
 
@@ -360,14 +409,14 @@ public class TestEntityQueryDateFunctions
 	@Test
 	public void thisWeekPlusTwoWeeksWhenWeeksStartOnSunday() {
 		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), 2 );
-		expectedDate = DateUtils.truncate( DateUtils.addDays( expectedDate, 6 ), Calendar.DATE );
+		expectedDate = DateUtils.truncate( DateUtils.addDays( expectedDate, -1 ), Calendar.DATE );
 
 		assertThat( eqf( "thisWeek(+2w, sun)", Date.class ) )
 				.isEqualTo( expectedDate );
 	}
 
 	@Test
-	public void nextWeek(){
+	public void nextWeek() {
 		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), 1 );
 
 		assertThat( eqf( "nextWeek()", Date.class ) )
@@ -375,7 +424,40 @@ public class TestEntityQueryDateFunctions
 	}
 
 	@Test
-	public void lastWeek(){
+	public void nextYear() {
+		Date expectedDate = DateUtils.addYears( getYearStartDate(), 1 );
+
+		assertThat( eqf( "nextYear()", Date.class ) )
+				.isEqualTo( expectedDate );
+
+		assertThat( eqf( "startOfYear(today(+1y))", Date.class ) )
+				.isEqualTo( expectedDate );
+	}
+
+	@Test
+	public void lastYear() {
+		Date expectedDate = DateUtils.addYears( getYearStartDate(), -1 );
+
+		assertThat( eqf( "lastYear()", Date.class ) )
+				.isEqualTo( expectedDate );
+
+		assertThat( eqf( "startOfYear(today(-1y))", Date.class ) )
+				.isEqualTo( expectedDate );
+	}
+
+	@Test
+	public void nextMonth() {
+		Date expectedDate = DateUtils.addMonths( getMonthStartDate(), 1 );
+
+		assertThat( eqf( "nextMonth()", Date.class ) )
+				.isEqualTo( expectedDate );
+
+		assertThat( eqf( "startOfMonth(today(+1M))", Date.class ) )
+				.isEqualTo( expectedDate );
+	}
+
+	@Test
+	public void lastWeek() {
 		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), -1 );
 
 		assertThat( eqf( "lastWeek()", Date.class ) )

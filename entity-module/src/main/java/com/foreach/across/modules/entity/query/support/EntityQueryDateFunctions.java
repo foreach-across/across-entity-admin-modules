@@ -23,6 +23,7 @@ import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.Date;
 import java.util.Locale;
@@ -160,11 +161,11 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	}
 
 	private LocalDateTime nextMonth( DurationWithPeriod period ) {
-		return addDurationWithPeriodTooDateTime( LocalDateTime.now().plusMonths( 1 ).withDayOfYear( 1 ).toLocalDate().atStartOfDay(), period );
+		return addDurationWithPeriodTooDateTime( LocalDateTime.now().plusMonths( 1 ).withDayOfMonth( 1 ).toLocalDate().atStartOfDay(), period );
 	}
 
 	private LocalDateTime lastMonth( DurationWithPeriod period ) {
-		return addDurationWithPeriodTooDateTime( LocalDateTime.now().plusMonths( -1 ).withDayOfYear( 1 ).toLocalDate().atStartOfDay(), period );
+		return addDurationWithPeriodTooDateTime( LocalDateTime.now().plusMonths( -1 ).withDayOfMonth( 1 ).toLocalDate().atStartOfDay(), period );
 	}
 
 	private LocalDateTime startOfDay( LocalDateTime temporal, DurationWithPeriod period ) {
@@ -180,11 +181,11 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	}
 
 	private LocalDateTime startOfWeek( LocalDateTime temporal, DurationWithPeriod period, DayOfWeek firstDayOfWeek ) {
-		return addDurationWithPeriodTooDateTime( temporal.with( firstDayOfWeek ).toLocalDate().atStartOfDay(), period );
+		return addDurationWithPeriodTooDateTime( temporal.with( TemporalAdjusters.previousOrSame( firstDayOfWeek ) ).toLocalDate().atStartOfDay(), period );
 	}
 
 	private LocalDateTime thisWeek( DurationWithPeriod period, DayOfWeek firstDayOfWeek ) {
-		return addDurationWithPeriodTooDateTime( LocalDateTime.now().with( firstDayOfWeek ).toLocalDate().atStartOfDay(), period );
+		return addDurationWithPeriodTooDateTime( LocalDateTime.now().with( TemporalAdjusters.previousOrSame(firstDayOfWeek )).toLocalDate().atStartOfDay(), period );
 	}
 
 	private LocalDateTime nextWeek( DurationWithPeriod period, DayOfWeek firstDayOfWeek ) {
