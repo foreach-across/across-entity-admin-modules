@@ -26,6 +26,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -40,6 +41,8 @@ public class Application implements Persistable<UUID>
 	@NotBlank
 	@Length(max = 255)
 	private String name;
+
+	private LocalDateTime since;
 
 	@Override
 	@Transient
