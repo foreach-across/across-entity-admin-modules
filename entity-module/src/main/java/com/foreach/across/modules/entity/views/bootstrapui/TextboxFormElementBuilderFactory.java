@@ -92,16 +92,10 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 						( ( builderContext, element ) -> {
 							if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
 								element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
-							}
-						} )
-				)
-				.postProcessor(
-						( ctx, element ) -> {
-							if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
 								EntityQueryFilterControlUtils.configureControlSettings( ElementOrBuilder.wrap( element ), propertyDescriptor );
 							}
 						} )
-				;
+				);
 	}
 
 	@Autowired

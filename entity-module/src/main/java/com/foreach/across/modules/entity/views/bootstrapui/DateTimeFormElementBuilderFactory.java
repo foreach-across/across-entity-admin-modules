@@ -250,8 +250,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 									EntityQueryFilterControlUtils.configureControlSettings( wrapped, propertyDescriptor );
 								}
 							} )
-					)
-					;
+					);
 		}
 	}
 

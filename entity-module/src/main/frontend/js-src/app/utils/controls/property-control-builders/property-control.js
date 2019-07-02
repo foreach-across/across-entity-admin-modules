@@ -56,12 +56,9 @@ function convertToEQValue( eqType, selectedValues ) {
  * @param reset whether the filter control should be reset.
  */
 function setCondition( controlElement, filterControl, reset = true ) {
-  console.log( controlElement );
-  console.log( $( controlElement ).data() );
   const property = $( controlElement ).data( "entity-query-property" );
   const adapter = $( controlElement ).data( "bootstrapui-adapter" );
 
-  console.log( adapter );
   const values = adapter.getValue()
     .map( ( selectedVal ) => {
       const context = $( selectedVal.context );
@@ -95,8 +92,11 @@ export function createDefaultControl( control, filterControl ) {
     setCondition( control, filterControl, false );
     const controlAdapter = $( control ).data( 'bootstrapui-adapter' );
     if ( controlAdapter ) {
-      $( controlAdapter.getTarget() ).on( 'bootstrapui.change', {"item": $( control ), "filter": filterControl}
-        , event => setCondition( event.data.item, event.data.filter ) );
+      $( controlAdapter.getTarget() ).on(
+        'bootstrapui.change',
+        {"item": $( control ), "filter": filterControl},
+        event => setCondition( event.data.item, event.data.filter )
+      );
       return true;
     }
   }

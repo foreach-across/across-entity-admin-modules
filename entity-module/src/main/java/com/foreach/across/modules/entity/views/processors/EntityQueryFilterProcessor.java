@@ -302,21 +302,10 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		          } )
 		          .map( property -> {
 			          ViewElementBuilder control = createFilterControl( property );
-			          ViewElementBuilder labelText = viewElementBuilderService.getElementBuilder(
-					          property, ViewElementMode.LABEL
-			          );
+			          ViewElementBuilder labelText = viewElementBuilderService.getElementBuilder( property, ViewElementMode.LABEL );
 			          LabelFormElementBuilder labelBuilder = label().text( labelText );
 
-			          Boolean valueType = translateAsTextValue( property );
-			          String event = StringUtils.defaultIfBlank( property.getAttribute( ENTITY_QUERY_CONTROL_EVENT, String.class ), "change" );
-
-			          return formGroup( labelBuilder, control )
-//					          .data( "entity-query-operand", retrieveEntityQueryOperand( property ).name() )
-//					          .data( "entity-query-control", "marker" )
-//					          .data( "entity-query-control-event", event )
-//					          .data( "entity-query-text-type", valueType )
-//					          .data( "entity-query-property", property.getName() )
-.build( builderContext );
+			          return formGroup( labelBuilder, control ).build( builderContext );
 		          } ).forEach( controls::add );
 
 		return controls;

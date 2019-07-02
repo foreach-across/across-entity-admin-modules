@@ -59,7 +59,9 @@ public class EntityQueryFilterControlUtils
 
 	public static void setOperand( ViewElementBuilderSupport.ElementOrBuilder elementOrBuilder, EntityPropertyDescriptor propertyDescriptor ) {
 		EntityQueryOps operand = propertyDescriptor.getAttribute( ENTITY_QUERY_OPERAND, EntityQueryOps.class );
-		setAttribute( elementOrBuilder, FilterControlAttributes.OPERAND, operand.name() );
+		if ( operand != null ) {
+			setAttribute( elementOrBuilder, FilterControlAttributes.OPERAND, operand.name() );
+		}
 	}
 
 	public static void setPropertyName( ViewElementBuilderSupport.ElementOrBuilder elementOrBuilder, EntityPropertyDescriptor propertyDescriptor ) {
