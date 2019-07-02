@@ -120,6 +120,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	private EntityViewElementBuilderService viewElementBuilderService;
 	private EntityQueryFacadeResolver entityQueryFacadeResolver;
 	private EntityRegistry entityRegistry;  // todo check if different way to resolve the EntityTypeDescriptor ?
+	private EQTypeConverter eqTypeConverter;
 
 	/**
 	 * Holds the configuration for this query filter processor.
@@ -292,7 +293,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				          prop.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.MANUAL );
 				          prop.setAttribute( EntityAttributes.CONTROL_NAME, "extensions[" + PARAM_PROPERTIES + "][" + prop.getName() + "]" );
 				          EntityQueryRequestValueFetcher valueFetcher = new EntityQueryRequestValueFetcher(
-						          prop, retrieveEntityQueryOperand( prop ), filterConfiguration.isMultiValue( prop.getName() )
+						          eqTypeConverter, prop, retrieveEntityQueryOperand( prop ), filterConfiguration.isMultiValue( prop.getName() )
 				          );
 
 				          prop.setAttribute( ENTITY_QUERY_OPERAND, retrieveEntityQueryOperand( prop ) );
@@ -379,5 +380,10 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	@Autowired
 	void setEntityQueryFacadeResolver( EntityQueryFacadeResolver entityQueryFacadeResolver ) {
 		this.entityQueryFacadeResolver = entityQueryFacadeResolver;
+	}
+
+	@Autowired
+	void setEqTypeConverter( EQTypeConverter eqTypeConverter ) {
+		this.eqTypeConverter = eqTypeConverter;
 	}
 }

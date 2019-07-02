@@ -31,7 +31,6 @@ import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.entity.views.processors.AssociationHeaderViewProcessor;
-import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.processors.EntityViewProcessorAdapter;
 import com.foreach.across.modules.entity.views.processors.PageableExtensionViewProcessor;
 import com.foreach.across.modules.entity.views.processors.query.EQLStringValueOptionEnhancer;
@@ -124,63 +123,63 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 	public void configure( EntitiesConfigurationBuilder configuration ) {
 		configuration.withType( Note.class )
 		             .attribute( EntityAttributes.LINK_TO_DETAIL_VIEW, true )
-                     .allowableActionsBuilder( new EntityConfigurationAllowableActionsBuilder()
-                     {
-	                     @Override
-	                     public AllowableActions getAllowableActions( EntityConfiguration<?> entityConfiguration ) {
-		                     return FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS;
-	                     }
+		             .allowableActionsBuilder( new EntityConfigurationAllowableActionsBuilder()
+		             {
+			             @Override
+			             public AllowableActions getAllowableActions( EntityConfiguration<?> entityConfiguration ) {
+				             return FixedEntityAllowableActionsBuilder.DEFAULT_ALLOWABLE_ACTIONS;
+			             }
 
-	                     @Override
-	                     public <V> AllowableActions getAllowableActions( EntityConfiguration<V> entityConfiguration, V entity ) {
-		                     IdBasedEntity item = (IdBasedEntity) entity;
-		                     AllowableActionSet allowableActions = new AllowableActionSet();
-		                     if ( Math.floorMod( item.getId(), 2 ) == 0 ) {
-			                     allowableActions.add( AllowableAction.READ );
-		                     }
-		                     if ( Math.floorMod( item.getId(), 4 ) == 0 ) {
-			                     allowableActions.add( AllowableAction.UPDATE );
-		                     }
-		                     allowableActions.add( AllowableAction.DELETE );
-		                     return allowableActions;
-	                     }
-                     } )
-                     .properties( props -> props.property( "text" )
-                                                .valueFetcher( entity -> "" )
-                                                .propertyType( TypeDescriptor.valueOf( String.class ) )
-                                                .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.TEXTAREA )
-                                                .attribute( EntityQueryConditionTranslator.class,
-                                                            EntityQueryConditionTranslator.expandingOr( "name", "content" ) )
-                                                .hidden( true )
+			             @Override
+			             public <V> AllowableActions getAllowableActions( EntityConfiguration<V> entityConfiguration, V entity ) {
+				             IdBasedEntity item = (IdBasedEntity) entity;
+				             AllowableActionSet allowableActions = new AllowableActionSet();
+				             if ( Math.floorMod( item.getId(), 2 ) == 0 ) {
+					             allowableActions.add( AllowableAction.READ );
+				             }
+				             if ( Math.floorMod( item.getId(), 4 ) == 0 ) {
+					             allowableActions.add( AllowableAction.UPDATE );
+				             }
+				             allowableActions.add( AllowableAction.DELETE );
+				             return allowableActions;
+			             }
+		             } )
+		             .properties( props -> props.property( "text" )
+		                                        .valueFetcher( entity -> "" )
+		                                        .propertyType( TypeDescriptor.valueOf( String.class ) )
+		                                        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.TEXTAREA )
+		                                        .attribute( EntityQueryConditionTranslator.class,
+		                                                    EntityQueryConditionTranslator.expandingOr( "name", "content" ) )
+		                                        .hidden( true )
 
-                     )
-                     .association( ab -> ab.name( "note.parent" )
-                                           .targetEntityType( Note.class )
-                                           .associationType( EntityAssociation.Type.EMBEDDED )
-                                           .listView( "customListView",
-                                                      lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( Collections.emptyList(), pageable, 0L ) )
-                                                                .postProcess( AssociationHeaderViewProcessor.class,
-                                                                              p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE )
-                                                                                    .setAddEntityMenu( true ) )
-                                           )
-                                           .formView( "customView", basicSettings().adminMenu( "customView" )
-                                                                                   .andThen( formSettings().forExtension( false )
-                                                                                                           .addFormButtons( true ) ) )
-                     )
-                     .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
-                                          .entityQueryFilter(
-		                                          eqf -> eqf.showProperties( "text", "parent.content", "lastModifiedDate" )
-		                                                    .properties(
-				                                                    props -> props.property( "lastModifiedDate" )
-				                                                                  .writable( true )
-				                                                                  .viewElementType( ViewElementMode.FILTER_CONTROL,
-				                                                                                    BootstrapUiElements.DATETIME )
-		                                                    )
-		                                                    .basicMode( true )
-		                                                    .advancedMode( true )
-                                          )
-                                          .showOnlyItemsWithAction( AllowableAction.READ )
-                     )
+		             )
+		             .association( ab -> ab.name( "note.parent" )
+		                                   .targetEntityType( Note.class )
+		                                   .associationType( EntityAssociation.Type.EMBEDDED )
+		                                   .listView( "customListView",
+		                                              lvb -> lvb.pageFetcher( pageable -> new PageImpl<>( Collections.emptyList(), pageable, 0L ) )
+		                                                        .postProcess( AssociationHeaderViewProcessor.class,
+		                                                                      p -> p.setTitleMessageCode( EntityMessages.PAGE_TITLE_UPDATE )
+		                                                                            .setAddEntityMenu( true ) )
+		                                   )
+		                                   .formView( "customView", basicSettings().adminMenu( "customView" )
+		                                                                           .andThen( formSettings().forExtension( false )
+		                                                                                                   .addFormButtons( true ) ) )
+		             )
+		             .listView( lvb -> lvb.showProperties( "*", "lastModified", "parent.lastModified" )
+		                                  .entityQueryFilter(
+				                                  eqf -> eqf.showProperties( "text", "parent.content", "lastModifiedDate" )
+				                                            .properties(
+						                                            props -> props.property( "lastModifiedDate" )
+						                                                          .writable( true )
+						                                                          .viewElementType( ViewElementMode.FILTER_CONTROL,
+						                                                                            BootstrapUiElements.DATETIME )
+				                                            )
+				                                            .basicMode( true )
+				                                            .advancedMode( true )
+		                                  )
+		                                  .showOnlyItemsWithAction( AllowableAction.READ )
+		             )
 		;
 		/*configuration.withType( Client.class )
 		             .properties( props -> props.property( "phones" )

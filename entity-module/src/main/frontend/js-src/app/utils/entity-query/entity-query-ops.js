@@ -91,8 +91,8 @@ export const EntityQueryOps = {
     "NEQ": new EntityQueryOperand( ( field, ...args ) => `${field} != ${args.length > 0 ? objectAsString( args[0] ) : ""}`, "!=", "<>" ),
     "CONTAINS": new EntityQueryOperand( ( field, ...args ) => `${field} contains ${objectAsString( args[0] )}`, "contains" ),
     "NOT_CONTAINS": new EntityQueryOperand( ( field, ...args ) => `${field} not contains ${objectAsString( args[0] )}`, "not contains" ),
-  "IN": new EntityQueryOperand( ( field, ...args ) => `${field} in ${joinAsStrings( ...args )}`, "in" ),
-  "NOT_IN": new EntityQueryOperand( ( field, ...args ) => `${field} not in ${joinAsStrings( ...args )}`, "not in" ),
+    "IN": new EntityQueryOperand( ( field, ...args ) => `${field} in ${joinAsStrings( ...args )}`, "in" ),
+    "NOT_IN": new EntityQueryOperand( ( field, ...args ) => `${field} not in ${joinAsStrings( ...args )}`, "not in" ),
     "LIKE": new EntityQueryOperand( ( field, ...args ) => `${field} like ${objectAsString( args[0] )}`, "like" ),
     "LIKE_IC": new EntityQueryOperand( ( field, ...args ) => `${field} ilike ${objectAsString( args[0] )}`, "ilike" ),
     "NOT_LIKE": new EntityQueryOperand( ( field, ...args ) => `${field} not like ${objectAsString( args[0] )}`, "not like" ),
@@ -120,8 +120,8 @@ export const EntityQueryOps = {
       return null;
     },
 
-  isGroupOperand( operand ) {
-    return operand.equals( EntityQueryOps.IN ) || operand.equals( EntityQueryOps.NOT_IN );
-  }
+    isGroupOperand( operand ) {
+      return operand.equals( EntityQueryOps.IN ) || operand.equals( EntityQueryOps.NOT_IN );
+    }
   }
 ;

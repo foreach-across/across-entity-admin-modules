@@ -16,9 +16,7 @@
 
 package com.foreach.across.modules.entity.views.processors.query;
 
-import com.foreach.across.modules.entity.query.EntityQuery;
-import com.foreach.across.modules.entity.query.EntityQueryCondition;
-import com.foreach.across.modules.entity.query.EntityQueryOps;
+import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.val;
 import org.junit.Before;
@@ -26,12 +24,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import static com.foreach.across.modules.entity.query.EntityQueryOps.*;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
@@ -45,6 +46,9 @@ public class TestEntityQueryRequestValueFetcher
 
 	@Mock
 	private EntityPropertyDescriptor propertyDescriptor;
+
+	@Mock
+	private EQTypeConverter typeConverter;
 
 	@Before
 	public void initMocks() {
@@ -118,6 +122,8 @@ public class TestEntityQueryRequestValueFetcher
 				EntityQuery.and( new EntityQueryCondition( "name", LIKE, "%\\%123%" ) )
 		);
 
+		when( typeConverter.convert( any(), eq( new EQString( "%123" ) ) ) ).thenReturn( "%123" );
+
 		Object value = valueFetcher.getValue( entityQueryRequest );
 		assertEquals( "%123", value );
 	}
@@ -183,8 +189,21 @@ public class TestEntityQueryRequestValueFetcher
 		assertEquals( EntityQueryRequestValueFetcher.NOT_FILTERED, value );
 	}
 
+	@Test
+	public void singleRawValueIsConvertedIfNecessary() {
+		val valueFetcher = fetcher( EQ, false );
+		entityQueryRequest.setRawQuery( EntityQuery.parse( "myProperty = 123" ) );
+
+		when( propertyDescriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( Integer.class ) );
+		when( typeConverter.convert( TypeDescriptor.valueOf( Integer.class ), new EQValue( "123" ) ) ).thenReturn( "one-two-three" );
+
+		Object value = valueFetcher.getValue( entityQueryRequest );
+		assertTrue( entityQueryRequest.isConvertibleToBasicMode() );
+		assertEquals( "one-two-three", value );
+	}
+
 	private EntityQueryRequestValueFetcher fetcher( EntityQueryOps operand, boolean multiple ) {
-		return new EntityQueryRequestValueFetcher( propertyDescriptor, operand, multiple );
+		return new EntityQueryRequestValueFetcher( typeConverter, propertyDescriptor, operand, multiple );
 	}
 
 }
