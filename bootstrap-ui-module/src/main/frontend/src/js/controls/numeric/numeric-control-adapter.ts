@@ -67,6 +67,5 @@ export default class NumericControlAdapter extends BaseControlAdapter
  * @param node to initialize
  */
 export function createNumericControlAdapter( node: any ): BootstrapUiControlAdapter {
-    console.log( node.autoNumeric );
     return new NumericControlAdapter( node );
 }
