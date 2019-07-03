@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {isNullOrUndefined} from "./app/utils/utilities";
+import EntityQueryPropertyControlFactory from "./app/utils/controls/entity-query-property-control-factory";
+import EntityQueryFilterControl from "./app/utils/controls/entity-query-filter-control";
+import {createDefaultControl} from "./app/utils/controls/property-control-builders/property-control";
 import {isNullOrUndefined} from "./utils/utilities";
 import EntityQueryPropertyControlFactory from "./utils/controls/entity-query-property-control-factory";
-import {createTextControl} from "./utils/controls/property-control-builders/property-control-text";
-import {createSelectControl} from "./utils/controls/property-control-builders/property-control-select";
-import {createDateControl} from "./utils/controls/property-control-builders/property-control-date";
-import {createCheckboxRadioControl} from "./utils/controls/property-control-builders/property-control-checkbox-radio";
 import EntityQueryFilterControl from "./utils/controls/entity-query-filter-control";
 import {EntityModule} from "./modules/EntityModule";
 import {SortableTableEvent} from "./events/SortableTableEvent";
@@ -28,7 +28,7 @@ import {SortableTableEvent} from "./events/SortableTableEvent";
  * @param node a container containing an eql filter and controls to filter on.
  */
 function initializeEntityQueryForm( node ) {
-  const nodes = $( node ).find( "[data-entity-query-control]" );
+  const nodes = $( node ).find( "[data-entity-query-property]" );
   const eqlFilter = $( node ).find( "input[name='extensions[eqFilter]']" );
   const entityQueryFilterControl = new EntityQueryFilterControl( nodes, eqlFilter );
 
@@ -76,10 +76,7 @@ if ( !isNullOrUndefined( window ) ) {
  * @see initializeEntityQueryForm
  */
 window.EntityModule.registerInitializer( function( node ) {
-  EntityQueryPropertyControlFactory.register( createSelectControl, 1000 );
-  EntityQueryPropertyControlFactory.register( createDateControl, 1033 );
-  EntityQueryPropertyControlFactory.register( createCheckboxRadioControl, 1066 );
-  EntityQueryPropertyControlFactory.register( createTextControl, 1100 );
+  EntityQueryPropertyControlFactory.register( createDefaultControl, 1000 );
 
   $( "[data-entity-query-filter-form]" ).each( function() {
     initializeEntityQueryForm( $( this ) );

@@ -78,9 +78,9 @@ class EntityQueryFilterControl {
   }
 
   initControlFactories( nodes ) {
-    for ( let i = 0; i < nodes.length; i++ ) {
-      EntityQueryPropertyControlFactory.createControl( nodes[i], this );
-    }
+    nodes.each( ( index, controlNode ) => {
+      EntityQueryPropertyControlFactory.createControl( controlNode, this );
+    } );
   }
 }
 

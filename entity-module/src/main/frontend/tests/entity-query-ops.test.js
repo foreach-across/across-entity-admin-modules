@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {EntityQueryOps} from "../src/js/app/utils/entity-query/entity-query-ops";
+import EQGroup from "../app/utils/entity-query/eq-group";
 
 describe( "EntityQueryOps", function() {
   let assertExists;
@@ -110,9 +111,9 @@ describe( "EntityQueryOps", function() {
 
     expect( tokens.length ).toEqual( 1 );
     expect( tokens ).toContain( "in" );
-    expect( operand.toString( "id", -1 ) ).toEqual( "id in (-1)" );
-    expect( operand.toString( "id", -2, -3 ) ).toEqual( "id in (-2,-3)" );
-    expect( operand.toString( "name", "Jan", "Evert" ) ).toEqual( "name in ('Jan','Evert')" );
+    expect( operand.toString( "id", new EQGroup( -1 ) ) ).toEqual( "id in (-1)" );
+    expect( operand.toString( "id", new EQGroup( -2, -3 ) ) ).toEqual( "id in (-2,-3)" );
+    expect( operand.toString( "name", new EQGroup( "'Jan'", "'Evert'" ) ) ).toEqual( "name in ('Jan','Evert')" );
 
   } );
 
@@ -123,9 +124,9 @@ describe( "EntityQueryOps", function() {
 
     expect( tokens.length ).toEqual( 1 );
     expect( tokens ).toContain( "not in" );
-    expect( operand.toString( "id", -1 ) ).toEqual( "id not in (-1)" );
-    expect( operand.toString( "id", -2, -3 ) ).toEqual( "id not in (-2,-3)" );
-    expect( operand.toString( "name", "Jan", "Evert" ) ).toEqual( "name not in ('Jan','Evert')" );
+    expect( operand.toString( "id", new EQGroup( -1 ) ) ).toEqual( "id not in (-1)" );
+    expect( operand.toString( "id", new EQGroup( -2, -3 ) ) ).toEqual( "id not in (-2,-3)" );
+    expect( operand.toString( "name", new EQGroup( "'Jan'", "'Evert'" ) ) ).toEqual( "name not in ('Jan','Evert')" );
   } );
 
   it( "LIKE", function() {

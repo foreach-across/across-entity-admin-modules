@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.views.processors.query;
 
 import com.foreach.across.modules.entity.query.EQString;
+import com.foreach.across.modules.entity.query.EQTypeConverter;
 import com.foreach.across.modules.entity.query.EQValue;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -30,6 +31,9 @@ import java.util.List;
 
 /**
  * Fetches the value for a {@link EntityPropertyDescriptor} from a {@link EntityQueryRequest} instance.
+ * Will use the type specific translated value when possible, but will fall back to the raw value if
+ * necessary. An attempt will be made to convert the raw value back to the type specific value as
+ * defined by the property descriptor.
  *
  * @author Arne Vandamme
  * @since 2.2.0
@@ -37,7 +41,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EntityQueryRequestValueFetcher implements ValueFetcher<EntityQueryRequest>
 {
-	public static final Object NOT_FILTERED = EQValue.MISSING;//new Object();
+	public static final Object NOT_FILTERED = EQValue.MISSING;
+
+	@NonNull
+	private final EQTypeConverter typeConverter;
 
 	@NonNull
 	private final EntityPropertyDescriptor propertyDescriptor;
@@ -69,7 +76,10 @@ public class EntityQueryRequestValueFetcher implements ValueFetcher<EntityQueryR
 					return Collections.singletonList( null );
 				}
 			}
-			if ( selectedProperty.getRawConditionCount() > 0 ) {
+			if ( selectedProperty.getTranslatedConditionCount() == 0 && selectedProperty.hasSingleRawValue() ) {
+				return retrieveSingleRawValue( selectedProperty );
+			}
+			else if ( selectedProperty.getRawConditionCount() > 0 ) {
 				entityQueryRequest.setConvertibleToBasicMode( false );
 			}
 		}
@@ -91,18 +101,6 @@ public class EntityQueryRequestValueFetcher implements ValueFetcher<EntityQueryR
 	}
 
 	private Object retrieveSingleRawValue( EntityQueryRequestProperty selectedProperty ) {
-		Object singleValue = selectedProperty.getSingleRawValue();
-
-		if ( singleValue instanceof EQString ) {
-			return ( (EQString) singleValue ).getValue();
-		}
-		else if ( EQValue.NULL.equals( singleValue ) ) {
-			return null;
-		}
-		else if ( singleValue instanceof EQValue ) {
-			return ( (EQValue) singleValue ).getValue();
-		}
-
-		return singleValue;
+		return typeConverter.convert( propertyDescriptor.getPropertyTypeDescriptor(), selectedProperty.getSingleRawValue() );
 	}
 }

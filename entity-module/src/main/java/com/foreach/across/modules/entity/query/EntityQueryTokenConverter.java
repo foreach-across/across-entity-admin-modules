@@ -92,6 +92,7 @@ class EntityQueryTokenConverter
 		return buildQuery( new TokenQueue( tokenMetadata ), false );
 	}
 
+	@SuppressWarnings( "squid:S2583" )
 	private EntityQuery buildQuery( TokenQueue queue, boolean inGroup ) {
 		EntityQuery query = new EntityQuery();
 		EntityQueryOps queryOp = null;
@@ -167,7 +168,6 @@ class EntityQueryTokenConverter
 				}
 			}
 			else {
-
 				if ( expectingNextValue ) {
 					orders.add( buildOrderSpecifier( queue ) );
 					expectingNextValue = false;
@@ -299,8 +299,8 @@ class EntityQueryTokenConverter
 
 				return true;
 			}
-			else if ( "null".equals( rawValue ) ) {
-				return true;
+			else {
+				return "null".equals( rawValue );
 			}
 		}
 

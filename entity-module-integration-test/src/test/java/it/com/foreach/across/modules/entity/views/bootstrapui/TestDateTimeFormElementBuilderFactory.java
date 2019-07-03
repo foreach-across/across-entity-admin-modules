@@ -22,6 +22,7 @@ import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfig
 import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.builder.DateTimeFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.query.EQValue;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
@@ -218,6 +219,13 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 
 		DateTimeFormElement datetime = assembleAndVerify( "date", false );
 		assertEquals( date, datetime.getLocalDateTime() );
+	}
+
+	@Test
+	public void missingEQValueTranslatedToNull() {
+		when( properties.get( "withoutAnnotations" ).getValueFetcher() ).thenReturn( entity -> EQValue.MISSING );
+		DateTimeFormElement datetime = assembleAndVerify( "withoutAnnotations", false );
+		assertNull( datetime.getLocalDateTime() );
 	}
 
 	@Test

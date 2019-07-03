@@ -242,7 +242,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 						"<a role=\"button\" href=\"#\" data-tbl=\"entityList\" data-tbl-page=\"0\" class=\"btn btn-link\">" +
 						"<span aria-hidden=\"true\" class=\"glyphicon glyphicon-step-backward\"></span>" +
 						"</a>" +
-						"<label class=\"control-label\"><span></span><input type=\"text\"\n" +
+						"<label class=\"control-label\"><span></span><input data-bootstrapui-adapter-type=\"basic\" type=\"text\"\n" +
 						"\t\tclass=\"form-control\" value=\"2\" data-tbl=\"entityList\" data-tbl-page-selector=\"selector\" /></label>" +
 						"<span></span>" +
 						"<a data-tbl=\"entityList\" href=\"#\" class=\"total-pages-link\" data-tbl-page=\"2\">3</a>" +
