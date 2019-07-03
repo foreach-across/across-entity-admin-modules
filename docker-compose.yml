@@ -12,6 +12,14 @@ services:
     - ./entity-module/src/main/frontend:/build
     - ./entity-module/src/main/resources/views/static/entity:/resources/views/static/entity
 
+  # Update frontend resources lockfile
+  update-lockfile:
+    image: beforeach/node:10
+    command: yarn install --modules-folder /node_modules
+    container_name: entity-module-update-lockfile
+    volumes:
+      - ./entity-module/src/main/frontend:/build
+
 #  # executing e2e tests
 #  web:
 #    ipc: host

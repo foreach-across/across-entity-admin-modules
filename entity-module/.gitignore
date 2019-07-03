@@ -5,3 +5,4 @@ src/main/resources/views/static/entity/css/*
 !src/main/frontend/scss/entity-module.css.map
 
 src/main/resources/views/static/entity/js/*
+!src/main/resources/views/static/entity/js/dependson.js
