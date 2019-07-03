@@ -50,7 +50,7 @@ export class EntityModule
      *
      * @param node optional parent to limit the scan
      */
-    initializeFormElements( node: any )
+    initializeFormElements( node?: any )
     {
         // Dispatch to BootstrapUiModule directly if initial document initialization has happened
         if ( (node !== undefined || this.documentInitialized) && this.bootstrapUiModule && this.bootstrapUiModule.initializeFormElements ) {

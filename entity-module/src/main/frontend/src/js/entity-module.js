@@ -19,8 +19,8 @@ import {SortableTable} from "./components/SortableTable";
 
 const entityModule = new EntityModule();
 
-$( document ).ready( function () {
-  entityModule.initializeFormElements( null );
+$( document ).ready( function() {
+    entityModule.initializeFormElements();
 } );
 
 window.EntityModule = entityModule;
@@ -28,10 +28,10 @@ window.EntityModule = entityModule;
 /**
  * Expose JQuery plugin emSortableTable, creates a SortableTable when called.
  */
-$.fn.emSortableTable = function () {
-  return this.each( function () {
-    if ( !this._emSortableTable ) {
-      this._emSortableTable = new SortableTable( this );
-    }
-  } );
+$.fn.emSortableTable = function() {
+    return this.each( function() {
+        if ( !this._emSortableTable ) {
+            this._emSortableTable = new SortableTable( this );
+        }
+    } );
 };

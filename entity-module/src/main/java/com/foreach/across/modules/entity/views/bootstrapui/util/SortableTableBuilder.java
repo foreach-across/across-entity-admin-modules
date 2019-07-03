@@ -533,7 +533,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		attributes.put( DATA_ATTR_PAGES, currentPage.getTotalPages() );
 		attributes.put( DATA_ATTR_PAGE_SIZE, currentPage.getSize() );
 		attributes.put( DATA_ATTR_SORT, convertSortAttribute( currentPage.getSort() ) );
-		attributes.put( DATA_ATTR_AJAX_LOAD, true );
+		attributes.put( DATA_ATTR_AJAX_LOAD, false );
 
 		if ( getFormName() != null ) {
 			attributes.put( DATA_ATTR_FORM, getFormName() );
@@ -682,7 +682,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 	protected ViewElementBuilder createDefaultNoResultsPanel() {
 		return BootstrapUiBuilders.node( "div" )
 		                          .name( elementName( ELEMENT_NORESULTS ) )
-		                          .attribute( DATA_ATTR_AJAX_LOAD, true )
+		                          .attribute( DATA_ATTR_AJAX_LOAD, false )
 		                          .css( "panel", "panel-warning" )
 		                          .add(
 				                          BootstrapUiBuilders.node( "div" )

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import * as EntityModule from './modules/EntityModule';
-
 function makeExpandable( node: JQuery )
 {
     let lastTarget;
@@ -28,20 +26,23 @@ function makeExpandable( node: JQuery )
             // bubble edit button
             return true;
         }
-        const target = $( this );
+
+        const target = $( evt.currentTarget );
         if ( target.next().attr( 'data-summary' ) !== undefined ) {
             target.toggleClass( 'summary-expanded' );
-            target.next().fadeToggle( {
-                duration: fadeDuration, complete: () => {
-                    lastTarget = target;
-                },
-            } );
+            target.next()
+                  .fadeToggle( {
+                                   duration: fadeDuration,
+                                   complete: () => {
+                                       lastTarget = target;
+                                   },
+                               } );
         }
         else {
             const newTr = $( '<tr data-summary style="display:none"></tr>' );
-            const newTd = $( '<td colspan=' + $( this ).find( 'td' ).length + '"></td>' );
-            const entityId = $( this ).data( 'entity-id' );
-            const summaryUrl = $( this ).data( 'summary-url' );
+            const newTd = $( '<td colspan=' + target.find( 'td' ).length + '"></td>' );
+            const entityId = target.data( 'entity-id' );
+            const summaryUrl = target.data( 'summary-url' );
             newTd.appendTo( newTr );
             target.after( newTr );
             if ( summaryUrl ) {
@@ -52,7 +53,7 @@ function makeExpandable( node: JQuery )
                 } );
             }
             else if ( entityId ) {
-                newTd.load( entityType + '/' + $( this ).attr( 'data-entity-id' ) + '?view=summary&_partial=content', null, () => {
+                newTd.load( entityType + '/' + target.attr( 'data-entity-id' ) + '?view=summary&_partial=content', null, () => {
                     target.toggleClass( 'summary-expanded' );
                     newTr.fadeIn( {duration: fadeDuration} );
                     lastTarget = target;

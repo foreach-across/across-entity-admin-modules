@@ -37,6 +37,9 @@ export class SortableTable
         const currentSort = this.table.data( 'tbl-sort' );
         this.sort = currentSort != null ? currentSort : [];
 
+        this.sortables = $( "[data-tbl='" + id + "'][data-tbl-sort-property]", this.table );
+        this.sortables.removeClass( 'asc', 'desc' );
+
         for ( let i = 0; i < this.sort.length; i++ ) {
             const order = this.sort[i];
 
@@ -98,10 +101,6 @@ export class SortableTable
                     }
                 }
             } );
-
-        this.sortables = $( "[data-tbl='" + id + "'][data-tbl-sort-property]", this.table );
-        this.sortables.removeClass( 'asc' );
-        this.sortables.removeClass( 'desc' );
 
         this.sortables.click( ( e: JQueryEventObject ) => {
             e.preventDefault();

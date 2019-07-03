@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import {EntityModule} from '../modules/EntityModule';
-
 export class EmbeddedCollection
 {
     private bootstrapUiModule: any;
@@ -25,11 +23,12 @@ export class EmbeddedCollection
     {
         this.bootstrapUiModule = (<any>window).BootstrapUiModule;
         this.entityModule = (<any>window).EntityModule;
+
         const wrapper = element;
 
         const filter = ( results: any ) => {
-            return results.filter( ( ix: number ) => {
-                return $( this ).closest( '[data-item-format]' ).is( wrapper );
+            return results.filter( ( ix: number, element: any ) => {
+                return $( element ).closest( '[data-item-format]' ).is( wrapper );
             } );
         };
 
@@ -48,47 +47,45 @@ export class EmbeddedCollection
             targetPrefix = targetPrefix.replace( parentTemplate, parentPrefix );
         }
 
-        filter( items.find( '[data-action=remove-item]' ) )
-            .click( ( e: JQueryEventObject ) => {
-                e.preventDefault();
-                $( this ).closest( '[data-role=item]' ).remove();
+        filter( items.find( '[data-action=remove-item]' ) ).click( ( e: JQueryEventObject ) => {
+            e.preventDefault();
+            $( e.currentTarget ).closest( '[data-role=item]' ).remove();
+        } );
+
+        filter( wrapper.find( '[data-action=add-item]' ) ).click( () => {
+            const sortIndex = nextItemIndex++;
+            const id = 'item-' + sortIndex;
+            const target = targetPrefix.replace( '{{key}}', id );
+
+            const template = $( this.bootstrapUiModule.refTarget( editItemTemplate ).html() );
+            template.attr( 'data-item-key', id );
+            template.attr( 'data-item-prefix', target );
+
+            template.find( '[name^="' + templatePrefix + '"]' ).each( ( ix: number, node: any ) => {
+                $( node ).attr( 'name', $( node ).attr( 'name' ).replace( templatePrefix, target ) );
+            } );
+            template.find( '[name^="_' + templatePrefix + '"]' ).each( ( ix: number, node: any ) => {
+                $( node ).attr( 'name', $( node ).attr( 'name' ).replace( '_' + templatePrefix, '_' + target ) );
+            } );
+            template.find( '[for^="' + templatePrefix + '"]' ).each( ( ix: number, node: any ) => {
+                $( node ).attr( 'for', $( node ).attr( 'for' ).replace( templatePrefix, target ) );
+            } );
+            template.find( '[id^="' + templatePrefix + '"]' ).each( ( ix: number, node: any ) => {
+                $( node ).attr( 'id', $( node ).attr( 'id' ).replace( templatePrefix, target ) );
             } );
 
-        filter( wrapper.find( '[data-action=add-item]' ) )
-            .click( () => {
-                const sortIndex = nextItemIndex++;
-                const id = 'item-' + sortIndex;
-                const target = targetPrefix.replace( '{{key}}', id );
+            template.find( '[data-action=remove-item]' ).click( ( e: JQueryEventObject ) => {
+                e.preventDefault();
+                $( e.currentTarget ).closest( '[data-role=item]' ).remove();
+            } );
 
-                const template = $( this.bootstrapUiModule.refTarget( editItemTemplate ).html() );
-                template.attr( 'data-item-key', id );
-                template.attr( 'data-item-prefix', target );
-
-                template.find( '[name^="' + templatePrefix + '"]' ).each( ( node: any ) => {
-                    $( this ).attr( 'name', $( this ).attr( 'name' ).replace( templatePrefix, target ) );
-                } );
-                template.find( '[name^="_' + templatePrefix + '"]' ).each( ( node: any ) => {
-                    $( this ).attr( 'name', $( this ).attr( 'name' ).replace( '_' + templatePrefix, '_' + target ) );
-                } );
-                template.find( '[for^="' + templatePrefix + '"]' ).each( ( node: any ) => {
-                    $( this ).attr( 'for', $( this ).attr( 'for' ).replace( templatePrefix, target ) );
-                } );
-                template.find( '[id^="' + templatePrefix + '"]' ).each( ( node: any ) => {
-                    $( this ).attr( 'id', $( this ).attr( 'id' ).replace( templatePrefix, target ) );
-                } );
-
-                template.find( '[data-action=remove-item]' ).click( ( e: JQueryEventObject ) => {
-                    e.preventDefault();
-                    $( this ).closest( '[data-role=item]' ).remove();
-                } );
-
-                template.find( '[name="' + target + '.sortIndex"]' )
+            template.find( '[name="' + target + '.sortIndex"]' )
                     .attr( 'value', sortIndex );
 
-                items.append( template );
+            items.append( template );
 
-                this.entityModule.initializeFormElements( template );
-            } );
+            this.entityModule.initializeFormElements( template );
+        } );
     }
 
 }
