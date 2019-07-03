@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {isNullOrUndefined} from "./app/utils/utilities";
-import EntityQueryPropertyControlFactory from "./app/utils/controls/entity-query-property-control-factory";
-import EntityQueryFilterControl from "./app/utils/controls/entity-query-filter-control";
-import {createDefaultControl} from "./app/utils/controls/property-control-builders/property-control";
+import {createDefaultControl} from "./utils/controls/property-control-builders/property-control";
 import {isNullOrUndefined} from "./utils/utilities";
 import EntityQueryPropertyControlFactory from "./utils/controls/entity-query-property-control-factory";
 import EntityQueryFilterControl from "./utils/controls/entity-query-filter-control";
