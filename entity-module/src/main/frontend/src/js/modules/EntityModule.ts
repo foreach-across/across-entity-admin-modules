@@ -33,7 +33,7 @@ export class EntityModule
      * @param callback function to execute
      * @param callIfAlreadyInitialized should the initializer execute immediately if document has been initialized already - defaults to true
      */
-    registerInitializer( callback:any, callIfAlreadyInitialized:any )
+    registerInitializer( callback: any, callIfAlreadyInitialized: any )
     {
         this.initializers.push( callback );
 
@@ -69,57 +69,57 @@ export class EntityModule
         /**
          * Initialize depends-on conditions between controls.
          */
-        $( '[data-dependson]', node ).each( function () {
+        $( '[data-dependson]', node ).each( function (ix, n) {
             const dependsonConfig = $( this ).data( 'dependson' );
             const options = dependsonConfig['options'] != null ? dependsonConfig['options'] : {hide: false};
             delete dependsonConfig['options'];
 
-            $( this ).dependsOn( dependsonConfig, options );
+            $( n ).dependsOn( dependsonConfig, options );
         } );
 
         /**
          * Initialize multi value controls.
          */
-        $( '.js-multi-value-control', node ).each( () => {
-            const container = $( this );
+        $( '.js-multi-value-control', node ).each( ( ix, element ) => {
+            const container = $( element );
 
-            container.find( '.js-multi-value-input' ).on( 'keypress', function ( e ) {
+            container.find( '.js-multi-value-input' ).on( 'keypress', ( e ) => {
                 const keyCode = (e.keyCode ? e.keyCode : e.which);
                 if ( keyCode === 13 ) {
                     e.preventDefault();
-                    const value = $( this ).val();
+                    const value = $( e.currentTarget ).val();
                     if ( value ) {
                         const template = container.find( '.js-multi-value-template' ).clone( false );
                         template.removeClass( 'hidden js-multi-value-template' );
                         template.addClass( 'js-multi-value-item' );
 
-                        template.find( '.js-multi-value-value' ).each( ( i:number, node:any ) => {
+                        template.find( '.js-multi-value-value' ).each( ( i: number, node: any ) => {
                             node.innerText = value;
                         } );
 
                         template.find( '[type=hidden]' ).val( value ).removeAttr( 'disabled' );
                         container.find( 'table' ).append( template );
 
-                        template.find( 'a' ).on( 'click', function () {
-                            $( this ).closest( 'tr' ).remove();
+                        template.find( 'a' ).on( 'click', ( clickEvent ) => {
+                            clickEvent.preventDefault();
+                            $( clickEvent.currentTarget ).closest( 'tr' ).remove();
                         } );
 
-                        $( this ).val( '' );
+                        $( e.currentTarget ).val( '' );
                     }
                 }
             } );
 
-            container.find( '.js-multi-value-item a' ).on( 'click', function () {
-                $( this ).closest( 'tr' ).remove();
+            container.find( '.js-multi-value-item a' ).on( 'click', ( clickEvent ) => {
+                clickEvent.preventDefault();
+                $( clickEvent.currentTarget ).closest( 'tr' ).remove();
             } );
         } );
 
         /**
          * Experimental: initialize embedded collections.
          */
-        $( '.js-embedded-collection-form-group', node ).each( function () {
-            new EmbeddedCollection( $( this ) );
-        } );
+        $( '.js-embedded-collection-form-group', node ).each( ( ix, n ) => new EmbeddedCollection( $( n ) ) );
 
         /**
          * Initialize tooltips.
