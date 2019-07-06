@@ -1,4 +1,5 @@
 version: "3.1"
+
 services:
   # compiling frontend resources
   frontend:
@@ -11,6 +12,7 @@ services:
     volumes:
     - ./entity-module/src/main/frontend:/build
     - ./entity-module/src/main/resources/views/static/entity:/resources/views/static/entity
+    - /build/node_modules/
 
   # Update frontend resources lockfile
   update-lockfile:
@@ -18,7 +20,8 @@ services:
     command: yarn install --modules-folder /node_modules
     container_name: entity-module-update-lockfile
     volumes:
-      - ./entity-module/src/main/frontend:/build
+      - './entity-module/src/main/frontend:/build'
+      - /build/node_modules/
 
 #  # executing e2e tests
 #  web:
