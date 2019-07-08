@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import EntityQuery from "../src/js/app/utils/entity-query/entity-query";
-import EntityQueryCondition from "../src/js/app/utils/entity-query/entity-query-condition";
-import {EntityQueryOps} from "../src/js/app/utils/entity-query/entity-query-ops";
-import Sort from "../src/js/app/utils/sort/sort";
-import SortOrder, {Direction} from "../src/js/app/utils/sort/sort-order";
+import EntityQuery from "./entity-query";
+import EntityQueryCondition from "./entity-query-condition";
+import {EntityQueryOps} from "./entity-query-ops";
+import Sort from "../sort/sort";
+import SortOrder, {Direction} from "../sort/sort-order";
 
 describe( "EntityQuery", function() {
   it( "single property toString()", function() {

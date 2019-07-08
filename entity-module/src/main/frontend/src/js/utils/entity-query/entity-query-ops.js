@@ -25,40 +25,40 @@ import {isNullOrUndefined} from "../utilities";
  * @since 2.2.0
  */
 class EntityQueryOperand {
-  constructor( opswriter, ...tokens ) {
-    this.opsWriter = opswriter;
-    this.tokens = tokens;
-  }
+    constructor( opswriter, ...tokens ) {
+        this.opsWriter = opswriter;
+        this.tokens = tokens;
+    }
 
-  toString( propertyName, ...args ) {
-    return this.opsWriter( propertyName, ...args );
-  }
+    toString( propertyName, ...args ) {
+        return this.opsWriter( propertyName, ...args );
+    }
 
-  getToken() {
-    return this.tokens[0];
-  }
+    getToken() {
+        return this.tokens[0];
+    }
 
-  equals( that ) {
-    return this.getToken() === that.getToken();
-  }
+    equals( that ) {
+        return this.getToken() === that.getToken();
+    }
 }
 
 function escapeChars( value ) {
-  return value.replace( "\\", "\\\\" ).replace( "'", "\\'" );
+    return value.replace( "\\", "\\\\" ).replace( "'", "\\'" );
 }
 
 function objectAsString( object ) {
-  if ( isNullOrUndefined( object ) ) {
-    return "NULL";
-  }
-  if ( _.isString( object ) || typeof object === "string" ) {
-    return `'${escapeChars( object )}'`;
-  }
-  return object.toString();
+    if ( isNullOrUndefined( object ) ) {
+        return "NULL";
+    }
+    if ( _.isString( object ) || typeof object === "string" ) {
+        return `'${escapeChars( object )}'`;
+    }
+    return object.toString();
 }
 
 function joinAsStrings( ...args ) {
-  return args.map( arg => objectAsString( arg ) ).join( "," );
+    return args.map( arg => objectAsString( arg ) ).join( "," );
 }
 
 /**
@@ -66,8 +66,8 @@ function joinAsStrings( ...args ) {
  * @type {{AND: string, OR: string}}
  */
 const EntityQueryToken = {
-  "AND": "and",
-  "OR": "or"
+    "AND": "and",
+    "OR": "or"
 };
 
 /**
@@ -77,51 +77,51 @@ const EntityQueryToken = {
  *          or else the query.
  */
 function setBraces( expr ) {
-  const query = objectAsString( expr );
-  if ( query.search( ` ${EntityQueryToken.AND} ` ) !== -1 || query.search( ` ${EntityQueryToken.OR} ` ) !== -1 ) {
-    return `(${query})`;
-  }
-  return query;
+    const query = objectAsString( expr );
+    if ( query.search( ` ${EntityQueryToken.AND} ` ) !== -1 || query.search( ` ${EntityQueryToken.OR} ` ) !== -1 ) {
+        return `(${query})`;
+    }
+    return query;
 }
 
 export const EntityQueryOps = {
-    "AND": new EntityQueryOperand( ( field, ...args ) => `${args.map( arg => setBraces( arg ) ).join( " and " )}`, EntityQueryToken.AND ),
-    "OR": new EntityQueryOperand( ( field, ...args ) => `${args.map( arg => setBraces( arg ) ).join( " or " )}`, EntityQueryToken.OR ),
-    "EQ": new EntityQueryOperand( ( field, ...args ) => `${field} = ${args.length > 0 ? objectAsString( args[0] ) : ""}`, "=" ),
-    "NEQ": new EntityQueryOperand( ( field, ...args ) => `${field} != ${args.length > 0 ? objectAsString( args[0] ) : ""}`, "!=", "<>" ),
-    "CONTAINS": new EntityQueryOperand( ( field, ...args ) => `${field} contains ${objectAsString( args[0] )}`, "contains" ),
-    "NOT_CONTAINS": new EntityQueryOperand( ( field, ...args ) => `${field} not contains ${objectAsString( args[0] )}`, "not contains" ),
-    "IN": new EntityQueryOperand( ( field, ...args ) => `${field} in ${joinAsStrings( ...args )}`, "in" ),
-    "NOT_IN": new EntityQueryOperand( ( field, ...args ) => `${field} not in ${joinAsStrings( ...args )}`, "not in" ),
-    "LIKE": new EntityQueryOperand( ( field, ...args ) => `${field} like ${objectAsString( args[0] )}`, "like" ),
-    "LIKE_IC": new EntityQueryOperand( ( field, ...args ) => `${field} ilike ${objectAsString( args[0] )}`, "ilike" ),
-    "NOT_LIKE": new EntityQueryOperand( ( field, ...args ) => `${field} not like ${objectAsString( args[0] )}`, "not like" ),
-    "NOT_LIKE_IC": new EntityQueryOperand( ( field, ...args ) => `${field} not ilike ${objectAsString( args[0] )}`, "not ilike" ),
-    "GT": new EntityQueryOperand( ( field, ...args ) => `${field} > ${objectAsString( args[0] )}`, ">" ),
-    "GE": new EntityQueryOperand( ( field, ...args ) => `${field} >= ${objectAsString( args[0] )}`, ">=" ),
-    "LT": new EntityQueryOperand( ( field, ...args ) => `${field} < ${objectAsString( args[0] )}`
-      , "<" ),
-    "LE": new EntityQueryOperand( ( field, ...args ) => `${field} <= ${objectAsString( args[0] )}`, "<=" ),
-    "IS_NULL": new EntityQueryOperand( ( field, ...args ) => `${field} is NULL`, "is" ),
-    "IS_NOT_NULL": new EntityQueryOperand( ( field, ...args ) => `${field} is not NULL`
-      , "is not" ),
-    "IS_EMPTY": new EntityQueryOperand( ( field, ...args ) => `${field} is EMPTY`, "is" ),
-    "IS_NOT_EMPTY": new EntityQueryOperand( ( field, ...args ) => `${field} is not EMPTY`, "is not" ),
+            "AND": new EntityQueryOperand( ( field, ...args ) => `${args.map( arg => setBraces( arg ) ).join( " and " )}`, EntityQueryToken.AND ),
+            "OR": new EntityQueryOperand( ( field, ...args ) => `${args.map( arg => setBraces( arg ) ).join( " or " )}`, EntityQueryToken.OR ),
+            "EQ": new EntityQueryOperand( ( field, ...args ) => `${field} = ${args.length > 0 ? objectAsString( args[0] ) : ""}`, "=" ),
+            "NEQ": new EntityQueryOperand( ( field, ...args ) => `${field} != ${args.length > 0 ? objectAsString( args[0] ) : ""}`, "!=", "<>" ),
+            "CONTAINS": new EntityQueryOperand( ( field, ...args ) => `${field} contains ${objectAsString( args[0] )}`, "contains" ),
+            "NOT_CONTAINS": new EntityQueryOperand( ( field, ...args ) => `${field} not contains ${objectAsString( args[0] )}`, "not contains" ),
+            "IN": new EntityQueryOperand( ( field, ...args ) => `${field} in ${joinAsStrings( ...args )}`, "in" ),
+            "NOT_IN": new EntityQueryOperand( ( field, ...args ) => `${field} not in ${joinAsStrings( ...args )}`, "not in" ),
+            "LIKE": new EntityQueryOperand( ( field, ...args ) => `${field} like ${objectAsString( args[0] )}`, "like" ),
+            "LIKE_IC": new EntityQueryOperand( ( field, ...args ) => `${field} ilike ${objectAsString( args[0] )}`, "ilike" ),
+            "NOT_LIKE": new EntityQueryOperand( ( field, ...args ) => `${field} not like ${objectAsString( args[0] )}`, "not like" ),
+            "NOT_LIKE_IC": new EntityQueryOperand( ( field, ...args ) => `${field} not ilike ${objectAsString( args[0] )}`, "not ilike" ),
+            "GT": new EntityQueryOperand( ( field, ...args ) => `${field} > ${objectAsString( args[0] )}`, ">" ),
+            "GE": new EntityQueryOperand( ( field, ...args ) => `${field} >= ${objectAsString( args[0] )}`, ">=" ),
+            "LT": new EntityQueryOperand( ( field, ...args ) => `${field} < ${objectAsString( args[0] )}`
+                    , "<" ),
+            "LE": new EntityQueryOperand( ( field, ...args ) => `${field} <= ${objectAsString( args[0] )}`, "<=" ),
+            "IS_NULL": new EntityQueryOperand( ( field, ...args ) => `${field} is NULL`, "is" ),
+            "IS_NOT_NULL": new EntityQueryOperand( ( field, ...args ) => `${field} is not NULL`
+                    , "is not" ),
+            "IS_EMPTY": new EntityQueryOperand( ( field, ...args ) => `${field} is EMPTY`, "is" ),
+            "IS_NOT_EMPTY": new EntityQueryOperand( ( field, ...args ) => `${field} is not EMPTY`, "is not" ),
 
-    "forToken": function( token ) {
-      const lookup = token.toLowerCase().trim();
-      const values = Object.values( EntityQueryOps );
-      for ( let i = 0; i < values.length; i++ ) {
-        const currentValue = values[i];
-        if ( currentValue instanceof EntityQueryOperand && currentValue.tokens.includes( lookup ) ) {
-          return currentValue;
+            "forToken": function( token ) {
+                const lookup = token.toLowerCase().trim();
+                const values = Object.values( EntityQueryOps );
+                for ( let i = 0; i < values.length; i++ ) {
+                    const currentValue = values[i];
+                    if ( currentValue instanceof EntityQueryOperand && currentValue.tokens.includes( lookup ) ) {
+                        return currentValue;
+                    }
+                }
+                return null;
+            },
+
+            isGroupOperand( operand ) {
+                return operand.equals( EntityQueryOps.IN ) || operand.equals( EntityQueryOps.NOT_IN );
+            }
         }
-      }
-      return null;
-    },
-
-    isGroupOperand( operand ) {
-      return operand.equals( EntityQueryOps.IN ) || operand.equals( EntityQueryOps.NOT_IN );
-    }
-  }
 ;

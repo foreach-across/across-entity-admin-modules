@@ -131,8 +131,6 @@ module.exports = {
     ],
     "watchOptions":
             {
-                "ignored": "/node_modules/",
-                //aggregateTimeout: 300,
-               // poll: 500
+                "ignored": "/node_modules/"
             }
 };

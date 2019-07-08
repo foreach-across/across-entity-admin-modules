@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-import {exampleAddMethod, exampleSubstractMethod} from "../src/js/app/modules/example-module";
-
-/*
- * syntax: Jasmine
- * https://jasmine.github.io/
- *
- * Testrunner: Karma
- * http://karma-runner.github.io
- * */
-
-describe( "main initialisation", function() {
-  it( "should run a unit test", function() {
-    expect( true ).toBe( true );
-  } );
-} );
-
-describe( "module initialisation", function() {
-  it( "should init a  module succesfully", function() {
-
-    expect( exampleAddMethod( 1, 2 ) ).toEqual( 3 );
-    expect( exampleSubstractMethod( 2, 1 ) ).toEqual( 1 );
-
-  } );
-} );
+module.exports = {
+    roots: ['<rootDir>/src/js'],
+    transform: {
+        //'^.+\\.tsx?$': 'ts-jest',
+        '^.+\\.jsx?$': 'babel-jest',
+    },
+  //  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+};

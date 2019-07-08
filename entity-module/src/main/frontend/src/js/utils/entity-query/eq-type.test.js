@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import EQType from "../src/js/app/utils/entity-query/eq-type"
-import EQString from "../src/js/app/utils/entity-query/eq-string";
-import EQValue from "../src/js/app/utils/entity-query/eq-value";
-import EQGroup from "../src/js/app/utils/entity-query/eq-group";
-import EQFunction from "../src/js/app/utils/entity-query/eq-function";
-import {arrayEquals} from "../src/js/app/utils/utilities";
-import {NullOrUndefinedException} from "../src/js/app/utils/exceptions";
+import EQType from "./eq-type"
+import EQString from "./eq-string";
+import EQValue from "./eq-value";
+import EQGroup from "./eq-group";
+import EQFunction from "./eq-function";
+import {arrayEquals} from "../utilities";
+import {NullOrUndefinedException} from "../exceptions";
 
 describe( "EQType", function() {
 
