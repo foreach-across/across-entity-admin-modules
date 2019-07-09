@@ -45,6 +45,21 @@ describe( 'List view: basic features', () => {
         cy.assertListViewResults( 1 );
     } );
 
+    it( 'Simple sorting', () => {
+        cy.server();
+        cy.goToMenuItem( "Partner" );
+
+        cy.get( "tbody" ).within( () => {
+            cy.get( '[data-tbl-field="name"]' ).first().contains( "Facebook" );
+        } );
+
+        cy.get( '[data-tbl-sort-property="name"]' ).click();
+
+        cy.get( "tbody" ).within( () => {
+            cy.get( '[data-tbl-field="name"]' ).first().contains( "Microsoft" );
+        } );
+    } );
+
     it( 'After filtering nonExistant we get no results', () => {
         cy.goToMenuItem( "Partner" );
 
@@ -59,26 +74,27 @@ describe( 'List view: basic features', () => {
 
     it( 'Filtering and sorting', () => {
         cy.server();
-        cy.route( '/admin/entities/note?*' ).as( "listViewAjax" );
-        cy.goToMenuItem( "Note" );
+        cy.route( '/admin/entities/user?*' ).as( "listViewAjax" );
+        cy.goToMenuItem( "User" );
 
         cy.get( "tbody" ).within( () => {
-            cy.get( '[data-tbl-field="name"]' ).first().contains( "adipiscing" );
+            cy.get( '[data-tbl-field="id"]' ).first().contains( "jane 0" );
         } );
 
-        cy.get( '[name="extensions[eqFilterProperties][text]"]' ).type( "dolor{enter}" );
+        cy.get( '[name="extensions[eqFilterProperties][name]"]' ).type( "joey{enter}" );
         //cy.wait('@listViewAjax');
-        cy.assertListViewResults( 4 );
+        cy.assertListViewResults( 15 );
 
         cy.get( "tbody" ).within( () => {
-            cy.get( '[data-tbl-field="name"]' ).first().contains( "amet" );
+            cy.get( '[data-tbl-field="id"]' ).first().contains( "joey 0" );
         } );
 
         cy.get( '[data-tbl-sort-property="name"]' ).click();
-        //cy.wait('@listViewAjax');
+        // configured via AJAX
+        cy.wait('@listViewAjax');
 
         cy.get( "tbody" ).within( () => {
-            cy.get( '[data-tbl-field="name"]' ).first().contains( "quis" );
+            cy.get( '[data-tbl-field="id"]' ).first().contains( "joey 9" );
         } );
     } );
 

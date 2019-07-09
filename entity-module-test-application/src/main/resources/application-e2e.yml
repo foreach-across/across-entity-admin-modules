@@ -21,6 +21,9 @@ spring:
   datasource:
     url: jdbc:h2:mem:entity-module
     username: sa
+  devtools:
+    restart:
+      enabled: false
 
 across:
   development:

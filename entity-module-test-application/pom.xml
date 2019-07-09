@@ -30,7 +30,6 @@
 
 	<properties>
 		<sonar.skip>true</sonar.skip>
-		<cwb.version>1.1.0.RELEASE</cwb.version>
 	</properties>
 
 	<dependencies>
@@ -68,18 +67,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.foreach.cwb</groupId>
-			<artifactId>cwb-core</artifactId>
-			<version>${cwb.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.foreach.cwb</groupId>
-			<artifactId>cwb-sahi</artifactId>
-			<version>${cwb.version}</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
