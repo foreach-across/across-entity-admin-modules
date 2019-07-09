@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-describe( 'Partner listview', () => {
+describe( 'List view: summary views', () => {
 
     beforeEach( function() {
-        cy.login( 'admin', 'admin' );
+        cy.login( 'admin' );
     } );
 
     it( 'Clicking on the rows opens up the summary view', () => {

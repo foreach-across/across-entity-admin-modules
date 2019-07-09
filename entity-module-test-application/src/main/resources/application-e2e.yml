@@ -15,7 +15,7 @@
 #
 
 server:
-  port: 0
+  port: 8080
 
 spring:
   datasource:
@@ -24,7 +24,7 @@ spring:
 
 across:
   development:
-    active: false
+    active: true
 
 acrossModule:
   EntityModule:

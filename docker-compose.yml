@@ -5,7 +5,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.assets
+      dockerfile: ./docker/frontend.docker
     image: entity-module-assets:latest
     command: yarn run build
     container_name: entity-module-assets-builder
@@ -23,42 +23,40 @@ services:
       - './entity-module/src/main/frontend:/build'
       - /build/node_modules/
 
-#  # executing e2e tests
-#  web:
-#    ipc: host
-#    # TTY doesn't show pretty in bamboo
-#    tty: false
-#    build:
-#      context: .
-#      dockerfile: entity-module/src/main/frontend/tests/e2e/web/Dockerfile
-#    ports:
-#    - "8080:8080"
-#    expose:
-#    - "8080"
-#    #    depends_on:
-#    #      - gulp
-#    volumes:
-#    - ./entity-module-test/target:/web
-#    networks:
-#      default:
-#        aliases:
-#        - bootstrapui-test.dev.foreach.be
-#  test:
-#    ipc: host
-#    # TTY doesn't show pretty in bamboo
-#    tty: false
-#    build:
-#      context: .
-#      dockerfile: entity-module/src/main/frontend/tests/e2e/tests/Dockerfile
-#    depends_on:
-#    - web
-#    command: bash -c "./wait-for-it.sh -t 360 web:8080 -- run; ./node_modules/.bin/cypress run --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results.xml; chmod -R 777 ./cypress"
-#    links:
-#    - web
-#    volumes:
-#    - ./entity-module/src/main/frontend/tests/e2e/tests:/cypress
-#  cleanup:
-#    image: busybox:latest
-#    command: sh -c "echo Cleanup up /cypress/cypress/out; ls -al /cypress/cypress; rm -rf /cypress/cypress/out"
-#    volumes:
-#    - ./entity-module/src/main/frontend/tests/e2e/tests:/cypress
+  # executing e2e tests
+  web:
+    ipc: host
+    # TTY doesn't show pretty in bamboo
+    tty: false
+    build:
+      context: .
+      dockerfile: ./docker/e2e-web.docker
+    ports:
+    - "8080:8080"
+    expose:
+    - "8080"
+    volumes:
+    - ./entity-module-test-application/target:/web
+    networks:
+      default:
+        aliases:
+        - entity-module-test.dev.foreach.be
+  e2e:
+    ipc: host
+    # TTY doesn't show pretty in bamboo
+    tty: false
+    build:
+      context: .
+      dockerfile: ./docker/e2e-tests.docker
+    depends_on:
+    - web
+    command: bash -c "./wait-for-it.sh -t 180 web:8080 -- echo executing e2e tests; ./node_modules/.bin/cypress run --project ./cypress --config video=false,watchForFileChanges=false --reporter junit --reporter-options mochaFile=cypress/out/test-results.[hash].xml; chmod -R 777 ./cypress"
+    links:
+    - web
+    volumes:
+    - ./entity-module-test-application/src/test/e2e/tests:/cypress
+  cleanup:
+    image: busybox:latest
+    command: sh -c "echo Cleanup up /cypress/cypress/out; ls -al /cypress/cypress; rm -rf /cypress/cypress/out"
+    volumes:
+      - ./entity-module-test-application/src/test/e2e/tests:/cypress
