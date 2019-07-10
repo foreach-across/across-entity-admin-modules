@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-describe( 'Partner listview', () => {
+describe( 'List view: summary views', () => {
 
     beforeEach( function() {
-        cy.login( 'admin', 'admin' );
+        cy.login( 'admin' );
     } );
 
     it( 'Clicking on the rows opens up the summary view', () => {
@@ -25,6 +25,7 @@ describe( 'Partner listview', () => {
 
         cy.get('[data-ax-dev-view-element="formGroup-name"] > .control-label').should("not.be.visible");
         cy.get('[data-summary-url]').first().click();
+
         cy.get('[data-ax-dev-view-element="formGroup-name"] > .control-label').should("be.visible");
     } );
 } );

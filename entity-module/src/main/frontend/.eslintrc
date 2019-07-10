@@ -1,5 +1,5 @@
 {
-    "extends": "airbnb",
+    "extends": "airbnb/base",
     "rules": {
         "no-lonely-if": "warn",
         "func-names": [
@@ -27,6 +27,7 @@
         "import/prefer-default-export": "warn",
         "no-plusplus": "off",
         "space-in-parens": "off",
+        "react/jsx-filename-extension": "off",
         "jsx-a11y/href-no-hash": "off",
         "quotes": 0,
         "import/no-extraneous-dependencies": "off",
@@ -46,13 +47,14 @@
     "env": {
         "browser": true,
         "node": true,
-        "jasmine": true
+        "jest": true
     },
     "globals": {
         "define": true
     },
     "parser": "babel-eslint",
     "parserOptions": {
+        "ecmaVersion": 2017,
         "sourceType": "module",
         "allowImportExportEverywhere": true
     }

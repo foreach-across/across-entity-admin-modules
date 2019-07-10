@@ -6,5 +6,3 @@ src/main/resources/views/static/entity/css/*
 
 src/main/resources/views/static/entity/js/*
 !src/main/resources/views/static/entity/js/dependson.js
-!src/main/resources/views/static/entity/js/entity-module.js
-!src/main/resources/views/static/entity/js/expandable.js

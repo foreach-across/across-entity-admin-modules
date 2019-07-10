@@ -10,7 +10,7 @@ Navigate to `entity-module-test-application/src/test/e2e/tests`
 
 ## Open the Cypress Test Runner
 
-* Start the BootstrapUiTestApplication
+* Start the EntityModuleTestApplication: e2e (start with profile `e2e`)
 * `"../node_modules/.bin/cypress" open` (or `npx cypress open`) opens the GUI through which you can run all or specific tests 
 
 ## Running tests
@@ -23,4 +23,3 @@ To run specific files, provide the spec option with a quoted path or comma separ
 See the [cypress command line](https://docs.cypress.io/guides/guides/command-line.html#Installation) for more information.
 
 
- 
