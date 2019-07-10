@@ -65,7 +65,7 @@ class CollectionEntityQueryComparators
 	}
 
 	private static Comparator<?> createComparatorForType( Sort.Order order, EntityPropertyDescriptor descriptor ) {
-		val simpleType = descriptor.getPropertyTypeDescriptor().getObjectType();
+		Class<?> simpleType = descriptor.getPropertyTypeDescriptor().getObjectType();
 
 		if ( String.class.equals( simpleType ) ) {
 			return stringComparator( order.isIgnoreCase() );

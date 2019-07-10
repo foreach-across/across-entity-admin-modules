@@ -7,3 +7,4 @@ target
 db
 local-data
 .DS_Store
+node_modules

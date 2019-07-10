@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-describe( 'Partner listview', () => {
+describe( 'EntityQuery advanced filter', () => {
 
     beforeEach( function() {
-        cy.login( 'admin', 'admin' );
+        cy.login( 'admin' );
     } );
 
     it( 'Advanced filter has the correct terms', () => {

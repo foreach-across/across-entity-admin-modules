@@ -53,7 +53,7 @@ public class EntityViewElementUtils
 	 * in all other cases the attribute {@link EntityViewModel#ENTITY}.</p>
 	 * <p>Will return null if no entity can be found.</p>
 	 *
-	 * @param builderContext curret builder context
+	 * @param builderContext current builder context
 	 * @return entity or null if none found
 	 */
 	public static Object currentEntity( ViewElementBuilderContext builderContext ) {

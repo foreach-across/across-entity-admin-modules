@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://localhost:8080",
+  "baseUrl": "http://entity-module-test.dev.foreach.be:8080",
   "screenshotsFolder": "cypress/out/screenshots",
   "watchForFileChanges": true,
   "videosFolder": "cypress/out/videos",

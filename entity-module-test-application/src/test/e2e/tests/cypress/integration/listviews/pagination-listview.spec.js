@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-describe( 'Partner listview', () => {
+describe( 'List view: pagination', () => {
 
     beforeEach( function() {
-        cy.login( 'admin', 'admin' );
+        cy.login( 'admin' );
     } );
 
     it( 'Pagination without sorting & filtering', () => {
@@ -29,7 +29,11 @@ describe( 'Partner listview', () => {
             cy.get( '[data-tbl-field="name"]' ).first().contains( "adipiscing" );
         } );
 
+        cy.server();
+        cy.route('/admin/entities/note?*').as("listViewAjax");
+
         cy.get( '.pager-form .glyphicon-step-forward' ).click();
+        //cy.wait('@listViewAjax');
 
         cy.assertListViewResults( 10, 22 );
         cy.get( "tbody" ).within( () => {
@@ -37,6 +41,8 @@ describe( 'Partner listview', () => {
         } );
 
         cy.get( '[data-tbl-page-selector]' ).type( "3{enter}" );
+//        cy.wait('@listViewAjax');
+
         cy.assertListViewResults( 2, 22 );
         cy.get( "tbody" ).within( () => {
             cy.get( '[data-tbl-field="name"]' ).first().contains( "sit" );

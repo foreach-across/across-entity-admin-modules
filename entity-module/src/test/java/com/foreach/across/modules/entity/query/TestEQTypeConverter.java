@@ -23,11 +23,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.ConversionService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.springframework.core.convert.TypeDescriptor.collection;
 import static org.springframework.core.convert.TypeDescriptor.valueOf;
 
 /**
@@ -80,39 +82,30 @@ public class TestEQTypeConverter
 
 	@Test
 	public void convertUsingConversionServiceWins() {
-		when( conversionService
-				      .canConvert( valueOf( EQValue.class ), valueOf( Integer.class ) ) )
-				.thenReturn( true );
-		when( conversionService.convert( new EQValue( "123" ), valueOf( EQValue.class ),
-		                                 valueOf( Integer.class ) ) )
-				.thenReturn( 123 );
+		when( conversionService.canConvert( valueOf( EQValue.class ), valueOf( Integer.class ) ) ).thenReturn( true );
+		when( conversionService.convert( new EQValue( "123" ), valueOf( EQValue.class ), valueOf( Integer.class ) ) ).thenReturn( 123 );
 
 		assertEquals( 123, typeConverter.convert( valueOf( Integer.class ), new EQValue( "123" ) ) );
 	}
 
 	@Test
 	public void stringExpectedTypeIsNotDispatchedToConversionService() {
-		assertEquals( "text",
-		              typeConverter.convert( valueOf( String.class ), new EQString( "text" ) ) );
+		assertEquals( "text", typeConverter.convert( valueOf( String.class ), new EQString( "text" ) ) );
 		verifyNoMoreInteractions( conversionService );
 	}
 
 	@Test
 	public void eqStringIsReturnedAsString() {
-		assertEquals( "text",
-		              typeConverter.convert( valueOf( Integer.class ), new EQString( "text" ) ) );
-		verify( conversionService ).canConvert( valueOf( EQString.class ),
-		                                        valueOf( Integer.class ) );
-		verify( conversionService ).canConvert( valueOf( String.class ),
-		                                        valueOf( Integer.class ) );
+		assertEquals( "text", typeConverter.convert( valueOf( Integer.class ), new EQString( "text" ) ) );
+		verify( conversionService ).canConvert( valueOf( EQString.class ), valueOf( Integer.class ) );
+		verify( conversionService ).canConvert( valueOf( String.class ), valueOf( Integer.class ) );
 		verifyNoMoreInteractions( conversionService );
 	}
 
 	@Test
 	public void eqValueDispatchesToInnerValueConversion() {
 		when( conversionService.canConvert( valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( true );
-		when( conversionService.convert( "123", valueOf( String.class ), valueOf( Integer.class ) ) )
-				.thenReturn( 123 );
+		when( conversionService.convert( "123", valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( 123 );
 
 		assertEquals( 123, typeConverter.convert( valueOf( Integer.class ), new EQValue( "123" ) ) );
 	}
@@ -120,14 +113,25 @@ public class TestEQTypeConverter
 	@Test
 	public void eqGroupConvertsValuesSeparateAndReturnsArray() {
 		when( conversionService.canConvert( valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( true );
-		when( conversionService.convert( "1", valueOf( String.class ), valueOf( Integer.class ) ) )
-				.thenReturn( 1 );
-		when( conversionService.convert( "2", valueOf( String.class ), valueOf( Integer.class ) ) )
-				.thenReturn( 2 );
+		when( conversionService.convert( "1", valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( 1 );
+		when( conversionService.convert( "2", valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( 2 );
 
 		assertArrayEquals( new Object[] { 1, 2 },
 		                   (Object[]) typeConverter.convert( valueOf( Integer.class ),
 		                                                     new EQGroup( new EQValue( "1" ), new EQString( "2" ) ) ) );
+	}
+
+	@Test
+	public void eqGroupConvertsToCollectionType() {
+		when( conversionService.canConvert( valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( true );
+		when( conversionService.convert( "1", valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( 1 );
+		when( conversionService.convert( "2", valueOf( String.class ), valueOf( Integer.class ) ) ).thenReturn( 2 );
+		when( conversionService.convert( eq( new Object[] { 1, 2 } ), any(), eq( collection( ArrayList.class, valueOf( Integer.class ) ) ) ) )
+				.thenReturn( Arrays.asList( 1, 2 ) );
+
+		assertEquals( Arrays.asList( 1, 2 ),
+		              typeConverter.convert( collection( ArrayList.class, valueOf( Integer.class ) ),
+		                                     new EQGroup( new EQValue( "1" ), new EQString( "2" ) ) ) );
 	}
 
 	@Test(expected = EntityQueryParsingException.IllegalFunction.class)

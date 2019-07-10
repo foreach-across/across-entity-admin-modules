@@ -179,7 +179,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 		        )
 		        .listView(
 				        lvb -> lvb.defaultSort( "name" )
-				                  .entityQueryFilter( cfg -> cfg.showProperties( "id", "name" ).multiValue( "id" ) )
+				                  .entityQueryFilter( cfg -> cfg.showProperties( "id", "name", "manager.email" ).multiValue( "id" ) )
 		        )
 		        .createFormView( fvb -> fvb.showProperties( "id", "generateId", "name", "manager", "stockCount", "brands" ) )
 		        .updateFormView( fvb -> fvb.showProperties( "name", "manager", "brands", "stockCount" ) )

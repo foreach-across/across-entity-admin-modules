@@ -86,8 +86,7 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 		}
 
 		entityConfigurations.add( entityConfiguration );
-
-		Collections.sort( entityConfigurations, DISPLAYNAME_COMPARATOR );
+		entityConfigurations.sort( DISPLAYNAME_COMPARATOR );
 	}
 
 	@Override
@@ -129,10 +128,11 @@ public class EntityRegistryImpl implements MutableEntityRegistry
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "squid:S1872" })
 	public <T> MutableEntityConfiguration<T> getEntityConfiguration( @NonNull Class<T> entityType ) {
 		for ( EntityConfiguration configuration : entityConfigurations ) {
 			// Consider 2 classes the same if they have the same name - workaround some issues with spring boot devtools classloader
+			// squid:S1872
 			if ( configuration.getEntityType().getName().equals( entityType.getName() ) ) {
 				return (MutableEntityConfiguration<T>) configuration;
 			}

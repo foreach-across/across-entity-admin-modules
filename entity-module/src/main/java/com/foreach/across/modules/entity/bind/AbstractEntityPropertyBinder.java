@@ -120,6 +120,7 @@ abstract class AbstractEntityPropertyBinder implements EntityPropertyBinder
 		return currentValue;
 	}
 
+	@SuppressWarnings({ "OptionalAssignedToNull", "squid:S2789" })
 	final Object loadOriginalValue() {
 		if ( originalValue == null ) {
 			originalValue = Optional.ofNullable( fetchOriginalValue() );
