@@ -22,7 +22,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.time.*;
-import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
@@ -42,14 +41,14 @@ import java.util.Locale;
  */
 public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 {
-	private static final String NOW = "now";
+	public static final String NOW = "now";
 	private static final String OFFSET = "offset";
 	private static final String START_OF_DAY = "startOfDay";
 	private static final String START_OF_WEEK = "startOfWeek";
 	private static final String START_OF_MONTH = "startOfMonth";
 	private static final String START_OF_YEAR = "startOfYear";
 
-	private static final String TODAY = "today";
+	public static final String TODAY = "today";
 	private static final String THIS_YEAR = "thisYear";
 	private static final String NEXT_YEAR = "nextYear";
 	private static final String LAST_YEAR = "lastYear";
@@ -189,7 +188,8 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	}
 
 	private LocalDateTime thisWeek( DurationWithPeriod period, DayOfWeek firstDayOfWeek ) {
-		return addDurationWithPeriodTooDateTime( LocalDateTime.now().with( TemporalAdjusters.previousOrSame(firstDayOfWeek )).toLocalDate().atStartOfDay(), period );
+		return addDurationWithPeriodTooDateTime( LocalDateTime.now().with( TemporalAdjusters.previousOrSame( firstDayOfWeek ) ).toLocalDate().atStartOfDay(),
+		                                         period );
 	}
 
 	private LocalDateTime nextWeek( DurationWithPeriod period, DayOfWeek firstDayOfWeek ) {
@@ -413,20 +413,20 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 			return Date.from( dateTime.atZone( ZoneId.systemDefault() ).toInstant() );
 		}
 
-		if(LocalTime.class.equals( desiredType )) {
-			return date.toInstant().atZone( ZoneId.systemDefault() ).toLocalTime();
+		if ( LocalTime.class.equals( desiredType ) ) {
+			return dateTime.atZone( ZoneId.systemDefault() ).toLocalTime();
 		}
 
-		if(LocalDate.class.equals( desiredType )) {
-			return date.toInstant().atZone( ZoneId.systemDefault() ).toLocalDate();
+		if ( LocalDate.class.equals( desiredType ) ) {
+			return dateTime.atZone( ZoneId.systemDefault() ).toLocalDate();
 		}
 
 		if ( LocalDateTime.class.equals( desiredType ) ) {
-			return date.toInstant().atZone( ZoneId.systemDefault() ).toLocalDateTime();
+			return dateTime.atZone( ZoneId.systemDefault() ).toLocalDateTime();
 		}
 
 		if ( ZonedDateTime.class.equals( desiredType ) ) {
-			return date.toInstant().atZone( ZoneId.systemDefault() );
+			return dateTime.atZone( ZoneId.systemDefault() );
 		}
 
 		return dateTime;
