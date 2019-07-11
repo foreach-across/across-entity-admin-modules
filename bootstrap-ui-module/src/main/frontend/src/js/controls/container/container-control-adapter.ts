@@ -78,6 +78,6 @@ export default class ContainerControlAdapter extends BaseControlAdapter
  * @param node to initialize
  */
 export function createContainerControlAdapter( node: any ): BootstrapUiControlAdapter {
-    ControlAdapterFactory.initializeNode( node );
+    ControlAdapterFactory.initializeControlAdapters( node );
     return new ContainerControlAdapter( node );
 }

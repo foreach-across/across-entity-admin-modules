@@ -21,6 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBu
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ViewElement;
 import lombok.Data;
 import org.springframework.context.event.EventListener;
@@ -47,7 +48,7 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
 public class BootstrapFormController
 {
 	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	protected void registerMenuItems( BuildMenuEvent navMenu ) {
+	public void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
 		       .item( "/test/form-elements/form", "Form", "/form" ).order( 1 );
 	}
@@ -63,7 +64,10 @@ public class BootstrapFormController
 
 	@ModelAttribute
 	public void registerWebResources( WebResourceRegistry resources ) {
-		resources.add( WebResource.CSS, "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" );
+		resources.apply(
+				WebResourceRule.add( WebResource.css( "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" ) )
+				               .toBucket( WebResource.CSS )
+		);
 	}
 
 	@PostMapping

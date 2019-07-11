@@ -49,7 +49,7 @@ export class ControlAdapterFactoryObject
      *
      * @param node for which to initialize the child nodes
      */
-    initializeNode( node: any ): void {
+    initializeControlAdapters( node: any ): void {
         $( '[data-bootstrapui-adapter-type]', node )
             .each( ( index, element ) => {
                 const adapterType: string = $( element ).data( BootstrapUiAttributes.CONTROL_ADAPTER_TYPE );

@@ -17,23 +17,19 @@ Output paths | The output path for scss and js can be configured by specifying t
 Files to keep | Configured by listing these files in the `keepFiles` property | `settings.js` 
 Libraries that are loaded externally | Configured by specifying a dependency to global variable mapping for the dependency in the `externals` object.  | `settings.js` 
 
-### Compilation
+### Building
 
-First of all, the docker image needs to be created for compiling the frontend scripts.
+First of all, the docker image needs to be created for building the frontend resources.
 Execute `docker-compose build` to build the required image(s)
 
-Frontend files can be can be compiled in various manners.
-Builds can be compiled locally by running `build-local.sh`.
+Builds can be compiled locally by running `build-local.sh`, this will also watch the files by default.
 An additional `build-prod.sh` is provided for build agents.
-
-Compiling locally can be done for various end purposes.
 
 Description | command
 --- | ---
-Compiling javascript | `build-local.sh js`
-Compiling style sheets | `build-local.sh scss`
-Compiling and watching | `build-local.sh js:watch` (respectively with scss) 
-Compiling in production mode | `build-local.sh js:prod` (respectively with scss)
+Building only | `build-local.sh build`
+Building and watching | `build-local.sh build:watch` or `build-local.sh`
+Building in production mode | `build-local.sh build:prod`
 
 ## Contributing
 Contributions in the form of pull requests are greatly appreciated.  Please refer to the [contributor guidelines][] for more details. 
