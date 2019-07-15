@@ -441,10 +441,55 @@ public class TestEntityQueryDateFunctions
 
 	@Test
 	public void lastWeek() {
+		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
 		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), -1 );
 
 		assertThat( eqf( "lastWeek()", Date.class ) )
 				.isEqualTo( expectedDate );
+
+		LocalDateTime todayLocalDateTime = today.toInstant().atZone( ZoneId.systemDefault() ).toLocalDateTime();
+		assertEquals( todayLocalDateTime, entityQueryDateFunctions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null ) );
+	}
+
+	@Test
+	public void todayWithLocalDateAsReturnType() {
+		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
+		Object result = entityQueryDateFunctions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( LocalDate.class ), null );
+
+		assertTrue( result instanceof LocalDate );
+
+		LocalDate calculatedLocalDate = (LocalDate) result;
+		assertEquals( calculatedLocalDate.getDayOfWeek().getValue(), today.getDay() );
+	}
+
+	@Test
+	public void todayWithLocalTimeAsReturnType() {
+		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
+		Object result = entityQueryDateFunctions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalTime.class ), null );
+		assertTrue( result instanceof LocalTime );
+	}
+
+	@Test
+	public void todayWithZoneDateTimeAsReturnType() {
+		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
+		Object result = entityQueryDateFunctions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( ZonedDateTime.class ), null );
+		assertTrue( result instanceof ZonedDateTime );
+
+		ZonedDateTime calculatedLocalTime = (ZonedDateTime) result;
+		assertEquals( today.getDay(), calculatedLocalTime.getDayOfWeek().getValue() );
+	}
+
+	@Test
+	public void todayWithLocalDateTimeAsReturnType() {
+		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
+		Object result = entityQueryDateFunctions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null );
+
+		assertTrue( result instanceof LocalDateTime );
+
+		LocalDateTime calculatedLocalDateTime = (LocalDateTime) result;
+		assertNotNull( calculatedLocalDateTime );
+
+		assertEquals( today.getDay(), calculatedLocalDateTime.getDayOfWeek().getValue() );
 	}
 
 	private static Date getWeekStartDate() {
