@@ -39,11 +39,11 @@ public class TestDurationWithPeriod
 {
 	@Test
 	public void hours() {
-		DurationWithPeriod result = DurationWithPeriod.from( "5h" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+5h" );
 		assertEquals( 5, result.getDuration().toHours() );
 		assertEquals( 0, result.getDuration().minusHours( result.getDuration().toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "5 hour" );
+		result = DurationWithPeriod.from( "+5 hour" );
 		assertEquals( 5, result.getDuration().toHours() );
 		assertEquals( 0, result.getDuration().minusHours( result.getDuration().toHours() ).toMinutes() );
 
@@ -55,13 +55,13 @@ public class TestDurationWithPeriod
 
 	@Test
 	public void minutes() {
-		DurationWithPeriod result = DurationWithPeriod.from( "20m" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+20m" );
 		Duration duration = result.getDuration();
 
 		assertEquals( 0, duration.toHours() );
 		assertEquals( 20, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "20 minutes" );
+		result = DurationWithPeriod.from( "+20 minutes" );
 		duration = result.getDuration();
 
 		assertEquals( 0, duration.toHours() );
@@ -76,7 +76,7 @@ public class TestDurationWithPeriod
 
 	@Test
 	public void seconds() {
-		DurationWithPeriod result = DurationWithPeriod.from( "120s" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+120s" );
 		Duration duration = result.getDuration();
 
 		assertEquals( 2, duration.toMinutes() );
@@ -96,8 +96,16 @@ public class TestDurationWithPeriod
 	}
 
 	@Test
+	public void milliseconds() {
+		DurationWithPeriod result = DurationWithPeriod.from( "+120S" );
+		Duration duration = result.getDuration();
+
+		assertEquals( 120, duration.toMillis() );
+	}
+
+	@Test
 	public void yearsAndMonths(){
-		DurationWithPeriod durationWithPeriod = DurationWithPeriod.from( "1y6M" );
+		DurationWithPeriod durationWithPeriod = DurationWithPeriod.from( "+1y6M" );
 		Period period = durationWithPeriod.getPeriod();
 
 		assertEquals( 1, period.getYears() );
@@ -107,18 +115,18 @@ public class TestDurationWithPeriod
 	@Test
 	public void decimalHours() {
 		assertThatExceptionOfType( IllegalArgumentException.class ).isThrownBy(
-				() -> DurationWithPeriod.from( "1.5h" ) );
+				() -> DurationWithPeriod.from( "+1.5h" ) );
 	}
 
 	@Test
 	public void minutesExceeding60() {
-		DurationWithPeriod result = DurationWithPeriod.from( "150m" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+150m" );
 		Duration duration = result.getDuration();
 
 		assertEquals( 2, duration.toHours() );
 		assertEquals( 30, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "259m" );
+		result = DurationWithPeriod.from( "+259m" );
 		duration = result.getDuration();
 		assertEquals( 4, duration.toHours() );
 		assertEquals( 19, duration.minusHours( duration.toHours() ).toMinutes() );
@@ -132,33 +140,37 @@ public class TestDurationWithPeriod
 
 	@Test
 	public void hoursAndMinutes() {
-		DurationWithPeriod result = DurationWithPeriod.from( "4h5m" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+4h5m" );
 		Duration duration = result.getDuration();
 
 		assertEquals( 4, duration.toHours() );
 		assertEquals( 5, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "4h5 m" );
+		result = DurationWithPeriod.from( "+4h5 m" );
 		duration = result.getDuration();
 		assertEquals( 4, duration.toHours() );
 		assertEquals( 5, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "4 h5m" );
+		result = DurationWithPeriod.from( "+4 h5m" );
 		duration = result.getDuration();
 		assertEquals( 4, duration.toHours() );
 		assertEquals( 5, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "-2h 60m" );
+		result = DurationWithPeriod.from( "-2h +60m" );
 		duration = result.getDuration();
 		assertEquals( -1, duration.toHours() );
 		assertEquals( 0, duration.minusHours( duration.toHours() ).toMinutes() );
+
+		result = DurationWithPeriod.from( "-2h 60m" );
+		duration = result.getDuration();
+		assertEquals( -3, duration.toHours() );
 
 		result = DurationWithPeriod.from( "-2h60m" );
 		duration = result.getDuration();
 		assertEquals( -3, duration.toHours() );
 		assertEquals( 0, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "-2d6h 50m" );
+		result = DurationWithPeriod.from( "-2d6h +50m" );
 		duration = result.getDuration();
 		Period period = result.getPeriod();
 		assertEquals( -2, period.getDays() );
@@ -168,18 +180,18 @@ public class TestDurationWithPeriod
 
 	@Test
 	public void hoursAndMinutesWithSpaces() {
-		DurationWithPeriod result = DurationWithPeriod.from( "3h 45m" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+3h 45m" );
 		Duration duration = result.getDuration();
 
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "3 h 45m" );
+		result = DurationWithPeriod.from( "+3 h 45m" );
 		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "3h 45 m" );
+		result = DurationWithPeriod.from( "+3h 45 m" );
 		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
@@ -187,38 +199,38 @@ public class TestDurationWithPeriod
 
 	@Test
 	public void hoursAndMinutesFullWords() {
-		DurationWithPeriod result = DurationWithPeriod.from( "3 hours 45 minutes" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+3 hours 45 minutes" );
 		Duration duration = result.getDuration();
 
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "3hours 45minutes" );
+		result = DurationWithPeriod.from( "+3hours 45minutes" );
 		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "3hours45minutes" );
+		result = DurationWithPeriod.from( "+3hours45minutes" );
 		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "3 hours 45minutes" );
+		result = DurationWithPeriod.from( "+3 hours 45minutes" );
 		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "3hours 45 minutes" );
+		result = DurationWithPeriod.from( "+3hours 45 minutes" );
 		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "3 hours45minutes" );
+		result = DurationWithPeriod.from( "+3 hours45minutes" );
 		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
 
-		result = DurationWithPeriod.from( "3hours45 minutes" );
+		result = DurationWithPeriod.from( "+3hours45 minutes" );
 		duration = result.getDuration();
 		assertEquals( 3, duration.toHours() );
 		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
@@ -226,100 +238,142 @@ public class TestDurationWithPeriod
 
 	@Test
 	public void dayConvertsToHours() {
-		DurationWithPeriod result = DurationWithPeriod.from( "1d" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+1d" );
 		Period period = result.getPeriod();
 		assertEquals( 1, period.getDays() );
 
-		result = DurationWithPeriod.from( "3d" );
+		result = DurationWithPeriod.from( "+3d" );
 		period = result.getPeriod();
 		assertEquals( 3, period.getDays() );
 	}
 
 	@Test
 	public void dayFullConvertsToHours() {
-		DurationWithPeriod result = DurationWithPeriod.from( "1day" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+1day" );
 		Period period = result.getPeriod();
 		assertEquals( 1, period.getDays() );
 
-		result = DurationWithPeriod.from( "1 day" );
+		result = DurationWithPeriod.from( "+1 day" );
 		period = result.getPeriod();
 		assertEquals( 1, period.getDays() );
 	}
 
 	@Test
 	public void dayFullTranslatedConvertsToHours() {
-		DurationWithPeriod result = DurationWithPeriod.from( "1day" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+1day" );
 		Period period = result.getPeriod();
 		assertEquals( 1, period.getDays() );
 
-		result = DurationWithPeriod.from( "2 dagen" );
+		result = DurationWithPeriod.from( "+2 dagen" );
 		period = result.getPeriod();
 		assertEquals( 2, period.getDays() );
 	}
 
 	@Test
 	public void timeStamp(){
-		DurationWithPeriod result = DurationWithPeriod.from( "1d at 15:20" );
+		DurationWithPeriod result = DurationWithPeriod.from( "+1d at 15:20" );
 		Period period = result.getPeriod();
 		Duration duration = result.getDuration();
 		assertEquals( 1, period.getDays() );
-
 		assertEquals( 15, duration.toHours() );
 		assertEquals( 20, duration.minusHours( duration.toHours() ).toMinutes() );
 	}
 
 	@Test
-	public void convertToDuration() {
-		assertThat( DurationWithPeriod.from( "7h25m" ).getDuration().toMinutes() ).isEqualTo( 7 * 60 + 25 );
-		assertThat( DurationWithPeriod.from( "20m" ).getDuration().toMinutes() ).isEqualTo( 20 );
+	public void timeStampWithMillis(){
+		DurationWithPeriod result = DurationWithPeriod.from( "at 2:45:01.002" );
+		Duration duration = result.getDuration();
+		Duration durationWithoutHourAndMinutes = duration.minusHours( 2 ).minusMinutes( 45 );
 
-		DurationWithPeriod durationWithPeriod = DurationWithPeriod.from( "2d3h47m" );
+		assertEquals( 2, duration.toHours() );
+		assertEquals( 45, duration.minusHours( duration.toHours() ).toMinutes() );
+		assertEquals( 1, durationWithoutHourAndMinutes.getSeconds() );
+		assertEquals( 2, durationWithoutHourAndMinutes.minusSeconds( 1 ).toMillis() );
+	}
+
+	@Test
+	public void convertToDuration() {
+		assertThat( DurationWithPeriod.from( "+7h25m" ).getDuration().toMinutes() ).isEqualTo( 7 * 60 + 25 );
+		assertThat( DurationWithPeriod.from( "+20m" ).getDuration().toMinutes() ).isEqualTo( 20 );
+
+		DurationWithPeriod durationWithPeriod = DurationWithPeriod.from( "+2d3h47m" );
 		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( 2 );
 		assertThat( durationWithPeriod.getDuration().toHours() ).isEqualTo( 3 );
 		assertThat( durationWithPeriod.getDuration().minusHours( 3 ).toMinutes() ).isEqualTo( 47 );
 
-		durationWithPeriod = DurationWithPeriod.from( "1d -1h 30m" );
+		durationWithPeriod = DurationWithPeriod.from( "+1d -1h 30m" );
 		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( 1 );
-		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( -30 );
+		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( -90 );
 
-		durationWithPeriod = DurationWithPeriod.from( "1d -1h -30m" );
+		durationWithPeriod = DurationWithPeriod.from( "+1d -1h -30m" );
 		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( 1 );
 		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( -60 - 30 );
 
-		durationWithPeriod = DurationWithPeriod.from( "-1d 9h -30m" );
+		durationWithPeriod = DurationWithPeriod.from( "-1d +9h -30m" );
 		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( -1 );
 		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( 9 * 60 - 30 );
 
-		durationWithPeriod = DurationWithPeriod.from( "1d 9h -30m" );
+		durationWithPeriod = DurationWithPeriod.from( "+1d +9h -30m" );
 		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( 1 );
 		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( 9 * 60 - 30 );
 
-		durationWithPeriod = DurationWithPeriod.from( "-1d 9h 30m" );
+		durationWithPeriod = DurationWithPeriod.from( "-1d +9h 30m" );
 		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( -1 );
 		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( 9 * 60 + 30 );
 
-		durationWithPeriod = DurationWithPeriod.from( "2w 3d 50m" );
+		durationWithPeriod = DurationWithPeriod.from( "+2w 3d 50m" );
 		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( 17 );
 		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( 50 );
 
-		durationWithPeriod = DurationWithPeriod.from( "2M 50m" );
+		durationWithPeriod = DurationWithPeriod.from( "+2M 50m" );
 		assertThat( durationWithPeriod.getPeriod().getMonths() ).isEqualTo( 2 );
 
-		durationWithPeriod = DurationWithPeriod.from( "5y 2M" );
+		durationWithPeriod = DurationWithPeriod.from( "+5y 2M" );
 		assertThat( durationWithPeriod.getPeriod().getYears() ).isEqualTo( 5 );
 		assertThat( durationWithPeriod.getPeriod().getMonths() ).isEqualTo( 2 );
+
+		durationWithPeriod = DurationWithPeriod.from( "+1d30m" );
+		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( 1 );
+		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( 30 );
+
+		durationWithPeriod = DurationWithPeriod.from( "+1d +30m" );
+		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( 1 );
+		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( 30 );
+
+		durationWithPeriod = DurationWithPeriod.from( "+1d-30m" );
+		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( 1 );
+		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( -30 );
+
+		durationWithPeriod = DurationWithPeriod.from( "-1d30m" );
+		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( -1 );
+		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( -30 );
+
+		durationWithPeriod = DurationWithPeriod.from( "-1d 30m" );
+		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( -1 );
+		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( -30 );
+
+		durationWithPeriod = DurationWithPeriod.from( "at 03:30" );
+		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( 210 );
+
+		durationWithPeriod = DurationWithPeriod.from( "+1d at 03:30" );
+		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( 1 );
+		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( 210 );
+
+		durationWithPeriod = DurationWithPeriod.from( "at 03:30 +1d" );
+		assertThat( durationWithPeriod.getPeriod().getDays() ).isEqualTo( 1 );
+		assertThat( durationWithPeriod.getDuration().toMinutes() ).isEqualTo( 210 );
 	}
 
 	@Test
 	public void decimalMinutesAreNotAllowed() {
 		assertThatExceptionOfType( IllegalArgumentException.class ).isThrownBy(
-				() -> DurationWithPeriod.from( "25.2m" ) );
+				() -> DurationWithPeriod.from( "+25.2m" ) );
 		assertThatExceptionOfType( IllegalArgumentException.class ).isThrownBy(
-				() -> DurationWithPeriod.from( "1d17.3m" ) );
+				() -> DurationWithPeriod.from( "+1d17.3m" ) );
 		assertThatExceptionOfType( IllegalArgumentException.class ).isThrownBy(
-				() -> DurationWithPeriod.from( "1h 14.5m" ) );
+				() -> DurationWithPeriod.from( "+1h 14.5m" ) );
 		assertThatExceptionOfType( IllegalArgumentException.class ).isThrownBy(
-				() -> DurationWithPeriod.from( "3 d 4h 47.8m" ) );
+				() -> DurationWithPeriod.from( "+3 d 4h 47.8m" ) );
 	}
 
 	@Test

@@ -37,6 +37,9 @@ public class DurationWithPeriod
 	private Duration duration;
 	private Period period;
 
+	/**
+	 * The indexes of the different regex capture groups
+	 */
 	private static final int YEAR_INDEX = 2;
 	private static final int MONTH_INDEX = 5;
 	private static final int WEEK_INDEX = 8;
@@ -44,28 +47,32 @@ public class DurationWithPeriod
 	private static final int HOURS_INDEX = 14;
 	private static final int MINUTES_INDEX = 17;
 	private static final int SECONDS_INDEX = 20;
-	private static final int TIMESTAMP_HOURS_INDEX = 24;
-	private static final int TIMESTAMP_MINUTES_INDEX = 25;
-	private static final int TIMESTAMP_SECONDS_INDEX = 27;
+	private static final int MILLISECONDS_INDEX = 23;
+	private static final int TIMESTAMP_HOURS_INDEX = 27;
+	private static final int TIMESTAMP_MINUTES_INDEX = 28;
+	private static final int TIMESTAMP_SECONDS_INDEX = 30;
+	private static final int TIMESTAMP_MILLISECONDS_INDEX = 32;
 
-	private static final String signPattern = "(?=[-+])";
+	private static final String signRegexPattern = "(?=[-+])";
 
-	private static final String DURATION_PATTERN =
-			"(([-|+]?[\\d]+?)([y|Y][a-z]*+))?(([-|+]?[\\d]+?)([M][a-z]*+))?" +
-					"(([-|+]?[\\d]+?)([W|w][a-z]*+))?(([-|+]?[\\d]+?)([D|d][a-z]*+))?(([-|+]?[\\d]+?)([H|h][a-z]*+))?" +
-					"(([-|+]?[\\d]+?)([m][a-z]*+))?(([-|+]?[\\d]+?)([s|S][a-z]*+))?(([-|+]?at)([0-9]{1,2}):([0-9]{1,2})(:?([0-9]{0,2}))+?)?";
+	private static final String DURATION_REGEX_PATTERN =
+			"(([\\d]+?)([y|Y][a-z]*+))?(([\\d]+?)([M][a-z]*+))?" +
+					"(([\\d]+?)([W|w][a-z]*+))?(([\\d]+?)([D|d][a-z]*+))?(([\\d]+?)([H|h][a-z]*+))?" +
+					"(([\\d]+?)([m][a-z]*+))?(([\\d]+?)([s][a-z]*+))?(([\\d]+?)([S][a-z]*+))?((at)([0-9]{1,2}):([0-9]{1,2})(:?([0-9]{0,2}))(.?([0-9]{0,3}))+?)?";
 
 	/**
 	 * Converts a given text value to a representing duration and period.
 	 * The formatted string has to adhere to the following format:
 	 * <ul>
-	 * <li> seconds are represented by an integer followed by (one or more) characters starting with 's', 'S'</li>
+	 * <li> milliseconds are represented by an integer followed by (one or more) characters starting with 'S'</li>
+	 * <li> seconds are represented by an integer followed by (one or more) characters starting with 's'</li>
 	 * <li> minutes are represented by an integer followed by (one or more) characters starting with 'm'</li>
 	 * <li> hours are represented by an integer or decimal followed by (one or more) characters starting with 'h', 'u'</li>
 	 * <li> days are represented by an integer or decimal followed by (one or more) characters starting with 'd', 'D'</li>
 	 * <li> weeks are represented by an integer followed by (one or more) characters starting with 'w', 'W'</li>
 	 * <li> months are represented by an integer followed by (one or more) characters starting with 'M'</li>
 	 * <li> years are represented by an integer followed by (one or more) characters starting with 'y', 'Y'</li>
+	 * <li> timestamps are represented in the following format: at 00:00:00.000 </li>
 	 * </ul>
 	 *
 	 * @param period to convert
@@ -75,20 +82,20 @@ public class DurationWithPeriod
 	public static DurationWithPeriod from( String period ) {
 		DurationWithPeriod durationWithPeriod = new DurationWithPeriod( Duration.ZERO, Period.ZERO );
 
-		Pattern pattern = Pattern.compile( DURATION_PATTERN );
+		Pattern pattern = Pattern.compile( DURATION_REGEX_PATTERN );
 		String durationFromUser = period.replaceAll( ",", "." )
 		                                .replaceAll( " at ", "+at" )
 		                                .replaceAll( "at ", "+at" )
-		                                .replaceAll( " [\\d]+?", "+$0" )
-		                                .replaceAll( " ", "" );
+//		                                .replaceAll( " [\\d]+?", "+$0" )
+                                        .replaceAll( " ", "" );
 
 		// The default sign is +
 		if ( !durationFromUser.startsWith( "-" ) && !durationFromUser.startsWith( "+" ) ) {
-			durationFromUser = "+" + durationFromUser;
+			throw new IllegalArgumentException( "'" + period + "' is not a valid format. Must start with a valid period operator (-, + or at)." );
 		}
 
 		// Split in groups for each sign
-		Arrays.stream( durationFromUser.split( signPattern ) ).forEach( periodPart -> {
+		Arrays.stream( durationFromUser.split( signRegexPattern ) ).forEach( periodPart -> {
 			Character sign = periodPart.charAt( 0 );
 			String periodExpression = periodPart.substring( 1 );
 
@@ -96,6 +103,8 @@ public class DurationWithPeriod
 
 			if ( m.matches() ) {
 				Stream.of(
+						calculateDuration( m.group( MILLISECONDS_INDEX ), ChronoUnit.MILLIS, sign ),
+						calculateDuration( m.group( TIMESTAMP_MILLISECONDS_INDEX ), ChronoUnit.MILLIS, sign ),
 						calculateDuration( m.group( SECONDS_INDEX ), ChronoUnit.SECONDS, sign ),
 						calculateDuration( m.group( TIMESTAMP_SECONDS_INDEX ), ChronoUnit.SECONDS, sign ),
 						calculateDuration( m.group( MINUTES_INDEX ), ChronoUnit.MINUTES, sign ),
@@ -156,6 +165,8 @@ public class DurationWithPeriod
 					return Duration.ofMinutes( valueToUse );
 				case SECONDS:
 					return Duration.ofSeconds( valueToUse );
+				case MILLIS:
+					return Duration.ofMillis( valueToUse );
 				default:
 					break;
 			}
