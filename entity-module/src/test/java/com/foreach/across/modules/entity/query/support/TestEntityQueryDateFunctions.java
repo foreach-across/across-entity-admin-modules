@@ -448,13 +448,13 @@ public class TestEntityQueryDateFunctions
 				.isEqualTo( expectedDate );
 
 		LocalDateTime todayLocalDateTime = today.toInstant().atZone( ZoneId.systemDefault() ).toLocalDateTime();
-		assertEquals( todayLocalDateTime, entityQueryDateFunctions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null ) );
+		assertEquals( todayLocalDateTime, functions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null ) );
 	}
 
 	@Test
 	public void todayWithLocalDateAsReturnType() {
 		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
-		Object result = entityQueryDateFunctions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( LocalDate.class ), null );
+		Object result = functions.apply( TODAY, new EQType[0], TypeDescriptor.valueOf( LocalDate.class ), null );
 
 		assertTrue( result instanceof LocalDate );
 
@@ -465,14 +465,14 @@ public class TestEntityQueryDateFunctions
 	@Test
 	public void todayWithLocalTimeAsReturnType() {
 		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
-		Object result = entityQueryDateFunctions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalTime.class ), null );
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalTime.class ), null );
 		assertTrue( result instanceof LocalTime );
 	}
 
 	@Test
 	public void todayWithZoneDateTimeAsReturnType() {
 		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
-		Object result = entityQueryDateFunctions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( ZonedDateTime.class ), null );
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( ZonedDateTime.class ), null );
 		assertTrue( result instanceof ZonedDateTime );
 
 		ZonedDateTime calculatedLocalTime = (ZonedDateTime) result;
@@ -482,7 +482,7 @@ public class TestEntityQueryDateFunctions
 	@Test
 	public void todayWithLocalDateTimeAsReturnType() {
 		Date today = DateUtils.truncate( new Date(), Calendar.DATE );
-		Object result = entityQueryDateFunctions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null );
+		Object result = functions.apply( NOW, new EQType[0], TypeDescriptor.valueOf( LocalDateTime.class ), null );
 
 		assertTrue( result instanceof LocalDateTime );
 
