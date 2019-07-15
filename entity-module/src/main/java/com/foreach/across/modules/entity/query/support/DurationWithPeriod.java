@@ -27,6 +27,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+
+/**
+ * A helper class that holds a {@link Period} and {@link Duration}.
+ * The {@link DurationWithPeriod#from(String)} method can be used to convert a {@link String} to a {@link DurationWithPeriod}
+ */
 @Builder
 @Getter
 @Setter
@@ -81,40 +86,31 @@ public class DurationWithPeriod
 	 */
 	public static DurationWithPeriod from( String period ) {
 		DurationWithPeriod durationWithPeriod = new DurationWithPeriod( Duration.ZERO, Period.ZERO );
-
 		Pattern pattern = Pattern.compile( DURATION_REGEX_PATTERN );
-		String durationFromUser = period.replaceAll( ",", "." )
-		                                .replaceAll( " at ", "+at" )
-		                                .replaceAll( "at ", "+at" )
-//		                                .replaceAll( " [\\d]+?", "+$0" )
-                                        .replaceAll( " ", "" );
 
-		// The default sign is +
-		if ( !durationFromUser.startsWith( "-" ) && !durationFromUser.startsWith( "+" ) ) {
-			throw new IllegalArgumentException( "'" + period + "' is not a valid format. Must start with a valid period operator (-, + or at)." );
-		}
+		String durationFromUser = cleanupAndValidateUserInput( period );
 
 		// Split in groups for each sign
 		Arrays.stream( durationFromUser.split( signRegexPattern ) ).forEach( periodPart -> {
 			Character sign = periodPart.charAt( 0 );
 			String periodExpression = periodPart.substring( 1 );
 
-			Matcher m = pattern.matcher( periodExpression );
+			Matcher regexMatcher = pattern.matcher( periodExpression );
 
-			if ( m.matches() ) {
+			if ( regexMatcher.matches() ) {
 				Stream.of(
-						calculateDuration( m.group( MILLISECONDS_INDEX ), ChronoUnit.MILLIS, sign ),
-						calculateDuration( m.group( TIMESTAMP_MILLISECONDS_INDEX ), ChronoUnit.MILLIS, sign ),
-						calculateDuration( m.group( SECONDS_INDEX ), ChronoUnit.SECONDS, sign ),
-						calculateDuration( m.group( TIMESTAMP_SECONDS_INDEX ), ChronoUnit.SECONDS, sign ),
-						calculateDuration( m.group( MINUTES_INDEX ), ChronoUnit.MINUTES, sign ),
-						calculateDuration( m.group( TIMESTAMP_MINUTES_INDEX ), ChronoUnit.MINUTES, sign ),
-						calculateDuration( m.group( HOURS_INDEX ), ChronoUnit.HOURS, sign ),
-						calculateDuration( m.group( TIMESTAMP_HOURS_INDEX ), ChronoUnit.HOURS, sign ),
-						calculatePeriod( m.group( DAYS_INDEX ), ChronoUnit.DAYS, sign ),
-						calculatePeriod( m.group( WEEK_INDEX ), ChronoUnit.WEEKS, sign ),
-						calculatePeriod( m.group( MONTH_INDEX ), ChronoUnit.MONTHS, sign ),
-						calculatePeriod( m.group( YEAR_INDEX ), ChronoUnit.YEARS, sign )
+						calculateDuration( regexMatcher.group( MILLISECONDS_INDEX ), ChronoUnit.MILLIS, sign ),
+						calculateDuration( regexMatcher.group( TIMESTAMP_MILLISECONDS_INDEX ), ChronoUnit.MILLIS, sign ),
+						calculateDuration( regexMatcher.group( SECONDS_INDEX ), ChronoUnit.SECONDS, sign ),
+						calculateDuration( regexMatcher.group( TIMESTAMP_SECONDS_INDEX ), ChronoUnit.SECONDS, sign ),
+						calculateDuration( regexMatcher.group( MINUTES_INDEX ), ChronoUnit.MINUTES, sign ),
+						calculateDuration( regexMatcher.group( TIMESTAMP_MINUTES_INDEX ), ChronoUnit.MINUTES, sign ),
+						calculateDuration( regexMatcher.group( HOURS_INDEX ), ChronoUnit.HOURS, sign ),
+						calculateDuration( regexMatcher.group( TIMESTAMP_HOURS_INDEX ), ChronoUnit.HOURS, sign ),
+						calculatePeriod( regexMatcher.group( DAYS_INDEX ), ChronoUnit.DAYS, sign ),
+						calculatePeriod( regexMatcher.group( WEEK_INDEX ), ChronoUnit.WEEKS, sign ),
+						calculatePeriod( regexMatcher.group( MONTH_INDEX ), ChronoUnit.MONTHS, sign ),
+						calculatePeriod( regexMatcher.group( YEAR_INDEX ), ChronoUnit.YEARS, sign )
 				).forEach( ( temporalAmount -> {
 					// Add the period to the existing period
 					if ( temporalAmount instanceof Period && !( (Period) temporalAmount ).isZero() ) {
@@ -133,6 +129,20 @@ public class DurationWithPeriod
 		} );
 
 		return durationWithPeriod;
+	}
+
+	private static String cleanupAndValidateUserInput( String period ) {
+		String durationFromUser = period.replaceAll( ",", "." )
+			                                .replaceAll( " at ", "+at" )
+			                                .replaceAll( "at ", "+at" )
+	                                        .replaceAll( " ", "" );
+
+		// The default sign is +
+		if ( !durationFromUser.startsWith( "-" ) && !durationFromUser.startsWith( "+" ) ) {
+			throw new IllegalArgumentException( "'" + period + "' is not a valid format. Must start with a valid period operator (-, + or at)." );
+		}
+
+		return durationFromUser;
 	}
 
 	private static Period calculatePeriod( String number, ChronoUnit unit, Character sign ) {
