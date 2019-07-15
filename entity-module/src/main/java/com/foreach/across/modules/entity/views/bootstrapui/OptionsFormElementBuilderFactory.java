@@ -22,6 +22,7 @@ import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElement
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
+import com.foreach.across.modules.entity.query.EQGroup;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -33,7 +34,9 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySu
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.options.*;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.LocalizedTextPostProcessor;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -47,6 +50,8 @@ import java.util.function.Consumer;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.option;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.*;
 import static com.foreach.across.modules.entity.EntityAttributes.OPTIONS_ENHANCER;
+import static com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils.*;
+import static com.foreach.across.modules.web.ui.ViewElementBuilderSupport.ElementOrBuilder.wrap;
 
 /**
  * Builds a {@link OptionsFormElementBuilder} for a given {@link EntityPropertyDescriptor}.
@@ -91,7 +96,19 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 				= BootstrapUiBuilders.options()
 				                     .name( descriptor.getName() )
 				                     .controlName( descriptor.getName() )
-				                     .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) );
+				                     .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) )
+				                     .postProcessor(
+						                     ( ( builderContext, element ) -> {
+							                     if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+								                     ViewElementBuilderSupport.ElementOrBuilder wrappedElement = wrap( element );
+								                     configureControlSettings( wrappedElement, descriptor );
+								                     if ( viewElementMode.isForMultiple() ) {
+									                     setAttribute( wrappedElement, FilterControlAttributes.TYPE, EQGroup.class.getSimpleName() );
+								                     }
+								                     element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
+							                     }
+						                     } )
+				                     );
 
 		EntityConfiguration optionConfiguration = entityRegistry.getEntityConfiguration( typeDescriptor.getSimpleTargetType() );
 		OptionGenerator optionGenerator = determineOptionGenerator( descriptor, typeDescriptor.getSimpleTargetType(), optionConfiguration, viewElementMode );

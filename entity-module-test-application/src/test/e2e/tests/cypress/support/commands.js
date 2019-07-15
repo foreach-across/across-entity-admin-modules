@@ -40,18 +40,21 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-Cypress.Commands.add( "login", ( username, password ) => {
+Cypress.Commands.add( "login", ( username ) => {
 
-    cy.visit( "/admin/login" );
+    cy.fixture( "users" ).then( users => {
+        cy.visit( "/admin/login" );
 
-    cy.get( '#username' )
-            .clear()
-            .type( username )
-            .get( '#password' )
-            .clear()
-            .type( password )
-            .get( '.btn-primary' )
-            .click();
+        cy.get( '#username' )
+                .clear()
+                .type( username )
+                .get( '#password' )
+                .clear()
+                .type( users[username] )
+                .get( '.btn-primary' )
+                .click();
+    } );
+
 } );
 
 Cypress.Commands.add( 'goToMenuItem', ( title ) => {
@@ -62,5 +65,5 @@ Cypress.Commands.add( 'goToMenuItem', ( title ) => {
 
 Cypress.Commands.add( 'assertListViewResults', ( numberOfResultsOnPage, totalNumberOfResults = numberOfResultsOnPage ) => {
     cy.get( 'table tr' ).should( 'have.length', numberOfResultsOnPage + 1 );
-    cy.get('.pcs-body-section > .panel > .panel-heading').contains(totalNumberOfResults);
+    cy.get( '.pcs-body-section > .panel > .panel-heading' ).contains( totalNumberOfResults );
 } );

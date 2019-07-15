@@ -25,6 +25,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -67,7 +68,10 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	public boolean accepts( String functionName, TypeDescriptor desiredType ) {
 		return ArrayUtils.contains( FUNCTION_NAMES, functionName ) && (
 				Date.class.equals( desiredType.getObjectType() )
+						|| LocalDate.class.equals( desiredType.getObjectType() )
+						|| LocalTime.class.equals( desiredType.getObjectType() )
 						|| LocalDateTime.class.equals( desiredType.getObjectType() )
+						|| ZonedDateTime.class.equals( desiredType.getObjectType() )
 						|| Long.class.equals( desiredType.getObjectType() )
 		);
 	}
@@ -409,7 +413,23 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 			return Date.from( dateTime.atZone( ZoneId.systemDefault() ).toInstant() );
 		}
 
-		return dateTime;
+		if(LocalTime.class.equals( desiredType )) {
+			return date.toInstant().atZone( ZoneId.systemDefault() ).toLocalTime();
+		}
+
+		if(LocalDate.class.equals( desiredType )) {
+			return date.toInstant().atZone( ZoneId.systemDefault() ).toLocalDate();
+		}
+
+		if ( LocalDateTime.class.equals( desiredType ) ) {
+			return date.toInstant().atZone( ZoneId.systemDefault() ).toLocalDateTime();
+		}
+
+		if ( ZonedDateTime.class.equals( desiredType ) ) {
+			return date.toInstant().atZone( ZoneId.systemDefault() );
+		}
+
+		return date;
 	}
 }
 

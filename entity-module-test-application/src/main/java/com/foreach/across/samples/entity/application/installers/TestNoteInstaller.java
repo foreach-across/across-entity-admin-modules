@@ -46,8 +46,8 @@ public class TestNoteInstaller
 					word -> {
 						Note note = new Note();
 						note.setName( word );
-						String content = words[random.nextInt( words.length )] + " " + words[random.nextInt( words.length )] + " " + words[random.nextInt(
-								words.length )];
+						String content = words[random.nextInt( words.length )] + " " + words[random.nextInt( words.length )] + " "
+								+ words[random.nextInt( words.length )];
 						note.setContent( content );
 						noteRepository.save( note );
 					}
