@@ -84,7 +84,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input  data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"</div>"
 		);
 	}
@@ -101,8 +101,8 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class=\"form-group\">\n" +
 						"    <label for=\"firstName\" class=\"control-label\">Name</label>\n" +
 						"    <input type=\"hidden\" name=\"name\" id=\"name\" disabled=\"disabled\" />\n" +
-						"    <input type=\"text\" name=\"firstName\" id=\"firstName\" class=\"form-control\" />\n" +
-						"    <input type=\"text\" name=\"lastName\" id=\"lastName\" class=\"form-control\" />\n" +
+						"    <input data-bootstrapui-adapter-type='basic' type=\"text\" name=\"firstName\" id=\"firstName\" class=\"form-control\" />\n" +
+						"    <input data-bootstrapui-adapter-type='basic' type=\"text\" name=\"lastName\" id=\"lastName\" class=\"form-control\" />\n" +
 						"</div>"
 		);
 	}
@@ -124,7 +124,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				this::sampleModelWithError,
 				"<form method='post' role='form'>" +
 						"<div class='form-group'>" +
-						"<input type='text' class='form-control' />" +
+						"<input  data-bootstrapui-adapter-type='basic' type='text' class='form-control' />" +
 						"</div>" +
 						"</form>"
 		);
@@ -152,7 +152,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<label for='control' class='control-label'>title input group</label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input  data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"</div>" +
 						"</div>"
 		);
@@ -166,7 +166,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group required'>" +
 						"<label for='control' class='control-label'>title<sup class='required'>*</sup></label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"</div>"
 		);
 	}
@@ -180,7 +180,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group required'>" +
 						"<label for='control' class='control-label'>title<sup class='required'>*</sup><a>my tooltip</a></label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"</div>"
 		);
 	}
@@ -195,7 +195,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<label for='control' class='control-label'>title input group<sup class='required'>*</sup></label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"</div>" +
 						"</div>"
 		);
@@ -213,7 +213,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"<div class='some-class'>appended div</div>" +
 						"</div>"
 		);
@@ -226,7 +226,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<label for='control' class='control-label'>title input group</label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"</div>" +
 						"<div class='some-class'>appended div</div>" +
 						"</div>"
@@ -248,7 +248,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
 						"<p class='help-block' id='control.help'>example help text</p>" +
 						"</div>"
 		);
@@ -261,7 +261,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
 						"<p id='control.description'>description</p>" +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.description' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' aria-describedby='control.description' />" +
 						"</div>"
 		);
 
@@ -276,7 +276,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
 						"<p id='list.description'>description</p>" +
-						"<select class='form-control' name='list' id='list' aria-describedby='list.description list.help' />" +
+						"<select data-bootstrapui-adapter-type='select' class='form-control' name='list' id='list' aria-describedby='list.description list.help' />" +
 						"<p class='help-block' id='list.help'>example help text</p>" +
 						"</div>"
 		);
@@ -289,7 +289,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<label for='control' class='control-label'>title input group</label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
 						"</div>" +
 						"<p class='help-block' id='control.help'>example help text</p>" +
 						"</div>"
@@ -304,7 +304,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"</div>"
 		);
 
@@ -316,7 +316,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<label for='control' class='control-label'>title input group</label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"</div>" +
 						"</div>"
 		);
@@ -330,7 +330,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label sr-only'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' placeholder='title' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' placeholder='title' />" +
 						"</div>"
 		);
 
@@ -339,7 +339,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label sr-only'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' placeholder='some placeholder' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' placeholder='some placeholder' />" +
 						"</div>"
 		);
 
@@ -348,7 +348,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label sr-only'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' placeholder='' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' placeholder='' />" +
 						"</div>"
 		);
 
@@ -362,7 +362,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<label for='control' class='control-label sr-only'>title input group</label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
-						"<input type='text' class='form-control' name='control' id='control' placeholder='title input group' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' placeholder='title input group' />" +
 						"</div>" +
 						"</div>"
 		);
@@ -376,7 +376,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<label for='control' class='control-label sr-only'>title input group</label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
-						"<input type='text' class='form-control' name='control' id='control' placeholder='some placeholder' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' placeholder='some placeholder' />" +
 						"</div>" +
 						"</div>"
 		);
@@ -390,7 +390,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<label for='control' class='control-label sr-only'>title input group</label>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
-						"<input type='text' class='form-control' name='control' id='control' placeholder='' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' placeholder='' />" +
 						"</div>" +
 						"</div>"
 		);
@@ -409,7 +409,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
 						"<p class='help-block sr-only' id='control.help'>example help text</p>" +
 						"</div>"
 		);
@@ -420,7 +420,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label sr-only'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' placeholder='title' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' aria-describedby='control.help' placeholder='title' />" +
 						"<p class='help-block sr-only' id='control.help'>example help text</p>" +
 						"</div>"
 		);
@@ -440,7 +440,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label col-md-2'>title</label>" +
 						"<div class='col-md-10'>" +
-						"<input type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' aria-describedby='control.help' />" +
 						"<p class='help-block' id='control.help'>example help text</p>" +
 						"</div>" +
 						"</div>"
@@ -455,7 +455,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 						"<div class='col-md-6'>" +
 						"<div class='input-group'>" +
 						INPUT_GROUP_ADDON +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"</div>" +
 						"</div>" +
 						"</div>"
@@ -475,8 +475,8 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group checkbox'>" +
 						"<div class='col-md-10 col-md-offset-2'>" +
-						"<div class='checkbox'><label>" +
-						"<input type='checkbox' />checkbox value" +
+						"<div class='checkbox' data-bootstrapui-adapter-type='checkbox'><label>" +
+						"<input type='checkbox'/>checkbox value" +
 						"</label>" +
 						"</div>" +
 						"</div>" +
@@ -502,7 +502,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				form,
 				"<form method='post' role='form' class='form-horizontal'><div class='form-group checkbox'>" +
 						"<div class='col-md-10 col-md-offset-2'>" +
-						"<div class='checkbox'><label>" +
+						"<div class='checkbox' data-bootstrapui-adapter-type='checkbox'><label>" +
 						"<input type='checkbox' />checkbox value" +
 						"(tooltip)</label>" +
 						"</div>" +
@@ -522,7 +522,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				callback,
 				"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>"
 		);
@@ -533,7 +533,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				callback,
 				"<div class='form-group'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' />" +
 						"</div>"
 		);
 	}
@@ -551,7 +551,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				this::sampleModelWithError,
 				"<div class='form-group'>" +
 						"<label for='illegalProperty' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='illegalProperty' id='illegalProperty' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='illegalProperty' id='illegalProperty' />" +
 						"</div>"
 		);
 	}
@@ -568,7 +568,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				this::sampleModelWithError,
 				"<div class='form-group has-error'>" +
 						"<label for='values[sub.item].name' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='values[sub.item].name' id='values[sub.item].name' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='values[sub.item].name' id='values[sub.item].name' />" +
 						"<div class='small text-danger'>map-broken</div>" +
 						"</div>"
 		);
@@ -609,7 +609,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<form role='form' method='post'>" +
 						"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>" +
 						"</form>"
@@ -631,7 +631,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<form role='form' method='post'>" +
 						"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label'>title</label>" +
-						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>" +
 						"</form>"
@@ -651,7 +651,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 				"<div class='form-group has-error'>" +
 						"<label for='control' class='control-label col-md-2'>title</label>" +
 						"<div class='col-md-10'>" +
-						"<input type='text' class='form-control' name='control' id='control' value='test value' />" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' value='test value' />" +
 						"<div class='small text-danger'>broken</div>" +
 						"</div>" +
 						"</div>"

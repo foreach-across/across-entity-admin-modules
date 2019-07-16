@@ -42,7 +42,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 	public void emptyNumeric() {
 		renderAndExpect(
 				numeric,
-				"<input class='numeric form-control' type='text' />"
+				"<input data-bootstrapui-adapter-type='basic' class='numeric form-control' type='text' />"
 		);
 	}
 
@@ -54,7 +54,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				numeric,
-				"<input id='number' name='number' class='numeric form-control' type='text' value='123' />"
+				"<input data-bootstrapui-adapter-type='basic' id='number' name='number' class='numeric form-control' type='text' value='123' />"
 		);
 	}
 
@@ -68,7 +68,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				numeric,
-				"<input id='number' name='_number' class='numeric form-control' " +
+				"<input data-bootstrapui-adapter-type='numeric' id='number' name='_number' class='numeric form-control' " +
 						"type='text' " + DATA_ATTRIBUTE + " value='123.9541' />" +
 						"<input type='hidden' name='number' value='123.9541' />"
 		);
@@ -91,7 +91,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 				group,
 				"<div class='form-group'>" +
 						"<label for='number' class='control-label'>title</label>" +
-						"<input id='number' name='number' class='numeric form-control' type='text' />" +
+						"<input data-bootstrapui-adapter-type='basic' id='number' name='number' class='numeric form-control' type='text' />" +
 						"</div>"
 		);
 	}
@@ -104,7 +104,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 		control.setControlName( "two" );
 		renderAndExpect(
 				control,
-				"<input type='text' class='numeric form-control' id='two' name='two' />"
+				"<input data-bootstrapui-adapter-type='basic' type='text' class='numeric form-control' id='two' name='two' />"
 		);
 
 		assertEquals( "two", control.getControlName() );
@@ -122,7 +122,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<input type='text' class='numeric form-control' id='prefix.one' name='prefix.one' />"
+				"<input data-bootstrapui-adapter-type='basic' type='text' class='numeric form-control' id='prefix.one' name='prefix.one' />"
 		);
 
 		assertEquals( "prefix.one", control.getControlName() );
@@ -146,7 +146,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<input id='my-specific-id' name='_prefix.two' class='numeric form-control' " +
+				"<input data-bootstrapui-adapter-type='numeric' id='my-specific-id' name='_prefix.two' class='numeric form-control' " +
 						"type='text' " + DATA_ATTRIBUTE + " value='1433' />" +
 						"<input type='hidden' name='prefix.two' value='1433' />"
 		);

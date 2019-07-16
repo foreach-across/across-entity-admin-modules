@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiViewElementAttributes;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
@@ -182,6 +183,7 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 
 			if ( type == Type.CHECKBOX || type == Type.RADIO ) {
 				control = createBoxDiv();
+				control.setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "container" );
 
 				if ( controlName != null ) {
 					control.setHtmlId( "options-" + controlName );

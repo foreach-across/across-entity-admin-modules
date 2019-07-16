@@ -34,7 +34,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<select name='boxName' class='form-control' />"
+				"<select data-bootstrapui-adapter-type='select' name='boxName' class='form-control' />"
 		);
 	}
 
@@ -47,7 +47,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<select name='boxName' class='form-control' data-bootstrapui-select='{&quot;dropupAuto&quot;:false}' />"
+				"<select data-bootstrapui-adapter-type='bootstrap-select' name='boxName' class='form-control' data-bootstrapui-select='{&quot;dropupAuto&quot;:false}' />"
 		);
 	}
 
@@ -58,7 +58,19 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<select class='form-control' multiple='multiple' />"
+				"<select data-bootstrapui-adapter-type='select' class='form-control' multiple='multiple' />"
+		);
+	}
+
+	@Test
+	public void multipleWithControlName() {
+		SelectFormElement box = new SelectFormElement();
+		box.setMultiple( true );
+		box.setControlName( "controlName" );
+
+		renderAndExpect(
+				box,
+				"<select data-bootstrapui-adapter-type='select' name='controlName' multiple='multiple' id='controlName' class='form-control'></select><input name='_controlName' type='hidden' value=''></input>"
 		);
 	}
 
@@ -69,7 +81,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<select class='form-control' disabled='disabled' />"
+				"<select data-bootstrapui-adapter-type='select' class='form-control' disabled='disabled' />"
 		);
 
 		box.setDisabled( false );
@@ -77,7 +89,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<select class='form-control' readonly='readonly' />"
+				"<select data-bootstrapui-adapter-type='select' class='form-control' readonly='readonly' />"
 		);
 	}
 
@@ -106,7 +118,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<select class='form-control'>" +
+				"<select data-bootstrapui-adapter-type='select' class='form-control'>" +
 						"<option value='one'>Inner text</option>" +
 						"<option label='Short two' selected='selected' disabled='disabled'>Some text</option>" +
 						"<option class='one two' value='123'>Label only</option>" +
@@ -147,7 +159,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<select id='controlName' class='form-control' name='controlName' multiple='multiple' readonly='readonly'>" +
+				"<select data-bootstrapui-adapter-type='select' id='controlName' class='form-control' name='controlName' multiple='multiple' readonly='readonly'>" +
 						"<option label='Short two' selected='selected' disabled='disabled'>Some text</option>" +
 						"<optgroup>" +
 						"<option value='one'>Inner text</option>" +
@@ -155,7 +167,8 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 						"</optgroup>" +
 						"<optgroup disabled='disabled' label='some label'></optgroup>" +
 						"<option value='one'>Inner text</option>" +
-						"</select>"
+						"</select>" +
+						"<input name='_controlName' type='hidden' value=''></input>"
 		);
 	}
 
@@ -167,7 +180,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 		control.setControlName( "two" );
 		renderAndExpect(
 				control,
-				"<select name='two' id='two' class='form-control' />"
+				"<select data-bootstrapui-adapter-type='select' name='two' id='two' class='form-control' />"
 		);
 
 		assertEquals( "two", control.getControlName() );
@@ -185,7 +198,7 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<select name='prefix.one' id='prefix.one' class='form-control' />"
+				"<select data-bootstrapui-adapter-type='select' name='prefix.one' id='prefix.one' class='form-control' />"
 		);
 
 		assertEquals( "prefix.one", control.getControlName() );

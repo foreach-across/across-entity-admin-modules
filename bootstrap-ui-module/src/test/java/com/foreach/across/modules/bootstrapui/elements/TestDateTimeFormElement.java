@@ -38,7 +38,7 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 	private static final String DATA_ATTRIBUTE =
 			"data-bootstrapui-datetimepicker='{\"datepickerInput\":\"input[type=text]\"," +
 					"\"format\":\"L LT\",\"extraFormats\":[\"YYYY-MM-DD HH:mm\",\"L\",\"YYYY-MM-DD\"]," +
-					"\"locale\":\"en-GB\",\"exportFormat\":\"YYYY-MM-DD HH:mm\"}'";
+					"\"locale\":\"en-GB\",\"exportFormat\":\"YYYY-MM-DD HH:mm\"}' data-bootstrapui-adapter-type='datetime'";
 
 	private DateTimeFormElement datetime;
 

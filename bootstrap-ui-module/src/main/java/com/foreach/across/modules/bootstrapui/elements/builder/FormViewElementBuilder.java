@@ -59,7 +59,7 @@ public class FormViewElementBuilder extends AbstractLinkSupportingNodeViewElemen
 	 * for field error binding by the {@link com.foreach.across.modules.bootstrapui.elements.FormGroupElement}
 	 * members of this form.
 	 *
-	 * @param commandObject command bject
+	 * @param commandObject command object
 	 * @return current builder
 	 */
 	public FormViewElementBuilder commandObject( Object commandObject ) {
