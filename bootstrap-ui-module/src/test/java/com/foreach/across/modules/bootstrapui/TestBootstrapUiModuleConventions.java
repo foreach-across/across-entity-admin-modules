@@ -23,11 +23,6 @@ import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
 public class TestBootstrapUiModuleConventions extends AbstractAcrossModuleConventionsTest
 {
 	@Override
-	protected boolean hasSettings() {
-		return false;
-	}
-
-	@Override
 	protected BootstrapUiModule createModule() {
 		return new BootstrapUiModule();
 	}
