@@ -15,7 +15,7 @@
  */
 package com.foreach.across.modules.entity.formatters;
 
-import com.foreach.across.core.convert.StringToDateConverter;
+import com.foreach.across.core.convert.StringToDateTimeConverter;
 import liquibase.exception.DateParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -43,7 +43,7 @@ public class DateFormatter extends org.springframework.format.datetime.DateForma
 		dateFormats.add( FastDateFormat.getInstance( "yyyy/MM/dd HH:mm" ) );
 		dateFormats.add( FastDateFormat.getInstance( "yyyy-MM-dd HH:mm:ss" ) );
 		dateFormats.add( FastDateFormat.getInstance( "yyyy/MM/dd HH:mm:ss" ) );
-		Stream.of( StringToDateConverter.defaultPatterns() )
+		Stream.of( StringToDateTimeConverter.defaultPatterns() )
 		      .forEach( p -> dateFormats.add( FastDateFormat.getInstance( p ) ) );
 		Collections.sort( dateFormats,
 		                  Collections.reverseOrder( Comparator.comparingInt( f -> f.getPattern().length() ) ) );
