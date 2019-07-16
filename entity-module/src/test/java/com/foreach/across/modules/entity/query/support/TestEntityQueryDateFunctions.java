@@ -91,7 +91,7 @@ public class TestEntityQueryDateFunctions
 		Date nextHourWithThreeMinutes = DateUtils.addMinutes( DateUtils.addHours( new Date(), 1 ), 3 );
 		Date moreThenOneHourAgo = DateUtils.addSeconds( DateUtils.addMinutes( DateUtils.addHours( new Date(), -1 ), -3 ), 5 );
 
-		assertThat( eqf( "offset(now(),'1h 3m')", Date.class ) )
+		assertThat( eqf( "offset(now(),'+1h +3m')", Date.class ) )
 				.isBefore( DateUtils.addSeconds( nextHourWithThreeMinutes, 1 ) )
 				.isAfterOrEqualsTo( nextHourWithThreeMinutes );
 
@@ -99,7 +99,7 @@ public class TestEntityQueryDateFunctions
 				.isBefore( DateUtils.addSeconds( nextHourWithThreeMinutes, 1 ) )
 				.isAfterOrEqualsTo( nextHourWithThreeMinutes );
 
-		assertThat( eqf( "offset(now(),'-1h3m 5s')", Date.class ) )
+		assertThat( eqf( "offset(now(),'-1h3m +5s')", Date.class ) )
 				.isBefore( DateUtils.addSeconds( moreThenOneHourAgo, 1 ) )
 				.isAfterOrEqualsTo( moreThenOneHourAgo );
 
@@ -188,7 +188,7 @@ public class TestEntityQueryDateFunctions
 		assertThat( eqf( "offset(today(),'-1d')", Date.class ) )
 				.isEqualTo( yesterday );
 
-		assertThat( eqf( "offset(today(),'1d')", Date.class ) )
+		assertThat( eqf( "offset(today(),'+1d')", Date.class ) )
 				.isEqualTo( tomorrow );
 
 		assertThat( eqf( "offset(today(),'+7d +13h +30m')", Date.class ) )
@@ -278,7 +278,7 @@ public class TestEntityQueryDateFunctions
 	@Test
 	public void startOfMonthWithTemporalAndOffset() {
 		Date expectedDate = DateUtils.truncate( DateUtils.addMonths( getMonthStartDate(), 3 ), Calendar.DATE );
-		assertThat( eqf( "offset(offset(startOfMonth(now()), '1M'), '2M')", Date.class ) )
+		assertThat( eqf( "offset(offset(startOfMonth(now()), '+1M'), '+2M')", Date.class ) )
 				.isEqualTo( expectedDate );
 	}
 
@@ -346,10 +346,10 @@ public class TestEntityQueryDateFunctions
 	public void offsetYear() {
 		Date towMonthsLater = DateUtils.addMonths( getYearStartDate(), 2 );
 
-		assertThat( eqf( "offset(startOfYear(now()), 2M)", Date.class ) )
+		assertThat( eqf( "offset(startOfYear(now()), '+2M')", Date.class ) )
 				.isEqualTo( towMonthsLater );
 
-		assertThat( eqf( "offset(thisYear(),'2M')", Date.class ) )
+		assertThat( eqf( "offset(thisYear(),'+2M')", Date.class ) )
 				.isEqualTo( towMonthsLater );
 
 	}
