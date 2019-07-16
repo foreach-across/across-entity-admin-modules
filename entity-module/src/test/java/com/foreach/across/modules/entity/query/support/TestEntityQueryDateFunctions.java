@@ -91,13 +91,19 @@ public class TestEntityQueryDateFunctions
 		Date nextHourWithThreeMinutes = DateUtils.addMinutes( DateUtils.addHours( new Date(), 1 ), 3 );
 		Date moreThenOneHourAgo = DateUtils.addSeconds( DateUtils.addMinutes( DateUtils.addHours( new Date(), -1 ), -3 ), 5 );
 
-		assertThat( eqf( "offset(now(),'+1h +3m')", Date.class ) )
-				.isBefore( DateUtils.addSeconds( nextHourWithThreeMinutes, 1 ) )
-				.isAfterOrEqualsTo( nextHourWithThreeMinutes );
+		Calendar calendar = Calendar.getInstance();
+		calendar.set( Calendar.HOUR_OF_DAY, 1 );
+		calendar.set( Calendar.MINUTE, 3 );
+		calendar.set( Calendar.SECOND, 0 );
+		calendar.set( Calendar.MILLISECOND, 0 );
 
 		assertThat( eqf( "offset(now(),'+1h +3m')", Date.class ) )
 				.isBefore( DateUtils.addSeconds( nextHourWithThreeMinutes, 1 ) )
 				.isAfterOrEqualsTo( nextHourWithThreeMinutes );
+
+		assertThat( eqf( "offset(now(), 'at 1:03') ", Date.class ) )
+				.isBefore( DateUtils.addSeconds( calendar.getTime(), 1 ) )
+				.isAfterOrEqualsTo( calendar.getTime() );
 
 		assertThat( eqf( "offset(now(),'-1h3m +5s')", Date.class ) )
 				.isBefore( DateUtils.addSeconds( moreThenOneHourAgo, 1 ) )
@@ -150,7 +156,6 @@ public class TestEntityQueryDateFunctions
 		assertNotNull( calculatedLocalDateTime );
 
 		assertTrue( start.getNano() <= calculatedLocalDateTime.getNano() );
-
 	}
 
 	@Test
@@ -197,6 +202,15 @@ public class TestEntityQueryDateFunctions
 		assertThat( eqf( "offset(today(),'+7d at 13:30')", Date.class ) )
 				.isEqualTo( withSpecialPeriod );
 
+		Date todayInTheAfternoon = getStartOfDay();
+		todayInTheAfternoon = DateUtils.addHours( todayInTheAfternoon, 2 );
+		todayInTheAfternoon = DateUtils.addMinutes( todayInTheAfternoon, 45 );
+
+		assertThat( eqf( "offset(today(), '+2h45m')", Date.class ) )
+				.isEqualTo( todayInTheAfternoon );
+
+		assertThat( eqf( "offset(today(), 'at 2:45')", Date.class ) )
+				.isEqualTo( todayInTheAfternoon );
 	}
 
 	@Test
@@ -300,6 +314,9 @@ public class TestEntityQueryDateFunctions
 
 		assertThat( eqf( "offset(today(),'+1s at 15:20')", Date.class ) )
 				.isEqualTo( calendar.getTime() );
+
+		assertThat( eqf( "offset(today(),'at 15:20 +1s')", Date.class ) )
+				.isEqualTo( calendar.getTime() );
 	}
 
 	@Test
@@ -311,6 +328,18 @@ public class TestEntityQueryDateFunctions
 		calendar.set( Calendar.MILLISECOND, 0 );
 
 		assertThat( eqf( "offset(today(),'+1s at 15:20:02')", Date.class ) )
+				.isEqualTo( calendar.getTime() );
+	}
+
+	@Test
+	public void atTimestampWithMilliSeconds() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set( Calendar.HOUR_OF_DAY, 15 );
+		calendar.set( Calendar.MINUTE, 20 );
+		calendar.set( Calendar.SECOND, 3 );
+		calendar.set( Calendar.MILLISECOND, 120 );
+
+		assertThat( eqf( "offset(today(),'+1s at 15:20:02.120')", Date.class ) )
 				.isEqualTo( calendar.getTime() );
 	}
 
@@ -351,7 +380,6 @@ public class TestEntityQueryDateFunctions
 
 		assertThat( eqf( "offset(thisYear(),'+2M')", Date.class ) )
 				.isEqualTo( towMonthsLater );
-
 	}
 
 	@Test
