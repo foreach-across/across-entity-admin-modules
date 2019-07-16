@@ -21,6 +21,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
 import com.foreach.across.modules.entity.util.EntityTypeDescriptor;
 import com.foreach.across.modules.entity.util.EntityUtils;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -59,6 +60,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	public static final int ORDER = Ordered.LOWEST_PRECEDENCE - 1000;
 
 	private final EntityRegistry entityRegistry;
+	private final EntityPropertyRegistryProvider propertyRegistryProvider;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -95,11 +97,14 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 
 		boolean isRegisteredEntity = entityConfiguration != null && entityConfiguration.hasEntityModel();
 		Boolean isEmbedded = isEmbedded( descriptor, entityConfiguration );
+		boolean isEmbeddedCandidate = propertyType != null && isEmbeddedCandidate( propertyType );
+		boolean hasVisibleProperties = isEmbedded == null && isEmbeddedCandidate && hasVisibleProperties( propertyType, entityConfiguration );
 
 		if ( ViewElementMode.FORM_WRITE.equals( singleMode ) || ViewElementMode.FORM_READ.equals( singleMode ) ) {
 			if ( propertyType != null
 					&& isSingularType( propertyType )
-					&& ( ( isEmbedded == null && !isRegisteredEntity && isEmbeddedCandidate( propertyType ) ) || Boolean.TRUE.equals( isEmbedded ) ) ) {
+					&& ( ( isEmbedded == null && !isRegisteredEntity && isEmbeddedCandidate
+					&& hasVisibleProperties ) || Boolean.TRUE.equals( isEmbedded ) ) ) {
 				return BootstrapUiElements.FIELDSET;
 			}
 
@@ -175,7 +180,7 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 					if ( isRegisteredEntity ) {
 						return BootstrapUiElements.SELECT;
 					}
-					else if ( isEmbedded == null || Boolean.TRUE.equals( isEmbedded ) ) {
+					else if ( hasVisibleProperties || Boolean.TRUE.equals( isEmbedded ) ) {
 						return BootstrapUiElements.FIELDSET;
 					}
 				}
@@ -185,6 +190,13 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 		}
 
 		return null;
+	}
+
+	private boolean hasVisibleProperties( Class propertyType, EntityConfiguration entityConfiguration ) {
+		EntityPropertyRegistry propertyRegistry = entityConfiguration != null
+				? entityConfiguration.getPropertyRegistry() : propertyRegistryProvider.get( propertyType );
+
+		return propertyRegistry != null && propertyRegistry.getProperties().stream().anyMatch( d -> !d.isHidden() );
 	}
 
 	private boolean isEmbeddedCandidate( Class type ) {

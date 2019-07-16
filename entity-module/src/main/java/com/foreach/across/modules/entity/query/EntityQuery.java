@@ -156,6 +156,13 @@ public class EntityQuery implements EntityQueryExpression
 	}
 
 	/**
+	 * @return true if one or more expressions are present
+	 */
+	public boolean hasExpressions() {
+		return !expressions.isEmpty();
+	}
+
+	/**
 	 * @return true if a sort has been set on this query and it contains orders
 	 */
 	public boolean hasSort() {

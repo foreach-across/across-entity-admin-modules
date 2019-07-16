@@ -16,6 +16,9 @@
 
 package com.foreach.across.testmodules.springdata.business;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
@@ -24,6 +27,9 @@ import javax.persistence.*;
  * @author Arne Vandamme
  */
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Table(name = "car")
 public class Car implements Persistable<String>
 {

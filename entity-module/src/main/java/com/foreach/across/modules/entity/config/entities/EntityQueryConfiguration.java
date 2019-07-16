@@ -55,7 +55,7 @@ class EntityQueryConfiguration
 	}
 
 	/**
-	 * Configures  default {@link com.foreach.across.modules.entity.query.EntityQueryParser} and {@link EntityQueryFacade}
+	 * Configures a default {@link com.foreach.across.modules.entity.query.EntityQueryParser} and {@link EntityQueryFacade}
 	 * on all entities having a {@link com.foreach.across.modules.entity.query.EntityQueryExecutor}.
 	 *
 	 * @author Arne Vandamme

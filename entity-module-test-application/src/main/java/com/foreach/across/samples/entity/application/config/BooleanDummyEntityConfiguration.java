@@ -20,8 +20,6 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
-import com.foreach.across.modules.entity.query.EntityQueryExecutor;
-import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
@@ -33,6 +31,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
 /**
  * @author Steven Gentens
@@ -121,11 +121,7 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 						        )
 						        .deleteMethod( booleanDummyRepository::remove )
 		        )
-		        .attribute(
-				        ( config, attributes ) ->
-						        attributes.setAttribute( EntityQueryExecutor.class,
-						                                 new CollectionEntityQueryExecutor<>( booleanDummyRepository, config.getPropertyRegistry() ) )
-		        )
+		        .and( registerEntityQueryExecutor( booleanDummyRepository ) )
 		        .properties( props -> props
 				        .property( "id" )
 				        .viewElementType( ViewElementMode.FILTER_CONTROL, OptionsFormElementBuilderFactory.OPTIONS )
@@ -158,7 +154,20 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 				        .and().property( "booleanSelectNonNull" )
 				        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.RADIO )
 		        )
-		        .listView( lvb -> lvb.entityQueryFilter( cfg -> cfg.showProperties( "id", "booleanRadio", "booleanSelect" ).multiValue( "booleanSelect" ) ) )
+		        .listView(
+				        lvb -> lvb.entityQueryFilter(
+						        cfg -> cfg.showProperties( "id", "booleanRadio", "booleanSelect" )
+						                  .multiValue( "booleanSelect" )
+						                  .properties(
+								                  props -> props.property( "booleanRadio" )
+								                                .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.RADIO )
+								                                .and()
+								                                .property( "booleanSelect" )
+								                                .viewElementType( ViewElementMode.FILTER_CONTROL.forMultiple(),
+								                                                  BootstrapUiElements.MULTI_CHECKBOX )
+						                  )
+				        )
+		        )
 		        .createFormView( fvb -> fvb.showProperties( "booleanSelectNonNull", "primitiveBooleanSelectNonNull" ) )
 		        .updateFormView( fvb -> fvb.showProperties( "*" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )

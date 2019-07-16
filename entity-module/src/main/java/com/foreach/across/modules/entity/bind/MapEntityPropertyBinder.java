@@ -98,6 +98,10 @@ public final class MapEntityPropertyBinder extends AbstractEntityPropertyBinder
 	public Entry getTemplate() {
 		if ( template == null ) {
 			template = createEntry( "" );
+			Object keyValue = binder.getTemplateValueResolver().resolveTemplateValue( binder.asBindingContext(), keyDescriptor );
+			template.getKeyInternal().setOriginalValue( keyValue );
+			Object valueValue = binder.getTemplateValueResolver().resolveTemplateValue( binder.asBindingContext(), valueDescriptor );
+			template.getValueInternal().setOriginalValue( valueValue );
 		}
 		return template;
 	}

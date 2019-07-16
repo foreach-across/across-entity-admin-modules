@@ -44,13 +44,14 @@ public class TestEntityQuery
 		EntityQuery query = EntityQuery.and();
 		query.add( null );
 
-		assertTrue( query.getExpressions().isEmpty() );
+		assertFalse( query.hasExpressions() );
 	}
 
 	@Test
 	public void singlePropertyToString() {
 		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.EQ, "myName" ) );
 		assertEquals( "name = 'myName'", query.toString() );
+		assertTrue( query.hasExpressions() );
 	}
 
 	@Test

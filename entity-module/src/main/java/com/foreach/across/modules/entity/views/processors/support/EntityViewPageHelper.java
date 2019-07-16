@@ -28,6 +28,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
@@ -74,6 +75,16 @@ public class EntityViewPageHelper
 				addFeedbackMessage( (Map<String, Style>) value, feedbackStyle, messages.withNameSingular( messageCode, entityViewContext.getEntityLabel() ) ) );
 	}
 
+	/**
+	 * Throws an exception in development mode, else registers it as an exception on the {@link BindingResult} if there is one
+	 * attached to the {@link EntityViewRequest}. This assumes that binding result errors will be displayed.
+	 * <p/>
+	 * For now, the exception is also added as global feedback message, but this behaviour is expected to change in a future release.
+	 *
+	 * @param viewRequest to which to add the message
+	 * @param messageCode for the message
+	 * @param exception that was thrown
+	 */
 	public void throwOrAddExceptionFeedback( EntityViewRequest viewRequest, String messageCode, Throwable exception ) {
 		if ( developmentMode.isActive() ) {
 			throw exception instanceof RuntimeException ? (RuntimeException) exception : new RuntimeException( exception );
@@ -93,16 +104,20 @@ public class EntityViewPageHelper
 
 		EntityMessages messages = entityViewContext.getEntityMessages();
 
+		String message = messages.withNameSingular( messageCode, entityViewContext.getEntityLabel(), exception.toString(), exceptionId );
+
+		BindingResult bindingResult = viewRequest.getBindingResult();
+
+		if ( bindingResult != null ) {
+			bindingResult.reject( messageCode, new Object[] { entityViewContext.getEntityLabel(), exception.toString(), exceptionId }, message );
+		}
+
 		viewRequest.getPageContentStructure().addToFeedback(
 				BootstrapUiBuilders
 						.alert()
 						.danger()
 						.dismissible()
-						.add(
-								TextViewElement.html(
-										messages.withNameSingular( messageCode, entityViewContext.getEntityLabel(), exception.toString(), exceptionId )
-								)
-						)
+						.add( TextViewElement.html( message ) )
 						.build()
 		);
 	}

@@ -133,7 +133,7 @@ public class TestDefaultEntityQueryTranslator
 	public void isEmptyOnNonCollectionGetsReplacedByIsNull() {
 		EntityPropertyDescriptor cities = mock( EntityPropertyDescriptor.class );
 		when( cities.getName() ).thenReturn( "translatedCities" );
-		when( cities.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
+		when( cities.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( Integer.class ) );
 		when( propertyRegistry.getProperty( "cities" ) ).thenReturn( cities );
 		when( propertyRegistry.getProperty( "translatedCities" ) ).thenReturn( cities );
 
@@ -341,6 +341,47 @@ public class TestDefaultEntityQueryTranslator
 				new Sort(
 						new Sort.Order( Sort.Direction.ASC, "translatedName", Sort.NullHandling.NULLS_LAST ).ignoreCase(),
 						new Sort.Order( Sort.Direction.DESC, "city" )
+				)
+		);
+
+		assertEquals( translated, translator.translate( rawQuery ) );
+	}
+
+	@Test
+	public void isEmptyOnStringPropertiesIsTranslatedToNullOrEmpty() {
+		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
+		when( descriptor.getName() ).thenReturn( "name" );
+		when( propertyRegistry.getProperty( "name" ) ).thenReturn( descriptor );
+		when( typeConverter.convertAll( TypeDescriptor.valueOf( String.class ), true, "" ) )
+				.thenReturn( new Object[] { "" } );
+
+		EntityQuery rawQuery = EntityQuery.and( new EntityQueryCondition( "name", IS_EMPTY ) );
+
+		EntityQuery translated = EntityQuery.and(
+				EntityQuery.or(
+						new EntityQueryCondition( "name", IS_NULL ),
+						new EntityQueryCondition( "name", EQ, "" )
+				)
+		);
+
+		assertEquals( translated, translator.translate( rawQuery ) );
+	}
+
+	@Test
+	public void isNotEmptyOnStringPropertiesIsTranslatedToNotNullAndNotEmpty() {
+		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
+		when( descriptor.getName() ).thenReturn( "name" );
+		when( propertyRegistry.getProperty( "name" ) ).thenReturn( descriptor );
+		when( typeConverter.convertAll( TypeDescriptor.valueOf( String.class ), true, "" ) )
+				.thenReturn( new Object[] { "" } );
+
+		EntityQuery rawQuery = EntityQuery.and( new EntityQueryCondition( "name", IS_NOT_EMPTY ) );
+		EntityQuery translated = EntityQuery.and(
+				EntityQuery.and(
+						new EntityQueryCondition( "name", IS_NOT_NULL ),
+						new EntityQueryCondition( "name", NEQ, "" )
 				)
 		);
 

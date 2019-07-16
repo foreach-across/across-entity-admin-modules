@@ -34,6 +34,9 @@ import java.util.List;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.ENTITY_QUERY_REQUEST;
+import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT;
+import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
+import static com.foreach.across.modules.web.resource.WebResourceRule.add;
 
 /**
  * Builds the configured form controls for an {@link com.foreach.across.modules.entity.query.EntityQuery} based approach.
@@ -254,17 +257,15 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 	@Override
 	protected void registerWebResources( WebResourceRegistry webResourceRegistry ) {
 		if ( isBasicModeActive() ) {
-			webResourceRegistry.addWithKey(
-					WebResource.JAVASCRIPT,
-					"lodash",
-					"https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js",
-					WebResource.EXTERNAL
-			);
-			webResourceRegistry.addWithKey(
-					WebResource.JAVASCRIPT_PAGE_END,
-					ENTITY_QUERY_RESOURCE_KEY,
-					"/static/entity/js/entity-query.js",
-					WebResource.VIEWS
+			webResourceRegistry.apply(
+					// Lodash
+					add( WebResource.javascript( "@webjars:/lodash/4.17.4/lodash.min.js" ) )
+							.withKey( "lodash" )
+							.toBucket( JAVASCRIPT ),
+
+					add( WebResource.javascript( "@static:/entity/js/entity-query.js" ) )
+							.withKey( ENTITY_QUERY_RESOURCE_KEY )
+							.toBucket( JAVASCRIPT_PAGE_END )
 			);
 		}
 	}

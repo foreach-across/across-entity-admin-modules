@@ -23,6 +23,8 @@ import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.config.EntityMessageCodeProperties;
 import com.foreach.across.modules.entity.query.EntityQueryExecutor;
+import com.foreach.across.modules.entity.query.PagingAndSortingEntityQueryExecutor;
+import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.query.jpa.EntityQueryJpaExecutor;
 import com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslExecutor;
 import com.foreach.across.modules.entity.registrars.EntityRegistrar;
@@ -40,6 +42,9 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryInformation;
@@ -235,6 +240,7 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	/**
 	 * Determine the best {@link EntityQueryExecutor} implementation for this entity.
 	 */
+	@SuppressWarnings("unchecked")
 	private void registerEntityQueryExecutor( MutableEntityConfiguration entityConfiguration ) {
 		Repository repository = entityConfiguration.getAttribute( Repository.class );
 
@@ -248,17 +254,18 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 		else if ( repository instanceof JpaSpecificationExecutor ) {
 			entityQueryExecutor = new EntityQueryJpaExecutor( (JpaSpecificationExecutor) repository );
 		}
+		else if ( repository instanceof CrudRepository ) {
+			entityQueryExecutor = new CollectionEntityQueryExecutor( ( (CrudRepository) repository )::findAll, entityConfiguration.getPropertyRegistry() );
+
+			if ( repository instanceof PagingAndSortingRepository ) {
+				entityQueryExecutor = EntityQueryExecutor.createFallbackExecutor(
+						new PagingAndSortingEntityQueryExecutor<>( (PagingAndSortingRepository) repository ), entityQueryExecutor
+				);
+			}
+		}
 
 		if ( entityQueryExecutor != null ) {
 			entityConfiguration.setAttribute( EntityQueryExecutor.class, entityQueryExecutor );
-
-			// todo factor out
-			/*EntityQueryParser parser = new EntityQueryParser();
-			EntityQueryMetadataProvider metadataProvider = new DefaultEntityQueryMetadataProvider( entityConfiguration.getPropertyRegistry() );
-			EntityQueryTranslator queryTranslator = new EntityQueryTranslator
-			parser.setEntityConfiguration( entityConfiguration );
-			parser.setConversionService( mvcConversionService );
-			entityConfiguration.setAttribute( EntityQueryParser.class, parser );*/
 		}
 	}
 

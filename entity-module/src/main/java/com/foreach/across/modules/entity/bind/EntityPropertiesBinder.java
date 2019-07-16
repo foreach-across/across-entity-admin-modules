@@ -97,6 +97,14 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	private String binderPrefix = "";
 
 	/**
+	 * The resolver that should be used for determining template values of properties: list item and map entry templates.
+	 */
+	@Setter
+	@Getter
+	@NonNull
+	private EntityPropertyTemplateValueResolver templateValueResolver = new DefaultEntityPropertyTemplateValueResolver();
+
+	/**
 	 * Optionally set a {@link ConversionService} that should be used to convert the input
 	 * value to the required field type. It no {@code ConversionService} is set, the actual value
 	 * must match the expected field type or a {@link ClassCastException} will occur.
@@ -306,8 +314,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 	/**
 	 * Signal that actual binding is enabled, this allows individual property binders to determine how they
 	 * should interpret the current value. For example: if binding is enabled and a list value is requested,
-	 * the list will only return the items that have been bound before, disregarding the possible currently
-	 * stored value.
+	 * the list will only return the items that have been bound before, disregarding the currently stored value.
 	 * <p/>
 	 * In readonly mode this property will usually be kept {@code false}, simply returning the property values.
 	 *
@@ -394,6 +401,7 @@ public class EntityPropertiesBinder extends HashMap<String, EntityPropertyBinder
 		childBinder.setPropertyRegistry( propertyRegistry );
 		childBinder.setConversionService( conversionService );
 		childBinder.setBindingEnabled( bindingEnabled );
+		childBinder.setTemplateValueResolver( templateValueResolver );
 		return childBinder;
 	}
 

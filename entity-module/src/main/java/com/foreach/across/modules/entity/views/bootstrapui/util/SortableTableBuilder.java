@@ -32,6 +32,7 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderService;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
@@ -86,6 +87,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 	public static final String DATA_ATTR_SORT = "data-tbl-sort";
 	public static final String DATA_ATTR_SORT_PROPERTY = "data-tbl-sort-property";
 	public static final String DATA_ATTR_FORM = "data-tbl-form";
+	private static final String DATA_ATTR_AJAX_LOAD = "data-tbl-ajax-load";
 
 	protected final EntityViewElementBuilderService viewElementBuilderService;
 
@@ -471,6 +473,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 	@Override
 	public ContainerViewElement build( ViewElementBuilderContext parentBuilderContext ) {
 		ViewElementBuilderContext builderContext = new DefaultViewElementBuilderContext( parentBuilderContext );
+		EntityViewElementUtils.setCurrentEntity( builderContext, null );
 
 		if ( getEntityConfiguration() != null ) {
 			// todo: setting the message code this way is not optimal - find better approach
@@ -530,6 +533,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		attributes.put( DATA_ATTR_PAGES, currentPage.getTotalPages() );
 		attributes.put( DATA_ATTR_PAGE_SIZE, currentPage.getSize() );
 		attributes.put( DATA_ATTR_SORT, convertSortAttribute( currentPage.getSort() ) );
+		//attributes.put( DATA_ATTR_AJAX_LOAD, false );
 
 		if ( getFormName() != null ) {
 			attributes.put( DATA_ATTR_FORM, getFormName() );
@@ -678,6 +682,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 	protected ViewElementBuilder createDefaultNoResultsPanel() {
 		return BootstrapUiBuilders.node( "div" )
 		                          .name( elementName( ELEMENT_NORESULTS ) )
+		                          //.attribute( DATA_ATTR_AJAX_LOAD, false )
 		                          .css( "panel", "panel-warning" )
 		                          .add(
 				                          BootstrapUiBuilders.node( "div" )

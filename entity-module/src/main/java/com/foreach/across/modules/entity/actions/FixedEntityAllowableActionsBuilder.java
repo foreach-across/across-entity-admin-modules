@@ -20,6 +20,7 @@ import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Implementation of {@link com.foreach.across.modules.entity.actions.EntityConfigurationAllowableActionsBuilder} that
@@ -51,7 +52,7 @@ public class FixedEntityAllowableActionsBuilder implements EntityConfigurationAl
 
 				@Override
 				public AllowableAction next() {
-					return null;
+					throw new NoSuchElementException();
 				}
 
 				@Override

@@ -47,7 +47,7 @@ public final class EntityPropertiesBinderController
 
 	/**
 	 * Add one or more callbacks that should be called whenever the entity validation should happen.
-	 * These will get executed (in their registration order), after {@link EntityPropertyController#BEFORE_ENTITY},
+	 * These will get executed in their registration order, after {@link EntityPropertyController#BEFORE_ENTITY},
 	 * but before {@link EntityPropertyController#AFTER_ENTITY}.
 	 *
 	 * @param callback to add
@@ -60,7 +60,7 @@ public final class EntityPropertiesBinderController
 
 	/**
 	 * Add one or more callbacks that should be called whenever the entity save should happen.
-	 * These will get executed (in their registration order), after {@link EntityPropertyController#BEFORE_ENTITY},
+	 * These will get executed in their registration order, after {@link EntityPropertyController#BEFORE_ENTITY},
 	 * but before {@link EntityPropertyController#AFTER_ENTITY}.
 	 *
 	 * @param callback to add

@@ -24,9 +24,7 @@ import com.foreach.across.modules.entity.annotations.EntityValidator;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
-import com.foreach.across.modules.entity.query.EntityQueryExecutor;
 import com.foreach.across.modules.entity.query.EntityQueryOps;
-import com.foreach.across.modules.entity.query.collections.CollectionEntityQueryExecutor;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyController;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertySelector;
@@ -60,6 +58,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.entity.registry.properties.EntityPropertyController.AFTER_ENTITY;
+import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
 /**
  * Configures a dummy <strong>category</strong> entity.
@@ -180,27 +179,24 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 		        )
 		        .listView(
 				        lvb -> lvb.defaultSort( "name" )
-				                  .entityQueryFilter( cfg -> cfg.showProperties( "id", "name" ).multiValue( "id" ) )
+				                  .entityQueryFilter( cfg -> cfg.showProperties( "id", "name", "manager.email" ).multiValue( "id" ) )
 		        )
 		        .createFormView( fvb -> fvb.showProperties( "id", "generateId", "name", "manager", "stockCount", "brands" ) )
 		        .updateFormView( fvb -> fvb.showProperties( "name", "manager", "brands", "stockCount" ) )
 		        .deleteFormView( dvb -> dvb.showProperties( "." ) )
 		        .detailView(
-		        		// we currently can't put global properties inside a collection iteration as the property value context is different
+				        // we currently can't put global properties inside a collection iteration as the property value context is different
 				        // todo: make this possible in a future update?
 				        dvb -> dvb.properties(
 						        props -> props.property( "brands[]" )
 						                      .attribute(
 								                      EntityAttributes.FIELDSET_PROPERTY_SELECTOR,
-								                      EntityPropertySelector.of( "brands[].code", "brands[].name"/*, "id" */)
+								                      EntityPropertySelector.of( "brands[].code", "brands[].name"/*, "id" */ )
 						                      )
 				        )
 		        )
 		        .show()
-		        .attribute( ( configuration, attributes ) ->
-				                    attributes.setAttribute( EntityQueryExecutor.class,
-				                                             new CollectionEntityQueryExecutor<>( categoryRepository, configuration.getPropertyRegistry() ) )
-		        );
+		        .and( registerEntityQueryExecutor( categoryRepository ) );
 	}
 
 	/**

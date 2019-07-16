@@ -36,6 +36,8 @@ import com.foreach.across.modules.entity.views.processors.query.EntityQueryReque
 import com.foreach.across.modules.entity.views.request.EntityViewCommand;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.entity.web.EntityViewModel;
+import com.foreach.across.modules.web.ui.ScopedAttributesViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -54,6 +56,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.WebDataBinder;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
@@ -87,13 +93,34 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	 */
 	public static final String ENTITY_QUERY_OPERAND = "entityQueryOperand";
 
+	/**
+	 * Css class that marks the control element which holds the value for the specified property.
+	 * Only a single element should have the marker specified.
+	 */
+	public static final String ENTITY_QUERY_CONTROL_MARKER = "js-entity-query-control";
+
+	/**
+	 * Specifies whether the property value should be parsed as an {@link EQValue} or as an {@link EQString}.
+	 * In the case of an {@link EQString}, the value should be {@code true}.
+	 */
+	public static final String ENTITY_QUERY_PROPERTY_TEXT_VALUE = "entityQueryPropertyTextValue";
+
+	/**
+	 * Attribute on an {@link EntityPropertyDescriptor} that holds the event name that should
+	 * result in an update of the entity query. Defaults to {@code "change"}
+	 */
+	public static final String ENTITY_QUERY_CONTROL_EVENT = "entityQueryControlEvent";
+
 	private static final String PARAM = "eqFilter";
 	private static final String PARAM_PROPERTIES = "eqFilterProperties";
+	public static final List<? extends Class<? extends Serializable>> TEXT_VALUE_TYPES = Arrays.asList( String.class, Date.class, LocalDate.class,
+	                                                                                                    LocalTime.class, LocalDateTime.class );
 
 	private EntityPropertyRegistryProvider propertyRegistryProvider;
 	private EntityViewElementBuilderService viewElementBuilderService;
 	private EntityQueryFacadeResolver entityQueryFacadeResolver;
 	private EntityRegistry entityRegistry;  // todo check if different way to resolve the EntityTypeDescriptor ?
+	private EQTypeConverter eqTypeConverter;
 
 	/**
 	 * Holds the configuration for this query filter processor.
@@ -201,44 +228,48 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		ContainerViewElement container = entityView.getAttribute( ATTRIBUTE_CONTAINER_ELEMENT, ContainerViewElement.class );
 		ViewElementBuilderContext builderContext = EntityViewProcessorAdapter.retrieveBuilderContext();
 
-		List<ViewElement> propertyFilters = buildFilterControls( entityViewRequest, builderContext );
-		EntityQueryFilterFormControlBuilder filterForm = new EntityQueryFilterFormControlBuilder()
-				.basicFilter( filterConfiguration.isBasicMode() )
-				.advancedFilter( filterConfiguration.isAdvancedMode() )
-				.basicControls( propertyFilters )
-				.eqlControlName( "extensions[" + PARAM + "]" )
-				.convertibleToBasicMode( queryRequest.isConvertibleToBasicMode() );
+		try (ScopedAttributesViewElementBuilderContext ignore = builderContext
+				.withAttributeOverride( EntityViewModel.ENTITY, null )
+				.withAttributeOverride( EntityPropertyBindingContext.class, EntityPropertyBindingContext.forReading( queryRequest ) )) {
+			List<ViewElement> propertyFilters = buildFilterControls( entityViewRequest, builderContext );
+			EntityQueryFilterFormControlBuilder filterForm = new EntityQueryFilterFormControlBuilder()
+					.basicFilter( filterConfiguration.isBasicMode() )
+					.advancedFilter( filterConfiguration.isAdvancedMode() )
+					.basicControls( propertyFilters )
+					.eqlControlName( "extensions[" + PARAM + "]" )
+					.convertibleToBasicMode( queryRequest.isConvertibleToBasicMode() );
 
-		if ( queryRequest.getRawQuery() != null ) {
-			filterForm.query( queryRequest.getRawQuery() );
-		}
-		else {
-			filterForm.query( command.getExtension( PARAM, String.class ) )
-			          .convertibleToBasicMode( false );
-		}
-
-		if ( queryRequest.isShowBasicFilter() ) {
-			filterForm.showBasicFilter();
-		}
-		else {
-			filterForm.showAdvancedFilter();
-		}
-
-		// move the original actions
-		Optional<ContainerViewElement> header = find( container, ListFormViewProcessor.DEFAULT_FORM_NAME + "-header", ContainerViewElement.class );
-		header.ifPresent( h -> {
-			h.addFirstChild( filterForm.build( builderContext ) );
-
-			String errorMessage = entityView.getAttribute( "filterError", String.class );
-
-			if ( !StringUtils.isBlank( errorMessage ) ) {
-				container.addChild(
-						alert().danger()
-						       .add( text( errorMessage ) )
-						       .build( builderContext )
-				);
+			if ( queryRequest.getRawQuery() != null ) {
+				filterForm.query( queryRequest.getRawQuery() );
 			}
-		} );
+			else {
+				filterForm.query( command.getExtension( PARAM, String.class ) )
+				          .convertibleToBasicMode( false );
+			}
+
+			if ( queryRequest.isShowBasicFilter() ) {
+				filterForm.showBasicFilter();
+			}
+			else {
+				filterForm.showAdvancedFilter();
+			}
+
+			// move the original actions
+			Optional<ContainerViewElement> header = find( container, ListFormViewProcessor.DEFAULT_FORM_NAME + "-header", ContainerViewElement.class );
+			header.ifPresent( h -> {
+				h.addFirstChild( filterForm.build( builderContext ) );
+
+				String errorMessage = entityView.getAttribute( "filterError", String.class );
+
+				if ( !StringUtils.isBlank( errorMessage ) ) {
+					container.addChild(
+							alert().danger()
+							       .add( text( errorMessage ) )
+							       .build( builderContext )
+					);
+				}
+			} );
+		}
 	}
 
 	private List<ViewElement> buildFilterControls( EntityViewRequest entityViewRequest, ViewElementBuilderContext builderContext ) {
@@ -262,26 +293,27 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				          prop.setAttribute( EntityPropertyHandlingType.class, EntityPropertyHandlingType.MANUAL );
 				          prop.setAttribute( EntityAttributes.CONTROL_NAME, "extensions[" + PARAM_PROPERTIES + "][" + prop.getName() + "]" );
 				          EntityQueryRequestValueFetcher valueFetcher = new EntityQueryRequestValueFetcher(
-						          prop, retrieveEntityQueryOperand( prop ), filterConfiguration.isMultiValue( prop.getName() )
+						          eqTypeConverter, prop, retrieveEntityQueryOperand( prop ), filterConfiguration.isMultiValue( prop.getName() )
 				          );
+
+				          prop.setAttribute( ENTITY_QUERY_OPERAND, retrieveEntityQueryOperand( prop ) );
 				          prop.setValueFetcher( valueFetcher );
 			          }
 		          } )
 		          .map( property -> {
 			          ViewElementBuilder control = createFilterControl( property );
-			          ViewElementBuilder labelText = viewElementBuilderService.getElementBuilder(
-					          property, ViewElementMode.LABEL
-			          );
+			          ViewElementBuilder labelText = viewElementBuilderService.getElementBuilder( property, ViewElementMode.LABEL );
 			          LabelFormElementBuilder labelBuilder = label().text( labelText );
 
-			          return formGroup( labelBuilder, control )
-					          .attribute( "data-entity-query-operand", retrieveEntityQueryOperand( property ).name() )
-					          .attribute( "data-entity-query-control", "marker" )
-					          .attribute( "data-entity-query-property", property.getName() )
-					          .build( builderContext );
+			          return formGroup( labelBuilder, control ).build( builderContext );
 		          } ).forEach( controls::add );
 
 		return controls;
+	}
+
+	private boolean translateAsTextValue( EntityPropertyDescriptor property ) {
+		return Boolean.TRUE.equals( property.getAttribute( ENTITY_QUERY_PROPERTY_TEXT_VALUE ) )
+				|| TEXT_VALUE_TYPES.stream().anyMatch( clazz -> clazz.equals( property.getPropertyType() ) );
 	}
 
 	private EntityQueryOps retrieveEntityQueryOperand( EntityPropertyDescriptor property ) {
@@ -337,5 +369,10 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	@Autowired
 	void setEntityQueryFacadeResolver( EntityQueryFacadeResolver entityQueryFacadeResolver ) {
 		this.entityQueryFacadeResolver = entityQueryFacadeResolver;
+	}
+
+	@Autowired
+	void setEqTypeConverter( EQTypeConverter eqTypeConverter ) {
+		this.eqTypeConverter = eqTypeConverter;
 	}
 }

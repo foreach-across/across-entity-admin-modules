@@ -25,6 +25,7 @@ import com.foreach.across.modules.entity.views.context.EntityViewContext;
 import com.foreach.across.modules.entity.views.request.EntityViewRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +47,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 @RequiredArgsConstructor
+@Slf4j
 public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetchingViewProcessor
 {
 	/**
@@ -99,12 +101,36 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 			return fetchItemsForEntityAssociation(
 					entityViewContext.getEntityAssociation(),
 					entityViewContext.getParentContext().getEntity( Object.class ),
+					entityQueryFacade,
 					entityQuery,
-					pageable
+					pageable,
+					sort
 			);
 		}
 
 		return fetchItemsForEntityConfiguration( entityViewContext.getEntityConfiguration(), entityQueryFacade, entityQuery, pageable, sort );
+	}
+
+	@SuppressWarnings("unchecked")
+	private Iterable<Object> fetchItemsForEntityAssociation( EntityAssociation association,
+	                                                         Object parentEntity,
+	                                                         EntityQueryFacade entityQueryFacade,
+	                                                         EntityQuery entityQuery,
+	                                                         Pageable pageable,
+	                                                         Sort sort ) {
+		AssociatedEntityQueryExecutor associatedEntityQueryExecutor = association.getAttribute( AssociatedEntityQueryExecutor.class );
+
+		if ( associatedEntityQueryExecutor != null ) {
+			LOG.trace( "An AssociatedEntityQueryExecutor is registered - using it for fetching the items" );
+			return associatedEntityQueryExecutor.findAll( parentEntity, entityQuery != null ? entityQuery : EntityQuery.all(), pageable );
+		}
+
+		return fetchItemsForEntityConfiguration(
+				association.getTargetEntityConfiguration(),
+				entityQueryFacade,
+				EntityQueryUtils.and( entityQuery, EntityQueryUtils.createAssociationPredicate( association, parentEntity ) ),
+				pageable,
+				sort );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -145,22 +171,6 @@ public final class DefaultEntityFetchingViewProcessor extends AbstractEntityFetc
 
 		throw new IllegalStateException(
 				"Neither a CrudRepository nor an EntityQueryExecutor are configured on entity configuration " + entityConfiguration.getName() );
-	}
-
-	@SuppressWarnings("unchecked")
-	private Iterable<Object> fetchItemsForEntityAssociation( EntityAssociation association,
-	                                                         Object parentEntity,
-	                                                         EntityQuery entityQuery,
-	                                                         Pageable pageable ) {
-		AssociatedEntityQueryExecutor associatedEntityQueryExecutor = association.getAttribute( AssociatedEntityQueryExecutor.class );
-
-		if ( associatedEntityQueryExecutor != null ) {
-			return associatedEntityQueryExecutor.findAll( parentEntity, entityQuery != null ? entityQuery : EntityQuery.all(), pageable );
-		}
-
-		throw new IllegalStateException(
-				"No AssociatedEntityQueryExecutor found for association " + association.getName()
-		);
 	}
 
 	private EntityQuery buildEntityQuery( EntityQueryFacade entityQueryFacade, String additionalPredicate ) {

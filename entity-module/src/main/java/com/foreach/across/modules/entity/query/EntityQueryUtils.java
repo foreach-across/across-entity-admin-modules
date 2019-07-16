@@ -16,8 +16,11 @@
 
 package com.foreach.across.modules.entity.query;
 
+import com.foreach.across.modules.entity.registry.EntityAssociation;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.List;
 import java.util.Objects;
@@ -164,5 +167,23 @@ public abstract class EntityQueryUtils
 		}
 
 		return Stream.of( query );
+	}
+
+	/**
+	 * Create the predicate for fetching entities associated to a specific parent entity, mapped by an {@link EntityAssociation}.
+	 *
+	 * @param association entities to fetch
+	 * @param parent      entity they belong to
+	 * @return query predicate
+	 */
+	public static EntityQueryCondition createAssociationPredicate( @NonNull EntityAssociation association, @NonNull Object parent ) {
+		EntityPropertyDescriptor sourceProperty = association.getSourceProperty();
+		EntityPropertyDescriptor targetProperty = association.getTargetProperty();
+
+		Object sourceValue = sourceProperty != null ? sourceProperty.getPropertyValue( parent ) : parent;
+		TypeDescriptor targetTypeDescriptor = targetProperty.getPropertyTypeDescriptor();
+		EntityQueryOps operand = targetTypeDescriptor.isCollection() || targetTypeDescriptor.isArray() ? EntityQueryOps.CONTAINS : EntityQueryOps.EQ;
+
+		return new EntityQueryCondition( targetProperty.getName(), operand, sourceValue );
 	}
 }

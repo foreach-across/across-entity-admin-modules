@@ -205,7 +205,7 @@ public class ViewElementFieldset extends ContainerViewElement
 	}
 
 	@Override
-	public void addChildren( Collection<ViewElement> elements ) {
+	public void addChildren( Collection<? extends ViewElement> elements ) {
 		getBody().addChildren( elements );
 	}
 

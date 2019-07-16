@@ -34,8 +34,11 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Arne Vandamme
@@ -48,11 +51,12 @@ public class TestCollectionEntityQueryExecutor
 	private Entry george = new Entry( 1, "George" );
 	private Collection<Entry> entries = new ArrayList<>( Arrays.asList( john, george, jane ) );
 
+	private DefaultEntityPropertyRegistry propertyRegistry = new DefaultEntityPropertyRegistry();
+
 	private EntityQueryExecutor<Entry> executor;
 
 	@Before
 	public void before() {
-		DefaultEntityPropertyRegistry propertyRegistry = new DefaultEntityPropertyRegistry();
 		new DefaultPropertiesRegistrar( new EntityPropertyDescriptorFactoryImpl() ).accept( Entry.class, propertyRegistry );
 
 		executor = new CollectionEntityQueryExecutor<>( entries, propertyRegistry );
@@ -61,6 +65,18 @@ public class TestCollectionEntityQueryExecutor
 	@Test
 	public void allQueryReturnsAllItemsInOriginalOrder() {
 		assertThat( executor.findAll( EntityQuery.all() ) ).containsExactly( john, george, jane );
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void supplierIsUsedOnEveryFind() {
+		Supplier<Collection<Entry>> supplier = mock( Supplier.class );
+		when( supplier.get() ).thenReturn( Arrays.asList( john, george ) )
+		                      .thenReturn( Arrays.asList( john, jane ) );
+
+		executor = new CollectionEntityQueryExecutor<>( supplier, propertyRegistry );
+		assertThat( executor.findAll( EntityQuery.all() ) ).containsExactly( john, george );
+		assertThat( executor.findAll( EntityQuery.all() ) ).containsExactly( john, jane );
 	}
 
 	@Test

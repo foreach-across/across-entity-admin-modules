@@ -28,12 +28,6 @@
 
 	<name>${project.groupId}:${project.artifactId}</name>
 
-	<properties>
-		<frontend.dir>src/main/frontend</frontend.dir>
-		<frontend.node.version>v9.11.2</frontend.node.version>
-		<frontend.yarn.version>v1.7.0</frontend.yarn.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.foreach.across</groupId>
@@ -91,6 +85,12 @@
 		<dependency>
 			<groupId>org.atteo</groupId>
 			<artifactId>evo-inflector</artifactId>
+		</dependency>
+		<!-- Webjars -->
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>lodash</artifactId>
+			<version>4.17.4</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -181,48 +181,6 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>com.github.eirslett</groupId>
-				<artifactId>frontend-maven-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>install node and yarn</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>install-node-and-yarn</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>yarn install</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>yarn</goal>
-						</goals>
-						<configuration>
-							<arguments>install</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>gulp build</id>
-						<goals>
-							<goal>gulp</goal>
-						</goals>
-						<configuration>
-							<arguments>scss js --production</arguments>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<nodeVersion>${frontend.node.version}</nodeVersion>
-					<yarnVersion>${frontend.yarn.version}</yarnVersion>
-					<workingDirectory>${frontend.dir}</workingDirectory>
-					<!--
-					<nodeDownloadRoot>http://repository.foreach.be/nexus/repository/node_proxy/</nodeDownloadRoot>
-					<npmDownloadRoot>http://repository.foreach.be/nexus/repository/npm_proxy/</npmDownloadRoot>
-					-->
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

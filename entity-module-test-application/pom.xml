@@ -26,10 +26,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>entity-module-test-application</artifactId>
+	<packaging>jar</packaging>
 
 	<properties>
 		<sonar.skip>true</sonar.skip>
-		<cwb.version>1.1.0.RELEASE</cwb.version>
 	</properties>
 
 	<dependencies>
@@ -68,21 +68,10 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>com.foreach.cwb</groupId>
-			<artifactId>cwb-core</artifactId>
-			<version>${cwb.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.foreach.cwb</groupId>
-			<artifactId>cwb-sahi</artifactId>
-			<version>${cwb.version}</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
+		<finalName>entity-module-test-application</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -98,6 +87,35 @@
 				<version>2.9.1</version>
 				<configuration>
 					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addClasspath>true</addClasspath>
+							<mainClass>com.foreach.across.samples.entity.EntityModuleTestApplication</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>2.1.6.RELEASE</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>true</executable>
 				</configuration>
 			</plugin>
 		</plugins>
