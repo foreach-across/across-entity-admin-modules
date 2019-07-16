@@ -29,6 +29,11 @@
 
 	<name>${project.groupId}:${project.artifactId}</name>
 
+	<properties>
+		<!-- Update WebResource registration when changing versions -->
+		<webjars.toastr>2.1.2</webjars.toastr>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.foreach.across</groupId>
@@ -65,6 +70,19 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<!-- Web resources -->
+		<dependency>
+			<groupId>org.webjars.bower</groupId>
+			<artifactId>toastr</artifactId>
+			<version>${webjars.toastr}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>jquery</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Admin Web" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="admin-web-module-test-web" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="admin.AdminWebTestApplication" />
+    <option name="ACTIVE_PROFILES" value="dev" />
+    <option name="WORKING_DIRECTORY" value="file://$MODULE_WORKING_DIR$" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
