@@ -105,8 +105,7 @@ public abstract class AbstractQueryTest
 
 			carOne = new Car( "one", one, true );
 			carTwo = new Car( "two", two, true );
-			carRepository.save( Arrays.asList( carOne, carTwo ) );
-
+			carRepository.saveAll( Arrays.asList( carOne, carTwo ) );
 		}
 	}
 

@@ -68,7 +68,7 @@ abstract class AbstractEntityPropertyBindingContextTest
 
 		collectionsProperties.getProperty( "cities[]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> new City( "Some city" ) );
 		collectionsProperties.getProperty( "addressMap[key]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> "some key" );
-		collectionsProperties.getProperty( "addressMap[value]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> new Address() );
+		collectionsProperties.getProperty( "addressMap[value]" ).setAttribute( EntityPropertyTemplateValueResolver.class, ( x, y ) -> new Address("Some street") );
 
 		userWithCityAddressProperties = registryProvider.get( UserWithCityAddress.class );
 
