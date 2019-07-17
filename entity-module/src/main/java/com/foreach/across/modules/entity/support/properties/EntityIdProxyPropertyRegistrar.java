@@ -297,6 +297,12 @@ public class EntityIdProxyPropertyRegistrar implements Function<EntityPropertyRe
 				: value;
 	}
 
+	private Object convertIfNecessary( Object value, TypeDescriptor targetType ) {
+		return value != null && targetType != null
+				? (Object) mvcConversionService.convert( value, TypeDescriptor.forObject( value ), targetType )
+				: value;
+	}
+
 	private Serializable convertIfNecessary( Serializable value, Class<?> targetType ) {
 		return value != null && targetType != null ? (Serializable) mvcConversionService.convert( value, targetType ) : value;
 	}
