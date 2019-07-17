@@ -19,7 +19,6 @@ import com.foreach.across.core.AcrossContext;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.Module;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
-import com.foreach.across.core.database.HasSchemaConfiguration;
 import com.foreach.across.modules.properties.PropertiesModule;
 import com.foreach.across.modules.properties.registries.EntityPropertiesRegistry;
 import com.foreach.across.modules.properties.repositories.PropertyTrackingRepository;
@@ -36,69 +35,63 @@ import javax.sql.DataSource;
  *
  * @author Arne Vandamme
  */
-public abstract class AbstractEntityPropertiesConfiguration implements EntityPropertiesDescriptor
-{
-	private final boolean allowTableConfiguration;
+public abstract class AbstractEntityPropertiesConfiguration implements EntityPropertiesDescriptor {
+    private final boolean allowTableConfiguration;
 
-	@Autowired
-	@Qualifier(AcrossContext.DATASOURCE)
-	private DataSource primaryDataSource;
+    @Autowired
+    @Qualifier(AcrossContext.DATASOURCE)
+    private DataSource primaryDataSource;
 
-	@Autowired
-	@Module(PropertiesModule.NAME)
-	private AcrossModuleInfo propertiesModule;
+    @Autowired
+    @Module(PropertiesModule.NAME)
+    private AcrossModuleInfo propertiesModule;
 
-	@Autowired
-	@Module(AcrossModule.CURRENT_MODULE)
-	protected AcrossModule currentModule;
+    @Autowired
+    @Module(AcrossModule.CURRENT_MODULE)
+    protected AcrossModule currentModule;
 
-	protected AbstractEntityPropertiesConfiguration() {
-		this( true );
-	}
+    protected AbstractEntityPropertiesConfiguration() {
+        this(true);
+    }
 
-	protected AbstractEntityPropertiesConfiguration( boolean allowTableConfiguration ) {
-		this.allowTableConfiguration = allowTableConfiguration;
-	}
+    protected AbstractEntityPropertiesConfiguration(boolean allowTableConfiguration) {
+        this.allowTableConfiguration = allowTableConfiguration;
+    }
 
-	@Override
-	public DataSource dataSource() {
-		return primaryDataSource;
-	}
+    @Override
+    public DataSource dataSource() {
+        return primaryDataSource;
+    }
 
-	/**
-	 * @return The ConversionService attached to the properties module.
-	 */
-	public ConversionService conversionService() {
-		return (ConversionService) propertiesModule.getApplicationContext().getBean(
-				ConversionServiceConfiguration.CONVERSION_SERVICE_BEAN );
-	}
+    /**
+     * @return The ConversionService attached to the properties module.
+     */
+    public ConversionService conversionService() {
+        return (ConversionService) propertiesModule.getApplicationContext().getBean(
+                ConversionServiceConfiguration.CONVERSION_SERVICE_BEAN);
+    }
 
-	@Override
-	public String tableName() {
-		if ( currentModule instanceof HasSchemaConfiguration && allowTableConfiguration ) {
-			return ( (HasSchemaConfiguration) currentModule ).getSchemaConfiguration().getCurrentTableName(
-					originalTableName() );
-		}
+    @Override
+    public String tableName() {
+        return originalTableName();
+    }
 
-		return originalTableName();
-	}
+    @Override
+    public PropertyTrackingRepository trackingRepository() {
+        return propertiesModule.getApplicationContext().getBean(PropertyTrackingRepository.class);
+    }
 
-	@Override
-	public PropertyTrackingRepository trackingRepository() {
-		return propertiesModule.getApplicationContext().getBean( PropertyTrackingRepository.class );
-	}
+    protected abstract String originalTableName();
 
-	protected abstract String originalTableName();
+    /**
+     * Override and annotate with @Bean(name=X) to create the repository bean.
+     */
+    @Override
+    public abstract EntityPropertiesServiceBase service();
 
-	/**
-	 * Override and annotate with @Bean(name=X) to create the repository bean.
-	 */
-	@Override
-	public abstract EntityPropertiesServiceBase service();
-
-	/**
-	 * Override and annotate with @Bean(name=X) to create the registry bean.
-	 */
-	@Override
-	public abstract EntityPropertiesRegistry registry();
+    /**
+     * Override and annotate with @Bean(name=X) to create the registry bean.
+     */
+    @Override
+    public abstract EntityPropertiesRegistry registry();
 }
