@@ -1,7 +1,5 @@
 package com.foreach.across.modules.applicationinfo.config;
 
-import com.foreach.across.core.annotations.AcrossEventHandler;
-import com.foreach.across.core.annotations.Event;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.events.AcrossContextBootstrappedEvent;
 import com.foreach.across.modules.applicationinfo.ApplicationInfoModule;
@@ -12,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 
 @Configuration
-@AcrossEventHandler
 public class ApplicationInfoConfiguration
 {
 	@Autowired
@@ -50,8 +48,8 @@ public class ApplicationInfoConfiguration
 		return applicationInfo;
 	}
 
-	@Event
-	protected void bootstrapFinished( AcrossContextBootstrappedEvent event ) {
+	@EventListener
+	public void bootstrapFinished( AcrossContextBootstrappedEvent event ) {
 		runningApplicationInfo().setBootstrapEndDate( new Date() );
 	}
 
