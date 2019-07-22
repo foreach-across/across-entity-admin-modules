@@ -6,13 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="entity-module" />
         <module name="entity-module-integration-test" />
-        <module name="entity-module-no-adminweb" />
+        <module name="entity-shared-test" />
         <module name="entity-module-no-bootstrapui" />
+        <module name="entity-module" />
         <module name="entity-module-test" />
         <module name="entity-module-test-application" />
-        <module name="entity-shared-test" />
+        <module name="entity-module-no-adminweb" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -25,5 +25,14 @@
       <module name="entity-module-test-application" target="1.8" />
       <module name="entity-shared-test" target="1.8" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="entity-module" options="" />
+      <module name="entity-module-integration-test" options="" />
+      <module name="entity-module-no-adminweb" options="" />
+      <module name="entity-module-no-bootstrapui" options="" />
+      <module name="entity-module-test-application" options="" />
+    </option>
   </component>
 </project>
