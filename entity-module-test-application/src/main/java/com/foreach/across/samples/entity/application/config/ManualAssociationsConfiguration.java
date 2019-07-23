@@ -17,6 +17,7 @@
 package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataSet;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
@@ -27,6 +28,7 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.support.EntityPropertyRegistrationHelper;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
@@ -152,7 +154,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 								                                 .stream()
 								                                 .map( author -> {
 									                                 Map<String, Object> entry = new HashMap<>();
-									                                 entry.put( "id", author.getId() );
+									                                 entry.put( "id", author.getId().toString() );
 									                                 entry.put( "label", author.getName() );
 									                                 return entry;
 								                                 } )
@@ -161,6 +163,12 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		);
 
 		properties.property( "author" )
+		          .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
+		          .attribute( AutoSuggestDataSet.NAME, "author-autosuggest" )
+		          .attribute( AutoSuggestDataSet.ResultTransformer.class, object -> {
+			          Author author = (Author) object;
+			          return new AutoSuggestDataSet.Result( author.getId(), author.getName() );
+		          } )
 		          .viewElementBuilder(
 				          ViewElementMode.FILTER_CONTROL,
 				          BootstrapUiBuilders.autosuggest()
@@ -169,12 +177,12 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 				                             .attribute( "data-entity-query-property", "author" )
 				                             .attribute( "data-entity-query-type", "EQValue" )
 				                             .postProcessor( ( viewElementBuilderContext, autoSuggestFormElement ) -> {
-					                             /*MmeUser user = EntityViewElementUtils.currentPropertyValue( viewElementBuilderContext, MmeUser.class );
+					                             Author user = EntityViewElementUtils.currentPropertyValue( viewElementBuilderContext, Author.class );
 
 					                             if ( user != null ) {
-						                             autoSuggestFormElement.setValue( user.getId() );
-						                             autoSuggestFormElement.setText( user.getDisplayName() );
-					                             }*/
+						                             autoSuggestFormElement.setValue( user.getId().toString() );
+						                             autoSuggestFormElement.setText( user.getName() );
+					                             }
 				                             } )
 		          );
 	}
@@ -212,6 +220,12 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		entities.withType( Book.class )
 		        .properties(
 				        props -> props.property( propertyRegistrars.entityIdProxy( "author" ).entityType( Author.class ).targetPropertyName( "authorId" ) )
+				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
+				                      .attribute( AutoSuggestDataSet.NAME, "author-autosuggest" )
+				                      .attribute( AutoSuggestDataSet.ResultTransformer.class, object -> {
+					                      Author author = (Author) object;
+					                      return new AutoSuggestDataSet.Result( author.getId().toString(), author.getName() );
+				                      } )
 				                      .and()
 				                      .property( propertyRegistrars.entityIdProxy( "reviewers" )
 				                                                   .entityType( Author.class )

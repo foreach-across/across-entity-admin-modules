@@ -17,8 +17,10 @@
 package com.foreach.across.modules.entity.autosuggest;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -42,6 +44,8 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class AutoSuggestDataSet
 {
+	public static final String NAME = AutoSuggestDataSet.class.getName() + "_name";
+
 	private final BiFunction<String, String, Object> suggestionsLoader;
 	private final Function<String, Object> prefetchLoader;
 
@@ -67,5 +71,20 @@ public class AutoSuggestDataSet
 	 */
 	public Object prefetch( String controlName ) {
 		return prefetchLoader != null ? prefetchLoader.apply( controlName ) : null;
+	}
+
+	/**
+	 * Represent a single auto-suggest result.
+	 */
+	@RequiredArgsConstructor
+	@Data
+	public static class Result
+	{
+		private final Object id;
+		private final String label;
+	}
+
+	public interface ResultTransformer extends Function<Object, Result> {
+
 	}
 }
