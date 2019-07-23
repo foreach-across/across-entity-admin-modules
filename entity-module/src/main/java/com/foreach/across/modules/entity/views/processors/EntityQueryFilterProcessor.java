@@ -90,8 +90,11 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 	/**
 	 * Attribute on an {@link EntityPropertyDescriptor} that can optionally hold the {@link EntityQueryOps}
 	 * operand that should be used when building a basic filter control for that property.
+	 *
+	 * @deprecated use {@code EntityQueryOps.class} instead
 	 */
-	public static final String ENTITY_QUERY_OPERAND = "entityQueryOperand";
+	@Deprecated
+	public static final String ENTITY_QUERY_OPERAND = EntityQueryOps.class.getName();
 
 	/**
 	 * Css class that marks the control element which holds the value for the specified property.
@@ -296,7 +299,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 						          eqTypeConverter, prop, retrieveEntityQueryOperand( prop ), filterConfiguration.isMultiValue( prop.getName() )
 				          );
 
-				          prop.setAttribute( ENTITY_QUERY_OPERAND, retrieveEntityQueryOperand( prop ) );
+				          prop.setAttribute( EntityQueryOps.class, retrieveEntityQueryOperand( prop ) );
 				          prop.setValueFetcher( valueFetcher );
 			          }
 		          } )
@@ -311,13 +314,8 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		return controls;
 	}
 
-	private boolean translateAsTextValue( EntityPropertyDescriptor property ) {
-		return Boolean.TRUE.equals( property.getAttribute( ENTITY_QUERY_PROPERTY_TEXT_VALUE ) )
-				|| TEXT_VALUE_TYPES.stream().anyMatch( clazz -> clazz.equals( property.getPropertyType() ) );
-	}
-
 	private EntityQueryOps retrieveEntityQueryOperand( EntityPropertyDescriptor property ) {
-		EntityQueryOps operand = property.getAttribute( ENTITY_QUERY_OPERAND, EntityQueryOps.class );
+		EntityQueryOps operand = property.getAttribute( EntityQueryOps.class );
 		boolean isMultiValue = filterConfiguration.isMultiValue( property.getName() );
 
 		if ( operand == null ) {

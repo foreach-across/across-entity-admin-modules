@@ -23,7 +23,6 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescr
 import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -33,9 +32,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.*;
+import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.ENTITY_QUERY_PROPERTY_TEXT_VALUE;
 
 /**
+ * Internal to the framework.
+ *
  * @author Steven Gentens
  * @since 3.3.0
  */
@@ -58,7 +59,7 @@ public class EntityQueryFilterControlUtils
 	}
 
 	public static void setOperand( ViewElementBuilderSupport.ElementOrBuilder elementOrBuilder, EntityPropertyDescriptor propertyDescriptor ) {
-		EntityQueryOps operand = propertyDescriptor.getAttribute( ENTITY_QUERY_OPERAND, EntityQueryOps.class );
+		EntityQueryOps operand = propertyDescriptor.getAttribute( EntityQueryOps.class );
 		if ( operand != null ) {
 			setAttribute( elementOrBuilder, FilterControlAttributes.OPERAND, operand.name() );
 		}
