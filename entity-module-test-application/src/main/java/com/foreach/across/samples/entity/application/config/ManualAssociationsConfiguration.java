@@ -16,11 +16,17 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
+import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataSet;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.config.builders.EntityPropertyRegistryBuilder;
+import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.support.EntityPropertyRegistrationHelper;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
@@ -31,7 +37,9 @@ import org.springframework.data.repository.core.support.ReflectionEntityInformat
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.withDataSet;
 import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
 /**
@@ -46,6 +54,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 	private final Map<Serializable, Author> authors = new HashMap<>();
 
 	private final EntityPropertyRegistrationHelper propertyRegistrars;
+	private final AutoSuggestDataEndpoint autoSuggestDataEndpoint;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
@@ -58,11 +67,28 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 	}
 
 	private void configureBooks( EntitiesConfigurationBuilder entities ) {
+		AutoSuggestDataEndpoint.MappedDataSet dataSet = autoSuggestDataEndpoint.registerDataSet(
+				"author-autosuggest",
+				AutoSuggestDataSet
+						.builder()
+						.suggestionsLoader(
+								( query, controlName ) -> authors.values()
+								                                 .stream()
+								                                 .map( author -> {
+									                                 Map<String, Object> entry = new HashMap<>();
+									                                 entry.put( "id", author.getId() );
+									                                 entry.put( "label", author.getName() );
+									                                 return entry;
+								                                 } )
+								                                 .collect( Collectors.toList() ) )
+						.build()
+		);
+
 		entities.create()
 		        .name( "book2" )
 		        .displayName( "Book" )
 		        .entityType( Book.class, true )
-		        .properties( props -> props.property( "id" ).hidden( true ) )
+		        .properties( props -> props.property( "id" ).hidden( true ).and( this::configureAuthorAutoSuggest ) )
 		        .entityModel(
 				        model -> model.entityFactory( EntityFactory.of( Book::new ) )
 				                      .entityInformation( new ReflectionEntityInformation<>( Book.class ) )
@@ -79,11 +105,78 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        )
 		        .and( registerEntityQueryExecutor( books::values ) )
 		        .detailView()
-		        .listView( lvb -> lvb.entityQueryFilter( eqf -> eqf.showProperties( "author", "reviewers" ).multiValue( "reviewers" ) ) )
+		        .listView( lvb -> lvb.entityQueryFilter(
+				        eqf -> eqf.showProperties( "author", "reviewers" )
+				                  .multiValue( "reviewers" )
+				                  .properties( properties -> properties.property( "author" )
+				                                                       .viewElementBuilder(
+						                                                       ViewElementMode.FILTER_CONTROL,
+						                                                       BootstrapUiBuilders.autosuggest()
+						                                                                          .configuration( withDataSet(
+								                                                                          ds -> ds.remoteUrl(
+										                                                                          dataSet.suggestionsUrl() ) ) )
+						                                                                          .attribute(
+								                                                                          "data-entity-query-operand",
+								                                                                          EntityQueryOps.EQ
+										                                                                          .name() )
+						                                                                          .attribute(
+								                                                                          "data-entity-query-property",
+								                                                                          "author" )
+						                                                                          .attribute(
+								                                                                          "data-entity-query-type",
+								                                                                          "EQValue" )
+						                                                                          .postProcessor(
+								                                                                          ( viewElementBuilderContext, autoSuggestFormElement ) -> {
+					                             /*MmeUser user = EntityViewElementUtils.currentPropertyValue( viewElementBuilderContext, MmeUser.class );
+
+					                             if ( user != null ) {
+						                             autoSuggestFormElement.setValue( user.getId() );
+						                             autoSuggestFormElement.setText( user.getDisplayName() );
+					                             }*/
+								                                                                          } )
+				                                                       ) )
+		        ) )
 		        .createFormView()
 		        .updateFormView()
 		        .deleteFormView()
 		        .show();
+	}
+
+	private void configureAuthorAutoSuggest( EntityPropertyRegistryBuilder properties ) {
+		AutoSuggestDataEndpoint.MappedDataSet dataSet = autoSuggestDataEndpoint.registerDataSet(
+				"author-autosuggest",
+				AutoSuggestDataSet
+						.builder()
+						.suggestionsLoader(
+								( query, controlName ) -> authors.values()
+								                                 .stream()
+								                                 .map( author -> {
+									                                 Map<String, Object> entry = new HashMap<>();
+									                                 entry.put( "id", author.getId() );
+									                                 entry.put( "label", author.getName() );
+									                                 return entry;
+								                                 } )
+								                                 .collect( Collectors.toList() ) )
+						.build()
+		);
+
+		properties.property( "author" )
+		          .viewElementBuilder(
+				          ViewElementMode.FILTER_CONTROL,
+				          BootstrapUiBuilders.autosuggest()
+				                             .configuration( withDataSet( ds -> ds.remoteUrl( dataSet.suggestionsUrl() ) ) )
+				                             .attribute( "data-entity-query-operand", EntityQueryOps.EQ.name() )
+				                             .attribute( "data-entity-query-property", "author" )
+				                             .attribute( "data-entity-query-type", "EQValue" )
+				                             .postProcessor( ( viewElementBuilderContext, autoSuggestFormElement ) -> {
+					                             /*MmeUser user = EntityViewElementUtils.currentPropertyValue( viewElementBuilderContext, MmeUser.class );
+
+					                             if ( user != null ) {
+						                             autoSuggestFormElement.setValue( user.getId() );
+						                             autoSuggestFormElement.setText( user.getDisplayName() );
+					                             }*/
+				                             } )
+		          );
 	}
 
 	private void configureAuthors( EntitiesConfigurationBuilder entities ) {

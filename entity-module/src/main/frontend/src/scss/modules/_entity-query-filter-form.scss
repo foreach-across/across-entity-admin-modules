@@ -1,4 +1,3 @@
-
 .entity-query-filter-form {
   .btn {
     padding: 6px 10px;
@@ -46,6 +45,21 @@
 
       .bootstrap-select.form-control {
         width: 200px;
+      }
+
+      .axbum-typeahead {
+        display: inline-block !important;
+        height: inherit !important;
+
+        .twitter-typeahead {
+          display: inline-block !important;
+          height: inherit !important;
+
+          > .form-control {
+            width: 200px;
+            height: inherit !important;
+          }
+        }
       }
     }
   }

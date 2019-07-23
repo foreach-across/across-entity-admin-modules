@@ -51,7 +51,9 @@ public final class AutoSuggestDataEndpoint
 	 *
 	 * @param dataSet to attach
 	 * @return attached dataset context
+	 * @deprecated since 3.4.0 - manually specify an id
 	 */
+	@Deprecated
 	public MappedDataSet registerDataSet( AutoSuggestDataSet dataSet ) {
 		return registerDataSet( UUID.randomUUID().toString(), dataSet );
 	}
