@@ -48,17 +48,13 @@
       }
 
       .axbum-typeahead {
-        display: inline-block !important;
-        height: inherit !important;
+        display: inline-block;
+        height: inherit;
+        vertical-align: middle;
 
-        .twitter-typeahead {
-          display: inline-block !important;
-          height: inherit !important;
-
-          > .form-control {
-            width: 200px;
-            height: inherit !important;
-          }
+        .twitter-typeahead > .form-control {
+          width: 200px;
+          height: inherit;
         }
       }
     }
