@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder;
 import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.query.*;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -39,7 +38,6 @@ import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import com.foreach.across.modules.web.ui.ScopedAttributesViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.Getter;
@@ -62,7 +60,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.alert;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.text;
 import static com.foreach.across.modules.entity.views.DefaultEntityViewFactory.ATTRIBUTE_CONTAINER_ELEMENT;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
@@ -303,13 +302,11 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 				          prop.setValueFetcher( valueFetcher );
 			          }
 		          } )
-		          .map( property -> {
-			          ViewElementBuilder control = createFilterControl( property );
-			          ViewElementBuilder labelText = viewElementBuilderService.getElementBuilder( property, ViewElementMode.LABEL );
-			          LabelFormElementBuilder labelBuilder = label().text( labelText );
-
-			          return formGroup( labelBuilder, control ).build( builderContext );
-		          } ).forEach( controls::add );
+		          .map(
+				          property -> viewElementBuilderService.getElementBuilder( property, determineViewElementMode( property ) )
+				                                               .build( builderContext )
+		          )
+		          .forEach( controls::add );
 
 		return controls;
 	}
@@ -332,12 +329,8 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 		return isMultiValue ? Optional.ofNullable( EntityQueryOps.resolveMultiValueOperand( operand ) ).orElse( operand ) : operand;
 	}
 
-	protected ViewElementBuilder createFilterControl( EntityPropertyDescriptor property ) {
-		return viewElementBuilderService.getElementBuilder( property, determineViewElementMode( property ) );
-	}
-
 	protected ViewElementMode determineViewElementMode( EntityPropertyDescriptor property ) {
-		return filterConfiguration.isMultiValue( property.getName() ) ? ViewElementMode.FILTER_CONTROL.forMultiple() : ViewElementMode.FILTER_CONTROL;
+		return filterConfiguration.isMultiValue( property.getName() ) ? ViewElementMode.FILTER_FORM.forMultiple() : ViewElementMode.FILTER_FORM;
 	}
 
 	protected EntityQueryFacade resolveEntityQueryFacade( EntityViewRequest viewRequest ) {
