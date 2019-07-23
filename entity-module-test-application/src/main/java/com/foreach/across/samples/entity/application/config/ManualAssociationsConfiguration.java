@@ -42,6 +42,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.withDataSet;
+import static com.foreach.across.modules.entity.autosuggest.AutoSuggestDataConfiguration.autoSuggestData;
 import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
 /**
@@ -141,7 +142,9 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        .createFormView()
 		        .updateFormView()
 		        .deleteFormView()
-		        .show();
+		        .show()
+		        //.attribute( autoSuggestDataEndpoint.data().suggestionsEql( "" ) )
+		;
 	}
 
 	private void configureAuthorAutoSuggest( EntityPropertyRegistryBuilder properties ) {
@@ -154,7 +157,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 								                                 .stream()
 								                                 .map( author -> {
 									                                 Map<String, Object> entry = new HashMap<>();
-									                                 entry.put( "id", author.getId().toString() );
+									                                 entry.put( "id", author.getId().id );
 									                                 entry.put( "label", author.getName() );
 									                                 return entry;
 								                                 } )
@@ -164,6 +167,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 
 		properties.property( "author" )
 		          .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
+		          .attribute( autoSuggestData().suggestionsEql( "name ilike '{0}%'" ) )
 		          .attribute( AutoSuggestDataSet.NAME, "author-autosuggest" )
 		          .attribute( AutoSuggestDataSet.ResultTransformer.class, object -> {
 			          Author author = (Author) object;
