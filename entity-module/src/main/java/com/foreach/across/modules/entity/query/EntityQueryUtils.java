@@ -190,22 +190,22 @@ public abstract class EntityQueryUtils
 	}
 
 	/**
-	 * Finds an {@link EntityQueryCondition} inside an {@link EntityQuery}
+	 * Finds all {@link EntityQueryCondition} conditions inside an {@link EntityQuery}
 	 *
 	 * @param propertyName the name of the property in the expression
 	 * @return all {@link EntityQueryCondition} that match the propertyName
 	 */
-	public static List<EntityQueryCondition> find( @NonNull EntityQuery entityQuery, @NonNull String propertyName ) {
-		return find( entityQuery, propertyName, new ArrayList<>() );
+	public static List<EntityQueryCondition> findConditionsForProperty( @NonNull EntityQuery entityQuery, @NonNull String propertyName ) {
+		return findConditionsForProperty( entityQuery, propertyName, new ArrayList<>() );
 	}
 
-	private static List<EntityQueryCondition> find( @NonNull EntityQuery entityQuery,
+	private static List<EntityQueryCondition> findConditionsForProperty( @NonNull EntityQuery entityQuery,
 	                                                @NonNull String propertyName,
 	                                                @NonNull List<EntityQueryCondition> matches ) {
 		for ( EntityQueryExpression expression : entityQuery.getExpressions() ) {
 
 			if ( expression instanceof EntityQuery ) {
-				find( (EntityQuery) expression, propertyName, matches );
+				findConditionsForProperty( (EntityQuery) expression, propertyName, matches );
 			}
 			else {
 				EntityQueryCondition entityQueryCondition = (EntityQueryCondition) expression;
