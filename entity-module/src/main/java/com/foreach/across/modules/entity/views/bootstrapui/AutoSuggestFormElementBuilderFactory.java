@@ -30,6 +30,7 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.element.Pr
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.RequiredControlPostProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
@@ -51,7 +52,7 @@ import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSu
 public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuilderFactorySupport<AutoSuggestFormElementBuilder>
 {
 	private final EntityRegistry entityRegistry;
-	private final AutoSuggestDataEndpoint autoSuggestDataEndpoint;
+	private final ObjectProvider<AutoSuggestDataEndpoint> autoSuggestDataEndpoint;
 
 	@Override
 	public boolean supports( String viewElementType ) {
@@ -87,6 +88,6 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 
 	private AutoSuggestFormElementConfiguration resolveAutoSuggestConfiguration( EntityPropertyDescriptor propertyDescriptor ) {
 		String dataSetId = propertyDescriptor.getAttribute( AutoSuggestDataSet.NAME, String.class );
-		return withDataSet( ds -> ds.remoteUrl( autoSuggestDataEndpoint.getDataSet( dataSetId ).suggestionsUrl() ) );
+		return withDataSet( ds -> ds.remoteUrl( autoSuggestDataEndpoint.getIfAvailable().getDataSet( dataSetId ).suggestionsUrl() ) );
 	}
 }

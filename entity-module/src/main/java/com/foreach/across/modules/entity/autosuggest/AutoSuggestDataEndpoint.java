@@ -34,8 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class AutoSuggestDataEndpoint
 {
-//	private final String baseUrl;// = "@adminWeb:/api/entityModule/auto-suggest?dataset={{dataset}}&query={{query}}&controlName={{controlName}}";
-
 	private final UriComponentsBuilder urlBuilder;
 	private final Map<String, MappedDataSet> dataSetMap = new ConcurrentHashMap<>();
 
