@@ -42,7 +42,7 @@ class RepositoryEntityPropertyRegistryBuilder
 		Class<? extends T> entityType = entityConfiguration.getEntityType();
 
 		MutableEntityPropertyRegistry registry = entityPropertyRegistryProvider.get( entityType );
-
+		registry.setId( entityConfiguration.getName() );
 		registry.setDefaultOrder( new EntityPropertyComparators.Ordered() );
 
 		setBeanDescriptor( entityConfiguration );

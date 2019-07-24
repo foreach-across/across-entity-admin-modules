@@ -131,12 +131,12 @@ public class AutoSuggestDataAttributeRegistrar
 
 	private String resolveDataSetId( Object owner ) {
 		if ( owner instanceof EntityConfiguration ) {
-			return ( (EntityConfiguration) owner ).getName() + "-autoSuggestData";
+			return "entity-" + ( (EntityConfiguration) owner ).getName();
 		}
 
 		if ( owner instanceof EntityPropertyDescriptor ) {
 			EntityPropertyDescriptor descriptor = (EntityPropertyDescriptor) owner;
-			return /* descriptor.getPropertyRegistry().getId() + */ "prop-" + descriptor.getName() + "-autoSuggestData";
+			return "property-" + descriptor.getPropertyRegistry().getId() + "." + descriptor.getName();
 		}
 
 		throw new IllegalArgumentException( "Only entity configurations or properties can have auto-suggest data attributes configured" );

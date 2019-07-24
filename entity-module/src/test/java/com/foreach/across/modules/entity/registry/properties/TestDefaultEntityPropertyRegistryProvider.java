@@ -17,6 +17,7 @@
 package com.foreach.across.modules.entity.registry.properties;
 
 import com.foreach.across.modules.entity.registry.properties.DefaultEntityPropertyRegistryProvider.PropertiesRegistrar;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -64,6 +65,12 @@ public class TestDefaultEntityPropertyRegistryProvider
 	}
 
 	@Test
+	public void idIsAssignedBasedOnClassName() {
+		Assertions.assertThat( provider.create( String.class ).getId() ).isEqualTo( String.class.getName() );
+		Assertions.assertThat( provider.create( long.class ).getId() ).isEqualTo( long.class.getName() );
+	}
+
+	@Test
 	public void getReturnsSameInstanceButCallsCreateOnlyOnce() {
 		MutableEntityPropertyRegistry registry = mock( MutableEntityPropertyRegistry.class );
 		when( provider.create( String.class ) ).thenReturn( registry );
@@ -76,13 +83,15 @@ public class TestDefaultEntityPropertyRegistryProvider
 	}
 
 	@Test
-	public void createForParentReturnsMergingRegistry() {
+	public void createForParentReturnsMergingRegistryWithSameId() {
 		MutableEntityPropertyRegistry parent = mock( MutableEntityPropertyRegistry.class );
+		when( parent.getId() ).thenReturn( "my id" );
 		MutableEntityPropertyRegistry registry = provider.createForParentRegistry( parent );
 
 		assertNotNull( registry );
 		assertTrue( registry instanceof MergingEntityPropertyRegistry );
 		assertNotSame( registry, provider.createForParentRegistry( parent ) );
+		assertEquals( "my id", registry.getId() );
 
 		registry.getDefaultFilter();
 		verify( parent ).getDefaultFilter();

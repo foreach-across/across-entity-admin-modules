@@ -82,6 +82,7 @@ public class DefaultEntityPropertyRegistryProvider implements EntityPropertyRegi
 	@Override
 	public MutableEntityPropertyRegistry create( Class<?> entityType ) {
 		DefaultEntityPropertyRegistry newRegistry = new DefaultEntityPropertyRegistry( this );
+		newRegistry.setId( entityType.getName() );
 		newRegistry.setDefaultMemberValidator( defaultMemberValidator );
 		propertiesRegistrars.forEach( b -> b.accept( entityType, newRegistry ) );
 		return newRegistry;
@@ -89,7 +90,9 @@ public class DefaultEntityPropertyRegistryProvider implements EntityPropertyRegi
 
 	@Override
 	public MutableEntityPropertyRegistry createForParentRegistry( EntityPropertyRegistry entityPropertyRegistry ) {
-		return new MergingEntityPropertyRegistry( entityPropertyRegistry, this, descriptorFactory );
+		MergingEntityPropertyRegistry mergingEntityPropertyRegistry = new MergingEntityPropertyRegistry( entityPropertyRegistry, this, descriptorFactory );
+		mergingEntityPropertyRegistry.setId( entityPropertyRegistry.getId() );
+		return mergingEntityPropertyRegistry;
 	}
 
 	/**

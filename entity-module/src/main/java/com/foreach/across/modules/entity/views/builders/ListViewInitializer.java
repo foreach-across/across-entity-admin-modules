@@ -63,7 +63,7 @@ final class ListViewInitializer extends AbstractViewInitializer<EntityListViewFa
 			builder.factoryType( DefaultEntityViewFactory.class )
 			       .messagePrefix( "views[" + templateName() + "]" )
 			       .requiredAllowableAction( AllowableAction.READ )
-			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
+			       .propertyRegistry( createViewPropertyRegistry( entityConfiguration ) )
 			       .viewElementMode( ViewElementMode.LIST_VALUE )
 			       .pageSize( 50 )
 			       .showProperties( EntityPropertySelector.READABLE )

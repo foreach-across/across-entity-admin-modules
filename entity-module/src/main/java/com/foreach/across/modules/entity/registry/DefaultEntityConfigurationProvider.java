@@ -19,6 +19,7 @@ package com.foreach.across.modules.entity.registry;
 import com.foreach.across.core.annotations.RefreshableCollection;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,9 @@ public class DefaultEntityConfigurationProvider implements EntityConfigurationPr
 		MutableEntityConfiguration<T> configuration = new EntityConfigurationImpl<>( entityType );
 		configuration.setHidden( true );
 		configuration.setEntityMessageCodeResolver( createMessageCodeResolver( configuration ) );
-		configuration.setPropertyRegistry( propertyRegistryProvider.get( entityType ) );
+		MutableEntityPropertyRegistry propertyRegistry = propertyRegistryProvider.get( entityType );
+		propertyRegistry.setId( configuration.getName() );
+		configuration.setPropertyRegistry( propertyRegistry );
 		postProcessors.forEach( p -> p.accept( configuration ) );
 
 		return configuration;
@@ -83,11 +86,11 @@ public class DefaultEntityConfigurationProvider implements EntityConfigurationPr
 		MutableEntityConfiguration<T> configuration = new EntityConfigurationImpl<>( name, entityType );
 		configuration.setHidden( true );
 		configuration.setEntityMessageCodeResolver( createMessageCodeResolver( configuration ) );
-		configuration.setPropertyRegistry(
-				registerForClass
-						? propertyRegistryProvider.get( entityType )
-						: propertyRegistryProvider.create( entityType )
-		);
+		MutableEntityPropertyRegistry propertyRegistry = registerForClass
+				? propertyRegistryProvider.get( entityType )
+				: propertyRegistryProvider.create( entityType );
+		propertyRegistry.setId( name );
+		configuration.setPropertyRegistry( propertyRegistry );
 		postProcessors.forEach( p -> p.accept( configuration ) );
 
 		return configuration;

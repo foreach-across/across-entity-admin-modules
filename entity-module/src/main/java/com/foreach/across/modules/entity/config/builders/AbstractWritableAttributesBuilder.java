@@ -19,6 +19,8 @@ package com.foreach.across.modules.entity.config.builders;
 import com.foreach.across.core.support.ReadableAttributes;
 import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 
 import java.util.ArrayDeque;
@@ -35,6 +37,7 @@ import java.util.Map;
  */
 public abstract class AbstractWritableAttributesBuilder<T extends ReadableAttributes>
 {
+	@Getter(value = AccessLevel.PROTECTED)
 	private final Map<String, Object> attributes = new HashMap<>();
 	private final Collection<AttributeRegistrar<T>> registrars = new ArrayDeque<>();
 

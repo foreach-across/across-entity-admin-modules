@@ -151,6 +151,9 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 						                      .attribute( autoSuggestData.entityQuery( "name contains '{0}' order by name desc" ) )
 				        )
 		        )
+		.formView( "meh", vb -> {
+
+		} )
 		;
 	}
 

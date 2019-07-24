@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,9 @@
  */
 package com.foreach.across.modules.entity.registry.properties;
 
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -34,6 +36,11 @@ public abstract class EntityPropertyRegistrySupport implements MutableEntityProp
 
 	private Predicate<EntityPropertyDescriptor> defaultFilter;
 	private Comparator<EntityPropertyDescriptor> defaultOrder = null;
+
+	@Getter
+	@Setter
+	@NonNull
+	private String id = UUID.randomUUID().toString();
 
 	protected EntityPropertyRegistrySupport( EntityPropertyRegistryProvider registryProvider ) {
 		this.registryProvider = registryProvider;

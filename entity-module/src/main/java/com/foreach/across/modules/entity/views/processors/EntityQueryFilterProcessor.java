@@ -339,6 +339,7 @@ public class EntityQueryFilterProcessor extends AbstractEntityFetchingViewProces
 
 	private void initializePropertyRegistry( EntityPropertyRegistry parent ) {
 		propertyRegistry = propertyRegistryProvider.createForParentRegistry( parent );
+		propertyRegistry.setId( parent.getId() + "_eqf" );
 		filterConfiguration.getPropertyRegistryBuilder().apply( propertyRegistry );
 	}
 

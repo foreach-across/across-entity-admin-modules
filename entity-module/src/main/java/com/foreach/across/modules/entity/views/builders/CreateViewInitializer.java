@@ -59,7 +59,7 @@ final class CreateViewInitializer extends AbstractViewInitializer<EntityViewFact
 			builder.factoryType( DefaultEntityViewFactory.class )
 			       .messagePrefix( "views[" + templateName() + "]" )
 			       .requiredAllowableAction( AllowableAction.CREATE )
-			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
+			       .propertyRegistry( createViewPropertyRegistry( entityConfiguration ) )
 			       .viewElementMode( ViewElementMode.FORM_WRITE )
 			       .showProperties( EntityPropertySelector.WRITABLE )
 			       .viewProcessor( beanFactory.getBean( DefaultValidationViewProcessor.class ), 0 )

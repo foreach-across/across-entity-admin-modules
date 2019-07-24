@@ -55,6 +55,11 @@ public interface EntityPropertyRegistry
 	String LABEL = "#label";
 
 	/**
+	 * @return an id for this property registry
+	 */
+	String getId();
+
+	/**
 	 * @param propertyName Name of the property.
 	 * @return True if a property with that name is registered.
 	 */
