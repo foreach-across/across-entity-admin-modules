@@ -16,9 +16,8 @@
 
 package com.foreach.across.samples.entity.application.config;
 
-import com.foreach.across.modules.entity.EntityAttributes;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
-import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataSet;
+import com.foreach.across.modules.entity.autosuggest.SimpleAutoSuggestDataSet;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.views.ViewElementMode;
@@ -26,7 +25,6 @@ import com.foreach.across.modules.entity.views.bootstrapui.processors.element.Pr
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.RequiredControlPostProcessor;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.samples.entity.application.business.Group;
-import com.foreach.across.samples.entity.application.business.User;
 import com.foreach.across.samples.entity.application.repositories.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +51,7 @@ public class AutoSuggestConfiguration implements EntityConfigurer
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
 		AutoSuggestDataEndpoint.MappedDataSet dataSet = autoSuggestDataEndpoint.registerDataSet(
-				AutoSuggestDataSet
+				SimpleAutoSuggestDataSet
 						.builder()
 						.suggestionsLoader(
 								( query, controlName ) -> groupRepository.findByNameContaining( query, new PageRequest( 0, 15, new Sort( "name" ) ) )
