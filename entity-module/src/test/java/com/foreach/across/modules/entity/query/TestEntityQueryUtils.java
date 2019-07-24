@@ -202,14 +202,14 @@ public class TestEntityQueryUtils
 	@Test
 	public void findOnPropertyNameWithNullValuesReturnsNull() {
 		Assertions.assertThatThrownBy( () -> {
-			EntityQueryUtils.find( null, null );
-			EntityQueryUtils.find( null, null );
+			EntityQueryUtils.findConditionsForProperty( null, null );
+			EntityQueryUtils.findConditionsForProperty( null, null );
 		} ).isInstanceOf( IllegalArgumentException.class );
 	}
 
 	@Test
 	public void findOnPropertyNameThatDoesNotMatchReturnsNull() {
-		assertThat( EntityQueryUtils.find( EntityQuery.or( new EntityQueryCondition( "foo", EQ, "bar" ) ), "milk" ) ).isNull();
+		assertThat( EntityQueryUtils.findConditionsForProperty( EntityQuery.or( new EntityQueryCondition( "foo", EQ, "bar" ) ), "milk" ) ).isEmpty();
 	}
 
 	@Test
@@ -219,7 +219,7 @@ public class TestEntityQueryUtils
 				new EntityQueryCondition( "name", EQ, "jane" ),
 				new EntityQueryCondition( "age", EQ, "19" )
 		), new EntityQueryCondition( "name", LIKE, "jean-pierre" ) );
-		List<EntityQueryCondition> result = EntityQueryUtils.find( query, "name" );
+		List<EntityQueryCondition> result = EntityQueryUtils.findConditionsForProperty( query, "name" );
 		assertThat( result ).isNotNull();
 		assertThat( result ).extracting( EntityQueryCondition::getFirstArgument ).containsOnly( "john", "jane", "jean-pierre" );
 	}
