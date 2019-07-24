@@ -32,9 +32,12 @@ import java.util.Objects;
 @Accessors(chain = true)
 public class EntityQueryCondition implements EntityQueryExpression
 {
+	@NonNull
 	private String property;
+
 	@NonNull
 	private EntityQueryOps operand;
+
 	private Object[] arguments = new Object[0];
 	private boolean translated;
 
@@ -72,7 +75,6 @@ public class EntityQueryCondition implements EntityQueryExpression
 
 		EntityQueryCondition that = (EntityQueryCondition) o;
 
-		// Probably incorrect - comparing Object[] arrays with Arrays.equals
 		return Arrays.equals( arguments, that.arguments ) && Objects.equals( operand, that.operand ) && Objects.equals( property, that.property );
 	}
 

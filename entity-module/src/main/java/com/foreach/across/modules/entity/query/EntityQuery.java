@@ -23,7 +23,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +54,7 @@ public class EntityQuery implements EntityQueryExpression
 	private Sort sort;
 
 	private EntityQueryOps operand = EntityQueryOps.AND;
+
 	@NonNull
 	private List<EntityQueryExpression> expressions = new ArrayList<>();
 	private boolean translated;
@@ -62,7 +62,7 @@ public class EntityQuery implements EntityQueryExpression
 	public EntityQuery() {
 	}
 
-	public EntityQuery( EntityQueryOps operand ) {
+	public EntityQuery( @NonNull EntityQueryOps operand ) {
 		setOperand( operand );
 	}
 
@@ -95,8 +95,7 @@ public class EntityQuery implements EntityQueryExpression
 		return this;
 	}
 
-	public EntityQuery setOperand( EntityQueryOps operand ) {
-		Assert.notNull( operand, "A valid operand is required" );
+	public EntityQuery setOperand( @NonNull EntityQueryOps operand ) {
 		if ( operand != EntityQueryOps.AND && operand != EntityQueryOps.OR ) {
 			throw new IllegalArgumentException( "EntityQuery operand type must be either AND or OR" );
 		}

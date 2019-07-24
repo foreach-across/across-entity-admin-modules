@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 /**
  * @author Arne Vandamme
  */
-@JsonTypeInfo( use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="@type" )
+@JsonTypeInfo( use=JsonTypeInfo.Id.NAME, property="@type" )
 @JsonSubTypes({
 		@JsonSubTypes.Type(value=EntityQuery.class, name="EntityQuery"),
 		@JsonSubTypes.Type(value=EntityQueryCondition.class, name="EntityQueryCondition")
@@ -31,10 +31,10 @@ public interface EntityQueryExpression
 	EntityQueryOps getOperand();
 
 	/**
-	 * If an expression is marked as translated, it will not be re-translated afterwards.
-	 * See {@link DefaultEntityQueryTranslator#translate(EntityQuery)}
+	 * If an expression is marked as translated no additional translation should be performed by an {@link EntityQueryTranslator}.
 	 *
 	 * @return true if this expression is marked as translated.
+	 * @see EntityQueryTranslator#translate(EntityQuery)
 	 */
 	boolean isTranslated();
 }
