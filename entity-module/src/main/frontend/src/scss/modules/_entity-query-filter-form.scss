@@ -49,12 +49,14 @@
 
       .axbum-typeahead {
         display: inline-block;
-        height: inherit;
-        vertical-align: middle;
 
-        .twitter-typeahead > .form-control {
-          width: 200px;
-          height: inherit;
+        .twitter-typeahead {
+          display: inline-block !important;
+          vertical-align: middle;
+
+          > .form-control {
+            width: 200px;
+          }
         }
       }
     }
