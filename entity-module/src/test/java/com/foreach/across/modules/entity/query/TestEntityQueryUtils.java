@@ -18,11 +18,14 @@ package com.foreach.across.modules.entity.query;
 
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.List;
 
+import static com.foreach.across.modules.entity.query.EntityQueryOps.EQ;
+import static com.foreach.across.modules.entity.query.EntityQueryOps.LIKE;
 import static com.foreach.across.modules.entity.query.EntityQueryUtils.createAssociationPredicate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -176,7 +179,7 @@ public class TestEntityQueryUtils
 		when( association.getTargetProperty() ).thenReturn( targetProperty );
 
 		assertThat( createAssociationPredicate( association, "parent" ) )
-				.isEqualTo( new EntityQueryCondition( "ownerId", EntityQueryOps.EQ, "parent" ) );
+				.isEqualTo( new EntityQueryCondition( "ownerId", EQ, "parent" ) );
 
 		EntityPropertyDescriptor sourceProperty = mock( EntityPropertyDescriptor.class );
 		when( sourceProperty.getName() ).thenReturn( "id" );
@@ -184,7 +187,7 @@ public class TestEntityQueryUtils
 		when( association.getSourceProperty() ).thenReturn( sourceProperty );
 
 		assertThat( createAssociationPredicate( association, "parent" ) )
-				.isEqualTo( new EntityQueryCondition( "ownerId", EntityQueryOps.EQ, 123 ) );
+				.isEqualTo( new EntityQueryCondition( "ownerId", EQ, 123 ) );
 
 		when( targetProperty.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.array( TypeDescriptor.valueOf( String.class ) ) );
 		assertThat( createAssociationPredicate( association, "parent" ) )
@@ -194,6 +197,31 @@ public class TestEntityQueryUtils
 				TypeDescriptor.array( TypeDescriptor.collection( List.class, TypeDescriptor.valueOf( String.class ) ) ) );
 		assertThat( createAssociationPredicate( association, "parent" ) )
 				.isEqualTo( new EntityQueryCondition( "ownerId", EntityQueryOps.CONTAINS, 123 ) );
+	}
+
+	@Test
+	public void findOnPropertyNameWithNullValuesReturnsNull() {
+		Assertions.assertThatThrownBy( () -> {
+			EntityQueryUtils.find( null, null );
+			EntityQueryUtils.find( null, null );
+		} ).isInstanceOf( IllegalArgumentException.class );
+	}
+
+	@Test
+	public void findOnPropertyNameThatDoesNotMatchReturnsNull() {
+		assertThat( EntityQueryUtils.find( EntityQuery.or( new EntityQueryCondition( "foo", EQ, "bar" ) ), "milk" ) ).isNull();
+	}
+
+	@Test
+	public void findOnPropertyNameThatMatchesReturnsAllMatches() {
+		EntityQuery query = EntityQuery.or( EntityQuery.and(
+				new EntityQueryCondition( "name", EQ, "john" ),
+				new EntityQueryCondition( "name", EQ, "jane" ),
+				new EntityQueryCondition( "age", EQ, "19" )
+		), new EntityQueryCondition( "name", LIKE, "jean-pierre" ) );
+		List<EntityQueryCondition> result = EntityQueryUtils.find( query, "name" );
+		assertThat( result ).isNotNull();
+		assertThat( result ).extracting( EntityQueryCondition::getFirstArgument ).containsOnly( "john", "jane", "jean-pierre" );
 	}
 
 	private void assertEqlEquals( String expectedEql, EntityQuery entityQuery ) {
