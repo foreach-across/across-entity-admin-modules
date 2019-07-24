@@ -29,4 +29,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public interface EntityQueryExpression
 {
 	EntityQueryOps getOperand();
+
+	/**
+	 * If an expression is marked as translated, it will not be re-translated afterwards.
+	 * See {@link DefaultEntityQueryTranslator#translate(EntityQuery)}
+	 *
+	 * @return true if this expression is marked as translated.
+	 */
+	boolean isTranslated();
 }

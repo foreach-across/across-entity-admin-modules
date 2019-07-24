@@ -77,6 +77,8 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 	/**
 	 * Translate the raw query into strongly typed version.
 	 *
+	 * If a query is marked as {@link EntityQueryExpression#isTranslated()}}, then the expression will not be re-translated.
+	 *
 	 * @param rawQuery instance
 	 * @return translated query
 	 */
@@ -102,17 +104,23 @@ public class DefaultEntityQueryTranslator implements EntityQueryTranslator
 			throw new IllegalStateException( "Unable to translate EntityQuery expression, maximum nested recursion level reached: " + expression );
 		}
 
-		if ( expression instanceof EntityQueryCondition ) {
-			translated = translateSingleCondition( (EntityQueryCondition) expression );
+		if ( !( expression.isTranslated() ) ) {
+			if ( expression instanceof EntityQueryCondition ) {
+				translated = translateSingleCondition( (EntityQueryCondition) expression );
 
-			if ( translated != null && !Objects.equals( expression, translated ) ) {
-				// recursive translation of individual properties
-				translated = translateExpression( translated, recursionLevel + 1 );
+				if ( translated != null && !Objects.equals( expression, translated ) ) {
+					// recursive translation of individual properties
+					translated = translateExpression( translated, recursionLevel + 1 );
+				}
+			}
+			else {
+				translated = translate( (EntityQuery) expression );
 			}
 		}
 		else {
-			translated = translate( (EntityQuery) expression );
+			translated = expression;
 		}
+
 
 		return translated;
 	}

@@ -16,18 +16,27 @@
 package com.foreach.across.modules.entity.query;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * @author Arne Vandamme
  */
+@Getter
+@Setter
+@Accessors(chain = true)
 public class EntityQueryCondition implements EntityQueryExpression
 {
 	private String property;
+	@NonNull
 	private EntityQueryOps operand;
 	private Object[] arguments = new Object[0];
+	private boolean translated;
 
 	protected EntityQueryCondition() {
 	}
@@ -38,28 +47,9 @@ public class EntityQueryCondition implements EntityQueryExpression
 		this.arguments = arguments;
 	}
 
-	public String getProperty() {
-		return property;
-	}
-
-	public void setProperty( String property ) {
-		this.property = property;
-	}
-
-	public EntityQueryOps getOperand() {
-		return operand;
-	}
-
-	public void setOperand( @NonNull EntityQueryOps operand ) {
-		this.operand = operand;
-	}
-
-	public Object[] getArguments() {
-		return arguments;
-	}
-
-	public void setArguments( @NonNull Object[] arguments ) {
+	public EntityQueryCondition setArguments( @NonNull Object[] arguments ) {
 		this.arguments = arguments.clone();
+		return this;
 	}
 
 	public boolean hasArguments() {
@@ -83,25 +73,12 @@ public class EntityQueryCondition implements EntityQueryExpression
 		EntityQueryCondition that = (EntityQueryCondition) o;
 
 		// Probably incorrect - comparing Object[] arrays with Arrays.equals
-		if ( !Arrays.equals( arguments, that.arguments ) ) {
-			return false;
-		}
-		if ( operand != that.operand ) {
-			return false;
-		}
-		if ( property != null ? !property.equals( that.property ) : that.property != null ) {
-			return false;
-		}
-
-		return true;
+		return Arrays.equals( arguments, that.arguments ) && Objects.equals( operand, that.operand ) && Objects.equals( property, that.property );
 	}
 
 	@Override
 	public int hashCode() {
-		int result = property != null ? property.hashCode() : 0;
-		result = 31 * result + ( operand != null ? operand.hashCode() : 0 );
-		result = 31 * result + ( arguments != null ? Arrays.hashCode( arguments ) : 0 );
-		return result;
+		return Objects.hash( property, operand, arguments );
 	}
 
 	@Override
