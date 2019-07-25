@@ -17,27 +17,38 @@
 package com.foreach.across.modules.entity.autosuggest;
 
 import com.foreach.across.core.support.ReadableAttributes;
+import com.foreach.across.core.support.WritableAttributes;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration;
 import com.foreach.across.modules.entity.config.AttributeRegistrar;
+import com.foreach.across.modules.entity.query.EntityQuery;
+import com.foreach.across.modules.entity.query.EntityQueryFacade;
 import com.foreach.across.modules.entity.query.EntityQueryFacadeResolver;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
+import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
- * Helper that allows registering simple auto-suggest datasets and attaching them
- * immediately to the scope of an entity configuration or property.
+ * Helper that allows registering simple entity (query) based auto-suggest datasets
+ * and attaching them immediately to the scope of an entity configuration or property.
  * <p/>
  * This will register the dataset in the {@link AutoSuggestDataEndpoint} (which must be
  * available) and attache the id of the dataset as attribute on the descriptor or configuration.
@@ -64,6 +75,17 @@ public class AutoSuggestDataAttributeRegistrar
 	private final ConversionService mvcConversionService;
 
 	/**
+	 * Registers the dataset with the given id as auto-suggest datasource.
+	 * This is the equivalent of directly setting the {@link #DATASET_ID} attribute.
+	 *
+	 * @param dataSetId id of the dataset
+	 * @return attribute registrar
+	 */
+	public <U extends ReadableAttributes> DataSetRegistrar<U> dataSetId( @NonNull String dataSetId ) {
+		return new DataSetRegistrar<>( ( owner, attributes ) -> attributes.setAttribute( DATASET_ID, dataSetId ) );
+	}
+
+	/**
 	 * Register a simple dataset that uses an EQL statement to fetch the results.
 	 * The entity configuration of the target type wil be used for query execution
 	 * and result transformation (using the available entity model). The target entity
@@ -71,29 +93,37 @@ public class AutoSuggestDataAttributeRegistrar
 	 * registered (either {@link EntityConfiguration} or {@link EntityPropertyDescriptor}.
 	 * <p/>
 	 * The EQL statement can hold a {@code \{0\} token} where the actual search string will be inserted.
+	 * <p/>
+	 * The default number of results will be limited to 50.
 	 *
 	 * @param suggestionsEql eql to fetch the suggestions
 	 * @return attribute registrar
-	 * @see EntityQueryAutoSuggestData
+	 * @see EntityDataSetConfiguration
 	 */
-	public <U extends ReadableAttributes> AttributeRegistrar<U> entityQuery( @NonNull String suggestionsEql ) {
-		return entityQuery( ds -> ds.setSuggestionsEql( suggestionsEql ) );
+	public <U extends ReadableAttributes> DataSetRegistrar<U> entityQuery( @NonNull String suggestionsEql ) {
+		return entityQuery( ds -> ds.suggestionsEql( suggestionsEql ) );
 	}
 
 	/**
-	 * Register an {@link EntityQueryAutoSuggestData} dataset that will be initialized upon first use.
+	 * Register an entity configuration based {@link InitializingAutoSuggestDataSet} dataset
+	 * that will be initialized upon first use. The default number of results will be limited to 50.
+	 * If no {@link EntityDataSetConfiguration#entityType(Class)} is specified manually, it will be
+	 * derived from the context on which the attribute is being registered.
 	 *
 	 * @param dataSetConsumer to customize the dataset properties
 	 * @return attribute registrar
-	 * @see EntityQueryAutoSuggestData
+	 * @see EntityDataSetConfiguration
 	 */
-	public <U extends ReadableAttributes> AttributeRegistrar<U> entityQuery( @NonNull Consumer<EntityQueryAutoSuggestData> dataSetConsumer ) {
-		return ( owner, attributes ) -> {
-			EntityQueryAutoSuggestData autoSuggestData = new EntityQueryAutoSuggestData()
-					.setInitializer( dataSet -> initializeEntityQueryAutoSuggestData( owner, dataSet ) );
+	@SuppressWarnings("unchecked")
+	public <U extends ReadableAttributes> DataSetRegistrar<U> entityQuery( @NonNull Consumer<EntityDataSetConfiguration<? super Object>> dataSetConsumer ) {
+		return new DataSetRegistrar<>( ( owner, attributes ) -> {
+			EntityDataSetConfiguration definition = new EntityDataSetConfiguration<>().maximumResults( 50 );
+			dataSetConsumer.accept( definition );
 
-			dataSetConsumer.accept( autoSuggestData );
+			InitializingAutoSuggestDataSet autoSuggestData = new InitializingAutoSuggestDataSet();
+			autoSuggestData.setInitializer( dataSet -> initializeEntityConfigurationAutoSuggestData( owner, dataSet, definition ) );
 
+			autoSuggestData.setDataSetId( definition.dataSetId );
 			assignDataSetIdIfNecessary( autoSuggestData, owner );
 
 			AutoSuggestDataEndpoint endpoint = autoSuggestDataEndpoint.getIfAvailable();
@@ -101,11 +131,11 @@ public class AutoSuggestDataAttributeRegistrar
 			endpoint.registerDataSet( autoSuggestData.getDataSetId(), autoSuggestData );
 
 			attributes.setAttribute( DATASET_ID, autoSuggestData.getDataSetId() );
-		};
+		} );
 	}
 
 	/**
-	 * Registers or customizes an {@link AutoSuggestFormElementConfiguration} which determines the default settings
+	 * Registers or customizes only the {@link AutoSuggestFormElementConfiguration} which determines the default settings
 	 * for the auto-suggest control (for example the minimum length before fetching results).
 	 *
 	 * @param controlConsumer consumer to customize the configuration
@@ -123,7 +153,7 @@ public class AutoSuggestDataAttributeRegistrar
 		};
 	}
 
-	private void assignDataSetIdIfNecessary( EntityQueryAutoSuggestData autoSuggestData, Object owner ) {
+	private void assignDataSetIdIfNecessary( InitializingAutoSuggestDataSet autoSuggestData, Object owner ) {
 		if ( StringUtils.isEmpty( autoSuggestData.getDataSetId() ) ) {
 			autoSuggestData.setDataSetId( resolveDataSetId( owner ) );
 		}
@@ -145,28 +175,226 @@ public class AutoSuggestDataAttributeRegistrar
 	/**
 	 * Attempts to resolve all unknown properties and activate the dataset correctly.
 	 */
-	private void initializeEntityQueryAutoSuggestData( Object owner, EntityQueryAutoSuggestData dataSet ) {
-		if ( dataSet.getConversionService() == null ) {
-			dataSet.setConversionService( mvcConversionService );
+	private void initializeEntityConfigurationAutoSuggestData( Object owner,
+	                                                           InitializingAutoSuggestDataSet dataSet,
+	                                                           EntityDataSetConfiguration<? super Object> configuration ) {
+		DataSetConfigurationContext context = new DataSetConfigurationContext( owner, configuration );
+
+		if ( configuration.resultTransformer != null ) {
+			dataSet.setResultTransformer( configuration.resultTransformer::apply );
+		}
+		else {
+			EntityModel entityModel = context.entityConfiguration().getEntityModel();
+			dataSet.setResultTransformer( entity -> transformToSimpleResult( entity, entityModel ) );
 		}
 
-		if ( dataSet.getEntityConfiguration() == null ) {
-			if ( owner instanceof EntityPropertyDescriptor ) {
-				EntityPropertyDescriptor propertyDescriptor = (EntityPropertyDescriptor) owner;
-				dataSet.setEntityConfiguration( entityRegistry.getEntityConfiguration( propertyDescriptor.getPropertyType() ) );
-			}
-			else if ( owner instanceof EntityConfiguration ) {
-				dataSet.setEntityConfiguration( (EntityConfiguration) owner );
-			}
-			else {
-				throw new IllegalArgumentException( "AutoSuggestData attributes are only supported on EntityConfiguration or EntityPropertyDescriptor" );
-			}
+		BiFunction<String, String, Iterable<?>> suggestionsLoader = configuration.suggestions;
+
+		if ( suggestionsLoader == null && configuration.suggestionsEntityQuery != null ) {
+			suggestionsLoader = createEntityQuerySuggestionsLoader( configuration, context );
 		}
 
-		if ( dataSet.getEntityQueryFacade() == null ) {
-			dataSet.setEntityQueryFacade( entityQueryFacadeResolver.forEntityConfiguration( dataSet.getEntityConfiguration() ) );
+		if ( suggestionsLoader != null ) {
+			dataSet.setSuggestionsLoader( createTransformingSuggestionsLoader( dataSet, configuration, suggestionsLoader ) );
 		}
 
-		dataSet.setInitializer( null );
+		Function<String, Iterable<?>> prefetchLoader = configuration.prefetch;
+
+		if ( prefetchLoader == null && configuration.prefetchEntityQuery != null ) {
+			prefetchLoader = createEntityQueryPrefetchLoader( configuration, context );
+		}
+
+		if ( prefetchLoader != null ) {
+			dataSet.setPrefetchLoader( createTransformingPrefetchLoader( dataSet, prefetchLoader ) );
+		}
+	}
+
+	private BiFunction<String, String, Object> createTransformingSuggestionsLoader(
+			InitializingAutoSuggestDataSet dataSet,
+			EntityDataSetConfiguration<? super Object> configuration,
+			BiFunction<String, String, Iterable<?>> suggestionsLoader ) {
+		return ( query, controlName ) -> {
+			Integer maximumResults = configuration.maximumResults;
+			Iterable<?> results = suggestionsLoader.apply( query, controlName );
+
+			return StreamSupport.stream( results.spliterator(), false )
+			                    .limit( maximumResults != null ? maximumResults : Integer.MAX_VALUE )
+			                    .map( dataSet.getResultTransformer()::transformToResult )
+			                    .collect( Collectors.toList() );
+		};
+	}
+
+	private Function<String, Object> createTransformingPrefetchLoader( InitializingAutoSuggestDataSet dataSet,
+	                                                                   Function<String, Iterable<?>> prefetchLoader ) {
+		return query -> {
+			Iterable<?> results = prefetchLoader.apply( query );
+
+			return StreamSupport.stream( results.spliterator(), false )
+			                    .map( dataSet.getResultTransformer()::transformToResult )
+			                    .collect( Collectors.toList() );
+		};
+	}
+
+	private BiFunction<String, String, Iterable<?>> createEntityQuerySuggestionsLoader( EntityDataSetConfiguration<? super Object> configuration,
+	                                                                                    DataSetConfigurationContext context ) {
+		return ( query, controlName ) -> {
+			Integer maximumResults = configuration.maximumResults;
+			EntityQueryFacade entityQueryFacade = context.entityQueryFacade();
+
+			EntityQuery entityQuery = configuration.suggestionsEntityQuery.apply( query, controlName );
+			EntityQuery executableQuery = entityQueryFacade.convertToExecutableQuery( entityQuery );
+
+			if ( maximumResults != null ) {
+				return entityQueryFacade.findAll( executableQuery, new PageRequest( 0, configuration.maximumResults ) );
+			}
+
+			return entityQueryFacade.findAll( executableQuery );
+		};
+	}
+
+	private Function<String, Iterable<?>> createEntityQueryPrefetchLoader( EntityDataSetConfiguration<? super Object> configuration,
+	                                                                       DataSetConfigurationContext context ) {
+		return query -> {
+			EntityQueryFacade entityQueryFacade = context.entityQueryFacade();
+
+			EntityQuery entityQuery = configuration.prefetchEntityQuery.apply( query );
+			EntityQuery executableQuery = entityQueryFacade.convertToExecutableQuery( entityQuery );
+
+			return entityQueryFacade.findAll( executableQuery );
+		};
+	}
+
+	@SuppressWarnings("unchecked")
+	private AutoSuggestDataSet.Result transformToSimpleResult( Object entity, EntityModel entityModel ) {
+		String id = mvcConversionService.convert( entityModel.getId( entity ), String.class );
+		String label = entityModel.getLabel( entity );
+
+		return new SimpleAutoSuggestDataSet.Result( id, label );
+	}
+
+	private EntityConfiguration loadEntityConfiguration( Object owner, EntityDataSetConfiguration<?> configuration ) {
+		if ( configuration.entityType != null ) {
+			return entityRegistry.getEntityConfiguration( configuration.entityType );
+		}
+		if ( owner instanceof EntityPropertyDescriptor ) {
+			EntityPropertyDescriptor propertyDescriptor = (EntityPropertyDescriptor) owner;
+			return entityRegistry.getEntityConfiguration( propertyDescriptor.getPropertyType() );
+		}
+		else if ( owner instanceof EntityConfiguration ) {
+			return ( (EntityConfiguration) owner );
+		}
+		else {
+			throw new IllegalArgumentException( "AutoSuggestData attributes are only supported on EntityConfiguration or EntityPropertyDescriptor" );
+		}
+	}
+
+	@RequiredArgsConstructor
+	private class DataSetConfigurationContext
+	{
+		private final Object owner;
+		private final EntityDataSetConfiguration<? super Object> configuration;
+
+		private EntityConfiguration entityConfiguration;
+		private EntityQueryFacade entityQueryFacade;
+
+		EntityConfiguration entityConfiguration() {
+			if ( entityConfiguration == null ) {
+				entityConfiguration = loadEntityConfiguration( owner, configuration );
+			}
+			return entityConfiguration;
+		}
+
+		EntityQueryFacade entityQueryFacade() {
+			if ( entityQueryFacade == null ) {
+				entityQueryFacade = entityQueryFacadeResolver.forEntityConfiguration( entityConfiguration() );
+			}
+			return entityQueryFacade;
+		}
+	}
+
+	/**
+	 * Holds the configuration for an {@link InitializingAutoSuggestDataSet} based on an entity configuration.
+	 * An {@link #entityType(Class)} can be specified manually but if missing will be resolved from the context.
+	 * Likewise if no {@link #resultTransformer(Function)} is set, the available entity model will be used.
+	 * <p/>
+	 * Suggestions and prefetch queries can be specified as either entity query or a function reference.
+	 * <p/>
+	 * The {@link #maximumResults(Integer)} property has impact on the number of suggestions
+	 * that will be returned. When using an entity query, setting maximum results will also fetch results
+	 * using a page request with that size.
+	 */
+	@Accessors(fluent = true, chain = true)
+	@Setter
+	public static class EntityDataSetConfiguration<T>
+	{
+		private String dataSetId;
+		private Integer maximumResults;
+		private Class<? extends T> entityType;
+		private BiFunction<String, String, Iterable<? extends T>> suggestions;
+		private Function<String, Iterable<? extends T>> prefetch;
+		private BiFunction<String, String, EntityQuery> suggestionsEntityQuery;
+		private Function<String, EntityQuery> prefetchEntityQuery;
+		private Function<T, AutoSuggestDataSet.Result> resultTransformer;
+
+		/**
+		 * Specify the entity type that this dataset fetches. If not set, the entity type
+		 * will be derived from the context (either the configuration or property type).
+		 */
+		public <U extends T> EntityDataSetConfiguration<U> entityType( Class<U> entityType ) {
+			this.entityType = entityType;
+			return as( entityType );
+		}
+
+		/**
+		 * Case this configuration for the specific entity type.
+		 * Provided for readability and less explicit casting in setter methods.
+		 */
+		@SuppressWarnings({ "unchecked", "unused" })
+		public <U extends T> EntityDataSetConfiguration<U> as( Class<U> entityType ) {
+			return (EntityDataSetConfiguration<U>) this;
+		}
+
+		public EntityDataSetConfiguration<T> suggestionsEql( @NonNull String eql ) {
+			return suggestionsEntityQuery( ( search, controlName ) -> {
+				String actual = replaceSearchParameter( eql, search );
+				return EntityQuery.parse( actual );
+			} );
+		}
+
+		public EntityDataSetConfiguration<T> prefetchEql( @NonNull String eql ) {
+			return prefetchEntityQuery( ( search ) -> {
+				String actual = replaceSearchParameter( eql, search );
+				return EntityQuery.parse( actual );
+			} );
+		}
+
+		private String replaceSearchParameter( @NonNull String eql, String search ) {
+			return StringUtils.replace( eql, "{0}",
+			                            StringUtils.replace(
+					                            StringUtils.replace( search, "%", "\\%" ),
+					                            "'", "\\'"
+			                            ) );
+		}
+	}
+
+	/**
+	 * Alias to allow direct control specification after dataset attribute.
+	 */
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	public final class DataSetRegistrar<T extends ReadableAttributes> implements AttributeRegistrar<T>
+	{
+		private final AttributeRegistrar<T> dataSetRegistrar;
+
+		@Override
+		public void accept( T owner, WritableAttributes attributes ) {
+			dataSetRegistrar.accept( owner, attributes );
+		}
+
+		public <U extends T> AttributeRegistrar<U> control( @NonNull Consumer<AutoSuggestFormElementConfiguration> controlConsumer ) {
+			return ( owner, attributes ) -> {
+				accept( owner, attributes );
+				AutoSuggestDataAttributeRegistrar.this.control( controlConsumer ).accept( owner, attributes );
+			};
+		}
 	}
 }

@@ -124,8 +124,10 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        .deleteFormView()
 		        .show()
 		        .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.AUTOSUGGEST )
-		        .attribute( autoSuggestData.entityQuery( "name ilike '{0}%' order by name desc" ) )
-		        .attribute( autoSuggestData.control( cfg -> cfg.minLength( 2 ) ) )
+		        .attribute(
+				        autoSuggestData.entityQuery( "name ilike '{0}%' order by name desc" )
+				                       .control( ctl -> ctl.minLength( 2 ) )
+		        )
 		;
 	}
 
@@ -141,19 +143,23 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        )
 		        .createFormView(
 				        vb -> vb.properties(
-						        props -> props.property( "author" )
-						                      .attribute( autoSuggestData.entityQuery( "name contains '{0}' order by name asc" ) )
+						        props -> props
+								        .property( "author" )
+								        .attribute(
+										        autoSuggestData.entityQuery( ds -> ds
+												        .suggestionsEql( "name contains '{0}' order by name asc" )
+												        .maximumResults( 1 )
+										        )
+								        )
 				        )
 		        )
 		        .updateFormView(
 				        vb -> vb.properties(
 						        props -> props.property( "author" )
-						                      .attribute( autoSuggestData.entityQuery( "name contains '{0}' order by name desc" ) )
+						                      .attribute( autoSuggestData.dataSetId( "property-book2_createView.author" )
+						                                                 .control( ctl -> ctl.showHint( false ) ) )
 				        )
 		        )
-		.formView( "meh", vb -> {
-
-		} )
 		;
 	}
 
