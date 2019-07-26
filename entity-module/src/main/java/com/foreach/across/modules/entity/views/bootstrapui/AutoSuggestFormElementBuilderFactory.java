@@ -117,20 +117,18 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 	private Settings buildAutoSuggestControlSettings( EntityPropertyDescriptor descriptor ) {
 		Settings settings = Settings.from( descriptor );
 
-		if ( settings.isComplete() ) {
-			return settings;
-		}
+		if ( !settings.isComplete() ) {
+			EntityConfiguration<?> targetEntityConfiguration = entityRegistry.getEntityConfiguration( descriptor.getPropertyType() );
 
-		EntityConfiguration<?> targetEntityConfiguration = entityRegistry.getEntityConfiguration( descriptor.getPropertyType() );
+			Settings entitySettings = null;
 
-		Settings entitySettings = null;
+			if ( targetEntityConfiguration != null ) {
+				entitySettings = Settings.from( targetEntityConfiguration );
+			}
 
-		if ( targetEntityConfiguration != null ) {
-			entitySettings = Settings.from( targetEntityConfiguration );
-		}
-
-		if ( entitySettings != null ) {
-			settings.merge( entitySettings );
+			if ( entitySettings != null ) {
+				settings.merge( entitySettings );
+			}
 		}
 
 		if ( settings.hasDataSetId() && StringUtils.isNotEmpty( settings.dataSetId ) ) {

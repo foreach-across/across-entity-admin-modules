@@ -18,7 +18,6 @@ package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
-import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -50,7 +49,6 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 	private final Map<Serializable, Author> authors = new HashMap<>();
 
 	private final EntityPropertyRegistrationHelper propertyRegistrars;
-	private final AutoSuggestDataEndpoint autoSuggestDataEndpoint;
 	private final AutoSuggestDataAttributeRegistrar autoSuggestData;
 
 	@Override
