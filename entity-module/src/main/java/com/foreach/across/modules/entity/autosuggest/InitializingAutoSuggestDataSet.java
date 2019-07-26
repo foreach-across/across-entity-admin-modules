@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.entity.autosuggest;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.Collections;
 import java.util.function.BiFunction;
@@ -34,15 +34,22 @@ import java.util.function.Function;
  * @since 3.4.0
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class InitializingAutoSuggestDataSet implements AutoSuggestDataSet, AutoSuggestDataSet.ResultTransformer
 {
-	private String dataSetId;
-
 	private Consumer<InitializingAutoSuggestDataSet> initializer;
+
+	@NonNull
 	private BiFunction<String, String, Object> suggestionsLoader;
 	private Function<String, Object> prefetchLoader;
+
+	@NonNull
 	private AutoSuggestDataSet.ResultTransformer resultTransformer;
 
+	@Getter(value = AccessLevel.NONE)
+	@Setter(value = AccessLevel.NONE)
 	private boolean initialized = false;
 
 	@Override
@@ -71,7 +78,9 @@ public class InitializingAutoSuggestDataSet implements AutoSuggestDataSet, AutoS
 
 	private void initializeIfNecessary() {
 		if ( !initialized ) {
-			initializer.accept( this );
+			if ( initializer != null ) {
+				initializer.accept( this );
+			}
 			initialized = true;
 		}
 	}

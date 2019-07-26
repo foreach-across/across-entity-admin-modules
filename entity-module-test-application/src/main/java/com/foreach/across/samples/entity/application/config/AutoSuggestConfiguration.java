@@ -78,21 +78,16 @@ public class AutoSuggestConfiguration implements EntityConfigurer
 	private void configureCitiesAutoSuggest( EntitiesConfigurationBuilder entities ) {
 		List<String> cities = Arrays.asList( "Antwerp", "Brussels", "Ghent", "Kortrijk", "Hasselt" );
 
-		AutoSuggestDataSet.ResultTransformer cityToSuggestion
-				= city -> new SimpleAutoSuggestDataSet.Result( city, city.toString() );
-
 		autoSuggestDataEndpoint.registerDataSet(
 				"cities",
-				SimpleAutoSuggestDataSet
-						.builder()
-						.suggestionsLoader(
-								( query, controlName ) ->
-										cities.stream()
-										      .filter( candidate -> StringUtils.containsIgnoreCase( candidate, query ) )
-										      .map( cityToSuggestion::transformToResult )
-										      .collect( Collectors.toList() )
-						)
-						.build()
+				AutoSuggestDataSet.forControl()
+				                  .suggestionsLoader( ( query, controlName ) ->
+						                                      cities.stream()
+						                                            .filter( candidate -> StringUtils.containsIgnoreCase( candidate, query ) )
+						                                            .map( SimpleAutoSuggestDataSet.Result::of )
+						                                            .collect( Collectors.toList() ) )
+				                  .resultTransformer( SimpleAutoSuggestDataSet.Result::of )
+				                  .build()
 		);
 
 		entities.withType( User.class )
@@ -100,7 +95,6 @@ public class AutoSuggestConfiguration implements EntityConfigurer
 				        props -> props.property( "address[].city" )
 				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
 				                      .attribute( AutoSuggestDataAttributeRegistrar.DATASET_ID, "cities" )
-				                      .attribute( AutoSuggestDataSet.ResultTransformer.class, cityToSuggestion )
 		        );
 	}
 }

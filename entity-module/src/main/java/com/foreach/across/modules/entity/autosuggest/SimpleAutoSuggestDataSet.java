@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.autosuggest;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.util.function.BiFunction;
@@ -86,5 +87,17 @@ public class SimpleAutoSuggestDataSet implements AutoSuggestDataSet
 	{
 		private final Object id;
 		private final String label;
+
+		/**
+		 * Create a result instance of an object, where the object is considered to be the
+		 * value of {@link #id} and the {@code toString()} method of the object will be called
+		 * to generate the label.
+		 *
+		 * @param data which represents the result
+		 * @return result instance
+		 */
+		public static Result of( @NonNull Object data ) {
+			return new Result( data, data.toString() );
+		}
 	}
 }

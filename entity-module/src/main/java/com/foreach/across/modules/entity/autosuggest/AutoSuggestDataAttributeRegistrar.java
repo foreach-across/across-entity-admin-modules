@@ -123,14 +123,16 @@ public class AutoSuggestDataAttributeRegistrar
 			InitializingAutoSuggestDataSet autoSuggestData = new InitializingAutoSuggestDataSet();
 			autoSuggestData.setInitializer( dataSet -> initializeEntityConfigurationAutoSuggestData( owner, dataSet, definition ) );
 
-			autoSuggestData.setDataSetId( definition.dataSetId );
-			assignDataSetIdIfNecessary( autoSuggestData, owner );
+			String dataSetId = definition.dataSetId;
+			if ( dataSetId == null ) {
+				dataSetId = resolveDataSetId( owner );
+			}
 
 			AutoSuggestDataEndpoint endpoint = autoSuggestDataEndpoint.getIfAvailable();
 			Assert.notNull( endpoint, "No AutoSuggestEndpoint is available for registering datasets" );
-			endpoint.registerDataSet( autoSuggestData.getDataSetId(), autoSuggestData );
+			endpoint.registerDataSet( dataSetId, autoSuggestData );
 
-			attributes.setAttribute( DATASET_ID, autoSuggestData.getDataSetId() );
+			attributes.setAttribute( DATASET_ID, dataSetId );
 		} );
 	}
 
@@ -151,12 +153,6 @@ public class AutoSuggestDataAttributeRegistrar
 
 			attributes.setAttribute( AutoSuggestFormElementConfiguration.class, cfg );
 		};
-	}
-
-	private void assignDataSetIdIfNecessary( InitializingAutoSuggestDataSet autoSuggestData, Object owner ) {
-		if ( StringUtils.isEmpty( autoSuggestData.getDataSetId() ) ) {
-			autoSuggestData.setDataSetId( resolveDataSetId( owner ) );
-		}
 	}
 
 	private String resolveDataSetId( Object owner ) {
