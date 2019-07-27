@@ -32,20 +32,19 @@
 	<description>
 		Provides services and facilities to manage collections of strong typed properties in a dbms.
 	</description>
-	<url>https://foreach.atlassian.net/wiki/display/AX/PropertiesModule</url>
+	<url>https://across.dev/modules/propertiesmodule</url>
 	<licenses>
 		<license>
 			<name>The Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
 
 	<developers>
 		<developer>
 			<name>Arne Vandamme</name>
-			<email>arne@foreach.be</email>
 			<organization>Foreach</organization>
-			<organizationUrl>http://www.foreach.be</organizationUrl>
+			<organizationUrl>https://www.foreach.be</organizationUrl>
 		</developer>
 	</developers>
 
@@ -71,7 +70,7 @@
 			<dependency>
 				<groupId>com.foreach.across.modules</groupId>
 				<artifactId>entity-module</artifactId>
-				<version>1.1.0.RELEASE</version>
+				<version>4.0.0-SNAPSHOT</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
