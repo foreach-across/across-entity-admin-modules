@@ -55,7 +55,7 @@ final class GenericViewInitializer extends AbstractViewInitializer<EntityViewFac
 		return ( entityConfiguration, builder ) -> {
 			builder.factoryType( DefaultEntityViewFactory.class )
 			       .messagePrefix( "views[" + templateName() + "]" )
-			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) );
+			       .propertyRegistry( createViewPropertyRegistry( entityConfiguration ) );
 		};
 	}
 

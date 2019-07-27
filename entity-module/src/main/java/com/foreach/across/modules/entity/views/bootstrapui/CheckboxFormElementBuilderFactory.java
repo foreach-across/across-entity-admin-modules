@@ -24,7 +24,10 @@ import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactorySu
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.EntityPropertyValueCheckboxPostProcessor;
 import com.foreach.across.modules.entity.views.bootstrapui.processors.element.TextCodeResolverPostProcessor;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
+import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,8 +45,7 @@ public class CheckboxFormElementBuilderFactory extends EntityViewElementBuilderF
 	}
 
 	@Override
-	public OptionFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor,
-	                                                      ViewElementMode viewElementMode, String viewElementType ) {
+	public OptionFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode, String viewElementType ) {
 		return BootstrapUiBuilders.checkbox()
 		                          .name( descriptor.getName() )
 		                          .controlName( descriptor.getName() )
@@ -51,6 +53,16 @@ public class CheckboxFormElementBuilderFactory extends EntityViewElementBuilderF
 		                          .value( "on" )
 		                          .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) )
 		                          .postProcessor( new EntityPropertyValueCheckboxPostProcessor( descriptor ) )
-		                          .postProcessor( new TextCodeResolverPostProcessor<>( "properties." + descriptor.getName() ) );
+		                          .postProcessor( new TextCodeResolverPostProcessor<>( "properties." + descriptor.getName() ) )
+		                          .postProcessor(
+				                          ( ( builderContext, element ) -> {
+					                          if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+						                          element.setValue( true );
+						                          element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
+						                          EntityQueryFilterControlUtils.configureControlSettings(
+								                          ViewElementBuilderSupport.ElementOrBuilder.wrap( element ), descriptor );
+					                          }
+				                          } )
+		                          );
 	}
 }

@@ -76,7 +76,6 @@ import java.util.Optional;
 
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
-import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.ENTITY_QUERY_OPERAND;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
 /**
@@ -260,7 +259,7 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 		                                                                .multiValue( "users" )
 		                                                                .advancedMode( true )
 		                                                                .properties( props -> props.property( "name" )
-		                                                                                           .attribute( ENTITY_QUERY_OPERAND,
+		                                                                                           .attribute( EntityQueryOps.class,
 		                                                                                                       EntityQueryOps.LIKE_IC ) ) ) )
 		             .association(
 				             ab -> ab.name( "user.group" )

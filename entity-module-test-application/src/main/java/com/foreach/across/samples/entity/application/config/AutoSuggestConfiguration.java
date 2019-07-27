@@ -16,29 +16,26 @@
 
 package com.foreach.across.samples.entity.application.config;
 
-import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataSet;
+import com.foreach.across.modules.entity.autosuggest.SimpleAutoSuggestDataSet;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.PropertyPlaceholderTextPostProcessor;
-import com.foreach.across.modules.entity.views.bootstrapui.processors.element.RequiredControlPostProcessor;
-import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.samples.entity.application.business.Group;
 import com.foreach.across.samples.entity.application.business.User;
 import com.foreach.across.samples.entity.application.repositories.GroupRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.autosuggest;
-import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.withDataSet;
 
 /**
  * Test configuration for auto suggest controls.
@@ -52,39 +49,52 @@ public class AutoSuggestConfiguration implements EntityConfigurer
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
-		AutoSuggestDataEndpoint.MappedDataSet dataSet = autoSuggestDataEndpoint.registerDataSet(
-				AutoSuggestDataSet
+		AutoSuggestDataSet.ResultTransformer groupToSuggestion = candidate -> {
+			Group group = (Group) candidate;
+			return new SimpleAutoSuggestDataSet.Result( group.getId(), group.getName() );
+		};
+
+		autoSuggestDataEndpoint.registerDataSet(
+				"possible-groups",
+				SimpleAutoSuggestDataSet
 						.builder()
 						.suggestionsLoader(
 								( query, controlName ) -> groupRepository.findByNameContaining( query, new PageRequest( 0, 15, new Sort( "name" ) ) )
 								                                         .getContent()
 								                                         .stream()
-								                                         .map( group -> {
-									                                         Map<String, Object> entry = new HashMap<>();
-									                                         entry.put( "id", group.getId() );
-									                                         entry.put( "label", group.getName() );
-									                                         return entry;
-								                                         } )
+								                                         .map( groupToSuggestion::transformToResult )
 								                                         .collect( Collectors.toList() ) )
 						.build()
 		);
 
 		entities.withType( Group.class )
-		        .viewElementBuilder(
-				        ViewElementMode.CONTROL,
-				        autosuggest()
-						        .controlName( "entity.group" )
-						        .configuration( withDataSet( ds -> ds.remoteUrl( dataSet.suggestionsUrl() ) ) )
-						        .postProcessor( new RequiredControlPostProcessor<>() )
-						        .postProcessor( new PropertyPlaceholderTextPostProcessor<>() )
-						        .postProcessor( ( viewElementBuilderContext, autoSuggestFormElement ) -> {
-							        Group group = EntityViewElementUtils.currentPropertyValue( viewElementBuilderContext, Group.class );
+		        .attribute( AutoSuggestDataAttributeRegistrar.DATASET_ID, "possible-groups" )
+		        .attribute( AutoSuggestDataSet.ResultTransformer.class, groupToSuggestion )
+		        .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST );
 
-							        if ( group != null ) {
-								        autoSuggestFormElement.setValue( group.getId() );
-								        autoSuggestFormElement.setText( group.getName() );
-							        }
-						        } )
+		configureCitiesAutoSuggest( entities );
+	}
+
+	private void configureCitiesAutoSuggest( EntitiesConfigurationBuilder entities ) {
+		List<String> cities = Arrays.asList( "Antwerp", "Brussels", "Ghent", "Kortrijk", "Hasselt" );
+
+		autoSuggestDataEndpoint.registerDataSet(
+				"cities",
+				AutoSuggestDataSet.forControl()
+				                  .suggestionsLoader( ( query, controlName ) ->
+						                                      cities.stream()
+						                                            .filter( candidate -> StringUtils.containsIgnoreCase( candidate, query ) )
+						                                            .map( SimpleAutoSuggestDataSet.Result::of )
+						                                            .collect( Collectors.toList() ) )
+				                  .resultTransformer( SimpleAutoSuggestDataSet.Result::of )
+				                  .build()
+		);
+
+		entities.withType( User.class )
+		        .properties(
+				        props -> props.property( "address[].city" )
+				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
+				                      .attribute( AutoSuggestDataAttributeRegistrar.DATASET_ID, "cities" )
 		        );
 	}
 }

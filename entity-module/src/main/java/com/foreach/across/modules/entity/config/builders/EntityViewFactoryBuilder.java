@@ -31,6 +31,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -45,6 +46,7 @@ import org.springframework.util.ClassUtils;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -542,6 +544,7 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 
 	private void configurePropertyRegistryProcessor( EntityViewProcessorRegistry processorRegistry ) {
 		if ( propertyRegistry != null ) {
+			assignPropertyRegistryId();
 			processorRegistry.remove( EntityPropertyRegistryViewProcessor.class.getName() );
 			processorRegistry.addProcessor( new EntityPropertyRegistryViewProcessor( propertyRegistry ), Ordered.HIGHEST_PRECEDENCE );
 		}
@@ -564,6 +567,17 @@ public class EntityViewFactoryBuilder extends AbstractWritableAttributesBuilder<
 				throw new IllegalStateException(
 						"Attempting to modify properties but not a MutableEntityPropertyRegistry" );
 			}
+		}
+	}
+
+	private void assignPropertyRegistryId() {
+		Map<String, Object> attributes = getAttributes();
+		String viewName = (String) attributes.get( EntityViewFactoryAttributes.VIEW_NAME );
+
+		if ( StringUtils.isNotEmpty( viewName )
+				&& StringUtils.endsWith( propertyRegistry.getId(), "_view" )
+				&& propertyRegistry instanceof MutableEntityPropertyRegistry ) {
+			( (MutableEntityPropertyRegistry) propertyRegistry ).setId( StringUtils.removeEnd( propertyRegistry.getId(), "view" ) + viewName );
 		}
 	}
 

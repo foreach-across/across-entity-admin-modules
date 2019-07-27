@@ -62,7 +62,7 @@ public final class FormViewInitializer extends AbstractViewInitializer<EntityVie
 			builder.factoryType( DefaultEntityViewFactory.class )
 			       .messagePrefix( "views[" + EntityView.UPDATE_VIEW_NAME + "]" )
 			       .requiredAllowableAction( AllowableAction.UPDATE )
-			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
+			       .propertyRegistry( createViewPropertyRegistry( entityConfiguration ) )
 			       .viewElementMode( ViewElementMode.FORM_WRITE )
 			       .showProperties( EntityPropertySelector.WRITABLE )
 			       .viewProcessor( beanFactory.getBean( DefaultValidationViewProcessor.class ), 0 )

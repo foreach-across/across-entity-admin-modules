@@ -67,6 +67,10 @@ public class BootstrapUiElementTypeLookupStrategy implements ViewElementTypeLook
 	public String findElementType( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode ) {
 		ViewElementMode singleMode = viewElementMode.forSingle();
 
+		if ( ViewElementMode.FILTER_FORM.equals( singleMode )) {
+			return FilterFormGroupElementBuilderFactory.VIEW_ELEMENT_TYPE;
+		}
+
 		if ( ViewElementMode.FILTER_CONTROL.equals( singleMode ) ) {
 			return findFilterControlElementType( descriptor, viewElementMode.isForMultiple() );
 		}

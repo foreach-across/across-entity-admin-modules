@@ -20,10 +20,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.foreach.across.modules.entity.query.support.SortDeserializer;
 import com.foreach.across.modules.entity.query.support.SortSerializer;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,9 @@ import java.util.stream.StreamSupport;
  * @see com.foreach.across.modules.entity.query.jpa.EntityQueryJpaUtils
  * @see com.foreach.across.modules.entity.query.querydsl.EntityQueryQueryDslUtils
  */
+@Accessors(chain = true)
+@Getter
+@Setter
 public class EntityQuery implements EntityQueryExpression
 {
 	/**
@@ -50,17 +54,18 @@ public class EntityQuery implements EntityQueryExpression
 	 */
 	@JsonDeserialize(using = SortDeserializer.class)
 	@JsonSerialize(using = SortSerializer.class)
-	@Getter
-	@Setter
 	private Sort sort;
 
 	private EntityQueryOps operand = EntityQueryOps.AND;
+
+	@NonNull
 	private List<EntityQueryExpression> expressions = new ArrayList<>();
+	private boolean translated;
 
 	public EntityQuery() {
 	}
 
-	public EntityQuery( EntityQueryOps operand ) {
+	public EntityQuery( @NonNull EntityQueryOps operand ) {
 		setOperand( operand );
 	}
 
@@ -70,7 +75,7 @@ public class EntityQuery implements EntityQueryExpression
 		this.sort = entityQuery.sort;
 	}
 
-	public final void add( EntityQueryExpression expression ) {
+	public final EntityQuery add( EntityQueryExpression expression ) {
 		if ( expression instanceof EntityQuery ) {
 			EntityQuery subQuery = new EntityQuery( (EntityQuery) expression );
 			if ( subQuery.hasSort() && !hasSort() ) {
@@ -90,27 +95,15 @@ public class EntityQuery implements EntityQueryExpression
 		else if ( expression != null ) {
 			expressions.add( expression );
 		}
+		return this;
 	}
 
-	public EntityQueryOps getOperand() {
-		return operand;
-	}
-
-	public void setOperand( EntityQueryOps operand ) {
-		Assert.notNull( operand, "A valid operand is required" );
+	public EntityQuery setOperand( @NonNull EntityQueryOps operand ) {
 		if ( operand != EntityQueryOps.AND && operand != EntityQueryOps.OR ) {
 			throw new IllegalArgumentException( "EntityQuery operand type must be either AND or OR" );
 		}
 		this.operand = operand;
-	}
-
-	public List<EntityQueryExpression> getExpressions() {
-		return expressions;
-	}
-
-	public void setExpressions( List<EntityQueryExpression> expressions ) {
-		Assert.notNull( expressions, "expression collection may not be null" );
-		this.expressions = expressions;
+		return this;
 	}
 
 	@Override
@@ -124,24 +117,12 @@ public class EntityQuery implements EntityQueryExpression
 
 		EntityQuery that = (EntityQuery) o;
 
-		if ( expressions != null ? !expressions.equals( that.expressions ) : that.expressions != null ) {
-			return false;
-		}
-		if ( operand != that.operand ) {
-			return false;
-		}
-		if ( sort != null ? !sort.equals( that.sort ) : that.sort != null ) {
-			return false;
-		}
-
-		return true;
+		return Objects.equals( expressions, that.expressions ) && Objects.equals( operand, that.operand ) && Objects.equals( sort, that.sort );
 	}
 
 	@Override
 	public int hashCode() {
-		int result = operand != null ? operand.hashCode() : 0;
-		result = 31 * result + ( expressions != null ? expressions.hashCode() : 0 );
-		return result;
+		return Objects.hash( operand, expressions );
 	}
 
 	@Override

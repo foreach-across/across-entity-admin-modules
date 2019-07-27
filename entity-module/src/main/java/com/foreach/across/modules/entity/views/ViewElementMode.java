@@ -73,8 +73,14 @@ public class ViewElementMode
 	public static final ViewElementMode FORM_WRITE = new ViewElementMode( "FORM_WRITE" );
 
 	/**
-	 * Control for filtering on the property or entity.
+	 * Wrapper for the control for filtering on the property or entity.
+	 * Usually a form group with holds the FILTER_CONTROL.
 	 */
+	public static final ViewElementMode FILTER_FORM = new ViewElementMode( "FILTER_FORM" );
+
+	/**
+	 * Control for filtering on the property or entity.
+	 **/
 	public static final ViewElementMode FILTER_CONTROL = new ViewElementMode( "FILTER_CONTROL" );
 
 	private static final String MULTIPLE_SUFFIX = "_MULTIPLE";

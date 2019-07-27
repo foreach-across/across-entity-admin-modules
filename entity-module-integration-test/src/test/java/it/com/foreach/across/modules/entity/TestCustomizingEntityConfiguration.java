@@ -80,6 +80,8 @@ public class TestCustomizingEntityConfiguration
 
 		EntityConfiguration configuration = entityRegistry.getEntityConfiguration( Client.class );
 		assertNotNull( configuration );
+		assertEquals( "client", configuration.getName() );
+		assertEquals( "client", configuration.getPropertyRegistry().getId() );
 	}
 
 	@Test
