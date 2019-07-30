@@ -33,6 +33,7 @@ import static com.foreach.across.modules.web.resource.WebResourceRule.addPackage
  * <li><a href="https://github.com/Eonasdan/bootstrap-datetimepicker">Eonasdan Bootstrap datepicker</a></li>
  * <li><a href="https://github.com/BobKnothe/autoNumeric">autoNumeric</a></li>
  * <li><a href="http://www.jacklmoore.com/autosize/">Autosize</a></li>
+ * <li><a href="https://github.com/corejavascript/typeahead.js">Twitter Typeahead</a></li>
  * </ul>
  *
  * @author Arne Vandamme
@@ -54,7 +55,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 	private static final String AUTO_NUMERIC_VERSION = "1.9.30";
 	private static final String AUTOSIZE_VERSION = "3.0.20";
 	private static final String BOOTSTRAP_SELECT_VERSION = "1.12.2";
-	private static final String TYPEAHEAD_VERSION = "0.11.1";
+	private static final String TYPEAHEAD_VERSION = "1.2.1";
 
 	private final boolean minified;
 
@@ -96,7 +97,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 						.toBucket( CSS ),
 
 				// typeahead
-				add( WebResource.javascript( "@webjars:/typeaheadjs/" + TYPEAHEAD_VERSION + "/typeahead.bundle" + minified( ".js" ) ) )
+				add( WebResource.javascript( "@webjars:/corejs-typeahead/" + TYPEAHEAD_VERSION + "/dist/typeahead.bundle" + minified( ".js" ) ) )
 						.withKey( TYPEAHEAD )
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
