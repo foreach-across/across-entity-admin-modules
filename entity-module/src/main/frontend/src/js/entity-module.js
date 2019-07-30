@@ -16,14 +16,26 @@
 
 import {EntityModule} from "./modules/EntityModule";
 import {SortableTable} from "./components/SortableTable";
+import {MultiValueAutoSuggestControlAdapter} from './components/MultiValueAutoSuggest';
 
 const entityModule = new EntityModule();
+const bootstrapUiModule = window.BootstrapUiModule;
+
+console.log( window.BootstrapUiModule );
+console.log( window.BootstrapUiModule['ControlAdapterFactory'] );
+
+window.BootstrapUiModule.ControlAdapterFactory.register( 'multi-value-autosuggest', function( node ) {
+    window.BootstrapUiModule.ControlAdapterFactory.initializeControlAdapters(node);
+    return new MultiValueAutoSuggestControlAdapter( node );
+} );
+
 
 $( document ).ready( function() {
     entityModule.initializeFormElements();
 } );
 
 window.EntityModule = entityModule;
+
 
 /**
  * Expose JQuery plugin emSortableTable, creates a SortableTable when called.
