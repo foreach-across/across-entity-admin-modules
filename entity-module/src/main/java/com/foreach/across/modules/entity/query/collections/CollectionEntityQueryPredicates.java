@@ -27,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -110,11 +111,32 @@ class CollectionEntityQueryPredicates
 	@SuppressWarnings("unchecked")
 	private static <T> Predicate<CollectionEntityQueryItem<T>> like( String property, Object value, boolean caseInsensitive ) {
 		return item -> {
-			String replacedWildCards = getPattern( "(?<!\\\\)%", true ).matcher( (String) value ).replaceAll( ".*" );
-			String regex = getPattern( "[?!\\\\]%", true ).matcher( replacedWildCards ).replaceAll( "%" );
-			regex = StringUtils.replace( regex, "\\", "\\\\" );
-			return getPattern( regex, caseInsensitive ).matcher( item.getPropertyValue( property ) ).matches();
+			String input = (String) value;
+			// Convert value with wildcard pattern to actual regex
+			Matcher matcher = getPattern( "(?<!\\\\)%", true ).matcher( input );
+
+			StringBuilder regex = new StringBuilder();
+
+			int prev = 0;
+			while ( matcher.find() ) {
+				String before = input.substring( prev, matcher.start() );
+				if ( !before.isEmpty() ) {
+					regex.append( convertToLiteral( before ) );
+				}
+				regex.append( ".*" );
+				prev = matcher.end();
+			}
+
+			if ( prev < input.length() ) {
+				regex.append( convertToLiteral( input.substring( prev ) ) );
+			}
+
+			return getPattern( regex.toString(), caseInsensitive ).matcher( item.getPropertyValue( property ) ).matches();
 		};
+	}
+
+	private static String convertToLiteral( String before ) {
+		return Pattern.quote( StringUtils.replace( before, "\\%", "%" ) );
 	}
 
 	@SuppressWarnings("unchecked")

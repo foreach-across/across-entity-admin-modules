@@ -63,6 +63,19 @@ public class TestCollectionEntityQueryExecutor
 	}
 
 	@Test
+	// AXEUM-159
+	public void regexCharactersShouldBeIgnored() {
+		Entry localhost = new Entry( 1, "john.doe@localhost" );
+		Entry doe = new Entry( 2, "john@doe.com" );
+
+		Collection<Entry> entries = Arrays.asList( localhost, doe );
+		executor = new CollectionEntityQueryExecutor<>( entries, propertyRegistry );
+
+		EntityQuery query = EntityQuery.and( new EntityQueryCondition( "name", EntityQueryOps.LIKE, "%.doe%" ) );
+		assertThat( executor.findAll( query ) ).containsExactly( localhost );
+	}
+
+	@Test
 	public void allQueryReturnsAllItemsInOriginalOrder() {
 		assertThat( executor.findAll( EntityQuery.all() ) ).containsExactly( john, george, jane );
 	}

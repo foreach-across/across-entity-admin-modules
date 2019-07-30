@@ -48,10 +48,15 @@ public interface AutoSuggestDataSet
 	boolean isPrefetchSupported();
 
 	/**
+	 * Create a builder for a simple dataset. Using a
 	 * @return builder for a simple auto-suggest dataset
 	 */
 	static SimpleAutoSuggestDataSet.SimpleAutoSuggestDataSetBuilder builder() {
 		return SimpleAutoSuggestDataSet.builder();
+	}
+
+	static InitializingAutoSuggestDataSet.InitializingAutoSuggestDataSetBuilder forControl() {
+		return InitializingAutoSuggestDataSet.builder();
 	}
 
 	/**

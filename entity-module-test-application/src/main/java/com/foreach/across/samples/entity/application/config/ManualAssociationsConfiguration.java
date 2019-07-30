@@ -18,7 +18,6 @@ package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
-import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -50,7 +49,6 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 	private final Map<Serializable, Author> authors = new HashMap<>();
 
 	private final EntityPropertyRegistrationHelper propertyRegistrars;
-	private final AutoSuggestDataEndpoint autoSuggestDataEndpoint;
 	private final AutoSuggestDataAttributeRegistrar autoSuggestData;
 
 	@Override
@@ -124,8 +122,10 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        .deleteFormView()
 		        .show()
 		        .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.AUTOSUGGEST )
-		        .attribute( autoSuggestData.entityQuery( "name ilike '{0}%' order by name desc" ) )
-		        .attribute( autoSuggestData.control( cfg -> cfg.minLength( 2 ) ) )
+		        .attribute(
+				        autoSuggestData.entityQuery( "name ilike '{0}%' order by name desc" )
+				                       .control( ctl -> ctl.minLength( 2 ) )
+		        )
 		;
 	}
 
@@ -141,19 +141,23 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        )
 		        .createFormView(
 				        vb -> vb.properties(
-						        props -> props.property( "author" )
-						                      .attribute( autoSuggestData.entityQuery( "name contains '{0}' order by name asc" ) )
+						        props -> props
+								        .property( "author" )
+								        .attribute(
+										        autoSuggestData.entityQuery( ds -> ds
+												        .suggestionsEql( "name contains '{0}' order by name asc" )
+												        .maximumResults( 1 )
+										        )
+								        )
 				        )
 		        )
 		        .updateFormView(
 				        vb -> vb.properties(
 						        props -> props.property( "author" )
-						                      .attribute( autoSuggestData.entityQuery( "name contains '{0}' order by name desc" ) )
+						                      .attribute( autoSuggestData.dataSetId( "property-book2_createView.author" )
+						                                                 .control( ctl -> ctl.showHint( false ) ) )
 				        )
 		        )
-		.formView( "meh", vb -> {
-
-		} )
 		;
 	}
 

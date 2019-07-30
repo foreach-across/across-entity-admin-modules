@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.controllers.admin;
 
+import com.foreach.across.core.AcrossVersionInfo;
 import com.foreach.across.core.annotations.ConditionalOnDevelopmentMode;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
@@ -68,12 +69,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 class EntityRegistryBrowserController
 {
-	private static final String DOC_BASE_URL = "https://across-docs.foreach.be/across-standard-modules/EntityModule";
-	private static final String DOC_VIEW_PROCESSORS = "%s/%s/reference/#appendix-view-processors";
-	private static final String DOC_ATTRIBUTES_CONFIGURATION = "%s/%s/reference/#appendix-entity-configuration-attributes";
-	private static final String DOC_ATTRIBUTES_PROPERTY = "%s/%s/reference/#appendix-entity-property-descriptor-attributes";
-	private static final String DOC_MESSAGE_CODES = "%s/%s/reference/#appendix-message-codes";
-	private static final String DOC_ENTITY_VIEWS = "%s/%s/reference/#entity-views";
+	private static final String DOC_BASE_URL = "https://docs.across.dev/across-site/%s/entity-module/%s";
+	private static final String JAVADOC_BASE_URL = "https://docs.across.dev/across-standard-modules/EntityModule/%s/javadoc";
+	private static final String DOC_VIEW_PROCESSORS = "%s/services-and-components/default-entityviewprocessors.html";
+	private static final String DOC_ATTRIBUTES_CONFIGURATION = "%s/services-and-components/attributes-overview.html#appendix-entity-configuration-attributes";
+	private static final String DOC_ATTRIBUTES_PROPERTY = "%s/services-and-components/attributes-overview.html#appendix-entity-property-descriptor-attributes";
+	private static final String DOC_MESSAGE_CODES = "%s/services-and-components/message-codes.html";
+	private static final String DOC_ENTITY_VIEWS = "%s/building-views/index.html";
 
 	private final EntityRegistry entityRegistry;
 	private final PageContentStructure page;
@@ -265,17 +267,19 @@ class EntityRegistryBrowserController
 	}
 
 	private void registerDocumentationLinks( Model model ) {
+		AcrossVersionInfo versionInfo = entityModuleInfo.getVersionInfo();
+		String docBaseUrl = String.format(
+				DOC_BASE_URL,
+				versionInfo.isSnapshot() ? "preview" : "production",
+				versionInfo.isSnapshot() ? StringUtils.replace( versionInfo.getVersion(), "SNAPSHOT", "dev" ) : versionInfo.getVersion()
+		);
+
 		model.addAttribute( "javadoc", new JavadocHelper() );
-		model.addAttribute( "referenceDocumentationViewProcessors",
-		                    String.format( DOC_VIEW_PROCESSORS, DOC_BASE_URL, entityModuleInfo.getVersionInfo().getVersion() ) );
-		model.addAttribute( "referenceDocumentationConfigurationAttributes",
-		                    String.format( DOC_ATTRIBUTES_CONFIGURATION, DOC_BASE_URL, entityModuleInfo.getVersionInfo().getVersion() ) );
-		model.addAttribute( "referenceDocumentationPropertyAttributes",
-		                    String.format( DOC_ATTRIBUTES_PROPERTY, DOC_BASE_URL, entityModuleInfo.getVersionInfo().getVersion() ) );
-		model.addAttribute( "referenceDocumentationMessageCodes",
-		                    String.format( DOC_MESSAGE_CODES, DOC_BASE_URL, entityModuleInfo.getVersionInfo().getVersion() ) );
-		model.addAttribute( "referenceDocumentationEntityViews",
-		                    String.format( DOC_ENTITY_VIEWS, DOC_BASE_URL, entityModuleInfo.getVersionInfo().getVersion() ) );
+		model.addAttribute( "referenceDocumentationViewProcessors", String.format( DOC_VIEW_PROCESSORS, docBaseUrl ) );
+		model.addAttribute( "referenceDocumentationConfigurationAttributes", String.format( DOC_ATTRIBUTES_CONFIGURATION, docBaseUrl ) );
+		model.addAttribute( "referenceDocumentationPropertyAttributes", String.format( DOC_ATTRIBUTES_PROPERTY, docBaseUrl ) );
+		model.addAttribute( "referenceDocumentationMessageCodes", String.format( DOC_MESSAGE_CODES, docBaseUrl ) );
+		model.addAttribute( "referenceDocumentationEntityViews", String.format( DOC_ENTITY_VIEWS, docBaseUrl ) );
 	}
 
 	class JavadocHelper
@@ -286,9 +290,8 @@ class EntityRegistryBrowserController
 				String path = actual.getName().replace( '.', '/' );
 
 				if ( path.startsWith( "com/foreach/across/modules/entity" ) ) {
-					return String.format( "<a href=\"%s/%s/javadoc/%s.html\" target=\"_blank\" title=\"Open javadoc\">%s</a>",
-					                      DOC_BASE_URL,
-					                      entityModuleInfo.getVersionInfo().getVersion(),
+					return String.format( "<a href=\"%s/%s.html\" target=\"_blank\" title=\"Open javadoc\">%s</a>",
+					                      String.format( JAVADOC_BASE_URL, entityModuleInfo.getVersionInfo().getVersion() ),
 					                      path,
 					                      actual.getSimpleName() );
 				}
@@ -304,9 +307,8 @@ class EntityRegistryBrowserController
 				String path = typeName.replace( '.', '/' );
 
 				if ( path.startsWith( "com/foreach/across/modules/entity" ) ) {
-					return String.format( "<a href=\"%s/%s/javadoc/%s.html\" target=\"_blank\" title=\"Open javadoc\">%s</a>",
-					                      DOC_BASE_URL,
-					                      entityModuleInfo.getVersionInfo().getVersion(),
+					return String.format( "<a href=\"%s/%s.html\" target=\"_blank\" title=\"Open javadoc\">%s</a>",
+					                      String.format( JAVADOC_BASE_URL, entityModuleInfo.getVersionInfo().getVersion() ),
 					                      path,
 					                      typeName );
 				}
