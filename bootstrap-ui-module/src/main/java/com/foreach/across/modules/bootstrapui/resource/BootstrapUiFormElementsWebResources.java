@@ -97,7 +97,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 						.toBucket( CSS ),
 
 				// typeahead
-				add( WebResource.javascript( "@webjars:/corejs-typeahead/" + TYPEAHEAD_VERSION + "/dist/typeahead.bundle" + minified( ".js" ) ) )
+				add( WebResource.javascript( "@webjars:org.webjars.npm/corejs-typeahead/" + TYPEAHEAD_VERSION + "/dist/typeahead.bundle" + minified( ".js" ) ) )
 						.withKey( TYPEAHEAD )
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
