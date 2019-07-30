@@ -32,20 +32,20 @@ import EQGroup from "../../entity-query/eq-group";
  * @param selectedValues for the property
  * @returns {*} the query arguments.
  */
-function convertToEQValue( eqType, selectedValues ) {
-  const filteredValues = selectedValues.filter( val => val !== '' );
-  if ( eqType === 'EQGroup' ) {
-    return new EQGroup( filteredValues.map( convertToTypedValue ) );
-  }
-
-  if ( filteredValues.length !== 0 ) {
-    const converted = convertToTypedValue( filteredValues.toString() );
-    if ( eqType === 'EQString' && converted instanceof EQValue ) {
-      return new EQString( converted.getValue() );
+function convertToEQType( eqType, selectedValues ) {
+    const filteredValues = selectedValues.filter( val => val !== '' );
+    if ( eqType === 'EQGroup' ) {
+        return new EQGroup( filteredValues.map( convertToTypedValue ) );
     }
-    return converted;
-  }
-  return null;
+
+    if ( filteredValues.length !== 0 ) {
+        const converted = convertToTypedValue( filteredValues.toString() );
+        if ( eqType === 'EQString' && converted instanceof EQValue ) {
+            return new EQString( converted.getValue() );
+        }
+        return converted;
+    }
+    return null;
 }
 
 /**
@@ -56,28 +56,28 @@ function convertToEQValue( eqType, selectedValues ) {
  * @param reset whether the filter control should be reset.
  */
 function setCondition( controlElement, filterControl, reset = true ) {
-  const property = $( controlElement ).data( "entity-query-property" );
-  const adapter = $( controlElement ).data( "bootstrapui-adapter" );
+    const property = $( controlElement ).data( "entity-query-property" );
+    const adapter = $( controlElement ).data( "bootstrapui-adapter" );
 
-  const values = adapter.getValue()
-    .map( ( selectedVal ) => {
-      const context = $( selectedVal.context );
-      if ( context.is( '[data-entity-query-pretty-value]' ) ) {
-        return context.data( 'entity-query-pretty-value' );
-      }
-      return selectedVal.value;
-    } );
+    const values = adapter.getValue()
+            .map( ( selectedVal ) => {
+                const context = $( selectedVal.context );
+                if ( context.is( '[data-entity-query-pretty-value]' ) ) {
+                    return context.data( 'entity-query-pretty-value' );
+                }
+                return selectedVal.value;
+            } );
 
-  let condition = null;
-  if ( !isEmptyArray( values ) ) {
-    const args = convertToEQValue( $( controlElement ).data( "entity-query-type" ), values );
+    let condition = null;
+    if ( !isEmptyArray( values ) ) {
+        const args = convertToEQType( $( controlElement ).data( "entity-query-type" ), values );
 
-    if ( !isNullOrUndefined( args ) ) {
-      const operand = EntityQueryOps[$( controlElement ).data( "entity-query-operand" )];
-      condition = new EntityQueryCondition( property, operand, args );
+        if ( !isNullOrUndefined( args ) ) {
+            const operand = EntityQueryOps[$( controlElement ).data( "entity-query-operand" )];
+            condition = new EntityQueryCondition( property, operand, args );
+        }
     }
-  }
-  filterControl.setPropertyCondition( property, condition, reset );
+    filterControl.setPropertyCondition( property, condition, reset );
 }
 
 /**
@@ -88,17 +88,17 @@ function setCondition( controlElement, filterControl, reset = true ) {
  * @returns {boolean} true if a control has been made.
  */
 export function createDefaultControl( control, filterControl ) {
-  if ( !isEmptyArray( control ) ) {
-    setCondition( control, filterControl, false );
-    const controlAdapter = $( control ).data( 'bootstrapui-adapter' );
-    if ( controlAdapter ) {
-      $( controlAdapter.getTarget() ).on(
-        'bootstrapui.change',
-        {"item": $( control ), "filter": filterControl},
-        event => setCondition( event.data.item, event.data.filter )
-      );
-      return true;
+    if ( !isEmptyArray( control ) ) {
+        setCondition( control, filterControl, false );
+        const controlAdapter = $( control ).data( 'bootstrapui-adapter' );
+        if ( controlAdapter ) {
+            $( controlAdapter.getTarget() ).on(
+                    'bootstrapui.change',
+                    {"item": $( control ), "filter": filterControl},
+                    event => setCondition( event.data.item, event.data.filter )
+            );
+            return true;
+        }
     }
-  }
-  return false;
+    return false;
 }
