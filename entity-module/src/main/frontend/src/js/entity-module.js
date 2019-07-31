@@ -21,11 +21,8 @@ import {MultiValueAutoSuggestControlAdapter} from './components/MultiValueAutoSu
 const entityModule = new EntityModule();
 const bootstrapUiModule = window.BootstrapUiModule;
 
-console.log( window.BootstrapUiModule );
-console.log( window.BootstrapUiModule['ControlAdapterFactory'] );
-
-window.BootstrapUiModule.ControlAdapterFactory.register( 'multi-value-autosuggest', function( node ) {
-    window.BootstrapUiModule.ControlAdapterFactory.initializeControlAdapters(node);
+bootstrapUiModule.ControlAdapterFactory.register( 'multi-value-autosuggest', function( node ) {
+    bootstrapUiModule.ControlAdapterFactory.initializeControlAdapters(node);
     return new MultiValueAutoSuggestControlAdapter( node );
 } );
 

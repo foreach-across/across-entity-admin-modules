@@ -27,6 +27,7 @@ import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataSet;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
+import com.foreach.across.modules.entity.query.EQGroup;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -52,12 +53,15 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.DEFAULT_DATASET;
+import static com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils.setAttribute;
 
 /**
  * Creates an auto-suggest control for a property value.
@@ -128,7 +132,7 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 	                                                    Settings controlSettings,
 	                                                    ViewElementMode viewElementMode ) {
 		return div()
-				//.data( "bootstrapui-adapter-type", "multi-value-autosuggest" )
+				.data( "bootstrapui-adapter-type", "multi-value-autosuggest" )
 				.css( "multi-value-autosuggest", "js-multi-value-autosuggest" )
 				.add( autoSuggestControl.data( "role", "control" ) )
 				.postProcessor( addEntityQueryAttributes( propertyDescriptor, viewElementMode ) )
@@ -174,6 +178,7 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 				} ) );
 	}
 
+	@SuppressWarnings("SuspiciousSystemArraycopy")
 	private Collection retrieveItems( ViewElementBuilderContext builderContext ) {
 		EntityPropertyBinder binder = EntityViewElementUtils.currentPropertyBinder( builderContext );
 
@@ -181,8 +186,19 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 			return ( (ListEntityPropertyBinder) binder ).getItemList().stream().map( EntityPropertyBinder::getValue ).collect( Collectors.toList() );
 		}
 
-		Collection items = EntityViewElementUtils.currentPropertyValue( builderContext, Collection.class );
-		return items != null ? items : Collections.emptyList();
+		Object items = EntityViewElementUtils.currentPropertyValue( builderContext );
+
+		if ( items instanceof Collection ) {
+			return (Collection) items;
+		}
+		else if ( items != null && items.getClass().isArray() ) {
+			int length = Array.getLength( items );
+			Object[] copy = new Object[length];
+			System.arraycopy( items, 0, copy, 0, length );
+			return Arrays.asList( copy );
+		}
+
+		return Collections.emptyList();
 	}
 
 	private TableViewElement.Row createResultRow( String controlName, Object id, String label, String removeItemMessage ) {
@@ -227,8 +243,11 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 		return ( builderContext, element ) -> {
 			if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
 				element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
-				EntityQueryFilterControlUtils.configureControlSettings( ViewElementBuilderSupport.ElementOrBuilder.wrap( element ),
-				                                                        propertyDescriptor );
+				ViewElementBuilderSupport.ElementOrBuilder wrappedElement = ViewElementBuilderSupport.ElementOrBuilder.wrap( element );
+				EntityQueryFilterControlUtils.configureControlSettings( wrappedElement, propertyDescriptor );
+				if ( viewElementMode.isForMultiple() ) {
+					setAttribute( wrappedElement, EntityQueryFilterControlUtils.FilterControlAttributes.TYPE, EQGroup.class.getSimpleName() );
+				}
 			}
 		};
 	}

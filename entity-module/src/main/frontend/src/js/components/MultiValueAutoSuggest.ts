@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as $ from 'jquery';
+
 export class MultiValueAutoSuggest
 {
     private bootstrapUiModule: any;
@@ -28,16 +30,27 @@ export class MultiValueAutoSuggest
             items.removeClass( 'hidden' );
         }
 
-        items.find( '[data-action=remove-item]' ).click( ( e: JQueryEventObject ) => {
+        const triggerChange = () => {
+            const controller = element.data( 'bootstrapui-adapter' ) as BootstrapUiControlAdapter;
+            if ( controller ) {
+                controller.triggerChange();
+            }
+        };
+
+        const removeHandler = ( e: JQueryEventObject ) => {
             e.preventDefault();
             $( e.currentTarget ).closest( '[data-role=item]' ).remove();
             if ( items.find( 'tr' ).length === 1 ) {
                 items.addClass( 'hidden' );
             }
-        } );
+            triggerChange();
+        };
+
+        items.find( '[data-action=remove-item]' ).click( removeHandler );
 
         const adapter = element.find( '[data-role=control]' ).first().data( 'bootstrapui-adapter' );
         $( adapter.getTarget() ).on( 'bootstrapui.change', ( e: JQueryEventObject, adapter: any ) => {
+            e.stopPropagation();
             const selectedValue = adapter.getValue()[0];
             if ( selectedValue.value !== '' ) {
                 const value = MultiValueAutoSuggest.escapeHtml( '' + selectedValue.value );
@@ -47,17 +60,12 @@ export class MultiValueAutoSuggest
                                     .html()
                                     .replace( '{{id}}', value )
                                     .replace( '{{label}}', MultiValueAutoSuggest.escapeHtml( '' + selectedValue.label ) ) );
-                    item.find( '[data-action=remove-item]' ).click( ( e: JQueryEventObject ) => {
-                        e.preventDefault();
-                        $( e.currentTarget ).closest( '[data-role=item]' ).remove();
-                        if ( items.find( 'tr' ).length === 1 ) {
-                            items.addClass( 'hidden' );
-                        }
-                    } );
+                    item.find( '[data-action=remove-item]' ).click( removeHandler );
                     items.append( item );
                     items.removeClass( 'hidden' );
                 }
                 adapter.reset();
+                triggerChange();
             }
         } );
     }
@@ -71,25 +79,37 @@ export class MultiValueAutoSuggest
     }
 }
 
+/**
+ * Control adapter implementation for a multi-value autosuggest control.
+ * With limited support as it only allows fetching the values.
+ */
 export class MultiValueAutoSuggestControlAdapter implements BootstrapUiControlAdapter
 {
-    private items: any;
+    private items: JQuery;
     private target: any;
 
-    constructor( element: JQuery )
+    constructor( node: any )
     {
-        console.log('djskljdslkdsa');
-        this.items = element.find( '[data-role=items]' ).first();
+        this.target = node;
+        this.items = $( node ).find( '[data-role=items]' ).first();
     }
 
     getTarget(): any
     {
+        return this.target;
     }
 
     getValue(): BootstrapUiControlValueHolder[]
     {
-        console.log( 'oi' );
-        return [];
+        return this.items.find( 'input[type=hidden]' )
+                   .map( ( ix, hidden ) => {
+                       const val = $( hidden ).val();
+                       return {
+                           label: val,
+                           value: val,
+                           context: hidden,
+                       };
+                   } ).toArray() as BootstrapUiControlValueHolder[];
     }
 
     reset(): void
@@ -102,9 +122,11 @@ export class MultiValueAutoSuggestControlAdapter implements BootstrapUiControlAd
 
     triggerChange(): void
     {
+        $( this.getTarget() ).trigger( 'bootstrapui.change', [this] );
     }
 
     triggerSubmit(): void
     {
+        $( this.getTarget() ).trigger( 'bootstrapui.submit', [this] );
     }
 }
