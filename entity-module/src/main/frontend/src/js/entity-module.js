@@ -21,10 +21,12 @@ import {MultiValueAutoSuggestControlAdapter} from './components/MultiValueAutoSu
 const entityModule = new EntityModule();
 const bootstrapUiModule = window.BootstrapUiModule;
 
-bootstrapUiModule.ControlAdapterFactory.register( 'multi-value-autosuggest', function( node ) {
-    bootstrapUiModule.ControlAdapterFactory.initializeControlAdapters(node);
-    return new MultiValueAutoSuggestControlAdapter( node );
-} );
+if ( bootstrapUiModule.ControlAdapterFactory ) {
+    bootstrapUiModule.ControlAdapterFactory.register( 'multi-value-autosuggest', function( node ) {
+        bootstrapUiModule.ControlAdapterFactory.initializeControlAdapters( node );
+        return new MultiValueAutoSuggestControlAdapter( node );
+    } );
+}
 
 
 $( document ).ready( function() {
