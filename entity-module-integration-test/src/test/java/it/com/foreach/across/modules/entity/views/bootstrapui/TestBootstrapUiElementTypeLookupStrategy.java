@@ -23,10 +23,7 @@ import com.foreach.across.modules.entity.registry.properties.DefaultEntityProper
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.ViewElementMode;
-import com.foreach.across.modules.entity.views.bootstrapui.BootstrapUiElementTypeLookupStrategy;
-import com.foreach.across.modules.entity.views.bootstrapui.EmbeddedCollectionOrMapElementBuilderFactory;
-import com.foreach.across.modules.entity.views.bootstrapui.MultiValueElementBuilderFactory;
-import com.foreach.across.modules.entity.views.bootstrapui.OptionsFormElementBuilderFactory;
+import com.foreach.across.modules.entity.views.bootstrapui.*;
 import com.foreach.across.testmodules.springdata.business.Client;
 import com.foreach.across.testmodules.springdata.business.CompanyStatus;
 import lombok.Getter;
@@ -84,6 +81,13 @@ public class TestBootstrapUiElementTypeLookupStrategy
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( int.class, ViewElementMode.FORM_READ ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( String.class, ViewElementMode.FORM_WRITE.forMultiple() ) );
 		assertEquals( BootstrapUiElements.FORM_GROUP, lookup( String.class, ViewElementMode.FORM_READ.forMultiple() ) );
+	}
+
+	@Test
+	public void filterFormGroupIsReturnedForFilterForm() {
+		assertEquals( FilterFormGroupElementBuilderFactory.VIEW_ELEMENT_TYPE, lookup( String.class, ViewElementMode.FILTER_FORM ) );
+		assertEquals( FilterFormGroupElementBuilderFactory.VIEW_ELEMENT_TYPE, lookup( int.class, ViewElementMode.FILTER_FORM ) );
+		assertEquals( FilterFormGroupElementBuilderFactory.VIEW_ELEMENT_TYPE, lookup( String.class, ViewElementMode.FILTER_FORM.forMultiple() ) );
 	}
 
 	@Test

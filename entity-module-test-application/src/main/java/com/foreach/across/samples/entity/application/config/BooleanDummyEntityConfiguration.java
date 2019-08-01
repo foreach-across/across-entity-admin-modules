@@ -156,7 +156,7 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 		        )
 		        .listView(
 				        lvb -> lvb.entityQueryFilter(
-						        cfg -> cfg.showProperties( "id", "booleanRadio", "booleanSelect" )
+						        cfg -> cfg.showProperties( "id", "booleanRadio", "booleanSelect", "primitiveBooleanSelect", "primitiveBooleanSelectNonNull" )
 						                  .multiValue( "booleanSelect" )
 						                  .properties(
 								                  props -> props.property( "booleanRadio" )
@@ -165,6 +165,12 @@ public class BooleanDummyEntityConfiguration implements EntityConfigurer
 								                                .property( "booleanSelect" )
 								                                .viewElementType( ViewElementMode.FILTER_CONTROL.forMultiple(),
 								                                                  BootstrapUiElements.MULTI_CHECKBOX )
+								                                .and()
+								                                .property( "primitiveBooleanSelect" )
+								                                .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.RADIO )
+								                                .and()
+								                                .property( "primitiveBooleanSelectNonNull" )
+								                                .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.CHECKBOX )
 						                  )
 				        )
 		        )

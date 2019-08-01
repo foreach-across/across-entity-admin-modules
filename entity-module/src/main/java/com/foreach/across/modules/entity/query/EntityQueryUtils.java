@@ -20,8 +20,10 @@ import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
 import lombok.NonNull;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.TypeDescriptor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -185,5 +187,33 @@ public abstract class EntityQueryUtils
 		EntityQueryOps operand = targetTypeDescriptor.isCollection() || targetTypeDescriptor.isArray() ? EntityQueryOps.CONTAINS : EntityQueryOps.EQ;
 
 		return new EntityQueryCondition( targetProperty.getName(), operand, sourceValue );
+	}
+
+	/**
+	 * Finds all {@link EntityQueryCondition} conditions inside an {@link EntityQuery}
+	 *
+	 * @param propertyName the name of the property in the expression
+	 * @return all {@link EntityQueryCondition} that match the propertyName
+	 */
+	public static List<EntityQueryCondition> findConditionsForProperty( @NonNull EntityQuery entityQuery, @NonNull String propertyName ) {
+		return findConditionsForProperty( entityQuery, propertyName, new ArrayList<>() );
+	}
+
+	private static List<EntityQueryCondition> findConditionsForProperty( @NonNull EntityQuery entityQuery,
+	                                                @NonNull String propertyName,
+	                                                @NonNull List<EntityQueryCondition> matches ) {
+		for ( EntityQueryExpression expression : entityQuery.getExpressions() ) {
+
+			if ( expression instanceof EntityQuery ) {
+				findConditionsForProperty( (EntityQuery) expression, propertyName, matches );
+			}
+			else {
+				EntityQueryCondition entityQueryCondition = (EntityQueryCondition) expression;
+				if ( StringUtils.equals( propertyName, entityQueryCondition.getProperty() ) ) {
+					matches.add( entityQueryCondition );
+				}
+			}
+		}
+		return matches;
 	}
 }

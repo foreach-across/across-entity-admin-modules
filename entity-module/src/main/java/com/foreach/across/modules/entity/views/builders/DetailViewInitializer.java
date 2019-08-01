@@ -59,7 +59,7 @@ final class DetailViewInitializer extends AbstractViewInitializer<EntityViewFact
 			builder.factoryType( DefaultEntityViewFactory.class )
 			       .messagePrefix( "views[" + templateName() + "]" )
 			       .requiredAllowableAction( AllowableAction.READ )
-			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
+			       .propertyRegistry( createViewPropertyRegistry( entityConfiguration ) )
 			       .viewElementMode( ViewElementMode.FORM_READ )
 			       .showProperties( EntityPropertySelector.READABLE )
 			       .viewProcessor( beanFactory.getBean( GlobalPageFeedbackViewProcessor.class ) );

@@ -1,22 +1,13 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="EntityModuleTestApplication" type="Application" factoryName="Application" singleton="true" nameIsGenerated="true">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-      <pattern>
-        <option name="PATTERN" value="com.foreach.across.samples.entity.*" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-    </extension>
-    <option name="MAIN_CLASS_NAME" value="com.foreach.across.samples.entity.EntityModuleTestApplication" />
-    <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="" />
+  <configuration default="false" name="EntityModuleTestApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="entity-module-test-application" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.foreach.across.samples.entity.EntityModuleTestApplication" />
+    <option name="ACTIVE_PROFILES" value="dev" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="ENABLE_SWING_INSPECTOR" value="false" />
-    <option name="ENV_VARIABLES" />
-    <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="entity-module-test" />
-    <envs />
-    <method />
+    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>

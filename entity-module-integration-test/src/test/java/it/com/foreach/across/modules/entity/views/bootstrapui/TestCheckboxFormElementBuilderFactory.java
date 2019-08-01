@@ -17,10 +17,14 @@
 package it.com.foreach.across.modules.entity.views.bootstrapui;
 
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
+import com.foreach.across.modules.entity.query.EQValue;
+import com.foreach.across.modules.entity.query.EntityQueryOps;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyBindingContext;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderFactory;
 import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.bootstrapui.CheckboxFormElementBuilderFactory;
+import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
+import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterControlUtils;
 import com.foreach.across.modules.entity.web.EntityViewModel;
 import org.junit.Test;
 
@@ -98,6 +102,18 @@ public class TestCheckboxFormElementBuilderFactory extends ViewElementBuilderFac
 
 		checkbox = assembleAndVerify( "atomic", false );
 		assertFalse( checkbox.isChecked() );
+	}
+
+	@Test
+	public void filterControlProperties() {
+		when( properties.get( "primitive" ).getAttribute( EntityQueryOps.class ) ).thenReturn( EntityQueryOps.EQ );
+
+		CheckboxFormElement checkbox = assemble( "primitive", ViewElementMode.FILTER_CONTROL );
+		assertEquals( true, checkbox.getValue() );
+		assertTrue( checkbox.hasCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER ) );
+		assertEquals( "primitive", checkbox.getAttribute( "data-" + EntityQueryFilterControlUtils.FilterControlAttributes.PROPERTY_NAME ) );
+		assertEquals( EntityQueryOps.EQ.name(), checkbox.getAttribute( "data-" + EntityQueryFilterControlUtils.FilterControlAttributes.OPERAND ) );
+		assertEquals( EQValue.class.getSimpleName(), checkbox.getAttribute( "data-" + EntityQueryFilterControlUtils.FilterControlAttributes.TYPE ) );
 	}
 
 	@SuppressWarnings("unchecked")

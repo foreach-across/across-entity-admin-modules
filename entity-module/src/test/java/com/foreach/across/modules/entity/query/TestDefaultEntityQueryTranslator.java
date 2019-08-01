@@ -387,4 +387,31 @@ public class TestDefaultEntityQueryTranslator
 
 		assertEquals( translated, translator.translate( rawQuery ) );
 	}
+
+	@Test
+	public void translatedExpressionsShouldNotBeTranslated() {
+		EntityPropertyDescriptor descriptor = mock( EntityPropertyDescriptor.class );
+		when( descriptor.getPropertyTypeDescriptor() ).thenReturn( TypeDescriptor.valueOf( String.class ) );
+		when( descriptor.getName() ).thenReturn( "title" );
+		when( descriptor.getAttribute( EntityQueryConditionTranslator.class ) ).thenReturn( new EntityQueryConditionTranslator()
+		{
+			@Override
+			public EntityQueryExpression translate( EntityQueryCondition condition ) {
+				EntityQuery entityQuery = EntityQuery.and( new EntityQueryCondition( "online_title", EQ, "foo" ),
+				                                           new EntityQueryCondition( "digital_title", EQ, "foo" ) );
+				return entityQuery.setTranslated( true );
+			}
+		} );
+		when( propertyRegistry.getProperty( "title" ) ).thenReturn( descriptor );
+		when( typeConverter.convertAll( TypeDescriptor.valueOf( String.class ), true, new EQString( "foo" ) ) )
+				.thenReturn( new Object[] { "foo" } );
+
+		EntityQuery rawQuery = EntityQuery.of( "title = 'foo'" );
+		EntityQueryExpression translated = EntityQuery.and(
+				EntityQuery.and( new EntityQueryCondition( "online_title", EQ, "foo" ), new EntityQueryCondition( "digital_title", EQ, "foo" ) )
+		);
+
+		EntityQueryExpression actual = translator.translate( rawQuery );
+		assertEquals( translated, actual );
+	}
 }

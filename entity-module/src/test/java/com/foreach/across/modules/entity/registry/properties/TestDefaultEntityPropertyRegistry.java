@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +60,13 @@ public class TestDefaultEntityPropertyRegistry
 		register( "name", String.class );
 		register( "created", Date.class );
 		register( "aliases", TypeDescriptor.collection( ArrayList.class, TypeDescriptor.valueOf( String.class ) ) );
+	}
+
+	@Test
+	public void idIsAlwaysSet() {
+		Assertions.assertThat( registry.getId() ).isNotNull().isNotEmpty();
+		registry.setId( "some-registry" );
+		Assertions.assertThat( registry.getId() ).isEqualTo( "some-registry" );
 	}
 
 	@Test

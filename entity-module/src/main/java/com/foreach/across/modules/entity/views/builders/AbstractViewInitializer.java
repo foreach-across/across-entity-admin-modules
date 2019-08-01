@@ -20,7 +20,9 @@ import com.foreach.across.modules.entity.config.builders.EntityViewFactoryBuilde
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyRegistryProvider;
+import com.foreach.across.modules.entity.registry.properties.MutableEntityPropertyRegistry;
 import com.foreach.across.modules.entity.views.processors.AssociationHeaderViewProcessor;
 import com.foreach.across.modules.entity.views.processors.SingleEntityPageStructureViewProcessor;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
@@ -56,6 +58,16 @@ abstract class AbstractViewInitializer<T extends EntityViewFactoryBuilder>
 	public final void register( EntityViewFactoryBuilderInitializer initializer ) {
 		initializer.registerConfigurationInitializer( templateName(), configurationInitializer );
 		initializer.registerAssociationInitializer( templateName(), associationInitializer );
+	}
+
+	/**
+	 * Create a new property registry for a view. This applies a suffix to the entity configuration registry id
+	 * which will be replaced with the view name inside the builders.
+	 */
+	protected EntityPropertyRegistry createViewPropertyRegistry( EntityConfiguration entityConfiguration ) {
+		MutableEntityPropertyRegistry propertyRegistry = propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() );
+		propertyRegistry.setId( entityConfiguration.getPropertyRegistry().getId() + "_view" );
+		return propertyRegistry;
 	}
 
 	protected abstract String templateName();

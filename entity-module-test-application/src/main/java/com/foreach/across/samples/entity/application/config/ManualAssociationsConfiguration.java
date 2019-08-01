@@ -16,11 +16,14 @@
 
 package com.foreach.across.samples.entity.application.config;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
+import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityFactory;
 import com.foreach.across.modules.entity.support.EntityPropertyRegistrationHelper;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
@@ -46,6 +49,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 	private final Map<Serializable, Author> authors = new HashMap<>();
 
 	private final EntityPropertyRegistrationHelper propertyRegistrars;
+	private final AutoSuggestDataAttributeRegistrar autoSuggestData;
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
@@ -79,11 +83,15 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        )
 		        .and( registerEntityQueryExecutor( books::values ) )
 		        .detailView()
-		        .listView( lvb -> lvb.entityQueryFilter( eqf -> eqf.showProperties( "author", "reviewers" ).multiValue( "reviewers" ) ) )
+		        .listView( lvb -> lvb.entityQueryFilter(
+				        eqf -> eqf.showProperties( "author", "reviewers" )
+				                  .multiValue( "reviewers", "author" )
+		        ) )
 		        .createFormView()
 		        .updateFormView()
 		        .deleteFormView()
-		        .show();
+		        .show()
+		;
 	}
 
 	private void configureAuthors( EntitiesConfigurationBuilder entities ) {
@@ -112,18 +120,47 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        .createFormView()
 		        .updateFormView()
 		        .deleteFormView()
-		        .show();
+		        .show()
+		        .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.AUTOSUGGEST )
+		        .viewElementType( ViewElementMode.FILTER_CONTROL.forMultiple(), BootstrapUiElements.AUTOSUGGEST )
+		        .attribute(
+				        autoSuggestData.entityQuery( "name ilike '{0}%' order by name desc" )
+				                       .control( ctl -> ctl.minLength( 2 ) )
+		        )
+		;
 	}
 
 	private void configureAuthorsOnBook( EntitiesConfigurationBuilder entities ) {
 		entities.withType( Book.class )
 		        .properties(
 				        props -> props.property( propertyRegistrars.entityIdProxy( "author" ).entityType( Author.class ).targetPropertyName( "authorId" ) )
+				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
 				                      .and()
 				                      .property( propertyRegistrars.entityIdProxy( "reviewers" )
 				                                                   .entityType( Author.class )
 				                                                   .targetPropertyName( "reviewerIds" ) )
-		        );
+				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
+		        )
+		        .createFormView(
+				        vb -> vb.properties(
+						        props -> props
+								        .property( "author" )
+								        .attribute(
+										        autoSuggestData.entityQuery( ds -> ds
+												        .suggestionsEql( "name contains '{0}' order by name asc" )
+												        .maximumResults( 1 )
+										        )
+								        )
+				        )
+		        )
+		        .updateFormView(
+				        vb -> vb.properties(
+						        props -> props.property( "author" )
+						                      .attribute( autoSuggestData.dataSetId( "property-book2_createView.author" )
+						                                                 .control( ctl -> ctl.showHint( false ) ) )
+				        )
+		        )
+		;
 	}
 
 	private void configureBooksOnAuthor( EntitiesConfigurationBuilder entities ) {

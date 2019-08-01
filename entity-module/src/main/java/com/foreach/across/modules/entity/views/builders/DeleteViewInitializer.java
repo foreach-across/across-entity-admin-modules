@@ -57,7 +57,7 @@ final class DeleteViewInitializer extends AbstractViewInitializer<EntityViewFact
 			builder.factoryType( DefaultEntityViewFactory.class )
 			       .messagePrefix( "views[" + templateName() + "]" )
 			       .requiredAllowableAction( AllowableAction.DELETE )
-			       .propertyRegistry( propertyRegistryProvider.createForParentRegistry( entityConfiguration.getPropertyRegistry() ) )
+			       .propertyRegistry( createViewPropertyRegistry( entityConfiguration ) )
 			       .viewProcessor( beanFactory.getBean( DefaultValidationViewProcessor.class ), 0 )
 			       .viewProcessor( beanFactory.getBean( GlobalPageFeedbackViewProcessor.class ) );
 

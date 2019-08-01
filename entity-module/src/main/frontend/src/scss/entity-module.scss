@@ -15,6 +15,7 @@
  */
 @import 'settings';
 @import 'modules/entity-query-filter-form';
+@import 'modules/multi-value-autosuggest';
 
 .sortable {
   cursor: pointer;
@@ -303,4 +304,8 @@ fieldset .help-block:last-child {
 
 .embedded-collection-actions .btn {
   width: 100%;
+}
+
+.js-multi-value-control > table {
+  margin-top: -1px;
 }

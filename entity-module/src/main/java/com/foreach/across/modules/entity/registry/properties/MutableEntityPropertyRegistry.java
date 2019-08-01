@@ -1,6 +1,6 @@
 /*
  * Copyright 2014 the original author or authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,13 @@ import java.util.function.Predicate;
  */
 public interface MutableEntityPropertyRegistry extends EntityPropertyRegistry
 {
+	/**
+	 * Set the id for this property registry.
+	 *
+	 * @param id of this registry
+	 */
+	void setId( String id );
+
 	/**
 	 * Attach a descriptor to this registry.  A descriptor can only be attached to a
 	 * single registry, so the {@link EntityPropertyDescriptor#getPropertyRegistry()} should return {@code null}

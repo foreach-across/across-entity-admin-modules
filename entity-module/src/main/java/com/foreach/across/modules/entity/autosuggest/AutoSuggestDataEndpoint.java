@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Registry for attaching a {@link AutoSuggestDataSet} to a particular endpoint.
+ * Registry for attaching a {@link SimpleAutoSuggestDataSet} to a particular endpoint.
  * This usually makes the dataset callable over a remote API.
  *
  * @author Arne Vandamme
@@ -34,8 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class AutoSuggestDataEndpoint
 {
-//	private final String baseUrl;// = "@adminWeb:/api/entityModule/auto-suggest?dataset={{dataset}}&query={{query}}&controlName={{controlName}}";
-
 	private final UriComponentsBuilder urlBuilder;
 	private final Map<String, MappedDataSet> dataSetMap = new ConcurrentHashMap<>();
 
@@ -51,7 +49,9 @@ public final class AutoSuggestDataEndpoint
 	 *
 	 * @param dataSet to attach
 	 * @return attached dataset context
+	 * @deprecated since 3.4.0 - manually specify an id
 	 */
+	@Deprecated
 	public MappedDataSet registerDataSet( AutoSuggestDataSet dataSet ) {
 		return registerDataSet( UUID.randomUUID().toString(), dataSet );
 	}
@@ -113,7 +113,7 @@ public final class AutoSuggestDataEndpoint
 	}
 
 	/**
-	 * Wraps a regular {@link AutoSuggestDataSet} with endpoint identification data.
+	 * Wraps a regular {@link SimpleAutoSuggestDataSet} with endpoint identification data.
 	 */
 	@Getter
 	@EqualsAndHashCode
@@ -137,6 +137,10 @@ public final class AutoSuggestDataEndpoint
 
 		public UriComponentsBuilder prefetchUriComponents() {
 			return AutoSuggestDataEndpoint.this.prefetchUriComponents( id );
+		}
+
+		public boolean isPrefetchSupported() {
+			return dataSet.isPrefetchSupported();
 		}
 	}
 }

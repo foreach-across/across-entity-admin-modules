@@ -129,7 +129,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 								                                                                                      .rawValue( id ) )
 								                                            .collect( Collectors.toList() )
 						        )
-						        .attribute( EntityQueryFilterProcessor.ENTITY_QUERY_OPERAND, EntityQueryOps.EQ )
+						        .attribute( EntityQueryOps.class, EntityQueryOps.EQ )
 						        .viewElementType( ViewElementMode.FILTER_CONTROL.forMultiple(), BootstrapUiElements.SELECT )
 						        .writable( true )
 						        .spelValueFetcher( "get('id')" )
