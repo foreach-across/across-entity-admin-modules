@@ -43,11 +43,11 @@ public class EntityUtils
 
 	/**
 	 * Inspects a {@link TypeDescriptor} to retrieve the target {@link TypeDescriptor} if possible.
-	 * This method is meant to determine the target entity type of for example a collection of array descriptor.
+	 * This method is meant to determine the target entity type of for example a collection or array descriptor.
 	 * In the latter case the target type would usually be the member type of the descriptor.
 	 * <p/>
 	 * If the type descriptor is neither array nor collection, the original type descriptor is considered to be the target.
-	 * If the type descriptor is representing a class that extends any of the collection types,
+	 * If the type descriptor is representing a class that extends any of the collection types, its member will be used.
 	 * <p/>
 	 * In case of a generic {@link Map}, no target type can be resolved.
 	 * <p/>

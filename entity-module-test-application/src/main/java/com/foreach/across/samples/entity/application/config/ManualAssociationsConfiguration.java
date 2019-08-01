@@ -140,6 +140,10 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 				                                                   .entityType( Author.class )
 				                                                   .targetPropertyName( "reviewerIds" ) )
 				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
+				                      .attribute(
+						                      autoSuggestData.entityQuery( "name ilike '%{0}' order by name desc" )
+						                                     .control( ctl -> ctl.minLength( 1 ) )
+				                      )
 		        )
 		        .createFormView(
 				        vb -> vb.properties(
