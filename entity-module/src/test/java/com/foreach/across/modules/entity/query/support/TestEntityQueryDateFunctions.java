@@ -429,6 +429,15 @@ public class TestEntityQueryDateFunctions
 	@Test
 	public void nextWeek() {
 		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), 1 );
+		expectedDate = DateUtils.addDays( expectedDate, 6 );
+
+		assertThat( eqf( "nextWeek(SUNDAY)", Date.class ) )
+				.isEqualTo( expectedDate );
+	}
+
+	@Test
+	public void nextWeekSunday() {
+		Date expectedDate = DateUtils.addWeeks( getWeekStartDate(), 1 );
 
 		assertThat( eqf( "nextWeek()", Date.class ) )
 				.isEqualTo( expectedDate );
