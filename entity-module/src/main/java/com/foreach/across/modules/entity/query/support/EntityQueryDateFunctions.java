@@ -145,8 +145,15 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 		return LocalDateTime.now();
 	}
 
-	private LocalDateTime offset( LocalDateTime temporal, DurationWithPeriod period ) {
-		return addDurationWithPeriodTooDateTime( temporal, period );
+	private LocalDateTime offset( LocalDateTime temporal, DurationWithPeriod durationWithPeriod, boolean resetTimeOfTemporal ) {
+		if ( resetTimeOfTemporal ) {
+			temporal = temporal.with( LocalTime.MIDNIGHT );
+		}
+
+		temporal = temporal.plus( durationWithPeriod.getPeriod() );
+		temporal = temporal.plus( durationWithPeriod.getDuration() );
+
+		return temporal;
 	}
 
 	private LocalDateTime now() {
@@ -213,7 +220,7 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	interface WithTemporal
 	{
 		default LocalDateTime call( EQType[] arguments, EQTypeConverter argumentConverter ) {
-			if(arguments.length > 1) {
+			if ( arguments.length > 1 ) {
 				throw new IllegalArgumentException(
 						"Invalid amount of argument specified. Expected one or zero arguments but got '" + arguments.length + "' arguments." );
 			}
@@ -279,12 +286,16 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 						"Invalid amount of argument specified. Expected a total number of 2 arguments but got '" + arguments.length + "' arguments." );
 			}
 
+			boolean resetTimeOfTemporal = false;
 			LocalDateTime localDateTimeFromEQFunction = validateAndGetTemporalFromArguments( arguments, argumentConverter );
 			DurationWithPeriod durationWithPeriod = validateAndGetPeriodWithDurationFromArguments( arguments, argumentConverter );
 
+			resetTimeOfTemporal = isASpecificTimestampSpecified( arguments, argumentConverter );
+
 			return execute(
 					localDateTimeFromEQFunction,
-					durationWithPeriod
+					durationWithPeriod,
+					resetTimeOfTemporal
 			);
 		}
 
@@ -292,7 +303,14 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 			return withTemporalAndPeriod;
 		}
 
-		LocalDateTime execute( LocalDateTime temporal, DurationWithPeriod period );
+		LocalDateTime execute( LocalDateTime temporal, DurationWithPeriod period, boolean resetTimeOfTemporal );
+	}
+
+	private static boolean isASpecificTimestampSpecified( EQType[] arguments,
+	                                                      EQTypeConverter argumentConverter ) {
+		String period = (String) argumentConverter.convert( TypeDescriptor.valueOf( String.class ), arguments[1] );
+
+		return period.toLowerCase().trim().startsWith( "at" );
 	}
 
 	/**
@@ -393,20 +411,6 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 		}
 
 		return firstDayOfWeek;
-	}
-
-	private LocalDateTime addDurationWithPeriodTooDateTime( LocalDateTime localDateTime, DurationWithPeriod durationWithPeriod ) {
-		localDateTime = localDateTime.plus( durationWithPeriod.getPeriod() );
-		localDateTime = localDateTime.plus( durationWithPeriod.getDuration() );
-
-		return localDateTime;
-	}
-
-	private LocalDate addDurationWithPeriodTooDate( LocalDate localDate, DurationWithPeriod durationWithPeriod ) {
-		localDate = localDate.plus( durationWithPeriod.getPeriod() );
-		localDate = localDate.plus( durationWithPeriod.getDuration() );
-
-		return localDate;
 	}
 
 	/**
