@@ -9,6 +9,7 @@ services:
     command: yarn run build
     container_name: bootstrap-ui-module-assets-builder
     volumes:
+    - '${HOME}/.npmrc:/root/.npmrc:delegated'
     - ./bootstrap-ui-module/src/main/frontend:/build
     - ./bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule:/resources/views/static/BootstrapUiModule
 
@@ -46,6 +47,7 @@ services:
     - web
     volumes:
     - ./bootstrap-ui-module/src/main/frontend/tests/e2e/tests:/cypress
+    - '${HOME}/.npmrc:/root/.npmrc:delegated'
   cleanup:
     image: busybox:latest
     command: sh -c "echo Cleanup up /cypress/cypress/out; ls -al /cypress/cypress; rm -rf /cypress/cypress/out"

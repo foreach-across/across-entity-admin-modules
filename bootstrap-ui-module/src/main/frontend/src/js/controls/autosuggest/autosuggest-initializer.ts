@@ -19,6 +19,7 @@
  * @since 2.2.0
  */
 declare const Bloodhound: any;
+declare const Handlebars: any;
 
 function registerAutosuggestControl() {
     BootstrapUiModule.Controls['AutoSuggest'] = {
@@ -57,6 +58,25 @@ function registerAutosuggestControl() {
             delete configuration._datasets;
 
             const ttDataSets: any[] = [];
+            const datasetsByName: any = {};
+            const templatesByDataSet: any = {};
+
+            // configure templates
+            $( node ).find( 'script[data-template]' )
+                .each( ( ix, value ) => {
+                    const asJqueryObject = $( value );
+                    const templateKey = asJqueryObject.data( 'template' );
+                    if ( templateKey && templateKey.includes( '-' ) ) {
+                        const keys = templateKey.split( '-' );
+                        const templateType = keys[0];
+                        const datasetName = keys[1];
+                        if ( !templatesByDataSet[datasetName] ) {
+                            templatesByDataSet[datasetName] = {};
+                        }
+                        // merge with configuration object and then handlebars compile each value
+                        templatesByDataSet[datasetName][templateType] = value.innerHTML;
+                    }
+                } );
 
             $.each( datasets, ( ix, value ) => {
                 const engine = createBloodhoundEngine( value.bloodhound );
@@ -67,8 +87,24 @@ function registerAutosuggestControl() {
                     options.source = engine.ttAdapter();
                 }
 
+                // merge view element templates with configuration templates
+                if ( templatesByDataSet[options.name] ) {
+                    options.templates = $.extend( {}, templatesByDataSet[options.name], options.templates );
+                }
+
+                // handlebars compile each given template
+                for ( const template in options.templates ) {
+                    if ( options.templates.hasOwnProperty( template ) ) {
+                        options.templates[template] = Handlebars.compile( options.templates[template] );
+                    }
+                }
+
+                datasetsByName[value.name] = engine;
+
                 ttDataSets.push( options );
             } );
+
+            node.data( 'datasets', datasetsByName );
 
             // Initialize the typeahead
             typeahead.typeahead( configuration, ttDataSets );
@@ -93,7 +129,8 @@ function registerAutosuggestControl() {
  */
 function autosuggestInitializer( node: any ): void {
     $( '[data-bootstrapui-autosuggest]', node ).each( function () {
-        const configuration = $( this ).data( 'bootstrapui-autosuggest' );
+        const configuration = $.extend( {}, $( this ).data( 'bootstrapui-autosuggest' ) );
+
         BootstrapUiModule.Controls.AutoSuggest.create( $( this ), configuration );
     } );
 }
