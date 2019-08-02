@@ -109,8 +109,10 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 	protected LocalDateTime calculateDate( String functionName, EQType[] arguments, EQTypeConverter argumentConverter ) {
 		switch ( functionName ) {
 			case NOW:
+				validateNoArgumentsAllowed(arguments);
 				return now();
 			case TODAY:
+				validateNoArgumentsAllowed(arguments);
 				return today();
 			case START_OF_DAY:
 				return WithTemporal.of( this::startOfDay ).call( arguments, argumentConverter );
@@ -119,18 +121,25 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 			case START_OF_YEAR:
 				return WithTemporal.of( this::startOfYear ).call( arguments, argumentConverter );
 			case THIS_YEAR:
+				validateNoArgumentsAllowed(arguments);
 				return thisYear();
 			case NEXT_YEAR:
+				validateNoArgumentsAllowed(arguments);
 				return nextYear();
 			case LAST_YEAR:
+				validateNoArgumentsAllowed(arguments);
 				return lastYear();
 			case THIS_MONTH:
+				validateNoArgumentsAllowed(arguments);
 				return thisMonth();
 			case NEXT_MONTH:
+				validateNoArgumentsAllowed(arguments);
 				return nextMonth();
 			case LAST_MONTH:
+				validateNoArgumentsAllowed(arguments);
 				return lastMonth();
 			case OFFSET:
+				validateNoArgumentsAllowed(arguments);
 				return WithTemporalAndPeriod.of( this::offset ).call( arguments, argumentConverter );
 			case START_OF_WEEK:
 				return WithTemporalAndFirstDayOfWeek.of( this::startOfWeek ).call( arguments, argumentConverter );
@@ -143,6 +152,12 @@ public class EntityQueryDateFunctions implements EntityQueryFunctionHandler
 		}
 
 		return LocalDateTime.now();
+	}
+
+	private void validateNoArgumentsAllowed( EQType[] arguments ) {
+		if(arguments.length > 0) {
+			throw new IllegalStateException("No arguments are allowed");
+		}
 	}
 
 	private LocalDateTime offset( LocalDateTime temporal, DurationWithPeriod durationWithPeriod, boolean resetTimeOfTemporal ) {
