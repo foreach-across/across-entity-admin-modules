@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>standard-module-bom</artifactId>
-		<version>3.2.0.RELEASE</version>
+		<version>3.2.1-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
@@ -54,7 +54,7 @@
 		<repository>
 			<id>foreach-nexus</id>
 			<name>Foreach repository</name>
-			<url>http://repository.foreach.be/nexus/repository/public/</url>
+			<url>https://repository.foreach.be/nexus/repository/public/</url>
 		</repository>
 	</repositories>
 
