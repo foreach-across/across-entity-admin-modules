@@ -3,6 +3,7 @@ FROM beforeach/node:10
 # Install project assets
 COPY /bootstrap-ui-module/src/main/frontend/package.json /build/package.json
 COPY /bootstrap-ui-module/src/main/frontend/yarn.lock /build/yarn.lock
+COPY /bootstrap-ui-module/src/main/frontend/.npmrc /build/.npmrc
 COPY .npmrc /root/.npmrc
 
-RUN yarn --pure-lockfile --modules-folder /node_modules
+RUN bash -c "cat /root/.npmrc && cat /build/.npmrc && yarn --pure-lockfile --modules-folder /node_modules"
