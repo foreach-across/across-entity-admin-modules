@@ -117,3 +117,13 @@ li.admin-nav-user-context.with-thumbnail > a {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
+.form-signin .help-block {
+    font-size: small;
+    margin-bottom: 15px;
+    padding-left: 10px;
+}
+
+.form-signin .help-block:empty {
+    display: none;
+}
