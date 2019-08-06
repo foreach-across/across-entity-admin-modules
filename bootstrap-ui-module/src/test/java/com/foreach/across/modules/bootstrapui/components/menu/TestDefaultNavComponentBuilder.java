@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	private DefaultNavComponentBuilder builder;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		menu = new PathBasedMenuBuilder();
 		builderContext = new DefaultViewElementBuilderContext();
 		builder = new DefaultNavComponentBuilder();
@@ -68,7 +68,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	@Test
 	public void namedMenuRendering() {
 		builderContext.setAttribute( "zeMenu", new PathBasedMenuBuilder().item( "two", "#{my.code=two}" ).and().build() );
-		renderAndExpect( builder.menu( "zeMenu" ), "<ul class='nav'><li><a href='two' title='two'>two</a></li></ul>" );
+		renderAndExpect( builder.menu( "zeMenu" ), "<ul class='nav'><li class='nav-item'><a href='two' class='nav-link' title='two'>two</a></li></ul>" );
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 
 		renderAndExpect(
 				builder.menu( menu.build() ).menu( "zeMenu" ),
-				"<ul class='nav'><li><a href='one' title='one'>one</a></li></ul>"
+				"<ul class='nav'><li class='nav-item'><a href='one' class='nav-link' title='one'>one</a></li></ul>"
 		);
 	}
 
@@ -92,7 +92,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<ul class='nav'><li><a href='context-url' title='one'>one</a></li></ul>"
+				"<ul class='nav'><li class='nav-item'><a class='nav-link' href='context-url' title='one'>one</a></li></ul>"
 		);
 	}
 
@@ -106,7 +106,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 
 		renderAndExpect(
 				builder.linkBuilder( url -> "other-url" ).menu( menu.build() ),
-				"<ul class='nav'><li><a href='other-url' title='one'>one</a></li></ul>"
+				"<ul class='nav'><li class='nav-item'><a href='other-url' class='nav-link' title='one'>one</a></li></ul>"
 		);
 	}
 

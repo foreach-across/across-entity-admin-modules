@@ -36,8 +36,10 @@ import static com.foreach.across.modules.web.resource.WebResourceRule.addPackage
 public class BootstrapUiWebResources implements WebResourcePackage
 {
 	public static final String NAME = "bootstrap";
+	public static final String POPPER = "popper";
 
-	private static final String BOOTSTRAP_VERSION = "3.3.7";
+	private static final String BOOTSTRAP_VERSION = "4.3.1";
+	private static final String POPPER_VERSION = "1.14.3";
 
 	private final boolean minified;
 
@@ -50,7 +52,10 @@ public class BootstrapUiWebResources implements WebResourcePackage
 				add( css( "@webjars:/bootstrap/" + BOOTSTRAP_VERSION + "/css/bootstrap" + ( minified ? ".min" : "" ) + ".css" ) )
 						.withKey( NAME )
 						.toBucket( WebResource.CSS ),
-				add( javascript( "@webjars:/bootstrap/" + BOOTSTRAP_VERSION + "/js/bootstrap" + ( minified ? ".min" : "" ) + ".js" ) )
+				//add( javascript( "@webjars:/popper.js/" + POPPER_VERSION + "/umd/popper" + ( minified ? ".min" : "" ) + ".js" ) )
+				//		.withKey( NAME )
+				//			.toBucket( WebResource.JAVASCRIPT_PAGE_END ),
+				add( javascript( "@webjars:/bootstrap/" + BOOTSTRAP_VERSION + "/js/bootstrap.bundle" + ( minified ? ".min" : "" ) + ".js" ) )
 						.withKey( NAME )
 						.toBucket( WebResource.JAVASCRIPT_PAGE_END ),
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -241,7 +241,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 		return null;
 	}
 
-	protected void addHtmlAttributes( NodeViewElement node, Map<String, Object> attributes ) {
+	protected void addHtmlAttributes( AbstractNodeViewElement node, Map<String, Object> attributes ) {
 		attributes.forEach( ( name, value ) -> {
 			if ( StringUtils.startsWith( name, PREFIX_HTML_ATTRIBUTE ) ) {
 				node.setAttribute( StringUtils.removeStart( name, PREFIX_HTML_ATTRIBUTE ), value );
@@ -266,7 +266,13 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	                                       ViewElementBuilderContext builderContext ) {
 		if ( iconOnly || !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, container, builderContext ) ) {
 			LinkViewElement link = new LinkViewElement();
+			link.addCssClass( "nav-link" );
 			link.setUrl( buildLink( item.getUrl(), builderContext ) );
+
+			if ( item.isSelected() ) {
+				link.addCssClass( "active" );
+			}
+
 			String resolvedTitle = builderContext.resolveText( item.getTitle() );
 			link.setTitle( builderContext.resolveText( resolvedTitle ) );
 			addIconAndText( link, item, resolvedTitle, iconAllowed, iconOnly, builderContext );

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,10 +131,8 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 
 			if ( iconOnly || !addViewElementIfAttributeExists( item, ATTR_ITEM_VIEW_ELEMENT, list, builderContext ) ) {
 				NodeViewElement li = new NodeViewElement( "li" );
+				li.addCssClass( "nav-item" );
 				addHtmlAttributes( li, item.getAttributes() );
-				if ( itemToRender.isSelected() ) {
-					li.addCssClass( "active" );
-				}
 
 				if ( itemToRender.isGroup() ) {
 					buildDropDownItem( li, itemToRender, iconOnly, builderContext );
@@ -158,8 +156,14 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 		if ( !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, li, builderContext ) ) {
 			LinkViewElement link = new LinkViewElement();
 			link.setUrl( "#" );
-			link.addCssClass( "dropdown-toggle" );
+			link.addCssClass( "nav-link", "dropdown-toggle" );
+			if ( item.isSelected() ) {
+				link.addCssClass( "active" );
+			}
 			link.setAttribute( "data-toggle", "dropdown" );
+			link.setAttribute( "role", "button" );
+			link.setAttribute( "aria-haspopup", true );
+			link.setAttribute( "aria-expanded", false );
 
 			if ( item.isSelected() && replaceGroupBySelectedItem
 					&& !Boolean.TRUE.equals( item.getAttribute( ATTR_KEEP_GROUP_ITEM ) ) ) {
@@ -175,15 +179,10 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 			}
 
 			link.addChild( new TextViewElement( " " ) );
-
-			NodeViewElement caret = new NodeViewElement( "span" );
-			caret.addCssClass( "caret" );
-			link.addChild( caret );
-
 			li.addChild( link );
 		}
 
-		NodeViewElement children = new NodeViewElement( "ul" );
+		NodeViewElement children = new NodeViewElement( "div" );
 		AtomicBoolean nextChildShouldBeSeparator = new AtomicBoolean( false );
 		children.addCssClass( "dropdown-menu" );
 
@@ -193,7 +192,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	}
 
 	private void addDropDownChildItem(
-			NodeViewElement list,
+			NodeViewElement dropDown,
 			Menu item,
 			AtomicBoolean nextChildShouldBeSeparator,
 			ViewElementBuilderContext builderContext
@@ -203,38 +202,37 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 		if ( itemToRender != null ) {
 			boolean shouldInsertSeparator =
 					nextChildShouldBeSeparator.get()
-							|| ( list.hasChildren()
+							|| ( dropDown.hasChildren()
 							&& ( itemToRender.isGroup() || Separator.insertBefore( itemToRender ) ) );
 
 			if ( shouldInsertSeparator ) {
-				NodeViewElement divider = new NodeViewElement( "li" );
-				divider.addCssClass( "divider" );
-				divider.setAttribute( "role", "separator" );
-				list.addChild( divider );
+				NodeViewElement divider = new NodeViewElement( "div" );
+				divider.addCssClass( "dropdown-divider" );
+				dropDown.addChild( divider );
 
 				nextChildShouldBeSeparator.set( false );
 			}
 
 			if ( itemToRender.isGroup() ) {
-				NodeViewElement header = new NodeViewElement( "li" );
+				NodeViewElement header = new NodeViewElement( "h6" );
 				header.addCssClass( "dropdown-header" );
 				addIconAndText( header, itemToRender, builderContext.resolveText( itemToRender.getTitle() ), true, false, builderContext );
-				list.addChild( header );
+				dropDown.addChild( header );
 
 				includedItems( itemToRender )
 						.filter( i -> !i.isGroup() )
-						.forEach( child -> addDropDownChildItem( list, child, nextChildShouldBeSeparator, builderContext ) );
+						.forEach( child -> addDropDownChildItem( dropDown, child, nextChildShouldBeSeparator, builderContext ) );
 
 				nextChildShouldBeSeparator.set( true );
 			}
 			else {
-				NodeViewElement li = new NodeViewElement( "li" );
-				addHtmlAttributes( li, itemToRender.getAttributes() );
+				LinkViewElement link = addItemLink( dropDown, itemToRender, true, false, builderContext );
+				link.addCssClass( "dropdown-item" );
+				link.removeCssClass( "nav-link" );
+				addHtmlAttributes( link, itemToRender.getAttributes() );
 				if ( itemToRender.isSelected() ) {
-					li.addCssClass( "active" );
+					link.addCssClass( "active" );
 				}
-				addItemLink( li, itemToRender, true, false, builderContext );
-				list.addChild( li );
 
 				nextChildShouldBeSeparator.set( Separator.insertAfter( itemToRender ) );
 			}
