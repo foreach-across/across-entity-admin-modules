@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.foreach.across.modules.bootstrapui;
 
-import com.foreach.across.test.AbstractAcrossModuleConventionsTest;
+$( '#datasource-switcher' ).on( 'change', ( event ) => {
 
-/**
- * @author Arne Vandamme
- */
-public class TestBootstrapUiModuleConventions extends AbstractAcrossModuleConventionsTest
-{
-	@Override
-	protected BootstrapUiModule createModule() {
-		return new BootstrapUiModule();
-	}
-}
+    let urlToUse = "/bootstrapAutosuggest/suggest?query={{query}}";
+
+    if ( $( event.currentTarget ).is( ':checked' ) ) {
+        urlToUse = "/bootstrapAutosuggest/suggest-more?query={{query}}"
+    }
+
+    $( '#js-switch-source-autosuggest' ).data( 'datasets' )['default'].remote.url = urlToUse;
+} );

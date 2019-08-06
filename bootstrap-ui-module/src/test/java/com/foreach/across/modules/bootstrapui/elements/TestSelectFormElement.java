@@ -63,6 +63,18 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void multipleWithControlName() {
+		SelectFormElement box = new SelectFormElement();
+		box.setMultiple( true );
+		box.setControlName( "controlName" );
+
+		renderAndExpect(
+				box,
+				"<select data-bootstrapui-adapter-type='select' name='controlName' multiple='multiple' id='controlName' class='form-control'></select><input name='_controlName' type='hidden' value=''></input>"
+		);
+	}
+
+	@Test
 	public void disabledAndReadonly() {
 		SelectFormElement box = new SelectFormElement();
 		box.setDisabled( true );
@@ -155,7 +167,8 @@ public class TestSelectFormElement extends AbstractBootstrapViewElementTest
 						"</optgroup>" +
 						"<optgroup disabled='disabled' label='some label'></optgroup>" +
 						"<option value='one'>Inner text</option>" +
-						"</select>"
+						"</select>" +
+						"<input name='_controlName' type='hidden' value=''></input>"
 		);
 	}
 

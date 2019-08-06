@@ -23,11 +23,11 @@ import com.foreach.across.modules.web.ui.elements.thymeleaf.AbstractHtmlViewElem
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.NotReadablePropertyException;
-import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.*;
-import org.thymeleaf.spring4.naming.SpringContextVariableNames;
-import org.thymeleaf.spring4.util.FieldUtils;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
+import org.thymeleaf.spring5.naming.SpringContextVariableNames;
+import org.thymeleaf.spring5.util.FieldUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -371,7 +371,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 						? StringUtils.substring( controlName, 1 )
 						: controlName;
 
-				BindStatus bindStatus = retrieveBindStatus( templateContext, propertyName );
+				IThymeleafBindStatus bindStatus = retrieveBindStatus( templateContext, propertyName );
 
 				if ( bindStatus != null && bindStatus.isError() ) {
 					if ( formControl instanceof TextboxFormElement ) {
@@ -397,7 +397,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 
 	// Temporary workaround for what appears to be a bug with Thymeleaf which does not allow map indexed properties
 	// even though they are allowed by Spring (see https://github.com/thymeleaf/thymeleaf-spring/issues/176)
-	private BindStatus retrieveBindStatus( ITemplateContext templateContext, String propertyName ) {
+	private IThymeleafBindStatus retrieveBindStatus( ITemplateContext templateContext, String propertyName ) {
 		if ( propertyName.indexOf( '[' ) >= 0 ) {
 			try {
 				return FieldUtils.getBindStatus( templateContext, false, "*{" + propertyName + "}" );

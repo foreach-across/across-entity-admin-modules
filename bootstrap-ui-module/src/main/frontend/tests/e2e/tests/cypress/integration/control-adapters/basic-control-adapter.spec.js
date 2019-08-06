@@ -86,4 +86,9 @@ describe( 'ControlAdapter - Basic', function () {
         const content = "Festive feasts\n\n\n\n\n!!";
         basicAdapterTests( '#ca-textarea', content );
     } );
+
+    describe( 'numeric without format', () => {
+        const content = '1234';
+        basicAdapterTests( '#ca-numeric-noformat', content );
+    } );
 } );

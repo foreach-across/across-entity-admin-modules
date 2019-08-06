@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.core.annotations.PostRefresh;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
+import com.foreach.across.core.development.AcrossDevelopmentMode;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactoryImpl;
 import com.foreach.across.modules.bootstrapui.elements.*;
@@ -88,13 +89,12 @@ class BootstrapUiConfiguration
 	}
 
 	@PostRefresh
-	void registerWebResourcePackages( AcrossContextBeanRegistry contextBeanRegistry ) {
+	void registerWebResourcePackages( AcrossContextBeanRegistry contextBeanRegistry, AcrossDevelopmentMode developmentMode ) {
 		contextBeanRegistry.getBeansOfType( WebResourcePackageManager.class ).forEach(
 				packageManager -> {
-					packageManager.register( BootstrapUiFormElementsWebResources.NAME,
-					                         new BootstrapUiFormElementsWebResources() );
-					packageManager.register( JQueryWebResources.NAME, new JQueryWebResources( true ) );
-					packageManager.register( BootstrapUiWebResources.NAME, new BootstrapUiWebResources() );
+					packageManager.register( JQueryWebResources.NAME, new JQueryWebResources( !developmentMode.isActive() ) );
+					packageManager.register( BootstrapUiWebResources.NAME, new BootstrapUiWebResources( !developmentMode.isActive() ) );
+					packageManager.register( BootstrapUiFormElementsWebResources.NAME, new BootstrapUiFormElementsWebResources( !developmentMode.isActive() ) );
 				}
 		);
 	}

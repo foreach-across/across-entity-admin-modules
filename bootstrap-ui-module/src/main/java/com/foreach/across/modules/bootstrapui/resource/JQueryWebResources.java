@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,35 @@
  */
 package com.foreach.across.modules.bootstrapui.resource;
 
-import com.foreach.across.modules.web.resource.SimpleWebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourcePackage;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.resource.WebResourceRule;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.Ordered;
 
-public class JQueryWebResources extends SimpleWebResourcePackage
+/**
+ * Registers the main JQuery javascript dependency in a {@link WebResourceRegistry}.
+ *
+ * @author Arne Vandamme
+ * @since 2.0.0
+ */
+@RequiredArgsConstructor
+public class JQueryWebResources implements WebResourcePackage
 {
 	public static final String NAME = "jquery";
 
-	public JQueryWebResources( boolean minified ) {
-		this( minified, "1.11.3" );
-	}
+	private static final String JQUERY_VERSION = "1.11.3";
 
-	public JQueryWebResources( boolean minified, String version ) {
-		if ( minified ) {
-			setWebResources(
-					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
-					                 "//ajax.googleapis.com/ajax/libs/jquery/" + version + "/jquery.min.js",
-					                 WebResource.EXTERNAL )
-			);
-		}
-		else {
-			setWebResources(
-					new WebResource( WebResource.JAVASCRIPT_PAGE_END, NAME,
-					                 "//ajax.googleapis.com/ajax/libs/jquery/" + version + "/jquery.js",
-					                 WebResource.EXTERNAL )
-			);
-		}
+	private final boolean minified;
+
+	@Override
+	public void install( WebResourceRegistry webResourceRegistry ) {
+		webResourceRegistry.apply(
+				WebResourceRule.add( WebResource.javascript( "@webjars:/jquery/" + JQUERY_VERSION + "/jquery" + ( minified ? ".min" : "" ) + ".js" ) )
+				               .withKey( NAME )
+				               .toBucket( WebResource.JAVASCRIPT_PAGE_END )
+				               .order( Ordered.HIGHEST_PRECEDENCE )
+		);
 	}
 }
