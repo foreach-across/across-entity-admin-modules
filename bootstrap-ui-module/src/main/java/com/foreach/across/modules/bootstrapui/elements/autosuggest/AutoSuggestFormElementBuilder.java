@@ -16,28 +16,26 @@
 
 package com.foreach.across.modules.bootstrapui.elements.autosuggest;
 
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
+import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormControlElementBuilderSupport;
-import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
-import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.http.MediaType;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.script;
 
 /**
  * Will create an autosuggest component backed by a Typeahead JS implementation.
@@ -50,8 +48,6 @@ import java.util.stream.Collectors;
 @Accessors(fluent = true)
 public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupport<AutoSuggestFormElement, AutoSuggestFormElementBuilder>
 {
-	public static final String ATTRIBUTE_DATA_PROPERTY = "data-as-property";
-
 	/**
 	 * CSS class on the wrapper, representing the autosuggest (typeahead) component.
 	 */
@@ -63,24 +59,8 @@ public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupp
 	public static final String CSS_TYPEAHEAD = "js-typeahead";
 	public static final String CSS_TYPEAHEAD_VALUE = "js-typeahead-value";
 
-	public static final String CSS_TYPEAHEAD_ITEM_CLASS = "js-typeahead-item";
-	public static final String CSS_PREFILL_TABLE = "js-typeahead-prefill";
-	public static final String CSS_SUGGESTION_TEMPLATE = "js-typeahead-suggestion-template";
-	public static final String CSS_ITEM_TEMPLATE = "js-typeahead-template";
-	public static final String CSS_EMPTY_TEMPLATE = "js-typeahead-empty-template";
-
-	public static final String DEFAULT_PROPERTY = "label";
-
 	private AutoSuggestFormElementConfiguration configuration = new AutoSuggestFormElementConfiguration();
-
-	private String idProperty = "id";
-	private String endpoint;
-
-	private List<String> properties = Collections.singletonList( DEFAULT_PROPERTY );
-	private List<Map<String, Object>> prefill = Collections.emptyList();
-	private ViewElementBuilderSupport.ElementOrBuilder notFoundTemplate;
-	private ViewElementBuilderSupport.ElementOrBuilder suggestionTemplate;
-	private ViewElementBuilderSupport.ElementOrBuilder itemTemplate;
+	private Map<String, ViewElementBuilder> templatesByKey = new HashMap<>();
 
 	/**
 	 * -- SETTER --
@@ -89,8 +69,6 @@ public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupp
 	 */
 	@Setter
 	private TextboxFormElementBuilder textboxBuilder;
-
-	private ViewElement containerTemplate;
 
 	private Function<String, String> linkBuilder;
 
@@ -105,80 +83,137 @@ public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupp
 		return this;
 	}
 
-	public AutoSuggestFormElementBuilder idProperty( String idProperty ) {
-		this.idProperty = idProperty;
-		return this;
-	}
-
-	public AutoSuggestFormElementBuilder prefill( List<Map<String, Object>> prefillValues ) {
-		this.prefill = prefillValues;
-		return this;
-	}
-
-	public AutoSuggestFormElementBuilder properties( String... properties ) {
-		this.properties = Arrays.asList( properties );
-		return this;
+	/**
+	 * <p>Use a custom {@code ViewElementBuilder} that will be used as template when there are no suggestions found
+	 * for the default dataset.
+	 * </p>
+	 *
+	 * @param template that should be used
+	 * @return current builder
+	 * @see #notFoundTemplate(String, ViewElementBuilder)
+	 */
+	public AutoSuggestFormElementBuilder notFoundTemplate( ViewElementBuilder template ) {
+		return notFoundTemplate( AutoSuggestFormElementConfiguration.DEFAULT_DATASET, template );
 	}
 
 	/**
-	 * Configure the endpoint that this control should use to retrieve suggestions.
+	 * <p>Use a custom {@code ViewElementBuilder} that will be used as template when there are no suggestions found
+	 * for the specified dataset.
+	 * </p>
 	 *
-	 * @param endpoint url
+	 * @param datasetId id of the dataset
+	 * @param template  that should be used
 	 * @return current builder
 	 */
-	public AutoSuggestFormElementBuilder endpoint( String endpoint ) {
-		this.endpoint = endpoint;
-		return this;
-	}
-
-	public AutoSuggestFormElementBuilder notFoundTemplate( ViewElement notFoundTemplate ) {
-		this.notFoundTemplate = ElementOrBuilder.wrap( notFoundTemplate );
-		return this;
-	}
-
-	public AutoSuggestFormElementBuilder notFoundTemplate( ViewElementBuilder notFoundTemplate ) {
-		this.notFoundTemplate = ElementOrBuilder.wrap( notFoundTemplate );
+	public AutoSuggestFormElementBuilder notFoundTemplate( String datasetId, ViewElementBuilder template ) {
+		templatesByKey.put( String.format( "notFound-%s", datasetId ), template );
 		return this;
 	}
 
 	/**
-	 * <p>Use a custom {@code ViewElementBuilder} that will be used as a template for the rendering of suggestions
-	 * in the suggestion dropdown.
+	 * <p>Use a custom {@code ViewElementBuilder} that will be used as template for the rendering of suggestions
+	 * of the default dataset in the suggestion dropdown. The template will be applied to each suggestion and the
+	 * associated suggestion object will be available within the context.
+	 * The default template for suggestions is {@code <div>{{value}}</div>}.
 	 * </p>
-	 * <p>
-	 * If you want to reuse properties from this {@code AutoSuggestFormElementBuilder}
-	 * instance, make sure to add an attribute {@code ATTRIBUTE_DATA_PROPERTY}to the node element which inner HTML should
-	 * be replaced.
-	 * </p>
+	 *
+	 * @param template that should be used
+	 * @return current builder
+	 * @see #suggestionTemplate(String, ViewElementBuilder)
 	 */
 	public AutoSuggestFormElementBuilder suggestionTemplate( ViewElementBuilder template ) {
-		this.suggestionTemplate = ElementOrBuilder.wrap( template );
+		return suggestionTemplate( AutoSuggestFormElementConfiguration.DEFAULT_DATASET, template );
+	}
+
+	/**
+	 * <p>Use a custom {@code ViewElementBuilder} that will be used as template for the rendering of suggestions
+	 * in the suggestion dropdown for a specific dataset. The template will be applied to each suggestion and the
+	 * associated suggestion object will be available within the context.
+	 * The default template for suggestions is {@code <div>{{value}}</div>}.
+	 * </p>
+	 *
+	 * @param datasetId id of the dataset
+	 * @param template  that should be used
+	 * @return current builder
+	 */
+	public AutoSuggestFormElementBuilder suggestionTemplate( String datasetId, ViewElementBuilder template ) {
+		templatesByKey.put( String.format( "suggestion-%s", datasetId ), template );
 		return this;
 	}
 
 	/**
-	 * {@see com.foreach.across.modules.bootstrapui.elements.builder.AutoSuggestFormElementBuilder#suggestionTemplate}
+	 * <p>Use a custom {@code ViewElementBuilder} that will be used as template for the default dataset when synchronous results
+	 * are not available, but asynchronous results are expected. The current query can be used in the template,
+	 * for example {@code <div>Loading results for {{query}}...</div>}
+	 * </p>
+	 *
+	 * @param template that should be used
+	 * @return current builder
+	 * @see #pendingTemplate(String, ViewElementBuilder)
 	 */
-	public AutoSuggestFormElementBuilder suggestionTemplate( ViewElement template ) {
-		this.suggestionTemplate = ElementOrBuilder.wrap( template );
+	public AutoSuggestFormElementBuilder pendingTemplate( ViewElementBuilder template ) {
+		return pendingTemplate( AutoSuggestFormElementConfiguration.DEFAULT_DATASET, template );
+	}
+
+	/**
+	 * <p>Use a custom {@code ViewElementBuilder} that will be used as template for the default dataset when synchronous results
+	 * are not available, but asynchronous results are expected. The current query can be used in the template,
+	 * for example {@code <div>Loading results for {{query}}...</div>}
+	 * </p>
+	 *
+	 * @param template that should be used
+	 * @return current builder
+	 */
+	public AutoSuggestFormElementBuilder pendingTemplate( String name, ViewElementBuilder template ) {
+		templatesByKey.put( String.format( "pending-%s", name ), template );
 		return this;
 	}
 
 	/**
-	 * <p>
-	 * Use a custom {@code ViewElement} that will be used as a template for the rendering of selected suggestions.
+	 * <p>Use a custom {@code ViewElementBuilder} that will be used as template as the header of the suggestions fetched for the default dataset
 	 * </p>
-	 * <p>
-	 * The given {@code ContainerViewElementBuilder} will contain all selected suggestions.  The container may not have child nodes
-	 * The given itemTemplate must contain a node with class {@code CSS_ITEM_TEMPLATE}. This childnode will be repeated
-	 * for all selected suggestions.
-	 * If you want to reuse properties from this {@code AutoSuggestFormElementBuilder} instance, make sure to add an
-	 * attribute {@code ATTRIBUTE_DATA_PROPERTY}to the node element which inner HTML should be replaced
-	 * </p>
+	 *
+	 * @param template that should be used
+	 * @return current builder
+	 * @see #headerTemplate(String, ViewElementBuilder)
 	 */
-	public AutoSuggestFormElementBuilder itemTemplate( ViewElement containerTemplate, ViewElement itemTemplate ) {
-		this.containerTemplate = containerTemplate;
-		this.itemTemplate = ElementOrBuilder.wrap( itemTemplate );
+	public AutoSuggestFormElementBuilder headerTemplate( ViewElementBuilder template ) {
+		return headerTemplate( AutoSuggestFormElementConfiguration.DEFAULT_DATASET, template );
+	}
+
+	/**
+	 * <p>Use a custom {@code ViewElementBuilder} that will be used as template as the header of the suggestions fetched for the default dataset
+	 * </p>
+	 *
+	 * @param template that should be used
+	 * @return current builder
+	 */
+	public AutoSuggestFormElementBuilder headerTemplate( String name, ViewElementBuilder template ) {
+		templatesByKey.put( String.format( "header-%s", name ), template );
+		return this;
+	}
+
+	/**
+	 * <p>Use a custom {@code ViewElementBuilder} that will be used as template as footer of the suggestions fetched for the default dataset
+	 * </p>
+	 *
+	 * @param template that should be used
+	 * @return current builder
+	 * @see #headerTemplate(String, ViewElementBuilder)
+	 */
+	public AutoSuggestFormElementBuilder footerTemplate( ViewElementBuilder template ) {
+		return footerTemplate( AutoSuggestFormElementConfiguration.DEFAULT_DATASET, template );
+	}
+
+	/**
+	 * <p>Use a custom {@code ViewElementBuilder} that will be used as template as footer of the suggestions fetched for the default dataset
+	 * </p>
+	 *
+	 * @param template that should be used
+	 * @return current builder
+	 */
+	public AutoSuggestFormElementBuilder footerTemplate( String name, ViewElementBuilder template ) {
+		templatesByKey.put( String.format( "footer-%s", name ), template );
 		return this;
 	}
 
@@ -200,22 +235,6 @@ public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupp
 
 	@Override
 	protected AutoSuggestFormElement createElement( ViewElementBuilderContext builderContext ) {
-	/*
-		if ( StringUtils.isNotBlank( endpoint ) ) {
-			this.configuration.setEndpoint( buildLink( endpoint, viewElementBuilderContext ) );
-		}
-		if ( configuration != null ) {
-			this.configuration = configuration.localize( LocaleContextHolder.getLocale() );
-		}*/
-
-/*		return BootstrapUiBuilders.div()
-		                          .css( CSS_TYPEAHEAD )
-		                          .attribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration )
-		                          .add( renderInputElement() )
-		                          .add( renderTemplates( viewElementBuilderContext ) )
-		                          //.add( renderPrefillValues( viewElementBuilderContext ) )
-		                          .build( viewElementBuilderContext );
-		                          */
 		TextboxFormElement textbox = createTextbox( builderContext );
 
 		HiddenFormElement value = new HiddenFormElement();
@@ -226,8 +245,20 @@ public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupp
 		container.setConfiguration( configuration.translate( url -> buildLink( url, builderContext ) ) );
 		container.addChild( textbox );
 		container.addChild( value );
+		templatesByKey
+				.entrySet()
+				.stream()
+				.map( entry -> createTemplateElement( entry.getKey(), entry.getValue() ).build( builderContext ) )
+				.forEach( container::addChild );
 
 		return apply( container, builderContext );
+	}
+
+	private ViewElementBuilder createTemplateElement( String key, ViewElementBuilder template ) {
+		return script()
+				.data( "template", key )
+				.type( MediaType.TEXT_HTML )
+				.add( template );
 	}
 
 	protected String buildLink( String link, ViewElementBuilderContext builderContext ) {
@@ -250,103 +281,5 @@ public class AutoSuggestFormElementBuilder extends FormControlElementBuilderSupp
 		textbox.addCssClass( CSS_TYPEAHEAD );
 
 		return textbox;
-	}
-
-	private ViewElement renderPrefillValues( ViewElementBuilderContext viewElementBuilderContext ) {
-		TableViewElementBuilder prefillTableElement = BootstrapUiBuilders.table();
-		TableViewElement defaultPrefillValues = prefillTableElement.css( CSS_PREFILL_TABLE )
-		                                                           .addAll( prefill.stream()
-		                                                                           .map( it -> renderDefaultPrefill(
-				                                                                           prefillTableElement,
-				                                                                           it ) )
-		                                                                           .collect( Collectors
-				                                                                                     .toList() ) )
-		                                                           .build( viewElementBuilderContext );
-		return containerTemplate != null ? containerTemplate : defaultPrefillValues;
-	}
-
-	private NodeViewElementBuilder renderTemplates( ViewElementBuilderContext viewElementBuilderContext ) {
-		return BootstrapUiBuilders.div()
-		                          .css( "hidden" )
-		                          .add( getSuggestionTemplate( viewElementBuilderContext ) )
-		                          .add( getItemTemplate( viewElementBuilderContext ) )
-		                          .add( getNotFoundTemplate( viewElementBuilderContext ) );
-	}
-
-	private NodeViewElementBuilder getNotFoundTemplate( ViewElementBuilderContext viewElementBuilderContext ) {
-		NodeViewElementBuilder notFoundContainer = BootstrapUiBuilders.div()
-		                                                              .css( CSS_EMPTY_TEMPLATE );
-		ViewElement defaultNotFoundViewElement = BootstrapUiBuilders.text( "Not Found" )
-		                                                            .build( viewElementBuilderContext );
-		return notFoundContainer.add( notFoundTemplate != null ?
-				                              notFoundTemplate
-						                              .get( viewElementBuilderContext ) : defaultNotFoundViewElement );
-	}
-
-	private NodeViewElementBuilder getSuggestionTemplate( ViewElementBuilderContext viewElementBuilderContext ) {
-		NodeViewElementBuilder suggestionContainer = BootstrapUiBuilders.div()
-		                                                                .css( CSS_SUGGESTION_TEMPLATE );
-		ViewElement defaultSuggestionElementOrBuilder =
-				BootstrapUiBuilders.container()
-				                   .addAll( properties.stream()
-				                                      .map( prop -> BootstrapUiBuilders.div()
-				                                                                       .attribute(
-						                                                                       ATTRIBUTE_DATA_PROPERTY,
-						                                                                       prop ) )
-				                                      .collect( Collectors.toList() ) )
-				                   .build( viewElementBuilderContext );
-		return suggestionContainer.add( suggestionTemplate != null ?
-				                                suggestionTemplate
-						                                .get( viewElementBuilderContext ) : defaultSuggestionElementOrBuilder );
-	}
-
-	private ViewElement getItemTemplate( ViewElementBuilderContext viewElementBuilderContext ) {
-		if ( itemTemplate != null ) {
-			return itemTemplate.get( viewElementBuilderContext );
-		}
-		TableViewElementBuilder defaultItemContainer = BootstrapUiBuilders.table();
-		return defaultItemContainer.add( defaultItemContainer.row()
-		                                                     .css( CSS_ITEM_TEMPLATE )
-		                                                     .addAll( properties.stream()
-		                                                                        .map( prop -> defaultItemContainer
-				                                                                        .cell()
-				                                                                        .attribute(
-						                                                                        "data-as-property",
-						                                                                        prop ) )
-		                                                                        .collect(
-				                                                                        Collectors
-						                                                                        .toList() ) )
-		                                                     .add( defaultItemContainer.cell()
-		                                                                               .css( "row-actions" )
-		                                                                               .add( BootstrapUiBuilders
-				                                                                                     .link()
-				                                                                                     .title( "REMOVE" ) //TODO make configurable
-				                                                                                     .add( new GlyphIcon(
-						                                                                                     GlyphIcon.REMOVE ) ) )
-		                                                                               .add( BootstrapUiBuilders
-				                                                                                     .hidden()
-				                                                                                     .controlName(
-						                                                                                     idProperty ) ) ) )
-		                           .build( viewElementBuilderContext );
-	}
-
-	private TableViewElementBuilder.Row renderDefaultPrefill( TableViewElementBuilder table,
-	                                                          Map<String, Object> items ) {
-		return table.row()
-		            .css( CSS_TYPEAHEAD_ITEM_CLASS )
-		            .addAll( items.entrySet().stream()
-		                          .map( prop -> table.cell()
-		                                             .text( prop.getValue().toString() ) )
-		                          .collect( Collectors.toList() ) )
-		            .add( table.cell()
-		                       .css( "row-actions" )
-		                       .add( BootstrapUiBuilders
-				                             .link()
-				                             .title( "REMOVE" ) //TODO make configurable
-				                             .add( new GlyphIcon( GlyphIcon.REMOVE ) ) )
-		                       .add( BootstrapUiBuilders
-				                             .hidden()
-				                             .value( items.get( idProperty ) )
-				                             .controlName( idProperty ) ) );
 	}
 }

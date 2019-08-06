@@ -21,30 +21,9 @@ import initializeAutoSuggestControls, {registerAutosuggestControl} from "./contr
 import initializeAutoSizeControls from "./controls/support/initializers/autosize-initializer";
 import disableLineBreakSupport from "./controls/support/initializers/line-breaks-initializer";
 import initializeTooltips from "./controls/support/initializers/tooltip-initializer";
-import {ControlAdapterFactory} from "./controls/support/control-adapter-factory";
-import {createAutosuggestControlAdapter} from "./controls/autosuggest/autosuggest-control-adapter";
-import {createDatePickerControlAdapter} from "./controls/datepicker/date-picker-control-adapter";
-import {createBasicControlAdapter} from "./controls/input/basic-control-adapter";
-import {createNumericControlAdapter} from "./controls/numeric/numeric-control-adapter";
-import {createBootstrapSelectControlAdapter} from "./controls/select/bootstrap-select-control-adapter";
-import {createSelectControlAdapter} from "./controls/select/select-control-adapter";
-import {createCheckboxControlAdapter} from "./controls/checkbox/checkbox-control-adapter";
-import {createContainerControlAdapter} from "./controls/container/container-control-adapter";
 
 (function ( $ ) {
             registerAutosuggestControl();
-
-            BootstrapUiModule.ControlAdapterFactory = ControlAdapterFactory;
-
-            // Register the default control adapters
-            ControlAdapterFactory.register( 'autosuggest', createAutosuggestControlAdapter );
-            ControlAdapterFactory.register( 'datetime', createDatePickerControlAdapter );
-            ControlAdapterFactory.register( 'basic', createBasicControlAdapter );
-            ControlAdapterFactory.register( 'numeric', createNumericControlAdapter );
-            ControlAdapterFactory.register( 'bootstrap-select', createBootstrapSelectControlAdapter );
-            ControlAdapterFactory.register( 'select', createSelectControlAdapter );
-            ControlAdapterFactory.register( 'checkbox', createCheckboxControlAdapter );
-            ControlAdapterFactory.register( 'container', createContainerControlAdapter );
 
             /**
              * Main initialization of BoostrapUiModule form elements.
@@ -58,7 +37,7 @@ import {createContainerControlAdapter} from "./controls/container/container-cont
                 initializeAutoSuggestControls( node );
                 initializeTooltips( node );
 
-                ControlAdapterFactory.initializeControlAdapters( node );
+                BootstrapUiModule.ControlAdapterFactory.initializeControlAdapters( node );
             } );
         }( jQuery )
 );

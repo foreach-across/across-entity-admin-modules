@@ -3,4 +3,5 @@ FROM beforeach/node:10
 # Install project assets
 COPY /bootstrap-ui-module/src/main/frontend/package.json /build/package.json
 COPY /bootstrap-ui-module/src/main/frontend/yarn.lock /build/yarn.lock
+
 RUN yarn --pure-lockfile --modules-folder /node_modules

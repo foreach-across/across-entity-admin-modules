@@ -16,17 +16,17 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
-import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
-import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
+import com.foreach.across.modules.web.resource.WebResource;
+import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.resource.WebResourceRule;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.event.EventListener;
@@ -41,7 +41,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
-import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder.CSS_PREFILL_TABLE;
+import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 
 /**
  * Generates Twitter Typeahead autosuggest instances.
@@ -64,7 +64,18 @@ public class AutoSuggestFormController
 	public String showElements( ModelMap model, ViewElementBuilderContext builderContext ) {
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
 
+		WebResourceRegistry webResourceRegistry = builderContext.getAttribute( WebResourceRegistry.class );
+
+		webResourceRegistry.apply(
+				WebResourceRule.add( WebResource.javascript( "@static:/bootstrapUiTest/switch-autosuggest-datasource.js" ) )
+				               .withKey( "testJs" )
+				               .after( BootstrapUiWebResources.NAME )
+				               .before( BootstrapUiFormElementsWebResources.NAME )
+				               .toBucket( JAVASCRIPT_PAGE_END )
+		);
+
 		generatedElements.put( "Simple autosuggest with default settings", defaultAutoSuggest() );
+		generatedElements.put( "Autosuggest with switching datasource", autoSuggestWithMultipleDatasets() );
 
 		model.addAttribute( "generatedElements", generatedElements );
 
@@ -72,12 +83,45 @@ public class AutoSuggestFormController
 	}
 
 	private AutoSuggestFormElement defaultAutoSuggest() {
-		return BootstrapUiBuilders
-				.autosuggest()
+		return autosuggest()
 				.configuration(
 						AutoSuggestFormElementConfiguration.withDataSet(
 								dataSet -> dataSet.remoteUrl( "/bootstrapAutosuggest/suggest?query={{query}}" )
+								                  .setAttribute( "templates", Collections.singletonMap( "footer", "End of dataset" ) )
+						).withDataSet( "willies",
+						               dataSet -> dataSet.remoteUrl( "/bootstrapAutosuggest/suggest-more?query={{query}}" )
 						)
+				)
+				.notFoundTemplate( text( "Ah, ah ah, '{{query}}' is not the magic word..." ) )
+				.suggestionTemplate( div().add( text( "{{label}} (alt: {{other}})" ) ) )
+				.headerTemplate( div().attribute( "style", "text-decoration: underline" ).add( text( "Suggestions" ) ) )
+				.notFoundTemplate( "willies", text( "Hey willy, '{{query}}' doesn't exist!" ) )
+				.headerTemplate( "willies", div().attribute( "style", "color: red" ).add( text( "My red header" ) ) )
+				.footerTemplate( "willies", div().attribute( "style", "color: red" ).add( text( "My red footer" ) ) )
+				.build();
+	}
+
+	private NodeViewElement autoSuggestWithMultipleDatasets() {
+		return div()
+				.add(
+						checkbox()
+								.htmlId( "datasource-switcher" )
+								.label( "Switch datasource" )
+				).add(
+						autosuggest()
+								.htmlId( "js-switch-source-autosuggest" )
+								.configuration(
+										AutoSuggestFormElementConfiguration.withDataSet(
+												dataSet -> dataSet.remoteUrl( "/bootstrapAutosuggest/suggest?query={{query}}" )
+										)
+								)
+								.notFoundTemplate( "willies", text( "Hey willy, '{{query}}' doesn't exist!" ) )
+								.notFoundTemplate( text( "Ah, ah ah, '{{query}}' is not the magic word..." ) )
+								.suggestionTemplate( div().add( text( "{{label}} (alt: {{other}})" ) ) )
+								.headerTemplate( "willies", div().attribute( "style", "color: red" ).add( text( "My red header" ) ) )
+								.headerTemplate( div().attribute( "style", "text-decoration: underline" ).add( text( "Suggestions" ) ) )
+								.footerTemplate( "willies", div().attribute( "style", "color: red" ).add( text( "My red footer" ) ) )
+
 				).build();
 	}
 
@@ -99,6 +143,31 @@ public class AutoSuggestFormController
 				          .id( 3 )
 				          .label( "ABClabel" )
 				          .other( "123other" )
+				          .build()
+		);
+		return suggestions.stream()
+		                  .filter( suggestion -> StringUtils.containsIgnoreCase( suggestion.getLabel(), query ) )
+		                  .collect( Collectors.toList() );
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/suggest-more", produces = "application/json; charset=UTF-8")
+	@ResponseBody
+	public List<Suggestion> moreSuggestions( @RequestParam("query") String query ) {
+		List<Suggestion> suggestions = Arrays.asList(
+				Suggestion.builder()
+				          .id( 1 )
+				          .label( "123" )
+				          .other( "abc" )
+				          .build(),
+				Suggestion.builder()
+				          .id( 2 )
+				          .label( "456a" )
+				          .other( "def" )
+				          .build(),
+				Suggestion.builder()
+				          .id( 3 )
+				          .label( "789" )
+				          .other( "ghi" )
 				          .build()
 		);
 		return suggestions.stream()
