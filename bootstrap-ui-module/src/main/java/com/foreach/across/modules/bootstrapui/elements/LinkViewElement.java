@@ -16,7 +16,13 @@
 
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractTextNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author Arne Vandamme
@@ -41,15 +47,123 @@ public class LinkViewElement extends AbstractTextNodeViewElement
 	 *
 	 * @param title text
 	 */
-	public void setTitle( String title ) {
-		setAttribute( "title", title );
+	public LinkViewElement setTitle( String title ) {
+		return setAttribute( "title", title );
 	}
 
 	public String getUrl() {
 		return getAttribute( "href", String.class );
 	}
 
-	public void setUrl( String url ) {
-		setAttribute( "href", url );
+	public LinkViewElement setUrl( String url ) {
+		return setAttribute( "href", url );
+	}
+
+	@Override
+	protected LinkViewElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected LinkViewElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public LinkViewElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> LinkViewElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement setText( String text ) {
+		super.setText( text );
+		return this;
 	}
 }

@@ -16,15 +16,24 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * @author Arne Vandamme
  */
+@Accessors(chain = true)
+@Getter
+@Setter
 public abstract class FormControlElementSupport extends AbstractNodeViewElement implements FormControlElement
 {
 	private boolean disabled, readonly, required;
 	private String controlName;
 
+	@Getter(value = AccessLevel.NONE)
+	@Setter(value = AccessLevel.NONE)
 	private boolean htmlIdSpecified;
 
 	protected FormControlElementSupport( String elementType ) {
@@ -32,36 +41,13 @@ public abstract class FormControlElementSupport extends AbstractNodeViewElement 
 		setElementType( elementType );
 	}
 
-	public boolean isDisabled() {
-		return disabled;
-	}
-
-	public void setDisabled( boolean disabled ) {
-		this.disabled = disabled;
-	}
-
-	public boolean isReadonly() {
-		return readonly;
-	}
-
-	public void setReadonly( boolean readonly ) {
-		this.readonly = readonly;
-	}
-
-	public boolean isRequired() {
-		return required;
-	}
-
-	public void setRequired( boolean required ) {
-		this.required = required;
-	}
-
 	@Override
-	public void setName( String name ) {
+	public FormControlElementSupport setName( String name ) {
 		super.setName( name );
 		if ( controlName == null ) {
 			setControlName( name );
 		}
+		return this;
 	}
 
 	@Override
@@ -70,16 +56,18 @@ public abstract class FormControlElementSupport extends AbstractNodeViewElement 
 	}
 
 	@Override
-	public void setControlName( String controlName ) {
+	public FormControlElementSupport setControlName( String controlName ) {
 		this.controlName = controlName;
 		if ( !htmlIdSpecified ) {
 			super.setHtmlId( controlName );
 		}
+		return this;
 	}
 
 	@Override
-	public void setHtmlId( String htmlId ) {
+	public FormControlElementSupport setHtmlId( String htmlId ) {
 		this.htmlIdSpecified = true;
 		super.setHtmlId( htmlId );
+		return this;
 	}
 }

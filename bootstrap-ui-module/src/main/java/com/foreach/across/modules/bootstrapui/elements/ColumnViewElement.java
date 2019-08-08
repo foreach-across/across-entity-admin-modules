@@ -15,11 +15,15 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * <p>Represents a Bootstrap column div, supporting {@link Grid.DeviceGridLayout}
@@ -31,6 +35,7 @@ import java.util.Collections;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class ColumnViewElement extends AbstractNodeViewElement
 {
 	private Grid.Position position = new Grid.Position();
@@ -46,8 +51,8 @@ public class ColumnViewElement extends AbstractNodeViewElement
 	 *
 	 * @param layouts to be used
 	 */
-	public void setLayouts( Grid.DeviceGridLayout... layouts ) {
-		setLayouts( Arrays.asList( layouts ) );
+	public ColumnViewElement setLayouts( Grid.DeviceGridLayout... layouts ) {
+		return setLayouts( Arrays.asList( layouts ) );
 	}
 
 	/**
@@ -55,12 +60,13 @@ public class ColumnViewElement extends AbstractNodeViewElement
 	 *
 	 * @param layouts to be used
 	 */
-	public void setLayouts( Collection<Grid.DeviceGridLayout> layouts ) {
+	public ColumnViewElement setLayouts( Collection<Grid.DeviceGridLayout> layouts ) {
 		removePositionClass();
 		position.clear();
 		position.addAll( layouts );
 
 		updatePositionClass();
+		return this;
 	}
 
 	/**
@@ -77,10 +83,11 @@ public class ColumnViewElement extends AbstractNodeViewElement
 	 *
 	 * @param layouts to add
 	 */
-	public void addLayout( Grid.DeviceGridLayout... layouts ) {
+	public ColumnViewElement addLayout( Grid.DeviceGridLayout... layouts ) {
 		removePositionClass();
 		Collections.addAll( position, layouts );
 		updatePositionClass();
+		return this;
 	}
 
 	/**
@@ -88,16 +95,18 @@ public class ColumnViewElement extends AbstractNodeViewElement
 	 *
 	 * @param layouts to remove
 	 */
-	public void removeLayout( Grid.DeviceGridLayout... layouts ) {
+	public ColumnViewElement removeLayout( Grid.DeviceGridLayout... layouts ) {
 		removePositionClass();
 		position.removeAll( Arrays.asList( layouts ) );
 		updatePositionClass();
+		return this;
 	}
 
-	public void clearLayouts() {
+	public ColumnViewElement clearLayouts() {
 		removePositionClass();
 		position.clear();
 		updatePositionClass();
+		return this;
 	}
 
 	private void removePositionClass() {
@@ -106,5 +115,101 @@ public class ColumnViewElement extends AbstractNodeViewElement
 
 	private void updatePositionClass() {
 		addCssClass( position.toString() );
+	}
+
+	@Override
+	public ColumnViewElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected ColumnViewElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> ColumnViewElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected ColumnViewElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public ColumnViewElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
 	}
 }

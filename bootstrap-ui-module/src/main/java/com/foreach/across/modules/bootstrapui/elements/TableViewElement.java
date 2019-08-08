@@ -15,18 +15,28 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractTextNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Represents a HTML table, supporting head, body, foot, caption and colgroup section.
  *
  * @author Arne Vandamme
  */
+@Accessors(chain = true)
+@Getter
+@Setter
 public class TableViewElement extends AbstractNodeViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.TABLE;
@@ -36,6 +46,11 @@ public class TableViewElement extends AbstractNodeViewElement
 	private Header header;
 	private Footer footer;
 	private Body body;
+
+	/**
+	 * Set the table as a responsive table.  This will wrap the table in a single div with
+	 * table-responsive class.
+	 */
 	private boolean responsive;
 
 	public TableViewElement() {
@@ -43,78 +58,126 @@ public class TableViewElement extends AbstractNodeViewElement
 		setElementType( ELEMENT_TYPE );
 	}
 
-	public boolean isResponsive() {
-		return responsive;
-	}
-
-	/**
-	 * Set the table as a responsive table.  This will wrap the table in a single div with
-	 * table-responsive class.
-	 *
-	 * @param responsive true if table should be wrapped
-	 */
-	public void setResponsive( boolean responsive ) {
-		this.responsive = responsive;
-	}
-
-	public Caption getCaption() {
-		return caption;
-	}
-
-	public void setCaption( Caption caption ) {
-		this.caption = caption;
-	}
-
-	public ColumnGroup getColumnGroup() {
-		return columnGroup;
-	}
-
-	public void setColumnGroup( ColumnGroup columnGroup ) {
-		this.columnGroup = columnGroup;
-	}
-
-	public Header getHeader() {
-		return header;
-	}
-
-	public void setHeader( Header header ) {
-		this.header = header;
-	}
-
-	public Footer getFooter() {
-		return footer;
-	}
-
-	public void setFooter( Footer footer ) {
-		this.footer = footer;
-	}
-
-	public Body getBody() {
-		return body;
-	}
-
-	public void setBody( Body body ) {
-		this.body = body;
-	}
-
-	public Set<Style> getStyles() {
-		return styles;
-	}
-
-	public void setStyles( Collection<Style> styles ) {
+	public TableViewElement setStyles( Collection<Style> styles ) {
 		this.styles.addAll( styles );
+		return this;
 	}
 
-	public void addStyle( Style style ) {
+	public TableViewElement addStyle( Style style ) {
 		styles.add( style );
+		return this;
 	}
 
-	public void removeStyle( Style style ) {
+	public TableViewElement removeStyle( Style style ) {
 		styles.remove( style );
+		return this;
 	}
 
-	public void clearStyles() {
+	public TableViewElement clearStyles() {
 		styles.clear();
+		return this;
+	}
+
+	@Override
+	public TableViewElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public TableViewElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public TableViewElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public TableViewElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public TableViewElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public TableViewElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public TableViewElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public TableViewElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected TableViewElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public TableViewElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public TableViewElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public TableViewElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public TableViewElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public TableViewElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> TableViewElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected TableViewElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public TableViewElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
 	}
 
 	public static class Caption extends AbstractTextNodeViewElement
@@ -136,13 +199,14 @@ public class TableViewElement extends AbstractNodeViewElement
 				super( "col" );
 			}
 
-			public void setSpan( Integer span ) {
+			public Column setSpan( Integer span ) {
 				if ( span == null ) {
 					removeAttribute( "span" );
 				}
 				else {
 					setAttribute( "span", span );
 				}
+				return this;
 			}
 		}
 	}
@@ -181,11 +245,15 @@ public class TableViewElement extends AbstractNodeViewElement
 			return style;
 		}
 
-		public void setStyle( Style style ) {
+		public Row setStyle( Style style ) {
 			this.style = style;
+			return this;
 		}
 	}
 
+	@Accessors(chain = true)
+	@Getter
+	@Setter
 	public static class Cell extends AbstractTextNodeViewElement
 	{
 		private boolean heading;
@@ -195,30 +263,6 @@ public class TableViewElement extends AbstractNodeViewElement
 		public Cell() {
 			super( "td" );
 			setElementType( ELEMENT_TYPE + ".cell" );
-		}
-
-		public Style getStyle() {
-			return style;
-		}
-
-		public void setStyle( Style style ) {
-			this.style = style;
-		}
-
-		public boolean isHeading() {
-			return heading;
-		}
-
-		public void setHeading( boolean heading ) {
-			this.heading = heading;
-		}
-
-		public Integer getColumnSpan() {
-			return columnSpan;
-		}
-
-		public void setColumnSpan( Integer columnSpan ) {
-			this.columnSpan = columnSpan;
 		}
 	}
 }

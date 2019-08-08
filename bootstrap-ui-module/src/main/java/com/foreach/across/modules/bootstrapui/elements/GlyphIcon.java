@@ -293,9 +293,10 @@ public class GlyphIcon extends IconViewElement
 		setGlyph( glyph );
 	}
 
-	public void setGlyph( @NonNull String glyph ) {
+	public GlyphIcon setGlyph( @NonNull String glyph ) {
 		this.glyph = glyph;
 		setIconCss( "glyphicon " + glyph );
+		return this;
 	}
 
 	public String getGlyph() {
