@@ -9,7 +9,9 @@
   "scripts": {
     "start": "foreach-tsdx watch -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
     "build": "foreach-tsdx build -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
-    "test": "foreach-tsdx test --env=jsdom"
+    "test": "foreach-tsdx test --env=jsdom",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "peerDependencies": {
     "autosize": "3.x",
@@ -43,7 +45,13 @@
     "trailingComma": "es5"
   },
   "devDependencies": {
+    "@babel/core": "^7.5.5",
     "@foreach/eslint-config-react-app": "^1.0.2",
+    "@storybook/addon-actions": "^5.1.10",
+    "@storybook/addon-info": "5.1.10",
+    "@storybook/addon-links": "^5.1.10",
+    "@storybook/addons": "^5.1.10",
+    "@storybook/react": "^5.1.10",
     "@testing-library/react": "^8.0.8",
     "@types/autosize": "^3.0.6",
     "@types/jest": "^24.0.17",
@@ -51,8 +59,15 @@
     "@types/moment": "^2.13.0",
     "@types/react": "^16.8.25",
     "@types/react-dom": "^16.8.5",
+    "@types/storybook__addon-actions": "^3.4.3",
+    "@types/storybook__addon-info": "^4.1.2",
+    "@types/storybook__addon-links": "^3.3.5",
+    "@types/storybook__react": "4.0.2",
     "autosize": "^3.0.20",
-    "foreach-tsdx": "^0.1.8-6",
+    "awesome-typescript-loader": "5.2.1",
+    "babel-loader": "^8.0.6",
+    "eslint": "5.16.0",
+    "foreach-tsdx": "^0.1.8-7",
     "husky": "^3.0.2",
     "jest-dom": "^4.0.0",
     "jquery": "1.11.3",
