@@ -16,16 +16,14 @@
 
 package com.foreach.across.modules.bootstrapui.components.builder;
 
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.AbstractLinkSupportingNodeViewElementBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
-import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import com.foreach.across.modules.web.ui.elements.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +32,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.a;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.span;
 
 /**
  * Abstract base class for rendering {@link Menu} items to nav-like structures.
@@ -266,7 +268,10 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	                                       ViewElementBuilderContext builderContext ) {
 		if ( iconOnly || !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, container, builderContext ) ) {
 			LinkViewElement link = new LinkViewElement();
-			link.addCssClass( "nav-link" );
+			link.set( css.nav.link );
+
+			//link( css.nav.link, css.active.when( item.isSelected()) )
+			//link.addCssClass( "nav-link" );
 			link.setUrl( buildLink( item.getUrl(), builderContext ) );
 
 			if ( item.isSelected() ) {
@@ -299,7 +304,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 		if ( iconAdded && iconOnly ) {
 			node.addChild( TextViewElement.text( " " ) );
 
-			NodeViewElement span = new NodeViewElement( "span" );
+			NodeViewElement span = span();
 			span.addCssClass( "nav-item-title" );
 			span.addChild( toTextElement( resolvedTitle ) );
 			node.addChild( span );

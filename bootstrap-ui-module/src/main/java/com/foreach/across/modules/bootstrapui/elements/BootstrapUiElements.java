@@ -15,12 +15,14 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.ui.StandardViewElements;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 
 /**
  * @author Arne Vandamme
  */
-public interface BootstrapUiElements extends StandardViewElements
+public interface BootstrapUiElements extends StandardViewElements, HtmlViewElements
 {
 	String HIDDEN = "bootstrapHidden";
 
@@ -45,4 +47,6 @@ public interface BootstrapUiElements extends StandardViewElements
 	String FILE_UPLOAD = "bootstrapFileUpload";
 	String AUTOSUGGEST = "bootstrapAutoSuggest";
 	String GENERIC_FORM_CONTROL = "bootstrapGenericFormControl";
+
+	BootstrapStyles css = new BootstrapStyles();
 }

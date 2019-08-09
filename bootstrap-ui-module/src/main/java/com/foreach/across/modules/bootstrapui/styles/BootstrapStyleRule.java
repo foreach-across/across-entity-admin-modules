@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.bootstrapui.styles;
 
+import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import lombok.NonNull;
 
 import java.util.stream.Stream;
@@ -25,9 +27,19 @@ import java.util.stream.Stream;
  * @since 2.3.0
  */
 @FunctionalInterface
-public interface BootstrapStyleRule
+public interface BootstrapStyleRule extends ViewElement.WitherSetter<HtmlViewElement>, ViewElement.WitherRemover<HtmlViewElement>
 {
 	String[] toCssClasses();
+
+	@Override
+	default void removeFrom( HtmlViewElement target ) {
+		target.removeCssClass( toCssClasses() );
+	}
+
+	@Override
+	default void applyTo( HtmlViewElement target ) {
+		target.addCssClass( toCssClasses() );
+	}
 
 	default BootstrapStyleRule suffix( @NonNull String suffix ) {
 		String[] cssClasses = Stream.of( toCssClasses() ).map( s -> s + "-" + suffix )
