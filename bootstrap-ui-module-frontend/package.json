@@ -1,23 +1,33 @@
 {
-  "name": "bootstrap-ui-module-frontend",
-  "version": "0.1.0",
+  "name": "@jarrku/bootstrap-ui-fe-test",
+  "version": "0.0.0",
   "main": "dist/bootstrapui.umd.production.js",
   "typings": "dist/bootstrapui.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
+    "prepare": "yarn build",
     "start": "foreach-tsdx watch -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
     "build": "foreach-tsdx build -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
     "test": "foreach-tsdx test --env=jsdom",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "release": "np"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "peerDependencies": {
     "autosize": "3.x",
     "jquery": "1.x",
     "moment": "2.x",
     "react": ">=16"
+  },
+  "np": {
+    "anyBranch": true,
+    "releaseDraft": false
   },
   "husky": {
     "hooks": {
@@ -77,6 +87,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "tslib": "^1.10.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "np": "^5.0.3"
   }
 }
