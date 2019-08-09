@@ -1,0 +1,67 @@
+{
+  "name": "bootstrap-ui-module-frontend",
+  "version": "0.1.0",
+  "main": "dist/bootstrapui.umd.production.js",
+  "typings": "dist/bootstrapui.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "foreach-tsdx watch -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
+    "build": "foreach-tsdx build -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
+    "test": "foreach-tsdx test --env=jsdom"
+  },
+  "peerDependencies": {
+    "autosize": "3.x",
+    "jquery": "1.x",
+    "moment": "2.x",
+    "react": ">=16"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "eslintConfig": {
+    "extends": "@foreach/eslint-config-react-app"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json,md,css,scss}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "devDependencies": {
+    "@foreach/eslint-config-react-app": "^1.0.2",
+    "@testing-library/react": "^8.0.8",
+    "@types/autosize": "^3.0.6",
+    "@types/jest": "^24.0.17",
+    "@types/jquery": "^3.3.31",
+    "@types/moment": "^2.13.0",
+    "@types/react": "^16.8.25",
+    "@types/react-dom": "^16.8.5",
+    "autosize": "^3.0.20",
+    "foreach-tsdx": "^0.1.8-6",
+    "husky": "^3.0.2",
+    "jest-dom": "^4.0.0",
+    "jquery": "1.11.3",
+    "lint-staged": "^9.2.1",
+    "moment": "^2.13.0",
+    "prettier": "^1.18.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "tslib": "^1.10.0",
+    "typescript": "^3.5.3"
+  }
+}
