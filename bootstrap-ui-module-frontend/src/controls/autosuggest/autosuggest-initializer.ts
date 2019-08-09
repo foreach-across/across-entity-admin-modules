@@ -18,9 +18,10 @@
  * @author Steven Gentens
  * @since 2.2.0
  */
+import $ from 'jquery';
 declare const Bloodhound: any;
 declare const Handlebars: any;
-import $ from 'jquery';
+declare const BootstrapUiModule: any;
 
 function registerAutosuggestControl() {
   BootstrapUiModule.Controls['AutoSuggest'] = {

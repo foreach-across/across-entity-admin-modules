@@ -24,6 +24,8 @@ import initializeAutoSizeControls from './controls/support/initializers/autosize
 import disableLineBreakSupport from './controls/support/initializers/line-breaks-initializer';
 import initializeTooltips from './controls/support/initializers/tooltip-initializer';
 
+declare const BootstrapUiModule: any;
+
 (function() {
   registerAutosuggestControl();
 

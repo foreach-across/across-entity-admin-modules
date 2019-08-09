@@ -27,10 +27,6 @@ import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
  * The target of the control adapter is the node on which it is registered.
  */
 export default class BootstrapSelectControlAdapter extends SelectControlAdapter {
-  constructor(target: any) {
-    super(target);
-  }
-
   public initializeEventTriggers(): void {
     $(this.getTarget()).on('changed.bs.select', _ => this.triggerChange());
 
