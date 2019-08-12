@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,6 +164,18 @@ public class LinkViewElement extends AbstractTextNodeViewElement
 	@Override
 	public LinkViewElement setText( String text ) {
 		super.setText( text );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public LinkViewElement remove( WitherRemover... functions ) {
+		super.remove( functions );
 		return this;
 	}
 }

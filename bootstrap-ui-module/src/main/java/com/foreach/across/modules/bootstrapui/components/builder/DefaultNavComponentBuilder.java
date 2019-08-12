@@ -17,12 +17,17 @@
 package com.foreach.across.modules.bootstrapui.components.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.combine;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * Builds a Bootstrap nav list structure for a {@link Menu} instance.
@@ -34,7 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavComponentBuilder>
 {
-	private String navStyle = "";
+	private BootstrapStyleRule navStyle = css.nav;
 	private boolean replaceGroupBySelectedItem = false;
 
 	/**
@@ -43,7 +48,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder simple() {
-		navStyle = "";
+		navStyle = css.nav;
 		return this;
 	}
 
@@ -53,7 +58,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder tabs() {
-		navStyle = "nav-tabs";
+		navStyle = css.nav.tabs;
 		return this;
 	}
 
@@ -63,7 +68,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder pills() {
-		navStyle = "nav-pills";
+		navStyle = css.nav.pills;
 		return this;
 	}
 
@@ -73,7 +78,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder stacked() {
-		navStyle = "nav-pills nav-stacked";
+		navStyle = combine( css.nav.pills, css.flex.column );
 		return this;
 	}
 
@@ -83,7 +88,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder navbar() {
-		navStyle = "navbar-nav";
+		navStyle = css.navbar.nav;
 		return this;
 	}
 
@@ -111,8 +116,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	}
 
 	protected NodeViewElement buildMenu( Menu menuToRender, ViewElementBuilderContext builderContext ) {
-		NodeViewElement list = apply( new NodeViewElement( "ul" ), builderContext );
-		list.addCssClass( "nav", navStyle );
+		NodeViewElement list = apply( HtmlViewElements.ul( navStyle ), builderContext );
 
 		if ( menuToRender != null ) {
 			includedItems( menuToRender ).forEach( item -> addMenuItemToList( list, item, builderContext ) );

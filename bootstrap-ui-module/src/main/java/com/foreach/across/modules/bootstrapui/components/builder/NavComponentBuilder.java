@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.bootstrapui.components.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.AbstractLinkSupportingNodeViewElementBuilder;
 import com.foreach.across.modules.web.menu.Menu;
@@ -34,8 +33,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.a;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.span;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.link;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
 
 /**
  * Abstract base class for rendering {@link Menu} items to nav-like structures.
@@ -267,15 +266,11 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	                                       boolean iconOnly,
 	                                       ViewElementBuilderContext builderContext ) {
 		if ( iconOnly || !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, container, builderContext ) ) {
-			LinkViewElement link = new LinkViewElement();
-			link.set( css.nav.link );
-
-			//link( css.nav.link, css.active.when( item.isSelected()) )
-			//link.addCssClass( "nav-link" );
-			link.setUrl( buildLink( item.getUrl(), builderContext ) );
+			LinkViewElement link = link( css.nav.link )
+					.setUrl( buildLink( item.getUrl(), builderContext ) );
 
 			if ( item.isSelected() ) {
-				link.addCssClass( "active" );
+				link.set( css.active );
 			}
 
 			String resolvedTitle = builderContext.resolveText( item.getTitle() );
@@ -304,10 +299,12 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 		if ( iconAdded && iconOnly ) {
 			node.addChild( TextViewElement.text( " " ) );
 
-			NodeViewElement span = span();
-			span.addCssClass( "nav-item-title" );
-			span.addChild( toTextElement( resolvedTitle ) );
-			node.addChild( span );
+			node.addChild(
+					HtmlViewElements.span(
+							css.of( "nav-item-title" ),
+							children( toTextElement( resolvedTitle ) )
+					)
+			);
 		}
 	}
 

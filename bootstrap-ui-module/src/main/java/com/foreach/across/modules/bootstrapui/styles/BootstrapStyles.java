@@ -21,8 +21,6 @@ import com.foreach.across.modules.bootstrapui.styles.content.*;
 import com.foreach.across.modules.bootstrapui.styles.layout.GridStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.utilities.*;
 
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.of;
-
 /**
  * Contains strong typed accessors for all common Bootstrap CSS classes.
  * Structure based on the documentation and css class format.
@@ -123,4 +121,8 @@ public class BootstrapStyles
 
 	// layout
 	public final GridStyleRule grid = new GridStyleRule();
+
+	public final BootstrapStyleRule of( String... cssClassNames ) {
+		return BootstrapStyleRule.of( cssClassNames );
+	}
 }

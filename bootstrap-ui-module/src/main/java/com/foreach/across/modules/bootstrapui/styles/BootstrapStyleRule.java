@@ -47,7 +47,19 @@ public interface BootstrapStyleRule extends ViewElement.WitherSetter<HtmlViewEle
 		return () -> cssClasses;
 	}
 
+	static BootstrapStyleRule empty() {
+		return of();
+	}
+
 	static BootstrapStyleRule of( String... css ) {
 		return () -> css;
+	}
+
+	static BootstrapStyleRule combine( BootstrapStyleRule... rules ) {
+		return () ->
+				Stream.of( rules )
+				      .map( BootstrapStyleRule::toCssClasses )
+				      .flatMap( Stream::of )
+				      .toArray( String[]::new );
 	}
 }

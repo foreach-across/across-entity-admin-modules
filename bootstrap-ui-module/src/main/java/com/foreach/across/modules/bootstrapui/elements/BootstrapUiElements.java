@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.ui.StandardViewElements;
-import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
+import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
  * @author Arne Vandamme
  */
-public interface BootstrapUiElements extends StandardViewElements, HtmlViewElements
+public interface BootstrapUiElements extends StandardViewElements
 {
 	String HIDDEN = "bootstrapHidden";
 
@@ -49,4 +49,8 @@ public interface BootstrapUiElements extends StandardViewElements, HtmlViewEleme
 	String GENERIC_FORM_CONTROL = "bootstrapGenericFormControl";
 
 	BootstrapStyles css = new BootstrapStyles();
+
+	static LinkViewElement link( ViewElement.WitherSetter... setters ) {
+		return new LinkViewElement().set( setters );
+	}
 }
