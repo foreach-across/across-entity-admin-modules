@@ -78,12 +78,12 @@ public class BootstrapUiBuilders
 		return FACTORY.hidden();
 	}
 
-	public static NodeViewElementBuilder div() {
-		return FACTORY.div();
+	public static NodeViewElementBuilder div( ViewElement.WitherSetter... setters ) {
+		return FACTORY.div().with( setters );
 	}
 
-	public static NodeViewElementBuilder span() {
-		return FACTORY.span();
+	public static NodeViewElementBuilder span( ViewElement.WitherSetter... setters ) {
+		return FACTORY.span().with( setters );
 	}
 
 	public static NodeViewElementBuilder paragraph() {
@@ -178,10 +178,12 @@ public class BootstrapUiBuilders
 		return FACTORY.row();
 	}
 
+	@Deprecated
 	public static NodeViewElementBuilder helpBlock( String text ) {
 		return FACTORY.helpBlock( text );
 	}
 
+	@Deprecated
 	public static NodeViewElementBuilder helpBlock() {
 		return FACTORY.helpBlock();
 	}
@@ -224,10 +226,6 @@ public class BootstrapUiBuilders
 
 	public static AlertViewElementBuilder alert() {
 		return FACTORY.alert();
-	}
-
-	public static GlyphIcon glyphIcon( String icon ) {
-		return FACTORY.glyphIcon( icon );
 	}
 
 	public static FaIcon faIcon( String icon ) {

@@ -30,7 +30,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<label class='control-label'>Component name</label>"
+				"<label>Component name</label>"
 		);
 	}
 
@@ -42,7 +42,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<label for='fixedId' class='control-label'>Component name</label>"
+				"<label for='fixedId'>Component name</label>"
 		);
 	}
 
@@ -57,7 +57,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				label,
-				"<label for='name' class='control-label'>Textbox title</label>"
+				"<label for='name'>Textbox title</label>"
 		);
 	}
 
@@ -75,7 +75,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				label,
-				"<label for='name' class='control-label'>InputGroup title</label>"
+				"<label for='name'>InputGroup title</label>"
 		);
 	}
 
@@ -95,7 +95,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				container,
 				"<input data-bootstrapui-adapter-type='basic' class='form-control' type='text' name='name' id='name' />" +
-						"<label for='name' class='control-label'>Textbox title</label>"
+						"<label for='name'>Textbox title</label>"
 		);
 	}
 
@@ -114,7 +114,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				container,
-				"<label for='name' class='control-label'>Textbox title</label>" +
+				"<label for='name'>Textbox title</label>" +
 						"<input data-bootstrapui-adapter-type='basic' class='form-control' type='text' name='name' id='name' />"
 		);
 	}
@@ -131,7 +131,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				label,
-				"<label for='name' class='control-label'>" +
+				"<label for='name'>" +
 						"Textbox title" +
 						"<input data-bootstrapui-adapter-type='basic' class='form-control' type='text' name='name' id='name' />" +
 						"</label>"
@@ -145,7 +145,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				label,
-				"<label class='control-label'>" +
+				"<label>" +
 						"<input data-bootstrapui-adapter-type='basic' class='form-control' type='text' />" +
 						"</label>"
 		);
@@ -167,7 +167,7 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				container,
-				"<label for='static' class='control-label'>title</label>" +
+				"<label for='static'>title</label>" +
 						"<p class='form-control-static' id='static'>static content</p>"
 		);
 	}
@@ -178,6 +178,6 @@ public class TestLabelFormElement extends AbstractBootstrapViewElementTest
 		label.setAttribute( "for", "custom-target" );
 		label.setText( "title" );
 
-		renderAndExpect( label, "<label for='custom-target' class='control-label'>title</label>" );
+		renderAndExpect( label, "<label for='custom-target'>title</label>" );
 	}
 }

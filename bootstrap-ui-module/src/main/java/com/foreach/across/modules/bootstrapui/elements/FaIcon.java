@@ -22,6 +22,7 @@ import lombok.NonNull;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class FaIcon extends IconViewElement
 {
 	public interface WebApp

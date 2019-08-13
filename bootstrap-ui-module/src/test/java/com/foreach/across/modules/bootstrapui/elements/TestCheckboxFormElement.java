@@ -37,9 +37,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox' data-bootstrapui-adapter-type='checkbox'><label for='boxName'>" +
-						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text" +
-						"</label>" +
+				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='form-check-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<label class='form-check-label' for='boxName'>label text</label>" +
 						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
 		);
@@ -55,9 +55,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<label for='boxName' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text" +
-						"</label>" +
+				"<input data-bootstrapui-adapter-type='checkbox' type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<label for='boxName'>label text</label>" +
 						"<input type='hidden' name='_boxName' value='on' />"
 		);
 	}
@@ -77,6 +76,21 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
+	public void withoutLabel() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+
+		renderAndExpect(
+				box,
+				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='form-check-input position-static' type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<input type='hidden' name='_boxName' value='on' />" +
+						"</div>"
+		);
+	}
+
+	@Test
 	public void checked() {
 		CheckboxFormElement box = new CheckboxFormElement();
 		box.setValue( true );
@@ -84,8 +98,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input type='checkbox' value='true' checked='checked' />" +
+				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='form-check-input position-static' type='checkbox' value='true' checked='checked' />" +
 						"</div>"
 		);
 	}
@@ -99,8 +113,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox disabled' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input type='checkbox' name='myBox' id='myBox' value='on' disabled='disabled' />" +
+				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='form-check-input position-static' type='checkbox' name='myBox' id='myBox' value='on' disabled='disabled' />" +
 						"<input type='hidden' name='_myBox' value='on' disabled='disabled' />" +
 						"</div>"
 		);
@@ -110,8 +124,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input type='checkbox' name='myBox' id='myBox' value='on' readonly='readonly' />" +
+				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='form-check-input position-static' type='checkbox' name='myBox' id='myBox' value='on' readonly='readonly' />" +
 						"<input type='hidden' name='_myBox' value='on' />" +
 						"</div>"
 		);
@@ -127,9 +141,10 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='checkbox' data-bootstrapui-adapter-type='checkbox'><label for='boxName'>" +
-						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text<strong></strong>" +
-						"</label>" +
+				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='form-check-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<label class='form-check-label' for='boxName'>label text</label>" +
+						"<strong></strong>" +
 						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
 		);
@@ -146,16 +161,16 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='one two checkbox' data-role='item' data-bootstrapui-adapter-type='checkbox'><label for='boxName'>" +
-						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text" +
-						"</label>" +
+				"<div class='one two form-check' data-role='item' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='form-check-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<label class='form-check-label' for='boxName'>label text</label>" +
 						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
 		);
 	}
 
 	@Test
-	public void attributesAreAddedToTheLabelIfNotWrapped() {
+	public void attributesAreAddedToTheInputIfNotWrapped() {
 		CheckboxFormElement box = new CheckboxFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
@@ -166,8 +181,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<label data-bootstrapui-adapter-type='checkbox' for='boxName' class='one two' data-role='item'>" +
-						"<input type='checkbox' id='boxName' name='boxName' value='123' />label text</label>" +
+				"<input data-bootstrapui-adapter-type='checkbox' class='one two' data-role='item' type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<label for='boxName'>label text</label>" +
 						"<input type='hidden' name='_boxName' value='on' />"
 		);
 	}
@@ -196,8 +211,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 		control.setControlName( "two" );
 		renderAndExpect(
 				control,
-				"<div class='checkbox' data-bootstrapui-adapter-type='checkbox'>"
-						+ "<input type='checkbox' id='two' name='two' />"
+				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>"
+						+ "<input class='form-check-input position-static' type='checkbox' id='two' name='two' />"
 						+ "<input type='hidden' name='_two' value='on' />"
 						+ "</div>"
 		);
@@ -217,8 +232,8 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<div class='checkbox' data-bootstrapui-adapter-type='checkbox'>"
-						+ "<input type='checkbox' id='prefix.one' name='prefix.one' />"
+				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>"
+						+ "<input class='form-check-input position-static' type='checkbox' id='prefix.one' name='prefix.one' />"
 						+ "<input type='hidden' name='_prefix.one' value='on' />"
 						+ "</div>"
 		);

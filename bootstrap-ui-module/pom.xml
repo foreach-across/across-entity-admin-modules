@@ -110,6 +110,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>font-awesome</artifactId>
+			<version>${webjars.font-awesome}</version>
+		</dependency>
 	</dependencies>
 
 </project>

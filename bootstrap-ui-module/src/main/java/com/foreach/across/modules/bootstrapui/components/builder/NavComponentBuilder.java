@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.css;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.link;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.text;
 
 /**
  * Abstract base class for rendering {@link Menu} items to nav-like structures.
@@ -242,6 +242,16 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 		return null;
 	}
 
+	protected ViewElement.WitherSetter<AbstractNodeViewElement> htmlAttributesOf( Menu item ) {
+		return node ->
+				item.getAttributes().forEach( ( name, value ) -> {
+					if ( StringUtils.startsWith( name, PREFIX_HTML_ATTRIBUTE ) ) {
+						node.setAttribute( StringUtils.removeStart( name, PREFIX_HTML_ATTRIBUTE ), value );
+					}
+				} );
+	}
+
+	@Deprecated
 	protected void addHtmlAttributes( AbstractNodeViewElement node, Map<String, Object> attributes ) {
 		attributes.forEach( ( name, value ) -> {
 			if ( StringUtils.startsWith( name, PREFIX_HTML_ATTRIBUTE ) ) {
@@ -302,7 +312,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 			node.addChild(
 					HtmlViewElements.span(
 							css.of( "nav-item-title" ),
-							children( toTextElement( resolvedTitle ) )
+							text( resolvedTitle )
 					)
 			);
 		}

@@ -19,7 +19,6 @@ package com.foreach.across.modules.bootstrapui.components.menu;
 import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.context.WebAppLinkBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
@@ -31,6 +30,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.*;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -176,7 +177,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 				-> new TextViewElement( ctx.getAttribute( CTX_CURRENT_MENU_ITEM, Menu.class ).getPath() );
 
 		menu.item( "one", "one" )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) )
 		    .and()
 		    .group( "two", "two" )
 		    .attribute( ATTR_ICON, customBuilder ).and()
@@ -384,7 +385,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		menu.group( "/one", "one" ).and()
 		    .item( "/one/item", "one item" ).and()
 		    .item( "/one/item2", "one item 2" )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) );
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) );
 
 		Menu built = menu.build();
 		builder.replaceGroupBySelectedItem().menu( built );
@@ -425,7 +426,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		    .and()
 		    .item( "/one/item", "one item" ).and()
 		    .item( "/one/item2", "one item 2" )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) );
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) );
 
 		Menu built = menu.build();
 		built.select( MenuSelector.byTitle( "one item 2" ) );
@@ -449,7 +450,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	public void subGroupsAreRenderedWithADividerAndHeading() {
 		menu.group( "/one", "one" ).and()
 		    .group( "/one/item", "one group" ).order( 1 )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) )
 		    .and()
 		    .item( "/one/item/sub", "one sub item 1" ).and()
 		    .item( "/one/item/sub2", "one sub item 2" ).and()
@@ -541,7 +542,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	public void iconOnlyItems() {
 		menu.item( "one", "one" )
 		    .order( 1 )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) )
 		    .attribute( ATTR_ICON_ONLY, true )
 		    .and()
 		    .item( "two", "two" )
@@ -553,18 +554,18 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		    .attribute( ATTR_ICON_ONLY, true )
 		    .and()
 		    .item( "three/one", "sub three" )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) )
 		    .and()
 		    .group( "four", "four" )
 		    .order( 4 )
 		    .attribute( ATTR_ICON_ONLY, true )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) )
 		    .and()
 		    .item( "four/one", "sub four 1" )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+		    .attribute( ATTR_ICON, i( css.fa.solid( "trash" ) ) )
 		    .and()
 		    .item( "four/two", "sub four 2" )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) );
+		    .attribute( ATTR_ICON, i( css.fa.solid( "download" ) ) );
 
 		Menu built = menu.build();
 		built.sort();
@@ -591,7 +592,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	public void onlyItemsMatchingThePredicateAreRenderedIfFilterConfigured() {
 		menu.item( "one", "one" )
 		    .order( 1 )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) )
 		    .and()
 		    .item( "two", "two" )
 		    .order( 2 )
@@ -600,16 +601,16 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		    .order( 3 )
 		    .and()
 		    .item( "three/one", "sub three" )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) )
 		    .and()
 		    .group( "four", "four" )
 		    .order( 4 )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) )
 		    .and()
 		    .item( "four/one", "sub four 1" )
 		    .and()
 		    .item( "four/two", "sub four 2" )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) );
+		    .attribute( ATTR_ICON, i( css.fa.solid( "download" ) ) );
 
 		Menu built = menu.build();
 		built.sort();
@@ -643,7 +644,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	public void filteredItemsInSubGroup() {
 		menu.group( "/one", "one" ).and()
 		    .group( "/one/item", "one group" ).order( 1 )
-		    .attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+		    .attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) )
 		    .and()
 		    .item( "/one/item/sub", "one sub item 1" ).and()
 		    .item( "/one/item/sub2", "one sub item 2" ).and();

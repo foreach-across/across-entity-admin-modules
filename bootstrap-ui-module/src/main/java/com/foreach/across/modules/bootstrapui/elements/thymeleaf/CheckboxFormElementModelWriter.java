@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.elements.thymeleaf;
 
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Arne Vandamme
@@ -32,28 +33,13 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 
 	protected void writeOpenElement( String type, CheckboxFormElement control, ThymeleafModelBuilder model ) {
 		String text = control.getText();
-		boolean showLabel = text != null || control.hasChildren();
+		boolean showLabel = StringUtils.isNotEmpty( text ) || control.hasChildren();
 
 		// add wrapper div
 		if ( control.isWrapped() ) {
 			model.addOpenElement( "div" );
 			control.getAttributes().forEach( model::addAttribute );
-			model.addAttributeValue( "class", type );
-
-			if ( control.isDisabled() ) {
-				model.addAttributeValue( "class", "disabled" );
-			}
-		}
-
-		// add label div
-		if ( showLabel ) {
-			model.addOpenElement( "label" );
-
-			if ( !control.isWrapped() ) {
-				control.getAttributes().forEach( model::addAttribute );
-			}
-
-			model.addAttribute( "for", model.retrieveHtmlId( control ) );
+			model.addAttributeValue( "class", "form-check" );
 		}
 
 		writeCheckboxInputWithoutAttributes( control, model );
@@ -65,6 +51,30 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 		model.addAttribute( "type", type );
 		model.addAttribute( "value", control.getValue() );
 		model.addBooleanAttribute( "checked", control.isChecked() );
+
+		if ( control.isWrapped() ) {
+			model.addAttributeValue( "class", "form-check-input" );
+			if ( !showLabel ) {
+				model.addAttributeValue( "class", "position-static" );
+			}
+		}
+		else {
+			control.getAttributes().forEach( model::addAttribute );
+		}
+
+		// add label div
+		if ( showLabel ) {
+			model.addCloseElement();
+			model.addOpenElement( "label" );
+			if ( control.isWrapped() ) {
+				model.addAttribute( "class", "form-check-label" );
+			}
+
+			model.addAttribute( "for", model.retrieveHtmlId( control ) );
+
+			// add label text
+			model.addHtml( control.getText() );
+		}
 	}
 
 	private void writeCheckboxInputWithoutAttributes( CheckboxFormElement control, ThymeleafModelBuilder model ) {
@@ -81,9 +91,6 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 		// never add children inside the checkbox input
 		model.addCloseElement();
 
-		// add initial text
-		model.addHtml( control.getText() );
-
 		// add children after checkbox tag and text
 		super.writeChildren( control, model );
 	}
@@ -91,9 +98,9 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 	@Override
 	protected void writeCloseElement( CheckboxFormElement control, ThymeleafModelBuilder model ) {
 		// close label if there is one
-		if ( control.getText() != null || control.hasChildren() ) {
-			model.addCloseElement();
-		}
+//		if ( control.getText() != null || control.hasChildren() ) {
+//			model.addCloseElement();
+//		}
 
 		// write hidden value for form post
 		if ( control.getControlName() != null ) {

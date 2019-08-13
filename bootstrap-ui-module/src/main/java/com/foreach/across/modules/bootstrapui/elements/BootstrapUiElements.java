@@ -26,7 +26,9 @@ public interface BootstrapUiElements extends StandardViewElements
 {
 	String HIDDEN = "bootstrapHidden";
 
+	@Deprecated
 	String ICON = "bootstrapIcon";
+
 	String BUTTON = "bootstrapButton";
 	String TEXTBOX = "bootstrapTextbox";
 	String TEXTAREA = "bootstrapTextarea";
@@ -52,5 +54,9 @@ public interface BootstrapUiElements extends StandardViewElements
 
 	static LinkViewElement link( ViewElement.WitherSetter... setters ) {
 		return new LinkViewElement().set( setters );
+	}
+
+	static InputGroupFormElement inputGroup( ViewElement.WitherSetter... setters ) {
+		return new InputGroupFormElement().set( setters );
 	}
 }

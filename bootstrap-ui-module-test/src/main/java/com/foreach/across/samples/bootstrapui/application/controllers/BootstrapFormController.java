@@ -64,10 +64,11 @@ public class BootstrapFormController
 
 	@ModelAttribute
 	public void registerWebResources( WebResourceRegistry resources ) {
-		resources.apply(
-				WebResourceRule.add( WebResource.css( "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" ) )
-				               .toBucket( WebResource.CSS )
-		);
+		// todo: include FA only in layout?
+//		resources.apply(
+//				WebResourceRule.add( WebResource.css( "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" ) )
+//				               .toBucket( WebResource.CSS )
+//		);
 	}
 
 	@PostMapping

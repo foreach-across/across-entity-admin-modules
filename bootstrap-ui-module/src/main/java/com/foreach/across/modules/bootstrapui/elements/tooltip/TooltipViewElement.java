@@ -16,7 +16,7 @@
 
 package com.foreach.across.modules.bootstrapui.elements.tooltip;
 
-import com.foreach.across.modules.bootstrapui.elements.FaIcon;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -30,6 +30,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 /**
  * Represents a default tooltip view element, rendered as a link with a
@@ -48,7 +51,6 @@ public class TooltipViewElement extends NodeViewElement implements ConfigurableT
 	 * -- SETTER --
 	 * Set the icon view element for this tooltip.
 	 * This will always be the first child of the tooltip node.
-	 * Defaults to a question mark {@link com.foreach.across.modules.bootstrapui.elements.FaIcon}.
 	 */
 	@Getter
 	@Setter
@@ -57,13 +59,14 @@ public class TooltipViewElement extends NodeViewElement implements ConfigurableT
 	public TooltipViewElement() {
 		super( "a" );
 		setEscapeHtml( false );
-		setAttribute( "data-toggle", "tooltip" );
+		set( attribute.data.toggle.tooltip );
 		addCssClass( "tooltip-link", "text-muted" );
-		setIcon( new FaIcon( FaIcon.WebApp.QUESTION_CIRCLE ) );
+		// todo use icon set
+		setIcon( i( BootstrapStyles.css.fa.solid( "question-circle" ) ).set( attribute.aria.hidden ) );
 	}
 
 	public boolean isEscapeHtml() {
-		return !Boolean.TRUE.equals( getAttribute( "data-html", Boolean.class ) );
+		return !Boolean.TRUE.equals( get( attribute.data( "html" ).as( Boolean.class ) ) );
 	}
 
 	/**
@@ -72,7 +75,7 @@ public class TooltipViewElement extends NodeViewElement implements ConfigurableT
 	 * @param escapeHtml should HTML text be escaped
 	 */
 	public TooltipViewElement setEscapeHtml( boolean escapeHtml ) {
-		return setAttribute( "data-html", !escapeHtml );
+		return set( attribute.data( "html", !escapeHtml ) );
 	}
 
 	/**
@@ -202,6 +205,18 @@ public class TooltipViewElement extends NodeViewElement implements ConfigurableT
 	@Override
 	public <U extends ViewElement> TooltipViewElement applyUnsafe( Consumer<U> consumer ) {
 		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	public TooltipViewElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public TooltipViewElement remove( WitherRemover... functions ) {
+		super.remove( functions );
 		return this;
 	}
 }

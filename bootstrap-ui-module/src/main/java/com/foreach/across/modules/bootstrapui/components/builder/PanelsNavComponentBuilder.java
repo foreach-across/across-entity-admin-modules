@@ -17,6 +17,7 @@
 package com.foreach.across.modules.bootstrapui.components.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -24,6 +25,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.nav;
 
 /**
  * Renders a {@link com.foreach.across.modules.web.menu.Menu} into a panels structure with list-group items.
@@ -63,8 +67,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 
 	@Override
 	protected NodeViewElement buildMenu( Menu menu, ViewElementBuilderContext builderContext ) {
-		NodeViewElement container = apply( new NodeViewElement( "nav" ), builderContext );
-		container.addCssClass( "nav", "nav-panels" );
+		NodeViewElement container = apply( nav().set( css.nav, css.of( "nav-panels" ) ), builderContext );
 
 		NodeViewElement nonPanelList = null;
 		AtomicInteger subMenuCount = new AtomicInteger( 0 );
@@ -124,8 +127,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 			panel.addChild( heading );
 		}
 
-		NodeViewElement list = createList( panel );
-		list.addCssClass( "list-group" );
+		NodeViewElement list = createList( panel ).set( css.listGroup );
 
 		includedItems( item ).forEach( child -> addMenuItem( list, child, builderContext, true, subMenuCount ) );
 		container.addChild( panel );

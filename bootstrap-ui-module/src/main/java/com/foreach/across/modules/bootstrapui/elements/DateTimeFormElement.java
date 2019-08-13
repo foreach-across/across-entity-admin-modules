@@ -26,6 +26,9 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+
 /**
  * Extension of an {@link InputGroupFormElement} that represents a date/time picker.
  * By default this is an input group with a calendar icon after the control element,
@@ -45,7 +48,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 	private LocalDateTime value;
 
 	public DateTimeFormElement() {
-		setAddonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
+		setAppend( i( css.fa.solid( "calendar" ) ) );
 		addCssClass( CSS_JS_CONTROL, CSS_DATE );
 		setAttribute( ATTRIBUTE_DATA_DATEPICKER, new DateTimeFormElementConfiguration() );
 		setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "datetime" );
@@ -137,14 +140,14 @@ public class DateTimeFormElement extends InputGroupFormElement
 	}
 
 	@Override
-	public DateTimeFormElement setAddonBefore( ViewElement addonBefore ) {
-		super.setAddonBefore( addonBefore );
+	public DateTimeFormElement setPrepend( ViewElement prepend ) {
+		super.setPrepend( prepend );
 		return this;
 	}
 
 	@Override
-	public DateTimeFormElement setAddonAfter( ViewElement addonAfter ) {
-		super.setAddonAfter( addonAfter );
+	public DateTimeFormElement setAppend( ViewElement append ) {
+		super.setAppend( append );
 		return this;
 	}
 

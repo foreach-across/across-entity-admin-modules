@@ -19,13 +19,14 @@ package com.foreach.across.samples.bootstrapui.application.controllers;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
 
 /**
  * Generates Bootstrap based tabs from a {@link Menu} instance.
@@ -98,12 +103,12 @@ public class BootstrapMenuController
 		menu.item( "/one", "One", "#" ).order( 2 ).and()
 		    .item( "/two", "Two", "#" ).order( 1 ).and()
 		    .item( "/three", "Three", "#" )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) ).order( 3 );
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "trash" ) ).order( 3 );
 	}
 
 	private void simpleMenuWithSelected( PathBasedMenuBuilder menu ) {
 		menu.item( "/one", "Selected", "#" )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) ).order( 2 )
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "download" ) ).order( 2 )
 		    .and()
 		    .item( "/two", "Two", "#" ).order( 1 ).and()
 		    .item( "/three", "Three", "#" ).order( 3 ).and();
@@ -115,10 +120,10 @@ public class BootstrapMenuController
 		    .item( "/two/one", "Sub item 1", "#" ).and()
 		    .item( "/two/two", "Sub item 2", "#" ).and()
 		    .item( "/two/three", "Selected", "#" )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "download" ) )
 		    .and()
 		    .group( "/three", "Three" )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.ALERT ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "exclamation" ) )
 		    .order( 3 ).and()
 		    .item( "/three/one", "Sub item 1", "#" ).order( 1 ).and()
 		    .item( "/three/two", "Sub item 2", "#" ).order( 2 );
@@ -135,7 +140,7 @@ public class BootstrapMenuController
 		    .group( "/two/four", "Sub group 2" ).order( 4 ).and()
 		    .item( "/two/four/1", "Sub group 2 item 1", "#" ).and()
 		    .item( "/two/five", "Item 4", "#" )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "trash" ) )
 		    .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.AROUND )
 		    .order( 5 )
 		    .and()
@@ -149,17 +154,17 @@ public class BootstrapMenuController
 		    .item( "/two/one", "Item 1", "#" ).order( 1 ).and()
 		    .item( "/two/two", "Item 2", "#" ).order( 2 ).and()
 		    .group( "/two/three", "Sub group 1" )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.HOME ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "home" ) )
 		    .order( 3 )
 		    .and()
 		    .item( "/two/three/1", "Sub group item 1", "#" ).and()
 		    .item( "/two/three/2", "Selected", "#" )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.COG ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "cog" ) )
 		    .and()
 		    .group( "/two/four", "Sub group 2" ).order( 4 ).and()
 		    .item( "/two/four/1", "Sub group 2 item 1", "#" ).and()
 		    .item( "/two/five", "Item 4", "#" )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "trash" ) )
 		    .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.AROUND )
 		    .order( 5 )
 		    .and()
@@ -174,10 +179,10 @@ public class BootstrapMenuController
 		    .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
 		    .and()
 		    .item( "/advanced/trash", "Move to trash", "#" )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "trash" ) )
 		    .and()
 		    .group( "/two", "Two" ).order( 3 )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "download" ) )
 		    .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
 		    .attribute( "html:class", "pull-right" )
 		    .and()
@@ -189,14 +194,18 @@ public class BootstrapMenuController
 		    .group( "/two/four", "Sub group 2" ).order( 4 ).and()
 		    .item( "/two/four/1", "Sub group 2 item 1", "#" ).and()
 		    .item( "/two/five", "Selected", "#" )
-		    .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "trash" ) )
 		    .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.AROUND )
 		    .order( 5 )
 		    .and()
 		    .item( "/two/six", "Item 5", "#" ).order( 6 );
 	}
 
-	private NavComponentBuilder menuComponentBuilder( String type, Menu menu ) {
+	private NodeViewElement icon( String name ) {
+		return i( css.fa.solid( name ) );
+	}
+
+	private ViewElementBuilder<NodeViewElement> menuComponentBuilder( String type, Menu menu ) {
 		DefaultNavComponentBuilder menuBuilder = bootstrapUiComponentFactory.nav( menu );
 
 		switch ( type ) {
@@ -219,6 +228,10 @@ public class BootstrapMenuController
 
 		if ( "replaceGroup".equals( menu.getRoot().getPath() ) ) {
 			menuBuilder.replaceGroupBySelectedItem();
+		}
+
+		if ( "navbar".equals( type ) ) {
+			return menuBuilder.map( items -> nav( css.navbar, css.navbar.expand.onLargeAndUp(), css.navbar.dark, css.background.dark, children( items ) ) );
 		}
 
 		return menuBuilder;

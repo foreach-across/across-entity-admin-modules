@@ -195,6 +195,18 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 		return this;
 	}
 
+	@Override
+	public ButtonViewElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public ButtonViewElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
+
 	public enum Type
 	{
 		BUTTON,

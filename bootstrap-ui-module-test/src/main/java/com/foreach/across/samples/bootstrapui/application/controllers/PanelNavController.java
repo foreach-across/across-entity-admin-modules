@@ -16,11 +16,10 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
@@ -40,6 +39,7 @@ import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.ATTR_ICON;
 import static com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 @Controller
 @RequestMapping("/panelnav")
@@ -83,7 +83,7 @@ public class PanelNavController
 	private NodeViewElement panelNavWithGroupsAndIcons() {
 		Menu menu = new PathBasedMenuBuilder()
 				.item( "/one", "one" )
-				.attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) )
+				.attribute( ATTR_ICON, i( BootstrapStyles.css.fa.brands( "apple" ) ) )
 				.group( true ).and()
 				.item( "/one/sub", "sub one" ).and()
 				.item( "/one/sub2", "sub one 2" ).and()
@@ -94,7 +94,6 @@ public class PanelNavController
 
 		return BootstrapUiBuilders.panels( menu ).build();
 	}
-
 
 	private NodeViewElement panelNavWithStyling() {
 		Menu menu = new PathBasedMenuBuilder()
@@ -110,7 +109,7 @@ public class PanelNavController
 
 		return BootstrapUiBuilders.panels( menu ).build();
 	}
-	
+
 	private NodeViewElement panelNavGroupNotAsPanel() {
 		Menu menu = new PathBasedMenuBuilder()
 				.item( "/one", "one" )

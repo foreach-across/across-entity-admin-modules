@@ -29,26 +29,31 @@ public abstract class InputGroupFormElementBuilderSupport<T extends InputGroupFo
 	private String placeholder;
 	private ElementOrBuilder addonBefore, addonAfter, control;
 
+	@Override
+	public SELF with( ViewElement.WitherSetter... setters ) {
+		return super.with( setters );
+	}
+
 	@SuppressWarnings("unchecked")
-	public SELF addonBefore( ViewElement element ) {
+	public SELF prepend( ViewElement element ) {
 		addonBefore = element != null ? ElementOrBuilder.wrap( element ) : null;
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
-	public SELF addonBefore( ViewElementBuilder element ) {
+	public SELF prepend( ViewElementBuilder element ) {
 		addonBefore = element != null ? ElementOrBuilder.wrap( element ) : null;
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
-	public SELF addonAfter( ViewElement element ) {
+	public SELF append( ViewElement element ) {
 		addonAfter = element != null ? ElementOrBuilder.wrap( element ) : null;
 		return (SELF) this;
 	}
 
 	@SuppressWarnings("unchecked")
-	public SELF addonAfter( ViewElementBuilder element ) {
+	public SELF append( ViewElementBuilder element ) {
 		addonAfter = element != null ? ElementOrBuilder.wrap( element ) : null;
 		return (SELF) this;
 	}
@@ -77,10 +82,10 @@ public abstract class InputGroupFormElementBuilderSupport<T extends InputGroupFo
 			group.setControl( control.get( builderContext ) );
 		}
 		if ( addonBefore != null ) {
-			group.setAddonBefore( addonBefore.get( builderContext ) );
+			group.setPrepend( addonBefore.get( builderContext ) );
 		}
 		if ( addonAfter != null ) {
-			group.setAddonAfter( addonAfter.get( builderContext ) );
+			group.setAppend( addonAfter.get( builderContext ) );
 		}
 		if ( placeholder != null ) {
 			group.setPlaceholder( builderContext.resolveText( placeholder ) );

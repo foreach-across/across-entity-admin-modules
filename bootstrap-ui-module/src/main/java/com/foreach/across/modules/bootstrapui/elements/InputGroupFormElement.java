@@ -18,6 +18,8 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -27,6 +29,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
 
 /**
  * <p>Represents a bootstrap input group, wrapping a control and allowing left or right addon.
@@ -44,7 +49,7 @@ import java.util.function.Consumer;
 @Setter
 public class InputGroupFormElement extends AbstractNodeViewElement implements FormControlElement.Proxy, ConfigurablePlaceholderText
 {
-	private ViewElement addonBefore, addonAfter, control;
+	private ViewElement prepend, append, control;
 
 	public InputGroupFormElement() {
 		super( "div" );
@@ -53,12 +58,12 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 		setControl( new TextboxFormElement() );
 	}
 
-	public <V extends ViewElement> V getAddonBefore( Class<V> addonType ) {
-		return returnIfType( addonBefore, addonType );
+	public <V extends ViewElement> V getPrepend( Class<V> addonType ) {
+		return returnIfType( prepend, addonType );
 	}
 
-	public <V extends ViewElement> V getAddonAfter( Class<V> addonType ) {
-		return returnIfType( addonAfter, addonType );
+	public <V extends ViewElement> V getAppend( Class<V> addonType ) {
+		return returnIfType( append, addonType );
 	}
 
 	@Override
@@ -124,20 +129,20 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 	public List<ViewElement> getChildren() {
 		List<ViewElement> children = super.getChildren();
 
-		if ( control == null && addonBefore == null && addonAfter == null ) {
+		if ( control == null && prepend == null && append == null ) {
 			return children;
 		}
 
 		List<ViewElement> extended = new ArrayList<>();
-		if ( addonBefore != null ) {
-			extended.add( createAddon( addonBefore ) );
+		if ( prepend != null ) {
+			extended.add( createAddon( prepend ).set( css.inputGroup.prepend ) );
 		}
 		if ( control != null ) {
 			extended.add( control );
 		}
 		extended.addAll( children );
-		if ( addonAfter != null ) {
-			extended.add( createAddon( addonAfter ) );
+		if ( append != null ) {
+			extended.add( createAddon( append ).set( css.inputGroup.append ) );
 		}
 
 		return extended;
@@ -145,13 +150,14 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 
 	@Override
 	public boolean hasChildren() {
-		return super.hasChildren() || addonBefore != null || addonAfter != null || control != null;
+		return super.hasChildren() || prepend != null || append != null || control != null;
 	}
 
-	private ViewElement createAddon( ViewElement child ) {
-		Addon addon = new Addon( child instanceof ButtonViewElement );
-		addon.addChild( child );
-		return addon;
+	private NodeViewElement createAddon( ViewElement child ) {
+		if ( child instanceof TextViewElement ) {
+			return div().addChild( span( css.inputGroup.text ).addChild( child ) );
+		}
+		return div().addChild( child );
 	}
 
 	@Override
@@ -256,11 +262,57 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 		return this;
 	}
 
-	public static class Addon extends AbstractNodeViewElement
-	{
-		public Addon( boolean forButton ) {
-			super( "span" );
-			addCssClass( forButton ? "input-group-btn" : "input-group-addon" );
-		}
+	@Override
+	public InputGroupFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public InputGroupFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
+
+	/**
+	 * Prepend a number of view elements. If a single text view element is added, it will be wrapped inside a span with class input-group-text.
+	 */
+	public static WitherSetter<InputGroupFormElement> prepend( ViewElement... elements ) {
+		return inputGroup -> {
+			if ( elements.length == 1 ) {
+				inputGroup.setPrepend( elements[0] );
+			}
+			else {
+				inputGroup.setPrepend( container( elements ) );
+			}
+		};
+	}
+
+	/**
+	 * Append a number of view elements. If a single text view element is added, it will be wrapped inside a span with class input-group-text.
+	 */
+	public static WitherSetter<InputGroupFormElement> append( ViewElement... elements ) {
+		return inputGroup -> {
+			if ( elements.length == 1 ) {
+				inputGroup.setAppend( elements[0] );
+			}
+			else {
+				inputGroup.setAppend( container( elements ) );
+			}
+		};
+	}
+
+	/**
+	 * Set the input group control, replacing the default textbox.
+	 */
+	public static WitherSetter<InputGroupFormElement> control( ViewElement... elements ) {
+		return inputGroup -> {
+			if ( elements.length == 1 ) {
+				inputGroup.setControl( elements[0] );
+			}
+			else {
+				inputGroup.setControl( container( elements ) );
+			}
+		};
 	}
 }

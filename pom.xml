@@ -70,6 +70,7 @@
 		<webjars.bootstrap-select>1.12.2</webjars.bootstrap-select>
 		<webjars.typeaheadjs>1.2.1</webjars.typeaheadjs>
 		<webjars.handlebars>4.0.14</webjars.handlebars>
+		<webjars.font-awesome>5.10.1</webjars.font-awesome>
 	</properties>
 
 	<modules>

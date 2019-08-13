@@ -35,7 +35,7 @@ public class TestTooltipViewElementBuilder extends AbstractBootstrapViewElementT
 		renderAndExpect(
 				builder.build( context ),
 				"<a data-toggle='tooltip' class='tooltip-link text-muted' data-html='true'>" +
-						"<i aria-hidden='true' class='fa fa-question-circle'></i></a>"
+						"<i aria-hidden='true' class='fas fa-question-circle'></i></a>"
 		);
 	}
 
@@ -44,7 +44,7 @@ public class TestTooltipViewElementBuilder extends AbstractBootstrapViewElementT
 		renderAndExpect(
 				builder.text( "my text" ).build( context ),
 				"<a data-toggle='tooltip' title='my text' class='tooltip-link text-muted' data-html='true'>" +
-						"<i aria-hidden='true' class='fa fa-question-circle'></i></a>"
+						"<i aria-hidden='true' class='fas fa-question-circle'></i></a>"
 		);
 	}
 

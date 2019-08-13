@@ -18,9 +18,8 @@ package com.foreach.across.samples.bootstrapui.application.controllers;
 
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
-import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
@@ -35,9 +34,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 @Controller
 @RequestMapping("/breadcrumb")
@@ -76,10 +76,10 @@ public class BreadcrumbController
 	private NodeViewElement breadcrumbWithIcons() {
 		Menu menu = new PathBasedMenuBuilder()
 				.item( "components", "Components" )
-				.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.HOME ) )
+				.attribute( NavComponentBuilder.ATTR_ICON, i( BootstrapStyles.css.fa.solid( "home" ) ) )
 				.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true ).and()
 				.item( "components/breadcrumb", "Breadcrumb example" )
-				.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.HOURGLASS ) )
+				.attribute( NavComponentBuilder.ATTR_ICON, i( BootstrapStyles.css.fa.solid( "hourglass" ) ) )
 				.and().build();
 
 		menu.select( MenuSelector.byTitle( "Breadcrumb example" ) );

@@ -25,6 +25,7 @@ import java.util.Map;
  * @author Arne Vandamme
  * @see GlyphIcon
  */
+@Deprecated
 public abstract class IconViewElement extends AbstractVoidNodeViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.ICON;

@@ -28,6 +28,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -84,7 +86,7 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void customIcon() {
-		datetime.setAddonAfter( new GlyphIcon( GlyphIcon.TIME ) );
+		datetime.setAppend( i( css.fa.brands( "clock" ) ) );
 
 		renderAndExpect(
 				datetime,

@@ -16,8 +16,11 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
+import com.foreach.across.modules.bootstrapui.elements.Size;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -30,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 @Controller
 @RequestMapping("/button")
@@ -68,16 +73,15 @@ public class BootstrapButtonController
 				.text( "To google  " )
 				.link( "http://www.foreach.be" )
 				.iconRight()
-				.icon( BootstrapUiBuilders.glyphIcon( GlyphIcon.ARROW_RIGHT ))
+				.icon( i( BootstrapStyles.css.fa.solid( "arrow-right" ) ) )
 				.build();
 	}
 
-
-	private ButtonViewElement largeSubmitButton(){
+	private ButtonViewElement largeSubmitButton() {
 		return BootstrapUiBuilders
 				.button()
 				.submit()
-				.size(Size.LARGE )
+				.size( Size.LARGE )
 				.text( "Submit" )
 				.build();
 	}

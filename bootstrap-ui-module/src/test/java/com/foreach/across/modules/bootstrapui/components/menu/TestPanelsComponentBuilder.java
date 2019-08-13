@@ -19,7 +19,7 @@ package com.foreach.across.modules.bootstrapui.components.menu;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.context.WebAppLinkBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
@@ -33,6 +33,8 @@ import org.junit.Test;
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.ATTR_ICON;
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.CTX_CURRENT_MENU_ITEM;
 import static com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -156,7 +158,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 		ViewElementBuilder customBuilder = ( ctx )
 				-> new TextViewElement( ctx.getAttribute( CTX_CURRENT_MENU_ITEM, Menu.class ).getPath() );
 
-		menu.item( "/one", "one" ).attribute( ATTR_ICON, new GlyphIcon( GlyphIcon.APPLE ) ).group( true ).and()
+		menu.item( "/one", "one" ).attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) ).group( true ).and()
 		    .item( "/one/sub", "sub one" ).attribute( ATTR_ICON, customBuilder ).and()
 		    .item( "/one/sub2", "sub one 2" ).and();
 

@@ -16,13 +16,16 @@
 
 package com.foreach.across.modules.bootstrapui.elements.tooltip;
 
-import com.foreach.across.modules.bootstrapui.elements.FaIcon;
 import com.foreach.across.modules.bootstrapui.elements.builder.AbstractHtmlSupportingNodeViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 /**
  * Responsible for creating a {@link TooltipViewElement} instance.
@@ -47,7 +50,8 @@ public class TooltipViewElementBuilder extends AbstractHtmlSupportingNodeViewEle
 	 * Defaults to a question mark.
 	 */
 	@Setter
-	private ViewElement icon = new FaIcon( FaIcon.WebApp.QUESTION_CIRCLE );
+	// todo use icon set
+	private ViewElement icon = i( css.fa.solid( "question-circle" ), attribute.aria.hidden );
 
 	/**
 	 * -- SETTER --

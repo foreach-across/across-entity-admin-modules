@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.styles;
 
 import com.foreach.across.modules.bootstrapui.styles.components.*;
 import com.foreach.across.modules.bootstrapui.styles.content.*;
+import com.foreach.across.modules.bootstrapui.styles.icons.FontAwesomeStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.layout.GridStyleRule;
 import com.foreach.across.modules.bootstrapui.styles.utilities.*;
 
@@ -121,6 +122,9 @@ public class BootstrapStyles
 
 	// layout
 	public final GridStyleRule grid = new GridStyleRule();
+
+	// icon sets
+	public final FontAwesomeStyleRule fa = new FontAwesomeStyleRule();
 
 	public final BootstrapStyleRule of( String... cssClassNames ) {
 		return BootstrapStyleRule.of( cssClassNames );
