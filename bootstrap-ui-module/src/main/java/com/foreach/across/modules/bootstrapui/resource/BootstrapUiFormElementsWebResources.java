@@ -34,6 +34,7 @@ import static com.foreach.across.modules.web.resource.WebResourceRule.addPackage
  * <li><a href="https://github.com/BobKnothe/autoNumeric">autoNumeric</a></li>
  * <li><a href="http://www.jacklmoore.com/autosize/">Autosize</a></li>
  * <li><a href="https://github.com/corejavascript/typeahead.js">Twitter Typeahead</a></li>
+ * <li><a href="https://developer.snapappointments.com/bootstrap-select/">Bootstrap select</a></li>
  * </ul>
  *
  * @author Arne Vandamme
@@ -55,7 +56,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 	private static final String EONASDAN_VERSION = "4.14.30";
 	private static final String AUTO_NUMERIC_VERSION = "1.9.30";
 	private static final String AUTOSIZE_VERSION = "3.0.20";
-	private static final String BOOTSTRAP_SELECT_VERSION = "1.12.2";
+	private static final String BOOTSTRAP_SELECT_VERSION = "1.13.10";
 	private static final String TYPEAHEAD_VERSION = "1.2.1";
 	private static final String HANDLEBARS_VERSION = "4.0.14";
 
@@ -91,10 +92,10 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
 				// bootstrap select
-				add( WebResource.javascript( "@webjars:/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/js/bootstrap-select" + minified( ".js" ) ) )
+				add( WebResource.javascript( "@webjars:org.webjars.npm/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/dist/js/bootstrap-select" + minified( ".js" ) ) )
 						.withKey( BOOTSTRAP_SELECT )
 						.toBucket( JAVASCRIPT_PAGE_END ),
-				add( WebResource.css( "@webjars:/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/css/bootstrap-select" + minified( ".css" ) ) )
+				add( WebResource.css( "@webjars:org.webjars.npm/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/dist/css/bootstrap-select" + minified( ".css" ) ) )
 						.withKey( BOOTSTRAP_SELECT )
 						.toBucket( CSS ),
 

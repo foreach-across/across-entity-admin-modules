@@ -95,7 +95,7 @@
 			<version>${webjars.eonasdan-bootstrap-datetimepicker}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.webjars</groupId>
+			<groupId>org.webjars.npm</groupId>
 			<artifactId>bootstrap-select</artifactId>
 			<version>${webjars.bootstrap-select}</version>
 		</dependency>
