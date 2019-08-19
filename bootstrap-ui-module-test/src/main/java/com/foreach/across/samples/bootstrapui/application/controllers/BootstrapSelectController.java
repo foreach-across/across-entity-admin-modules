@@ -57,7 +57,7 @@ public class BootstrapSelectController
 	protected void registerMenuItems( BuildMenuEvent navMenu ) {
 		navMenu.builder()
 		       //.group( "/test", "Functionality demos" ).and()
-		       .group( "/test/form-elements", "Form elements" ).and()
+		       .group( "/test/form-elements", "Components" ).and()
 		       .item( "/test/form-elements/select", "Select box", "/select" ).order( 1 );
 	}
 

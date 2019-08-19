@@ -18,12 +18,17 @@ package com.foreach.across.samples.bootstrapui.application.controllers;
 
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.ui.ViewElement;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -49,7 +54,7 @@ public class BootstrapFormGroupController
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
 		generatedElements.put( "Simple form group", simpleFormGroup() );
 		generatedElements.put( "Checkbox and radios", checkboxAndRadios() );
-		generatedElements.put( "Validation", validation() );
+		generatedElements.put( "Validation", validation( model ) );
 		model.addAttribute( "generatedElements", generatedElements );
 
 		return "th/bootstrapUiTest/elementsRendering";
@@ -86,10 +91,38 @@ public class BootstrapFormGroupController
 				.build();
 	}
 
-	private ViewElement validation() {
-		return container()
-				.add( formGroup().with( css.invalid ).label( "Control label" ).control( textbox().controlName( "control" ) ) )
-				.build();
+	private ViewElement validation( Model model ) {
+		TestClass target = new TestClass( "test value" );
+		BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+		errors.rejectValue( "control", "broken", "broken" );
+		errors.rejectValue( "values[sub.item].name", "map-broken", "map-broken" );
+
+		model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
+		model.addAttribute( "item", target );
+
+		return form().commandObject( target )
+		             .add( formGroup().label( "Texbox" ).control( textbox().controlName( "control" ) ) )
+		             .add( formGroup().control( checkbox().controlName( "control" ).label( "Checkbox" ) ) )
+		             //.postProcessor( (builderContext, formGroup) -> formGroup.setDetectFieldErrors( tr ) ))
+		             .build();
 	}
 
+	@Getter
+	@Setter
+	public static class TestClass
+	{
+		private final Map<String, Object> values = Collections.singletonMap( "sub.item", new NamedItem() );
+		private String control;
+
+		TestClass( String control ) {
+			this.control = control;
+		}
+
+		@Getter
+		@Setter
+		static class NamedItem
+		{
+			String name;
+		}
+	}
 }

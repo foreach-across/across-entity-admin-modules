@@ -35,6 +35,23 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
+				"<div class='custom-control custom-radio' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input' type='radio' id='boxName' name='boxName' value='123' />" +
+						"<label class='custom-control-label' for='boxName'>label text</label>" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void defaultBoxAsNonCustomControl() {
+		RadioFormElement box = new RadioFormElement();
+		box.setControlName( "boxName" );
+		box.setText( "label text" );
+		box.setValue( 123 );
+		box.setRenderAsCustomControl( false );
+
+		renderAndExpect(
+				box,
 				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
 						"<input class='form-check-input' type='radio' id='boxName' name='boxName' value='123' />" +
 						"<label class='form-check-label' for='boxName'>label text</label>" +
@@ -119,9 +136,9 @@ public class TestRadioFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='one two form-check' data-role='item' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input' type='radio' id='boxName' name='boxName' value='123' />" +
-						"<label class='form-check-label' for='boxName'>label text</label>" +
+				"<div class='one two custom-control custom-radio' data-role='item' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input' type='radio' id='boxName' name='boxName' value='123' />" +
+						"<label class='custom-control-label' for='boxName'>label text</label>" +
 						"</div>"
 		);
 	}

@@ -37,6 +37,24 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
+				"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<label class='custom-control-label' for='boxName'>label text</label>" +
+						"<input type='hidden' name='_boxName' value='on' />" +
+						"</div>"
+		);
+	}
+
+	@Test
+	public void defaultBoxAsNonCustom() {
+		CheckboxFormElement box = new CheckboxFormElement();
+		box.setControlName( "boxName" );
+		box.setValue( 123 );
+		box.setText( "label text" );
+		box.setRenderAsCustomControl( false );
+
+		renderAndExpect(
+				box,
 				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
 						"<input class='form-check-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
 						"<label class='form-check-label' for='boxName'>label text</label>" +
@@ -141,9 +159,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
-						"<label class='form-check-label' for='boxName'>label text</label>" +
+				"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<label class='custom-control-label' for='boxName'>label text</label>" +
 						"<strong></strong>" +
 						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
@@ -161,9 +179,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='one two form-check' data-role='item' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
-						"<label class='form-check-label' for='boxName'>label text</label>" +
+				"<div class='one two custom-control custom-checkbox' data-role='item' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<label class='custom-control-label' for='boxName'>label text</label>" +
 						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
 		);

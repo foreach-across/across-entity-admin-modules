@@ -40,7 +40,14 @@ public class CheckboxFormElement extends FormControlElementSupport implements Co
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.CHECKBOX;
 
-	private boolean checked, wrapped = true;
+	private boolean checked;
+	private boolean wrapped = true;
+
+	/**
+	 * Should the control be rendered as a bootstrap custom control (default) or as a browser default form control.
+	 */
+	private boolean renderAsCustomControl = true;
+
 	private Object value;
 
 	@Getter(AccessLevel.NONE)

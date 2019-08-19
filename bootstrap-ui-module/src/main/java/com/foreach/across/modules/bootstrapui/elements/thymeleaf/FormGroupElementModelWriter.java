@@ -64,11 +64,6 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 
 		if ( isCheckboxGroup( group ) ) {
 			boxGroup = true;
-			model.addAttributeValue( "class", "checkbox" );
-		}
-		else if ( isRadioGroup( group ) ) {
-			boxGroup = true;
-			model.addAttributeValue( "class", "radio" );
 		}
 
 		FormLayout layout = determineFormLayout( group, model );
@@ -78,6 +73,8 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		ViewElement control = group.getControl();
 		FormControlElement formControl = BootstrapElementUtils.getFormControl( group );
 
+		boolean isWrappedBoxGroup = boxGroup && ( (CheckboxFormElement) control ).isWrapped();
+
 		if ( formControl != null ) {
 			errorBuilder = group.isDetectFieldErrors()
 					? createFieldErrorsBuilder( formControl, model.getTemplateContext() )
@@ -85,6 +82,14 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		}
 
 		IModel controlModel = control != null ? model.createViewElementModel( group.getControl() ) : null;
+
+		if ( controlModel != null && errorBuilder != null ) {
+			setIsInvalidOnControl( model.getModelFactory(), controlModel );
+
+			if ( isWrappedBoxGroup ) {
+				attachFeedbackToControl( model, controlModel, errorBuilder );
+			}
+		}
 
 		ViewElement helpBlock = group.getHelpBlock();
 		IModel helpBlockModel = helpBlock != null ? model.createViewElementModel( helpBlock ) : null;
@@ -141,7 +146,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		}
 
 		if ( errorBuilder != null ) {
-			model.addAttributeValue( "class", "has-error" );
+			model.addAttributeValue( "class", "is-invalid" );
 		}
 
 		if ( labelModel != null ) {
@@ -173,7 +178,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 
 		writeChildren( group, model );
 
-		if ( errorBuilder != null ) {
+		if ( errorBuilder != null && !boxGroup ) {
 			errorBuilder.accept( model );
 		}
 
@@ -185,12 +190,17 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		writeCloseElement( group, model );
 	}
 
+	private void attachFeedbackToControl( ThymeleafModelBuilder model, IModel controlModel, Consumer<ThymeleafModelBuilder> errorBuilder ) {
+		ThymeleafModelBuilder childModelBuilder = model.createChildModelBuilder();
+		errorBuilder.accept( childModelBuilder );
+		controlModel.insertModel( controlModel.size() - 1, childModelBuilder.retrieveModel() );
+	}
+
 	private FormLayout determineFormLayout( FormGroupElement group, ThymeleafModelBuilder model ) {
 		FormLayout layout = group.getFormLayout();
 
 		if ( layout == null ) {
-			FormViewElement form = (FormViewElement) model.getTemplateContext().getVariable(
-					VAR_CURRENT_BOOTSTRAP_FORM );
+			FormViewElement form = (FormViewElement) model.getTemplateContext().getVariable( VAR_CURRENT_BOOTSTRAP_FORM );
 
 			if ( form != null ) {
 				layout = form.getFormLayout();
@@ -320,6 +330,24 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 		}
 	}
 
+	/**
+	 * Set is-invalid css class on the actual control.
+	 */
+	private void setIsInvalidOnControl( IModelFactory modelFactory, IModel controlModel ) {
+		for ( int i = 0; i < controlModel.size(); i++ ) {
+			ITemplateEvent event = controlModel.get( i );
+			if ( event instanceof IOpenElementTag ) {
+				IOpenElementTag elementTag = (IOpenElementTag) event;
+
+				if ( CONTROL_ELEMENTS.contains( StringUtils.lowerCase( elementTag.getElementCompleteName() ) ) ) {
+					String currentClass = StringUtils.defaultString( elementTag.getAttributeValue( "class" ) );
+					String newClass = StringUtils.strip( currentClass + " is-invalid" );
+					controlModel.replace( i, modelFactory.setAttribute( elementTag, "class", newClass ) );
+				}
+			}
+		}
+	}
+
 	private String retrieveDescribedByIds( IModelFactory modelFactory, String controlId, IModel descriptionModel, IModel helpModel, IModel tooltipModel ) {
 		StringBuilder concatenated = new StringBuilder();
 
@@ -384,7 +412,7 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 
 					return model -> {
 						model.addOpenElement( "div" );
-						model.addAttributeValue( "class", "small", "text-danger" );
+						model.addAttributeValue( "class", "invalid-feedback" );
 						model.addHtml( bindStatus.getErrorMessagesAsString( " " ) );
 						model.addCloseElement();
 					};
@@ -412,9 +440,5 @@ public class FormGroupElementModelWriter extends AbstractHtmlViewElementModelWri
 
 	private boolean isCheckboxGroup( FormGroupElement group ) {
 		return group.getControl() instanceof CheckboxFormElement;
-	}
-
-	private boolean isRadioGroup( FormGroupElement group ) {
-		return group.getControl() instanceof RadioFormElement;
 	}
 }

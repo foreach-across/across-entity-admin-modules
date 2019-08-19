@@ -37,4 +37,9 @@ public class RadioFormElementModelWriter extends CheckboxFormElementModelWriter
 			model.addCloseElement();
 		}
 	}
+
+	@Override
+	protected String customControlCss() {
+		return "custom-radio";
+	}
 }
