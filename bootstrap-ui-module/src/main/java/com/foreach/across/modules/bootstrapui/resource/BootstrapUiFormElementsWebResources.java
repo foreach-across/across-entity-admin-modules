@@ -54,7 +54,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 
 	private static final String MOMENT_VERSION = "2.10.6";
 	private static final String EONASDAN_VERSION = "4.14.30";
-	private static final String AUTO_NUMERIC_VERSION = "1.9.30";
+	private static final String AUTO_NUMERIC_VERSION = "4.5.4";
 	private static final String AUTOSIZE_VERSION = "3.0.20";
 	private static final String BOOTSTRAP_SELECT_VERSION = "1.13.10";
 	private static final String TYPEAHEAD_VERSION = "1.2.1";
@@ -82,7 +82,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 						.toBucket( CSS ),
 
 				// autoNumeric
-				add( WebResource.javascript( "@webjars:org.webjars.bower/autoNumeric/" + AUTO_NUMERIC_VERSION + "/autoNumeric.js" ) )
+				add( WebResource.javascript( "@webjars:org.webjars.npm/autonumeric/" + AUTO_NUMERIC_VERSION + "/dist/autoNumeric" + minified( ".js" ) ) )
 						.withKey( AUTO_NUMERIC )
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
@@ -92,10 +92,12 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
 				// bootstrap select
-				add( WebResource.javascript( "@webjars:org.webjars.npm/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/dist/js/bootstrap-select" + minified( ".js" ) ) )
+				add( WebResource.javascript(
+						"@webjars:org.webjars.npm/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/dist/js/bootstrap-select" + minified( ".js" ) ) )
 						.withKey( BOOTSTRAP_SELECT )
 						.toBucket( JAVASCRIPT_PAGE_END ),
-				add( WebResource.css( "@webjars:org.webjars.npm/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/dist/css/bootstrap-select" + minified( ".css" ) ) )
+				add( WebResource.css( "@webjars:org.webjars.npm/bootstrap-select/" + BOOTSTRAP_SELECT_VERSION + "/dist/css/bootstrap-select" + minified(
+						".css" ) ) )
 						.withKey( BOOTSTRAP_SELECT )
 						.toBucket( CSS ),
 

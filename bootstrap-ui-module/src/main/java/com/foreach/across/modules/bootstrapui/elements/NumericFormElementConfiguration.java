@@ -32,7 +32,7 @@ import java.util.Objects;
 
 /**
  * Configuration class for a {@link NumericFormElement} based on
- * <a href="https://github.com/BobKnothe/autoNumeric">JQuery autoNumeric plugin</a>.  The order in which properties
+ * <a href="http://autonumeric.org/">JQuery autoNumeric plugin</a>.  The order in which properties
  * are set is important, as setting a format or currency will update several properties at once.
  *
  * @author Arne Vandamme
@@ -176,26 +176,26 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 	}
 
 	public void setDecimalPositions( int positions ) {
-		put( "mDec", positions );
+		put( "decimalPlaces", positions );
 	}
 
 	public void setGroupingSeparator( Character separator ) {
-		put( "aSep", separator == null ? "" : separator );
+		put( "digitGroupSeparator", separator == null ? "" : separator );
 	}
 
 	public void setGroupingSize( int size ) {
-		put( "dGroup", size );
+		put( "digitalGroupSpacing", size );
 	}
 
 	public void setDecimalSeparator( char separator ) {
-		put( "aDec", separator );
+		put( "decimalCharacter", separator );
 	}
 
 	public void setSign( String sign ) {
 		String actualSign = sign;
 
 		if ( sign != null && isForceWhitespaceAroundSign() ) {
-			if ( Objects.equals( 's', get( "pSign" ) ) ) {
+			if ( Objects.equals( 's', get( "currencySymbolPlacement" ) ) ) {
 				actualSign = " " + StringUtils.trim( sign );
 			}
 			else {
@@ -203,19 +203,19 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 			}
 		}
 
-		put( "aSign", actualSign );
+		put( "currencySymbol", actualSign );
 	}
 
 	public void setSignPositionRight( boolean positionRight ) {
-		put( "pSign", positionRight ? 's' : 'p' );
+		put( "currencySymbolPlacement", positionRight ? 's' : 'p' );
 	}
 
 	public void setMinValue( Number minValue ) {
-		put( "vMin", minValue );
+		put( "minimumValue", minValue );
 	}
 
 	public void setMaxValue( Number maxValue ) {
-		put( "vMax", maxValue );
+		put( "maximumValue", maxValue );
 	}
 
 	public void setRoundingMode( RoundingMode roundingMode ) {
@@ -284,11 +284,11 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 	}
 
 	public void setRoundingMode( String mode ) {
-		put( "mRound", mode );
+		put( "roundingMethod", mode );
 	}
 
 	public void setDecimalPadding( boolean padding ) {
-		put( "aPad", padding );
+		put( "allowDecimalPadding", padding );
 	}
 
 	/**
@@ -298,11 +298,11 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 	 * @param formatter string
 	 */
 	public void setNegativeFormatter( String formatter ) {
-		put( "nBracket", formatter );
+		put( "negativeBracketsTypeOnBlur", formatter );
 	}
 
 	public void setEmptyBehaviour( String behaviour ) {
-		put( "wEmpty", behaviour );
+		put( "emptyInputBehavior", behaviour );
 	}
 
 	public boolean isLocalizeOutputFormat() {
@@ -367,7 +367,7 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 			clone.setDecimalSeparator(
 					format == Format.CURRENCY ? symbols.getMonetaryDecimalSeparator() : symbols.getDecimalSeparator()
 			);
-			if ( !"".equals( clone.get( "aSep" ) ) ) {
+			if ( !"".equals( clone.get( "digitGroupSeparator" ) ) ) {
 				clone.setGroupingSeparator( symbols.getGroupingSeparator() );
 			}
 		}
@@ -422,21 +422,21 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 	 */
 	public NumberFormat createNumberFormat() {
 		DecimalFormat format = new DecimalFormat();
-		format.setGroupingSize( (Integer) getOrDefault( "dGroup", 3 ) );
-		format.setGroupingUsed( !"".equals( get( "aSep" ) ) );
-		format.setMaximumFractionDigits( (Integer) get( "mDec" ) );
+		format.setGroupingSize( (Integer) getOrDefault( "digitalGroupSpacing", 3 ) );
+		format.setGroupingUsed( !"".equals( get( "digitGroupSeparator" ) ) );
+		format.setMaximumFractionDigits( (Integer) get( "decimalPlacesOverride" ) );
 		format.setMinimumFractionDigits( format.getMaximumFractionDigits() );
-		format.setRoundingMode( toJavaRoundingMode( (String) get( "mRound" ) ) );
+		format.setRoundingMode( toJavaRoundingMode( (String) get( "roundingMethod" ) ) );
 		format.setMultiplier( getMultiplier() );
 
 		DecimalFormatSymbols symbols = new DecimalFormatSymbols( locale );
-		symbols.setGroupingSeparator( format.isGroupingUsed() ? (Character) getOrDefault( "aSep", ',' ) : ',' );
-		symbols.setDecimalSeparator( (Character) getOrDefault( "aDec", '.' ) );
+		symbols.setGroupingSeparator( format.isGroupingUsed() ? (Character) getOrDefault( "digitGroupSeparator", ',' ) : ',' );
+		symbols.setDecimalSeparator( (Character) getOrDefault( "decimalCharacter", '.' ) );
 
-		String sign = (String) get( "aSign" );
+		String sign = (String) get( "currencySymbol" );
 
 		if ( sign != null ) {
-			boolean signSuffix = 's' == ( (Character) getOrDefault( "pSign", 'p' ) );
+			boolean signSuffix = 's' == ( (Character) getOrDefault( "currencySymbolPlacement", 'p' ) );
 			if ( signSuffix ) {
 				format.setPositiveSuffix( sign );
 				format.setNegativeSuffix( sign );
@@ -447,7 +447,7 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 			}
 		}
 
-		String negativeFormatter = (String) get( "nBracket" );
+		String negativeFormatter = (String) get( "negativeBracketsTypeOnBlur" );
 
 		if ( negativeFormatter != null ) {
 			symbols.setMinusSign( '+' );

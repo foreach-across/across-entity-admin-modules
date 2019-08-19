@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+declare const AutoNumeric: any;
+
 /**
  * Find an activate all autoNumeric form elements.
  *
@@ -36,11 +38,11 @@ function numericInitializer( node: any ): void {
             }
         }
 
+        const autoNumeric = new AutoNumeric( this, configuration );
         $( this )
-            .autoNumeric( 'init', configuration )
-            .bind( 'blur focusout keypress keyup', function () {
-                if ( name.length > 1 && name[0] === '_' ) {
-                    let val = $( this ).autoNumeric( 'get' );
+            .bind( 'blur focusout keypress keyup', () => {
+                if ( name && name.length > 1 && name[0] === '_' ) {
+                    let val = autoNumeric.get();
 
                     if ( multiplier !== 1 ) {
                         val = val / multiplier;
@@ -50,8 +52,10 @@ function numericInitializer( node: any ): void {
                 }
             } );
 
+        $( this ).data( 'autoNumeric', autoNumeric );
+
         if ( multiplied ) {
-            $( this ).autoNumeric( 'set', multiplied );
+            autoNumeric.set( multiplied );
         }
     } );
 }

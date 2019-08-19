@@ -79,12 +79,12 @@
 			<version>${webjars.handlebars}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>autoNumeric</artifactId>
+			<groupId>org.webjars.npm</groupId>
+			<artifactId>autonumeric</artifactId>
 			<version>${webjars.autonumeric}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.webjars.bower</groupId>
+					<groupId>org.webjars.npm</groupId>
 					<artifactId>jquery</artifactId>
 				</exclusion>
 			</exclusions>
