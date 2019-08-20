@@ -27,7 +27,7 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.helpBlock;
-import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder.CSS_FORM_TEXT_DESCRIPTION;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * Post-processor that resolves a description text for a current property and a {@link com.foreach.across.modules.bootstrapui.elements.FormGroupElement}.
@@ -36,8 +36,8 @@ import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupE
  * This post processor is usually registered automatically when rendering {@link com.foreach.across.modules.entity.views.ViewElementMode#FORM_WRITE}.
  *
  * @author Arne Vandamme
- * @since 3.0.0
  * @see FieldsetDescriptionTextPostProcessor
+ * @since 3.0.0
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -56,10 +56,9 @@ public class FormGroupDescriptionTextPostProcessor<T extends ViewElement> extend
 
 			if ( !StringUtils.isEmpty( text ) ) {
 				element.setDescriptionBlock(
-						helpBlock()
-								.css( CSS_FORM_TEXT_DESCRIPTION )
-								.add( new TextViewElement( text, escapeHtml ) )
-								.build( builderContext )
+						helpBlock().with( css.form.text.suffix( "description" ) )
+						           .add( new TextViewElement( text, escapeHtml ) )
+						           .build( builderContext )
 				);
 			}
 		}

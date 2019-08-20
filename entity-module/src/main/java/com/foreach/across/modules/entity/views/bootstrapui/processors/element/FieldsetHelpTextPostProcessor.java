@@ -27,7 +27,7 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.helpBlock;
-import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder.CSS_FORM_TEXT_HELP;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * Post-processor that resolves a help text for a current property and a {@link com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset}.
@@ -56,7 +56,7 @@ public class FieldsetHelpTextPostProcessor<T extends ViewElement> extends Abstra
 		if ( !StringUtils.isEmpty( text ) ) {
 			element.getFooter()
 			       .addChild(
-					       helpBlock().css( CSS_FORM_TEXT_HELP )
+					       helpBlock().with( css.form.text.suffix( "help" ) )
 					                  .add( new TextViewElement( text, escapeHtml ) )
 					                  .build( builderContext )
 			       );

@@ -27,7 +27,7 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.helpBlock;
-import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder.CSS_FORM_TEXT_DESCRIPTION;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * Post-processor that resolves a description text for a current property and a {@link com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset}.
@@ -56,10 +56,9 @@ public class FieldsetDescriptionTextPostProcessor<T extends ViewElement> extends
 		if ( !StringUtils.isEmpty( text ) ) {
 			element.getHeader()
 			       .addChild(
-					       helpBlock()
-							       .css( CSS_FORM_TEXT_DESCRIPTION )
-							       .add( new TextViewElement( text, escapeHtml ) )
-							       .build( builderContext )
+					       helpBlock().with( css.form.text.suffix( "description" ) )
+					                  .add( new TextViewElement( text, escapeHtml ) )
+					                  .build( builderContext )
 			       );
 		}
 	}
