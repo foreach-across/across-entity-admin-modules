@@ -17,60 +17,31 @@
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
- * An {@link IconSet} that is made available on an {@link IconSets}
- *
- * @author Stijn Vanhoof
+ * An immutable IconSet that is registered in the {@link IconSetRegistry} and that represents a collection of icons.
+ * You can get a registered {@link IconSet} using {@link IconSet#iconSet(String)}
  */
-public class IconSet
+public interface IconSet
 {
 	/**
-	 * The defaultIconResolver is used as a fallback default resolver when requesting an icon that has no
-	 * specific {@link IconSet#registeredIconResolvers} associated with it.
-	 * Each {@link IconSet} requires a {@link IconSet#defaultIconResolver} to resolve a sensible default {@link AbstractNodeViewElement} for the icon
-	 * that has been specified.
-	 */
-	private final Function<String, AbstractNodeViewElement> defaultIconResolver;
-	private Map<String, Function<String, AbstractNodeViewElement>> registeredIconResolvers = new HashMap<>();
-
-	public IconSet( Function<String, AbstractNodeViewElement> defaultIconResolver ) {
-		this.defaultIconResolver = defaultIconResolver;
-	}
-
-	/**
-	 * Returns an icon with from the current {@link IconSet}
+	 * Returns an icon with from the current {@link SimpleIconSet}. If no iconResolver function was registered for the requested icon, a fallback to the
+	 * defaultIconResolver is used.
 	 *
-	 * @param name of the icon in the {@link IconSet}
+	 * @param name of the icon in the {@link SimpleIconSet}
 	 * @return The icon as a {@link AbstractNodeViewElement}
 	 */
-	public AbstractNodeViewElement icon( String name ) {
-		return registeredIconResolvers.getOrDefault( name, defaultIconResolver ).apply( name );
-	}
+	public AbstractNodeViewElement icon( String name );
 
 	/**
-	 * Adds an icon to the {@link IconSet}
+	 * Shorthand method to get an {@link IconSet} from the {@link IconSetRegistry}
 	 *
-	 * @param name         of the icon to add to the current {@link IconSet}
-	 * @param iconResolver that will be used to resolve a {@link AbstractNodeViewElement} icon
+	 * @param name of the iconSet
+	 * @return an {@link IconSet}
 	 */
-	public void add( @NotNull String name, Function<String, AbstractNodeViewElement> iconResolver ) {
-		registeredIconResolvers.put( name, iconResolver );
-	}
-
-	/**
-	 * Removes an icon from the {@link IconSet}
-	 *
-	 * @param name of the icon to be removed
-	 */
-	public void remove( @NotNull String name ) {
-		registeredIconResolvers.remove( name );
+	public static IconSet iconSet( @NotNull String name ) {
+		return IconSetRegistry.getIconSet( name );
 	}
 }

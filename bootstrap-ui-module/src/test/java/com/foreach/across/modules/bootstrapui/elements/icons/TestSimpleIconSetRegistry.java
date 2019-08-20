@@ -27,50 +27,50 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Stijn Vanhoof
  */
-public class TestIconSets
+public class TestSimpleIconSetRegistry
 {
-	private IconSet initialIconSet = mock( IconSet.class );
+	private SimpleIconSet initialSimpleIconSet = mock( SimpleIconSet.class );
 
 	@BeforeEach
 	public void setup() {
-		IconSets.add( "test", initialIconSet );
+		IconSetRegistry.addIconSet( "test", initialSimpleIconSet );
 	}
 
 	@Test
 	public void addNewIconSet() {
-		IconSet testIconSet = mock( IconSet.class );
+		SimpleIconSet testSimpleIconSet = mock( SimpleIconSet.class );
 
-		IconSets.add( "bootstrapUiModule", testIconSet );
-		assertThat( IconSets.iconSet( "bootstrapUiModule" ) ).isEqualTo( testIconSet );
-		assertThat( IconSets.iconSet( "test" ) ).isEqualTo( initialIconSet );
+		IconSetRegistry.addIconSet( "bootstrapUiModule", testSimpleIconSet );
+		assertThat( IconSetRegistry.getIconSet( "bootstrapUiModule" ) ).isEqualTo( testSimpleIconSet );
+		assertThat( IconSetRegistry.getIconSet( "test" ) ).isEqualTo( initialSimpleIconSet );
 	}
 
 	@Test
 	public void invalidIconSetThrowIllegalArgumentException() {
 		Assertions.assertThrows( IllegalArgumentException.class, () -> {
-			IconSets.iconSet( "unknown" );
+			IconSetRegistry.getIconSet( "unknown" );
 		} );
 	}
 
 	@Test
 	public void overrideIconSet() {
-		IconSet iconSetThatWillOverride = mock( IconSet.class );
-		IconSets.add( "test", iconSetThatWillOverride );
+		SimpleIconSet simpleIconSetThatWillOverride = mock( SimpleIconSet.class );
+		IconSetRegistry.addIconSet( "test", simpleIconSetThatWillOverride );
 
-		assertThat( IconSets.iconSet( "test" ) ).isEqualTo( iconSetThatWillOverride );
+		assertThat( IconSetRegistry.getIconSet( "test" ) ).isEqualTo( simpleIconSetThatWillOverride );
 	}
 
 	@Test
 	public void removeIconSet() {
-		IconSet testIconSet = mock( IconSet.class );
+		SimpleIconSet testSimpleIconSet = mock( SimpleIconSet.class );
 
-		IconSets.add( "bootstrapUiModule", testIconSet );
-		assertThat( IconSets.iconSet( "bootstrapUiModule" ) ).isEqualTo( testIconSet );
+		IconSetRegistry.addIconSet( "bootstrapUiModule", testSimpleIconSet );
+		assertThat( IconSetRegistry.getIconSet( "bootstrapUiModule" ) ).isEqualTo( testSimpleIconSet );
 
-		IconSets.remove( "bootstrapUiModule" );
+		IconSetRegistry.removeIconSet( "bootstrapUiModule" );
 
 		Assertions.assertThrows( IllegalArgumentException.class, () -> {
-			IconSets.iconSet( "bootstrapUiModule" );
+			IconSetRegistry.getIconSet( "bootstrapUiModule" );
 		} );
 	}
 }

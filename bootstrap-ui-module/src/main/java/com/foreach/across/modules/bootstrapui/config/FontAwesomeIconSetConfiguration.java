@@ -16,29 +16,36 @@
 
 package com.foreach.across.modules.bootstrapui.config;
 
-import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
-import com.foreach.across.modules.bootstrapui.elements.icons.IconSets;
+import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.PostConstruct;
 
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 /**
- * Register the default Font Awesome {@link IconSet} that BootstrapUiModule uses.
+ * Register the default Font Awesome {@link SimpleIconSet} that BootstrapUiModule uses.
  * For now the free solid and brand icons of Font Awesome 5 are implemented.
+ *
+ * @author Stijn Vanhoof
+ * @since 3.0.0
  */
 @Configuration
 public class FontAwesomeIconSetConfiguration
 {
-	public final String FONT_AWESOME_SOLID_ICON_SET = "fontawesome-solid";
-	public final String FONT_AWESOME_BRANDS_ICON_SET = "fontawesome-brands";
+	public static final String FONT_AWESOME_SOLID_ICON_SET = "fontawesome-solid";
+	public static final String FONT_AWESOME_BRANDS_ICON_SET = "fontawesome-brands";
 
 	@Autowired
-	public void createDefaultIconSets(){
-		IconSets.add( FONT_AWESOME_SOLID_ICON_SET, new IconSet( ( iconName ) -> i( css( "fas fa-" + iconName ) ) ) );
-		IconSets.add( FONT_AWESOME_BRANDS_ICON_SET, new IconSet( ( iconName ) -> i( css( "fab fa-" + iconName ) ) ) );
+	public void createDefaultIconSets() {
+		SimpleIconSet fontAwesomeSolidIconSet = new SimpleIconSet();
+		fontAwesomeSolidIconSet.setDefaultIconResolver( ( iconName ) -> i( css( "fas fa-" + iconName ) ) );
+
+		SimpleIconSet fontAwesomeBrandsIconSet = new SimpleIconSet();
+		fontAwesomeBrandsIconSet.setDefaultIconResolver( ( iconName ) -> i( css( "fab fa-" + iconName ) ) );
+
+		IconSetRegistry.addIconSet( FONT_AWESOME_SOLID_ICON_SET, fontAwesomeSolidIconSet );
+		IconSetRegistry.addIconSet( FONT_AWESOME_BRANDS_ICON_SET, fontAwesomeBrandsIconSet );
 	}
 }
