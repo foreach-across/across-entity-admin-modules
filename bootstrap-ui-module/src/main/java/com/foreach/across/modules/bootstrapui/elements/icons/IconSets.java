@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Holds a collection of {@link IconSet} that can be used to generate an {@link IconSet#icon(String)}
+ * Is used to add,remove or get an {@link IconSet} from the {@link IconSets} collection.
  *
  * @author Stijn Vanhoof
  */
@@ -31,6 +31,12 @@ public class IconSets
 {
 	private static Map<String, IconSet> iconSets = new HashMap<>();
 
+	/**
+	 * Get's a registered {@link IconSet} from the collection
+	 *
+	 * @param name of the {@link IconSet} to add
+	 * @return the newly added {@link IconSet}
+	 */
 	public static IconSet iconSet( @NotNull String name ) {
 		if ( !iconSets.containsKey( name ) ) {
 			throw new IllegalArgumentException( String.format( "IconSet with name %s does not exist", name ) );
@@ -39,10 +45,19 @@ public class IconSets
 		return iconSets.get( name );
 	}
 
+	/**
+	 *  Add an {@link IconSet} to the collection of {@link IconSets}
+	 * @param name the {@link IconSet} will be registered under
+	 * @param iconSet to register
+	 */
 	public static void add( @NotNull String name, @NotNull IconSet iconSet ) {
 		iconSets.put( name, iconSet );
 	}
 
+	/**
+	 * Remove an {@link IconSet} from the {@link IconSets}
+	 * @param name
+	 */
 	public static void remove( @NonNull String name ) {
 		iconSets.remove( name );
 	}
