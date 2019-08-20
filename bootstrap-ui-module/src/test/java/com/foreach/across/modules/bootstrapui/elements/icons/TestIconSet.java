@@ -48,7 +48,39 @@ public class TestIconSet extends AbstractViewElementTemplateTest
 		renderAndExpect( icon, "<i class=\"fas fa-save\"></i>" );
 
 		IconSets.iconSet( customFontAwesomeIconSet ).add( "save", ( iconName ) -> i( css( "fas fa-floppy" ) ) );
+		IconSets.iconSet( customFontAwesomeIconSet ).add( "edit", ( iconName ) -> i( css( "fas fa-edit" ) ) );
 		icon = IconSets.iconSet( customFontAwesomeIconSet ).icon( "save" );
 		renderAndExpect( icon, "<i class=\"fas fa-floppy\"></i>" );
+	}
+
+	@Test
+	public void overrideIcon() {
+		IconSets.iconSet( customFontAwesomeIconSet ).add( "icon-override-1", ( iconName ) -> i( css( "icon-override-v1" ) ) );
+		IconSets.iconSet( customFontAwesomeIconSet ).add( "icon-override-1", ( iconName ) -> i( css( "icon-override-v2" ) ) );
+		AbstractNodeViewElement icon = IconSets.iconSet( customFontAwesomeIconSet ).icon( "icon-override-1" );
+		renderAndExpect( icon, "<i class=\"icon-override-v2\"></i>" );
+	}
+
+	@Test
+	public void removeIcon() {
+		IconSets.iconSet( customFontAwesomeIconSet ).add( "icon-remove", ( iconName ) -> i( css( "icon-remove" ) ) );
+		AbstractNodeViewElement icon = IconSets.iconSet( customFontAwesomeIconSet ).icon( "icon-remove" );
+		renderAndExpect( icon, "<i class=\"icon-remove\"></i>" );
+
+		IconSets.iconSet( customFontAwesomeIconSet ).remove( "icon-remove" );
+		icon = IconSets.iconSet( customFontAwesomeIconSet ).icon( "icon-remove" );
+		renderAndExpect( icon, "<i class=\"fas fa-icon-remove\"></i>" );
+	}
+
+	@Test
+	public void tryToRemoveIconFromOtherIconSet() {
+		IconSets.add( "other-iconset", new IconSet( ( iconName ) -> i( css( "other-iconset") ) ) );
+
+		IconSets.iconSet( customFontAwesomeIconSet ).add( "icon-remove", ( iconName ) -> i( css( "icon-remove" ) ) );
+		AbstractNodeViewElement icon = IconSets.iconSet( customFontAwesomeIconSet ).icon( "icon-remove" );
+		renderAndExpect( icon, "<i class=\"icon-remove\"></i>" );
+		IconSets.iconSet( "other-iconset" ).remove( "icon-remove" );
+		icon = IconSets.iconSet( customFontAwesomeIconSet ).icon( "icon-remove" );
+		renderAndExpect( icon, "<i class=\"icon-remove\"></i>" );
 	}
 }

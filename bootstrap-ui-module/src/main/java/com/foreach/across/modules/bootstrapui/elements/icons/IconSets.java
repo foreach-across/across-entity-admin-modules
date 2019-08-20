@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
+import lombok.NonNull;
+
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +40,10 @@ public class IconSets
 	}
 
 	static void add( @NotNull String name, @NotNull IconSet iconSet ) {
-		iconSets.putIfAbsent( name, iconSet );
+		iconSets.put( name, iconSet );
+	}
+
+	static void remove( @NonNull String name ) {
+		iconSets.remove( name );
 	}
 }

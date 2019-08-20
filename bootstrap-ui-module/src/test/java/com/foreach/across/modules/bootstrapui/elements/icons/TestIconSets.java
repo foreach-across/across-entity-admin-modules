@@ -44,7 +44,26 @@ public class TestIconSets
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void invalidIconSetThrowIllegalArguemntException() {
+	public void invalidIconSetThrowIllegalArgumentException() {
 		IconSets.iconSet( "unknown" );
+	}
+
+	@Test
+	public void overrideIconSet(){
+		IconSet iconSetThatWillOverride = mock( IconSet.class );
+		IconSets.add( "test", iconSetThatWillOverride );
+
+		Assert.assertEquals( IconSets.iconSet( "test" ), iconSetThatWillOverride );
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void removeIconSet() {
+		IconSet testIconSet = mock( IconSet.class );
+
+		IconSets.add( "bootstrapUiModule", testIconSet );
+		Assert.assertEquals( IconSets.iconSet( "bootstrapUiModule" ), testIconSet );
+
+		IconSets.remove( "bootstrapUiModule" );
+		IconSets.iconSet( "bootstrapUiModule" );
 	}
 }

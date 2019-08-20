@@ -58,6 +58,14 @@ public class IconSet
 	 * @param iconResolver that will be used to resolve a {@link AbstractNodeViewElement} icon
 	 */
 	public void add( @NotNull String name, Function<String, AbstractNodeViewElement> iconResolver ) {
-		registeredIconResolvers.putIfAbsent( name, iconResolver );
+		registeredIconResolvers.put( name, iconResolver );
+	}
+
+	/**
+	 * Removes an icon from the {@link IconSet}
+	 * @param name of the icon to be removed
+	 */
+	public void remove(@NotNull String name) {
+		registeredIconResolvers.remove( name );
 	}
 }
