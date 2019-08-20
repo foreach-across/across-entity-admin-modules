@@ -17,8 +17,10 @@
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 /**
  * An immutable IconSet that is registered in the {@link IconSetRegistry} and that represents a collection of icons.
@@ -34,6 +36,12 @@ public interface IconSet
 	 * @return The icon as a {@link AbstractNodeViewElement}
 	 */
 	public AbstractNodeViewElement icon( String name );
+
+	/**
+	 * Gets all registered icons on an {@link IconSet}
+	 * @return a {@code Map<String, AbstractNodeViewElement>} that holds all icons by name
+	 */
+	public Map<String, AbstractNodeViewElement> getAllRegisteredIcons();
 
 	/**
 	 * Shorthand method to get an {@link IconSet} from the {@link IconSetRegistry}

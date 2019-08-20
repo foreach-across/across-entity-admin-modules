@@ -48,6 +48,15 @@ public class TestSimpleIconSetRegistry
 	}
 
 	@Test
+	public void getAllIconSets(){
+		IconSetRegistry.removeAllIconSets(  );
+		IconSetRegistry.addIconSet( "test1",  mock( SimpleIconSet.class ) );
+		IconSetRegistry.addIconSet( "test2",  mock( SimpleIconSet.class ) );
+
+		assertThat( IconSetRegistry.getAllIconSets() ).hasSize( 2 );
+	}
+
+	@Test
 	public void invalidIconSetThrowIllegalArgumentException() {
 		Assertions.assertThrows( IllegalArgumentException.class, () -> {
 			IconSetRegistry.getIconSet( "unknown" );

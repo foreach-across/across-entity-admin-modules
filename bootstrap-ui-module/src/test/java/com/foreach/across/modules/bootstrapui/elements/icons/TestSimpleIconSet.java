@@ -24,6 +24,7 @@ import org.junit.Test;
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Stijn Vanhoof
@@ -46,11 +47,11 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void noDefaultIconResolverProvided(){
+	public void noDefaultIconResolverProvided() {
 		SimpleIconSet noDefaultIconSet = new SimpleIconSet();
 		IconSetRegistry.addIconSet( "no-default", noDefaultIconSet );
 
-		iconSet("unknown");
+		iconSet( "unknown" );
 	}
 
 	@Test
@@ -95,5 +96,30 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 		IconSetRegistry.getIconSet( "other-icons" ).remove( "icon-remove" );
 		icon = iconSet( customFontAwesomeIconSetName ).icon( "icon-remove" );
 		renderAndExpect( icon, "<i class=\"icon-remove\"></i>" );
+	}
+
+	@Test
+	public void getAllRegisteredIcons(){
+		SimpleIconSet withAllIcons = new SimpleIconSet();
+		withAllIcons.setDefaultIconResolver( ( iconName ) -> i( css( "fas fa-" + iconName ) ) );
+		IconSetRegistry.addIconSet( "with-all-icons", withAllIcons );
+
+		IconSetRegistry.getIconSet( "with-all-icons").add( "save", ( iconName ) -> i( css( "fas fa-floppy" ) ) );
+		IconSetRegistry.getIconSet( "with-all-icons" ).add( "edit", ( iconName ) -> i( css( "fas fa-edit" ) ) );
+
+		assertThat(iconSet("with-all-icons").getAllRegisteredIcons()).hasSize( 2 );
+	}
+
+	@Test
+	public void removeAllIcons(){
+		SimpleIconSet withAllIcons = new SimpleIconSet();
+		withAllIcons.setDefaultIconResolver( ( iconName ) -> i( css( "fas fa-" + iconName ) ) );
+		IconSetRegistry.addIconSet( "remove-all-icons", withAllIcons );
+
+		IconSetRegistry.getIconSet( "remove-all-icons").add( "save", ( iconName ) -> i( css( "fas fa-floppy" ) ) );
+		IconSetRegistry.getIconSet( "remove-all-icons" ).add( "edit", ( iconName ) -> i( css( "fas fa-edit" ) ) );
+
+		IconSetRegistry.getIconSet( "remove-all-icons" ).removeAll();
+		assertThat(iconSet("remove-all-icons").getAllRegisteredIcons()).hasSize( 0 );
 	}
 }

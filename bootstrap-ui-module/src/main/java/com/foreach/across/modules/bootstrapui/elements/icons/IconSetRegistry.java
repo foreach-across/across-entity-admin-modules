@@ -82,7 +82,7 @@ public class IconSetRegistry
 	/**
 	 * Remove all {@link MutableIconSet}  from the {@link IconSetRegistry}
 	 */
-	public void removeAllIconSets() {
+	public static void removeAllIconSets() {
 		iconSets.clear();
 	}
 }

@@ -17,6 +17,7 @@
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
@@ -52,6 +53,15 @@ public class SimpleIconSet implements MutableIconSet
 		}
 
 		return defaultIconResolver.apply( name );
+	}
+
+	@Override
+	public Map<String, AbstractNodeViewElement> getAllRegisteredIcons() {
+		Map<String, AbstractNodeViewElement> allIconsInTheIconSet = new HashMap<>();
+		registeredIconResolvers.forEach(
+				( iconName, functionToGenerateIcon ) -> allIconsInTheIconSet.put( iconName, functionToGenerateIcon.apply( iconName ) ) );
+
+		return allIconsInTheIconSet;
 	}
 
 	@Override
