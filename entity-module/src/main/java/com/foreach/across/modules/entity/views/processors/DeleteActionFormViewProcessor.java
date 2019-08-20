@@ -17,9 +17,9 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -33,6 +33,9 @@ import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBu
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+
+import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.DELETE_BUTTON;
 
 /**
  * Adds a delete button to the existing {@link SingleEntityFormViewProcessor#FORM_BUTTONS} if the {@link AllowableAction#DELETE} is present.
@@ -92,7 +95,7 @@ public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 		                          .name( "btn-delete" )
 		                          .link( linkToDeleteView.toUriString() )
 		                          .style( Style.DANGER )
-		                          .icon( new GlyphIcon( GlyphIcon.TRASH ) )
+		                          .icon( iconSet( EntityModule.NAME).icon( DELETE_BUTTON ) )
 		                          .title( messages.messageWithFallback( "buttons.delete" ) );
 	}
 }

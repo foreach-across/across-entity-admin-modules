@@ -18,10 +18,10 @@ package com.foreach.across.modules.entity.views.bootstrapui.util;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -45,6 +45,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+
+import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.*;
 
 /**
  * Helper that aids in building a sortable {@link com.foreach.across.modules.bootstrapui.elements.TableViewElement}
@@ -703,7 +706,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 			pager.add(
 					BootstrapUiBuilders.button()
 					                   .link( "#" )
-					                   .icon( new GlyphIcon( GlyphIcon.STEP_BACKWARD ) )
+					                   .icon( iconSet( EntityModule.NAME).icon( PREVIOUS_PAGE ) )
 					                   .title( messages.previousPage( currentPage ) )
 					                   .attribute( DATA_ATTR_PAGE, currentPage.getNumber() - 1 )
 					                   .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
@@ -737,7 +740,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 			pager.add(
 					BootstrapUiBuilders.button()
 					                   .link( "#" )
-					                   .icon( new GlyphIcon( GlyphIcon.STEP_FORWARD ) )
+					                   .icon( iconSet( EntityModule.NAME).icon( NEXT_PAGE ) )
 					                   .title( messages.nextPage( currentPage ) )
 					                   .attribute( DATA_ATTR_PAGE, currentPage.getNumber() + 1 )
 					                   .attribute( DATA_ATTR_TABLE_NAME, getTableName() )

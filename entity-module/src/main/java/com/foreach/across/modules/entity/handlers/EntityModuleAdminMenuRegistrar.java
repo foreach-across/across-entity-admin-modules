@@ -20,8 +20,8 @@ import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.controllers.admin.GenericEntityViewController;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
@@ -49,6 +49,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.function.Consumer;
+
+import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.ADVANCED_SETTINGS;
 
 @ConditionalOnAdminWeb
 @Component
@@ -148,7 +151,7 @@ class EntityModuleAdminMenuRegistrar
 			builder.group( "/advanced-options",
 			               messageCodeResolver.getMessageWithFallback( "menu.advanced", "Advanced" ) )
 			       .attribute( "html:class", "pull-right" )
-			       .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.COG ) )
+			       .attribute( NavComponentBuilder.ATTR_ICON, iconSet( EntityModule.NAME).icon( ADVANCED_SETTINGS ))
 			       .attribute( NavComponentBuilder.ATTR_KEEP_GROUP_ITEM, true )
 			       .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );
 		}
