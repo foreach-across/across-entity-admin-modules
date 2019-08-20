@@ -16,6 +16,7 @@
 
 package admin.application.controllers;
 
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
@@ -23,7 +24,6 @@ import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -32,6 +32,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import static admin.application.config.CustomAdminWebIcons.*;
+import static com.foreach.across.modules.adminweb.resource.AdminWebIcons.*;
+import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 
 /**
  * @author Arne Vandamme
@@ -75,10 +79,10 @@ public class PageContentStructureController
 				.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
 				.and()
 				.item( "/advanced/trash", "Move to trash", "#" )
-				.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+				.attribute( NavComponentBuilder.ATTR_ICON, iconSet( AdminWebModule.NAME ).icon( DELETE ) )
 				.and()
 				.group( "/two", "Two" ).order( 3 )
-				.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.DOWNLOAD ) )
+				.attribute( NavComponentBuilder.ATTR_ICON, iconSet( AdminWebModule.NAME ).icon( DOWNLOAD ) )
 				.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
 				.attribute( "html:class", "pull-right" )
 				.and()
@@ -90,7 +94,7 @@ public class PageContentStructureController
 				.group( "/two/four", "Sub group 2" ).order( 4 ).and()
 				.item( "/two/four/1", "Sub group 2 item 1", "#" ).and()
 				.item( "/two/five", "Selected", "#" )
-				.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.TRASH ) )
+				.attribute( NavComponentBuilder.ATTR_ICON, iconSet( AdminWebModule.NAME ).icon( DELETE ) )
 				.attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.AROUND )
 				.order( 5 )
 				.and()
@@ -100,7 +104,7 @@ public class PageContentStructureController
 		menu.sort();
 
 		page.setPageTitle( "Some page title..." );
-		page.addToPageTitleSubText( new GlyphIcon( GlyphIcon.ALERT ) );
+		page.addToPageTitleSubText( iconSet( AdminWebModule.NAME ).icon( ALERT ) );
 
 		page.addToNav( bootstrapUiComponentFactory.nav( menu ).tabs().build( builderContext ) );
 		page.addToFeedback(

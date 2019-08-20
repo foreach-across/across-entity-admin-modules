@@ -16,13 +16,13 @@
 
 package com.foreach.across.modules.adminweb.menu.registrars;
 
+import com.foreach.across.modules.adminweb.AdminWebModule;
 import com.foreach.across.modules.adminweb.events.UserContextAdminMenuGroup;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.AdminWebLayoutTemplate;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.spring.security.infrastructure.services.CurrentSecurityPrincipalProxy;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -33,6 +33,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
+
+import static com.foreach.across.modules.adminweb.resource.AdminWebIcons.*;
+import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 
 /**
  * Registers the user context menu item to render in the right navbar on the default template.
@@ -54,7 +57,7 @@ public final class DefaultAdminMenuRegistrar
 		menuEvent.builder()
 		         .root( "/" )
 		         .title( "Administration" )
-		         .attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.HOME ) )
+		         .attribute( NavComponentBuilder.ATTR_ICON, iconSet( AdminWebModule.NAME ).icon( ADMINISTRATION_HOME ) )
 		         .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
 		         .and()
 		         .andThen( this::registerUserContextAdminMenuGroup );
@@ -79,7 +82,7 @@ public final class DefaultAdminMenuRegistrar
 				group.title( " " + userContextAdminMenuGroup.getDisplayName() );
 			}
 			else {
-				group.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.USER ) );
+				group.attribute( NavComponentBuilder.ATTR_ICON, iconSet( AdminWebModule.NAME ).icon( USER_CONTEXT_MENU ) );
 			}
 		}
 		else {

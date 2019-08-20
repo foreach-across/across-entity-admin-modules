@@ -3,7 +3,7 @@ across:
     active: true
 
 adminWebModule:
-  root-path: /
+  root-path: /admin
   login:
     rememberMe:
       key: remember-me

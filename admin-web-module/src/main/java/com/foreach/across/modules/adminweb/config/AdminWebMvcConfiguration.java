@@ -24,6 +24,8 @@ import com.foreach.across.modules.adminweb.AdminWebModuleSettings;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.controllers.AuthenticationController;
 import com.foreach.across.modules.adminweb.menu.*;
+import com.foreach.across.modules.adminweb.ui.PageContentStructure;
+import com.foreach.across.modules.adminweb.web.IconSetBrowserController;
 import com.foreach.across.modules.web.config.support.PrefixingHandlerMappingConfiguration;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.mvc.PrefixingRequestMappingHandlerMapping;
@@ -103,5 +105,10 @@ public class AdminWebMvcConfiguration extends PrefixingHandlerMappingConfigurati
 	@Bean
 	public AuthenticationController authenticationController() {
 		return new AuthenticationController();
+	}
+
+	@Bean
+	public IconSetBrowserController iconSetBrowserController( PageContentStructure page) {
+		return new IconSetBrowserController(page);
 	}
 }
