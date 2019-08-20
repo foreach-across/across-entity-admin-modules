@@ -61,7 +61,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<revision>3.0.0-SNAPSHOT</revision>
-		<webjars.jquery>1.11.3</webjars.jquery>
+		<webjars.jquery>3.4.1</webjars.jquery>
 		<webjars.bootstrap>4.3.1</webjars.bootstrap>
 		<webjars.autosize>4.0.2</webjars.autosize>
 		<webjars.autonumeric>4.5.4</webjars.autonumeric>

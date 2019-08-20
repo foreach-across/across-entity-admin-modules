@@ -33,7 +33,7 @@ public class JQueryWebResources implements WebResourcePackage
 {
 	public static final String NAME = "jquery";
 
-	private static final String JQUERY_VERSION = "1.11.3";
+	private static final String JQUERY_VERSION = "3.4.1";
 
 	private final boolean minified;
 

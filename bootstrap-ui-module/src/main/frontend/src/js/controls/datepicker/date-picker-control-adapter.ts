@@ -38,7 +38,7 @@ export default class DatePickerControlAdapter extends BaseControlAdapter
         this.exportFormat = exportFormat;
         this.initialValue = this.getDateTimePicker().date();
         this.valueHolder = $( 'input[type=hidden]', target )[0];
-        $( target ).on( 'dp.change', event => this.triggerChange() );
+        $( target ).on( 'change.datetimepicker', event => this.triggerChange() );
 
         // TODO configure 'bootstrapui.submit' event
         // $( target ).find( 'input[type="text"]' ).keyup( this, ( event ) => {
