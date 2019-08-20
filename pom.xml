@@ -65,8 +65,8 @@
 		<webjars.bootstrap>4.3.1</webjars.bootstrap>
 		<webjars.autosize>4.0.2</webjars.autosize>
 		<webjars.autonumeric>4.5.4</webjars.autonumeric>
-		<webjars.momentjs>2.10.6</webjars.momentjs>
-		<webjars.eonasdan-bootstrap-datetimepicker>4.14.30</webjars.eonasdan-bootstrap-datetimepicker>
+		<webjars.momentjs>2.24.0</webjars.momentjs>
+		<webjars.tempus-dominus-datetimepicker>5.1.2</webjars.tempus-dominus-datetimepicker>
 		<webjars.bootstrap-select>1.13.10</webjars.bootstrap-select>
 		<webjars.typeaheadjs>1.2.1</webjars.typeaheadjs>
 		<webjars.handlebars>4.0.14</webjars.handlebars>

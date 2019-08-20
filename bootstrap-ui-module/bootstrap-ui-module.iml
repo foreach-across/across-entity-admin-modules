@@ -155,10 +155,10 @@
     <orderEntry type="library" name="Maven: org.webjars:bootstrap:4.3.1" level="project" />
     <orderEntry type="library" name="Maven: org.webjars:popper.js:1.14.3" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.bower:autosize:4.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.webjars:momentjs:2.10.6" level="project" />
+    <orderEntry type="library" name="Maven: org.webjars:momentjs:2.24.0" level="project" />
     <orderEntry type="library" name="Maven: org.webjars:handlebars:4.0.14" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.npm:autonumeric:4.5.4" level="project" />
-    <orderEntry type="library" name="Maven: org.webjars:Eonasdan-bootstrap-datetimepicker:4.14.30" level="project" />
+    <orderEntry type="library" name="Maven: org.webjars:tempusdominus-bootstrap-4:5.1.2" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.npm:bootstrap-select:1.13.10" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.npm:corejs-typeahead:1.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.webjars:font-awesome:5.10.1" level="project" />

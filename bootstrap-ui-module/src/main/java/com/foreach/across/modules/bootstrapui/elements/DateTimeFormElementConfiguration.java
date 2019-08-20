@@ -66,11 +66,13 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	@JsonIgnore
 	private boolean localizePatterns = true;
 
+	private Map<String, Boolean> buttons = new HashMap<>();
+
 	public DateTimeFormElementConfiguration() {
 		setFormat( Format.DATETIME );
 		setLocale( DEFAULT_LOCALE );
 		setZoneId( DEFAULT_ZONE_ID );
-		put( "datepickerInput", "input[type=text]" );
+		put( "buttons", buttons );
 	}
 
 	public DateTimeFormElementConfiguration( Format format ) {
@@ -413,21 +415,21 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	 * set the calendar view and set the date to now.
 	 */
 	public void setShowTodayButton( boolean showTodayButton ) {
-		put( "showTodayButton", showTodayButton );
+		buttons.put( "showToday", showTodayButton );
 	}
 
 	/**
 	 * Show the "Clear" button in the icon toolbar.  Clicking the "Clear" button will set the calendar to null.
 	 */
 	public void setShowClearButton( boolean showClearButton ) {
-		put( "showClear", showClearButton );
+		buttons.put( "showClear", showClearButton );
 	}
 
 	/**
 	 * Show the "Close" button in the icon toolbar.
 	 */
 	public void setShowCloseButton( boolean showCloseButton ) {
-		put( "showClose", showCloseButton );
+		buttons.put( "showClose", showCloseButton );
 	}
 
 	/**

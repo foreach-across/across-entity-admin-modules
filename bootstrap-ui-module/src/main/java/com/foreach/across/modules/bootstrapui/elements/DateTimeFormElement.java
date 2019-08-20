@@ -18,7 +18,9 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,9 +41,13 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 public class DateTimeFormElement extends InputGroupFormElement
 {
 	public static final String ATTRIBUTE_DATA_DATEPICKER = "data-bootstrapui-datetimepicker";
+	public static final String ATTRIBUTE_DATA_TARGET = "data-target";
+	public static final String ATTRIBUTE_DATA_TOGGLE = "data-toggle";
+	public static final String ATTRIBUTE_DATA_TARGET_INPUT = "data-target-input";
 
 	public static final String CSS_JS_CONTROL = "js-form-datetimepicker";
 	public static final String CSS_DATE = "date";
+	public static final String CSS_DATETIMEPICKER_INPUT = "datetimepicker-input";
 
 	private final HiddenFormElement hidden = new HiddenFormElement();
 
@@ -51,6 +57,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 		setAppend( i( css.fa.solid( "calendar" ) ) );
 		addCssClass( CSS_JS_CONTROL, CSS_DATE );
 		setAttribute( ATTRIBUTE_DATA_DATEPICKER, new DateTimeFormElementConfiguration() );
+		setAttribute( ATTRIBUTE_DATA_TARGET_INPUT, "nearest" );
 		setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "datetime" );
 	}
 
@@ -69,6 +76,9 @@ public class DateTimeFormElement extends InputGroupFormElement
 
 	@Override
 	public DateTimeFormElement setControlName( String controlName ) {
+		if ( StringUtils.isBlank( getHtmlId() ) && StringUtils.isNotBlank( controlName ) ) {
+			this.setHtmlId( String.format( "_dp-controller--%s", controlName ) );
+		}
 		hidden.setControlName( controlName );
 		return this;
 	}
@@ -117,6 +127,9 @@ public class DateTimeFormElement extends InputGroupFormElement
 		controlElement.removeAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE );
 		String controlName = hidden.getControlName();
 
+		controlElement.setAttribute( ATTRIBUTE_DATA_TARGET, getTarget() );
+		controlElement.addCssClass( CSS_DATETIMEPICKER_INPUT );
+
 		if ( controlName != null ) {
 			controlElement.setControlName( "_" + controlName );
 			controlElement.setHtmlId( controlName );
@@ -135,8 +148,26 @@ public class DateTimeFormElement extends InputGroupFormElement
 		}
 
 		List<ViewElement> elements = new ArrayList<>( super.getChildren() );
+		// todo find a better way to do this
+		elements.stream()
+		        .filter( e -> NodeViewElement.class.isAssignableFrom( e.getClass() ) && ( (NodeViewElement) e ).hasCssClass( "input-group-append" ) )
+		        .findFirst()
+		        .ifPresent( e -> {
+			        ( (NodeViewElement) e ).setAttribute( ATTRIBUTE_DATA_TOGGLE, "datetimepicker" );
+			        ( (NodeViewElement) e ).setAttribute( ATTRIBUTE_DATA_TARGET, getTarget() );
+		        } );
 		elements.add( hidden );
 		return elements;
+	}
+
+	/**
+	 * Returns the selector for the target element that controls the datepicker.
+	 */
+	private String getTarget() {
+		if ( StringUtils.isNotBlank( this.getHtmlId() ) ) {
+			return "#" + getHtmlId();
+		}
+		return "";
 	}
 
 	@Override

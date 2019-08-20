@@ -65,7 +65,7 @@ export default class DatePickerControlAdapter extends BaseControlAdapter
     }
 
     private getDateTimePicker(): any {
-        return $( this.getTarget() ).data( 'DateTimePicker' );
+        return $( this.getTarget() ).data( 'datetimepicker' );
     }
 }
 
