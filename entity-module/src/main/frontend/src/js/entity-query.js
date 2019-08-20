@@ -53,7 +53,7 @@ function initializeEntityQueryForm( node ) {
     if ( $( findShowBasicFilterElement() ).attr( "value" ) === "true" ) {
       entityQueryFilterControl.resetEntityQuery();
     }
-    $( this ).find( 'span' ).removeClass( 'glyphicon glyphicon-search' ).addClass( 'fa fa-spin fa-spinner' );
+    $( this ).find( 'span' ).removeClass( 'fas fa-search' ).addClass( 'fa fa-spin fa-spinner' );
   } );
 
   // After submit ajax

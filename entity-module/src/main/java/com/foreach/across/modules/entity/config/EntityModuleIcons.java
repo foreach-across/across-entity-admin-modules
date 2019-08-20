@@ -41,6 +41,8 @@ public class EntityModuleIcons
 	public static final String EMBEDDED_COLLECTION_ITEM_HANDLE = "embedded-collection-item-handle";
 	public static final String EMBEDDED_COLLECTION_ITEM_ADD = "embedded-collection-item-add";
 	public static final String EMBEDDED_COLLECTION_ITEM_DELETE = "embedded-collection-item-delete";
+	public static final String EXTENSION_NAVIGATION = "extension-navigation";
+	public static final String NEW_WINDOW = "new-window";
 
 	@Autowired
 	public void registerAdminWebIconSet() {
@@ -56,6 +58,7 @@ public class EntityModuleIcons
 		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_HANDLE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "bars" ) );
 		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_ADD, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "plus" ) );
 		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_DELETE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" ) );
+		adminWebIconSet.add( EXTENSION_NAVIGATION, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "external-link-alt" ) );
 
 		IconSetRegistry.addIconSet( EntityModule.NAME, adminWebIconSet );
 	}

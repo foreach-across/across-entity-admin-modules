@@ -19,8 +19,8 @@ package com.foreach.across.samples.entity.application.controllers;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.views.EntityViewElementBuilderHelper;
 import com.foreach.across.modules.entity.views.bootstrapui.util.SortableTableBuilder;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -42,6 +42,8 @@ import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.elements.Style.Table.BORDERED;
 import static com.foreach.across.modules.bootstrapui.elements.Style.Table.CONDENSED;
+import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.NEW_WINDOW;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
 /**
@@ -230,7 +232,7 @@ public class SortableTableSimpleController
 							BootstrapUiBuilders.table().cell().add(
 									BootstrapUiBuilders.button()
 									                   .link( partner.getUrl() )
-									                   .icon( new GlyphIcon( GlyphIcon.NEW_WINDOW ) )
+									                   .icon( iconSet( EntityModule.NAME ).icon( NEW_WINDOW ))
 									                   .iconOnly()
 									                   .attribute( "target", "_blank" )
 									                   .text( "Visit partner website" )

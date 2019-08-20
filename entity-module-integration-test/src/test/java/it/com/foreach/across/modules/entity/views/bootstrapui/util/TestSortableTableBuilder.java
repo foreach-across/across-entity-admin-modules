@@ -240,14 +240,14 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 						"<div class=\"panel-footer\">" +
 						"<div class=\"pager-form form-inline text-center\">" +
 						"<a role=\"button\" href=\"#\" data-tbl=\"entityList\" data-tbl-page=\"0\" class=\"btn btn-link\">" +
-						"<span aria-hidden=\"true\" class=\"glyphicon glyphicon-step-backward\"></span>" +
+						"<span aria-hidden=\"true\" class=\"fas fa-step-backward\"></span>" +
 						"</a>" +
 						"<label class=\"control-label\"><span></span><input data-bootstrapui-adapter-type=\"basic\" type=\"text\"\n" +
 						"\t\tclass=\"form-control\" value=\"2\" data-tbl=\"entityList\" data-tbl-page-selector=\"selector\" /></label>" +
 						"<span></span>" +
 						"<a data-tbl=\"entityList\" href=\"#\" class=\"total-pages-link\" data-tbl-page=\"2\">3</a>" +
 						"<a role=\"button\" href=\"#\" data-tbl=\"entityList\" data-tbl-page=\"2\" class=\"btn btn-link\">" +
-						"<span aria-hidden=\"true\" class=\"glyphicon glyphicon-step-forward\"></span>" +
+						"<span aria-hidden=\"true\" class=\"fas fa-step-forward\"></span>" +
 						"</a>" +
 						"</div></div>" +
 						"</div>"

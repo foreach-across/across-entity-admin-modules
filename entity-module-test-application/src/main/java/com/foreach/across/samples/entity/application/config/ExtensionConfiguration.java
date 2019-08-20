@@ -19,9 +19,9 @@ package com.foreach.across.samples.entity.application.config;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -46,6 +46,9 @@ import javax.validation.constraints.Min;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.formGroup;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.textbox;
+import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.EMBEDDED_COLLECTION_ITEM_DELETE;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.EXTENSION_NAVIGATION;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
 
@@ -64,7 +67,7 @@ public class ExtensionConfiguration implements EntityConfigurer
 		        .formView(
 				        "extension",
 				        basicSettings()
-						        .adminMenu( "/extension", item -> item.attribute( NavComponentBuilder.ATTR_ICON, new GlyphIcon( GlyphIcon.CALENDAR ) ) )
+						        .adminMenu( "/extension", item -> item.attribute( NavComponentBuilder.ATTR_ICON, iconSet( EntityModule.NAME ).icon( EXTENSION_NAVIGATION )) )
 						        .andThen( formSettings().forExtension( true ).formLayout( Grid.create( 12 ) ) )
 						        .andThen( builder -> builder.viewProcessor( new PartnerExtensionViewProcessor() ) )
 		        );
