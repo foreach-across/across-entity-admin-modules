@@ -63,7 +63,7 @@ class CheckboxesAndRadios extends ExampleController
 
 	@GetMapping("/switch")
 	String switchControls( Model model ) {
-		return render( SwitchFormElement::new, () -> options().toggle(), model );
+		return renderControls( SwitchFormElement::new, () -> options().toggle() );
 	}
 
 	private String renderControls( Supplier<? extends CheckboxFormElement> control, Supplier<OptionsFormElementBuilder> options ) {
