@@ -26,6 +26,10 @@ import javax.annotation.PostConstruct;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
+/**
+ * Register the default Font Awesome {@link IconSet} that BootstrapUiModule uses.
+ * For now the free solid and brand icons of Font Awesome 5 are implemented.
+ */
 @Configuration
 public class FontAwesomeIconSetConfiguration
 {
