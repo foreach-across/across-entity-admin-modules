@@ -18,6 +18,7 @@ package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.entity.EntityAttributes;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
@@ -38,6 +39,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.*;
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentPropertyDescriptor;
 
 /**
@@ -245,7 +248,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 										.name( "itemHandle" )
 										.data( ROLE, "item-handle" )
 										.css( "embedded-collection-item-handle" )
-										.add( BootstrapUiBuilders.glyphIcon( GlyphIcon.MENU_HAMBURGER ) )
+										.add( iconSet( EntityModule.NAME ).icon( EMBEDDED_COLLECTION_ITEM_HANDLE ) )
 								: null
 				)
 				.add(
@@ -272,7 +275,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 												link()
 														.data( ACTION, "remove-item" )
 														.title( removeItemMessage )
-														.add( glyphIcon( GlyphIcon.REMOVE ) )
+														.add( iconSet( EntityModule.NAME ).icon( EMBEDDED_COLLECTION_ITEM_DELETE )  )
 										)
 								: null
 				)
@@ -295,7 +298,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 								.data( ACTION, "add-item" )
 								.style( Style.DEFAULT )
 								.iconLeft()
-								.icon( glyphIcon( GlyphIcon.PLUS ) )
+								.icon( iconSet( EntityModule.NAME ).icon( EMBEDDED_COLLECTION_ITEM_ADD ) )
 								.title( addItemMessage )
 								.text( StringUtils.isEmpty( addItemMessage ) ? "" : " " + addItemMessage )
 

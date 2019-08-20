@@ -38,6 +38,9 @@ public class EntityModuleIcons
 	public static final String ENTITY_QUERY_SEARCH = "entity-query-search";
 	public static final String DETAIL = "detail";
 	public static final String EDIT = "edit";
+	public static final String EMBEDDED_COLLECTION_ITEM_HANDLE = "embedded-collection-item-handle";
+	public static final String EMBEDDED_COLLECTION_ITEM_ADD = "embedded-collection-item-add";
+	public static final String EMBEDDED_COLLECTION_ITEM_DELETE = "embedded-collection-item-delete";
 
 	@Autowired
 	public void registerAdminWebIconSet() {
@@ -50,6 +53,9 @@ public class EntityModuleIcons
 		adminWebIconSet.add( ENTITY_QUERY_SEARCH, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "search" ) );
 		adminWebIconSet.add( DETAIL, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "eye" ) );
 		adminWebIconSet.add( EDIT, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" ) );
+		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_HANDLE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "bars" ) );
+		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_ADD, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "plus" ) );
+		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_DELETE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" ) );
 
 		IconSetRegistry.addIconSet( EntityModule.NAME, adminWebIconSet );
 	}
