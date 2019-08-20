@@ -3,6 +3,7 @@ package com.foreach.across.modules.bootstrapui;
 import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
+import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
 import com.foreach.across.modules.web.AcrossWebModule;
 
 import java.util.Set;
@@ -24,5 +25,6 @@ public class BootstrapUiModule extends AcrossModule
 
 	@Override
 	protected void registerDefaultApplicationContextConfigurers( Set<ApplicationContextConfigurer> contextConfigurers ) {
+		contextConfigurers.add( new ComponentScanConfigurer( getClass().getPackage().getName() + ".config" ) );
 	}
 }

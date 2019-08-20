@@ -31,7 +31,7 @@ public class IconSets
 {
 	private static Map<String, IconSet> iconSets = new HashMap<>();
 
-	static IconSet iconSet( @NotNull String name ) {
+	public static IconSet iconSet( @NotNull String name ) {
 		if ( !iconSets.containsKey( name ) ) {
 			throw new IllegalArgumentException( String.format( "IconSet with name %s does not exist", name ) );
 		}
@@ -39,11 +39,11 @@ public class IconSets
 		return iconSets.get( name );
 	}
 
-	static void add( @NotNull String name, @NotNull IconSet iconSet ) {
+	public static void add( @NotNull String name, @NotNull IconSet iconSet ) {
 		iconSets.put( name, iconSet );
 	}
 
-	static void remove( @NonNull String name ) {
+	public static void remove( @NonNull String name ) {
 		iconSets.remove( name );
 	}
 }
