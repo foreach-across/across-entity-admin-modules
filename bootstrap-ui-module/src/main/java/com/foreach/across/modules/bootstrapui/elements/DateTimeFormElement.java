@@ -58,7 +58,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 	private LocalDateTime value;
 
 	public DateTimeFormElement() {
-		setAppend( div( css( css.inputGroup.text.toCssClasses() ), children( i( css.fa.solid( "calendar" ) ) ) ) );
+		setAppend( div( css.inputGroup.text, children( i( css.fa.solid( "calendar" ) ) ) ) );
 		addCssClass( CSS_JS_CONTROL, CSS_DATE );
 		setAttribute( ATTRIBUTE_DATA_DATEPICKER, new DateTimeFormElementConfiguration() );
 		setAttribute( ATTRIBUTE_DATA_TARGET_INPUT, "nearest" );

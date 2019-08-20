@@ -20,7 +20,6 @@ import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfig
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.time.LocalDate;
@@ -119,10 +118,10 @@ public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupp
 
 		// todo use static icon set
 		if ( format == DateTimeFormElementConfiguration.Format.TIME ) {
-			append( div( HtmlViewElement.Functions.css( css.inputGroup.text.toCssClasses() ), children( i( css.fa.solid( "clock" ) ) ) ) );
+			append( div( css.inputGroup.text, children( i( css.fa.solid( "clock" ) ) ) ) );
 		}
 		else {
-			append( div( HtmlViewElement.Functions.css( css.inputGroup.text.toCssClasses() ), children( i( css.fa.solid( "calendar" ) ) ) ) );
+			append( div( css.inputGroup.text, children( i( css.fa.solid( "calendar" ) ) ) ) );
 		}
 		return this;
 	}
