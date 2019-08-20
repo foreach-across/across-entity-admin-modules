@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers;
+package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.builder.InputGroupFormElementBuilderSupport;
-import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
-import com.foreach.across.modules.web.events.BuildMenuEvent;
-import com.foreach.across.modules.web.resource.WebResourceRegistry;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
-import org.springframework.context.event.EventListener;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
@@ -40,29 +33,23 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 @Controller
-@RequestMapping("/input-group")
-public class BootstrapInputGroupController
+@RequestMapping("/components/input-group")
+class InputGroup extends ExampleController
 {
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	public void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .item( "/test/form-elements/input-group", "Input group", "/input-group" ).order( 24 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/components/input-group", "Input group" );
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String renderIcon( Model model, ViewElementBuilderContext builderContext, WebResourceRegistry webResourceRegistry ) {
-		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Simple inputGroup", simpleInputGroup() );
-		generatedElements.put( "Checkboxes and radios", checkboxesAndRadios() );
-		generatedElements.put( "Multiple inputs", multipleInputs() );
-		generatedElements.put( "Multiple addons", multipleAddons() );
-		generatedElements.put( "Button addons", buttonAddons() );
-
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
+	String renderIcon() {
+		return render(
+				panel( "Simple inputGroup", simpleInputGroup() ),
+				panel( "Checkboxes and radios", checkboxesAndRadios() ),
+				panel( "Multiple inputs", multipleInputs() ),
+				panel( "Multiple addons", multipleAddons() ),
+				panel( "Button addons", buttonAddons() )
+		);
 	}
 
 	private ViewElement checkboxesAndRadios() {

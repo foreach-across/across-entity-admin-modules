@@ -14,45 +14,45 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers;
+package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
-import com.foreach.across.modules.web.events.BuildMenuEvent;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
-import org.springframework.context.event.EventListener;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
 @Controller
-@RequestMapping("/formGroup")
-public class BootstrapFormGroupController
+@RequestMapping("/components/forms/formGroup")
+class FormGroup extends ExampleController
 {
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	public void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .item( "/test/form-elements/formGroup", "Form group", "/formGroup" ).order( 1 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/components/forms/formGroup", "Form group" );
 	}
 
 	@GetMapping
-	public String renderFormGroup( Model model ) {
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Simple form group", simpleFormGroup() );
-		generatedElements.put( "Checkbox and radios", checkboxAndRadios() );
-		generatedElements.put( "Validation", validation() );
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
+	String renderFormGroup( Model model ) {
+		return render(
+				panel( "Simple form group", simpleFormGroup() ),
+				panel( "Checkbox and radios", checkboxAndRadios() ),
+				panel( "Validation", validation( model ) )
+		);
 	}
 
 	private ViewElement simpleFormGroup() {
@@ -86,10 +86,38 @@ public class BootstrapFormGroupController
 				.build();
 	}
 
-	private ViewElement validation() {
-		return container()
-				.add( formGroup().with( css.invalid ).label( "Control label" ).control( textbox().controlName( "control" ) ) )
-				.build();
+	private ViewElement validation( Model model ) {
+		TestClass target = new TestClass( "test value" );
+		BindingResult errors = new BeanPropertyBindingResult( target, "item" );
+		errors.rejectValue( "control", "broken", "broken" );
+		errors.rejectValue( "values[sub.item].name", "map-broken", "map-broken" );
+
+		model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
+		model.addAttribute( "item", target );
+
+		return form().commandObject( target )
+		             .add( formGroup().label( "Texbox" ).control( textbox().controlName( "control" ) ) )
+		             .add( formGroup().control( checkbox().controlName( "control" ).label( "Checkbox" ) ) )
+		             //.postProcessor( (builderContext, formGroup) -> formGroup.setDetectFieldErrors( tr ) ))
+		             .build();
 	}
 
+	@Getter
+	@Setter
+	public static class TestClass
+	{
+		private final Map<String, Object> values = Collections.singletonMap( "sub.item", new NamedItem() );
+		private String control;
+
+		TestClass( String control ) {
+			this.control = control;
+		}
+
+		@Getter
+		@Setter
+		static class NamedItem
+		{
+			String name;
+		}
+	}
 }

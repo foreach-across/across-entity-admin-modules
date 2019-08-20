@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,44 +14,28 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers;
+package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
-import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
-import com.foreach.across.modules.web.events.BuildMenuEvent;
-import com.foreach.across.modules.web.resource.WebResourceRegistry;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import org.springframework.context.event.EventListener;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 @Controller
-@RequestMapping("/table")
-public class BootstrapTableController
+@RequestMapping("/components/table")
+class Tables extends ExampleController
 {
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	public void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .item( "/test/form-elements/table", "Table", "/table" ).order( 14 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/components/table", "Tables" );
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String render( Model model, ViewElementBuilderContext builderContext, WebResourceRegistry webResourceRegistry ) {
-		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Full table", simpleTableElement() );
-
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
+	String render() {
+		return render( panel( "Full table", simpleTableElement() ) );
 	}
 
 	private TableViewElement simpleTableElement() {

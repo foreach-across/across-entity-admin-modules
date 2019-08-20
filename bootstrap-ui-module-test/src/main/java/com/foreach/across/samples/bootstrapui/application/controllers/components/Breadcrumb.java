@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,52 +14,36 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers;
+package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
-import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
-import com.foreach.across.modules.web.resource.WebResourceRegistry;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import org.springframework.context.event.EventListener;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 @Controller
-@RequestMapping("/breadcrumb")
-public class BreadcrumbController
+@RequestMapping("/components/breadcrumb")
+class Breadcrumb extends ExampleController
 {
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	public void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .item( "/test/form-elements/breadcrumb", "Breadcrumb", "/breadcrumb" ).order( 24 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/components/breadcrumb", "Breadcrumb" );
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String render( Model model, ViewElementBuilderContext builderContext, WebResourceRegistry webResourceRegistry ) {
-		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Simple breadcrumb nav", simpleBreadCrumbNav() );
-		generatedElements.put( "Breadcrumb nav with icons", breadcrumbWithIcons() );
-
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
+	String render() {
+		return render(
+				panel( "Simple breadcrumb nav", simpleBreadCrumbNav() ),
+				panel( "Breadcrumb nav with icons", breadcrumbWithIcons() ) );
 	}
 
 	private NodeViewElement simpleBreadCrumbNav() {

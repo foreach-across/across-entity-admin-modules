@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,56 +14,42 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers;
+package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
-import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
-import com.foreach.across.modules.web.resource.WebResourceRegistry;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import org.springframework.context.event.EventListener;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.ATTR_ICON;
 import static com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 @Controller
-@RequestMapping("/panelnav")
-public class PanelNavController
+@RequestMapping("/components/navs/panel")
+@Deprecated
+class PanelNav extends ExampleController
 {
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	public void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .item( "/test/form-elements/panelnav", "Panel nav", "/panelnav" ).order( 28 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/components/navs/panel", "Panel layout" );
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String render( Model model, ViewElementBuilderContext builderContext, WebResourceRegistry webResourceRegistry ) {
-		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Simple panel nav", simplePanelNav() );
-		generatedElements.put( "Panel nav with group", panelNavWithGroupsAndIcons() );
-		generatedElements.put( "Panel nav with styling", panelNavWithStyling() );
-		generatedElements.put( "Panel nav group without panel", panelNavGroupNotAsPanel() );
-
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
+	String render() {
+		return render(
+				panel( "Simple panel nav", simplePanelNav() ),
+				panel( "Panel nav with group", panelNavWithGroupsAndIcons() ),
+				panel( "Panel nav with styling", panelNavWithStyling() ),
+				panel( "Panel nav group without panel", panelNavGroupNotAsPanel() )
+		);
 	}
 
 	private NodeViewElement simplePanelNav() {

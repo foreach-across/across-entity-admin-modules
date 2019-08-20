@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,55 +14,36 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers;
+package com.foreach.across.samples.bootstrapui.application.controllers.form.controls;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
-import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
-import com.foreach.across.modules.web.events.BuildMenuEvent;
-import com.foreach.across.modules.web.resource.WebResourceRegistry;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @author Arne Vandamme
  * @since 1.2.0
  */
-@RequiredArgsConstructor
 @Controller
-@RequestMapping("/textbox")
-public class BootstrapTextBoxAndAreaController
+@RequestMapping("/form-controls/textbox")
+class Textbox extends ExampleController
 {
-	/**
-	 * Register the section in the administration menu.
-	 */
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	protected void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .item( "/test/form-elements/textbox", "Textbox", "/textbox" ).order( 2 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/form-controls/textbox", "Textbox" );
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String renderTextboxes( Model model, ViewElementBuilderContext builderContext, WebResourceRegistry webResourceRegistry ) {
-		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Textbox without auto-size", simpleTextbox() );
-		generatedElements.put( "Textarea with auto-size", textarea() );
-		generatedElements.put( "Textbox with auto-size", autoSizingTextbox() );
-
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
+	String renderTextboxes() {
+		return render(
+				panel( "Textbox without auto-size", simpleTextbox() ),
+				panel( "Textarea with auto-size", textarea() ),
+				panel( "Textbox with auto-size", autoSizingTextbox() )
+		);
 	}
 
 	private TextboxFormElement simpleTextbox() {

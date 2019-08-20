@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,18 @@ import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
 
 /**
- * @author Arne Vandamme
- * @since 1.0.0
+ * @author Steven Gentens
+ * @since 3.0.0
  */
-public class RadioFormElementModelWriter extends CheckboxFormElementModelWriter
+public class SwitchFormElementModelWriter extends CheckboxFormElementModelWriter
 {
 	@Override
 	protected void writeOpenElement( CheckboxFormElement control, ThymeleafModelBuilder model ) {
-		writeOpenElement( "radio", control, model );
+		writeOpenElement( "checkbox", control, model );
 	}
 
 	@Override
 	protected void writeCloseElement( CheckboxFormElement control, ThymeleafModelBuilder model ) {
-		// radio button does not have hidden value holder
 		if ( control.isWrapped() ) {
 			model.addCloseElement();
 		}
@@ -40,6 +39,6 @@ public class RadioFormElementModelWriter extends CheckboxFormElementModelWriter
 
 	@Override
 	protected String customControlCss() {
-		return "custom-radio";
+		return "custom-switch";
 	}
 }

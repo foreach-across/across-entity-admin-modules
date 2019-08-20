@@ -35,25 +35,40 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 		String text = control.getText();
 		boolean showLabel = StringUtils.isNotEmpty( text ) || control.hasChildren();
 
+		boolean asCustomControl = useCustomControlCss( control, showLabel );
+
 		// add wrapper div
 		if ( control.isWrapped() ) {
 			model.addOpenElement( "div" );
 			control.getAttributes().forEach( model::addAttribute );
-			model.addAttributeValue( "class", "form-check" );
+			if ( asCustomControl ) {
+				model.addAttributeValue( "class", "custom-control", customControlCss() );
+			}
+			else {
+				model.addAttributeValue( "class", "form-check" );
+			}
 		}
 
-		writeCheckbox( type, control, model, showLabel );
+		writeCheckbox( type, control, model, showLabel, asCustomControl );
 
 		if ( showLabel ) {
-			writeLabel( control, model );
+			writeLabel( control, model, asCustomControl );
 		}
 	}
 
-	private void writeLabel( CheckboxFormElement control, ThymeleafModelBuilder model ) {
+	protected boolean useCustomControlCss( CheckboxFormElement control, boolean hasLabel ) {
+		return control.isRenderAsCustomControl() && hasLabel && control.isWrapped();
+	}
+
+	protected String customControlCss() {
+		return "custom-checkbox";
+	}
+
+	private void writeLabel( CheckboxFormElement control, ThymeleafModelBuilder model, boolean asCustomControl ) {
 		model.addOpenElement( "label" );
 
 		if ( control.isWrapped() ) {
-			model.addAttribute( "class", "form-check-label" );
+			model.addAttribute( "class", asCustomControl ? "custom-control-label" : "form-check-label" );
 		}
 
 		model.addAttribute( "for", model.retrieveHtmlId( control ) );
@@ -63,7 +78,7 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 		model.addCloseElement();
 	}
 
-	private void writeCheckbox( String type, CheckboxFormElement control, ThymeleafModelBuilder model, boolean showLabel ) {
+	private void writeCheckbox( String type, CheckboxFormElement control, ThymeleafModelBuilder model, boolean showLabel, boolean asCustomControl ) {
 		model.addOpenElement( control.getTagName() );
 		model.addAttribute( "id", model.retrieveHtmlId( control ) );
 		model.addAttribute( "name", control.getControlName() );
@@ -80,7 +95,7 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 		model.addBooleanAttribute( "checked", control.isChecked() );
 
 		if ( control.isWrapped() ) {
-			model.addAttributeValue( "class", "form-check-input" );
+			model.addAttributeValue( "class", asCustomControl ? "custom-control-input" : "form-check-input" );
 			if ( !showLabel ) {
 				model.addAttributeValue( "class", "position-static" );
 			}

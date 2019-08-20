@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers;
+package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
-import com.foreach.across.modules.web.events.BuildMenuEvent;
-import com.foreach.across.modules.web.resource.WebResource;
-import com.foreach.across.modules.web.resource.WebResourceRegistry;
-import com.foreach.across.modules.web.resource.WebResourceRule;
-import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.Data;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,9 +30,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 
 /**
@@ -44,35 +37,23 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
  * @since 2.0.0
  */
 @Controller
-@RequestMapping("/form")
-public class BootstrapFormController
+@RequestMapping("/components/forms/form")
+class Forms extends ExampleController
 {
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	public void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .item( "/test/form-elements/form", "Form", "/form" ).order( 1 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.group( "/components/forms", "Forms" ).and()
+		    .item( "/components/forms/form", "Form" );
 	}
 
 	@GetMapping
-	public String renderForm( @ModelAttribute FormDto formDto, Model model ) {
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Simple form", buildForm( formDto ).build() );
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
-	}
-
-	@ModelAttribute
-	public void registerWebResources( WebResourceRegistry resources ) {
-		// todo: include FA only in layout?
-//		resources.apply(
-//				WebResourceRule.add( WebResource.css( "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" ) )
-//				               .toBucket( WebResource.CSS )
-//		);
+	String renderForm( @ModelAttribute FormDto formDto, Model model ) {
+		return render( panel( "Simple form", buildForm( formDto ) ) );
 	}
 
 	@PostMapping
 	public String updateForm( @ModelAttribute @Validated FormDto formDto, BindingResult bindingResult, Model model ) {
+		bindingResult.rejectValue( "number", "NaN", "Not really a number" );
 		return renderForm( formDto, model );
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,39 +18,34 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @author Arne Vandamme
- */
-public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
+public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 {
 	@Test
 	public void defaultBox() {
-		CheckboxFormElement box = new CheckboxFormElement();
+		SwitchFormElement box = new SwitchFormElement();
 		box.setControlName( "boxName" );
-		box.setValue( 123 );
 		box.setText( "label text" );
+		box.setValue( 123 );
 
 		renderAndExpect(
 				box,
-				"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>" +
+				"<div class='custom-control custom-switch' data-bootstrapui-adapter-type='checkbox'>" +
 						"<input class='custom-control-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
 						"<label class='custom-control-label' for='boxName'>label text</label>" +
-						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
 		);
 	}
 
 	@Test
-	public void defaultBoxAsNonCustom() {
-		CheckboxFormElement box = new CheckboxFormElement();
+	public void defaultBoxAsNonCustomControl() {
+		SwitchFormElement box = new SwitchFormElement();
 		box.setControlName( "boxName" );
-		box.setValue( 123 );
 		box.setText( "label text" );
+		box.setValue( 123 );
 		box.setRenderAsCustomControl( false );
 
 		renderAndExpect(
@@ -58,14 +53,13 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
 						"<input class='form-check-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
 						"<label class='form-check-label' for='boxName'>label text</label>" +
-						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
 		);
 	}
 
 	@Test
 	public void unwrappedWithLabel() {
-		CheckboxFormElement box = new CheckboxFormElement();
+		SwitchFormElement box = new SwitchFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setText( "label text" );
@@ -74,43 +68,26 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				box,
 				"<input data-bootstrapui-adapter-type='checkbox' type='checkbox' id='boxName' name='boxName' value='123' />" +
-						"<label for='boxName'>label text</label>" +
-						"<input type='hidden' name='_boxName' value='on' />"
+						"<label for='boxName'>label text</label>"
 		);
 	}
 
 	@Test
 	public void unwrappedWithoutLabel() {
-		CheckboxFormElement box = new CheckboxFormElement();
+		SwitchFormElement box = new SwitchFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setWrapped( false );
 
 		renderAndExpect(
 				box,
-				"<input data-bootstrapui-adapter-type='checkbox' type='checkbox' id='boxName' name='boxName' value='123' />" +
-						"<input type='hidden' name='_boxName' value='on' />"
-		);
-	}
-
-	@Test
-	public void withoutLabel() {
-		CheckboxFormElement box = new CheckboxFormElement();
-		box.setControlName( "boxName" );
-		box.setValue( 123 );
-
-		renderAndExpect(
-				box,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input position-static' type='checkbox' id='boxName' name='boxName' value='123' />" +
-						"<input type='hidden' name='_boxName' value='on' />" +
-						"</div>"
+				"<input data-bootstrapui-adapter-type='checkbox' type='checkbox' id='boxName' name='boxName' value='123' />"
 		);
 	}
 
 	@Test
 	public void checked() {
-		CheckboxFormElement box = new CheckboxFormElement();
+		SwitchFormElement box = new SwitchFormElement();
 		box.setValue( true );
 		box.setChecked( true );
 
@@ -124,16 +101,14 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void disabled() {
-		CheckboxFormElement box = new CheckboxFormElement();
-		box.setControlName( "myBox" );
+		SwitchFormElement box = new SwitchFormElement();
 		box.setValue( "on" );
 		box.setDisabled( true );
 
 		renderAndExpect(
 				box,
 				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input position-static' type='checkbox' name='myBox' id='myBox' value='on' disabled='disabled' />" +
-						"<input type='hidden' name='_myBox' value='on' disabled='disabled' />" +
+						"<input class='form-check-input position-static' type='checkbox' value='on' disabled='disabled' />" +
 						"</div>"
 		);
 
@@ -143,34 +118,14 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				box,
 				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input position-static' type='checkbox' name='myBox' id='myBox' value='on' readonly='readonly' />" +
-						"<input type='hidden' name='_myBox' value='on' />" +
-						"</div>"
-		);
-	}
-
-	@Test
-	public void additionalLabelText() {
-		CheckboxFormElement box = new CheckboxFormElement();
-		box.setControlName( "boxName" );
-		box.setValue( 123 );
-		box.setText( "label text" );
-		box.addChild( new NodeViewElement( "strong" ) );
-
-		renderAndExpect(
-				box,
-				"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='custom-control-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
-						"<label class='custom-control-label' for='boxName'>label text</label>" +
-						"<strong></strong>" +
-						"<input type='hidden' name='_boxName' value='on' />" +
+						"<input class='form-check-input position-static' type='checkbox' value='on' readonly='readonly' />" +
 						"</div>"
 		);
 	}
 
 	@Test
 	public void attributesAreAddedToTheWrapperIfPresent() {
-		CheckboxFormElement box = new CheckboxFormElement();
+		SwitchFormElement box = new SwitchFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setText( "label text" );
@@ -179,17 +134,16 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='one two custom-control custom-checkbox' data-role='item' data-bootstrapui-adapter-type='checkbox'>" +
+				"<div class='one two custom-control custom-switch' data-role='item' data-bootstrapui-adapter-type='checkbox'>" +
 						"<input class='custom-control-input' type='checkbox' id='boxName' name='boxName' value='123' />" +
 						"<label class='custom-control-label' for='boxName'>label text</label>" +
-						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
 		);
 	}
 
 	@Test
 	public void attributesAreAddedToTheInputIfNotWrapped() {
-		CheckboxFormElement box = new CheckboxFormElement();
+		SwitchFormElement box = new SwitchFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setText( "label text" );
@@ -199,15 +153,14 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input data-bootstrapui-adapter-type='checkbox' class='one two' data-role='item' type='checkbox' id='boxName' name='boxName' value='123' />" +
-						"<label for='boxName'>label text</label>" +
-						"<input type='hidden' name='_boxName' value='on' />"
+				"<input data-bootstrapui-adapter-type='checkbox' class='one two' type='checkbox' id='boxName' name='boxName' value='123' data-role='item' />" +
+						"<label for='boxName'>label text</label>"
 		);
 	}
 
 	@Test
 	public void attributesAreAddedToTheInputIfNotWrappedAndNoLabel() {
-		CheckboxFormElement box = new CheckboxFormElement();
+		SwitchFormElement box = new SwitchFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setAttribute( "data-role", "item" );
@@ -216,14 +169,13 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<input data-bootstrapui-adapter-type='checkbox' type='checkbox' id='boxName' name='boxName' class='one two' data-role='item' value='123' />" +
-						"<input type='hidden' name='_boxName' value='on' />"
+				"<input data-bootstrapui-adapter-type='checkbox' type='checkbox' id='boxName' name='boxName' class='one two' data-role='item' value='123' />"
 		);
 	}
 
 	@Test
 	public void updateControlName() {
-		CheckboxFormElement control = new CheckboxFormElement();
+		SwitchFormElement control = new SwitchFormElement();
 		control.setControlName( "one" );
 		render( control );
 		control.setControlName( "two" );
@@ -231,7 +183,6 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>"
 						+ "<input class='form-check-input position-static' type='checkbox' id='two' name='two' />"
-						+ "<input type='hidden' name='_two' value='on' />"
 						+ "</div>"
 		);
 
@@ -241,7 +192,7 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void updateControlNameThroughContainer() {
 		ContainerViewElement container = new ContainerViewElement();
-		FormInputElement control = new CheckboxFormElement();
+		FormInputElement control = new SwitchFormElement();
 		control.setControlName( "one" );
 		render( control );
 		container.addChild( control );
@@ -252,7 +203,6 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 				control,
 				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>"
 						+ "<input class='form-check-input position-static' type='checkbox' id='prefix.one' name='prefix.one' />"
-						+ "<input type='hidden' name='_prefix.one' value='on' />"
 						+ "</div>"
 		);
 

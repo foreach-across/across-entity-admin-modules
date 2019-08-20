@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * Find and activate all <a href="https://developer.snapappointments.com/bootstrap-select/">bootstrap-select</a> elements.
- */
-function selectInitializer( node: any ): void {
-    $( '[data-bootstrapui-select]', node ).each( function () {
-        const configuration = $( this ).data( 'bootstrapui-select' );
-        $( this ).selectpicker( configuration );
-    } );
-}
+package com.foreach.across.modules.bootstrapui.elements;
 
-export default selectInitializer;
+/**
+ * Represents a <a href="https://getbootstrap.com/docs/4.3/components/forms/#switches">bootstrap switch</a> element.
+ *
+ * @author Steven Gentens
+ * @since 3.0.0
+ */
+public class SwitchFormElement extends CheckboxFormElement
+{
+	public static final String ELEMENT_TYPE = BootstrapUiElements.SWITCH;
+
+	public SwitchFormElement() {
+		setElementType( ELEMENT_TYPE );
+	}
+}

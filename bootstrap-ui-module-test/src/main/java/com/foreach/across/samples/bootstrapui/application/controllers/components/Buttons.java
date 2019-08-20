@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,50 +14,36 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers;
+package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Size;
-import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
-import com.foreach.across.modules.web.events.BuildMenuEvent;
-import com.foreach.across.modules.web.resource.WebResourceRegistry;
-import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import org.springframework.context.event.EventListener;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 @Controller
-@RequestMapping("/button")
-public class BootstrapButtonController
+@RequestMapping("/components/buttons")
+class Buttons extends ExampleController
 {
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	public void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .item( "/test/form-elements/button", "Button", "/button" ).order( 16 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/components/buttons", "Buttons" );
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String render( Model model, ViewElementBuilderContext builderContext, WebResourceRegistry webResourceRegistry ) {
-		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
-
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Simple button", simpleButtonElement() );
-		generatedElements.put( "Button as link with icon", buttonAsLink() );
-		generatedElements.put( "Large submit button", largeSubmitButton() );
-
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
+	String render() {
+		return render(
+				panel( "Simple button", simpleButtonElement() ),
+				panel( "Button as link with icon", buttonAsLink() ),
+				panel( "Large submit button", largeSubmitButton() )
+		);
 	}
 
 	private ButtonViewElement simpleButtonElement() {

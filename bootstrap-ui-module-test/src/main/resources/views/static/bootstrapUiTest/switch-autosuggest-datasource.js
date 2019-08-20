@@ -16,10 +16,10 @@
 
 $( '#datasource-switcher' ).on( 'change', ( event ) => {
 
-    let urlToUse = "/bootstrapAutosuggest/suggest?query={{query}}";
+    let urlToUse = "/form-controls/autosuggest/suggest?query={{query}}";
 
     if ( $( event.currentTarget ).is( ':checked' ) ) {
-        urlToUse = "/bootstrapAutosuggest/suggest-more?query={{query}}"
+        urlToUse = "/form-controls/autosuggest/suggest-more?query={{query}}"
     }
 
     $( '#js-switch-source-autosuggest' ).data( 'datasets' )['default'].remote.url = urlToUse;
