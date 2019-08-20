@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Is used to add,remove or get an {@link SimpleIconSet} from the {@link IconSetRegistry} collection.
+ * Is used to add,remove or get an {@link MutableIconSet} from the {@link IconSetRegistry} collection.
  * If you are looking for an easy way to render or get an immutable icon, you can use the {@link IconSet#icon(String)}
  *
  * @author Stijn Vanhoof
@@ -32,46 +32,46 @@ import java.util.Map;
  */
 public class IconSetRegistry
 {
-	private static final Map<String, SimpleIconSet> iconSets = new HashMap<>();
+	private static final Map<String, MutableIconSet> iconSets = new HashMap<>();
 
 	/**
-	 * Get's a registered {@link SimpleIconSet} from the collection so you can modify the iconSet
+	 * Get's a registered {@link MutableIconSet} from the collection so you can modify the iconSet
 	 * If you just want to render the icon take a look at the {@link IconSet}
 	 *
-	 * @param name of the {@link SimpleIconSet} to add
-	 * @return the newly added {@link SimpleIconSet}
+	 * @param name of the {@link MutableIconSet} to add
+	 * @return the newly added {@link MutableIconSet}
 	 */
 	public static MutableIconSet getIconSet( @NotNull String name ) {
-		SimpleIconSet foundSimpleIconSet = iconSets.get( name );
+		MutableIconSet foundMutableIconSet = iconSets.get( name );
 
-		if ( foundSimpleIconSet == null ) {
+		if ( foundMutableIconSet == null ) {
 			throw new IllegalArgumentException( String.format( "IconSet with name %s does not exist", name ) );
 		}
 
-		return foundSimpleIconSet;
+		return foundMutableIconSet;
 	}
 
 	/**
-	 * Get all registered {@link SimpleIconSet} by name
+	 * Get all registered {@link MutableIconSet} by name
 	 *
-	 * @return an {@link Collections.UnmodifiableMap} of the registered {@link SimpleIconSet}
+	 * @return an {@link Collections.UnmodifiableMap} of the registered {@link MutableIconSet}
 	 */
-	public static Map<String, SimpleIconSet> getAllIconSets() {
+	public static Map<String, MutableIconSet> getAllIconSets() {
 		return Collections.unmodifiableMap( iconSets );
 	}
 
 	/**
-	 * Add an {@link SimpleIconSet} to the collection of {@link IconSetRegistry}
+	 * Add an {@link MutableIconSet} to the collection of {@link IconSetRegistry}
 	 *
-	 * @param name          the {@link SimpleIconSet} will be registered under
-	 * @param simpleIconSet to register
+	 * @param name          the {@link MutableIconSet} will be registered under
+	 * @param MutableIconSet to register
 	 */
-	public static void addIconSet( @NotNull String name, @NotNull SimpleIconSet simpleIconSet ) {
-		iconSets.put( name, simpleIconSet );
+	public static void addIconSet( @NotNull String name, @NotNull MutableIconSet MutableIconSet ) {
+		iconSets.put( name, MutableIconSet );
 	}
 
 	/**
-	 * Remove an {@link SimpleIconSet} from the {@link IconSetRegistry}
+	 * Remove an {@link MutableIconSet} from the {@link IconSetRegistry}
 	 *
 	 * @param name
 	 */
@@ -80,7 +80,7 @@ public class IconSetRegistry
 	}
 
 	/**
-	 * Remove all {@link SimpleIconSet}  from the {@link IconSetRegistry}
+	 * Remove all {@link MutableIconSet}  from the {@link IconSetRegistry}
 	 */
 	public void removeAllIconSets() {
 		iconSets.clear();
