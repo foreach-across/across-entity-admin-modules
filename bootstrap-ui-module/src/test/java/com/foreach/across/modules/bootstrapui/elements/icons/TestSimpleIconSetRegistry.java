@@ -16,6 +16,8 @@
 
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.sun.deploy.panel.ExceptionListDialog;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,6 +60,11 @@ public class TestSimpleIconSetRegistry
 		IconSetRegistry.addIconSet( "test", simpleIconSetThatWillOverride );
 
 		assertThat( IconSetRegistry.getIconSet( "test" ) ).isEqualTo( simpleIconSetThatWillOverride );
+		MutableIconSet previouslySetIconSet = IconSetRegistry.getIconSet( "test" );
+		previouslySetIconSet.add( "sample-icon", (iconName) -> new NodeViewElement( "i" ) );
+		IconSetRegistry.addIconSet( "test",  previouslySetIconSet);
+
+		assertThat( IconSetRegistry.getIconSet( "test" ) ).isEqualTo( previouslySetIconSet );
 	}
 
 	@Test
