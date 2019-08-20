@@ -16,9 +16,9 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
-import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.attribute;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 /**
@@ -148,14 +149,13 @@ public class DateTimeFormElement extends InputGroupFormElement
 		}
 
 		List<ViewElement> elements = new ArrayList<>( super.getChildren() );
-		// todo find a better way to do this
-		elements.stream()
-		        .filter( e -> NodeViewElement.class.isAssignableFrom( e.getClass() ) && ( (NodeViewElement) e ).hasCssClass( "input-group-append" ) )
-		        .findFirst()
-		        .ifPresent( e -> {
-			        ( (NodeViewElement) e ).setAttribute( ATTRIBUTE_DATA_TOGGLE, "datetimepicker" );
-			        ( (NodeViewElement) e ).setAttribute( ATTRIBUTE_DATA_TARGET, getTarget() );
-		        } );
+
+		ViewElement append = getAppend();
+		if ( AbstractNodeViewElement.class.isAssignableFrom( append.getClass() ) ) {
+			append.set( attribute( ATTRIBUTE_DATA_TOGGLE, "datetimepicker" ) )
+			      .set( attribute( ATTRIBUTE_DATA_TARGET, getTarget() ) );
+		}
+
 		elements.add( hidden );
 		return elements;
 	}
