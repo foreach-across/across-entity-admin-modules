@@ -200,18 +200,21 @@ public class ViewElementFieldset extends ContainerViewElement
 	}
 
 	@Override
-	public void addChild( ViewElement element ) {
+	public ViewElementFieldset addChild( ViewElement element ) {
 		getBody().addChild( element );
+		return this;
 	}
 
 	@Override
-	public void addChildren( Collection<? extends ViewElement> elements ) {
+	public ViewElementFieldset addChildren( Collection<? extends ViewElement> elements ) {
 		getBody().addChildren( elements );
+		return this;
 	}
 
 	@Override
-	public void addFirstChild( ViewElement element ) {
+	public ViewElementFieldset addFirstChild( ViewElement element ) {
 		getBody().addFirstChild( element );
+		return this;
 	}
 
 	@Override
@@ -220,8 +223,9 @@ public class ViewElementFieldset extends ContainerViewElement
 	}
 
 	@Override
-	public void clearChildren() {
+	public ViewElementFieldset clearChildren() {
 		super.clearChildren();
+		return this;
 	}
 
 	@Override
