@@ -64,20 +64,21 @@ public class BootstrapDatepickerController
 		webResourceRegistry.addPackage( BootstrapUiFormElementsWebResources.NAME );
 
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Null value LocalDateTime", datetime().value( (LocalDateTime) null ).build() );
-		generatedElements.put( "Null value LocalDate", datetime().value( (LocalDate) null ).build() );
-		generatedElements.put( "Null value LocalTime", datetime().value( (LocalTime) null ).build() );
-		generatedElements.put( "Null value Date", datetime().value( (Date) null ).build() );
-		generatedElements.put( "Simple datepicker (Date)", simpleDatepicker_Date() );
-		generatedElements.put( "Simple datepicker (LocalDate)", simpleDatepicker_LocalDate() );
-		generatedElements.put( "Simple datepicker (LocalTime)", simpleDatepicker_LocalTime() );
-		generatedElements.put( "Simple datepicker (LocalDateTime)", simpleDatepicker_LocalDateTime() );
-		generatedElements.put( "Time format", datepickerWithTimeFormat() );
-		generatedElements.put( "Date format", datepickerWithDateFormat() );
-		generatedElements.put( "Localized fr_FR (Date)", datepickerLocalizedfrFR_Date() );
-		generatedElements.put( "Localized fr_FR (LocalDateTime)", datepickerLocalizedfrFR_LocalDateTime() );
-		generatedElements.put( "Localized ja_JP (Date)", datepickerLocalizedjaJP_Date() );
-		generatedElements.put( "Localized ja_JP (LocalDateTime)", datepickerLocalizedjaJP_LocalDateTime() );
+		generatedElements.put( "Null value LocalDateTime", datetime().controlName( "dp1" ).value( (LocalDateTime) null ).build() );
+		generatedElements.put( "Null value LocalDate", datetime().controlName( "dp2" ).value( (LocalDate) null ).build() );
+		generatedElements.put( "Null value LocalTime", datetime().controlName( "dp3" ).value( (LocalTime) null ).build() );
+		generatedElements.put( "Null value Date", datetime().controlName( "dp4" ).value( (Date) null ).build() );
+		generatedElements.put( "Simple datepicker (Date)", simpleDatepicker_Date().setControlName( "dp5" ) );
+		generatedElements.put( "Simple datepicker (LocalDate)", simpleDatepicker_LocalDate().setControlName( "dp6" ) );
+		generatedElements.put( "Simple datepicker (LocalTime)", simpleDatepicker_LocalTime().setControlName( "dp7" ) );
+		generatedElements.put( "Simple datepicker (LocalDateTime)", simpleDatepicker_LocalDateTime().setControlName( "dp8" ) );
+		generatedElements.put( "Time format", datepickerWithTimeFormat().setControlName( "dp9" ) );
+		generatedElements.put( "Date format", datepickerWithDateFormat().setControlName( "dp10" ) );
+		generatedElements.put( "Datepicker with control buttons", datepickerWithAllButtons().setControlName( "dp11" ) );
+		generatedElements.put( "Localized fr_FR (Date)", datepickerLocalizedfrFR_Date().setControlName( "dp12" ) );
+		generatedElements.put( "Localized fr_FR (LocalDateTime)", datepickerLocalizedfrFR_LocalDateTime().setControlName( "dp13" ) );
+		generatedElements.put( "Localized ja_JP (Date)", datepickerLocalizedjaJP_Date().setControlName( "dp14" ) );
+		generatedElements.put( "Localized ja_JP (LocalDateTime)", datepickerLocalizedjaJP_LocalDateTime().setControlName( "dp15" ) );
 
 		model.addAttribute( "generatedElements", generatedElements );
 
@@ -119,6 +120,19 @@ public class BootstrapDatepickerController
 		return datetime()
 				.value( LocalDateTime.now() )
 				.format( DateTimeFormElementConfiguration.Format.DATE )
+				.build();
+	}
+
+	private DateTimeFormElement datepickerWithAllButtons(){
+		DateTimeFormElementBuilder builder = datetime();
+		DateTimeFormElementConfiguration config = builder.getConfiguration();
+		config.setShowClearButton( true );
+		config.setShowCloseButton( true );
+		config.setShowTodayButton( true );
+		config.setFormat( DateTimeFormElementConfiguration.Format.DATETIME_FULL );
+		config.setLocalizePatterns( false );
+		return builder
+				.configuration( config )
 				.build();
 	}
 
