@@ -18,6 +18,7 @@ package com.foreach.across.samples.bootstrapui.application.controllers.form.cont
 
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.RadioFormElement;
+import com.foreach.across.modules.bootstrapui.elements.SwitchFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
@@ -58,6 +59,11 @@ class CheckboxesAndRadios extends ExampleController
 	@GetMapping("/radio")
 	String radioControls( Model model ) {
 		return renderControls( RadioFormElement::new, () -> options().radio() );
+	}
+
+	@GetMapping("/switch")
+	String switchControls( Model model ) {
+		return render( SwitchFormElement::new, () -> options().toggle(), model );
 	}
 
 	private String renderControls( Supplier<? extends CheckboxFormElement> control, Supplier<OptionsFormElementBuilder> options ) {
