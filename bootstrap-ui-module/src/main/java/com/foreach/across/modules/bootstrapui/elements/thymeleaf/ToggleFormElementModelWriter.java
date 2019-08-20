@@ -23,7 +23,7 @@ import com.foreach.across.modules.web.thymeleaf.ThymeleafModelBuilder;
  * @author Steven Gentens
  * @since 3.0.0
  */
-public class SwitchFormElementModelWriter extends CheckboxFormElementModelWriter
+public class ToggleFormElementModelWriter extends CheckboxFormElementModelWriter
 {
 	@Override
 	protected void writeOpenElement( CheckboxFormElement control, ThymeleafModelBuilder model ) {

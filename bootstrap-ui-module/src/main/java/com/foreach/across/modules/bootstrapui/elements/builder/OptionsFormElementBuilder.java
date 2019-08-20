@@ -118,7 +118,7 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 	}
 
 	public OptionsFormElementBuilder toggle() {
-		type = Type.SWITCH;
+		type = Type.TOGGLE;
 		return this;
 	}
 
@@ -186,7 +186,7 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 		try {
 			AbstractNodeViewElement control;
 
-			if ( type == Type.CHECKBOX || type == Type.RADIO || type == Type.SWITCH ) {
+			if ( type == Type.CHECKBOX || type == Type.RADIO || type == Type.TOGGLE ) {
 				control = createBoxDiv();
 				control.setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "container" );
 
@@ -236,6 +236,6 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 		SELECT,
 		CHECKBOX,
 		RADIO,
-		SWITCH;
+		TOGGLE;
 	}
 }

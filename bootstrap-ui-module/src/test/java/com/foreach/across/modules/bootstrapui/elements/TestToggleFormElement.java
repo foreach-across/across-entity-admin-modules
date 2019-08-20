@@ -22,11 +22,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
+public class TestToggleFormElement extends AbstractBootstrapViewElementTest
 {
 	@Test
 	public void defaultBox() {
-		SwitchFormElement box = new SwitchFormElement();
+		ToggleFormElement box = new ToggleFormElement();
 		box.setControlName( "boxName" );
 		box.setText( "label text" );
 		box.setValue( 123 );
@@ -42,7 +42,7 @@ public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void defaultBoxAsNonCustomControl() {
-		SwitchFormElement box = new SwitchFormElement();
+		ToggleFormElement box = new ToggleFormElement();
 		box.setControlName( "boxName" );
 		box.setText( "label text" );
 		box.setValue( 123 );
@@ -59,7 +59,7 @@ public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void unwrappedWithLabel() {
-		SwitchFormElement box = new SwitchFormElement();
+		ToggleFormElement box = new ToggleFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setText( "label text" );
@@ -74,7 +74,7 @@ public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void unwrappedWithoutLabel() {
-		SwitchFormElement box = new SwitchFormElement();
+		ToggleFormElement box = new ToggleFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setWrapped( false );
@@ -87,7 +87,7 @@ public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void checked() {
-		SwitchFormElement box = new SwitchFormElement();
+		ToggleFormElement box = new ToggleFormElement();
 		box.setValue( true );
 		box.setChecked( true );
 
@@ -101,7 +101,7 @@ public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void disabled() {
-		SwitchFormElement box = new SwitchFormElement();
+		ToggleFormElement box = new ToggleFormElement();
 		box.setValue( "on" );
 		box.setDisabled( true );
 
@@ -125,7 +125,7 @@ public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void attributesAreAddedToTheWrapperIfPresent() {
-		SwitchFormElement box = new SwitchFormElement();
+		ToggleFormElement box = new ToggleFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setText( "label text" );
@@ -143,7 +143,7 @@ public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void attributesAreAddedToTheInputIfNotWrapped() {
-		SwitchFormElement box = new SwitchFormElement();
+		ToggleFormElement box = new ToggleFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setText( "label text" );
@@ -160,7 +160,7 @@ public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void attributesAreAddedToTheInputIfNotWrappedAndNoLabel() {
-		SwitchFormElement box = new SwitchFormElement();
+		ToggleFormElement box = new ToggleFormElement();
 		box.setControlName( "boxName" );
 		box.setValue( 123 );
 		box.setAttribute( "data-role", "item" );
@@ -175,7 +175,7 @@ public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void updateControlName() {
-		SwitchFormElement control = new SwitchFormElement();
+		ToggleFormElement control = new ToggleFormElement();
 		control.setControlName( "one" );
 		render( control );
 		control.setControlName( "two" );
@@ -192,7 +192,7 @@ public class TestSwitchFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void updateControlNameThroughContainer() {
 		ContainerViewElement container = new ContainerViewElement();
-		FormInputElement control = new SwitchFormElement();
+		FormInputElement control = new ToggleFormElement();
 		control.setControlName( "one" );
 		render( control );
 		container.addChild( control );

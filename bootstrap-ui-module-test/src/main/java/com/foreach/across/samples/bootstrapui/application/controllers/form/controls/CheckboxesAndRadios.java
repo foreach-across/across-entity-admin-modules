@@ -18,7 +18,7 @@ package com.foreach.across.samples.bootstrapui.application.controllers.form.cont
 
 import com.foreach.across.modules.bootstrapui.elements.CheckboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.RadioFormElement;
-import com.foreach.across.modules.bootstrapui.elements.SwitchFormElement;
+import com.foreach.across.modules.bootstrapui.elements.ToggleFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
@@ -63,7 +63,7 @@ class CheckboxesAndRadios extends ExampleController
 
 	@GetMapping("/switch")
 	String switchControls( Model model ) {
-		return renderControls( SwitchFormElement::new, () -> options().toggle() );
+		return renderControls( ToggleFormElement::new, () -> options().toggle() );
 	}
 
 	private String renderControls( Supplier<? extends CheckboxFormElement> control, Supplier<OptionsFormElementBuilder> options ) {
@@ -73,7 +73,8 @@ class CheckboxesAndRadios extends ExampleController
 						.add( hr() )
 						.add( options.get()
 						             .controlName( "optionsControl" )
-						             .add( option().text( "option 1" ).value( 1 ) )
+						             .add( option().text( "" ).value( 0 ) )
+								             .add( option().text( "option 1" ).value( 1 ) )
 						             .add( option().text( "option 2" ).value( 2 ).selected() )
 						             .add( option().text( "option 3" ).value( 3 ) ) ),
 				panel( "Browser native controls" )

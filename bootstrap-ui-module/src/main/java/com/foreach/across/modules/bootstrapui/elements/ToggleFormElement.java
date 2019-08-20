@@ -22,11 +22,11 @@ package com.foreach.across.modules.bootstrapui.elements;
  * @author Steven Gentens
  * @since 3.0.0
  */
-public class SwitchFormElement extends CheckboxFormElement
+public class ToggleFormElement extends CheckboxFormElement
 {
-	public static final String ELEMENT_TYPE = BootstrapUiElements.SWITCH;
+	public static final String ELEMENT_TYPE = BootstrapUiElements.TOGGLE;
 
-	public SwitchFormElement() {
+	public ToggleFormElement() {
 		setElementType( ELEMENT_TYPE );
 	}
 }

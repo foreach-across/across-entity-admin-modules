@@ -51,13 +51,13 @@ public class CheckboxFormElementModelWriter extends FormControlElementModelWrite
 
 		writeCheckbox( type, control, model, showLabel, asCustomControl );
 
-		if ( showLabel ) {
+		if ( showLabel || asCustomControl ) {
 			writeLabel( control, model, asCustomControl );
 		}
 	}
 
 	protected boolean useCustomControlCss( CheckboxFormElement control, boolean hasLabel ) {
-		return control.isRenderAsCustomControl() && hasLabel && control.isWrapped();
+		return control.isRenderAsCustomControl() /*&& hasLabel*/ && control.isWrapped();
 	}
 
 	protected String customControlCss() {

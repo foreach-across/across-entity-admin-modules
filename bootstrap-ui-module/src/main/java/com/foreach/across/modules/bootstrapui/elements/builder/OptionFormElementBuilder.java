@@ -87,7 +87,7 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 	}
 
 	public OptionFormElementBuilder<T> toggle() {
-		return type( SWITCH );
+		return type( TOGGLE );
 	}
 
 	public OptionFormElementBuilder<T> type( OptionsFormElementBuilder.Type type ) {
@@ -287,8 +287,8 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 				radio.setChecked( selected );
 				radio.setWrapped( wrapped );
 				return radio;
-			case SWITCH:
-				SwitchFormElement toggle = new SwitchFormElement();
+			case TOGGLE:
+				ToggleFormElement toggle = new ToggleFormElement();
 				toggle.setText( builderContext.resolveText( label != null ? label : text ) );
 				toggle.setValue( value );
 				toggle.setChecked( selected );

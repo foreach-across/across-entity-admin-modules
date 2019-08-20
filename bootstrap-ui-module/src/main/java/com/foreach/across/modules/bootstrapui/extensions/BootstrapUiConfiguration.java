@@ -63,8 +63,8 @@ class BootstrapUiConfiguration
 			                                         new CheckboxFormElementModelWriter() );
 			modelWriterRegistry.registerModelWriter( RadioFormElement.class,
 			                                         new RadioFormElementModelWriter() );
-			modelWriterRegistry.registerModelWriter( SwitchFormElement.class,
-			                                         new SwitchFormElementModelWriter() );
+			modelWriterRegistry.registerModelWriter( ToggleFormElement.class,
+			                                         new ToggleFormElementModelWriter() );
 			modelWriterRegistry.registerModelWriter( SelectFormElement.class,
 			                                         new SelectFormElementModelWriter() );
 			modelWriterRegistry.registerModelWriter( SelectFormElement.Option.class,

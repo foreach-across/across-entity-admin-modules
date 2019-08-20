@@ -22,7 +22,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestOptionsAsSwitchBuilder extends AbstractBootstrapViewElementTest
+public class TestOptionsAsToggleBuilder extends AbstractBootstrapViewElementTest
 {
 	protected OptionsFormElementBuilder builder;
 

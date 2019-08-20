@@ -35,7 +35,7 @@ public interface BootstrapUiElements extends StandardViewElements
 	String FORM = "bootstrapForm";
 	String CHECKBOX = "bootstrapCheckbox";
 	String RADIO = "bootstrapRadio";
-	String SWITCH = "bootstrapSwitch";
+	String TOGGLE = "bootstrapToggleSwitch";
 	String SELECT = "bootstrapSelect";
 	String MULTI_CHECKBOX = "bootstrapMultiCheckbox";
 	String STATIC_CONTROL = "bootstrapStaticControl";
