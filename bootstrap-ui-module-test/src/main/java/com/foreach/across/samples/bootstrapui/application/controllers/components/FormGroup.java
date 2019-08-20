@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers;
+package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
-import com.foreach.across.modules.web.events.BuildMenuEvent;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -29,35 +29,30 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
-import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * @author Arne Vandamme
  * @since 2.0.0
  */
 @Controller
-@RequestMapping("/formGroup")
-public class BootstrapFormGroupController
+@RequestMapping("/components/forms/formGroup")
+class FormGroup extends ExampleController
 {
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	public void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .item( "/test/form-elements/formGroup", "Form group", "/formGroup" ).order( 1 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/components/forms/formGroup", "Form group" );
 	}
 
 	@GetMapping
-	public String renderFormGroup( Model model ) {
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Simple form group", simpleFormGroup() );
-		generatedElements.put( "Checkbox and radios", checkboxAndRadios() );
-		generatedElements.put( "Validation", validation( model ) );
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
+	String renderFormGroup( Model model ) {
+		return render(
+				panel( "Simple form group", simpleFormGroup() ),
+				panel( "Checkbox and radios", checkboxAndRadios() ),
+				panel( "Validation", validation( model ) )
+		);
 	}
 
 	private ViewElement simpleFormGroup() {

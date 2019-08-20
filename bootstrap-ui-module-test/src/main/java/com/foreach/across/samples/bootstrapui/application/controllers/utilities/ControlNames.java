@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers.examples;
+package com.foreach.across.samples.bootstrapui.application.controllers.utilities;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
-import com.foreach.across.modules.web.events.BuildMenuEvent;
-import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.Data;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 
@@ -39,15 +35,12 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
  * @since 2.0.0
  */
 @Controller
-@RequestMapping("/examples/todo")
-public class ExamplesController
+@RequestMapping("/utilities/control-names")
+class ControlNames extends ExampleController
 {
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	protected void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .group( "/examples", "Examples" ).and()
-		       .item( "/examples/todo", "Control names", "/examples/todo" ).order( 1 ).and()
-		       .item( "/examples/scripts", "Scripts", "/examples/scripts" ).order( 2 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/utilities/control-names", "Control names" );
 	}
 
 	@Data
@@ -58,7 +51,7 @@ public class ExamplesController
 	}
 
 	@GetMapping
-	public String todoForm( Model model ) {
+	String render( Model model ) {
 		FormViewElementBuilder form = BootstrapUiBuilders.form();
 
 		for ( int i = 0; i < 3; i++ ) {
@@ -66,12 +59,10 @@ public class ExamplesController
 			form.add( createTodoForm( todo ).postProcessor( BootstrapElementUtils.prefixControlNames( "todoList[" + i + "]" ) ) );
 		}
 
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Non-prefixed control names", createTodoForm( new Todo() ).build() );
-		generatedElements.put( "Prefixed control names form", form.build() );
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
+		return render(
+				panel( "Non-prefixed control names", createTodoForm( new Todo() ) ),
+				panel( "Prefixed control names form", form )
+		);
 	}
 
 	private ContainerViewElementBuilder createTodoForm( Todo item ) {

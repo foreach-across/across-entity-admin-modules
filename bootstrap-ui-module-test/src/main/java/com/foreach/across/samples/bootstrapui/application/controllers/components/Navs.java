@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers;
+package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.web.events.BuildMenuEvent;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
@@ -27,8 +26,8 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +40,8 @@ import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.nav;
 
 /**
  * Generates Bootstrap based tabs from a {@link Menu} instance.
@@ -51,33 +51,27 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
  */
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/bootstrapNav")
-public class BootstrapMenuController
+@RequestMapping("/components/navs")
+class Navs extends ExampleController
 {
-	private final BootstrapUiComponentFactory bootstrapUiComponentFactory;
-
-	/**
-	 * Register the section in the administration menu.
-	 */
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	public void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       //.group( "/test", "Functionality demos" ).and()
-		       .group( "/test/menu", "Bootstrap menu rendering" ).and()
-		       .item( "/test/menu/simple", "Simple navigation", "/bootstrapNav/simple" ).order( 1 ).and()
-		       .item( "/test/menu/navbar", "Navbar navigation", "/bootstrapNav/navbar" ).order( 2 ).and()
-		       .item( "/test/menu/tabs", "Tabs navigation", "/bootstrapNav/tabs" ).order( 3 ).and()
-		       .item( "/test/menu/pills", "Pills navigation", "/bootstrapNav/pills" ).order( 4 ).and()
-		       .item( "/test/menu/pills-stacked", "Stacked pills navigation", "/bootstrapNav/pills-stacked" )
-		       .order( 5 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu
+				//.group( "/test", "Functionality demos" ).and()
+				.group( "/components/navs", "Navs" ).and()
+				.item( "/components/navs/simple", "Default" ).and()
+				.item( "/components/navs/tabs", "Tabs" ).and()
+				.item( "/components/navs/pills", "Pills" ).and()
+				.item( "/components/navs/pills-stacked", "Vertical layout" ).and()
+				.item( "/components/navbar", "Navbar", "/components/navs/navbar" )
+		;
 	}
 
 	/**
 	 * Entry point that adds the different menus to the model.
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/{type}")
-	public String listMenus( @PathVariable String type, Model model, ViewElementBuilderContext builderContext ) {
-
+	String listMenus( @PathVariable String type, Model model, ViewElementBuilderContext builderContext ) {
 		Map<String, Consumer<PathBasedMenuBuilder>> menusToGenerate = new LinkedHashMap<>();
 		menusToGenerate.put( "Simple menu without dropdowns and no selected item", this::simpleMenu );
 		menusToGenerate.put( "Simple menu without dropdowns and with a selected item", this::simpleMenuWithSelected );
@@ -86,17 +80,15 @@ public class BootstrapMenuController
 		menusToGenerate.put( "Selected item used as group name", this::twoLevelGroupsWithSelected );
 		menusToGenerate.put( "Icon only menu items with custom HTML attributes", this::iconOnlyItems );
 
-		Map<String, ViewElement> generatedMenus = new LinkedHashMap<>();
-		menusToGenerate.forEach(
-				( title, consumer ) -> {
-					Menu menu = buildMenu( consumer );
-					generatedMenus.put( title, menuComponentBuilder( type, menu ).build( builderContext ) );
-				}
+		return render(
+				menusToGenerate.entrySet()
+				               .stream()
+				               .map( e -> {
+					               Menu menu = buildMenu( e.getValue() );
+					               return panel( e.getKey(), menuComponentBuilder( type, menu ) );
+				               } )
+				               .toArray()
 		);
-
-		model.addAttribute( "generatedMenus", generatedMenus );
-
-		return "th/bootstrapUiTest/menuRendering";
 	}
 
 	private void simpleMenu( PathBasedMenuBuilder menu ) {
@@ -206,7 +198,7 @@ public class BootstrapMenuController
 	}
 
 	private ViewElementBuilder<NodeViewElement> menuComponentBuilder( String type, Menu menu ) {
-		DefaultNavComponentBuilder menuBuilder = bootstrapUiComponentFactory.nav( menu );
+		DefaultNavComponentBuilder menuBuilder = BootstrapUiBuilders.nav( menu );
 
 		switch ( type ) {
 			case "navbar":

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers.examples;
+package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.elements.ScriptViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 
@@ -36,19 +34,22 @@ import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilder
  * @since 2.1.1
  */
 @Controller
-@RequestMapping("/examples/scripts")
-public class ScriptController
+@RequestMapping("/components/scripts")
+class Scripts extends ExampleController
 {
-	@GetMapping
-	public String todoForm( Model model ) {
-		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Simple script", simpleJavascript() );
-		generatedElements.put( "Simple HTML template", simpleHtmlTemplate() );
-		generatedElements.put( "Nested HTML template", nestedHtmlTemplate() );
-		generatedElements.put( "Double nested HTML template", doubleNestedTemplate() );
-		model.addAttribute( "generatedElements", generatedElements );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/components/scripts", "Scripts" );
+	}
 
-		return "th/bootstrapUiTest/elementsRendering";
+	@GetMapping
+	String render() {
+		return render(
+				panel( "Simple script", simpleJavascript() ),
+				panel( "Simple HTML template", simpleHtmlTemplate() ),
+				panel( "Nested HTML template", nestedHtmlTemplate() ),
+				panel( "Double nested HTML template", doubleNestedTemplate() )
+		);
 	}
 
 	private ViewElement simpleJavascript() {

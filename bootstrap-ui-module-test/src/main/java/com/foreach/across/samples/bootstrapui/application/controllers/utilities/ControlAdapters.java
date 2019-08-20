@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.foreach.across.samples.bootstrapui.application.controllers.examples;
+package com.foreach.across.samples.bootstrapui.application.controllers.utilities;
 
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiViewElementAttributes;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
-import com.foreach.across.modules.web.events.BuildMenuEvent;
+import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
-import org.springframework.context.event.EventListener;
+import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,16 +41,12 @@ import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSu
  * @since 2.2.0
  */
 @Controller
-@RequestMapping("/control-adapters")
-public class ControlAdapterController
+@RequestMapping("/utilities/control-adapters")
+class ControlAdapters extends ExampleController
 {
-	/**
-	 * Register the section in the administration menu.
-	 */
-	@EventListener(condition = "#navMenu.menuName=='navMenu'")
-	public void registerMenuItems( BuildMenuEvent navMenu ) {
-		navMenu.builder()
-		       .item( "/examples/control-adapters", "Control adapters", "/control-adapters" ).order( 3 );
+	@Override
+	protected void menuItems( PathBasedMenuBuilder menu ) {
+		menu.item( "/utilities/control-adapters", "Control adapters" );
 	}
 
 	@GetMapping
@@ -82,7 +78,8 @@ public class ControlAdapterController
 		                                      .build() );
 		generatedElements.put( "Autosuggest",
 		                       autosuggest().controlName( "ca-autosuggest" )
-		                                    .configuration( withDataSet( dataset -> dataset.remoteUrl( "/bootstrapAutosuggest/suggest?query={{query}}" ) ) )
+		                                    .configuration(
+				                                    withDataSet( dataset -> dataset.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" ) ) )
 		                                    .build() );
 		generatedElements.put( "Textbox", textbox().controlName( "ca-textbox" ).build() );
 		generatedElements.put( "Autosizing textbox", textbox().autoSize().controlName( "ca-textbox-autosize" ).build() );
@@ -94,9 +91,7 @@ public class ControlAdapterController
 		generatedElements.put( "Numeric", numeric().configuration( numericFormElementConfiguration ).controlName( "ca-numeric" ).build() );
 		generatedElements.put( "Numeric without formatting", numeric().controlName( "ca-numeric-noformat" ).build() );
 
-		model.addAttribute( "generatedElements", generatedElements );
-
-		return "th/bootstrapUiTest/elementsRendering";
+		return render( generatedElements.entrySet().stream().map( e -> panel( e.getKey(), e.getValue() ) ).toArray() );
 	}
 
 	private void addOptionFormElements( Map<String, ViewElement> generatedElements, String identifier ) {
