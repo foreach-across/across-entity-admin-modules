@@ -16,9 +16,11 @@
 
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.Mockito.mock;
 
@@ -29,7 +31,7 @@ public class TestIconSets
 {
 	private IconSet initialIconSet = mock( IconSet.class );
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		IconSets.add( "test", initialIconSet );
 	}
@@ -39,31 +41,36 @@ public class TestIconSets
 		IconSet testIconSet = mock( IconSet.class );
 
 		IconSets.add( "bootstrapUiModule", testIconSet );
-		Assert.assertEquals( IconSets.iconSet( "bootstrapUiModule" ), testIconSet );
-		Assert.assertEquals( IconSets.iconSet( "test" ), initialIconSet );
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void invalidIconSetThrowIllegalArgumentException() {
-		IconSets.iconSet( "unknown" );
+		assertThat( IconSets.iconSet( "bootstrapUiModule" ) ).isEqualTo( testIconSet );
+		assertThat( IconSets.iconSet( "test" ) ).isEqualTo( initialIconSet );
 	}
 
 	@Test
-	public void overrideIconSet(){
+	public void invalidIconSetThrowIllegalArgumentException() {
+		Assertions.assertThrows( IllegalArgumentException.class, () -> {
+			IconSets.iconSet( "unknown" );
+		} );
+	}
+
+	@Test
+	public void overrideIconSet() {
 		IconSet iconSetThatWillOverride = mock( IconSet.class );
 		IconSets.add( "test", iconSetThatWillOverride );
 
-		Assert.assertEquals( IconSets.iconSet( "test" ), iconSetThatWillOverride );
+		assertThat( IconSets.iconSet( "test" ) ).isEqualTo( iconSetThatWillOverride );
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void removeIconSet() {
 		IconSet testIconSet = mock( IconSet.class );
 
 		IconSets.add( "bootstrapUiModule", testIconSet );
-		Assert.assertEquals( IconSets.iconSet( "bootstrapUiModule" ), testIconSet );
+		assertThat( IconSets.iconSet( "bootstrapUiModule" ) ).isEqualTo( testIconSet );
 
 		IconSets.remove( "bootstrapUiModule" );
-		IconSets.iconSet( "bootstrapUiModule" );
+
+		Assertions.assertThrows( IllegalArgumentException.class, () -> {
+			IconSets.iconSet( "bootstrapUiModule" );
+		} );
 	}
 }

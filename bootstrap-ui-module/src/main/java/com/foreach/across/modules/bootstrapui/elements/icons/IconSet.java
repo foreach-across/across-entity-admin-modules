@@ -17,6 +17,7 @@
 package com.foreach.across.modules.bootstrapui.elements.icons;
 
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
@@ -29,7 +30,6 @@ import java.util.function.Function;
  *
  * @author Stijn Vanhoof
  */
-@RequiredArgsConstructor
 public class IconSet
 {
 	/**
@@ -40,6 +40,10 @@ public class IconSet
 	 */
 	private final Function<String, AbstractNodeViewElement> defaultIconResolver;
 	private Map<String, Function<String, AbstractNodeViewElement>> registeredIconResolvers = new HashMap<>();
+
+	public IconSet( Function<String, AbstractNodeViewElement> defaultIconResolver ) {
+		this.defaultIconResolver = defaultIconResolver;
+	}
 
 	/**
 	 * Returns an icon with from the current {@link IconSet}
@@ -63,9 +67,10 @@ public class IconSet
 
 	/**
 	 * Removes an icon from the {@link IconSet}
+	 *
 	 * @param name of the icon to be removed
 	 */
-	public void remove(@NotNull String name) {
+	public void remove( @NotNull String name ) {
 		registeredIconResolvers.remove( name );
 	}
 }
