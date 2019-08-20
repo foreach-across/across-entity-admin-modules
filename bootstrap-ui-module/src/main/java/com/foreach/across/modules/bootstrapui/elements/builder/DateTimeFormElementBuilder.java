@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfig
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.time.LocalDate;
@@ -28,6 +29,8 @@ import java.time.LocalTime;
 import java.util.Date;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.div;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 /**
@@ -116,10 +119,10 @@ public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupp
 
 		// todo use static icon set
 		if ( format == DateTimeFormElementConfiguration.Format.TIME ) {
-			append( i( css.fa.solid( "clock" ) ) );
+			append( div( HtmlViewElement.Functions.css( css.inputGroup.text.toCssClasses() ), children( i( css.fa.solid( "clock" ) ) ) ) );
 		}
 		else {
-			append( i( css.fa.solid( "calendar" ) ) );
+			append( div( HtmlViewElement.Functions.css( css.inputGroup.text.toCssClasses() ), children( i( css.fa.solid( "calendar" ) ) ) ) );
 		}
 		return this;
 	}

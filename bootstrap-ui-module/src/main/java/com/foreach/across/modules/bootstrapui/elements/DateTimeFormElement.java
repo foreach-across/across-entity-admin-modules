@@ -30,6 +30,9 @@ import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.attribute;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.div;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 /**
@@ -55,7 +58,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 	private LocalDateTime value;
 
 	public DateTimeFormElement() {
-		setAppend( i( css.fa.solid( "calendar" ) ) );
+		setAppend( div( css( css.inputGroup.text.toCssClasses() ), children( i( css.fa.solid( "calendar" ) ) ) ) );
 		addCssClass( CSS_JS_CONTROL, CSS_DATE );
 		setAttribute( ATTRIBUTE_DATA_DATEPICKER, new DateTimeFormElementConfiguration() );
 		setAttribute( ATTRIBUTE_DATA_TARGET_INPUT, "nearest" );
