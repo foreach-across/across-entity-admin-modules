@@ -29,7 +29,7 @@ import java.util.*;
 
 /**
  * Configuration class for a {@link DateTimeFormElement} based on
- * <a href="https://github.com/Eonasdan/bootstrap-datetimepicker">Eonasdan Bootstrap datepicker</a>.
+ * <a href="https://tempusdominus.github.io/bootstrap-4/">Tempus Dominus datepicker</a>.
  *
  * @author Arne Vandamme
  */
@@ -66,6 +66,7 @@ public class DateTimeFormElementConfiguration extends HashMap<String, Object>
 	@JsonIgnore
 	private boolean localizePatterns = true;
 
+	@JsonIgnore
 	private Map<String, Boolean> buttons = new HashMap<>();
 
 	public DateTimeFormElementConfiguration() {
