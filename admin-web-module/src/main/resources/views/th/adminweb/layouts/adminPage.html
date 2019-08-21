@@ -25,6 +25,9 @@
     <across:web-resources bucket="head"/>
     <across:web-resources bucket="javascript"/>
     <across:web-resources bucket="css"/>
+    <th:block th:if="${isLoginPage}">
+        <link rel="stylesheet" th:href="@{@static:adminweb/css/adminweb-login.css}"/>
+    </th:block>
 </head>
 <body>
 <div sec:authorize="!isAnonymous()" th:unless="${isLoginPage}">
@@ -62,9 +65,9 @@
 </div>
 
 <!--/* Login page does not render navigation */-->
-<div th:if="${isLoginPage}">
+<th:block th:if="${isLoginPage}">
     <div th:replace="${childPage} :: content"></div>
-</div>
+</th:block>
 
 <across:web-resources bucket="javascript-page-end"/>
 
