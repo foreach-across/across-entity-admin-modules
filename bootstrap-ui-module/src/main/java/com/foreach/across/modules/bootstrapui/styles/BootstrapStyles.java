@@ -84,6 +84,7 @@ public class BootstrapStyles
 	public final CardStyleRule card = new CardStyleRule();
 	public final CarouselStyleRule carousel = new CarouselStyleRule();
 	public final BootstrapStyleRule collapse = of( "collapse" );
+	public final BootstrapStyleRule collapsed = of( "collapsed" );
 	public final BootstrapStyleRule collapsing = of( "collapsing" );
 	public final BootstrapStyleRule accordion = of( "accordion" );
 	public final DropdownStyleRule dropdown = new DropdownStyleRule();

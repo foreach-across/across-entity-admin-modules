@@ -170,6 +170,7 @@ class TestBootstrapStylesComponents
 	@Test
 	void collapse() {
 		assertStyle( css.collapse ).is( "collapse" );
+		assertStyle( css.collapsed ).is( "collapsed" );
 		assertStyle( css.collapsing ).is( "collapsing" );
 		assertStyle( css.accordion ).is( "accordion" );
 	}

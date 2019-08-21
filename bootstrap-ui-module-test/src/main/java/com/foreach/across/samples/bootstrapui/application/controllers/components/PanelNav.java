@@ -35,7 +35,6 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
 
 @Controller
 @RequestMapping("/components/navs/panel")
-@Deprecated
 class PanelNav extends ExampleController
 {
 	@Override
@@ -65,10 +64,14 @@ class PanelNav extends ExampleController
 				.item( "/group1/subgroup1/one", "Sub-group 1 item 1" ).and()
 				.item( "/group1/subgroup1/two", "Sub-group 1 item 2" ).and()
 				.item( "/group1/subgroup1/three", "Sub-group 1 item 3" ).and()
+				.item( "/group1/subgroup1/subgroup1", "Sub-group 1 sub-group 1" ).and()
+				.item( "/group1/subgroup1/subgroup1/one", "Sub-group 1-1 item 1" ).and()
 				.item("/three", "Item 3").order( 6 ).and()
 				.item("/four", "Item 4").order( 7 ).and()
 				.build();
 
+		menu.sort();
+		menu.select( MenuSelector.byPath( "/group1/subgroup1/three" ) );
 
 		return BootstrapUiBuilders.panels( menu ).build();
 	}

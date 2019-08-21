@@ -19,22 +19,26 @@ package com.foreach.across.modules.bootstrapui.components.menu;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.context.WebAppLinkBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.ATTR_ICON;
-import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.CTX_CURRENT_MENU_ITEM;
+import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.*;
 import static com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.remove;
+import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.witherFor;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.text;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,14 +61,16 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void noMenuRendersEmptyList() {
-		renderAndExpect( builder.htmlId( "menu" ), "<nav id='menu' class='nav nav-panels'></nav>" );
+		renderAndExpect( builder.htmlId( "menu" ), "<nav id='menu' class='nav nav-panels flex-column'></nav>" );
 	}
 
 	@Test
 	public void namedMenuRendering() {
 		builderContext.setAttribute( "zeMenu", new PathBasedMenuBuilder().item( "two", "two" ).and().build() );
 		renderAndExpect( builder.menu( "zeMenu" ),
-		                 "<nav class='nav nav-panels'><ul class='nav nav-sidebar'><li><a href='two' title='two'>two</a></li></ul></nav>" );
+		                 "<nav class='nav nav-panels flex-column'>" +
+				                 "<div class='list-group mb-3'><a href='two' title='two' class='list-group-item list-group-item-action'>two</a></div>" +
+				                 "</nav>" );
 	}
 
 	@Test
@@ -74,7 +80,9 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ).menu( "zeMenu" ),
-				"<nav class='nav nav-panels'><ul class='nav nav-sidebar'><li><a href='one' title='one'>one</a></li></ul></nav>"
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='list-group mb-3'><a href='one' title='one' class='list-group-item list-group-item-action'>one</a></div>" +
+						"</nav>"
 		);
 	}
 
@@ -88,7 +96,9 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels'><ul class='nav nav-sidebar'><li><a href='context-url' title='one'>one</a></li></ul></nav>"
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='list-group mb-3'><a href='context-url' title='one' class='list-group-item list-group-item-action'>one</a></div>" +
+						"</nav>"
 		);
 	}
 
@@ -102,7 +112,9 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.linkBuilder( url -> "other-url" ).menu( menu.build() ),
-				"<nav class='nav nav-panels'><ul class='nav nav-sidebar'><li><a href='other-url' title='one'>one</a></li></ul></nav>"
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='list-group mb-3'><a href='other-url' title='one' class='list-group-item list-group-item-action'>one</a></div>" +
+						"</nav>"
 		);
 	}
 
@@ -113,7 +125,9 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels'><ul class='nav nav-sidebar'><li><a href='one' title='one'>one</a></li></ul></nav>"
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='list-group mb-3'><a href='one' title='one' class='list-group-item list-group-item-action'>one</a></div>" +
+						"</nav>"
 		);
 	}
 
@@ -126,28 +140,28 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels'><ul class='nav nav-sidebar'>" +
-						"<li><a href='/one' title='one'>one</a></li>" +
-						"<li><a href='/two' title='two'>two</a></li>" +
-						"</ul></nav>"
+				"<nav class='nav nav-panels flex-column'><div class='list-group mb-3'>" +
+						"<a class='list-group-item list-group-item-action' href='/one' title='one'>one</a>" +
+						"<a class='list-group-item list-group-item-action' href='/two' title='two'>two</a>" +
+						"</div></nav>"
 		);
 	}
 
 	@Test
-	public void groupIsRenderedAsPanel() {
+	public void groupIsRenderedAsCard() {
 		menu.item( "/one", "one" ).group( true ).and()
 		    .item( "/one/sub", "sub one" ).and()
-		    .item( "/one/sub2", "sub one 2" ).and();
+		    .item( "/one/sub2", "sub one 2" );
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels'>" +
-						"<div class='panel panel-default'>" +
-						"<div class='panel-heading'><h3 class='panel-title'>one</h3></div>" +
-						"<ul class='nav nav-sidebar list-group'>" +
-						"<li class='list-group-item'><a href='/one/sub' title='sub one'>sub one</a></li>" +
-						"<li class='list-group-item'><a href='/one/sub2' title='sub one 2'>sub one 2</a></li>" +
-						"</ul>" +
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='card mb-3'>" +
+						"<div class='card-header'>one</div>" +
+						"<div class='list-group list-group-flush'>" +
+						"<a class='list-group-item list-group-item-action' href='/one/sub' title='sub one'>sub one</a>" +
+						"<a class='list-group-item list-group-item-action' href='/one/sub2' title='sub one 2'>sub one 2</a>" +
+						"</div>" +
 						"</div>" +
 						"</nav>"
 		);
@@ -160,19 +174,19 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		menu.item( "/one", "one" ).attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) ).group( true ).and()
 		    .item( "/one/sub", "sub one" ).attribute( ATTR_ICON, customBuilder ).and()
-		    .item( "/one/sub2", "sub one 2" ).and();
+		    .item( "/one/sub2", "sub one 2" );
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels'>" +
-						"<div class='panel panel-default'>" +
-						"<div class='panel-heading'>" +
-						"<h3 class='panel-title'><span aria-hidden='true' class='glyphicon glyphicon-apple' />one</h3>" +
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='card mb-3'>" +
+						"<div class='card-header'>" +
+						"<i class='fab fa-apple' /> one" +
 						"</div>" +
-						"<ul class='nav nav-sidebar list-group'>" +
-						"<li class='list-group-item'><a href='/one/sub' title='sub one'>/one/sub sub one</a></li>" +
-						"<li class='list-group-item'><a href='/one/sub2' title='sub one 2'>sub one 2</a></li>" +
-						"</ul>" +
+						"<div class='list-group list-group-flush'>" +
+						"<a class='list-group-item list-group-item-action' href='/one/sub' title='sub one'>/one/sub sub one</a>" +
+						"<a class='list-group-item list-group-item-action' href='/one/sub2' title='sub one 2'>sub one 2</a>" +
+						"</div>" +
 						"</div>" +
 						"</nav>"
 		);
@@ -182,11 +196,11 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 	public void allItemsFilteredOutResultsInNoPanels() {
 		menu.item( "/one", "one" ).group( true ).and()
 		    .item( "/one/sub", "sub one" ).and()
-		    .item( "/one/sub2", "sub one 2" ).and();
+		    .item( "/one/sub2", "sub one 2" );
 
 		renderAndExpect(
 				builder.menu( menu.build() ).filter( item -> !item.getTitle().startsWith( "sub" ) ),
-				"<nav class='nav nav-panels'></nav>"
+				"<nav class='nav nav-panels flex-column'></nav>"
 		);
 	}
 
@@ -194,38 +208,54 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 	public void groupWithoutTitleResultsInPanelWithoutHeading() {
 		menu.item( "/one", "" ).group( true ).and()
 		    .item( "/one/sub", "sub one" ).and()
-		    .item( "/one/sub2", "sub one 2" ).and();
+		    .item( "/one/sub2", "sub one 2" );
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels'>" +
-						"<div class='panel panel-default'>" +
-						"<ul class='nav nav-sidebar list-group'>" +
-						"<li class='list-group-item'><a href='/one/sub' title='sub one'>sub one</a></li>" +
-						"<li class='list-group-item'><a href='/one/sub2' title='sub one 2'>sub one 2</a></li>" +
-						"</ul>" +
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='card mb-3'>" +
+						"<div class='list-group list-group-flush'>" +
+						"<a class='list-group-item list-group-item-action' href='/one/sub' title='sub one'>sub one</a>" +
+						"<a class='list-group-item list-group-item-action' href='/one/sub2' title='sub one 2'>sub one 2</a>" +
+						"</div>" +
 						"</div>" +
 						"</nav>"
 		);
 	}
 
 	@Test
-	public void panelStyling() {
-		menu.item( "/one", "" ).group( true ).attribute( PanelsNavComponentBuilder.ATTR_PANEL_STYLE, "panel-danger" ).and()
-		    .item( "/one/sub", "sub one" ).and()
-		    .item( "/one/sub2", "sub one 2" ).and();
+	public void processingTheViewElements() {
+		menu.item( "/one", "My group" )
+		    .group( true )
+		    .attribute( customizeViewElement( css.text.muted, witherFor( NodeViewElement.class, this::addToCardHeader ) ) ).and()
+		    .item( "/one/sub", "sub one" ).attribute( customizeViewElement( css.margin.auto ) ).and()
+		    .item( "/one/sub2", "sub one 2" ).and()
+		    .item( "/two", "two" ).attribute( customizeViewElement( css.disabled ) ).and();
+		//.item( "/three", "" ).group( true ).attribute( ATTR_RENDER_AS_PANEL, false ).and()
+		//.item( "/three/sub", "sub three" );
 
 		renderAndExpect(
-				builder.menu( menu.build() ),
+				builder.menu( menu.build() ).with( remove( css.flex.column ) ),
 				"<nav class='nav nav-panels'>" +
-						"<div class='panel panel-danger'>" +
-						"<ul class='nav nav-sidebar list-group'>" +
-						"<li class='list-group-item'><a href='/one/sub' title='sub one'>sub one</a></li>" +
-						"<li class='list-group-item'><a href='/one/sub2' title='sub one 2'>sub one 2</a></li>" +
-						"</ul>" +
+						"<div class='card mb-3 text-muted'>" +
+						"<div class='card-header'>My groupsuffix</div>" +
+						"<div class='list-group list-group-flush'>" +
+						"<a class='list-group-item list-group-item-action m-auto' href='/one/sub' title='sub one'>sub one</a>" +
+						"<a class='list-group-item list-group-item-action' href='/one/sub2' title='sub one 2'>sub one 2</a>" +
+						"</div>" +
+						"</div>" +
+						"<div class='list-group mb-3'>" +
+						"<a class='list-group-item list-group-item-action disabled' href='/two' title='two'>two</a>" +
 						"</div>" +
 						"</nav>"
 		);
+	}
+
+	private void addToCardHeader( NodeViewElement card ) {
+		card.findAll( e -> e instanceof HtmlViewElement && ( (HtmlViewElement) e ).hasCssClass( "card-header" ) )
+		    .map( ContainerViewElement.class::cast )
+		    .findFirst()
+		    .ifPresent( header -> header.addChild( text( "suffix" ) ) );
 	}
 
 	@Test

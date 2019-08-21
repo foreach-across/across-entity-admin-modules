@@ -19,15 +19,16 @@ package com.foreach.across.modules.bootstrapui.components.builder;
 import com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes;
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.div;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.nav;
 
 /**
  * Renders a {@link com.foreach.across.modules.web.menu.Menu} into a panels structure with list-group items.
@@ -85,14 +86,14 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 								addSidebarList( container, itemToRender, builderContext, subMenuCount );
 							}
 							else {*/
-								addPanel( container, itemToRender, builderContext, subMenuCount );
+							addPanel( container, itemToRender, builderContext, subMenuCount );
 							//}
 						}
 						else {
 							nonPanelList = nonPanelList != null ? nonPanelList : createList( container ).set( css.margin.bottom.s3 );
 							addItemLink( nonPanelList, item, true, false, builderContext )
 									.remove( css.nav.link )
-									.set( css.listGroup.item, css.listGroup.item.action );
+									.set( css.listGroup.item, css.listGroup.item.action, witherAttribute( item ) );
 						}
 					}
 				}
@@ -100,6 +101,12 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		}
 
 		return container;
+	}
+
+	private ViewElement.WitherSetter witherAttribute( Menu menu ) {
+		ViewElement.WitherSetter setter = menu.getAttribute( ATTR_VIEW_ELEMENT_WITHER );
+		return setter != null ? setter : element -> {
+		};
 	}
 
 	private void addSidebarList( NodeViewElement container, Menu item, ViewElementBuilderContext builderContext, AtomicInteger subMenuCount ) {
@@ -128,6 +135,9 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		NodeViewElement list = createList( panel ).set( css.listGroup, css.listGroup.flush );
 
 		includedItems( item ).forEach( child -> addMenuItem( list, child, builderContext, true, subMenuCount ) );
+
+		panel.set( witherAttribute( item ) );
+
 		container.addChild( panel );
 	}
 
@@ -167,7 +177,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 
 						addItemLink( list, itemToRender, true, iconOnly, builderContext )
 								.remove( css.nav.link )
-								.set( css.listGroup.item, css.listGroup.item.action );
+								.set( css.listGroup.item, css.listGroup.item.action, witherAttribute( itemToRender ) );
 					}
 
 					//list.addChild( li );
@@ -194,12 +204,13 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 
 		if ( !item.isSelected() ) {
 			list.set( css.collapse );
+			link.set( css.collapsed );
 			//link.addCssClass( "collapsed" );
 			//list.addCssClass( "collapse" );
 		}
 		else {
 			link.set( BootstrapAttributes.attribute.aria.expanded( true ) );
-
+			list.set( css.collapse, css.show );
 			//link.setAttribute( "aria-expanded", "true" );
 			//list.addCssClass( "in" );
 			list.set( BootstrapAttributes.attribute.aria.expanded( true ) );
