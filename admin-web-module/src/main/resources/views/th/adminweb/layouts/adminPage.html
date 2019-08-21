@@ -29,6 +29,7 @@
 <body>
 <div sec:authorize="!isAnonymous()" th:unless="${isLoginPage}">
 
+    <!--/* Main menu navigation */-->
     <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
         <div class="navbar-header admin-navbar-title">-->
             <a class="navbar-brand" th:if="${@adminWeb.title}" th:href="@{${#webapp.path('/')}}" th:text="${@adminWeb.title}">
@@ -43,27 +44,6 @@
             <across:view element="${adminWebNavbarRightNavigation}"/>
         </div>
     </nav>
-
-    <!--/* Main menu navigation */-->
-    <!--    <nav class="navbar fixed-top" role="navigation">-->
-    <!--        <div class="container-fluid">-->
-    <!--            <div class="navbar-header admin-navbar-title">-->
-    <!--                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#admin-top-navbar" aria-controls="navbar">-->
-    <!--                    <span class="sr-only">Toggle navigation</span>-->
-    <!--                    <span class="icon-bar"></span>-->
-    <!--                    <span class="icon-bar"></span>-->
-    <!--                    <span class="icon-bar"></span>-->
-    <!--                </button>-->
-    <!--                <a class="navbar-brand" th:if="${@adminWeb.title}" th:href="@{${#webapp.path('/')}}" th:text="${@adminWeb.title}">-->
-    <!--                    application name-->
-    <!--                </a>-->
-    <!--            </div>-->
-    <!--            <div id="admin-top-navbar" class="navbar-collapse collapse">-->
-    <!--                <across:view element="${adminWebNavbarNavigation}"/>-->
-    <!--                <across:view element="${adminWebNavbarRightNavigation}"/>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--    </nav>-->
 
     <!--/* Content body */-->
     <div th:if="${childPage}" class="content for-navbar-fixed-top">
