@@ -98,9 +98,9 @@
 /*    top: 70px;*/
 /*}*/
 
-/*.toast-message button.close {*/
-/*    display: none;*/
-/*}*/
+.toast-message button.close {
+    display: none;
+}
 
 /*li.admin-nav-user-context.with-thumbnail > a {*/
 /*    padding-bottom: 8px;*/
