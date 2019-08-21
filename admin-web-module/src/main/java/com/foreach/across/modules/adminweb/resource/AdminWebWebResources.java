@@ -74,13 +74,13 @@ public class AdminWebWebResources implements WebResourcePackage
 
 				// javascript/css
 				addPackage( BootstrapUiWebResources.NAME ),
-				add( WebResource.css( "@static:/adminweb/css/admin-web-bootstrap.css" ) ).withKey( NAME ).toBucket( CSS ),
+//				add( WebResource.css( "@static:/adminweb/css/admin-web-bootstrap.css" ) ).withKey( NAME ).toBucket( CSS ),
 				add( WebResource.javascript( "@static:/adminweb/js/ie10-viewport-bug-workaround.js" ) )
 						.withKey( NAME + "-ie10-viewport" )
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
 				// Add FontAwesome icons
-				add( WebResource.css( "@static:/adminweb/css/font-awesome.min.css" ) ).withKey( FONT_AWESOME ).toBucket( CSS ),
+//				add( WebResource.css( "@static:/adminweb/css/font-awesome.min.css" ) ).withKey( FONT_AWESOME ).toBucket( CSS ),
 
 				// Use toastr for notifications
 				add( WebResource.javascript( "@webjars:/toastr/2.1.2/toastr.min.js" ) )
