@@ -13,19 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-.form-signin .page-header {
-    background: url("../img/logo.png") no-repeat center top;
-    padding-top: 75px;
-    background-size: 75px 75px
-}
-
-.navbar.navbar-default .navbar-header {
-    background: url("../img/logo.png") no-repeat left center
-}
-
-.navbar-header {
-    background: url("../img/logo.png") no-repeat left center;
-    padding-left: 20px;
-    background-size: 40px
-}
