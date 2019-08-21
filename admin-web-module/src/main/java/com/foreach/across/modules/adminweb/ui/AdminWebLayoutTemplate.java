@@ -123,13 +123,14 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 						                                  .keepGroupsAsGroup( true )
 						                                  .replaceGroupBySelectedItem( false )
 						                                  .filter( navPosition( NAVBAR, true ) )
+						                                  .css( "navbar-nav mr-auto" )
 						                                  .build()
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_NAVBAR_RIGHT,
 						key -> bootstrapUiComponentFactory.nav( adminMenu )
 						                                  .navbar()
-						                                  .css( "navbar-right" )
+						                                  .css( "navbar-nav" )
 						                                  .keepGroupsAsGroup( true )
 						                                  .replaceGroupBySelectedItem( false )
 						                                  .filter( navPosition( NAVBAR_RIGHT, false ) )

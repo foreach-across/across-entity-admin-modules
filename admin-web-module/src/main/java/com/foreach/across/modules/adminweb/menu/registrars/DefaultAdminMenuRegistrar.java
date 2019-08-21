@@ -93,7 +93,7 @@ public final class DefaultAdminMenuRegistrar
 			NodeViewElement image = new NodeViewElement( "img" );
 			image.addCssClass( "admin-nav-user-context-thumbnail" );
 			image.setAttribute( "src", userContextAdminMenuGroup.getThumbnailUrl() );
-			group.attribute( "html:class", "admin-nav-user-context with-thumbnail" )
+			group.attribute( "html:class", "nav-item admin-nav-user-context" )
 			     .attribute( NavComponentBuilder.ATTR_ICON, image );
 		}
 
