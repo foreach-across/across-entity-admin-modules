@@ -50,11 +50,11 @@ public class EntityModuleIcons
 		adminWebIconSet.add( ADVANCED_SETTINGS, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "cog" ) );
 		adminWebIconSet.add( PREVIOUS_PAGE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "step-backward" ) );
 		adminWebIconSet.add( NEXT_PAGE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "step-forward" ) );
-		adminWebIconSet.add( DELETE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "trash" ) );
+		adminWebIconSet.add( DELETE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" ) );
 		adminWebIconSet.add( DELETE_BUTTON, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "trash" ) );
 		adminWebIconSet.add( ENTITY_QUERY_SEARCH, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "search" ) );
 		adminWebIconSet.add( DETAIL, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "eye" ) );
-		adminWebIconSet.add( EDIT, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" ) );
+		adminWebIconSet.add( EDIT, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "edit" ) );
 		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_HANDLE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "bars" ) );
 		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_ADD, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "plus" ) );
 		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_DELETE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" ) );
