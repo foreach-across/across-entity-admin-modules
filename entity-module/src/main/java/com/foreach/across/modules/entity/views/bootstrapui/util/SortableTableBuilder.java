@@ -657,17 +657,17 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		NodeViewElementBuilder panel = BootstrapUiBuilders.node( "div" )
 		                                                  .name( elementName( ELEMENT_PANEL ) )
-		                                                  .css( "panel", "panel-default" )
+		                                                  .css( "card" )
 		                                                  .add(
 				                                                  BootstrapUiBuilders.node( "div" )
 				                                                                     .name( elementName( ELEMENT_PANEL_HEADING ) )
-				                                                                     .css( "panel-heading" )
+				                                                                     .css( "card-header" )
 				                                                                     .add( BootstrapUiBuilders.html( resultsFound ) )
 		                                                  )
 		                                                  .add(
 				                                                  BootstrapUiBuilders.node( "div" )
 				                                                                     .name( elementName( ELEMENT_PANEL_BODY ) )
-				                                                                     .css( "panel-body" )
+				                                                                     .css( "card-body" )
 				                                                                     .add( tableBody )
 		                                                  );
 
@@ -675,7 +675,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 			panel.add(
 					BootstrapUiBuilders.node( "div" )
 					                   .name( elementName( ELEMENT_PANEL_FOOTER ) )
-					                   .css( "panel-footer" )
+					                   .css( "card-footer" )
 					                   .add( createPager() )
 			);
 		}
@@ -686,10 +686,10 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		return BootstrapUiBuilders.node( "div" )
 		                          .name( elementName( ELEMENT_NORESULTS ) )
 		                          //.attribute( DATA_ATTR_AJAX_LOAD, false )
-		                          .css( "panel", "panel-warning" )
+		                          .css( "card", "bg-warning" )
 		                          .add(
 				                          BootstrapUiBuilders.node( "div" )
-				                                             .css( "panel-body", "text-warning" )
+				                                             .css( "card-body", "text-warning" )
 				                                             .add( BootstrapUiBuilders.html( getResolvedPagingMessages().resultsFound( getPage() ) ) )
 		                          );
 	}
