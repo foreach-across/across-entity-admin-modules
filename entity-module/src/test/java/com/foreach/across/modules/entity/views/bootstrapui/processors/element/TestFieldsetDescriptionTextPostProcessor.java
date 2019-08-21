@@ -22,6 +22,7 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder.CSS_FORM_TEXT_DESCRIPTION;
+import java.util.Arrays;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +73,8 @@ public class TestFieldsetDescriptionTextPostProcessor
 		assertThat( fieldset.getHeader().getChildren() ).hasSize( 1 );
 		assertThat( (NodeViewElement) fieldset.getHeader().getChildren().get( 0 ) )
 				.satisfies( node -> {
-					assertThat( node.hasCssClass( CSS_FORM_TEXT_DESCRIPTION ) ).isTrue();
+					Assertions.assertThat( node.getAttribute( "class", String.class ).split( " " ) )
+					          .containsAll( Arrays.asList( css.form.text.suffix( "description" ).toCssClasses()));
 					TextViewElement text = node.findAll( TextViewElement.class )
 					                           .findFirst()
 					                           .orElseThrow( AssertionError::new );
