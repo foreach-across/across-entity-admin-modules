@@ -166,7 +166,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 	protected NodeViewElement createElement( ViewElementBuilderContext builderContext ) {
 		NodeViewElementBuilder container = div()
 				.name( "entity-query-filter-form" )
-				.css( "entity-query-filter-form" )
+				.css( "entity-query-filter-form flex-grow-1" )
 				.attribute( ATTRIBUTE_ENTITY_QUERY_FILTER_FORM, "default" );
 
 		boolean basicFilterEnabled = isBasicModeActive();
@@ -178,11 +178,11 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 					.link()
 					.submit()
 					.text( builderContext.resolveText( "#{entityQueryFilter.searchButton}" ) )
-					.icon( iconSet( EntityModule.NAME).icon( ENTITY_QUERY_SEARCH ));
+					.icon( iconSet( EntityModule.NAME ).icon( ENTITY_QUERY_SEARCH ) );
 
 			if ( basicFilterEnabled ) {
 				NodeViewElementBuilder basicFilter = div().name( "entity-query-filter-form-basic" )
-				                                          .css( "entity-query-filter-form-basic", showBasicFilter ? "" : "hidden" );
+				                                          .css( "entity-query-filter-form-basic", showBasicFilter ? "" : "d-none" );
 				basicFilter.addAll( basicFilterControls )
 				           .add( searchButton );
 
@@ -203,24 +203,26 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 			}
 			else {
 				NodeViewElementBuilder advancedFilter = div().name( "entity-query-filter-form-advanced" )
-				                                             .css( "entity-query-filter-form-advanced", showBasicFilter ? "hidden" : "" );
+				                                             .css( "entity-query-filter-form-advanced ", showBasicFilter ? "d-none" : "d-flex" );
 
 				NodeViewElementBuilder actions = div().css( "list-header-actions" )
 				                                      .add( searchButton );
 
 				advancedFilter
 						.add(
-								formGroup().control( textbox()
-										                     .controlName( eqlControlName )
-										                     .text( eqlStatement )
-										                     .placeholder( builderContext.resolveText( "#{entityQueryFilter.eqlPlaceholder}" ) ) )
-								           .postProcessor( ( ctx, group ) -> {
-									                           String helpText = ctx.resolveText( "#{entityQueryFilter.eqlDescription}" );
-									                           if ( StringUtils.isNotEmpty( helpText ) ) {
-										                           group.setHelpBlock( helpBlock( helpText ).build( ctx ) );
-									                           }
-								                           }
-								           ) )
+								formGroup()
+										.css( "form-group flex-grow-1" )
+										.control( textbox()
+												          .controlName( eqlControlName )
+												          .text( eqlStatement )
+												          .placeholder( builderContext.resolveText( "#{entityQueryFilter.eqlPlaceholder}" ) ) )
+										.postProcessor( ( ctx, group ) -> {
+											                String helpText = ctx.resolveText( "#{entityQueryFilter.eqlDescription}" );
+											                if ( StringUtils.isNotEmpty( helpText ) ) {
+												                group.setHelpBlock( helpBlock( helpText ).build( ctx ) );
+											                }
+										                }
+										) )
 						.add( actions );
 
 				if ( basicFilterEnabled ) {

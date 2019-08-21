@@ -90,7 +90,7 @@ export class EntityModule
                     const value = $( e.currentTarget ).val();
                     if ( value ) {
                         const template = container.find( '.js-multi-value-template' ).clone( false );
-                        template.removeClass( 'hidden js-multi-value-template' );
+                        template.removeClass( 'd-none js-multi-value-template' );
                         template.addClass( 'js-multi-value-item' );
 
                         template.find( '.js-multi-value-value' ).each( ( i: number, node: any ) => {

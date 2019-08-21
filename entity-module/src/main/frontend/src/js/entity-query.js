@@ -35,8 +35,8 @@ function initializeEntityQueryForm( node ) {
 
   function toggleFilters( event ) {
     event.preventDefault();
-    $( node ).find( ".entity-query-filter-form-basic" ).toggleClass( "hidden" );
-    $( node ).find( ".entity-query-filter-form-advanced" ).toggleClass( "hidden" );
+    $( node ).find( ".entity-query-filter-form-basic" ).toggleClass( "d-none" );
+    $( node ).find( ".entity-query-filter-form-advanced" ).toggleClass( "d-none d-flex" );
 
     let inputShowBasicFilter = findShowBasicFilterElement();
     if ( $( inputShowBasicFilter ).attr( "value" ) === "true" ) {

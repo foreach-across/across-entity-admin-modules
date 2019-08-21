@@ -73,7 +73,7 @@ public class TestEntityQueryFilterFormControlBuilder extends AbstractViewElement
 	private static final String FILTER_NOTHING = "<div data-entity-query-filter-form=\"default\" class=\"entity-query-filter-form\"></div>";
 	private static final String FILTER_BASIC_ADVANCED_NOT_CONVERTIBLE_TO_BASIC =
 			"<div data-entity-query-filter-form=\"default\" class=\"entity-query-filter-form\">" +
-					"<div class=\"entity-query-filter-form-basic hidden\">" +
+					"<div class=\"entity-query-filter-form-basic d-none\">" +
 					"<input data-entity-query-control=\"marker\" name=\"extensions[myName]\" data-entity-query-operand=\"LIKE\" id=\"extensions[myName]\" type=\"text\" class=\"form-control\" data-entity-query-property=\"myName\"></input>" +
 					"<div data-entity-query-control=\"marker\" data-entity-query-operand=\"IN\" id=\"extensions[myOption]\" data-entity-query-property=\"myOption\"><div class=\"checkbox\"><input name=\"extensions[myOption]\" id=\"extensions[myOption]1\" type=\"checkbox\" value=\"myOption\"></input><input name=\"_extensions[myOption]\" type=\"hidden\" value=\"on\"></input></div></div>" +
 					"<a data-entity-query-filter-form-link=\"advanced\" role=\"button\" href=\"#\" class=\"btn btn-link\">entityQueryFilter.linkToAdvancedMode</a><button type=\"submit\" class=\"btn btn-link\"><span aria-hidden=\"true\" class=\"fas fa-search\"></span>entityQueryFilter.searchButton</button></div>" +

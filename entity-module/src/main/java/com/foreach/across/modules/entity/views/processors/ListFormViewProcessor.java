@@ -94,7 +94,7 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 		String formHeaderName = formName + "-header";
 		ColumnViewElementBuilder formHeader = BootstrapUiBuilders.column( Grid.Device.MD.width( Grid.Width.FULL ) )
 		                                                         .name( formHeaderName )
-		                                                         .css( "list-header" );
+		                                                         .css( "list-header d-flex" );
 
 		formHeaderRow.add( formHeader );
 		listForm.add( formHeaderRow );
