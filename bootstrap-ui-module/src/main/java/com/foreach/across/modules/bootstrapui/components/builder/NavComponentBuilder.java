@@ -32,8 +32,8 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.css;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.link;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.text;
 
 /**
@@ -311,7 +311,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 
 			node.addChild(
 					HtmlViewElements.span(
-							css.of( "nav-item-title" ),
+							css.screenReaderOnly,
 							text( resolvedTitle )
 					)
 			);
