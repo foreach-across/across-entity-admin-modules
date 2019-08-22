@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.config.EntityModuleIcons.DELETE_BUTTON;
 
 /**
@@ -61,7 +62,7 @@ public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 			                                                                      ContainerViewElementBuilderSupport.class );
 
 			if ( buttonsContainer != null ) {
-				buttonsContainer.add( createDeleteButton( entityViewContext, entityViewRequest.getViewName() ).css( "pull-right" ) );
+				buttonsContainer.add( createDeleteButton( entityViewContext, entityViewRequest.getViewName() ).with( css.cssFloat.right ) );
 			}
 		}
 	}
@@ -95,7 +96,7 @@ public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 		                          .name( "btn-delete" )
 		                          .link( linkToDeleteView.toUriString() )
 		                          .style( Style.DANGER )
-		                          .icon( iconSet( EntityModule.NAME).icon( DELETE_BUTTON ) )
+		                          .icon( iconSet( EntityModule.NAME ).icon( DELETE_BUTTON ) )
 		                          .title( messages.messageWithFallback( "buttons.delete" ) );
 	}
 }

@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.helpBlock;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.span;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
@@ -56,9 +56,9 @@ public class FormGroupHelpTextPostProcessor<T extends ViewElement> extends Abstr
 
 			if ( !StringUtils.isEmpty( text ) ) {
 				element.setHelpBlock(
-						helpBlock().with( css.form.text.suffix( "help" ) )
-						           .add( new TextViewElement( text, escapeHtml ) )
-						           .build( builderContext )
+						span().with( css.form.text )
+						      .add( new TextViewElement( text, escapeHtml ) )
+						      .build( builderContext )
 				);
 			}
 		}

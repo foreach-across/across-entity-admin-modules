@@ -150,8 +150,8 @@ class EntityModuleAdminMenuRegistrar
 			// Generate advanced options
 			builder.group( "/advanced-options",
 			               messageCodeResolver.getMessageWithFallback( "menu.advanced", "Advanced" ) )
-			       .attribute( "html:class", "pull-right" )
-			       .attribute( NavComponentBuilder.ATTR_ICON, iconSet( EntityModule.NAME).icon( ADVANCED_SETTINGS ))
+			       .attribute( "html:class", "float-right" )
+			       .attribute( NavComponentBuilder.ATTR_ICON, iconSet( EntityModule.NAME ).icon( ADVANCED_SETTINGS ) )
 			       .attribute( NavComponentBuilder.ATTR_KEEP_GROUP_ITEM, true )
 			       .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );
 		}

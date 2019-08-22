@@ -607,7 +607,8 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 	}
 
 	protected void createTableBody( TableViewElementBuilder table ) {
-		TableViewElementBuilder.Row valueRow = table.row();
+		TableViewElementBuilder.Row valueRow = table.row()
+		                                            .postProcessor( CSS_ODD_EVEN_ROW_PROCESSOR );
 
 		if ( isShowResultNumber() ) {
 			int startIndex = Math.max( 0, page.getNumber() ) * page.getSize();
@@ -723,7 +724,8 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		pager.add(
 				BootstrapUiBuilders.label()
-				                   .add( BootstrapUiBuilders.node( "span" ).with( css.margin.right.s2 ).add( BootstrapUiBuilders.html( messages.page( currentPage ) ) ) )
+				                   .add( BootstrapUiBuilders.node( "span" ).with( css.margin.right.s2 )
+				                                            .add( BootstrapUiBuilders.html( messages.page( currentPage ) ) ) )
 				                   .add(
 						                   BootstrapUiBuilders.textbox()
 						                                      .attribute( "data-tbl-page-selector", "selector" )
