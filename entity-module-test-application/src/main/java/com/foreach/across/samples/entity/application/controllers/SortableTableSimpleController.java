@@ -40,9 +40,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.foreach.across.modules.bootstrapui.elements.Style.Table.BORDERED;
-import static com.foreach.across.modules.bootstrapui.elements.Style.Table.CONDENSED;
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.config.EntityModuleIcons.NEW_WINDOW;
 import static com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils.find;
 
@@ -163,7 +162,7 @@ public class SortableTableSimpleController
 		return builderHelper.createSortableTableBuilder( Partner.class )
 		                    .items( partners )
 		                    .properties( "id", "url", "name" )      // specify the properties in order
-		                    .tableStyles( CONDENSED, BORDERED )     // add some bootstrap table styles
+		                    .tableStyles( css.table.bordered, css.table.small )     // add some bootstrap table styles
 		                    .tableOnly()                            // only render the table - not the surrounding panel with paging/results information
 		                    .noSorting()                            // disable sorting on all properties
 		                    .hideResultNumber()                     // hide the result number column
@@ -232,7 +231,7 @@ public class SortableTableSimpleController
 							BootstrapUiBuilders.table().cell().add(
 									BootstrapUiBuilders.button()
 									                   .link( partner.getUrl() )
-									                   .icon( iconSet( EntityModule.NAME ).icon( NEW_WINDOW ))
+									                   .icon( iconSet( EntityModule.NAME ).icon( NEW_WINDOW ) )
 									                   .iconOnly()
 									                   .attribute( "target", "_blank" )
 									                   .text( "Visit partner website" )

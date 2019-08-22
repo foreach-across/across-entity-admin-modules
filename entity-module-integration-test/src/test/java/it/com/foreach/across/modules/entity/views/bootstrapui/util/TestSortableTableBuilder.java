@@ -19,7 +19,6 @@ package it.com.foreach.across.modules.entity.views.bootstrapui.util;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
-import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -51,6 +50,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.views.support.EntityMessages.RESULTS_FOUND;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -403,7 +403,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 
 	@Test
 	public void tableStyle() {
-		tableBuilder.tableStyles( Style.Table.CONDENSED ).tableOnly( true );
+		tableBuilder.tableStyles( css.table.small ).tableOnly( true );
 
 		expect(
 				TABLE_WITH_RESULT_NUMBER.replace( "table-hover", "table-condensed" )

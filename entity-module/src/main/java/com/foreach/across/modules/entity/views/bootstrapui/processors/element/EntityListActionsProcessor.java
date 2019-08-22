@@ -32,6 +32,7 @@ import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import lombok.Setter;
 
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.config.EntityModuleIcons.*;
 
 /**
@@ -65,6 +66,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 	public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row row ) {
 		TableViewElementBuilder.Cell cell = new TableViewElementBuilder.Cell()
 				.name( CELL_NAME )
+				.with( css.text.nowrap )
 				.css( "row-actions" );
 
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
@@ -111,8 +113,9 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 			cell.add(
 					BootstrapUiBuilders.button()
 					                   .link( url.deleteView().toUriString() )
-					                   .iconOnly(iconSet( EntityModule.NAME ).icon( DELETE )  )
+					                   .iconOnly( iconSet( EntityModule.NAME ).icon( DELETE ) )
 					                   .text( messages.deleteAction() )
+					                   .with( css.text.danger )
 			);
 		}
 	}

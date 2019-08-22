@@ -18,9 +18,9 @@ package com.foreach.across.modules.entity.views.bootstrapui.util;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
-import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
@@ -47,7 +47,9 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.*;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.NEXT_PAGE;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.PREVIOUS_PAGE;
 
 /**
  * Helper that aids in building a sortable {@link com.foreach.across.modules.bootstrapui.elements.TableViewElement}
@@ -103,7 +105,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 	private Collection<EntityPropertyDescriptor> propertyDescriptors;
 	private boolean tableOnly, showResultNumber = true;
 	private Page<Object> page = new PageImpl<>( Collections.emptyList() );
-	private Style[] tableStyles = new Style[] { Style.Table.HOVER };
+	private BootstrapStyleRule[] tableStyles = new BootstrapStyleRule[] { css.table.hover, css.table.striped, css.table.small };
 	private PagingMessages pagingMessages;
 	private ViewElementBuilderSupport.ElementOrBuilder noResultsElement;
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors = new ArrayList<>();
@@ -347,14 +349,14 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		return this;
 	}
 
-	protected Style[] getTableStyles() {
+	protected BootstrapStyleRule[] getTableStyles() {
 		return tableStyles;
 	}
 
 	/**
 	 * @param tableStyles that should be applied to the generated table
 	 */
-	public SortableTableBuilder tableStyles( Style... tableStyles ) {
+	public SortableTableBuilder tableStyles( BootstrapStyleRule... tableStyles ) {
 		this.tableStyles = tableStyles;
 		return this;
 	}
@@ -509,14 +511,15 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		TableViewElementBuilder table = createTable();
 
-		return ( isTableOnly() ? table.name( getTableName() ) : createPanelForTable( table ).name( getTableName() ) ).build( builderContext );
+		return ( isTableOnly() ? table.name( getTableName() ).with( css.margin.bottom.s3 ) : createPanelForTable( table ).name( getTableName() ) )
+				.build( builderContext );
 	}
 
 	protected TableViewElementBuilder createTable() {
 		TableViewElementBuilder table = BootstrapUiBuilders.table()
 		                                                   .name( elementName( ELEMENT_TABLE ) )
 		                                                   .responsive()
-		                                                   .style( getTableStyles() )
+		                                                   .with( getTableStyles() )
 		                                                   .attributes( createTableAttributes() );
 
 		createTableHeader( table );
@@ -604,13 +607,13 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 	}
 
 	protected void createTableBody( TableViewElementBuilder table ) {
-		TableViewElementBuilder.Row valueRow = table.row()
-		                                            .postProcessor( CSS_ODD_EVEN_ROW_PROCESSOR );
+		TableViewElementBuilder.Row valueRow = table.row();
 
 		if ( isShowResultNumber() ) {
 			int startIndex = Math.max( 0, page.getNumber() ) * page.getSize();
 			valueRow.add(
 					table.cell()
+					     .with( css.align.middle )
 					     .css( "result-number" )
 					     .add(
 							     BootstrapUiBuilders.text().postProcessor( new ResultNumberProcessor( startIndex ) )
@@ -622,6 +625,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 			ViewElementBuilder valueBuilder = createValue( descriptor );
 
 			TableViewElementBuilder.Cell cell = table.cell()
+			                                         .with( css.align.middle )
 			                                         .name( descriptor.getName() )
 			                                         .attribute( DATA_ATTR_FIELD, descriptor.getName() );
 
@@ -657,17 +661,17 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		NodeViewElementBuilder panel = BootstrapUiBuilders.node( "div" )
 		                                                  .name( elementName( ELEMENT_PANEL ) )
-		                                                  .css( "card" )
+		                                                  .with( css.card, css.margin.bottom.s5 )
 		                                                  .add(
 				                                                  BootstrapUiBuilders.node( "div" )
 				                                                                     .name( elementName( ELEMENT_PANEL_HEADING ) )
-				                                                                     .css( "card-header" )
+				                                                                     .with( css.card.header )
 				                                                                     .add( BootstrapUiBuilders.html( resultsFound ) )
 		                                                  )
 		                                                  .add(
 				                                                  BootstrapUiBuilders.node( "div" )
 				                                                                     .name( elementName( ELEMENT_PANEL_BODY ) )
-				                                                                     .css( "card-body" )
+				                                                                     .with( css.card.body )
 				                                                                     .add( tableBody )
 		                                                  );
 
@@ -675,7 +679,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 			panel.add(
 					BootstrapUiBuilders.node( "div" )
 					                   .name( elementName( ELEMENT_PANEL_FOOTER ) )
-					                   .css( "card-footer" )
+					                   .with( css.card.footer )
 					                   .add( createPager() )
 			);
 		}
@@ -686,10 +690,10 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		return BootstrapUiBuilders.node( "div" )
 		                          .name( elementName( ELEMENT_NORESULTS ) )
 		                          //.attribute( DATA_ATTR_AJAX_LOAD, false )
-		                          .css( "card", "border",  "border-warning" )
+		                          .with( css.card, css.border.warning )
 		                          .add(
 				                          BootstrapUiBuilders.node( "div" )
-				                                             .css( "card-body", "text-warning" )
+				                                             .with( css.card.body, css.text.warning )
 				                                             .add( BootstrapUiBuilders.html( getResolvedPagingMessages().resultsFound( getPage() ) ) )
 		                          );
 	}
@@ -700,13 +704,14 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		NodeViewElementBuilder pager = BootstrapUiBuilders.node( "div" )
 		                                                  .name( elementName( ELEMENT_PAGER ) )
-		                                                  .css( "pager-form", "form-inline", "text-center" );
+		                                                  .css( "pager-form", "form-inline" )
+		                                                  .with( css.flex.row, css.justifyContent.center );
 
 		if ( currentPage.hasPrevious() ) {
 			pager.add(
 					BootstrapUiBuilders.button()
 					                   .link( "#" )
-					                   .icon( iconSet( EntityModule.NAME).icon( PREVIOUS_PAGE ) )
+					                   .icon( iconSet( EntityModule.NAME ).icon( PREVIOUS_PAGE ) )
 					                   .title( messages.previousPage( currentPage ) )
 					                   .attribute( DATA_ATTR_PAGE, currentPage.getNumber() - 1 )
 					                   .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
@@ -718,15 +723,16 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		pager.add(
 				BootstrapUiBuilders.label()
-				                   .add( BootstrapUiBuilders.node( "span" ).add( BootstrapUiBuilders.html( messages.page( currentPage ) ) ) )
+				                   .add( BootstrapUiBuilders.node( "span" ).with( css.margin.right.s2 ).add( BootstrapUiBuilders.html( messages.page( currentPage ) ) ) )
 				                   .add(
 						                   BootstrapUiBuilders.textbox()
 						                                      .attribute( "data-tbl-page-selector", "selector" )
 						                                      .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
 						                                      .text( String.valueOf( currentPage.getNumber() + 1 ) )
+						                                      .with( css.margin.right.s2 )
 				                   )
 		)
-		     .add( BootstrapUiBuilders.node( "span" ).add( BootstrapUiBuilders.html( messages.ofPages( currentPage ) ) ) )
+		     .add( BootstrapUiBuilders.node( "span" ).with( css.margin.right.s2 ).add( BootstrapUiBuilders.html( messages.ofPages( currentPage ) ) ) )
 		     .add(
 				     BootstrapUiBuilders.link()
 				                        .url( "#" )
@@ -740,7 +746,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 			pager.add(
 					BootstrapUiBuilders.button()
 					                   .link( "#" )
-					                   .icon( iconSet( EntityModule.NAME).icon( NEXT_PAGE ) )
+					                   .icon( iconSet( EntityModule.NAME ).icon( NEXT_PAGE ) )
 					                   .title( messages.nextPage( currentPage ) )
 					                   .attribute( DATA_ATTR_PAGE, currentPage.getNumber() + 1 )
 					                   .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
