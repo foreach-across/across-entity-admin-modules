@@ -686,7 +686,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 		return BootstrapUiBuilders.node( "div" )
 		                          .name( elementName( ELEMENT_NORESULTS ) )
 		                          //.attribute( DATA_ATTR_AJAX_LOAD, false )
-		                          .css( "card", "bg-warning" )
+		                          .css( "card", "border",  "border-warning" )
 		                          .add(
 				                          BootstrapUiBuilders.node( "div" )
 				                                             .css( "card-body", "text-warning" )
