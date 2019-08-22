@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+
 /**
  * Represents the content structure of a single page.
  * A standard content structure has the following elements:
@@ -272,6 +274,7 @@ public class PageContentStructure extends AbstractNodeViewElement
 
 			NodeViewElement heading = new NodeViewElement( ELEMENT_PAGE_TITLE, "h3" );
 			heading.addCssClass( "page-header" );
+			heading.set( css.margin.bottom.s4, css.padding.bottom.s2, css.border.bottom );
 			heading.addChild( titleText );
 			heading.addChild( new TextViewElement( " " ) );
 
@@ -307,18 +310,19 @@ public class PageContentStructure extends AbstractNodeViewElement
 		if ( super.hasChildren() ) {
 			if ( renderAsTabs ) {
 				NodeViewElement tabWrapper = new NodeViewElement( "div" );
-				tabWrapper.addCssClass( "tabbable", "filled" );
+				tabWrapper.set( css.margin.bottom.s3 )
+				          .addCssClass( "tabbable", "filled" );
 				if ( nav.hasChildren() ) {
-					tabWrapper.addChild( nav );
+					tabWrapper.addChild( nav.set( css.margin.bottom.s3 ) );
 				}
 				tabWrapper.addChild( body );
 
 				NodeViewElement tabContent = new NodeViewElement( "div" );
-				tabContent.addCssClass( "tab-content" );
+				tabContent.set( css.tab.content, css.padding.left.s3, css.padding.right.s3 );
 				body.addChild( tabContent );
 
 				NodeViewElement tabPane = new NodeViewElement( "div" );
-				tabPane.addCssClass( "tab-pane", "active" );
+				tabPane.set( css.tab.pane, css.active );
 				tabPane.addChildren( getContentChildren() );
 
 				tabContent.addChild( tabPane );
