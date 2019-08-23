@@ -100,7 +100,8 @@ public class PageContentStructure extends AbstractNodeViewElement
 		header.addCssClass( CSS_HEADER );
 
 		footer = new NodeViewElement( "footer" );
-		footer.addCssClass( CSS_FOOTER );
+		footer.set( css.margin.bottom.s3 )
+		      .addCssClass( CSS_FOOTER );
 
 		nav = new NodeViewElement( "nav" );
 		nav.addCssClass( CSS_NAV );
