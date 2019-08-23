@@ -37,11 +37,14 @@ public class EntityModuleIcons
 	public static final String PREVIOUS_PAGE = "previous-page";
 	public static final String NEXT_PAGE = "next-page";
 	public static final String ENTITY_QUERY_SEARCH = "entity-query-search";
-	public static final String EMBEDDED_COLLECTION_ITEM_HANDLE = "embedded-collection-item-handle";
-	public static final String EMBEDDED_COLLECTION_ITEM_ADD = "embedded-collection-item-add";
-	public static final String EMBEDDED_COLLECTION_ITEM_DELETE = "embedded-collection-item-delete";
 	public static final String EXTENSION_NAVIGATION = "extension-navigation";
 	public static final String NEW_WINDOW = "new-window";
+
+	public interface EmbeddedCollection {
+		String ITEM_HANDLE = "embeddedCollection-item-handle";
+		String ITEM_ADD = "embeddedCollection-item-add";
+		String ITEM_DELETE = "embeddedCollection-item-delete";
+	}
 
 	public interface FormView {
 		String DELETE = "formView-delete";
@@ -65,14 +68,15 @@ public class EntityModuleIcons
 	@Autowired
 	public void registerAdminWebIconSet() {
 		SimpleIconSet adminWebIconSet = new SimpleIconSet();
+
 		adminWebIconSet.add( ADVANCED_SETTINGS, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "cog" ) );
 		adminWebIconSet.add( PREVIOUS_PAGE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "step-backward" ) );
 		adminWebIconSet.add( NEXT_PAGE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "step-forward" ) );
 		adminWebIconSet.add( FormView.DELETE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "trash" ) );
 		adminWebIconSet.add( ENTITY_QUERY_SEARCH, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "search" ) );
-		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_HANDLE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "bars" ) );
-		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_ADD, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "plus" ) );
-		adminWebIconSet.add( EMBEDDED_COLLECTION_ITEM_DELETE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" ) );
+		adminWebIconSet.add( EmbeddedCollection.ITEM_HANDLE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "bars" ) );
+		adminWebIconSet.add( EmbeddedCollection.ITEM_ADD, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "plus" ) );
+		adminWebIconSet.add( EmbeddedCollection.ITEM_DELETE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" ).set( css.text.danger )  );
 		adminWebIconSet.add( EXTENSION_NAVIGATION, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "external-link-alt" ) );
 
 		adminWebIconSet.add( ListView.DETAIL, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "eye" ) );

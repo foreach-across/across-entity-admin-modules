@@ -16,9 +16,11 @@
 
 package com.foreach.across.modules.entity.views.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
+import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
+import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.EntityAttributes;
-import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.bind.EntityPropertyBinder;
 import com.foreach.across.modules.entity.bind.EntityPropertyControlName;
 import com.foreach.across.modules.entity.bind.ListEntityPropertyBinder;
@@ -39,8 +41,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
-import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.*;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.EmbeddedCollection;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentPropertyDescriptor;
 
 /**
@@ -241,6 +244,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 		return div()
 				.data( ROLE, "item" )
 				.data( "item-key", itemKey )
+				.with( css.display.flex, css.border.top, css.padding.top.s2 )
 				.css( "embedded-collection-item" )
 				.add(
 						sortable && !readonly ?
@@ -248,7 +252,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 										.name( "itemHandle" )
 										.data( ROLE, "item-handle" )
 										.css( "embedded-collection-item-handle" )
-										.add( iconSet( EntityModule.NAME ).icon( EMBEDDED_COLLECTION_ITEM_HANDLE ) )
+										.add( entityModuleIcons.get().icon( EmbeddedCollection.ITEM_HANDLE ) )
 								: null
 				)
 				.add(
@@ -256,6 +260,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 								.name( "itemData" )
 								.data( ROLE, "item-data" )
 								.css( "embedded-collection-item-data" )
+								.with( css.flex.grow.enabled, css.margin.right.s2 )
 								.add( itemTemplate )
 								.add(
 										!readonly ?
@@ -275,7 +280,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 												link()
 														.data( ACTION, "remove-item" )
 														.title( removeItemMessage )
-														.add( iconSet( EntityModule.NAME ).icon( EMBEDDED_COLLECTION_ITEM_DELETE )  )
+														.add( entityModuleIcons.get().icon( EmbeddedCollection.ITEM_DELETE ) )
 										)
 								: null
 				)
@@ -297,8 +302,9 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 						button()
 								.data( ACTION, "add-item" )
 								.style( Style.DEFAULT )
+								.with( css.button.outline.secondary, css.size.width100 )
 								.iconLeft()
-								.icon( iconSet( EntityModule.NAME ).icon( EMBEDDED_COLLECTION_ITEM_ADD ) )
+								.icon( entityModuleIcons.get().icon( EmbeddedCollection.ITEM_ADD ) )
 								.title( addItemMessage )
 								.text( StringUtils.isEmpty( addItemMessage ) ? "" : " " + addItemMessage )
 

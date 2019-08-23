@@ -662,7 +662,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		NodeViewElementBuilder panel = BootstrapUiBuilders.node( "div" )
 		                                                  .name( elementName( ELEMENT_PANEL ) )
-		                                                  .with( css.card, css.margin.bottom.s5 )
+		                                                  .with( css.card )
 		                                                  .add(
 				                                                  BootstrapUiBuilders.node( "div" )
 				                                                                     .name( elementName( ELEMENT_PANEL_HEADING ) )
