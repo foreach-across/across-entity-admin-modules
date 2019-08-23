@@ -16,10 +16,19 @@
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
+import com.foreach.across.modules.entity.config.EntityModuleIcons;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
+
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.*;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.span;
 
 /**
  * Registers an expandable detail view for an entity.
@@ -39,6 +48,14 @@ public class EntitySummaryViewActionProcessor implements ViewElementPostProcesso
 	@Override
 	public void postProcess( ViewElementBuilderContext builderContext, TableViewElement.Row element ) {
 		Object entity = EntityViewElementUtils.currentEntity( builderContext );
-		element.setAttribute( "data-summary-url", linkBuilder.forInstance( entity ).withViewName( viewName ).withPartial( "content" ).toUriString());
+		element.setAttribute( "data-summary-url", linkBuilder.forInstance( entity ).withViewName( viewName ).withPartial( "content" ).toUriString() );
+		ContainerViewElementUtils.findAll( element, TableViewElement.Cell.class )
+		                         .findFirst()
+		                         .ifPresent( cell -> cell.addFirstChild(
+				                         span( css( "js-summary-toggle" ),
+				                               children( entityModuleIcons.get().icon( SummaryView.SUMMARY_EXPAND),
+				                                         entityModuleIcons.get().icon( SummaryView.SUMMARY_COLLAPSE)
+				                                                          .set(  BootstrapStyles.css.display.none ) ) ) ) );
+
 	}
 }

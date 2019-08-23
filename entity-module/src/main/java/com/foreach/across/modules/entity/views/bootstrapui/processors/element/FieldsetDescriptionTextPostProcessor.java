@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.span;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
@@ -56,7 +56,7 @@ public class FieldsetDescriptionTextPostProcessor<T extends ViewElement> extends
 		if ( !StringUtils.isEmpty( text ) ) {
 			element.getHeader()
 			       .addChild(
-					       span().with( css.form.text )
+					       div().with( css.form.text, css.margin.bottom.s1 )
 					             .add( new TextViewElement( text, escapeHtml ) )
 					             .build( builderContext )
 			       );

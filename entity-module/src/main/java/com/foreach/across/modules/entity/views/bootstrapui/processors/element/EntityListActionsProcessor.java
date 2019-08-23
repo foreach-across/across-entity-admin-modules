@@ -19,7 +19,6 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
-import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
@@ -31,9 +30,9 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import lombok.Setter;
 
-import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.*;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.ListView;
+import static com.foreach.across.modules.entity.config.EntityModuleIcons.entityModuleIcons;
 
 /**
  * Adds common actions (update, delete) for an {@link EntityConfiguration} entity to every result item.
@@ -88,7 +87,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 
 		ButtonViewElementBuilder detailViewBtn = BootstrapUiBuilders.button()
 		                                                            .link( url.toUriString() )
-		                                                            .iconOnly( iconSet( EntityModule.NAME ).icon( DETAIL ) )
+		                                                            .iconOnly( entityModuleIcons.get().icon( ListView.DETAIL ) )
 		                                                            .text( messages.viewAction() );
 		if ( linkToDetailView ) {
 			if ( allowableActions.contains( AllowableAction.READ ) ) {
@@ -100,7 +99,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 				cell.add(
 						BootstrapUiBuilders.button()
 						                   .link( url.updateView().toUriString() )
-						                   .iconOnly( iconSet( EntityModule.NAME ).icon( EDIT ) )
+						                   .iconOnly( entityModuleIcons.get().icon( ListView.EDIT ) )
 						                   .text( messages.updateAction() )
 				);
 			}
@@ -113,9 +112,8 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 			cell.add(
 					BootstrapUiBuilders.button()
 					                   .link( url.deleteView().toUriString() )
-					                   .iconOnly( iconSet( EntityModule.NAME ).icon( DELETE ) )
+					                   .iconOnly( entityModuleIcons.get().icon( ListView.DELETE ) )
 					                   .text( messages.deleteAction() )
-					                   .with( css.text.danger )
 			);
 		}
 	}

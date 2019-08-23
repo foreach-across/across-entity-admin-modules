@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+function toggleExpansion( target: any )
+{
+    target.toggleClass( 'summary-expanded' );
+    target.find( '.js-summary-toggle' )
+          .children().toggleClass( 'd-none' );
+}
+
 function makeExpandable( node: JQuery )
 {
     let lastTarget;
@@ -29,7 +36,7 @@ function makeExpandable( node: JQuery )
 
         const target = $( evt.currentTarget );
         if ( target.next().attr( 'data-summary' ) !== undefined ) {
-            target.toggleClass( 'summary-expanded' );
+            toggleExpansion( target );
             target.next()
                   .fadeToggle( {
                                    duration: fadeDuration,
@@ -47,14 +54,14 @@ function makeExpandable( node: JQuery )
             target.after( newTr );
             if ( summaryUrl ) {
                 newTd.load( summaryUrl, null, () => {
-                    target.toggleClass( 'summary-expanded' );
+                    toggleExpansion( target );
                     newTr.fadeIn( {duration: fadeDuration} );
                     lastTarget = target;
                 } );
             }
             else if ( entityId ) {
                 newTd.load( entityType + '/' + target.attr( 'data-entity-id' ) + '?view=summary&_partial=content', null, () => {
-                    target.toggleClass( 'summary-expanded' );
+                    toggleExpansion( target );
                     newTr.fadeIn( {duration: fadeDuration} );
                     lastTarget = target;
                 } );
