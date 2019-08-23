@@ -319,7 +319,7 @@ public class PageContentStructure extends AbstractNodeViewElement
 				tabWrapper.addChild( body );
 
 				NodeViewElement tabContent = new NodeViewElement( "div" );
-				tabContent.set( css.tab.content, css.padding.left.s3, css.padding.right.s3 );
+				tabContent.set( css.tab.content, css.padding.horizontal.s3 );
 				body.addChild( tabContent );
 
 				NodeViewElement tabPane = new NodeViewElement( "div" );
