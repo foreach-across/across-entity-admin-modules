@@ -22,6 +22,7 @@ import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfigur
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -48,32 +49,60 @@ class Select extends ExampleController
 	String renderSelects() {
 		return render(
 				panel( "Simple select", simpleSelect().build() ),
+				panel( "Simple select with empty option", simpleSelect( true ).build() ),
 				panel( "Multi select", multiSelect().build() ),
+				panel( "Multi select with empty option", multiSelect( true ).build() ),
 				panel( "Simple select - bootstrap-select", simpleBootstrapSelect() ),
-				panel( "Multi select - bootstrap-select", multiBootstrapSelect() )
+				panel( "Simple select with empty option - bootstrap-select", simpleBootstrapSelect( true ) ),
+				panel( "Simple select with empty none selected text - bootstrap-select", simpleBootstrapSelect( true )
+						.setConfiguration( SelectFormElementConfiguration.liveSearch().setNoneSelectedText( " " ) ) ),
+				panel( "Multi select - bootstrap-select", multiBootstrapSelect() ),
+				panel( "Multi select with empty option - bootstrap-select", multiBootstrapSelect( true ) )
 		);
 	}
 
 	private SelectFormElement simpleBootstrapSelect() {
-		return (SelectFormElement) simpleSelect().select( SelectFormElementConfiguration.simple() ).build();
+		return simpleBootstrapSelect( false );
+	}
+
+	private SelectFormElement simpleBootstrapSelect( boolean addEmptyOption ) {
+		return (SelectFormElement) simpleSelect( addEmptyOption ).select( SelectFormElementConfiguration.simple() ).build();
 	}
 
 	private SelectFormElement multiBootstrapSelect() {
-		return (SelectFormElement) multiSelect().select( SelectFormElementConfiguration.liveSearch() ).build();
+		return multiBootstrapSelect( false );
+	}
+
+	private SelectFormElement multiBootstrapSelect( boolean addEmptyOption ) {
+		return (SelectFormElement) multiSelect( addEmptyOption ).select( SelectFormElementConfiguration.liveSearch() ).build();
 	}
 
 	private OptionsFormElementBuilder simpleSelect() {
-		return BootstrapUiBuilders.options()
-		                          .select()
-		                          .controlName( "controlName" )
-		                          .name( "internalName" )
-		                          .readonly( false )
-		                          .add( BootstrapUiBuilders.option().value( "one" ).text( "Inner text" ) )
-		                          .add( BootstrapUiBuilders.option().value( "two" ).text( "Inner text 2" )
-		                          );
+		return simpleSelect( false );
+	}
+
+	private OptionsFormElementBuilder simpleSelect( boolean addEmptyOption ) {
+		OptionsFormElementBuilder select = BootstrapUiBuilders.options()
+		                                                      .select()
+		                                                      .controlName( "controlName" )
+		                                                      .name( "internalName" )
+		                                                      .readonly( false );
+		if ( addEmptyOption ) {
+			select.add( BootstrapUiBuilders.option().value( "-1" ).text( " " ) );
+		}
+
+		select
+				.add( BootstrapUiBuilders.option().value( "one" ).text( "Inner text" ) )
+				.add( BootstrapUiBuilders.option().value( "two" ).text( "Inner text 2" )
+				);
+		return select;
 	}
 
 	private OptionsFormElementBuilder multiSelect() {
+		return multiSelect( false );
+	}
+
+	private OptionsFormElementBuilder multiSelect( boolean addEmptyOption ) {
 		SelectFormElement.OptionGroup group = new SelectFormElement.OptionGroup();
 		group.setLabel( "Group label" );
 		group.addChild(
@@ -89,12 +118,16 @@ class Select extends ExampleController
 				                   .build()
 		);
 
-		return BootstrapUiBuilders.options()
-		                          .select()
-		                          .add( group )
-		                          .multiple( true )
-		                          .controlName( "controlName" )
-		                          .name( "internalName" )
-		                          .readonly( false );
+		OptionsFormElementBuilder select = BootstrapUiBuilders.options()
+		                                                      .select();
+		if ( addEmptyOption ) {
+			select.add( BootstrapUiBuilders.option().value( "-1" ).text( " " ) );
+		}
+		return select
+				.add( group )
+				.multiple( true )
+				.controlName( "controlName" )
+				.name( "internalName" )
+				.readonly( false );
 	}
 }
