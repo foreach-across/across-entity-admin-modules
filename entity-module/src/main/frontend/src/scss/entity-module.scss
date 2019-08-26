@@ -17,6 +17,9 @@
 @import "modules/summary_view";
 //@import 'modules/entity-query-filter-form';
 
+table.table tr.odd {
+  background-color: rgba(0, 0, 0, .05);
+}
 
 //.table > thead > tr.odd {
 //  background-color: #ffffff;

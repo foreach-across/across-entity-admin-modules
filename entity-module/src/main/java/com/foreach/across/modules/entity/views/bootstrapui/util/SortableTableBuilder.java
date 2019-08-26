@@ -102,7 +102,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 	private Collection<EntityPropertyDescriptor> propertyDescriptors;
 	private boolean tableOnly, showResultNumber = true;
 	private Page<Object> page = new PageImpl<>( Collections.emptyList() );
-	private BootstrapStyleRule[] tableStyles = new BootstrapStyleRule[] { css.table.hover, css.table.striped, css.table.small };
+	private BootstrapStyleRule[] tableStyles = new BootstrapStyleRule[] { css.table.hover, css.table.small };
 	private PagingMessages pagingMessages;
 	private ViewElementBuilderSupport.ElementOrBuilder noResultsElement;
 	private Collection<ViewElementPostProcessor<TableViewElement.Row>> headerRowProcessors = new ArrayList<>();
