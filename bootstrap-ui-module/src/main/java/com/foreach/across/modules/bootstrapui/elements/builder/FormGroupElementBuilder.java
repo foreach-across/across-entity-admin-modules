@@ -124,7 +124,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder helpBlock( String text ) {
-		helpBlock( small( css.form.text, css.text.muted ).addChild( text( text ) ) );
+		helpBlock( html.small( css.form.text, css.text.muted ).addChild( html.text( text ) ) );
 		return this;
 	}
 
@@ -159,7 +159,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder descriptionBlock( String text ) {
-		descriptionBlock( p( css.form.text, css.text.muted ).addChild( text( text ) ) );
+		descriptionBlock( html.p( css.form.text, css.text.muted ).addChild( html.text( text ) ) );
 		return this;
 	}
 

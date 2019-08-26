@@ -25,7 +25,7 @@ import lombok.experimental.Accessors;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Responsible for creating a {@link TooltipViewElement} instance.
@@ -51,7 +51,7 @@ public class TooltipViewElementBuilder extends AbstractHtmlSupportingNodeViewEle
 	 */
 	@Setter
 	// todo use icon set
-	private ViewElement icon = i( css.fa.solid( "question-circle" ), attribute.aria.hidden );
+	private ViewElement icon = html.i( css.fa.solid( "question-circle" ), attribute.aria.hidden );
 
 	/**
 	 * -- SETTER --

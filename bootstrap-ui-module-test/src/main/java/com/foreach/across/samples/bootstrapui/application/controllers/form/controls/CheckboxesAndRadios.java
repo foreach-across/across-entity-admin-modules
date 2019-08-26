@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.option;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.options;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.hr;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
@@ -70,7 +70,7 @@ class CheckboxesAndRadios extends ExampleController
 		return render(
 				panel( "Default custom controls" )
 						.add( control.get().setControlName( "control" ).setText( "Simple control text" ) )
-						.add( hr() )
+						.add( html.hr() )
 						.add( options.get()
 						             .controlName( "optionsControl" )
 						             .add( option().text( "" ).value( 0 ) )
@@ -81,7 +81,7 @@ class CheckboxesAndRadios extends ExampleController
 						.add( control.get().setRenderAsCustomControl( false ).setControlName( "control" ).setText( "Simple control text" ) ),
 				panel( "Unwrapped" )
 						.add( control.get().setWrapped( false ).setControlName( "control3" ) )
-						.add( hr() )
+						.add( html.hr() )
 						.add( control.get().setWrapped( false ).setControlName( "control2" ).setText( "Unwrapped with label" ) )
 
 		);

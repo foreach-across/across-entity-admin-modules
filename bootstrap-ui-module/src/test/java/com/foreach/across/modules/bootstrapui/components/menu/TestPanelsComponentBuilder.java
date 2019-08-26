@@ -37,8 +37,7 @@ import static com.foreach.across.modules.bootstrapui.components.builder.PanelsNa
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.remove;
 import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.witherFor;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.text;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -172,7 +171,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 		ViewElementBuilder customBuilder = ( ctx )
 				-> new TextViewElement( ctx.getAttribute( CTX_CURRENT_MENU_ITEM, Menu.class ).getPath() );
 
-		menu.item( "/one", "one" ).attribute( ATTR_ICON, i( css.fa.brands( "apple" ) ) ).group( true ).and()
+		menu.item( "/one", "one" ).attribute( ATTR_ICON, html.i( css.fa.brands( "apple" ) ) ).group( true ).and()
 		    .item( "/one/sub", "sub one" ).attribute( ATTR_ICON, customBuilder ).and()
 		    .item( "/one/sub2", "sub one 2" );
 
@@ -255,7 +254,7 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 		card.findAll( e -> e instanceof HtmlViewElement && ( (HtmlViewElement) e ).hasCssClass( "card-header" ) )
 		    .map( ContainerViewElement.class::cast )
 		    .findFirst()
-		    .ifPresent( header -> header.addChild( text( "suffix" ) ) );
+		    .ifPresent( header -> header.addChild( html.text( "suffix" ) ) );
 	}
 
 	@Test

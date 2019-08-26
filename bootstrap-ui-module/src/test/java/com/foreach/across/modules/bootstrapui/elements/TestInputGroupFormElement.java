@@ -22,8 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.text;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
 import static org.junit.Assert.*;
 
 /**
@@ -62,7 +61,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void simpleAddonBefore() {
-		inputGroup.setPrepend( i( css.fa.solid( "calendar" ) ) );
+		inputGroup.setPrepend( html.i( css.fa.solid( "calendar" ) ) );
 
 		assertNull( inputGroup.getAppend() );
 		assertNotNull( inputGroup.getPrepend() );
@@ -81,7 +80,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void simpleAddonAfter() {
-		inputGroup.setAppend( i( css.fa.solid( "calendar" ) ) );
+		inputGroup.setAppend( html.i( css.fa.solid( "calendar" ) ) );
 
 		assertNull( inputGroup.getPrepend() );
 		assertNotNull( inputGroup.getAppend() );
@@ -100,8 +99,8 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void textAddonIsWrapped() {
-		inputGroup.setPrepend( text( "before" ) );
-		inputGroup.setAppend( text( "after" ) );
+		inputGroup.setPrepend( html.text( "before" ) );
+		inputGroup.setAppend( html.text( "after" ) );
 
 		renderAndExpect(
 				inputGroup,
@@ -116,7 +115,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void buttonBefore() {
 		inputGroup.setPrepend( new ButtonViewElement() );
-		inputGroup.setAppend( i( css.fa.solid( "calendar" ) ) );
+		inputGroup.setAppend( html.i( css.fa.solid( "calendar" ) ) );
 		inputGroup.setControl( new TextboxFormElement() );
 
 		renderAndExpect(
@@ -136,7 +135,7 @@ public class TestInputGroupFormElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void buttonAfter() {
 		inputGroup.setAppend( new ButtonViewElement() );
-		inputGroup.setPrepend( i( css.fa.solid( "calendar" ) ) );
+		inputGroup.setPrepend( html.i( css.fa.solid( "calendar" ) ) );
 		inputGroup.setControl( new TextboxFormElement() );
 
 		renderAndExpect(

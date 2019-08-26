@@ -155,9 +155,9 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 
 	private NodeViewElement createAddon( ViewElement child ) {
 		if ( child instanceof TextViewElement ) {
-			return div().addChild( span( css.inputGroup.text ).addChild( child ) );
+			return html.div().addChild( html.span( css.inputGroup.text ).addChild( child ) );
 		}
-		return div().addChild( child );
+		return html.div().addChild( child );
 	}
 
 	@Override
@@ -283,7 +283,7 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 				inputGroup.setPrepend( elements[0] );
 			}
 			else {
-				inputGroup.setPrepend( container( elements ) );
+				inputGroup.setPrepend( html.container( elements ) );
 			}
 		};
 	}
@@ -297,7 +297,7 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 				inputGroup.setAppend( elements[0] );
 			}
 			else {
-				inputGroup.setAppend( container( elements ) );
+				inputGroup.setAppend( html.container( elements ) );
 			}
 		};
 	}
@@ -311,7 +311,7 @@ public class InputGroupFormElement extends AbstractNodeViewElement implements Fo
 				inputGroup.setControl( elements[0] );
 			}
 			else {
-				inputGroup.setControl( container( elements ) );
+				inputGroup.setControl( html.container( elements ) );
 			}
 		};
 	}

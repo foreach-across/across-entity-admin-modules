@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.div;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.text;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
@@ -46,9 +46,9 @@ class Card extends ExampleController
 				       div( css.card, css.margin.bottom.s2 ).add( div( css.card.body ).add( text( "This is some text within a card body." ) ) ),
 				       div( css.card ).add(
 						       div( css.card.body )
-								       .add( h5( css.card.title, unescapedText( "Card title" ) ) )
-								       .add( h6( css.card.subTitle, css.margin.bottom.s2, css.text.muted, unescapedText( "Card subtitle" ) ) )
-								       .add( p( css.card.text, unescapedText(
+								       .add( html.h5( css.card.title, html.unescapedText( "Card title" ) ) )
+								       .add( html.h6( css.card.subTitle, css.margin.bottom.s2, css.text.muted, html.unescapedText( "Card subtitle" ) ) )
+								       .add( html.p( css.card.text, html.unescapedText(
 										       "Some quick example text to build on the card title and make up the bulk of the card's content." ) )
 								       )
 								       .add( BootstrapUiBuilders.link( css.card.link ).text( "Card link" ) )

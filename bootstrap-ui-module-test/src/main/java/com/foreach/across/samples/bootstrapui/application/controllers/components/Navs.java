@@ -40,8 +40,7 @@ import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.nav;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Generates Bootstrap based tabs from a {@link Menu} instance.
@@ -194,7 +193,7 @@ class Navs extends ExampleController
 	}
 
 	private NodeViewElement icon( String name ) {
-		return i( css.fa.solid( name ) );
+		return html.i( css.fa.solid( name ) );
 	}
 
 	private ViewElementBuilder<NodeViewElement> menuComponentBuilder( String type, Menu menu ) {
@@ -223,7 +222,7 @@ class Navs extends ExampleController
 		}
 
 		if ( "navbar".equals( type ) ) {
-			return menuBuilder.map( items -> nav( css.navbar, css.navbar.expand.onLargeAndUp(), css.navbar.dark, css.background.dark, children( items ) ) );
+			return menuBuilder.map( items -> html.nav( css.navbar, css.navbar.expand.onLargeAndUp(), css.navbar.dark, css.background.dark, children( items ) ) );
 		}
 
 		return menuBuilder;

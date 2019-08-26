@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.junit.Assert.*;
 
 /**
@@ -70,7 +70,7 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 		InputGroupFormElement inputGroupFormElement = new InputGroupFormElement();
 		inputGroupFormElement.setControl( textbox );
-		inputGroupFormElement.setPrepend( i( css.fa.solid( "exclamation" ) ) );
+		inputGroupFormElement.setPrepend( html.i( css.fa.solid( "exclamation" ) ) );
 
 		LabelFormElement inputGroupLabel = new LabelFormElement();
 		inputGroupLabel.setTarget( inputGroupFormElement );

@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -36,7 +36,7 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 	@Before
 	public void setup() {
 		SimpleIconSet customFontAwesomeIconSetSimpleIconSet = new SimpleIconSet();
-		customFontAwesomeIconSetSimpleIconSet.setDefaultIconResolver( ( iconName ) -> i( css( "fas fa-" + iconName ) ) );
+		customFontAwesomeIconSetSimpleIconSet.setDefaultIconResolver( ( iconName ) -> html.i( css( "fas fa-" + iconName ) ) );
 		IconSetRegistry.addIconSet( customFontAwesomeIconSetName, customFontAwesomeIconSetSimpleIconSet );
 	}
 
@@ -59,23 +59,23 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 		AbstractNodeViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "save" );
 		renderAndExpect( icon, "<i class=\"fas fa-save\"></i>" );
 
-		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "save", ( iconName ) -> i( css( "fas fa-floppy" ) ) );
-		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "edit", ( iconName ) -> i( css( "fas fa-edit" ) ) );
+		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "save", ( iconName ) -> html.i( css( "fas fa-floppy" ) ) );
+		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "edit", ( iconName ) -> html.i( css( "fas fa-edit" ) ) );
 		icon = iconSet( customFontAwesomeIconSetName ).icon( "save" );
 		renderAndExpect( icon, "<i class=\"fas fa-floppy\"></i>" );
 	}
 
 	@Test
 	public void overrideIcon() {
-		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-override-1", ( iconName ) -> i( css( "icon-override-v1" ) ) );
-		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-override-1", ( iconName ) -> i( css( "icon-override-v2" ) ) );
+		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-override-1", ( iconName ) -> html.i( css( "icon-override-v1" ) ) );
+		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-override-1", ( iconName ) -> html.i( css( "icon-override-v2" ) ) );
 		AbstractNodeViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "icon-override-1" );
 		renderAndExpect( icon, "<i class=\"icon-override-v2\"></i>" );
 	}
 
 	@Test
 	public void removeIcon() {
-		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-remove", ( iconName ) -> i( css( "icon-remove" ) ) );
+		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-remove", ( iconName ) -> html.i( css( "icon-remove" ) ) );
 		AbstractNodeViewElement icon = IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).icon( "icon-remove" );
 		renderAndExpect( icon, "<i class=\"icon-remove\"></i>" );
 
@@ -87,10 +87,10 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 	@Test
 	public void tryToRemoveIconFromOtherIconSet() {
 		SimpleIconSet otherIconSEt = new SimpleIconSet();
-		otherIconSEt.setDefaultIconResolver( ( iconName ) -> i( css( "other-icons" ) ) );
+		otherIconSEt.setDefaultIconResolver( ( iconName ) -> html.i( css( "other-icons" ) ) );
 		IconSetRegistry.addIconSet( "other-icons", otherIconSEt );
 
-		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-remove", ( iconName ) -> i( css( "icon-remove" ) ) );
+		IconSetRegistry.getIconSet( customFontAwesomeIconSetName ).add( "icon-remove", ( iconName ) -> html.i( css( "icon-remove" ) ) );
 		AbstractNodeViewElement icon = iconSet( customFontAwesomeIconSetName ).icon( "icon-remove" );
 		renderAndExpect( icon, "<i class=\"icon-remove\"></i>" );
 		IconSetRegistry.getIconSet( "other-icons" ).remove( "icon-remove" );
@@ -99,27 +99,27 @@ public class TestSimpleIconSet extends AbstractViewElementTemplateTest
 	}
 
 	@Test
-	public void getAllRegisteredIcons(){
+	public void getAllRegisteredIcons() {
 		SimpleIconSet withAllIcons = new SimpleIconSet();
-		withAllIcons.setDefaultIconResolver( ( iconName ) -> i( css( "fas fa-" + iconName ) ) );
+		withAllIcons.setDefaultIconResolver( ( iconName ) -> html.i( css( "fas fa-" + iconName ) ) );
 		IconSetRegistry.addIconSet( "with-all-icons", withAllIcons );
 
-		IconSetRegistry.getIconSet( "with-all-icons").add( "save", ( iconName ) -> i( css( "fas fa-floppy" ) ) );
-		IconSetRegistry.getIconSet( "with-all-icons" ).add( "edit", ( iconName ) -> i( css( "fas fa-edit" ) ) );
+		IconSetRegistry.getIconSet( "with-all-icons" ).add( "save", ( iconName ) -> html.i( css( "fas fa-floppy" ) ) );
+		IconSetRegistry.getIconSet( "with-all-icons" ).add( "edit", ( iconName ) -> html.i( css( "fas fa-edit" ) ) );
 
-		assertThat(iconSet("with-all-icons").getAllRegisteredIcons()).hasSize( 2 );
+		assertThat( iconSet( "with-all-icons" ).getAllRegisteredIcons() ).hasSize( 2 );
 	}
 
 	@Test
-	public void removeAllIcons(){
+	public void removeAllIcons() {
 		SimpleIconSet withAllIcons = new SimpleIconSet();
-		withAllIcons.setDefaultIconResolver( ( iconName ) -> i( css( "fas fa-" + iconName ) ) );
+		withAllIcons.setDefaultIconResolver( ( iconName ) -> html.i( css( "fas fa-" + iconName ) ) );
 		IconSetRegistry.addIconSet( "remove-all-icons", withAllIcons );
 
-		IconSetRegistry.getIconSet( "remove-all-icons").add( "save", ( iconName ) -> i( css( "fas fa-floppy" ) ) );
-		IconSetRegistry.getIconSet( "remove-all-icons" ).add( "edit", ( iconName ) -> i( css( "fas fa-edit" ) ) );
+		IconSetRegistry.getIconSet( "remove-all-icons" ).add( "save", ( iconName ) -> html.i( css( "fas fa-floppy" ) ) );
+		IconSetRegistry.getIconSet( "remove-all-icons" ).add( "edit", ( iconName ) -> html.i( css( "fas fa-edit" ) ) );
 
 		IconSetRegistry.getIconSet( "remove-all-icons" ).removeAll();
-		assertThat(iconSet("remove-all-icons").getAllRegisteredIcons()).hasSize( 0 );
+		assertThat( iconSet( "remove-all-icons" ).getAllRegisteredIcons() ).hasSize( 0 );
 	}
 }

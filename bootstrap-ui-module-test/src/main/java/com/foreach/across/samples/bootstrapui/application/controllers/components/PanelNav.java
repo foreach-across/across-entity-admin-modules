@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.ATTR_ICON;
 import static com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 @Controller
 @RequestMapping("/components/navs/panel")
@@ -93,7 +93,7 @@ class PanelNav extends ExampleController
 	private NodeViewElement panelNavWithGroupsAndIcons() {
 		Menu menu = new PathBasedMenuBuilder()
 				.item( "/one", "one" )
-				.attribute( ATTR_ICON, i( BootstrapStyles.css.fa.brands( "apple" ) ) )
+				.attribute( ATTR_ICON, html.i( BootstrapStyles.css.fa.brands( "apple" ) ) )
 				.group( true ).and()
 				.item( "/one/sub", "sub one" ).and()
 				.item( "/one/sub2", "sub one 2" ).and()

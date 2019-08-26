@@ -16,13 +16,13 @@
 
 package com.foreach.across.modules.bootstrapui.config;
 
-import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
+import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Register the default Font Awesome {@link SimpleIconSet} that BootstrapUiModule uses.
@@ -40,10 +40,10 @@ public class FontAwesomeIconSetConfiguration
 	@Autowired
 	public void createDefaultIconSets() {
 		SimpleIconSet fontAwesomeSolidIconSet = new SimpleIconSet();
-		fontAwesomeSolidIconSet.setDefaultIconResolver( ( iconName ) -> i( css( "fas fa-" + iconName ) ) );
+		fontAwesomeSolidIconSet.setDefaultIconResolver( ( iconName ) -> html.i( css( "fas fa-" + iconName ) ) );
 
 		SimpleIconSet fontAwesomeBrandsIconSet = new SimpleIconSet();
-		fontAwesomeBrandsIconSet.setDefaultIconResolver( ( iconName ) -> i( css( "fab fa-" + iconName ) ) );
+		fontAwesomeBrandsIconSet.setDefaultIconResolver( ( iconName ) -> html.i( css( "fab fa-" + iconName ) ) );
 
 		IconSetRegistry.addIconSet( FONT_AWESOME_SOLID_ICON_SET, fontAwesomeSolidIconSet );
 		IconSetRegistry.addIconSet( FONT_AWESOME_BRANDS_ICON_SET, fontAwesomeBrandsIconSet );

@@ -118,7 +118,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	}
 
 	protected NodeViewElement buildMenu( Menu menuToRender, ViewElementBuilderContext builderContext ) {
-		NodeViewElement list = apply( HtmlViewElements.ul( navStyle ), builderContext );
+		NodeViewElement list = apply( html.ul( navStyle ), builderContext );
 
 		if ( menuToRender != null ) {
 			includedItems( menuToRender ).forEach( item -> addMenuItemToList( list, item, builderContext ) );
@@ -136,7 +136,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 					: Boolean.TRUE.equals( itemToRender.getAttribute( ATTR_ICON_ONLY ) );
 
 			if ( iconOnly || !addViewElementIfAttributeExists( item, ATTR_ITEM_VIEW_ELEMENT, list, builderContext ) ) {
-				NodeViewElement li = li( css.nav.item, htmlAttributesOf( item ) );
+				NodeViewElement li = html.li( css.nav.item, htmlAttributesOf( item ) );
 
 				if ( itemToRender.isGroup() ) {
 					buildDropDownItem( li, itemToRender, iconOnly, builderContext );
@@ -212,13 +212,13 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 							&& ( itemToRender.isGroup() || Separator.insertBefore( itemToRender ) ) );
 
 			if ( shouldInsertSeparator ) {
-				dropDown.addChild( div( css.dropdown.divider ) );
+				dropDown.addChild( html.div( css.dropdown.divider ) );
 
 				nextChildShouldBeSeparator.set( false );
 			}
 
 			if ( itemToRender.isGroup() ) {
-				NodeViewElement header = h6( css.dropdown.header );
+				NodeViewElement header = html.h6( css.dropdown.header );
 				addIconAndText( header, itemToRender, builderContext.resolveText( itemToRender.getTitle() ), true, false, builderContext );
 				dropDown.addChild( header );
 

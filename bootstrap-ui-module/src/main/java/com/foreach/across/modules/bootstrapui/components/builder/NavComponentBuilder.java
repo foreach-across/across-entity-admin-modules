@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.link;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.wither;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.text;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Abstract base class for rendering {@link Menu} items to nav-like structures.
@@ -318,9 +318,9 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 			node.addChild( TextViewElement.text( " " ) );
 
 			node.addChild(
-					HtmlViewElements.span(
+					html.span(
 							css.screenReaderOnly,
-							text( resolvedTitle )
+							html.text( resolvedTitle )
 					)
 			);
 		}

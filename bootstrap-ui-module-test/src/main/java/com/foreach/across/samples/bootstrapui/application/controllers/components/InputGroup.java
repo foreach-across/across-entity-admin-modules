@@ -30,7 +30,7 @@ import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttribu
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 import static com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement.*;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 @Controller
 @RequestMapping("/components/input-group")
@@ -84,8 +84,8 @@ class InputGroup extends ExampleController
 		return container()
 				.add( inputGroup().prepend( button().style( Style.PRIMARY ).text( "Click me" ) ) )
 				.add( inputGroup().append(
-						container().add( button().style( Style.DANGER ).iconOnly( i( css.fa.solid( "trash" ) ) ).text( "Delete" ) )
-						           .add( button().style( Style.PRIMARY ).iconOnly( i( css.fa.solid( "save" ) ) ).text( "Save" ) )
+						container().add( button().style( Style.DANGER ).iconOnly( html.i( css.fa.solid( "trash" ) ) ).text( "Delete" ) )
+						           .add( button().style( Style.PRIMARY ).iconOnly( html.i( css.fa.solid( "save" ) ) ).text( "Save" ) )
 				      )
 				)
 				.add(
@@ -97,7 +97,7 @@ class InputGroup extends ExampleController
 				)
 				.add(
 						inputGroup().append(
-								container().add( button().style( Style.DANGER ).icon( i( css.fa.solid( "save" ) ) ).text( " Save" ) )
+								container().add( button().style( Style.DANGER ).icon( html.i( css.fa.solid( "save" ) ) ).text( " Save" ) )
 								           .add( button().style( Style.WARNING ).with( css.dropdown.toggle, attribute.data.toggle.dropdown ) )
 								           .add( div( css.dropdown.menu ).add( link().with( css.dropdown.item ).text( "A dropdown item" ) ) )
 						)
@@ -106,19 +106,19 @@ class InputGroup extends ExampleController
 	}
 
 	private ViewElement simpleInputGroup() {
-		return HtmlViewElements.container(
+		return html.container(
 				inputGroup()
 						.control( textbox().placeholder( "Username" ).type( TextboxFormElement.Type.EMAIL ) )
 						.prepend( text( "@" ) ).build(),
 				BootstrapUiElements.inputGroup(
 						css.margin.bottom.s3,
 						control( textbox().placeholder( "Email prefix" ).type( TextboxFormElement.Type.TEXT ).build() ),
-						append( HtmlViewElements.text( "@example.com" ) )
+						append( html.text( "@example.com" ) )
 				),
-				BootstrapUiElements.inputGroup( css.margin.bottom.s3, prepend( HtmlViewElements.text( "$" ) ), append( HtmlViewElements.text( ".00" ) ) ),
+				BootstrapUiElements.inputGroup( css.margin.bottom.s3, prepend( html.text( "$" ) ), append( html.text( ".00" ) ) ),
 				BootstrapUiElements
 						.inputGroup( css.inputGroup.small, css.margin.bottom.s3,
-						             prepend( HtmlViewElements.text( "With textarea" ) ), control( new TextareaFormElement() ) )
+						             prepend( html.text( "With textarea" ) ), control( new TextareaFormElement() ) )
 		);
 	}
 

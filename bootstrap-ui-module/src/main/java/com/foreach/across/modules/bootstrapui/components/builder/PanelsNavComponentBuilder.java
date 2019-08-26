@@ -27,8 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.div;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.nav;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Renders a {@link com.foreach.across.modules.web.menu.Menu} into a panels structure with list-group items.
@@ -70,7 +69,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 
 	@Override
 	protected NodeViewElement buildMenu( Menu menu, ViewElementBuilderContext builderContext ) {
-		NodeViewElement container = apply( nav().set( css.nav, css.of( "nav-panels" ), css.flex.column ), builderContext );
+		NodeViewElement container = apply( html.nav().set( css.nav, css.of( "nav-panels" ), css.flex.column ), builderContext );
 
 		NodeViewElement nonPanelList = null;
 		AtomicInteger subMenuCount = new AtomicInteger( 0 );
@@ -123,11 +122,11 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 	}
 
 	private void addPanel( NodeViewElement container, Menu item, ViewElementBuilderContext builderContext, AtomicInteger subMenuCount ) {
-		NodeViewElement panel = div( css.card, css.margin.bottom.s3 );
+		NodeViewElement panel = html.div( css.card, css.margin.bottom.s3 );
 		//panel.addCssClass( "panel", StringUtils.defaultString( item.getAttribute( ATTR_PANEL_STYLE ), "panel-default" ) );
 
 		if ( item.hasTitle() ) {
-			NodeViewElement heading = div( css.card.header );
+			NodeViewElement heading = html.div( css.card.header );
 			addIconAndText( heading, item, builderContext.resolveText( item.getTitle() ), true, false, builderContext );
 			panel.addChild( heading );
 		}
@@ -142,7 +141,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 	}
 
 	private NodeViewElement createList( NodeViewElement container ) {
-		NodeViewElement list = div( css.listGroup );
+		NodeViewElement list = html.div( css.listGroup );
 		//list.addCssClass( "nav", "nav-sidebar" );
 		container.addChild( list );
 		return list;
@@ -198,7 +197,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		link.setTitle( resolvedTitle );
 		li.addChild( link );
 
-		NodeViewElement list = div().setHtmlId( "a" + subMenuId );
+		NodeViewElement list = html.div().setHtmlId( "a" + subMenuId );
 		//list.addCssClass( "submenu", "list-group" );
 		//list.setHtmlId( subMenuId );
 

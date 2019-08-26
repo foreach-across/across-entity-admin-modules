@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
@@ -112,7 +112,7 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 
 	@Test
 	public void onlyRenderIconsForTheLevelsSpecified() {
-		NodeViewElement apple = i( css.fa.brands( "apple" ) );
+		NodeViewElement apple = html.i( css.fa.brands( "apple" ) );
 		menu.item( "one", "one" )
 		    .attribute( NavComponentBuilder.ATTR_ICON, apple )
 		    .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )

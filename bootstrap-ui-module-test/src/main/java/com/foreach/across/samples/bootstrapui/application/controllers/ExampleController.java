@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.h4;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 @Controller
 public abstract class ExampleController
@@ -55,7 +55,7 @@ public abstract class ExampleController
 	protected abstract void menuItems( PathBasedMenuBuilder menu );
 
 	protected NodeViewElementBuilder panel( String title, Object... elementOrBuilders ) {
-		return BootstrapUiBuilders.div( css.margin.bottom.s3 ).add( h4( HtmlViewElements.text( title ) ) ).addAll( toViewElements( elementOrBuilders ) );
+		return BootstrapUiBuilders.div( css.margin.bottom.s3 ).add( html.h4( html.text( title ) ) ).addAll( toViewElements( elementOrBuilders ) );
 	}
 
 	protected String render( Object... elementOrBuilders ) {
