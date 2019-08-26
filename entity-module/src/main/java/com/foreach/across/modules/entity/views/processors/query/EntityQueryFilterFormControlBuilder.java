@@ -38,6 +38,7 @@ import static com.foreach.across.modules.entity.views.processors.EntityQueryFilt
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 import static com.foreach.across.modules.web.resource.WebResourceRule.add;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.attribute;
 
 /**
  * Builds the configured form controls for an {@link com.foreach.across.modules.entity.query.EntityQuery} based approach.
@@ -233,10 +234,8 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 
 					if ( !convertibleToBasicMode ) {
 						button.disable();
-						actions.add( div().add( button )
-						                  .attribute( "title", builderContext.resolveText( "#{entityQueryFilter.linkToBasicMode[impossibleTooltip]}" ) )
-						                  .css( "disabled-button-wrapper" )
-						);
+						button.with( attribute("title",builderContext.resolveText( "#{entityQueryFilter.linkToBasicMode[impossibleTooltip]}" )) );
+						actions.add( button );
 					}
 					else {
 						actions.add( button );
