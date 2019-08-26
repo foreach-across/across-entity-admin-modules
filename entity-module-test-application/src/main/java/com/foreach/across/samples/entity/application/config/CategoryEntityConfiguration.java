@@ -274,7 +274,6 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .controller( controller )
 			     .attribute( Printer.class, (Printer<Manager>) ( manager, locale ) -> manager.getName() )
 			     .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
-			     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_PANEL_SUCCESS )
 			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "manager.*" ) )
 			     .and()
 			     .property( "manager.email" )

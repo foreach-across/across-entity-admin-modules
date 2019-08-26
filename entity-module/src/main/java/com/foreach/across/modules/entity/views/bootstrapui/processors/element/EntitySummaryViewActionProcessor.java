@@ -23,8 +23,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.SummaryView;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
@@ -52,9 +51,9 @@ public class EntitySummaryViewActionProcessor implements ViewElementPostProcesso
 		                         .findFirst()
 		                         .ifPresent( cell -> cell.addFirstChild(
 				                         html.span( css( "js-summary-toggle" ),
-				                                    children( entityModuleIcons.get().icon( SummaryView.SUMMARY_EXPAND ),
-				                                              entityModuleIcons.get().icon( SummaryView.SUMMARY_COLLAPSE )
-				                                                               .set( BootstrapStyles.css.display.none ) ) ) ) );
+				                                    children( entityModuleIcons.listView.summaryView.expand(),
+				                                              entityModuleIcons.listView.summaryView.collapse()
+				                                                                                    .set( BootstrapStyles.css.display.none ) ) ) ) );
 
 	}
 }
