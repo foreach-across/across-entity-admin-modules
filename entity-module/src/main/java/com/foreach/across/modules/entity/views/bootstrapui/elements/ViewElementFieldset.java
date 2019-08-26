@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+
 /**
  * Represents a fieldset of other {@link ViewElement} objects. A fieldset has for {@link ContainerViewElement} properties:
  * <ul>
@@ -239,7 +241,7 @@ public class ViewElementFieldset extends ContainerViewElement
 	 * {@code descriptor.attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.template( fields -> new ContainerViewElement() ) )}.
 	 *
 	 * @param template function (not null)
-	 * @param <U> output view element type
+	 * @param <U>      output view element type
 	 * @return template function
 	 */
 	public static <U extends ViewElement> Function<ViewElementFieldset, U> template( @NonNull Function<ViewElementFieldset, U> template ) {
@@ -379,17 +381,18 @@ public class ViewElementFieldset extends ContainerViewElement
 	public static Function<ViewElementFieldset, NodeViewElement> panelTemplate( @NonNull String cssClassName, @NonNull Style style ) {
 		return fieldset -> {
 			NodeViewElement wrapper = new NodeViewElement( "div" );
-			wrapper.addCssClass( "element-fieldset", cssClassName, "panel", style.forPrefix( "panel" ) );
+			wrapper.addCssClass( "element-fieldset", cssClassName, style.forPrefix( "border" ) )
+			       .set( css.card );
 
 			if ( fieldset.getTitle().hasChildren() ) {
 				NodeViewElement panelHeading = new NodeViewElement( "div" );
-				panelHeading.addCssClass( "element-fieldset-title", "panel-heading" );
+				panelHeading.addCssClass( "element-fieldset-title", style.forPrefix( "bg" ) ).set( css.card.header );
 				panelHeading.addChild( fieldset.getTitle() );
 				wrapper.addChild( panelHeading );
 			}
 
 			NodeViewElement panelBody = new NodeViewElement( "div" );
-			panelBody.addCssClass( "element-fieldset-content", "panel-body" );
+			panelBody.addCssClass( "element-fieldset-content" ).set( css.card.body );
 
 			if ( fieldset.getHeader().hasChildren() ) {
 				NodeViewElement header = new NodeViewElement( "div" );
@@ -404,7 +407,7 @@ public class ViewElementFieldset extends ContainerViewElement
 			panelBody.addChild( b );
 
 			NodeViewElement panelFooter = new NodeViewElement( "div" );
-			panelFooter.addCssClass( "element-fieldset-footer", "panel-footer" );
+			panelFooter.addCssClass( "element-fieldset-footer", style.forPrefix( "bg" ) ).set( css.card.footer );
 			panelFooter.addChild( fieldset.getFooter() );
 
 			wrapper.addChild( panelBody );

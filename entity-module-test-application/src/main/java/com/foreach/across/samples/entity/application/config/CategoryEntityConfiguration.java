@@ -32,8 +32,8 @@ import com.foreach.across.modules.entity.registry.properties.EntityPropertyValid
 import com.foreach.across.modules.entity.registry.properties.GenericEntityPropertyController;
 import com.foreach.across.modules.entity.validators.EntityValidatorSupport;
 import com.foreach.across.modules.entity.views.ViewElementMode;
+import com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset;
 import com.foreach.across.modules.entity.views.bootstrapui.options.OptionIterableBuilder;
-import com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor;
 import com.foreach.across.modules.hibernate.jpa.repositories.config.EnableAcrossJpaRepositories;
 import com.foreach.across.samples.entity.EntityModuleTestApplication;
 import lombok.AllArgsConstructor;
@@ -274,6 +274,7 @@ public class CategoryEntityConfiguration implements EntityConfigurer
 			     .controller( controller )
 			     .attribute( Printer.class, (Printer<Manager>) ( manager, locale ) -> manager.getName() )
 			     .viewElementType( ViewElementMode.FORM_WRITE, BootstrapUiElements.FIELDSET )
+			     .attribute( ViewElementFieldset.TEMPLATE, ViewElementFieldset.TEMPLATE_PANEL_SUCCESS )
 			     .attribute( EntityAttributes.FIELDSET_PROPERTY_SELECTOR, EntityPropertySelector.of( "manager.*" ) )
 			     .and()
 			     .property( "manager.email" )

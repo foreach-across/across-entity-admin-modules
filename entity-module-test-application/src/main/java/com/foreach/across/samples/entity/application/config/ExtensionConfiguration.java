@@ -47,7 +47,6 @@ import javax.validation.constraints.Min;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.formGroup;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.textbox;
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.EMBEDDED_COLLECTION_ITEM_DELETE;
 import static com.foreach.across.modules.entity.config.EntityModuleIcons.EXTENSION_NAVIGATION;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
