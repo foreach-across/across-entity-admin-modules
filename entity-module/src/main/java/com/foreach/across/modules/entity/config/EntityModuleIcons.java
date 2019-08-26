@@ -82,10 +82,6 @@ public class EntityModuleIcons
 		adminWebIconSet.add( ListView.DETAIL, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "eye" ) );
 		adminWebIconSet.add( ListView.EDIT, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "edit" ) );
 		adminWebIconSet.add( ListView.DELETE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" ).set( css.text.danger ) );
-		adminWebIconSet.add( SummaryView.SUMMARY_EXPAND, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "plus-circle" )
-		                                                                      .set( css.margin.right.s2, css.text.success ) );
-		adminWebIconSet.add( SummaryView.SUMMARY_COLLAPSE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "minus-circle" )
-		                                                                        .set( css.margin.right.s2, css.text.danger ) );
 
 		IconSetRegistry.addIconSet( EntityModule.NAME, adminWebIconSet );
 	}
