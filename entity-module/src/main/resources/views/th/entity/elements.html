@@ -20,7 +20,7 @@
 <div th:fragment="multi-value-control(component)" class="js-multi-value-control">
     <input th:id="${component.htmlId}" type="text" class="form-control js-multi-value-input" th:placeholder="${component.placeholder}"/>
     <table class="table table-striped">
-        <tr class="js-multi-value-template hidden">
+        <tr class="js-multi-value-template d-none">
             <td class="js-multi-value-value">{{value}}</td>
             <td class="row-actions">
                 <a role="button" class="btn btn-link" title="Remove" href="#"><span aria-hidden="true" class="fas fa-times"></span></a>
