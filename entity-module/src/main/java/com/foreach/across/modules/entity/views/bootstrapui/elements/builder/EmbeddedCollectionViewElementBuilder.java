@@ -42,8 +42,7 @@ import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.EmbeddedCollection;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.entity.views.util.EntityViewElementUtils.currentPropertyDescriptor;
 
 /**
@@ -252,7 +251,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 										.name( "itemHandle" )
 										.data( ROLE, "item-handle" )
 										.css( "embedded-collection-item-handle" )
-										.add( entityModuleIcons.get().icon( EmbeddedCollection.ITEM_HANDLE ) )
+										.add( entityModuleIcons.embeddedCollection.itemHandle() )
 								: null
 				)
 				.add(
@@ -280,7 +279,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 												link()
 														.data( ACTION, "remove-item" )
 														.title( removeItemMessage )
-														.add( entityModuleIcons.get().icon( EmbeddedCollection.ITEM_DELETE ) )
+														.add( entityModuleIcons.embeddedCollection.removeItem() )
 										)
 								: null
 				)
@@ -304,7 +303,7 @@ public class EmbeddedCollectionViewElementBuilder extends NodeViewElementBuilder
 								.style( Style.DEFAULT )
 								.with( css.button.outline.secondary, css.size.width100 )
 								.iconLeft()
-								.icon( entityModuleIcons.get().icon( EmbeddedCollection.ITEM_ADD ) )
+								.icon( entityModuleIcons.embeddedCollection.addItem() )
 								.title( addItemMessage )
 								.text( StringUtils.isEmpty( addItemMessage ) ? "" : " " + addItemMessage )
 

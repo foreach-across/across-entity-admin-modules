@@ -34,8 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.FormView;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
 
 /**
  * Adds a delete button to the existing {@link SingleEntityFormViewProcessor#FORM_BUTTONS} if the {@link AllowableAction#DELETE} is present.
@@ -95,7 +94,7 @@ public class DeleteActionFormViewProcessor extends EntityViewProcessorAdapter
 		                          .name( "btn-delete" )
 		                          .link( linkToDeleteView.toUriString() )
 		                          .style( Style.DANGER )
-		                          .icon( entityModuleIcons.get().icon( FormView.DELETE ) )
+		                          .icon( entityModuleIcons.formView.delete() )
 		                          .title( messages.messageWithFallback( "buttons.delete" ) );
 	}
 }

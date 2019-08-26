@@ -21,7 +21,7 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
-import com.foreach.across.modules.entity.EntityModule;
+import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -44,10 +44,9 @@ import org.springframework.web.bind.WebDataBinder;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import static com.foreach.across.modules.bootstrapui.config.FontAwesomeIconSetConfiguration.FONT_AWESOME_SOLID_ICON_SET;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.formGroup;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.textbox;
-import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.EXTENSION_NAVIGATION;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
 
@@ -66,7 +65,8 @@ public class ExtensionConfiguration implements EntityConfigurer
 		        .formView(
 				        "extension",
 				        basicSettings()
-						        .adminMenu( "/extension", item -> item.attribute( NavComponentBuilder.ATTR_ICON, iconSet( EntityModule.NAME ).icon( EXTENSION_NAVIGATION )) )
+						        .adminMenu( "/extension", item -> item.attribute( NavComponentBuilder.ATTR_ICON,
+						                                                          IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "external-link-alt" ) ) )
 						        .andThen( formSettings().forExtension( true ).formLayout( Grid.create( 12 ) ) )
 						        .andThen( builder -> builder.viewProcessor( new PartnerExtensionViewProcessor() ) )
 		        );

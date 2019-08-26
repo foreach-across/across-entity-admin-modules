@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors.query;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.ButtonViewElementBuilder;
-import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -33,8 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
-import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.ENTITY_QUERY_SEARCH;
+import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.ENTITY_QUERY_REQUEST;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
@@ -178,7 +176,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 					.link()
 					.submit()
 					.text( builderContext.resolveText( "#{entityQueryFilter.searchButton}" ) )
-					.icon( iconSet( EntityModule.NAME ).icon( ENTITY_QUERY_SEARCH ) );
+					.icon( entityModuleIcons.listView.search() );
 
 			if ( basicFilterEnabled ) {
 				NodeViewElementBuilder basicFilter = div().name( "entity-query-filter-form-basic" )

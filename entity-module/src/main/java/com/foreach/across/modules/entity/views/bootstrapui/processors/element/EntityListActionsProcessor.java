@@ -31,8 +31,7 @@ import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import lombok.Setter;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.ListView;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.entityModuleIcons;
+import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
 
 /**
  * Adds common actions (update, delete) for an {@link EntityConfiguration} entity to every result item.
@@ -87,7 +86,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 
 		ButtonViewElementBuilder detailViewBtn = BootstrapUiBuilders.button()
 		                                                            .link( url.toUriString() )
-		                                                            .iconOnly( entityModuleIcons.get().icon( ListView.DETAIL ) )
+		                                                            .iconOnly( entityModuleIcons.listView.linkToDetailView() )
 		                                                            .text( messages.viewAction() );
 		if ( linkToDetailView ) {
 			if ( allowableActions.contains( AllowableAction.READ ) ) {
@@ -99,7 +98,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 				cell.add(
 						BootstrapUiBuilders.button()
 						                   .link( url.updateView().toUriString() )
-						                   .iconOnly( entityModuleIcons.get().icon( ListView.EDIT ) )
+						                   .iconOnly( entityModuleIcons.listView.linkToEditView() )
 						                   .text( messages.updateAction() )
 				);
 			}
@@ -112,7 +111,7 @@ public class EntityListActionsProcessor implements ViewElementPostProcessor<Tabl
 			cell.add(
 					BootstrapUiBuilders.button()
 					                   .link( url.deleteView().toUriString() )
-					                   .iconOnly( entityModuleIcons.get().icon( ListView.DELETE ) )
+					                   .iconOnly( entityModuleIcons.listView.linkToDeleteView() )
 					                   .text( messages.deleteAction() )
 			);
 		}

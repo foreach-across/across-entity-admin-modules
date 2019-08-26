@@ -21,7 +21,6 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
-import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -46,10 +45,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.NEXT_PAGE;
-import static com.foreach.across.modules.entity.config.EntityModuleIcons.PREVIOUS_PAGE;
+import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
 
 /**
  * Helper that aids in building a sortable {@link com.foreach.across.modules.bootstrapui.elements.TableViewElement}
@@ -712,7 +709,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 			pager.add(
 					BootstrapUiBuilders.button()
 					                   .link( "#" )
-					                   .icon( iconSet( EntityModule.NAME ).icon( PREVIOUS_PAGE ) )
+					                   .icon( entityModuleIcons.listView.previousPage() )
 					                   .title( messages.previousPage( currentPage ) )
 					                   .attribute( DATA_ATTR_PAGE, currentPage.getNumber() - 1 )
 					                   .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
@@ -748,7 +745,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 			pager.add(
 					BootstrapUiBuilders.button()
 					                   .link( "#" )
-					                   .icon( iconSet( EntityModule.NAME ).icon( NEXT_PAGE ) )
+					                   .icon( entityModuleIcons.listView.nextPage() )
 					                   .title( messages.nextPage( currentPage ) )
 					                   .attribute( DATA_ATTR_PAGE, currentPage.getNumber() + 1 )
 					                   .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
