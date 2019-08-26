@@ -731,7 +731,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 						                                      .attribute( "data-tbl-page-selector", "selector" )
 						                                      .attribute( DATA_ATTR_TABLE_NAME, getTableName() )
 						                                      .text( String.valueOf( currentPage.getNumber() + 1 ) )
-						                                      .with( css.margin.right.s2 )
+						                                      .with( css.margin.right.s2, css.padding.s2 )
 				                   )
 		)
 		     .add( BootstrapUiBuilders.node( "span" ).with( css.margin.right.s2 ).add( BootstrapUiBuilders.html( messages.ofPages( currentPage ) ) ) )

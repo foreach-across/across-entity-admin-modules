@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//@import 'settings';
+@import 'settings';
 //@import 'modules/entity-query-filter-form';
-//
-//.sortable {
-//  cursor: pointer;
-//
-//  :hover {
-//    color: orange;
-//  }
-//
-//  span.caret {
-//    display: none;
-//  }
-//  &.dropup, &.dropdown {
-//    span.caret {
-//      display: inline-block;
-//    }
-//  }
-//}
-//
+@import "modules/pager";
+
+
 //.table > thead > tr.odd {
 //  background-color: #ffffff;
 //}

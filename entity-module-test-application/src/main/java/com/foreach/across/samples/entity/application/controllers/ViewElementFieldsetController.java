@@ -30,7 +30,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -119,8 +119,8 @@ public class ViewElementFieldsetController
 
 	private ViewElementFieldset fieldset() {
 		ViewElementFieldset fieldset = new ViewElementFieldset();
-		fieldset.getTitle().addChild( HtmlViewElements.text( "Fieldset title" ) );
-		fieldset.getFooter().addChild( HtmlViewElements.text( "Fieldset footer" ) );
+		fieldset.getTitle().addChild( html.text( "Fieldset title" ) );
+		fieldset.getFooter().addChild( html.text( "Fieldset footer" ) );
 		fieldset.getBody().set( children( formGroup( label( "Field 1" ), textbox() ).build() ) );
 		return fieldset;
 	}
