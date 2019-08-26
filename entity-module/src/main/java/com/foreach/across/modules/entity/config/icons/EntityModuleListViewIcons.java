@@ -31,8 +31,6 @@ public class EntityModuleListViewIcons
 	public static final String PREVIOUS_PAGE = "previous-page";
 	public static final String NEXT_PAGE = "next-page";
 
-	public EntityModuleSummaryViewIcons summaryView = new EntityModuleSummaryViewIcons();
-
 	public AbstractNodeViewElement search() {
 		return IconSet.iconSet( EntityModule.NAME ).icon( ENTITY_QUERY_SEARCH );
 	}

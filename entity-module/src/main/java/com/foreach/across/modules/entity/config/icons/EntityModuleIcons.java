@@ -59,11 +59,6 @@ public class EntityModuleIcons
 		adminWebIconSet.add( EntityModuleListViewIcons.PREVIOUS_PAGE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "step-backward" ) );
 		adminWebIconSet.add( EntityModuleListViewIcons.NEXT_PAGE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "step-forward" ) );
 
-		adminWebIconSet.add( EntityModuleSummaryViewIcons.EXPAND, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "plus-circle" )
-		                                                                                  .set( css.margin.right.s2, css.text.success ) );
-		adminWebIconSet.add( EntityModuleSummaryViewIcons.COLLAPSE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "minus-circle" )
-		                                                                                    .set( css.margin.right.s2, css.text.danger ) );
-
 		IconSetRegistry.addIconSet( EntityModule.NAME, adminWebIconSet );
 	}
 }
