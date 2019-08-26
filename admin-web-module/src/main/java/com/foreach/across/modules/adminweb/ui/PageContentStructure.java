@@ -280,6 +280,7 @@ public class PageContentStructure extends AbstractNodeViewElement
 			heading.addChild( new TextViewElement( " " ) );
 
 			NodeViewElement actionsElement = new NodeViewElement( ELEMENT_PAGE_TITLE_SUB_TEXT, "small" );
+			actionsElement.addCssClass( "text-muted" );
 			heading.addChild( actionsElement );
 
 			header.addChild( heading );

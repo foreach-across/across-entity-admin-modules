@@ -142,3 +142,5 @@ li.admin-nav-user-context.with-thumbnail > a {
 /*    border-top-left-radius: 0;*/
 /*    border-top-right-radius: 0;*/
 /*}*/
+
+table.table th.sortable{cursor:pointer}table.table th.sortable:after{color:#c4c4c4;content:' ↕';font-size:1em}table.table th.sortable:hover{opacity:0.95;background-color:#fff;text-decoration:none}table.table th.sortable:hover:after{color:#222223;text-decoration:none}table.table th.sortable.desc:after{content:' ↑';color:#222223}table.table th.sortable.asc:after{content:' ↓';color:#222223}
