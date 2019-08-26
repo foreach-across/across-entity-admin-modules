@@ -20,26 +20,18 @@ body {
     padding-top: 5rem;
 }
 
-.navbar-header {
-    background: url("../images/across-logo.svg") no-repeat left center;
-    padding-left: 20px;
-    background-size: 35px 35px;
-}
+/* Navbar styling*/
+.navbar-header {background: url("../images/across-logo.svg") no-repeat left center;padding-left: 20px;background-size: 35px 35px;}  .navbar-header .logo {position: absolute;max-width: 40px;top: 4px;left: 10px;}  .navbar-header .navbar-brand {padding-left: 43px;font-weight: 700;font-size: 0.95em;text-transform: uppercase;color: #eeeeee;}
 
-.navbar-header .logo {
-    position: absolute;
-    max-width: 40px;
-    top: 4px;
-    left: 10px;
-}
+/* Toest styling*/
+.toast-message button.close {display: none;}  li.admin-nav-user-context.with-thumbnail > a {padding-bottom: 8px;padding-top: 12px;}  .admin-nav-user-context .admin-nav-user-context-thumbnail {width: 30px;height: 30px;border-radius: 5px;}
 
-.navbar-header .navbar-brand {
-    padding-left: 43px;
-    font-weight: 700;
-    font-size: 0.95em;
-    text-transform: uppercase;
-    color: #eeeeee;
-}
+/* Sortable styling*/
+table.table th.sortable{cursor:pointer}table.table th.sortable:after{color:#c4c4c4;content:' ↕';font-size:1em}table.table th.sortable:hover{opacity:0.95;background-color:#fff;text-decoration:none}table.table th.sortable:hover:after{color:#222223;text-decoration:none}table.table th.sortable.desc:after{content:' ↑';color:#222223}table.table th.sortable.asc:after{content:' ↓';color:#222223}
+
+/* Striped table styling */
+table.table tr.odd{background:#f1f1f1}table.table tr.even{background:white}
+
 
 /*!* todo: to bootstrap ui css! *!*/
 /*table td .btn {*/
@@ -123,24 +115,4 @@ body {
 /*    top: 70px;*/
 /*}*/
 
-.toast-message button.close {
-    display: none;
-}
 
-li.admin-nav-user-context.with-thumbnail > a {
-    padding-bottom: 8px;
-    padding-top: 12px;
-}
-
-.admin-nav-user-context .admin-nav-user-context-thumbnail {
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
-}
-
-/*.panel-heading {*/
-/*    border-top-left-radius: 0;*/
-/*    border-top-right-radius: 0;*/
-/*}*/
-
-table.table th.sortable{cursor:pointer}table.table th.sortable:after{color:#c4c4c4;content:' ↕';font-size:1em}table.table th.sortable:hover{opacity:0.95;background-color:#fff;text-decoration:none}table.table th.sortable:hover:after{color:#222223;text-decoration:none}table.table th.sortable.desc:after{content:' ↑';color:#222223}table.table th.sortable.asc:after{content:' ↓';color:#222223}
