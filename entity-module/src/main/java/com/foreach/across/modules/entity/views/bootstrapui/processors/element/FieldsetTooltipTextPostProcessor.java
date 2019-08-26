@@ -26,6 +26,8 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+
 /**
  * Post-processor that resolves a tooltip text for a current property and a {@link com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset}.
  * Any tooltip text will be added to the title of the fieldset. By default supports HTML in the resulting message.
@@ -54,6 +56,7 @@ public class FieldsetTooltipTextPostProcessor<T extends ViewElement> extends Abs
 			TooltipViewElement tooltip = new TooltipViewElement();
 			tooltip.setText( text );
 			tooltip.setEscapeHtml( escapeHtml );
+			tooltip.remove( css.text.muted );
 			element.getTitle().addChild( tooltip );
 		}
 	}
