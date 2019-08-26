@@ -16,15 +16,12 @@
 package com.foreach.across.modules.entity.views.bootstrapui.processors.element;
 
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.support.ContainerViewElementUtils;
 
-import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
@@ -50,10 +47,8 @@ public class EntitySummaryViewActionProcessor implements ViewElementPostProcesso
 		ContainerViewElementUtils.findAll( element, TableViewElement.Cell.class )
 		                         .findFirst()
 		                         .ifPresent( cell -> cell.addFirstChild(
-				                         html.span( css( "js-summary-toggle" ),
-				                                    children( entityModuleIcons.listView.summaryView.expand(),
-				                                              entityModuleIcons.listView.summaryView.collapse()
-				                                                                                    .set( BootstrapStyles.css.display.none ) ) ) ) );
+				                         html.span( css( "js-summary-toggle" ) )
+		                         ) );
 
 	}
 }

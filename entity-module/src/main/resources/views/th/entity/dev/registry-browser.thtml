@@ -18,9 +18,9 @@
 
 <!--/* list all entities */-->
 <div th:fragment="listAllEntities(entities)">
-    <div class="panel panel-default">
-        <div class="panel-heading">[[${entities.size()}]] entities</div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header">[[${entities.size()}]] entities</div>
+        <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -35,7 +35,7 @@
                     </thead>
                     <tbody>
                     <tr th:each="entity,entityStat : ${entities}" th:class="${entityStat.even} ? 'even' : 'odd'"
-                        th:classappend="${entity.hidden} ? 'danger'">
+                        th:classappend="${entity.hidden} ? 'table-danger'">
                         <td class="result-number">[[${entityStat.count}]]</td>
                         <td>[[${entity.getAttribute( 'com.foreach.across.core.context.info.AcrossModuleInfo' )?.name}]]</td>
                         <td>[[${entity.name}]]</td>
@@ -44,7 +44,7 @@
                         </td>
                         <td class="result-number">[[${not entity.associations.isEmpty() ? entity.associations.size() : ''}]]</td>
                         <td class="row-actions text-center">
-                            <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name}}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-down"></span></a>
+                            <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name}}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-right"></span></a>
                         </td>
                     </tr>
                     </tbody>
@@ -117,7 +117,7 @@
                         <td class="text-center"><span th:if="${property.writable}" aria-hidden="true" class="fas fa-check"></span></td>
                         <td class="text-center"><span th:unless="${property.hidden}" aria-hidden="true" class="fas fa-check"></span></td>
                         <td class="row-actions text-center">
-                            <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name}(property=${property.name})}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-down"></span></a>
+                            <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name}(property=${property.name})}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-right"></span></a>
                         </td>
                     </tr>
                     </tbody>
@@ -168,7 +168,7 @@
             </thead>
             <tbody>
             <tr th:each="association,itemStat : ${associations}" th:class="${itemStat.even} ? 'odd' : 'even'"
-                th:classappend="${association.hidden} ? 'danger'">
+                th:classappend="${association.hidden} ? 'table-danger'">
                 <td>
                     <a th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + association.targetEntityConfiguration.name}}">[[${association.targetEntityConfiguration.name}]]</a>
                 </td>
@@ -181,7 +181,7 @@
                 </td>
                 <td class="text-center">[[${association.parentDeleteMode}]]</td>
                 <td class="row-actions text-center">
-                    <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name + '/associations/' + association.name}}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-down"></span></a>
+                    <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name + '/associations/' + association.name}}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-right"></span></a>
                 </td>
             </tr>
             </tbody>
@@ -206,7 +206,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="association,itemStat : ${incoming}" th:class="${itemStat.even} ? 'odd' : 'even'"
-                    th:classappend="${association.hidden} ? 'danger'">
+                    th:classappend="${association.hidden} ? 'table-danger'">
                     <td>
                         <a th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + association.sourceEntityConfiguration.name}}">[[${association.sourceEntityConfiguration.name}]]</a>
                     </td>
@@ -219,7 +219,7 @@
                     </td>
                     <td class="text-center">[[${association.parentDeleteMode}]]</td>
                     <td class="row-actions text-center">
-                        <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + association.sourceEntityConfiguration.name + '/associations/' + association.name}}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-down"></span></a>
+                        <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + association.sourceEntityConfiguration.name + '/associations/' + association.name}}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-right"></span></a>
                     </td>
                 </tr>
                 </tbody>
@@ -325,7 +325,7 @@
                         <td th:utext="${javadoc.type(viewFactory.class)}">viewFactory type</td>
                         <td class="text-center">[[${viewFactory?.processorRegistry?.processors.size()}]]</td>
                         <td class="row-actions text-center">
-                            <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name + '/views/' + association.name + '_' + viewName}}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-down"></span></a>
+                            <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name + '/views/' + association.name + '_' + viewName}}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-right"></span></a>
                         </td>
                     </tr>
                     </tbody>
@@ -355,7 +355,7 @@
             <td th:utext="${javadoc.type(viewFactory.class)}">viewFactory type</td>
             <td class="text-center">[[${viewFactory?.processorRegistry?.processors.size()}]]</td>
             <td class="row-actions text-center">
-                <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name + '/views/' + viewName}}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-down"></span></a>
+                <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name + '/views/' + viewName}}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-right"></span></a>
             </td>
         </tr>
         </tbody>
@@ -445,7 +445,7 @@
                         <td class="text-center"><span th:if="${property.writable}" aria-hidden="true" class="fas fa-check"></span></td>
                         <td class="text-center"><span th:unless="${property.hidden}" aria-hidden="true" class="fas fa-check"></span></td>
                         <td class="row-actions text-center">
-                            <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name + '/views/' + viewName}(property=${property.name})}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-down"></span></a>
+                            <a role="button" th:href="@{${'@adminWeb:/ax/developer/entityModule/entities/' + entity.name + '/views/' + viewName}(property=${property.name})}" title="View details" class="btn btn-link"><span aria-hidden="true" class="fas fa-caret-square-right"></span></a>
                         </td>
                     </tr>
                     </tbody>
