@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
 import static com.foreach.across.modules.entity.views.processors.EntityQueryFilterProcessor.ENTITY_QUERY_REQUEST;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT;
@@ -165,6 +166,7 @@ public class EntityQueryFilterFormControlBuilder extends ViewElementBuilderSuppo
 		NodeViewElementBuilder container = div()
 				.name( "entity-query-filter-form" )
 				.css( "entity-query-filter-form flex-grow-1" )
+				.with( css.margin.right.s3 )
 				.attribute( ATTRIBUTE_ENTITY_QUERY_FILTER_FORM, "default" );
 
 		boolean basicFilterEnabled = isBasicModeActive();
