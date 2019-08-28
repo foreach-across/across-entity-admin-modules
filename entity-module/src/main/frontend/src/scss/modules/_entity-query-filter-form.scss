@@ -1,64 +1,50 @@
-//.entity-query-filter-form {
-//  .btn {
-//    padding: 6px 10px;
-//  }
-//
-//  //.entity-query-filter-form-advanced {
-//  //  display: table;
-//  //  width: 100%;
-//  //  padding-right: 20px;
-//  //
-//  //  .form-group {
-//  //    margin: 0 10px 0 0;
-//  //  }
-//  //
-//  //  .disabled-button-wrapper {
-//  //    display: inline;
-//  //  }
-//  //}
-//
-//  .entity-query-filter-form-basic {
-//    .form-group {
-//      display: inline-block;
-//      margin: 0 10px 0 0;
-//      vertical-align: middle;
-//
-//      .control-label {
-//        display: inline-block;
-//        float: left;
-//        margin: 0 7px 0 0;
-//        vertical-align: middle;
-//        line-height: 35px;
-//      }
-//
-//      .form-control, .form-control-static {
-//        display: inline-block;
-//        float: left;
-//        margin: 0;
-//        vertical-align: middle;
-//        width: auto;
-//      }
-//
-//      select[multiple] {
-//        display: none;
-//      }
-//
-//      .bootstrap-select.form-control {
-//        width: 200px;
-//      }
-//
-//      .axbum-typeahead {
-//        display: inline-block;
-//
-//        .twitter-typeahead {
-//          display: inline-block !important;
-//          vertical-align: middle;
-//
-//          > .form-control {
-//            width: 200px;
-//          }
-//        }
-//      }
-//    }
-//  }
-//}
+.entity-query-filter-form {
+  .btn {
+    padding: 6px 10px;
+  }
+
+  .entity-query-filter-form-basic {
+    .form-group {
+      display: inline-block;
+      margin: 0 10px 0 0;
+      vertical-align: middle;
+
+      label {
+        display: inline-block;
+        float: left;
+        margin: 0 7px 0 0;
+        vertical-align: middle;
+        line-height: 35px;
+      }
+
+      .form-control, .form-control-static {
+        display: inline-block;
+        float: left;
+        margin: 0;
+        vertical-align: middle;
+        width: auto;
+      }
+
+      select[multiple] {
+        display: none;
+      }
+
+      .bootstrap-select.form-control {
+        width: 200px;
+      }
+
+      .axbum-typeahead {
+        display: inline-block;
+
+        .twitter-typeahead {
+          display: inline-block !important;
+          vertical-align: middle;
+
+          > .form-control {
+            width: 200px;
+          }
+        }
+      }
+    }
+  }
+}

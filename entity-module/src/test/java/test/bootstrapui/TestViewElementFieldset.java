@@ -130,7 +130,7 @@ public class TestViewElementFieldset extends AbstractViewElementTemplateTest
 	@Test
 	public void customPanelTemplateFormat() {
 		fieldset.setTemplate( ViewElementFieldset.panelTemplate( "x", Style.DANGER ) );
-		renderAndExpect( fieldset, "<div class='element-fieldset x panel panel-danger'>" +
+		renderAndExpect( fieldset, "<div class='element-fieldset x card panel-danger'>" +
 				"<div class='element-fieldset-title panel-heading'>title</div>" +
 				"<div class='element-fieldset-content panel-body'>" +
 				"<div class='element-fieldset-header'>header</div>" +

@@ -84,7 +84,7 @@ public class TestFormGroupHelpTextPostProcessor
 		assertThat( group.getHelpBlock( NodeViewElement.class ) )
 				.satisfies( node -> {
 					Assertions.assertThat( node.getAttribute( "class", String.class ).split( " " ) )
-					          .containsAll( Arrays.asList( css.form.text.suffix( "help" ).toCssClasses()) );
+					          .containsAll( Arrays.asList( css.form.text.toCssClasses()) );
 					TextViewElement text = node.findAll( TextViewElement.class )
 					                           .findFirst()
 					                           .orElseThrow( AssertionError::new );

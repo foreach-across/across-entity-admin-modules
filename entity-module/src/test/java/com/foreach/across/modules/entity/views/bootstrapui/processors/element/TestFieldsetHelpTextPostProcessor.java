@@ -74,7 +74,7 @@ public class TestFieldsetHelpTextPostProcessor
 		assertThat( (NodeViewElement) fieldset.getFooter().getChildren().get( 0 ) )
 				.satisfies( node -> {
 					Assertions.assertThat( node.getAttribute( "class", String.class ).split( " " ) )
-					          .containsAll( Arrays.asList( css.form.text.suffix( "help" ).toCssClasses()));
+					          .containsAll( Arrays.asList( css.form.text.toCssClasses()));
 					TextViewElement text = node.findAll( TextViewElement.class )
 					                           .findFirst()
 					                           .orElseThrow( AssertionError::new );
@@ -93,7 +93,7 @@ public class TestFieldsetHelpTextPostProcessor
 		assertThat( (NodeViewElement) fieldset.getFooter().getChildren().get( 0 ) )
 				.satisfies( node -> {
 					Assertions.assertThat( node.getAttribute( "class", String.class ).split( " " ) )
-					          .containsAll( Arrays.asList( css.form.text.suffix( "help" ).toCssClasses()));
+					          .containsAll( Arrays.asList( css.form.text.toCssClasses()));
 					TextViewElement text = node.findAll( TextViewElement.class )
 					                           .findFirst()
 					                           .orElseThrow( AssertionError::new );

@@ -15,7 +15,7 @@
  */
 @import 'settings';
 @import "modules/summary_view";
-//@import 'modules/entity-query-filter-form';
+@import 'modules/entity-query-filter-form';
 
 table.table tr.odd {
   background-color: rgba(0, 0, 0, .05);
