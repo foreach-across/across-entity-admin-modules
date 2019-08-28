@@ -22,7 +22,10 @@ import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.*;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -118,6 +121,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	 * view element of an item. Which element will be the target depends on the component builder and item.
 	 */
 	public static final String ATTR_VIEW_ELEMENT_WITHER = "nav:viewElementWither";
+
 	/**
 	 * If set to {@code true} this group will always be rendered as a group (dropdown) even if there is only
 	 * a single item.  The default behaviour would be to then just render that item.
@@ -358,6 +362,22 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 		           .filter( this::shouldIncludeItem )
 		           .mapToInt( i -> i.isGroup() ? numberOfChildrenToInclude( i ) : 1 )
 		           .sum();
+	}
+
+	protected ViewElement.WitherSetter witherAttribute( Menu itemToRender, Menu originalItem ) {
+		return element -> {
+			if ( originalItem != null && originalItem != itemToRender ) {
+				ViewElement.WitherSetter originalSetter = originalItem.getAttribute( ATTR_VIEW_ELEMENT_WITHER );
+				if ( originalSetter != null ) {
+					originalSetter.applyTo( element );
+				}
+			}
+
+			ViewElement.WitherSetter setter = itemToRender.getAttribute( ATTR_VIEW_ELEMENT_WITHER );
+			if ( setter != null ) {
+				setter.applyTo( element );
+			}
+		};
 	}
 
 	private Menu retrieveMenu( ViewElementBuilderContext builderContext ) {

@@ -20,7 +20,6 @@ import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 
@@ -29,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.combine;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Builds a Bootstrap nav list structure for a {@link Menu} instance.
@@ -145,6 +144,8 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 					addItemLink( li, itemToRender, true, iconOnly, builderContext );
 				}
 
+				li.set( witherAttribute( itemToRender, item ) );
+
 				list.addChild( li );
 			}
 		}
@@ -154,7 +155,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	                                Menu item,
 	                                boolean iconOnly,
 	                                ViewElementBuilderContext builderContext ) {
-		li.set( css.dropdown );
+		li.set( css.dropdown, witherAttribute( item, null ) );
 
 		if ( !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, li, builderContext ) ) {
 			LinkViewElement link = new LinkViewElement();
@@ -220,6 +221,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 			if ( itemToRender.isGroup() ) {
 				NodeViewElement header = html.h6( css.dropdown.header );
 				addIconAndText( header, itemToRender, builderContext.resolveText( itemToRender.getTitle() ), true, false, builderContext );
+				header.set( witherAttribute( itemToRender, item ) );
 				dropDown.addChild( header );
 
 				includedItems( itemToRender )
@@ -236,6 +238,8 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 				if ( itemToRender.isSelected() ) {
 					link.set( css.active );
 				}
+
+				link.set( witherAttribute( itemToRender, item ) );
 
 				nextChildShouldBeSeparator.set( Separator.insertAfter( itemToRender ) );
 			}

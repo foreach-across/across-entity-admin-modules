@@ -19,7 +19,6 @@ package com.foreach.across.modules.bootstrapui.components.builder;
 import com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes;
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.web.menu.Menu;
-import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 
@@ -92,7 +91,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 							nonPanelList = nonPanelList != null ? nonPanelList : createList( container ).set( css.margin.bottom.s3 );
 							addItemLink( nonPanelList, item, true, false, builderContext )
 									.remove( css.nav.link )
-									.set( css.listGroup.item, css.listGroup.item.action, witherAttribute( item ) );
+									.set( css.listGroup.item, css.listGroup.item.action, witherAttribute( item, null ) );
 						}
 					}
 				}
@@ -100,25 +99,6 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		}
 
 		return container;
-	}
-
-	private ViewElement.WitherSetter witherAttribute( Menu menu ) {
-		ViewElement.WitherSetter setter = menu.getAttribute( ATTR_VIEW_ELEMENT_WITHER );
-		return setter != null ? setter : element -> {
-		};
-	}
-
-	private void addSidebarList( NodeViewElement container, Menu item, ViewElementBuilderContext builderContext, AtomicInteger subMenuCount ) {
-		NodeViewElement list = createList( container );
-
-		if ( item.hasTitle() ) {
-			NodeViewElement title = new NodeViewElement( "li" );
-			title.addCssClass( "nav-title" );
-			title.addChild( resolveTextElement( item.getTitle(), builderContext ) );
-			list.addChild( title );
-		}
-
-		includedItems( item ).forEach( child -> addMenuItem( list, child, builderContext, false, subMenuCount ) );
 	}
 
 	private void addPanel( NodeViewElement container, Menu item, ViewElementBuilderContext builderContext, AtomicInteger subMenuCount ) {
@@ -135,7 +115,7 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 
 		includedItems( item ).forEach( child -> addMenuItem( list, child, builderContext, true, subMenuCount ) );
 
-		panel.set( witherAttribute( item ) );
+		panel.set( witherAttribute( item, null ) );
 
 		container.addChild( panel );
 	}
@@ -176,10 +156,8 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 
 						addItemLink( list, itemToRender, true, iconOnly, builderContext )
 								.remove( css.nav.link )
-								.set( css.listGroup.item, css.listGroup.item.action, witherAttribute( itemToRender ) );
+								.set( css.listGroup.item, css.listGroup.item.action, witherAttribute( itemToRender, item ) );
 					}
-
-					//list.addChild( li );
 				}
 			}
 		}
@@ -191,13 +169,13 @@ public class PanelsNavComponentBuilder extends NavComponentBuilder<PanelsNavComp
 		LinkViewElement link = new LinkViewElement();
 		link.setUrl( "#a" + subMenuId );
 		link.setAttribute( "data-toggle", "collapse" );
-		link.set( css.listGroup.item.action );
+		link.set( css.listGroup.item.action, css.listGroup.suffix( "subgroup-toggle" ) );
 		String resolvedTitle = builderContext.resolveText( item.getTitle() );
 		link.setText( resolvedTitle );
 		link.setTitle( resolvedTitle );
 		li.addChild( link );
 
-		NodeViewElement list = html.div().setHtmlId( "a" + subMenuId );
+		NodeViewElement list = html.div().setHtmlId( "a" + subMenuId ).set( css.listGroup.suffix( "subgroup" ) );
 		//list.addCssClass( "submenu", "list-group" );
 		//list.setHtmlId( subMenuId );
 
