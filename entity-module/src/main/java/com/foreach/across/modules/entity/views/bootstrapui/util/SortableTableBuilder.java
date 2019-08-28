@@ -511,6 +511,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 	protected TableViewElementBuilder createTable() {
 		TableViewElementBuilder table = BootstrapUiBuilders.table()
+		                                                   .css( "em-sortableTable-table" )
 		                                                   .name( elementName( ELEMENT_TABLE ) )
 		                                                   .responsive()
 		                                                   .style( getTableStyles() )
@@ -654,7 +655,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		NodeViewElementBuilder panel = BootstrapUiBuilders.node( "div" )
 		                                                  .name( elementName( ELEMENT_PANEL ) )
-		                                                  .css( "panel", "panel-default" )
+		                                                  .css( "panel", "panel-default", "em-sortableTable-panel" )
 		                                                  .add(
 				                                                  BootstrapUiBuilders.node( "div" )
 				                                                                     .name( elementName( ELEMENT_PANEL_HEADING ) )

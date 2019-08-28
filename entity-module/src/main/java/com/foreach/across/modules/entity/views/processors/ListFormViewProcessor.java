@@ -85,6 +85,7 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 				.form()
 				.name( formName )
 				.formName( formName )
+				.css( "em-list-form" )
 				.noValidate()
 				.get();
 
