@@ -64,6 +64,7 @@ public class FilterFormGroupElementBuilderFactory extends EntityViewElementBuild
 				= entityViewElementBuilderService.getElementBuilder( propertyDescriptor, determineControlViewElementMode( viewElementMode ) );
 
 		FormGroupElementBuilder formGroupElementBuilder = formGroup()
+				.data( "em-property", propertyDescriptor.getName() )
 				.name( FormGroupElementBuilderFactory.NAME_PREFIX + propertyDescriptor.getName() )
 				.control( control );
 
