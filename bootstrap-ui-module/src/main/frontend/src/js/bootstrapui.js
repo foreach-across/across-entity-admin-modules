@@ -15,8 +15,19 @@
  */
 
 // Exposes infrastructure for form initialization logic
+import {ControlAdapterFactory} from "./controls/support/control-adapter-factory";
+import {createAutosuggestControlAdapter} from "./controls/autosuggest/autosuggest-control-adapter";
+import {createDatePickerControlAdapter} from "./controls/datepicker/date-picker-control-adapter";
+import {createBasicControlAdapter} from "./controls/input/basic-control-adapter";
+import {createNumericControlAdapter} from "./controls/numeric/numeric-control-adapter";
+import {createBootstrapSelectControlAdapter} from "./controls/select/bootstrap-select-control-adapter";
+import {createSelectControlAdapter} from "./controls/select/select-control-adapter";
+import {createCheckboxControlAdapter} from "./controls/checkbox/checkbox-control-adapter";
+import {createContainerControlAdapter} from "./controls/container/container-control-adapter";
+
 window.BootstrapUiModule = (function ( $ ) {
     var bootstrapUiModule = {
+        ControlAdapterFactory: ControlAdapterFactory,
         Controls: {},
         documentInitialized: false,
         initializers: [],
@@ -82,6 +93,16 @@ window.BootstrapUiModule = (function ( $ ) {
     $( document ).ready( function () {
         bootstrapUiModule.initializeFormElements();
     } );
+
+    // Register the default control adapters
+    bootstrapUiModule.ControlAdapterFactory.register( 'autosuggest', createAutosuggestControlAdapter );
+    bootstrapUiModule.ControlAdapterFactory.register( 'datetime', createDatePickerControlAdapter );
+    bootstrapUiModule.ControlAdapterFactory.register( 'basic', createBasicControlAdapter );
+    bootstrapUiModule.ControlAdapterFactory.register( 'numeric', createNumericControlAdapter );
+    bootstrapUiModule.ControlAdapterFactory.register( 'bootstrap-select', createBootstrapSelectControlAdapter );
+    bootstrapUiModule.ControlAdapterFactory.register( 'select', createSelectControlAdapter );
+    bootstrapUiModule.ControlAdapterFactory.register( 'checkbox', createCheckboxControlAdapter );
+    bootstrapUiModule.ControlAdapterFactory.register( 'container', createContainerControlAdapter );
 
     return bootstrapUiModule;
 }( jQuery ));

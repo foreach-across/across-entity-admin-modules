@@ -39,8 +39,8 @@
     "worker-loader": "^2.0.0"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js -d",
-    "build:watch": "webpack --config webpack.config.js -w",
-    "build:prod": "webpack --config webpack.config.js -p"
+    "build": "webpack --config webpack.config.js --debug --output-pathinfo --mode=development",
+    "build:watch": "webpack --config webpack.config.js -w --mode=development",
+    "build:prod": "webpack --config webpack.config.js -p --mode=production"
   }
 }
