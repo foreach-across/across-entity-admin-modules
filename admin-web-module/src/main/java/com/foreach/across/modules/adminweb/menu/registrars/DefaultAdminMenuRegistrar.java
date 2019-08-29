@@ -94,7 +94,7 @@ public final class DefaultAdminMenuRegistrar
 			     .attribute( NavComponentBuilder.ATTR_ICON, image );
 		}
 
-		menu.item( PATH + "/logout", "Logout", "@adminWeb:/logout" )
+		menu.item( PATH + "/logout", "#{AdminWebModule.logout.menu=Logout}", "@adminWeb:/logout" )
 		    .order( Ordered.LOWEST_PRECEDENCE )
 		    .attribute( NavComponentBuilder.ATTR_INSERT_SEPARATOR, NavComponentBuilder.Separator.BEFORE );
 	}
