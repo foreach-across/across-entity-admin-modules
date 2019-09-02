@@ -34,18 +34,20 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 @Configuration
 public class FontAwesomeIconSetConfiguration
 {
+	public static final String FONT_AWESOME_REGULAR_ICON_SET = "fontawesome-solid";
 	public static final String FONT_AWESOME_SOLID_ICON_SET = "fontawesome-solid";
 	public static final String FONT_AWESOME_BRANDS_ICON_SET = "fontawesome-brands";
 
 	@Autowired
 	public void createDefaultIconSets() {
-		SimpleIconSet fontAwesomeSolidIconSet = new SimpleIconSet();
-		fontAwesomeSolidIconSet.setDefaultIconResolver( ( iconName ) -> html.i( css( "fas fa-" + iconName ) ) );
+		IconSetRegistry.addIconSet( FONT_AWESOME_REGULAR_ICON_SET, createFontAwesomeIconSet( "far") );
+		IconSetRegistry.addIconSet( FONT_AWESOME_SOLID_ICON_SET, createFontAwesomeIconSet( "fas") );
+		IconSetRegistry.addIconSet( FONT_AWESOME_BRANDS_ICON_SET, createFontAwesomeIconSet( "fab" ) );
+	}
 
-		SimpleIconSet fontAwesomeBrandsIconSet = new SimpleIconSet();
-		fontAwesomeBrandsIconSet.setDefaultIconResolver( ( iconName ) -> html.i( css( "fab fa-" + iconName ) ) );
-
-		IconSetRegistry.addIconSet( FONT_AWESOME_SOLID_ICON_SET, fontAwesomeSolidIconSet );
-		IconSetRegistry.addIconSet( FONT_AWESOME_BRANDS_ICON_SET, fontAwesomeBrandsIconSet );
+	private SimpleIconSet createFontAwesomeIconSet( String cssPrefix ) {
+		SimpleIconSet simpleiconset = new SimpleIconSet();
+		simpleiconset.setDefaultIconResolver( ( iconName ) -> html.i( css( cssPrefix + "fa-" + iconName ) ) );
+		return simpleiconset;
 	}
 }
