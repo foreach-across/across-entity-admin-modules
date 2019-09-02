@@ -57,9 +57,9 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				page, "" +
 						"<div class='pcs'>" +
-						"<div class='tabbable filled'>" +
+						"<div class='mb-3 tabbable filled'>" +
 						"<section class='pcs-body-section'>" +
-						"<div class='tab-content'>" +
+						"<div class='tab-content px-3'>" +
 						"<div class='tab-pane active'>" +
 						"some content" +
 						"</div></div></section></div>" +
@@ -82,10 +82,10 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				page,
 				"<div class='pcs'>" +
-						"<div class='tabbable filled'>" +
-						"<nav class='pcs-nav'>some nav</nav>" +
+						"<div class='mb-3 tabbable filled'>" +
+						"<nav class='pcs-nav mb-3'>some nav</nav>" +
 						"<section class='pcs-body-section'>" +
-						"<div class='tab-content'>" +
+						"<div class='tab-content px-3'>" +
 						"<div class='tab-pane active'>" +
 						"some content" +
 						"</div></div></section></div>" +
@@ -102,7 +102,7 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				page,
 				"<div class='pcs'><header class='pcs-header'>" +
-						"<h3 class='page-header'>Simple page title <small></small></h3>" +
+						"<h3 class='page-header mb-4 pb-2 border-bottom'>Simple page title <small class=\"text-muted\"></small></h3>" +
 						"</header></div>"
 		);
 	}
@@ -114,7 +114,7 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				page,
 				"<div class='pcs'><header class='pcs-header'>" +
-						"<h3 class='page-header'><small>some action</small></h3>" +
+						"<h3 class='page-header mb-4 pb-2 border-bottom'><small class=\"text-muted\">some action</small></h3>" +
 						"</header></div>"
 		);
 	}
@@ -127,7 +127,7 @@ public class TestPageContentStructure extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				page,
 				"<div class='pcs'><header class='pcs-header'>" +
-						"<h3 class='page-header'>Simple page title <small>some action</small></h3>" +
+						"<h3 class='page-header mb-4 pb-2 border-bottom'>Simple page title <small class=\"text-muted\">some action</small></h3>" +
 						"</header></div>"
 		);
 	}
