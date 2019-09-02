@@ -34,7 +34,7 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 @Configuration
 public class FontAwesomeIconSetConfiguration
 {
-	public static final String FONT_AWESOME_REGULAR_ICON_SET = "fontawesome-solid";
+	public static final String FONT_AWESOME_REGULAR_ICON_SET = "fontawesome-regular";
 	public static final String FONT_AWESOME_SOLID_ICON_SET = "fontawesome-solid";
 	public static final String FONT_AWESOME_BRANDS_ICON_SET = "fontawesome-brands";
 
