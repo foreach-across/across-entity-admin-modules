@@ -18,3 +18,9 @@ html, body {
     height: 100%;
     width: 100%;
 }
+
+.form-signin .page-header {
+    background: url("../images/across-logo.svg") no-repeat center top;
+    padding-top: 120px;
+    background-size: 100px;
+}
