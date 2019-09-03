@@ -48,10 +48,10 @@ public class EntityModuleListViewIcons
 	}
 
 	public AbstractNodeViewElement nextPage() {
-		return IconSet.iconSet( EntityModule.NAME ).icon( ENTITY_QUERY_SEARCH );
+		return IconSet.iconSet( EntityModule.NAME ).icon( NEXT_PAGE );
 	}
 
 	public AbstractNodeViewElement previousPage() {
-		return IconSet.iconSet( EntityModule.NAME ).icon( ENTITY_QUERY_SEARCH );
+		return IconSet.iconSet( EntityModule.NAME ).icon( PREVIOUS_PAGE );
 	}
 }
