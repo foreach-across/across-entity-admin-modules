@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Represents a default tooltip view element, rendered as a link with a
@@ -62,7 +62,7 @@ public class TooltipViewElement extends NodeViewElement implements ConfigurableT
 		set( attribute.data.toggle.tooltip );
 		addCssClass( "tooltip-link", "text-muted" );
 		// todo use icon set
-		setIcon( i( BootstrapStyles.css.fa.solid( "question-circle" ) ).set( attribute.aria.hidden ) );
+		setIcon( html.i( BootstrapStyles.css.fa.solid( "question-circle" ) ).set( attribute.aria.hidden ) );
 	}
 
 	public boolean isEscapeHtml() {

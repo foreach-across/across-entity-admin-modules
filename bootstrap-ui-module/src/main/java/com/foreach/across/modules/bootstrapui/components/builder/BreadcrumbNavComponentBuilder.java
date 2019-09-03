@@ -26,8 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.li;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.ol;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Renders the selected path of a {@link com.foreach.across.modules.web.menu.Menu} to a breadcrumb list.
@@ -73,7 +72,7 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 
 	@Override
 	protected NodeViewElement buildMenu( Menu menu, ViewElementBuilderContext builderContext ) {
-		NodeViewElement list = apply(  ol( css.breadcrumb ), builderContext );
+		NodeViewElement list = apply(  html.ol( css.breadcrumb ), builderContext );
 
 		if ( menu != null ) {
 			List<Menu> segments = menu.getSelectedItemPath()
@@ -90,7 +89,7 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 	}
 
 	protected void addBreadcrumbSegment( NodeViewElement list, Menu item, ViewElementBuilderContext builderContext, int level, boolean isLastItem ) {
-		NodeViewElement li = li( css.breadcrumb.item );
+		NodeViewElement li = html.li( css.breadcrumb.item );
 
 		boolean iconOnly = level < iconOnlyLevels && Boolean.TRUE.equals( item.getAttribute( ATTR_ICON_ONLY ) );
 		boolean iconAllowed = level < iconLevels;

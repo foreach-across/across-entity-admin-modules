@@ -28,7 +28,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 @Controller
 @RequestMapping("/components/breadcrumb")
@@ -60,10 +60,10 @@ class Breadcrumb extends ExampleController
 	private NodeViewElement breadcrumbWithIcons() {
 		Menu menu = new PathBasedMenuBuilder()
 				.item( "components", "Components" )
-				.attribute( NavComponentBuilder.ATTR_ICON, i( BootstrapStyles.css.fa.solid( "home" ) ) )
+				.attribute( NavComponentBuilder.ATTR_ICON, html.i( BootstrapStyles.css.fa.solid( "home" ) ) )
 				.attribute( NavComponentBuilder.ATTR_ICON_ONLY, true ).and()
 				.item( "components/breadcrumb", "Breadcrumb example" )
-				.attribute( NavComponentBuilder.ATTR_ICON, i( BootstrapStyles.css.fa.solid( "hourglass" ) ) )
+				.attribute( NavComponentBuilder.ATTR_ICON, html.i( BootstrapStyles.css.fa.solid( "hourglass" ) ) )
 				.and().build();
 
 		menu.select( MenuSelector.byTitle( "Breadcrumb example" ) );

@@ -23,6 +23,7 @@ import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,11 +31,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.ATTR_ICON;
 import static com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 @Controller
 @RequestMapping("/components/navs/panel")
-@Deprecated
 class PanelNav extends ExampleController
 {
 	@Override
@@ -45,11 +45,35 @@ class PanelNav extends ExampleController
 	@RequestMapping(method = RequestMethod.GET)
 	String render() {
 		return render(
-				panel( "Simple panel nav", simplePanelNav() ),
-				panel( "Panel nav with group", panelNavWithGroupsAndIcons() ),
-				panel( "Panel nav with styling", panelNavWithStyling() ),
-				panel( "Panel nav group without panel", panelNavGroupNotAsPanel() )
+				panel( "Items without group", simplePanelNav() ),
+				panel( "Single group", panelNavWithGroupsAndIcons() ),
+				panel( "Custom styling (TODO)", panelNavWithStyling() ),
+				panel("Multiple groups", panelWithMultipleGroups())
+				//panel( "Panel nav group without panel", panelNavGroupNotAsPanel() )
 		);
+	}
+
+	private NodeViewElement panelWithMultipleGroups() {
+		Menu menu = new PathBasedMenuBuilder()
+				.item( "/one", "Item 1" ).order( 1 ).and()
+				.item("/two", "Item 2").order( 2 ).and()
+				.group( "/group1", "Group 1" ).order( 3 ).and()
+				.item( "/group1/one", "Group 1 item 1" ).and()
+				.item( "/group1/two", "Group 1 item 2" ).and()
+				.group( "/group1/subgroup1", "Sub-group 1" ).and()
+				.item( "/group1/subgroup1/one", "Sub-group 1 item 1" ).and()
+				.item( "/group1/subgroup1/two", "Sub-group 1 item 2" ).and()
+				.item( "/group1/subgroup1/three", "Sub-group 1 item 3" ).and()
+				.item( "/group1/subgroup1/subgroup1", "Sub-group 1 sub-group 1" ).and()
+				.item( "/group1/subgroup1/subgroup1/one", "Sub-group 1-1 item 1" ).and()
+				.item("/three", "Item 3").order( 6 ).and()
+				.item("/four", "Item 4").order( 7 ).and()
+				.build();
+
+		menu.sort();
+		menu.select( MenuSelector.byPath( "/group1/subgroup1/three" ) );
+
+		return BootstrapUiBuilders.panels( menu ).build();
 	}
 
 	private NodeViewElement simplePanelNav() {
@@ -58,10 +82,10 @@ class PanelNav extends ExampleController
 				.item( "/one/sub", "sub one" ).and()
 				.item( "/one/sub2", "sub one 2" ).and()
 				.item( "/two", "two" ).and()
+				.item( "/three", "three" ).and()
 				.build();
 
-		menu.select( MenuSelector.byTitle( "Panel example" ) );
-		menu.setTitle( "Bootstrap Ui Module" );
+		menu.select( MenuSelector.byPath( "/two" ) );
 
 		return BootstrapUiBuilders.panels( menu ).build();
 	}
@@ -69,14 +93,13 @@ class PanelNav extends ExampleController
 	private NodeViewElement panelNavWithGroupsAndIcons() {
 		Menu menu = new PathBasedMenuBuilder()
 				.item( "/one", "one" )
-				.attribute( ATTR_ICON, i( BootstrapStyles.css.fa.brands( "apple" ) ) )
+				.attribute( ATTR_ICON, html.i( BootstrapStyles.css.fa.brands( "apple" ) ) )
 				.group( true ).and()
 				.item( "/one/sub", "sub one" ).and()
 				.item( "/one/sub2", "sub one 2" ).and()
 				.build();
 
-		menu.select( MenuSelector.byTitle( "Panel example" ) );
-		menu.setTitle( "Bootstrap Ui Module" );
+		menu.select( MenuSelector.byPath( "/one/sub2" ) );
 
 		return BootstrapUiBuilders.panels( menu ).build();
 	}

@@ -29,8 +29,7 @@ import java.util.Date;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.div;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
@@ -118,10 +117,10 @@ public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupp
 
 		// todo use static icon set
 		if ( format == DateTimeFormElementConfiguration.Format.TIME ) {
-			append( div( css.inputGroup.text, children( i( css.fa.solid( "clock" ) ) ) ) );
+			append( html.div( css.inputGroup.text, children( html.i( css.fa.solid( "clock" ) ) ) ) );
 		}
 		else {
-			append( div( css.inputGroup.text, children( i( css.fa.solid( "calendar" ) ) ) ) );
+			append( html.div( css.inputGroup.text, children( html.i( css.fa.solid( "calendar" ) ) ) ) );
 		}
 		return this;
 	}

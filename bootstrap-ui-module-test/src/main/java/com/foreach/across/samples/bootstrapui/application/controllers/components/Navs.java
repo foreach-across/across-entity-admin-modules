@@ -22,7 +22,6 @@ import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
-import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
@@ -38,10 +37,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.customizeViewElement;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.remove;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.nav;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Generates Bootstrap based tabs from a {@link Menu} instance.
@@ -167,7 +167,7 @@ class Navs extends ExampleController
 		menu.item( "/one", "One", "#" ).order( 1 ).and()
 		    .group( "/advanced", "Advanced settings" )
 		    .order( 2 )
-		    .attribute( "html:class", "pull-right" )
+		    .attribute( customizeViewElement( css.cssFloat.right ) )
 		    .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
 		    .and()
 		    .item( "/advanced/trash", "Move to trash", "#" )
@@ -176,7 +176,7 @@ class Navs extends ExampleController
 		    .group( "/two", "Two" ).order( 3 )
 		    .attribute( NavComponentBuilder.ATTR_ICON, icon( "download" ) )
 		    .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true )
-		    .attribute( "html:class", "pull-right" )
+		    .attribute( customizeViewElement( css.cssFloat.right ) )
 		    .and()
 		    .item( "/two/one", "Item 1", "#" ).order( 1 ).and()
 		    .item( "/two/two", "Item 2", "#" ).order( 2 ).and()
@@ -194,15 +194,15 @@ class Navs extends ExampleController
 	}
 
 	private NodeViewElement icon( String name ) {
-		return i( css.fa.solid( name ) );
+		return html.i( css.fa.solid( name ) );
 	}
 
 	private ViewElementBuilder<NodeViewElement> menuComponentBuilder( String type, Menu menu ) {
-		DefaultNavComponentBuilder menuBuilder = BootstrapUiBuilders.nav( menu );
+		DefaultNavComponentBuilder menuBuilder = BootstrapUiBuilders.nav( menu ).with( css.display.block );
 
 		switch ( type ) {
 			case "navbar":
-				menuBuilder.navbar();
+				menuBuilder.navbar().with( remove( css.display.block ) );
 				break;
 			case "tabs":
 				menuBuilder.tabs();
@@ -211,7 +211,7 @@ class Navs extends ExampleController
 				menuBuilder.pills();
 				break;
 			case "pills-stacked":
-				menuBuilder.stacked();
+				menuBuilder.stacked().with( remove( css.display.block ) );
 				break;
 			default:
 				menuBuilder.simple();
@@ -223,7 +223,8 @@ class Navs extends ExampleController
 		}
 
 		if ( "navbar".equals( type ) ) {
-			return menuBuilder.map( items -> nav( css.navbar, css.navbar.expand.onLargeAndUp(), css.navbar.dark, css.background.dark, children( items ) ) );
+			return menuBuilder.map(
+					items -> html.nav( css.navbar, css.navbar.expand.onLargeAndUp(), css.navbar.dark, css.background.dark, children( items ) ) );
 		}
 
 		return menuBuilder;

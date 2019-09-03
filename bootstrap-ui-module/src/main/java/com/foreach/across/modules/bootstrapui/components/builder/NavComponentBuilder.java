@@ -22,19 +22,24 @@ import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
-import com.foreach.across.modules.web.ui.elements.*;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
+import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.css;
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.link;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.text;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.wither;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Abstract base class for rendering {@link Menu} items to nav-like structures.
@@ -110,6 +115,12 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	 * toggling the dropdown.
 	 */
 	public static final String ATTR_LINK_VIEW_ELEMENT = "nav:viewElement";
+
+	/**
+	 * Holds a {@link com.foreach.across.modules.web.ui.ViewElement.WitherSetter} that should be applied to the
+	 * view element of an item. Which element will be the target depends on the component builder and item.
+	 */
+	public static final String ATTR_VIEW_ELEMENT_WITHER = "nav:viewElementWither";
 
 	/**
 	 * If set to {@code true} this group will always be rendered as a group (dropdown) even if there is only
@@ -242,11 +253,12 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 		return null;
 	}
 
+	@Deprecated
 	protected ViewElement.WitherSetter<AbstractNodeViewElement> htmlAttributesOf( Menu item ) {
 		return node ->
 				item.getAttributes().forEach( ( name, value ) -> {
 					if ( StringUtils.startsWith( name, PREFIX_HTML_ATTRIBUTE ) ) {
-						node.setAttribute( StringUtils.removeStart( name, PREFIX_HTML_ATTRIBUTE ), value );
+						//node.setAttribute( StringUtils.removeStart( name, PREFIX_HTML_ATTRIBUTE ), value );
 					}
 				} );
 	}
@@ -310,9 +322,9 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 			node.addChild( TextViewElement.text( " " ) );
 
 			node.addChild(
-					HtmlViewElements.span(
-							css.of( "nav-item-title" ),
-							text( resolvedTitle )
+					html.span(
+							css.screenReaderOnly,
+							html.text( resolvedTitle )
 					)
 			);
 		}
@@ -352,6 +364,22 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 		           .sum();
 	}
 
+	protected ViewElement.WitherSetter witherAttribute( Menu itemToRender, Menu originalItem ) {
+		return element -> {
+			if ( originalItem != null && originalItem != itemToRender ) {
+				ViewElement.WitherSetter originalSetter = originalItem.getAttribute( ATTR_VIEW_ELEMENT_WITHER );
+				if ( originalSetter != null ) {
+					originalSetter.applyTo( element );
+				}
+			}
+
+			ViewElement.WitherSetter setter = itemToRender.getAttribute( ATTR_VIEW_ELEMENT_WITHER );
+			if ( setter != null ) {
+				setter.applyTo( element );
+			}
+		};
+	}
+
 	private Menu retrieveMenu( ViewElementBuilderContext builderContext ) {
 		if ( menu != null ) {
 			return menu;
@@ -367,7 +395,40 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	 * @param attributeName to convert
 	 * @return attribute name for HTML attribute
 	 */
+	@Deprecated
 	public static String htmlAttribute( String attributeName ) {
 		return PREFIX_HTML_ATTRIBUTE + attributeName;
+	}
+
+	/**
+	 * Create a registrar for the {@link #ATTR_VIEW_ELEMENT_WITHER} attribute on a {@link Menu} item by combining the collection of setters into a single
+	 * {@link com.foreach.across.modules.web.ui.ViewElement.WitherSetter} to be applied to the generated view element for the menu item.
+	 * A previously configured value will be kept and the new setters will be executed after. If you want to replace any previously configured
+	 * setters, use {@link #customizeViewElement(boolean, ViewElement.WitherSetter[])}.
+	 *
+	 * @param setters to add when processing the view element
+	 * @return attribute registrar
+	 */
+	public static Consumer<Map<String, Object>> customizeViewElement( ViewElement.WitherSetter... setters ) {
+		return customizeViewElement( false, setters );
+	}
+
+	/**
+	 * Create a registrar for the {@link #ATTR_VIEW_ELEMENT_WITHER} attribute on a {@link Menu} item by combining the collection of setters into a single
+	 * {@link com.foreach.across.modules.web.ui.ViewElement.WitherSetter} to be applied to the generated view element for the menu item.
+	 * Depending on the {@code replacePreviousRules} argument, the setters will be appended to or replace a previously configured value.
+	 *
+	 * @param replacePreviousRules true if any previous value should be ignored
+	 * @param setters              to add when processing the view element
+	 * @return attribute registrar
+	 */
+	public static Consumer<Map<String, Object>> customizeViewElement( boolean replacePreviousRules, ViewElement.WitherSetter... setters ) {
+		return attributes ->
+				attributes.compute( ATTR_VIEW_ELEMENT_WITHER, ( key, value ) -> {
+					if ( replacePreviousRules || value == null ) {
+						return wither( setters );
+					}
+					return wither( (ViewElement.WitherSetter) value, wither( setters ) );
+				} );
 	}
 }

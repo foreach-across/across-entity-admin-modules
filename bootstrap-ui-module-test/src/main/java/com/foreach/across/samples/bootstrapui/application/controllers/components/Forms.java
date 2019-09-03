@@ -57,7 +57,7 @@ class Forms extends ExampleController
 		return renderForm( formDto, model );
 	}
 
-	private FormViewElementBuilder buildForm( FormDto data ) {
+	protected FormViewElementBuilder buildForm( FormDto data ) {
 		return form()
 				.commandObject( data )
 				.add(

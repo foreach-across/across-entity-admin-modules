@@ -32,8 +32,7 @@ import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.attribute;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.div;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Extension of an {@link InputGroupFormElement} that represents a date/time picker.
@@ -58,7 +57,7 @@ public class DateTimeFormElement extends InputGroupFormElement
 	private LocalDateTime value;
 
 	public DateTimeFormElement() {
-		setAppend( div( css.inputGroup.text, children( i( css.fa.solid( "calendar" ) ) ) ) );
+		setAppend( html.div( css.inputGroup.text, children( html.i( css.fa.solid( "calendar" ) ) ) ) );
 		addCssClass( CSS_JS_CONTROL, CSS_DATE );
 		setAttribute( ATTRIBUTE_DATA_DATEPICKER, new DateTimeFormElementConfiguration() );
 		setAttribute( ATTRIBUTE_DATA_TARGET_INPUT, "nearest" );

@@ -22,7 +22,7 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -232,7 +232,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 	public void icon() {
 		ButtonViewElement button = new ButtonViewElement();
 		button.setText( " icon button" );
-		button.setIcon( i( css.fa.brands( "barcode" ) ) );
+		button.setIcon( html.i( css.fa.brands( "barcode" ) ) );
 
 		renderAndExpect( button,
 		                 "<button type='button' class='btn btn-default'>" +

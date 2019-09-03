@@ -26,7 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.i;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 @Controller
 @RequestMapping("/components/buttons")
@@ -59,7 +59,7 @@ class Buttons extends ExampleController
 				.text( "To google  " )
 				.link( "http://www.foreach.be" )
 				.iconRight()
-				.icon( i( BootstrapStyles.css.fa.solid( "arrow-right" ) ) )
+				.icon( html.i( BootstrapStyles.css.fa.solid( "arrow-right" ) ) )
 				.build();
 	}
 
