@@ -424,7 +424,7 @@ public class NumericFormElementConfiguration extends HashMap<String, Object>
 		DecimalFormat format = new DecimalFormat();
 		format.setGroupingSize( (Integer) getOrDefault( "digitalGroupSpacing", 3 ) );
 		format.setGroupingUsed( !"".equals( get( "digitGroupSeparator" ) ) );
-		format.setMaximumFractionDigits( (Integer) get( "decimalPlacesOverride" ) );
+		format.setMaximumFractionDigits( (Integer) get( "decimalPlaces" ) );
 		format.setMinimumFractionDigits( format.getMaximumFractionDigits() );
 		format.setRoundingMode( toJavaRoundingMode( (String) get( "roundingMethod" ) ) );
 		format.setMultiplier( getMultiplier() );

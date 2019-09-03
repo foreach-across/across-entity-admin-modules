@@ -47,7 +47,7 @@ public class FontAwesomeIconSetConfiguration
 
 	private SimpleIconSet createFontAwesomeIconSet( String cssPrefix ) {
 		SimpleIconSet simpleiconset = new SimpleIconSet();
-		simpleiconset.setDefaultIconResolver( ( iconName ) -> html.i( css( cssPrefix + "fa-" + iconName ) ) );
+		simpleiconset.setDefaultIconResolver( ( iconName ) -> html.i( css( cssPrefix + " fa-" + iconName ) ) );
 		return simpleiconset;
 	}
 }
