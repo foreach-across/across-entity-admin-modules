@@ -275,17 +275,17 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 	}
 
 	@Test
-	public void groupWithTitleNotRenderedAsPanel() {
-		menu.item( "/one", "one" ).group( true ).attribute( ATTR_RENDER_AS_PANEL, false ).and()
+	public void groupWithTitleNotRenderedAsCard() {
+		menu.item( "/one", "one" ).group( true ).and()
 		    .item( "/one/sub", "sub one" ).and()
 		    .item( "/one/sub2", "sub one 2" ).and();
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels'>" +
-						"<ul class='nav nav-sidebar'>" +
-						"<li class='nav-title'>one</li>" +
-						"<li><a href='/one/sub' title='sub one'>sub one</a></li>" +
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class=\"card mb-3\">" +
+						"<div class=\"card-header\">one</div>" +
+						"<div class=\"list-group list-group-flush\"><a href=\"/one/sub\" title=\"sub one\" class=\"list-group-item list-group-item-action\">sub one</a><a href=\"/one/sub2\" title=\"sub one 2\" class=\"list-group-item list-group-item-action\">sub one 2</a></div>" +
 						"<li><a href='/one/sub2' title='sub one 2'>sub one 2</a></li>" +
 						"</ul>" +
 						"</nav>"
@@ -376,25 +376,16 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( built ).subMenuBaseId( "sidebarMenu" ).keepGroupsAsGroup( true ),
-				"<nav class='nav nav-panels'>" +
-						"<div class='panel panel-default'>" +
-						"<div class='panel-heading'><h3 class='panel-title'>one</h3></div>" +
-						"<ul class='nav nav-sidebar list-group'>" +
-						"<li class='list-group-item'><a href='/one/one' title='one one'>one one</a></li>" +
-						"<li class='list-group-item'>" +
-						"<a data-toggle='collapse' href='#sidebarMenu-1' title='one sub' aria-expanded='true'>one sub</a>" +
-						"<ul class='nav nav-sidebar submenu list-group in' id='sidebarMenu-1' aria-expanded='true'>" +
-						"<li class='list-group-item'><a href='/one/sub/one' title='one sub one'>one sub one</a></li>" +
-						"<li class='list-group-item'>" +
-						"<a data-toggle='collapse' href='#sidebarMenu-2' title='one sub sub' aria-expanded='true'>one sub sub</a>" +
-						"<ul class='nav nav-sidebar submenu list-group in' id='sidebarMenu-2' aria-expanded='true'>" +
-						"<li class='list-group-item active'><a href='/one/sub/sub/one' title='one sub sub one'>one sub sub one</a></li>" +
-						"<li class='list-group-item'><a href='/one/sub/sub/two' title='one sub sub two'>one sub sub two</a></li>" +
-						"</ul>" +
-						"</li>" +
-						"</ul>" +
-						"</li>" +
-						"</ul>" +
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='card mb-3'>" +
+						"<div class='card-header'>one</div>" +
+						"<div class=\"list-group list-group-flush\">" +
+						"<a href=\"/one/one\" title=\"one one\" class=\"list-group-item list-group-item-action\">one one</a><a data-toggle=\"collapse\" aria-expanded=\"true\" href=\"#asidebarMenu-1\" title=\"one sub\" class=\"list-group-item list-group-item-action list-group-subgroup-toggle\">one sub</a>" +
+						"<div aria-expanded=\"true\" id=\"asidebarMenu-1\" class=\"list-group-subgroup collapse show\">" +
+						" <a href=\"/one/sub/one\" title=\"one sub one\" class=\"list-group-item list-group-item-action\">one sub one</a><a data-toggle=\"collapse\" aria-expanded=\"true\" href=\"#asidebarMenu-2\" title=\"one sub sub\" class=\"list-group-item list-group-item-action list-group-subgroup-toggle\">one sub sub</a>" +
+						"<div aria-expanded=\"true\" id=\"asidebarMenu-2\" class=\"list-group-subgroup collapse show\"><a href=\"/one/sub/sub/one\" title=\"one sub sub one\" class=\"active list-group-item list-group-item-action\">one sub sub one</a><a href=\"/one/sub/sub/two\" title=\"one sub sub two\" class=\"list-group-item list-group-item-action\">one sub sub two</a></div>" +
+						"</div>" +
+						"</div>" +
 						"</div>" +
 						"</nav>"
 		);

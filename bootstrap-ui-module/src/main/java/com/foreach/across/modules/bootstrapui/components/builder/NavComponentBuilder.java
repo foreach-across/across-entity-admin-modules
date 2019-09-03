@@ -304,7 +304,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 			return link;
 		}
 
-		return null;
+		return link( css.nav.link );
 	}
 
 	protected void addIconAndText( AbstractNodeViewElement node,
