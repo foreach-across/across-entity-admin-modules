@@ -21,8 +21,7 @@ import com.foreach.across.modules.web.resource.WebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import lombok.RequiredArgsConstructor;
 
-import static com.foreach.across.modules.web.resource.WebResource.css;
-import static com.foreach.across.modules.web.resource.WebResource.javascript;
+import static com.foreach.across.modules.web.resource.WebResource.*;
 import static com.foreach.across.modules.web.resource.WebResourceRule.add;
 import static com.foreach.across.modules.web.resource.WebResourceRule.addPackage;
 
@@ -70,7 +69,11 @@ public class BootstrapUiWebResources implements WebResourcePackage
 				// BootstrapUiModule main javascript
 				add( javascript( "@static:/" + BootstrapUiModule.NAME + "/js/bootstrapui.js" ) )
 						.withKey( BootstrapUiModule.NAME )
-						.toBucket( WebResource.JAVASCRIPT_PAGE_END )
+						.toBucket( WebResource.JAVASCRIPT_PAGE_END ),
+
+				add( WebResource.css( "@static:/" + BootstrapUiModule.NAME + "/css/bootstrapui.css" ) )
+						.withKey( NAME + "ui" )
+						.toBucket( CSS )
 		);
 	}
 }

@@ -191,6 +191,9 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 		}
 
 		NodeViewElement children = new NodeViewElement( "div" ).set( css.dropdown.menu );
+		if ( li.hasCssClass( "float-right" ) ) {
+			children.set( css.dropdown.menu.right, css.dropdown.menu.left );
+		}
 		AtomicBoolean nextChildShouldBeSeparator = new AtomicBoolean( false );
 
 		includedItems( item ).forEach( child -> addDropDownChildItem( children, child, nextChildShouldBeSeparator, builderContext ) );

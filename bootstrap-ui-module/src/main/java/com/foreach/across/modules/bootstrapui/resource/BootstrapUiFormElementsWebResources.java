@@ -113,10 +113,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 				// BootstrapUiModule specific
 				add( WebResource.javascript( "@static:/" + BootstrapUiModule.NAME + "/js/bootstrapui-formelements.js" ) )
 						.withKey( NAME )
-						.toBucket( JAVASCRIPT_PAGE_END ),
-				add( WebResource.css( "@static:/" + BootstrapUiModule.NAME + "/css/bootstrapui.css" ) )
-						.withKey( NAME )
-						.toBucket( CSS )
+						.toBucket( JAVASCRIPT_PAGE_END )
 		);
 	}
 
