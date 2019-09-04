@@ -18,11 +18,11 @@
 
 <!--/* list all iconSets */-->
 <div th:fragment="listIconSets(iconSets)">
-    <div class="panel panel-default">
-        <div class="panel-heading">[[${iconSets.size()}]] icon sets registered</div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header">[[${iconSets.size()}]] icon sets registered</div>
+        <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover table-sm">
                     <thead>
                     <tr>
                         <th class="result-number">#</th>
@@ -32,11 +32,11 @@
                     </thead>
                     <tbody>
                     <tr th:each="iconSet,iconSetStat : ${iconSets}" th:class="${iconSetStat.even} ? 'even' : 'odd'">
-                        <td class="result-number">[[${iconSetStat.count}]]</td>
-                        <td>
-                            <a th:href="@{@adminWeb:/ax/developer/iconSets(iconSetName=${iconSet.key})}">[[${iconSet.key}]]</a>
+                        <td class="align-middle result-number">[[${iconSetStat.count}]]</td>
+                        <td class="align-middle">
+                            <a th:href="@{@adminWeb:/ax/developer/iconSets/{id}(id=${iconSet.key})}">[[${iconSet.key}]]</a>
                         </td>
-                        <td class="row-actions text-center">
+                        <td class="align-middle row-actions text-center">
                         </td>
                     </tr>
                     </tbody>
@@ -48,11 +48,11 @@
 
 <!--/* list all icons for an icon set */-->
 <div th:fragment="listIcons(iconSetName, icons)">
-    <div class="panel panel-default">
-        <div class="panel-heading mb-2">[[${icons.size()}]] icons registered for icon set <strong>[[${iconSetName}]]</strong></div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header mb-2">[[${icons.size()}]] icons registered for icon set <strong>[[${iconSetName}]]</strong></div>
+        <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover table-sm">
                     <thead>
                     <tr>
                         <th class="result-number">#</th>
@@ -63,17 +63,16 @@
                     </thead>
                     <tbody>
                     <tr th:each="icon,iconStat : ${icons}" th:class="${iconStat.even} ? 'even' : 'odd'">
-                        <td class="result-number">[[${iconStat.count}]]</td>
-                        <td data-th-text="${icon.key}">...</td>
-                        <td>
+                        <td class="align-middle result-number">[[${iconStat.count}]]</td>
+                        <td class="align-middle" data-th-text="${icon.key}">...</td>
+                        <td class="align-middle">
                             <across:view element="${icon.value}"/>
                         </td>
-                        <td class="row-actions text-center"></td>
+                        <td class="align-middle row-actions text-center"></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <a th:href="@{@adminWeb:/ax/developer/iconSets}">Back to icon sets</a>
 </div>

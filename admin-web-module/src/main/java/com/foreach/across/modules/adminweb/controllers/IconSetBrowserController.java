@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.adminweb.web;
+package com.foreach.across.modules.adminweb.controllers;
 
 import com.foreach.across.core.annotations.ConditionalOnDevelopmentMode;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
+import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
@@ -28,10 +29,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.annotation.PostConstruct;
 import java.util.TreeMap;
 
 @AdminWebController
@@ -57,12 +57,13 @@ public class IconSetBrowserController
 		return PageContentStructure.TEMPLATE;
 	}
 
-	@GetMapping(params = { "iconSetName" })
-	public String listIconSets( Model model, @RequestParam String iconSetName ) {
+	@GetMapping(path = "/{iconSetName}")
+	public String listIconSets( AdminMenu adminMenu, Model model, @PathVariable String iconSetName ) {
+		adminMenu.breadcrumbLeaf( iconSetName );
 		model.addAttribute( "icons", new TreeMap<String, AbstractNodeViewElement>( IconSetRegistry.getIconSet( iconSetName ).getAllRegisteredIcons() ) );
 		model.addAttribute( "iconSetName", iconSetName );
 
-		page.setPageTitle( String.format( "Icons for icon set %s", iconSetName ) );
+		page.setPageTitle( "IconSet: " + iconSetName );
 		page.addChild( new TemplateViewElement( "th/adminweb/dev/bootstrapUiModule/icon-set-browser :: listIcons(${iconSetName},${icons})" ) );
 
 		return PageContentStructure.TEMPLATE;
