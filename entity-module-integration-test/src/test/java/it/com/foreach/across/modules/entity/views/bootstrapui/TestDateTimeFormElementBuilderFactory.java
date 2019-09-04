@@ -56,6 +56,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static org.junit.Assert.*;
@@ -106,6 +107,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void withoutAnnotations() {
 		LocaleContextHolder.setLocale( Locale.UK );
 
@@ -113,7 +115,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 			DateTimeFormElement datetime = assembleAndVerify( "withoutAnnotations", false );
 			assertEquals( Format.DATETIME, datetime.getConfiguration().getFormat() );
 			assertEquals( "en-GB", datetime.getConfiguration().get( "locale" ) );
-			assertEquals( true, datetime.getConfiguration().get( "showClear" ) );
+			assertEquals( true, ( (Map<String, Boolean>) datetime.getConfiguration().get( "buttons" ) ).get( "showClear" ) );
 		}
 		finally {
 			LocaleContextHolder.resetLocaleContext();
@@ -124,7 +126,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 	public void required() {
 		DateTimeFormElement datetime = assembleAndVerify( "required", true );
 		assertEquals( Format.DATETIME, datetime.getConfiguration().getFormat() );
-		assertEquals( false, datetime.getConfiguration().get( "showClear" ) );
+		assertEquals( false, ( (Map<String, Boolean>) datetime.getConfiguration().get( "buttons" ) ).get( "showClear" ) );
 	}
 
 	@Test
@@ -182,7 +184,7 @@ public class TestDateTimeFormElementBuilderFactory extends ViewElementBuilderFac
 //		assertTrue( datetime.getAddonAfter( GlyphIcon.class ).getGlyph().equals( GlyphIcon.TIME ) );
 		assertNull( datetime.getConfiguration().get( "minDate" ) );
 		assertNull( datetime.getConfiguration().get( "maxDate" ) );
-		assertEquals( true, datetime.getConfiguration().get( "showClear" ) );
+		assertEquals( true, ( (Map<String, Boolean>) datetime.getConfiguration().get( "buttons" ) ).get( "showClear" ) );
 	}
 
 	private void assertDateTimeControlIcon( DateTimeFormElement dateTime, String iconName ) {

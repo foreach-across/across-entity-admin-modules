@@ -508,11 +508,12 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		TableViewElementBuilder table = createTable();
 
-		return ( isTableOnly() ? table.name( getTableName() ).with( css.margin.bottom.s3 ) : createPanelForTable( table ).name( getTableName() ) )
+		return ( isTableOnly() ? table.name( getTableName() ) : createPanelForTable( table ).name( getTableName() ) )
 				.build( builderContext );
 	}
 
 	protected TableViewElementBuilder createTable() {
+		// TODO by rending a BootstrapUi builder two 'table' classes will be present on the table element, see TableViewElementModelBuilder
 		TableViewElementBuilder table = BootstrapUiBuilders.table()
 		                                                   .name( elementName( ELEMENT_TABLE ) )
 		                                                   .responsive()
