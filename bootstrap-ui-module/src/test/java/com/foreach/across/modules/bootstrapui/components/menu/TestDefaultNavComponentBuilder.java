@@ -25,6 +25,7 @@ import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,8 +62,8 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	public void renderingModes() {
 		renderAndExpect( builder.tabs(), "<ul class='nav nav-tabs'></ul>" );
 		renderAndExpect( builder.pills(), "<ul class='nav nav-pills'></ul>" );
-		renderAndExpect( builder.stacked(), "<ul class='nav nav-pills nav-stacked'></ul>" );
-		renderAndExpect( builder.navbar(), "<ul class='nav navbar-nav'></ul>" );
+		renderAndExpect( builder.stacked(), "<ul class='nav nav-pills flex-column'></ul>" );
+		renderAndExpect( builder.navbar(), "<ul class='navbar-nav'></ul>" );
 		renderAndExpect( builder.simple(), "<ul class='nav'></ul>" );
 	}
 
@@ -118,7 +119,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<ul class='nav'><li><a href='one' title='one'>one</a></li></ul>"
+				"<ul class='nav'><li class='nav-item'><a href='one' title='one' class='nav-link'>one</a></li></ul>"
 		);
 	}
 
@@ -132,8 +133,8 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( menu.build() ),
 				"<ul class='nav'>" +
-						"<li><a href='/one' title='one'>one</a></li>" +
-						"<li><a href='/two' title='two'>two</a></li>" +
+						"<li class='nav-item'><a href='/one' title='one' class='nav-link'>one</a></li>" +
+						"<li class='nav-item'><a href='/two' title='two' class='nav-link'>two</a></li>" +
 						"</ul>"
 		);
 	}
@@ -153,19 +154,11 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( built ),
 				"<ul class='nav'>" +
-						"<li class='active dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='one'>one <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='/one/sub' title='sub one'>sub one</a></li>" +
-						"<li class='active'><a href='/one/sub2' title='sub one 2'>sub one 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item dropdown'><a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='one' class='nav-link dropdown-toggle active'>one </a>" +
+						"<div class='dropdown-menu'><a href='/one/sub' title='sub one' class='dropdown-item'>sub one</a><a href='/one/sub2' title='sub one 2' class='dropdown-item active'>sub one 2</a></div>" +
 						"</li>" +
-						"<li class='dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='two'>two <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='/two/sub' title='sub two'>sub two</a></li>" +
-						"<li><a href='/two/sub2' title='sub two 2'>sub two 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item dropdown'><a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='two' class='nav-link dropdown-toggle'>two </a>" +
+						"<div class='dropdown-menu'><a href='/two/sub' title='sub two' class='dropdown-item'>sub two</a><a href='/two/sub2' title='sub two 2' class='dropdown-item'>sub two 2</a></div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -187,13 +180,13 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( menu.build() ),
 				"<ul class='nav'>" +
-						"<li><a href='one' title='one'><span aria-hidden='true' class='glyphicon glyphicon-apple' />one</a></li>" +
-						"<li class='dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='two'>two two <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='two/sub' title='sub two'>sub two</a></li>" +
-						"<li><a href='two/sub2' title='sub two 2'>sub two 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item'><a href='one' title='one' class='nav-link'><i class='fab fa-apple'></i> one</a></li>" +
+						"<li class='nav-item dropdown'>" +
+						"<a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='two' class='nav-link dropdown-toggle'>two two </a>" +
+						"<div class='dropdown-menu'>" +
+						"<a href='two/sub' title='sub two' class='dropdown-item'>sub two</a>" +
+						"<a href='two/sub2' title='sub two 2' class='dropdown-item'>sub two 2</a>" +
+						"</div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -265,13 +258,9 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( built ),
 				"<ul class='nav'>" +
-						"<li>fixed item</li>" +
-						"<li class='active dropdown'>" +
-						"fixed group" +
-						"<ul class='dropdown-menu'>" +
-						"<li class='active'>group item</li>" +
-						"<li><a href='/group/two' title='group item 2'>group item 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item'>fixed item</li>" +
+						"<li class='nav-item dropdown'>fixed group" +
+						"<div class='dropdown-menu'>group item<a href='/group/two' title='group item 2' class='dropdown-item'>group item 2</a></div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -280,15 +269,15 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	@Test
 	public void customHtmlAttributesAddedOnListItems() {
 		menu.item( "/one", "one" )
-		    .attribute( htmlAttribute( "class" ), "bold" )
-		    .attribute( htmlAttribute( "xlink" ), "url" )
+		    .attribute( customizeViewElement( HtmlViewElement.Functions.css( "bold" ) ) )
+		    .attribute( customizeViewElement( HtmlViewElement.Functions.attribute( "xlink", "url" ) ) )
 		    .and()
 		    .group( "/two", "two" )
-		    .attribute( htmlAttribute( "href" ), "test" )
+		    .attribute( customizeViewElement( HtmlViewElement.Functions.attribute( "href", "test" ) ) )
 		    .and()
 		    .item( "/two/one", "group item" )
-		    .attribute( htmlAttribute( "data-url" ), "test" )
-		    .attribute( htmlAttribute( "class" ), "pull-right" )
+		    .attribute( customizeViewElement( HtmlViewElement.Functions.attribute( "data-url", "test" ) ) )
+		    .attribute( customizeViewElement( HtmlViewElement.Functions.css( "pull-right" ) ) )
 		    .and()
 		    .item( "/two/two", "group item 2" );
 
@@ -298,13 +287,9 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( built ),
 				"<ul class='nav'>" +
-						"<li class='bold' xlink='url'><a href='/one' title='one'>one</a></li>" +
-						"<li class='active dropdown' href='test'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='two'>two <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li class='pull-right active' data-url='test'><a href='/two/one' title='group item'>group item</a></li>" +
-						"<li><a href='/two/two' title='group item 2'>group item 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item bold' xlink='url'><a href='/one' title='one' class='nav-link'>one</a></li>" +
+						"<li href='test' class='nav-item dropdown'><a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='two' class='nav-link dropdown-toggle active'>two </a>" +
+						"<div class='dropdown-menu'><a href='/two/one' title='group item' class='dropdown-item active pull-right' data-url='test'>group item</a><a href='/two/two' title='group item 2' class='dropdown-item'>group item 2</a></div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -320,7 +305,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( menu.build() ),
 				"<ul class='nav'>" +
-						"<li class='custom-class'><a href='/two/item' title='two item'>two item</a></li>" +
+						"<li class='nav-item'><a href='/two/item' title='two item' class='nav-link'>two item</a></li>" +
 						"</ul>"
 		);
 	}
@@ -335,11 +320,11 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( menu.build() ),
 				"<ul class='nav'>" +
-						"<li class='dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='two'>two <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='/two/item' title='two item'>two item</a></li>" +
-						"</ul>" +
+						"<li class='nav-item dropdown'>" +
+						"<a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='two' class='nav-link dropdown-toggle'>two </a>" +
+						"<div class='dropdown-menu'>" +
+						"<a href='/two/item' title='two item' class='dropdown-item'>two item</a>" +
+						"</div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -354,11 +339,11 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( menu.build() ).keepGroupsAsGroup( true ),
 				"<ul class='nav'>" +
-						"<li class='dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='two'>two <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='/two/item' title='two item'>two item</a></li>" +
-						"</ul>" +
+						"<li class='nav-item dropdown'>" +
+						"<a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='two' class='nav-link dropdown-toggle'>two </a>" +
+						"<div class='dropdown-menu'>" +
+						"<a href='/two/item' title='two item' class='dropdown-item'>two item</a>" +
+						"</div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -367,7 +352,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 	@Test
 	public void groupWithSingleItemIsRenderedAsItemIfDefaultKeepIsActiveButExplicitlyConfiguredToCollapse() {
 		menu.group( "/two", "two" )
-		    .attribute( "html:class", "custom-class" )
+		    .attribute( customizeViewElement( HtmlViewElement.Functions.css( "custom-class" ) ) )
 		    .attribute( ATTR_KEEP_AS_GROUP, false )
 		    .and()
 		    .item( "/two/item", "two item" );
@@ -375,7 +360,7 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( menu.build() ).keepGroupsAsGroup( true ),
 				"<ul class='nav'>" +
-						"<li class='custom-class'><a href='/two/item' title='two item'>two item</a></li>" +
+						"<li class='nav-item custom-class'><a href='/two/item' title='two item' class='nav-link'>two item</a></li>" +
 						"</ul>"
 		);
 	}
@@ -393,12 +378,9 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder,
 				"<ul class='nav'>" +
-						"<li class='dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='one'>one <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='/one/item' title='one item'>one item</a></li>" +
-						"<li><a href='/one/item2' title='one item 2'><span aria-hidden='true' class='glyphicon glyphicon-apple' />one item 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item dropdown'>" +
+						"<a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='one' class='nav-link dropdown-toggle'>one </a>" +
+						"<div class='dropdown-menu'><a href='/one/item' title='one item' class='dropdown-item'>one item</a><a href='/one/item2' title='one item 2' class='dropdown-item'><i class='fab fa-apple'></i> one item 2</a></div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -407,13 +389,8 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder,
 				"<ul class='nav'>" +
-						"<li class='active dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='one item 2'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-apple' />one item 2 <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='/one/item' title='one item'>one item</a></li>" +
-						"<li class='active'><a href='/one/item2' title='one item 2'><span aria-hidden='true' class='glyphicon glyphicon-apple' />one item 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item dropdown'><a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='one item 2' class='nav-link dropdown-toggle active'><i class='fab fa-apple'></i> one item 2 </a>" +
+						"<div class='dropdown-menu'><a href='/one/item' title='one item' class='dropdown-item'>one item</a><a href='/one/item2' title='one item 2' class='dropdown-item active'><i class='fab fa-apple'></i> one item 2</a></div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -435,12 +412,9 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder,
 				"<ul class='nav'>" +
-						"<li class='active dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='one'>one <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='/one/item' title='one item'>one item</a></li>" +
-						"<li class='active'><a href='/one/item2' title='one item 2'><span aria-hidden='true' class='glyphicon glyphicon-apple' />one item 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item dropdown'>" +
+						"<a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='one' class='nav-link dropdown-toggle active'>one </a>" +
+						"<div class='dropdown-menu'><a href='/one/item' title='one item' class='dropdown-item'>one item</a><a href='/one/item2' title='one item 2' class='dropdown-item active'><i class='fab fa-apple'></i> one item 2</a></div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -467,20 +441,17 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( built ),
 				"<ul class='nav'>" +
-						"<li class='dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='one'>one <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li class='dropdown-header'><span aria-hidden='true' class='glyphicon glyphicon-apple' />one group</li>" +
-						"<li><a href='/one/item/sub' title='one sub item 1'>one sub item 1</a></li>" +
-						"<li><a href='/one/item/sub2' title='one sub item 2'>one sub item 2</a></li>" +
-						"<li role='separator' class='divider'></li>" +
-						"<li><a href='/one/item3' title='one item 3'>one item 3</a></li>" +
-						"<li><a href='/one/item2/single' title='single sub item'>single sub item</a></li>" +
-						"<li role='separator' class='divider'></li>" +
-						"<li class='dropdown-header'>one group 3</li>" +
-						"<li><a href='/one/item4/sub' title='one sub item 3'>one sub item 3</a></li>" +
-						"<li><a href='/one/item4/sub2' title='one sub item 4'>one sub item 4</a></li>" +
-						"</ul>" +
+						"<li class='nav-item dropdown'>" +
+						"<a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='one' class='nav-link dropdown-toggle'>one </a>" +
+						"<div class='dropdown-menu'>" +
+						"<h6 class='dropdown-header'><i class='fab fa-apple'></i> one group</h6>" +
+						"<a href='/one/item/sub' title='one sub item 1' class='dropdown-item'>one sub item 1</a><a href='/one/item/sub2' title='one sub item 2' class='dropdown-item'>one sub item 2</a>" +
+						"<div class='dropdown-divider'></div>" +
+						"<a href='/one/item3' title='one item 3' class='dropdown-item'>one item 3</a><a href='/one/item2/single' title='single sub item' class='dropdown-item'>single sub item</a>" +
+						"<div class='dropdown-divider'></div>" +
+						"<h6 class='dropdown-header'>one group 3</h6>" +
+						"<a href='/one/item4/sub' title='one sub item 3' class='dropdown-item'>one sub item 3</a><a href='/one/item4/sub2' title='one sub item 4' class='dropdown-item'>one sub item 4</a>" +
+						"</div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -515,24 +486,17 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( built ),
 				"<ul class='nav'>" +
-						"<li class='dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='one'>one <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='/one/item1' title='item 1'>item 1</a></li>" +
-						"<li role='separator' class='divider'></li>" +
-						"<li class='dropdown-header'>item 2</li>" +
-						"<li><a href='/one/item2/sub' title='one sub item 1'>one sub item 1</a></li>" +
-						"<li role='separator' class='divider'></li>" +
-						"<li><a href='/one/item2/sub2' title='one sub item 2'>one sub item 2</a></li>" +
-						"<li role='separator' class='divider'></li>" +
-						"<li><a href='/one/item3' title='one item 3'>one item 3</a></li>" +
-						"<li role='separator' class='divider'></li>" +
-						"<li><a href='/one/item4' title='one item 4'>one item 4</a></li>" +
-						"<li role='separator' class='divider'></li>" +
-						"<li><a href='/one/item5' title='one item 5'>one item 5</a></li>" +
-						"<li role='separator' class='divider'></li>" +
-						"<li><a href='/one/item6' title='one item 6'>one item 6</a></li>" +
-						"</ul>" +
+						"<li class='nav-item dropdown'>" +
+						"<a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='one' class='nav-link dropdown-toggle'>one </a>" +
+						"<div class='dropdown-menu'>" +
+						"<a href='/one/item1' title='item 1' class='dropdown-item'>item 1</a>" +
+						"<div class='dropdown-divider'></div>" +
+						"<h6 class='dropdown-header'>item 2</h6><a href='/one/item2/sub' title='one sub item 1' class='dropdown-item'>one sub item 1</a>" +
+						"<div class='dropdown-divider'></div><a href='/one/item2/sub2' title='one sub item 2' class='dropdown-item'>one sub item 2</a>" +
+						"<div class='dropdown-divider'></div><a href='/one/item3' title='one item 3' class='dropdown-item'>one item 3</a>" +
+						"<div class='dropdown-divider'></div><a href='/one/item4' title='one item 4' class='dropdown-item'>one item 4</a>" +
+						"<div class='dropdown-divider'></div><a href='/one/item5' title='one item 5' class='dropdown-item'>one item 5</a>" +
+						"<div class='dropdown-divider'></div><a href='/one/item6' title='one item 6' class='dropdown-item'>one item 6</a></div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -573,16 +537,11 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( built ),
 				"<ul class='nav'>" +
-						"<li><a href='one' title='one'><span aria-hidden='true' class='glyphicon glyphicon-apple' /> <span class='nav-item-title'>one</span></a></li>" +
-						"<li><a href='two' title='two'>two</a></li>" +
-						"<li><a href='three/one' title='sub three'><span aria-hidden='true' class='glyphicon glyphicon-apple' /> <span class='nav-item-title'>sub three</span></a></li>" +
-						"<li class='dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='four'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-apple' /> <span class='nav-item-title'>four</span><span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='four/one' title='sub four 1'><span aria-hidden='true' class='glyphicon glyphicon-trash' />sub four 1</a></li>" +
-						"<li><a href='four/two' title='sub four 2'><span aria-hidden='true' class='glyphicon glyphicon-download' />sub four 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item'><a href='one' title='one' class='nav-link'><i class='fab fa-apple'></i> <span class='sr-only'>one</span></a></li>" +
+						"<li class='nav-item'><a href='two' title='two' class='nav-link'>two</a></li>" +
+						"<li class='nav-item'><a href='three/one' title='sub three' class='nav-link'><i class='fab fa-apple'></i> <span class='sr-only'>sub three</span></a></li>" +
+						"<li class='nav-item dropdown'><a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='four' class='nav-link dropdown-toggle'><i class='fab fa-apple'></i> <span class='sr-only'>four</span> </a>" +
+						"<div class='dropdown-menu'><a href='four/one' title='sub four 1' class='dropdown-item'><i class='fas fa-trash'></i> sub four 1</a><a href='four/two' title='sub four 2' class='dropdown-item'><i class='fas fa-download'></i> sub four 2</a></div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -619,13 +578,13 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( built ).keepGroupsAsGroup( true ).filter( item -> item.hasAttribute( ATTR_ICON ) ),
 				"<ul class='nav'>" +
-						"<li><a href='one' title='one'><span aria-hidden='true' class='glyphicon glyphicon-apple' /> one</a></li>" +
-						"<li class='dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='four'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-apple' /> four<span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li><a href='four/two' title='sub four 2'><span aria-hidden='true' class='glyphicon glyphicon-download' />sub four 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item'>" +
+						"<a href='one' title='one' class='nav-link'><i class='fab fa-apple'></i> one</a></li>" +
+						"<li class='nav-item dropdown'>" +
+						"<a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='four' class='nav-link dropdown-toggle'><i class='fab fa-apple'></i> four </a>" +
+						"<div class='dropdown-menu'>" +
+						" <a href='four/two' title='sub four 2' class='dropdown-item'><i class='fas fa-download'></i> sub four 2</a>" +
+						"</div>" +
 						"</li>" +
 						"</ul>"
 		);
@@ -634,8 +593,8 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.keepGroupsAsGroup( false ),
 				"<ul class='nav'>" +
-						"<li><a href='one' title='one'><span aria-hidden='true' class='glyphicon glyphicon-apple' /> one</a></li>" +
-						"<li><a href='four/two' title='sub four 2'><span aria-hidden='true' class='glyphicon glyphicon-download' />sub four 2</a></li>" +
+						"<li class='nav-item'><a href='one' title='one' class='nav-link'><i class='fab fa-apple'></i> one</a></li>" +
+						"<li class='nav-item'><a href='four/two' title='sub four 2' class='nav-link'><i class='fas fa-download'></i> sub four 2</a></li>" +
 						"</ul>"
 		);
 	}
@@ -655,12 +614,12 @@ public class TestDefaultNavComponentBuilder extends AbstractBootstrapViewElement
 		renderAndExpect(
 				builder.menu( built ).keepGroupsAsGroup( true ).filter( item -> !item.getTitle().endsWith( "item 1" ) ),
 				"<ul class='nav'>" +
-						"<li class='dropdown'>" +
-						"<a class='dropdown-toggle' data-toggle='dropdown' href='#' title='one'>one <span class='caret' /></a>" +
-						"<ul class='dropdown-menu'>" +
-						"<li class='dropdown-header'><span aria-hidden='true' class='glyphicon glyphicon-apple' />one group</li>" +
-						"<li><a href='/one/item/sub2' title='one sub item 2'>one sub item 2</a></li>" +
-						"</ul>" +
+						"<li class='nav-item dropdown'>" +
+						"<a data-toggle='dropdown' role='button' aria-expanded='false' aria-haspopup='true' href='#' title='one' class='nav-link dropdown-toggle'>one </a>" +
+						"<div class='dropdown-menu'>" +
+						"<h6 class='dropdown-header'><i class='fab fa-apple'></i> one group</h6>" +
+						"<a href='/one/item/sub2' title='one sub item 2' class='dropdown-item'>one sub item 2</a>" +
+						"</div>" +
 						"</li>" +
 						"</ul>"
 		);

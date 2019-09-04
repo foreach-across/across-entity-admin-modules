@@ -236,7 +236,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect( button,
 		                 "<button type='button' class='btn btn-default'>" +
-				                 "<span class='glyphicon glyphicon-barcode' aria-hidden='true'></span> icon button" +
+				                 "<i class='fab fa-barcode'></i> icon button" +
 				                 "</button>" );
 
 		button.setTitle( "icon button" );
@@ -244,7 +244,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect( button,
 		                 "<button type='button' class='btn btn-default' title='icon button'>" +
-				                 "<span class='glyphicon glyphicon-barcode' aria-hidden='true'></span>" +
+				                 "<i class='fab fa-barcode'></i>" +
 				                 "</button>" );
 	}
 

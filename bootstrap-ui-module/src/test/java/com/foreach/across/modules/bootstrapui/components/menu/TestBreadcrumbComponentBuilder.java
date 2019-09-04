@@ -70,9 +70,9 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 		built.select( MenuSelector.byTitle( "two" ) );
 
 		renderAndExpect( builder.menu( built ), "<ol class='breadcrumb'>" +
-				"<li><a href='' title='Root'>Root</a></li>" +
-				"<li><a href='one' title='one'>one</a></li>" +
-				"<li class='active'>two</li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one\" title=\"one\" class=\"active\">one</a></li>" +
+				"<li class=\"breadcrumb-item active\">two</li>" +
 				"</ol>" );
 	}
 
@@ -87,9 +87,9 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 		built.select( MenuSelector.byTitle( "three" ) );
 
 		renderAndExpect( builder.menu( built ), "<ol class='breadcrumb'>" +
-				"<li><a href='' title='Root'>Root</a></li>" +
-				"<li><a href='one' title='one'>one</a></li>" +
-				"<li class='active'>three</li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one\" title=\"one\" class=\"active\">one</a></li>" +
+				"<li class=\"breadcrumb-item active\">three</li>" +
 				"</ol>" );
 	}
 
@@ -104,9 +104,9 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 		built.select( MenuSelector.byTitle( "three" ) );
 
 		renderAndExpect( builder.menu( built ).filter( m -> !m.getTitle().equals( "two" ) ), "<ol class='breadcrumb'>" +
-				"<li><a href='' title='Root'>Root</a></li>" +
-				"<li><a href='one' title='one'>one</a></li>" +
-				"<li class='active'>three</li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one\" title=\"one\" class=\"active\">one</a></li>" +
+				"<li class=\"breadcrumb-item active\">three</li>" +
 				"</ol>" );
 	}
 
@@ -128,34 +128,34 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 
 		// by default all levels support icons and icon only
 		renderAndExpect( builder.menu( built ), "<ol class='breadcrumb'>" +
-				"<li><a href='' title='Root'>Root</a></li>" +
-				"<li><a href='one' title='one'><span aria-hidden=\"true\" class=\"glyphicon glyphicon-apple\" /> <span class='nav-item-title'>one</span></a></li>" +
-				"<li><a href='one/two' title='two'><span aria-hidden=\"true\" class=\"glyphicon glyphicon-apple\"/> <span class='nav-item-title'>two</span></a></li>" +
-				"<li class='active'><span aria-hidden=\"true\" class=\"glyphicon glyphicon-apple\"/> three</li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one\" title=\"one\" class=\"active\"><i class=\"fab fa-apple\"></i> <span class=\"sr-only\">one</span></a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one/two\" title=\"two\" class=\"active\"><i class=\"fab fa-apple\"></i> <span class=\"sr-only\">two</span></a></li>" +
+				"<li class=\"breadcrumb-item active\"><i class=\"fab fa-apple\"></i> three</li>" +
 				"</ol>" );
 
 		// only first 2 levels supports icon only
 		renderAndExpect( builder.menu( built ).iconOnlyLevels( 2 ), "<ol class='breadcrumb'>" +
-				"<li><a href='' title='Root'>Root</a></li>" +
-				"<li><a href='one' title='one'><span aria-hidden=\"true\" class=\"glyphicon glyphicon-apple\" /> <span class='nav-item-title'>one</span></a></li>" +
-				"<li><a href='one/two' title='two'><span aria-hidden=\"true\" class=\"glyphicon glyphicon-apple\"/> two</a></li>" +
-				"<li class='active'><span aria-hidden=\"true\" class=\"glyphicon glyphicon-apple\"/> three</li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one\" title=\"one\" class=\"active\"><i class=\"fab fa-apple\"></i> <span class=\"sr-only\">one</span></a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one/two\" title=\"two\" class=\"active\"><i class=\"fab fa-apple\"></i> two</a></li>" +
+				"<li class=\"breadcrumb-item active\"><i class=\"fab fa-apple\"></i> three</li>" +
 				"</ol>" );
 
 		// disable icon only altogether
-		renderAndExpect( builder.menu( built ).iconOnlyLevels( 0 ), "<ol class='breadcrumb'>" +
-				"<li><a href='' title='Root'>Root</a></li>" +
-				"<li><a href='one' title='one'><span aria-hidden=\"true\" class=\"glyphicon glyphicon-apple\" /> one</a></li>" +
-				"<li><a href='one/two' title='two'><span aria-hidden=\"true\" class=\"glyphicon glyphicon-apple\"/> two</a></li>" +
-				"<li class='active'><span aria-hidden=\"true\" class=\"glyphicon glyphicon-apple\"/> three</li>" +
+		renderAndExpect( builder.menu( built ).iconOnlyLevels( 0 ), "<ol class=\"breadcrumb\">" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one\" title=\"one\" class=\"active\"><i class=\"fab fa-apple\"></i> one</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one/two\" title=\"two\" class=\"active\"><i class=\"fab fa-apple\"></i> two</a></li>" +
+				" <li class=\"breadcrumb-item active\"><i class=\"fab fa-apple\"></i> three</li>" +
 				"</ol>" );
 
 		// by default only the first level supports icons
 		renderAndExpect( builder.menu( built ).iconOnlyLevels( Integer.MAX_VALUE ).iconAllowedLevels( 0 ), "<ol class='breadcrumb'>" +
-				"<li><a href='' title='Root'>Root</a></li>" +
-				"<li><a href='one' title='one'>one</a></li>" +
-				"<li><a href='one/two' title='two'>two</a></li>" +
-				"<li class='active'>three</li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"\" title=\"Root\" class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one\" title=\"one\" class=\"active\">one</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one/two\" title=\"two\" class=\"active\">two</a></li>" +
+				"<li class=\"breadcrumb-item active\">three</li>" +
 				"</ol>" );
 	}
 
@@ -171,10 +171,10 @@ public class TestBreadcrumbComponentBuilder extends AbstractBootstrapViewElement
 		built.select( MenuSelector.byTitle( "three" ) );
 
 		renderAndExpect( builder.menu( built ), "<ol class='breadcrumb'>" +
-				"<li><a href='' title='Root'>Root</a></li>" +
-				"<li><a href='group-one' title='one'>one</a></li>" +
-				"<li><a href='one/two/three' title='two'>two</a></li>" +
-				"<li class='active'>three</li>" +
+				"<li class=\"breadcrumb-item\"><a href='' title='Root' class=\"active\">Root</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href='group-one' title='one' class=\"active\">one</a></li>" +
+				"<li class=\"breadcrumb-item\"><a href=\"one/two/three\" title=\"two\" class=\"active\">two</a></li>" +
+				"<li class=\"breadcrumb-item active\">three</li>" +
 				"</ol>" );
 	}
 

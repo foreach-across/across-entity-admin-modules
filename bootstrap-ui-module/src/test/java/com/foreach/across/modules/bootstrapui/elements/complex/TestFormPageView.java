@@ -69,7 +69,7 @@ public class TestFormPageView extends AbstractBootstrapViewElementTest
 				element,
 				"<form role='form' method='post'>" +
 						"<div class='form-group'>" +
-						"<label class='control-label'>Name *</label>" +
+						"<label>Name *</label>" +
 						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' value='John Doe' />" +
 						"</div>" +
 						"<div class='form-group'>" +
