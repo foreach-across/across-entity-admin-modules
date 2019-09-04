@@ -47,16 +47,6 @@ public class IconSetBrowserController
 		menuEvent.builder().item( "/ax/developer/iconSets", "Icon sets" );
 	}
 
-	@GetMapping
-	public String listIconSets( Model model ) {
-		model.addAttribute( "iconSets", new TreeMap<String, IconSet>( IconSetRegistry.getAllIconSets() ) );
-
-		page.setPageTitle( "Icon sets" );
-		page.addChild( new TemplateViewElement( "th/adminweb/dev/bootstrapUiModule/icon-set-browser :: listIconSets(${iconSets})" ) );
-
-		return PageContentStructure.TEMPLATE;
-	}
-
 	@GetMapping(path = "/{iconSetName}")
 	public String listIconSets( AdminMenu adminMenu, Model model, @PathVariable String iconSetName ) {
 		adminMenu.breadcrumbLeaf( iconSetName );
@@ -65,6 +55,16 @@ public class IconSetBrowserController
 
 		page.setPageTitle( "IconSet: " + iconSetName );
 		page.addChild( new TemplateViewElement( "th/adminweb/dev/bootstrapUiModule/icon-set-browser :: listIcons(${iconSetName},${icons})" ) );
+
+		return PageContentStructure.TEMPLATE;
+	}
+
+	@GetMapping
+	public String listIconSets( Model model ) {
+		model.addAttribute( "iconSets", new TreeMap<String, IconSet>( IconSetRegistry.getAllIconSets() ) );
+
+		page.setPageTitle( "Icon sets" );
+		page.addChild( new TemplateViewElement( "th/adminweb/dev/bootstrapUiModule/icon-set-browser :: listIconSets(${iconSets})" ) );
 
 		return PageContentStructure.TEMPLATE;
 	}
