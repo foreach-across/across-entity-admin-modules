@@ -28,9 +28,11 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.witherFor;
 
 /**
  * Represents the content structure of a single page.
@@ -315,7 +317,8 @@ public class PageContentStructure extends AbstractNodeViewElement
 				tabWrapper.set( css.margin.bottom.s3 )
 				          .addCssClass( "tabbable", "filled" );
 				if ( nav.hasChildren() ) {
-					tabWrapper.addChild( nav.set( css.margin.bottom.s3 ) );
+					tabWrapper.addChild( nav.set( css.margin.bottom.s3 )
+					                        .set( witherFor( AbstractNodeViewElement.class, this::useDisplayBlockIfNecessary ) ) );
 				}
 				tabWrapper.addChild( body );
 
@@ -346,5 +349,21 @@ public class PageContentStructure extends AbstractNodeViewElement
 		}
 
 		return children;
+	}
+
+	/**
+	 * Checks whether there is an element that should be rendered on the right of the navigation bar.
+	 * If so, the nav will be rendered as display block.
+	 */
+	private void useDisplayBlockIfNecessary( AbstractNodeViewElement menu ) {
+		Optional<ViewElement> navItemToAlignRight = menu.findAll(
+				child -> child instanceof NodeViewElement && ( (NodeViewElement) child ).hasCssClass( "float-right" ) )
+		                                                .findFirst();
+		if ( navItemToAlignRight.isPresent() ) {
+			menu.findAll( child -> child instanceof NodeViewElement && ( (NodeViewElement) child )
+					.hasCssClass( "nav" ) )
+			    .findFirst()
+			    .ifPresent( ul -> ul.set( css.display.block ) );
+		}
 	}
 }
