@@ -49,6 +49,8 @@ import org.springframework.util.Assert;
 
 import java.util.function.Consumer;
 
+import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.customizeViewElement;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.entity.config.icons.EntityModuleIcons.entityModuleIcons;
 
 @ConditionalOnAdminWeb
@@ -148,7 +150,7 @@ class EntityModuleAdminMenuRegistrar
 			// Generate advanced options
 			builder.group( "/advanced-options",
 			               messageCodeResolver.getMessageWithFallback( "menu.advanced", "Advanced" ) )
-			       .attribute( "html:class", "float-right" )
+			       .attribute( customizeViewElement( css.cssFloat.right ) )
 			       .attribute( NavComponentBuilder.ATTR_ICON, entityModuleIcons.formView.advancedSettings() )
 			       .attribute( NavComponentBuilder.ATTR_KEEP_GROUP_ITEM, true )
 			       .attribute( NavComponentBuilder.ATTR_ICON_ONLY, true );

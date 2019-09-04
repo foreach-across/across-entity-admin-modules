@@ -113,7 +113,10 @@ public class EntityFilteringConfiguration implements EntityConfigurer
 			if ( menuEvent.isForUpdate() ) {
 				SingleEntityViewLinkBuilder linkBuilder = menuEvent.getLinkBuilder().forInstance( menuEvent.getEntity() );
 				menuEvent.builder()
-				         .item( "/advanced-options/customListView", "Custom list view", linkBuilder.withViewName( "customListView" ).toString() );
+				         .item( "/advanced-options/customListView", "Custom list view", linkBuilder.withViewName( "customListView" ).toString() )
+				         .and()
+				         .item( "/advanced-options/customListView2", "Another link to the custom list view",
+				                linkBuilder.withViewName( "customListView" ).toString() );
 			}
 		}
 	}

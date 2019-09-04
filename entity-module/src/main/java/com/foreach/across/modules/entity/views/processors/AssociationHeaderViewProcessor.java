@@ -43,6 +43,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * Adds a header component to embedded associations.
@@ -84,6 +85,7 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 		PageContentStructure page = entityViewRequest.getPageContentStructure();
 
 		NodeViewElementBuilder contentHeaderBuilder = div().css( "tab-pane-header" )
+		                                                   .with( css.margin.bottom.s3 )
 		                                                   .add( associatedContentTitle( entityViewContext ) );
 
 		if ( addEntityMenu ) {
@@ -102,6 +104,7 @@ public class AssociationHeaderViewProcessor extends EntityViewProcessorAdapter
 				return null;
 			}
 			return BootstrapUiBuilders.nav( entityAdminMenu )
+			                          .with( css.display.block )
 			                          .pills()
 			                          .replaceGroupBySelectedItem();
 		}
