@@ -93,8 +93,9 @@ public class TestToggleFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input position-static' type='checkbox' value='true' checked='checked' />" +
+				"<div class='custom-control custom-switch' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input position-static' type='checkbox' value='true' checked='checked' />" +
+						"<label class='custom-control-label'></label>" +
 						"</div>"
 		);
 	}
@@ -107,8 +108,9 @@ public class TestToggleFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input position-static' type='checkbox' value='on' disabled='disabled' />" +
+				"<div class='custom-control custom-switch' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input position-static' type='checkbox' value='on' disabled='disabled' />" +
+						"<label class='custom-control-label'></label>" +
 						"</div>"
 		);
 
@@ -117,8 +119,9 @@ public class TestToggleFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input position-static' type='checkbox' value='on' readonly='readonly' />" +
+				"<div class='custom-control custom-switch' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input position-static' type='checkbox' value='on' readonly='readonly' />" +
+						"<label class='custom-control-label'></label>" +
 						"</div>"
 		);
 	}
@@ -181,8 +184,9 @@ public class TestToggleFormElement extends AbstractBootstrapViewElementTest
 		control.setControlName( "two" );
 		renderAndExpect(
 				control,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>"
-						+ "<input class='form-check-input position-static' type='checkbox' id='two' name='two' />"
+				"<div class='custom-control custom-switch' data-bootstrapui-adapter-type='checkbox'>"
+						+ "<input class='custom-control-input position-static' type='checkbox' id='two' name='two' />"
+						+ "<label for='two' class='custom-control-label'></label>"
 						+ "</div>"
 		);
 
@@ -201,8 +205,9 @@ public class TestToggleFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>"
-						+ "<input class='form-check-input position-static' type='checkbox' id='prefix.one' name='prefix.one' />"
+				"<div class='custom-control custom-switch' data-bootstrapui-adapter-type='checkbox'>"
+						+ "<input class='custom-control-input position-static' type='checkbox' id='prefix.one' name='prefix.one' />"
+						+ "<label for='prefix.one' class='custom-control-label'></label>"
 						+ "</div>"
 		);
 

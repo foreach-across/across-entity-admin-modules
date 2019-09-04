@@ -475,11 +475,11 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				group,
-				"<div class='form-group checkbox'>" +
+				"<div class='form-group'>" +
 						"<div class='col-md-10 col-md-offset-2'>" +
-						"<div class='checkbox' data-bootstrapui-adapter-type='checkbox'><label>" +
-						"<input type='checkbox'/>checkbox value" +
-						"</label>" +
+						"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input type='checkbox' class='custom-control-input'/>" +
+						"<label class='custom-control-label'>checkbox value</label>" +
 						"</div>" +
 						"</div>" +
 						"</div>"
@@ -502,11 +502,11 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				form,
-				"<form method='post' role='form' class='form-horizontal'><div class='form-group checkbox'>" +
+				"<form method='post' role='form' class='form-horizontal'><div class='form-group'>" +
 						"<div class='col-md-10 col-md-offset-2'>" +
-						"<div class='checkbox' data-bootstrapui-adapter-type='checkbox'><label>" +
-						"<input type='checkbox' />checkbox value" +
-						"(tooltip)</label>" +
+						"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input type=\"checkbox\" class=\"custom-control-input\"></input>" +
+						" <label class=\"custom-control-label\">checkbox value(tooltip)</label>" +
 						"</div>" +
 						"</div>" +
 						"</div></form>"
@@ -522,10 +522,10 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				container,
 				callback,
-				"<div class='form-group has-error'>" +
+				"<div class='form-group is-invalid'>" +
 						"<label for='control'>title</label>" +
-						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' value='test value' />" +
-						"<div class='small text-danger'>broken</div>" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control is-invalid' name='control' id='control' value='test value' />" +
+						"<div class='invalid-feedback'>broken</div>" +
 						"</div>"
 		);
 
@@ -568,10 +568,10 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				container,
 				this::sampleModelWithError,
-				"<div class='form-group has-error'>" +
+				"<div class='form-group is-invalid'>" +
 						"<label for='values[sub.item].name'>title</label>" +
-						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='values[sub.item].name' id='values[sub.item].name' />" +
-						"<div class='small text-danger'>map-broken</div>" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control is-invalid' name='values[sub.item].name' id='values[sub.item].name' />" +
+						"<div class='invalid-feedback'>map-broken</div>" +
 						"</div>"
 		);
 	}
@@ -609,10 +609,10 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 					model.addAttribute( "item", target );
 				},
 				"<form role='form' method='post'>" +
-						"<div class='form-group has-error'>" +
+						"<div class='form-group is-invalid'>" +
 						"<label for='control'>title</label>" +
-						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' value='test value' />" +
-						"<div class='small text-danger'>broken</div>" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control is-invalid' name='control' id='control' value='test value' />" +
+						"<div class='invalid-feedback'>broken</div>" +
 						"</div>" +
 						"</form>"
 		);
@@ -631,10 +631,10 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				form,
 				"<form role='form' method='post'>" +
-						"<div class='form-group has-error'>" +
+						"<div class='form-group is-invalid'>" +
 						"<label for='control'>title</label>" +
-						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' value='test value' />" +
-						"<div class='small text-danger'>broken</div>" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control is-invalid' name='control' id='control' value='test value' />" +
+						"<div class='invalid-feedback'>broken</div>" +
 						"</div>" +
 						"</form>"
 		);
@@ -650,11 +650,11 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				container,
 				this::sampleModelWithError,
-				"<div class='form-group has-error'>" +
-						"<label for='control' class='control-label col-md-2'>title</label>" +
+				"<div class='form-group is-invalid'>" +
+						"<label for='control' class=' col-md-2'>title</label>" +
 						"<div class='col-md-10'>" +
-						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control' name='control' id='control' value='test value' />" +
-						"<div class='small text-danger'>broken</div>" +
+						"<input data-bootstrapui-adapter-type='basic' type='text' class='form-control is-invalid' name='control' id='control' value='test value' />" +
+						"<div class='invalid-feedback'>broken</div>" +
 						"</div>" +
 						"</div>"
 		);

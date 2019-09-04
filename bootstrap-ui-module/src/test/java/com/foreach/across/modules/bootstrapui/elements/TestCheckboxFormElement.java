@@ -101,8 +101,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input position-static' type='checkbox' id='boxName' name='boxName' value='123' />" +
+				"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input position-static' type='checkbox' id='boxName' name='boxName' value='123' />" +
+						"<label for='boxName' class='custom-control-label'></label>" +
 						"<input type='hidden' name='_boxName' value='on' />" +
 						"</div>"
 		);
@@ -116,8 +117,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input position-static' type='checkbox' value='true' checked='checked' />" +
+				"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input position-static' type='checkbox' value='true' checked='checked' />" +
+						"<label class='custom-control-label'></label>" +
 						"</div>"
 		);
 	}
@@ -131,8 +133,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input position-static' type='checkbox' name='myBox' id='myBox' value='on' disabled='disabled' />" +
+				"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input position-static' type='checkbox' name='myBox' id='myBox' value='on' disabled='disabled' />" +
+						"<label for='myBox' class='custom-control-label'></label>" +
 						"<input type='hidden' name='_myBox' value='on' disabled='disabled' />" +
 						"</div>"
 		);
@@ -142,8 +145,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				box,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>" +
-						"<input class='form-check-input position-static' type='checkbox' name='myBox' id='myBox' value='on' readonly='readonly' />" +
+				"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input class='custom-control-input position-static' type='checkbox' name='myBox' id='myBox' value='on' readonly='readonly' />" +
+						"<label for='myBox' class='custom-control-label'></label>" +
 						"<input type='hidden' name='_myBox' value='on' />" +
 						"</div>"
 		);
@@ -229,8 +233,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 		control.setControlName( "two" );
 		renderAndExpect(
 				control,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>"
-						+ "<input class='form-check-input position-static' type='checkbox' id='two' name='two' />"
+				"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>"
+						+ "<input class='custom-control-input position-static' type='checkbox' id='two' name='two' />"
+						+ "<label for='two' class='custom-control-label'></label>"
 						+ "<input type='hidden' name='_two' value='on' />"
 						+ "</div>"
 		);
@@ -250,8 +255,9 @@ public class TestCheckboxFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<div class='form-check' data-bootstrapui-adapter-type='checkbox'>"
-						+ "<input class='form-check-input position-static' type='checkbox' id='prefix.one' name='prefix.one' />"
+				"<div class='custom-control custom-checkbox' data-bootstrapui-adapter-type='checkbox'>"
+						+ "<input class='custom-control-input position-static' type='checkbox' id='prefix.one' name='prefix.one' />"
+						+ "<label for='prefix.one' class='custom-control-label'></label>"
 						+ "<input type='hidden' name='_prefix.one' value='on' />"
 						+ "</div>"
 		);

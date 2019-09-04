@@ -265,11 +265,12 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ),
-				"<nav class='nav nav-panels'>" +
-						"<ul class='nav nav-sidebar'>" +
-						"<li><a href='/one/sub' title='sub one'>sub one</a></li>" +
-						"<li><a href='/one/sub2' title='sub one 2'>sub one 2</a></li>" +
-						"</ul>" +
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='card mb-3'>" +
+						"<div class='list-group list-group-flush'>" +
+						"<a href='/one/sub' title='sub one' class='list-group-item list-group-item-action'>sub one</a>" +
+						"<a href='/one/sub2' title='sub one 2' class='list-group-item list-group-item-action'>sub one 2</a></div>" +
+						"</div>" +
 						"</nav>"
 		);
 	}
@@ -283,11 +284,13 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				builder.menu( menu.build() ),
 				"<nav class='nav nav-panels flex-column'>" +
-						"<div class=\"card mb-3\">" +
-						"<div class=\"card-header\">one</div>" +
-						"<div class=\"list-group list-group-flush\"><a href=\"/one/sub\" title=\"sub one\" class=\"list-group-item list-group-item-action\">sub one</a><a href=\"/one/sub2\" title=\"sub one 2\" class=\"list-group-item list-group-item-action\">sub one 2</a></div>" +
-						"<li><a href='/one/sub2' title='sub one 2'>sub one 2</a></li>" +
-						"</ul>" +
+						"<div class='card mb-3'>" +
+						"<div class='card-header'>one</div>" +
+						"<div class='list-group list-group-flush'>" +
+						"<a href='/one/sub' title='sub one' class='list-group-item list-group-item-action'>sub one</a>" +
+						"<a href='/one/sub2' title='sub one 2' class='list-group-item list-group-item-action'>sub one 2</a>" +
+						"</div>" +
+						"</div>" +
 						"</nav>"
 		);
 	}
@@ -306,20 +309,20 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( built ),
-				"<nav class='nav nav-panels'>" +
-						"<div class='panel panel-default'>" +
-						"<div class='panel-heading'><h3 class='panel-title'>one</h3></div>" +
-						"<ul class='nav nav-sidebar list-group'>" +
-						"<li class='list-group-item'><a href='/one/sub' title='sub one'>sub one</a></li>" +
-						"<li class='list-group-item active'><a href='/one/sub2' title='sub one 2'>sub one 2</a></li>" +
-						"</ul>" +
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='card mb-3'>" +
+						"<div class='card-header'>one</div>" +
+						"<div class='list-group list-group-flush'>" +
+						"<a href='/one/sub' title='sub one' class='list-group-item list-group-item-action'>sub one</a>" +
+						"<a href='/one/sub2' title='sub one 2' class='active list-group-item list-group-item-action'>sub one 2</a>" +
 						"</div>" +
-						"<div class='panel panel-default'>" +
-						"<div class='panel-heading'><h3 class='panel-title'>two</h3></div>" +
-						"<ul class='nav nav-sidebar list-group'>" +
-						"<li class='list-group-item'><a href='/two/sub' title='sub two'>sub two</a></li>" +
-						"<li class='list-group-item'><a href='/two/sub2' title='sub two 2'>sub two 2</a></li>" +
-						"</ul>" +
+						"</div" +
+						"><div class='card mb-3'>" +
+						"<div class='card-header'>two</div" +
+						"><div class='list-group list-group-flush'>" +
+						"<a href='/two/sub' title='sub two' class='list-group-item list-group-item-action'>sub two</a>" +
+						"<a href='/two/sub2' title='sub two 2' class='list-group-item list-group-item-action'>sub two 2</a>" +
+						"</div>" +
 						"</div>" +
 						"</nav>"
 		);
@@ -337,25 +340,14 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				builder.menu( menu.build() ).subMenuBaseId( "sidebarMenu" ).keepGroupsAsGroup( true ),
-				"<nav class='nav nav-panels'>" +
-						"<div class='panel panel-default'>" +
-						"<div class='panel-heading'><h3 class='panel-title'>one</h3></div>" +
-						"<ul class='nav nav-sidebar list-group'>" +
-						"<li class='list-group-item'><a href='/one/one' title='one one'>one one</a></li>" +
-						"<li class='list-group-item'>" +
-						"<a data-toggle='collapse' href='#sidebarMenu-1' class='collapsed' title='one sub'>one sub</a>" +
-						"<ul class='nav nav-sidebar submenu list-group collapse' id='sidebarMenu-1'>" +
-						"<li class='list-group-item'><a href='/one/sub/one' title='one sub one'>one sub one</a></li>" +
-						"<li class='list-group-item'>" +
-						"<a data-toggle='collapse' href='#sidebarMenu-2' class='collapsed' title='one sub sub'>one sub sub</a>" +
-						"<ul class='nav nav-sidebar submenu list-group collapse' id='sidebarMenu-2'>" +
-						"<li class='list-group-item'><a href='/one/sub/sub/one' title='one sub sub one'>one sub sub one</a></li>" +
-						"<li class='list-group-item'><a href='/one/sub/sub/two' title='one sub sub two'>one sub sub two</a></li>" +
-						"</ul>" +
-						"</li>" +
-						"</ul>" +
-						"</li>" +
-						"</ul>" +
+				"<nav class='nav nav-panels flex-column'>" +
+						"<div class='card mb-3'>" +
+						"<div class='card-header'>one</div>" +
+						"<div class='list-group list-group-flush'><a href='/one/one' title='one one' class='list-group-item list-group-item-action'>one one</a><a data-toggle='collapse' href='#asidebarMenu-1' title='one sub' class='list-group-item list-group-item-action list-group-subgroup-toggle collapsed'>one sub</a>" +
+						"<div id='asidebarMenu-1' class='list-group-subgroup collapse'><a href='/one/sub/one' title='one sub one' class='list-group-item list-group-item-action'>one sub one</a><a data-toggle='collapse' href='#asidebarMenu-2' title='one sub sub' class='list-group-item list-group-item-action list-group-subgroup-toggle collapsed'>one sub sub</a>" +
+						"<div id='asidebarMenu-2' class='list-group-subgroup collapse'><a href='/one/sub/sub/one' title='one sub sub one' class='list-group-item list-group-item-action'>one sub sub one</a><a href='/one/sub/sub/two' title='one sub sub two' class='list-group-item list-group-item-action'>one sub sub two</a></div>" +
+						"</div>" +
+						"</div>" +
 						"</div>" +
 						"</nav>"
 		);
@@ -379,11 +371,11 @@ public class TestPanelsComponentBuilder extends AbstractBootstrapViewElementTest
 				"<nav class='nav nav-panels flex-column'>" +
 						"<div class='card mb-3'>" +
 						"<div class='card-header'>one</div>" +
-						"<div class=\"list-group list-group-flush\">" +
-						"<a href=\"/one/one\" title=\"one one\" class=\"list-group-item list-group-item-action\">one one</a><a data-toggle=\"collapse\" aria-expanded=\"true\" href=\"#asidebarMenu-1\" title=\"one sub\" class=\"list-group-item list-group-item-action list-group-subgroup-toggle\">one sub</a>" +
-						"<div aria-expanded=\"true\" id=\"asidebarMenu-1\" class=\"list-group-subgroup collapse show\">" +
-						" <a href=\"/one/sub/one\" title=\"one sub one\" class=\"list-group-item list-group-item-action\">one sub one</a><a data-toggle=\"collapse\" aria-expanded=\"true\" href=\"#asidebarMenu-2\" title=\"one sub sub\" class=\"list-group-item list-group-item-action list-group-subgroup-toggle\">one sub sub</a>" +
-						"<div aria-expanded=\"true\" id=\"asidebarMenu-2\" class=\"list-group-subgroup collapse show\"><a href=\"/one/sub/sub/one\" title=\"one sub sub one\" class=\"active list-group-item list-group-item-action\">one sub sub one</a><a href=\"/one/sub/sub/two\" title=\"one sub sub two\" class=\"list-group-item list-group-item-action\">one sub sub two</a></div>" +
+						"<div class='list-group list-group-flush'>" +
+						"<a href='/one/one' title='one one' class='list-group-item list-group-item-action'>one one</a><a data-toggle='collapse' aria-expanded='true' href='#asidebarMenu-1' title='one sub' class='list-group-item list-group-item-action list-group-subgroup-toggle'>one sub</a>" +
+						"<div aria-expanded='true' id='asidebarMenu-1' class='list-group-subgroup collapse show'>" +
+						" <a href='/one/sub/one' title='one sub one' class='list-group-item list-group-item-action'>one sub one</a><a data-toggle='collapse' aria-expanded='true' href='#asidebarMenu-2' title='one sub sub' class='list-group-item list-group-item-action list-group-subgroup-toggle'>one sub sub</a>" +
+						"<div aria-expanded='true' id='asidebarMenu-2' class='list-group-subgroup collapse show'><a href='/one/sub/sub/one' title='one sub sub one' class='active list-group-item list-group-item-action'>one sub sub one</a><a href='/one/sub/sub/two' title='one sub sub two' class='list-group-item list-group-item-action'>one sub sub two</a></div>" +
 						"</div>" +
 						"</div>" +
 						"</div>" +
