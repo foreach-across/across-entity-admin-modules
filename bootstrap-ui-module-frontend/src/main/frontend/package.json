@@ -1,19 +1,25 @@
 {
-  "name": "bootstrap-ui-module-frontend",
-  "version": "0.1.0",
+  "name": "@foreachbe/bootstrap-ui-fe",
+  "version": "0.0.1",
   "main": "dist/bootstrapui.umd.production.js",
   "typings": "dist/bootstrapui.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
+    "prepare": "yarn build",
     "start": "foreach-tsdx watch -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
     "build": "foreach-tsdx build -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
     "build-jar": "foreach-tsdx build -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery && node build-jar",
     "build-test": "tsc -p tsconfig.json && rollup -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery && node build-jar",
     "test": "foreach-tsdx test --env=jsdom",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "release": "np"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "peerDependencies": {
     "autosize": "3.x",
@@ -21,13 +27,17 @@
     "moment": "2.x",
     "react": ">=16"
   },
-  "husky": {
+  "np": {
+    "anyBranch": true,
+    "releaseDraft": false
+  },
+  "husky-disabled": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
   },
   "eslintConfig": {
-    "extends": "@foreach/eslint-config-react-app"
+    "extends": "@foreachbe/eslint-config-react-app"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -48,7 +58,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
-    "@foreach/eslint-config-react-app": "^1.0.2",
     "@storybook/addon-actions": "^5.1.10",
     "@storybook/addon-info": "5.1.10",
     "@storybook/addon-links": "^5.1.10",
@@ -67,14 +76,15 @@
     "@types/storybook__react": "4.0.2",
     "autosize": "^3.0.20",
     "awesome-typescript-loader": "5.2.1",
+    "babel-eslint": "10.x",
     "babel-loader": "^8.0.6",
-    "eslint": "5.16.0",
-    "foreach-tsdx": "^0.1.8-7",
+    "foreach-tsdx": "^1.0.0",
     "husky": "^3.0.2",
     "jest-dom": "^4.0.0",
     "jquery": "1.11.3",
     "lint-staged": "^9.2.1",
     "moment": "^2.13.0",
+    "np": "^5.0.3",
     "prettier": "^1.18.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
