@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 {
-	private static final String DATA_ATTRIBUTE = "data-bootstrapui-numeric='{\"mDec\":2,\"vMin\":-9223372036854775808}'";
+	private static final String DATA_ATTRIBUTE = "data-bootstrapui-numeric='{\"minimumValue\":-9223372036854775808,\"decimalPlaces\":2}'";
 
 	private NumericFormElement numeric;
 
@@ -90,7 +90,7 @@ public class TestNumericFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				group,
 				"<div class='form-group'>" +
-						"<label for='number' class='control-label'>title</label>" +
+						"<label for='number'>title</label>" +
 						"<input data-bootstrapui-adapter-type='basic' id='number' name='number' class='numeric form-control' type='text' />" +
 						"</div>"
 		);

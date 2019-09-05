@@ -22,6 +22,7 @@ import lombok.NonNull;
  *
  * @author Arne Vandamme
  */
+@Deprecated
 public class FaIcon extends IconViewElement
 {
 	public interface WebApp
@@ -773,9 +774,10 @@ public class FaIcon extends IconViewElement
 		setGlyph( glyph );
 	}
 
-	public void setGlyph( @NonNull String glyph ) {
+	public FaIcon setGlyph( @NonNull String glyph ) {
 		this.glyph = glyph;
 		setIconCss( "fa " + glyph );
+		return this;
 	}
 
 	public String getGlyph() {

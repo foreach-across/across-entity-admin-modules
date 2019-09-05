@@ -27,9 +27,9 @@ public interface FormInputElement extends HtmlViewElement
 {
 	String getControlName();
 
-	void setControlName( String controlName );
+	FormInputElement setControlName( String controlName );
 
 	boolean isDisabled();
 
-	void setDisabled( boolean disabled );
+	FormInputElement setDisabled( boolean disabled );
 }

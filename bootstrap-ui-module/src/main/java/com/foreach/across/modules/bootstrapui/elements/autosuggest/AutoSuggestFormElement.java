@@ -20,8 +20,12 @@ import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.NonNull;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -60,8 +64,9 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 	}
 
 	@Override
-	public void setHtmlId( String htmlId ) {
+	public AutoSuggestFormElement setHtmlId( String htmlId ) {
 		super.setHtmlId( htmlId );
+		return this;
 	}
 
 	@Override
@@ -70,8 +75,9 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 	}
 
 	@Override
-	public void setReadonly( boolean readonly ) {
+	public AutoSuggestFormElement setReadonly( boolean readonly ) {
 		textbox.setReadonly( readonly );
+		return this;
 	}
 
 	@Override
@@ -80,8 +86,9 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 	}
 
 	@Override
-	public void setRequired( boolean required ) {
+	public AutoSuggestFormElement setRequired( boolean required ) {
 		textbox.setRequired( required );
+		return this;
 	}
 
 	@Override
@@ -90,8 +97,9 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 	}
 
 	@Override
-	public void setControlName( String controlName ) {
+	public AutoSuggestFormElement setControlName( String controlName ) {
 		valueControl.setControlName( controlName );
+		return this;
 	}
 
 	@Override
@@ -100,13 +108,15 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 	}
 
 	@Override
-	public void setDisabled( boolean disabled ) {
+	public AutoSuggestFormElement setDisabled( boolean disabled ) {
 		textbox.setDisabled( disabled );
+		return this;
 	}
 
 	@Override
-	public void setPlaceholder( String placeholder ) {
+	public AutoSuggestFormElement setPlaceholder( String placeholder ) {
 		textbox.setPlaceholder( placeholder );
+		return this;
 	}
 
 	@Override
@@ -115,8 +125,9 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 	}
 
 	@Override
-	public void setText( String text ) {
+	public AutoSuggestFormElement setText( String text ) {
 		textbox.setText( text );
+		return this;
 	}
 
 	@Override
@@ -132,21 +143,118 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 		return valueControl.getValue( expectedType );
 	}
 
-	public void setValue( Object value ) {
+	public AutoSuggestFormElement setValue( Object value ) {
 		valueControl.setValue( value );
+		return this;
 	}
 
 	public AutoSuggestFormElementConfiguration getConfiguration() {
 		return getAttribute( ATTRIBUTE_DATA_AUTOSUGGEST, AutoSuggestFormElementConfiguration.class );
 	}
 
-	public void setConfiguration( @NonNull AutoSuggestFormElementConfiguration configuration ) {
-		setAttribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration );
+	public AutoSuggestFormElement setConfiguration( @NonNull AutoSuggestFormElementConfiguration configuration ) {
+		return setAttribute( ATTRIBUTE_DATA_AUTOSUGGEST, configuration );
 	}
 
 	@Override
 	public Stream<ViewElement> elementStream() {
 		// filter out the textbox and value control from container finding
 		return super.elementStream().filter( e -> e != textbox && e != valueControl );
+	}
+
+	@Override
+	public AutoSuggestFormElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected AutoSuggestFormElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> AutoSuggestFormElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected AutoSuggestFormElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
 	}
 }

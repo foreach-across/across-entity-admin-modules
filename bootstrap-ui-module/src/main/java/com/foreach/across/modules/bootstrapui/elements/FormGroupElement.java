@@ -17,9 +17,14 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -31,6 +36,7 @@ import java.util.stream.Stream;
  */
 @Getter
 @Setter
+@Accessors(chain = true)
 public class FormGroupElement extends AbstractNodeViewElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.FORM_GROUP;
@@ -43,8 +49,6 @@ public class FormGroupElement extends AbstractNodeViewElement
 	 * -- SETTER --
 	 * Set a tooltip element. This will be inserted inside the label, after the label text.
 	 */
-	@Getter
-	@Setter
 	private ViewElement tooltip;
 
 	/**
@@ -52,8 +56,6 @@ public class FormGroupElement extends AbstractNodeViewElement
 	 * Set the description block that should be rendered above the control,
 	 * usually between the label and the control.
 	 */
-	@Getter
-	@Setter
 	private ViewElement descriptionBlock;
 
 	private FormLayout formLayout;
@@ -141,5 +143,107 @@ public class FormGroupElement extends AbstractNodeViewElement
 			}
 		}
 		return removed || super.removeChild( element );
+	}
+
+	@Override
+	public FormGroupElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected FormGroupElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public FormGroupElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> FormGroupElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected FormGroupElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
 	}
 }

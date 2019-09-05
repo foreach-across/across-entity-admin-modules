@@ -18,25 +18,46 @@ package com.foreach.across.modules.bootstrapui.elements;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Represents a Bootstrap button.
  *
  * @author Arne Vandamme
  */
+@Accessors(chain = true)
+@Getter
+@Setter
 public class ButtonViewElement extends AbstractNodeViewElement implements ConfigurableTextViewElement, FormInputElement
 {
 	public static final String ELEMENT_TYPE = BootstrapUiElements.BUTTON;
 	private String text, title, url = "#";
 	private Style style = Style.Button.DEFAULT;
+
+	@NonNull
 	private Type type = Type.BUTTON;
+
 	private State state;
 	private Size size;
+
+	/**
+	 * Set the icon to be aligned on the left-hand side of the text (if there is any text).
+	 */
 	private ViewElement icon;
 
 	private String controlName, value;
 
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	private boolean htmlIdSpecified;
 
 	public ButtonViewElement() {
@@ -45,21 +66,12 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 	}
 
 	@Override
-	public String getText() {
-		return text;
-	}
-
-	@Override
-	public void setText( String text ) {
-		this.text = text;
-	}
-
-	@Override
-	public void setName( String name ) {
+	public ButtonViewElement setName( String name ) {
 		super.setName( name );
 		if ( controlName == null ) {
 			setControlName( name );
 		}
+		return this;
 	}
 
 	@Override
@@ -68,17 +80,19 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 	}
 
 	@Override
-	public void setControlName( String controlName ) {
+	public ButtonViewElement setControlName( String controlName ) {
 		this.controlName = controlName;
 		if ( !htmlIdSpecified ) {
 			super.setHtmlId( controlName );
 		}
+		return this;
 	}
 
 	@Override
-	public void setHtmlId( String htmlId ) {
+	public ButtonViewElement setHtmlId( String htmlId ) {
 		this.htmlIdSpecified = true;
 		super.setHtmlId( htmlId );
+		return this;
 	}
 
 	@Override
@@ -87,82 +101,110 @@ public class ButtonViewElement extends AbstractNodeViewElement implements Config
 	}
 
 	@Override
-	public void setDisabled( boolean disabled ) {
-		setState( disabled ? State.DISABLED : null );
+	public ButtonViewElement setDisabled( boolean disabled ) {
+		return setState( disabled ? State.DISABLED : null );
 	}
 
-	public String getValue() {
-		return value;
+	@Override
+	public ButtonViewElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
 	}
 
-	public void setValue( String value ) {
-		this.value = value;
+	@Override
+	public ButtonViewElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
 	}
 
-	public String getTitle() {
-		return title;
+	@Override
+	public ButtonViewElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
 	}
 
-	/**
-	 * Set the title attribute for the element.
-	 *
-	 * @param title text
-	 */
-	public void setTitle( String title ) {
-		this.title = title;
+	@Override
+	public ButtonViewElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
 	}
 
-	public ViewElement getIcon() {
-		return icon;
+	@Override
+	public ButtonViewElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
 	}
 
-	/**
-	 * Set the icon to be aligned on the left-hand side of the text (if there is any text).
-	 *
-	 * @param icon ViewElement
-	 */
-	public void setIcon( ViewElement icon ) {
-		this.icon = icon;
+	@Override
+	public ButtonViewElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
 	}
 
-	public Type getType() {
-		return type;
+	@Override
+	public ButtonViewElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
 	}
 
-	public void setType( @NonNull Type type ) {
-		this.type = type;
+	@Override
+	protected ButtonViewElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
 	}
 
-	public Style getStyle() {
-		return style;
+	@Override
+	public ButtonViewElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
 	}
 
-	public void setStyle( Style style ) {
-		this.style = style;
+	@Override
+	public ButtonViewElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
 	}
 
-	public State getState() {
-		return state;
+	@Override
+	public ButtonViewElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
 	}
 
-	public void setState( State state ) {
-		this.state = state;
+	@Override
+	public ButtonViewElement clearChildren() {
+		super.clearChildren();
+		return this;
 	}
 
-	public Size getSize() {
-		return size;
+	@Override
+	public ButtonViewElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
 	}
 
-	public void setSize( Size size ) {
-		this.size = size;
+	@Override
+	public <U extends ViewElement> ButtonViewElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
 	}
 
-	public String getUrl() {
-		return url;
+	@Override
+	protected ButtonViewElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
 	}
 
-	public void setUrl( String url ) {
-		this.url = url;
+	@Override
+	public ButtonViewElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public ButtonViewElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
 	}
 
 	public enum Type

@@ -16,13 +16,19 @@
 
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Represents a {@code <script>} element. A script tag may not be safely nested, using a {@code ScriptViewElement} will ensure that
@@ -39,6 +45,7 @@ import java.util.Optional;
  * @author Arne Vandamme
  * @since 2.1.1
  */
+@Accessors(chain = true)
 public class ScriptViewElement extends AbstractNodeViewElement
 {
 	/**
@@ -64,8 +71,8 @@ public class ScriptViewElement extends AbstractNodeViewElement
 	 *
 	 * @param src url
 	 */
-	public void setSource( String src ) {
-		setAttribute( "src", src );
+	public ScriptViewElement setSource( String src ) {
+		return setAttribute( "src", src );
 	}
 
 	/**
@@ -80,8 +87,8 @@ public class ScriptViewElement extends AbstractNodeViewElement
 	 *
 	 * @param charset encoding
 	 */
-	public void setCharset( String charset ) {
-		setAttribute( "charset", charset );
+	public ScriptViewElement setCharset( String charset ) {
+		return setAttribute( "charset", charset );
 	}
 
 	/**
@@ -96,8 +103,8 @@ public class ScriptViewElement extends AbstractNodeViewElement
 	 *
 	 * @param mediaType to set
 	 */
-	public void setType( String mediaType ) {
-		setAttribute( "type", mediaType );
+	public ScriptViewElement setType( String mediaType ) {
+		return setAttribute( "type", mediaType );
 	}
 
 	/**
@@ -105,15 +112,15 @@ public class ScriptViewElement extends AbstractNodeViewElement
 	 *
 	 * @param mediaType to set
 	 */
-	public void setType( @NonNull MediaType mediaType ) {
-		setAttribute( "type", mediaType.toString() );
+	public ScriptViewElement setType( @NonNull MediaType mediaType ) {
+		return setAttribute( "type", mediaType.toString() );
 	}
 
 	/**
 	 * @return the script media type
 	 */
 	public MediaType getType() {
-		return Optional.ofNullable( getAttribute( "type", String.class ) ).map( MediaType::valueOf ).orElse( null );
+		return Optional.ofNullable( (String) getAttribute( "type", String.class ) ).map( MediaType::valueOf ).orElse( null );
 	}
 
 	/**
@@ -121,13 +128,14 @@ public class ScriptViewElement extends AbstractNodeViewElement
 	 *
 	 * @param async true if async
 	 */
-	public void setAsync( boolean async ) {
+	public ScriptViewElement setAsync( boolean async ) {
 		if ( async ) {
 			setAttribute( "async", "async" );
 		}
 		else {
 			removeAttribute( "async" );
 		}
+		return this;
 	}
 
 	/**
@@ -142,13 +150,14 @@ public class ScriptViewElement extends AbstractNodeViewElement
 	 *
 	 * @param defer true if script is deferred
 	 */
-	public void setDefer( boolean defer ) {
+	public ScriptViewElement setDefer( boolean defer ) {
 		if ( defer ) {
 			setAttribute( "defer", "defer" );
 		}
 		else {
 			removeAttribute( "defer" );
 		}
+		return this;
 	}
 
 	/**
@@ -156,5 +165,107 @@ public class ScriptViewElement extends AbstractNodeViewElement
 	 */
 	public boolean isDefer() {
 		return hasAttribute( "defer" );
+	}
+
+	@Override
+	public ScriptViewElement addCssClass( String... cssClass ) {
+		super.addCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement removeCssClass( String... cssClass ) {
+		super.removeCssClass( cssClass );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement setAttributes( Map<String, Object> attributes ) {
+		super.setAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement setAttribute( String attributeName, Object attributeValue ) {
+		super.setAttribute( attributeName, attributeValue );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement addAttributes( Map<String, Object> attributes ) {
+		super.addAttributes( attributes );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement removeAttribute( String attributeName ) {
+		super.removeAttribute( attributeName );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected ScriptViewElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> ScriptViewElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected ScriptViewElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement setHtmlId( String htmlId ) {
+		super.setHtmlId( htmlId );
+		return this;
 	}
 }

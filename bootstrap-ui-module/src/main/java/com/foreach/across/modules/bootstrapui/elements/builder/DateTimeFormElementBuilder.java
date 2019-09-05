@@ -17,7 +17,6 @@ package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElement;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
-import com.foreach.across.modules.bootstrapui.elements.GlyphIcon;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -27,6 +26,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
@@ -112,11 +115,12 @@ public class DateTimeFormElementBuilder extends InputGroupFormElementBuilderSupp
 			configuration.setFormat( format );
 		}
 
+		// todo use static icon set
 		if ( format == DateTimeFormElementConfiguration.Format.TIME ) {
-			addonAfter( new GlyphIcon( GlyphIcon.TIME ) );
+			append( html.div( css.inputGroup.text, children( html.i( css.fa.solid( "clock" ) ) ) ) );
 		}
 		else {
-			addonAfter( new GlyphIcon( GlyphIcon.CALENDAR ) );
+			append( html.div( css.inputGroup.text, children( html.i( css.fa.solid( "calendar" ) ) ) ) );
 		}
 		return this;
 	}

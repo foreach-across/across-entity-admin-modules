@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,20 +78,20 @@ public class BootstrapUiBuilders
 		return FACTORY.hidden();
 	}
 
-	public static NodeViewElementBuilder div() {
-		return FACTORY.div();
+	public static NodeViewElementBuilder div( ViewElement.WitherSetter... setters ) {
+		return FACTORY.div().with( setters );
 	}
 
-	public static NodeViewElementBuilder span() {
-		return FACTORY.span();
+	public static NodeViewElementBuilder span( ViewElement.WitherSetter... setters ) {
+		return FACTORY.span().with( setters );
 	}
 
 	public static NodeViewElementBuilder paragraph() {
 		return FACTORY.paragraph();
 	}
 
-	public static LinkViewElementBuilder link() {
-		return FACTORY.link();
+	public static LinkViewElementBuilder link( ViewElement.WitherSetter... setters ) {
+		return FACTORY.link().with( setters );
 	}
 
 	public static FormViewElementBuilder form() {
@@ -178,10 +178,12 @@ public class BootstrapUiBuilders
 		return FACTORY.row();
 	}
 
+	@Deprecated
 	public static NodeViewElementBuilder helpBlock( String text ) {
 		return FACTORY.helpBlock( text );
 	}
 
+	@Deprecated
 	public static NodeViewElementBuilder helpBlock() {
 		return FACTORY.helpBlock();
 	}
@@ -224,10 +226,6 @@ public class BootstrapUiBuilders
 
 	public static AlertViewElementBuilder alert() {
 		return FACTORY.alert();
-	}
-
-	public static GlyphIcon glyphIcon( String icon ) {
-		return FACTORY.glyphIcon( icon );
 	}
 
 	public static FaIcon faIcon( String icon ) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public abstract class BootstrapElementUtils
 	/**
 	 * Prefix all controls in a container. This is utility method that will scan
 	 * for all unique {@link FormInputElement} controls and ensure they are prefixed only once.
-	 * When it encounters a {@link FormControlElement.Proxy} it will also exclude the
+	 * When it encounters a {@code FormControlElement.Proxy} it will also exclude the
 	 * target {@link ViewElement} from control name updating.
 	 * <p/>
 	 * This method will insert a . between the prefix and the original control name, unless

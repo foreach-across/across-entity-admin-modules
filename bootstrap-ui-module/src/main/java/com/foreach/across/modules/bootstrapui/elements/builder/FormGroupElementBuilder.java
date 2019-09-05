@@ -22,18 +22,11 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
+
 public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<FormGroupElement, FormGroupElementBuilder>
 {
-	/**
-	 * CSS class added to default description block.
-	 */
-	public static final String CSS_FORM_TEXT_DESCRIPTION = "form-text-description";
-
-	/**
-	 * CSS class added to default help block.
-	 */
-	public static final String CSS_FORM_TEXT_HELP = "form-text-help";
-
 	private ElementOrBuilder label, control, helpBlock, descriptionBlock, tooltip;
 	private FormLayout formLayout;
 	private Boolean required;
@@ -131,7 +124,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder helpBlock( String text ) {
-		helpBlock( BootstrapUiBuilders.helpBlock( text ).css( CSS_FORM_TEXT_HELP ) );
+		helpBlock( html.small( css.form.text, css.text.muted ).addChild( html.text( text ) ) );
 		return this;
 	}
 
@@ -166,7 +159,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder descriptionBlock( String text ) {
-		descriptionBlock( BootstrapUiBuilders.helpBlock( text ).css( CSS_FORM_TEXT_DESCRIPTION ) );
+		descriptionBlock( html.p( css.form.text, css.text.muted ).addChild( html.text( text ) ) );
 		return this;
 	}
 
