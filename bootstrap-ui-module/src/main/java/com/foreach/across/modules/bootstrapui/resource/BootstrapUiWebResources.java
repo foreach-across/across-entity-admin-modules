@@ -67,11 +67,11 @@ public class BootstrapUiWebResources implements WebResourcePackage
 						.toBucket( WebResource.JAVASCRIPT_PAGE_END ),
 
 				// BootstrapUiModule main javascript
-				add( javascript( "@static:/" + BootstrapUiModule.NAME + "/js/bootstrapui.js" ) )
+				add( javascript( "@webjars:/bootstrap-ui/0.0.1/bootstrapui.umd.development.js" ) )
 						.withKey( BootstrapUiModule.NAME )
 						.toBucket( WebResource.JAVASCRIPT_PAGE_END ),
 
-				add( WebResource.css( "@static:/" + BootstrapUiModule.NAME + "/css/bootstrapui.css" ) )
+				add( WebResource.css( "@webjars:/bootstrap-ui/0.0.1/bootstrapui.umd.development.css" ) )
 						.withKey( NAME + "ui" )
 						.toBucket( CSS )
 		);

@@ -115,6 +115,11 @@
 			<artifactId>font-awesome</artifactId>
 			<version>${webjars.font-awesome}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.foreach.across.modules</groupId>
+			<artifactId>bootstrap-ui</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 
 </project>
