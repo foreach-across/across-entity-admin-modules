@@ -66,6 +66,7 @@
 	<modules>
 		<module>bootstrap-ui-module</module>
 		<module>bootstrap-ui-module-test</module>
+		<module>bootstrap-ui-module-frontend</module>
 	</modules>
 
 	<dependencyManagement>

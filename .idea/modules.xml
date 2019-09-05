@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/bootstrap-ui-module-frontend/bootstrap-ui.iml" filepath="$PROJECT_DIR$/bootstrap-ui-module-frontend/bootstrap-ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/bootstrap-ui-module/bootstrap-ui-module.iml" filepath="$PROJECT_DIR$/bootstrap-ui-module/bootstrap-ui-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bootstrap-ui-module-frontend/bootstrap-ui-module-frontend.iml" filepath="$PROJECT_DIR$/bootstrap-ui-module-frontend/bootstrap-ui-module-frontend.iml" />
       <module fileurl="file://$PROJECT_DIR$/bootstrap-ui-module-project.iml" filepath="$PROJECT_DIR$/bootstrap-ui-module-project.iml" />
       <module fileurl="file://$PROJECT_DIR$/bootstrap-ui-module-test/bootstrap-ui-module-test.iml" filepath="$PROJECT_DIR$/bootstrap-ui-module-test/bootstrap-ui-module-test.iml" />
     </modules>

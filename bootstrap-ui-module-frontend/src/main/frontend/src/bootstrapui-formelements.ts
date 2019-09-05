@@ -17,12 +17,12 @@
 import initializeDateTimePickerControls from './controls/datepicker/date-picker-initializer';
 import initializeNumericControls from './controls/numeric/numeric-initializer';
 import initializeSelectControls from './controls/select/select-initializer';
-import initializeAutoSuggestControls, {
-  registerAutosuggestControl,
-} from './controls/autosuggest/autosuggest-initializer';
+import initializeAutoSuggestControls, {registerAutosuggestControl,} from './controls/autosuggest/autosuggest-initializer';
 import initializeAutoSizeControls from './controls/support/initializers/autosize-initializer';
 import disableLineBreakSupport from './controls/support/initializers/line-breaks-initializer';
 import initializeTooltips from './controls/support/initializers/tooltip-initializer';
+
+declare const BootstrapUiModule: any;
 
 (function() {
   registerAutosuggestControl();

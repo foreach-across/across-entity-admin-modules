@@ -19,15 +19,15 @@ import jQuery from 'jquery';
 
 import './bootstrapui.scss';
 
-import { ControlAdapterFactory } from './controls/support/control-adapter-factory';
-import { createAutosuggestControlAdapter } from './controls/autosuggest/autosuggest-control-adapter';
-import { createDatePickerControlAdapter } from './controls/datepicker/date-picker-control-adapter';
-import { createBasicControlAdapter } from './controls/input/basic-control-adapter';
-import { createNumericControlAdapter } from './controls/numeric/numeric-control-adapter';
-import { createBootstrapSelectControlAdapter } from './controls/select/bootstrap-select-control-adapter';
-import { createSelectControlAdapter } from './controls/select/select-control-adapter';
-import { createCheckboxControlAdapter } from './controls/checkbox/checkbox-control-adapter';
-import { createContainerControlAdapter } from './controls/container/container-control-adapter';
+import {ControlAdapterFactory} from './controls/support/control-adapter-factory';
+import {createAutosuggestControlAdapter} from './controls/autosuggest/autosuggest-control-adapter';
+import {createDatePickerControlAdapter} from './controls/datepicker/date-picker-control-adapter';
+import {createBasicControlAdapter} from './controls/input/basic-control-adapter';
+import {createNumericControlAdapter} from './controls/numeric/numeric-control-adapter';
+import {createBootstrapSelectControlAdapter} from './controls/select/bootstrap-select-control-adapter';
+import {createSelectControlAdapter} from './controls/select/select-control-adapter';
+import {createCheckboxControlAdapter} from './controls/checkbox/checkbox-control-adapter';
+import {createContainerControlAdapter} from './controls/container/container-control-adapter';
 
 const BootstrapUiModule = (function($) {
   var bootstrapUiModule: BootstrapUiModuleObject = {

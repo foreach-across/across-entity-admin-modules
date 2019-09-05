@@ -23,7 +23,7 @@ import BaseControlAdapter from '../support/base-control-adapter';
 import BootstrapUiControlValueHolder from '../support/bootstrap-ui-control-value-holder';
 import BootstrapUiAttributes from '../support/bootstrap-ui-attributes';
 import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
-import { ControlAdapterFactory } from '../support/control-adapter-factory';
+import {ControlAdapterFactory} from '../support/control-adapter-factory';
 
 /**
  * {@link BootstrapUiControlAdapter} for elements whose state depends on the state of its children.

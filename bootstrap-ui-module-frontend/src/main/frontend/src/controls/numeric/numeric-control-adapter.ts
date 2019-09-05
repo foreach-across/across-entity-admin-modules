@@ -20,9 +20,7 @@
 import $ from 'jquery';
 
 import BaseControlAdapter from '../support/base-control-adapter';
-import BootstrapUiControlValueHolder, {
-  createControlValueHolder,
-} from '../support/bootstrap-ui-control-value-holder';
+import BootstrapUiControlValueHolder, {createControlValueHolder,} from '../support/bootstrap-ui-control-value-holder';
 import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 /**

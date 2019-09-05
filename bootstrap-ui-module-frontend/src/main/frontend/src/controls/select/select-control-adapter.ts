@@ -13,47 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * @author Steven Gentens
- * @since 2.2.0
- */
 
 import $ from 'jquery';
 
 import BaseControlAdapter from '../support/base-control-adapter';
-import BootstrapUiControlValueHolder, {
-  createControlValueHolder,
-} from '../support/bootstrap-ui-control-value-holder';
+import BootstrapUiControlValueHolder, {createControlValueHolder,} from '../support/bootstrap-ui-control-value-holder';
 import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 /**
- * {@link BootstrapUiControlAdapter} for basic html elements.
- * This adapter sets and retrieves the value using jquery's val method.
+ * {@link BootstrapUiControlAdapter} for select elements.
  * The target of the control adapter is the node on which it is registered.
- *
- * @see initializeDateTimePickers
  */
-export default class BasicControlAdapter extends BaseControlAdapter {
+export default class SelectControlAdapter extends BaseControlAdapter {
   private readonly initialValue: any;
 
   constructor(target: any) {
     super(target);
     this.initialValue = $(this.getTarget()).val();
+    this.initializeEventTriggers();
+  }
 
-    $(target).on('change', _ => this.triggerChange());
+  initializeEventTriggers(): void {
+    $(this.getTarget()).on('change', _ => this.triggerChange());
 
     // TODO configure 'bootstrapui.submit' event
     // prevent opening the element on enter, but see it as 'submitting' the value instead.
-    // $( target ).keypress( this, ( event ) => {
+    // $( this.getTarget() ).keypress( this, ( event ) => {
     //     if ( event.key === 'Enter' ) {
+    //         event.preventDefault();
     //         this.triggerSubmit();
     //     }
     // } );
   }
 
   getValue(): BootstrapUiControlValueHolder[] {
-    const value: any = $(this.getTarget()).val();
-    return [createControlValueHolder(value, value, this.getTarget())];
+    const selected: BootstrapUiControlValueHolder[] = [];
+    const selectedOptions: any = $(this.getTarget()).find('option:checked');
+    selectedOptions.each(function() {
+      //@ts-ignore
+      const element = $(this);
+      selected.push(
+        //@ts-ignore
+        createControlValueHolder(element.html(), element.val(), this)
+      );
+    });
+    return selected;
   }
 
   reset(): void {
@@ -66,12 +70,12 @@ export default class BasicControlAdapter extends BaseControlAdapter {
 }
 
 /**
- * Initializes a {@link BasicControlAdapter} for a given node.
+ * Initializes a {@link SelectControlAdapter} for a given node.
  *
  * @param node to initialize
  */
-export function createBasicControlAdapter(
+export function createSelectControlAdapter(
   node: any
 ): BootstrapUiControlAdapter {
-  return new BasicControlAdapter(node);
+  return new SelectControlAdapter(node);
 }

@@ -9,6 +9,8 @@
   "scripts": {
     "start": "foreach-tsdx watch -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
     "build": "foreach-tsdx build -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
+    "build-jar": "foreach-tsdx build -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery && node build-jar",
+    "build-test": "tsc -p tsconfig.json && rollup -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery && node build-jar",
     "test": "foreach-tsdx test --env=jsdom",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
