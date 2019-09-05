@@ -21,8 +21,7 @@ import com.foreach.across.modules.web.resource.WebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import lombok.RequiredArgsConstructor;
 
-import static com.foreach.across.modules.web.resource.WebResource.css;
-import static com.foreach.across.modules.web.resource.WebResource.javascript;
+import static com.foreach.across.modules.web.resource.WebResource.*;
 import static com.foreach.across.modules.web.resource.WebResourceRule.add;
 import static com.foreach.across.modules.web.resource.WebResourceRule.addPackage;
 
@@ -36,8 +35,12 @@ import static com.foreach.across.modules.web.resource.WebResourceRule.addPackage
 public class BootstrapUiWebResources implements WebResourcePackage
 {
 	public static final String NAME = "bootstrap";
+	public static final String POPPER = "popper";
+	public static final String FONT_AWESOME = "font-awesome";
 
-	private static final String BOOTSTRAP_VERSION = "3.3.7";
+	private static final String BOOTSTRAP_VERSION = "4.3.1";
+	private static final String POPPER_VERSION = "1.14.3";
+	private static final String FONT_AWESOME_VERSION = "5.10.1";
 
 	private final boolean minified;
 
@@ -50,14 +53,27 @@ public class BootstrapUiWebResources implements WebResourcePackage
 				add( css( "@webjars:/bootstrap/" + BOOTSTRAP_VERSION + "/css/bootstrap" + ( minified ? ".min" : "" ) + ".css" ) )
 						.withKey( NAME )
 						.toBucket( WebResource.CSS ),
-				add( javascript( "@webjars:/bootstrap/" + BOOTSTRAP_VERSION + "/js/bootstrap" + ( minified ? ".min" : "" ) + ".js" ) )
+
+				// Font Awesome CSS
+				add( css( "@webjars:/font-awesome/" + FONT_AWESOME_VERSION + "/css/all" + ( minified ? ".min" : "" ) + ".css" ) )
+						.withKey( FONT_AWESOME )
+						.toBucket( WebResource.CSS ),
+
+				//add( javascript( "@webjars:/popper.js/" + POPPER_VERSION + "/umd/popper" + ( minified ? ".min" : "" ) + ".js" ) )
+				//		.withKey( NAME )
+				//			.toBucket( WebResource.JAVASCRIPT_PAGE_END ),
+				add( javascript( "@webjars:/bootstrap/" + BOOTSTRAP_VERSION + "/js/bootstrap.bundle" + ( minified ? ".min" : "" ) + ".js" ) )
 						.withKey( NAME )
 						.toBucket( WebResource.JAVASCRIPT_PAGE_END ),
 
 				// BootstrapUiModule main javascript
 				add( javascript( "@static:/" + BootstrapUiModule.NAME + "/js/bootstrapui.js" ) )
 						.withKey( BootstrapUiModule.NAME )
-						.toBucket( WebResource.JAVASCRIPT_PAGE_END )
+						.toBucket( WebResource.JAVASCRIPT_PAGE_END ),
+
+				add( WebResource.css( "@static:/" + BootstrapUiModule.NAME + "/css/bootstrapui.css" ) )
+						.withKey( NAME + "ui" )
+						.toBucket( CSS )
 		);
 	}
 }

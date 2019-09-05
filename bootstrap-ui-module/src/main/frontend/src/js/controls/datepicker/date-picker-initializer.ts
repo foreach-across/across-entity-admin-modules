@@ -20,17 +20,34 @@
  * @since 2.2.0
  */
 function initializeDateTimePickers( node: any ): void {
+    $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+        icons: {
+            time: 'far fa-clock',
+            date: 'far fa-calendar',
+            up: 'fas fa-arrow-up',
+            down: 'fas fa-arrow-down',
+            previous: 'fas fa-chevron-left',
+            next: 'fas fa-chevron-right',
+            today: 'far fa-calendar-check',
+            clear: 'fas fa-trash',
+            close: 'fas fa-times',
+        },
+    });
+
     $( '[data-bootstrapui-datetimepicker]', node ).each( function () {
-        const configuration = $.extend( {}, $( this ).data( 'bootstrapui-datetimepicker' ) );
+        const configuration = $.extend( true, {}, $( this ).data( 'bootstrapui-datetimepicker' ) );
         const exportFormat = configuration.exportFormat;
 
         delete configuration.exportFormat;
 
-        $( this ).datetimepicker( configuration )
-            .on( 'dp.change', function ( e: any ) {
-                const exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
-                $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
-            } );
+        $( this ).datetimepicker( configuration );
+        $( this ).on( 'dp.change', ( e: any ) => {
+            const exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
+            $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
+        } );
+        $( this ).find( 'input[type="text"]' ).on( 'blur focusout', () => {
+            $( this ).data( 'datetimepicker' ).hide();
+        } );
     } );
 }
 

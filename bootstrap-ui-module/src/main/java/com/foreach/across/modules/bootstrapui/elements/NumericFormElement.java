@@ -20,10 +20,8 @@ import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Form input control that represents a formatted numeric input field, for example currency or percentage.
@@ -58,14 +56,16 @@ public class NumericFormElement extends FormControlElementSupport implements For
 		return textbox.getAttribute( ATTRIBUTE_DATA_NUMERIC, NumericFormElementConfiguration.class );
 	}
 
-	public void setConfiguration( @NonNull NumericFormElementConfiguration configuration ) {
+	public NumericFormElement setConfiguration( @NonNull NumericFormElementConfiguration configuration ) {
 		textbox.setAttribute( ATTRIBUTE_DATA_NUMERIC, configuration );
 		setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "numeric" );
+		return this;
 	}
 
 	@Override
-	public void setPlaceholder( String placeholder ) {
+	public NumericFormElement setPlaceholder( String placeholder ) {
 		textbox.setPlaceholder( placeholder );
+		return this;
 	}
 
 	@Override
@@ -79,8 +79,9 @@ public class NumericFormElement extends FormControlElementSupport implements For
 	}
 
 	@Override
-	public void setReadonly( boolean readonly ) {
+	public NumericFormElement setReadonly( boolean readonly ) {
 		textbox.setReadonly( readonly );
+		return this;
 	}
 
 	@Override
@@ -89,8 +90,9 @@ public class NumericFormElement extends FormControlElementSupport implements For
 	}
 
 	@Override
-	public void setRequired( boolean required ) {
+	public NumericFormElement setRequired( boolean required ) {
 		textbox.setRequired( required );
+		return this;
 	}
 
 	@Override
@@ -99,9 +101,10 @@ public class NumericFormElement extends FormControlElementSupport implements For
 	}
 
 	@Override
-	public void setControlName( String controlName ) {
+	public NumericFormElement setControlName( String controlName ) {
 		hidden.setControlName( controlName );
 		textbox.setControlName( controlName );
+		return this;
 	}
 
 	@Override
@@ -110,8 +113,9 @@ public class NumericFormElement extends FormControlElementSupport implements For
 	}
 
 	@Override
-	public void setDisabled( boolean disabled ) {
+	public NumericFormElement setDisabled( boolean disabled ) {
 		textbox.setDisabled( disabled );
+		return this;
 	}
 
 	@Override
@@ -120,8 +124,9 @@ public class NumericFormElement extends FormControlElementSupport implements For
 	}
 
 	@Override
-	public void addCssClass( String... cssClass ) {
+	public NumericFormElement addCssClass( String... cssClass ) {
 		textbox.addCssClass( cssClass );
+		return this;
 	}
 
 	@Override
@@ -130,14 +135,16 @@ public class NumericFormElement extends FormControlElementSupport implements For
 	}
 
 	@Override
-	public void removeCssClass( String... cssClass ) {
+	public NumericFormElement removeCssClass( String... cssClass ) {
 		textbox.removeCssClass( cssClass );
+		return this;
 	}
 
 	@Override
-	public void setHtmlId( String id ) {
+	public NumericFormElement setHtmlId( String id ) {
 		htmlIdSpecified = StringUtils.isNotEmpty( id );
 		textbox.setHtmlId( id );
+		return this;
 	}
 
 	@Override
@@ -151,23 +158,27 @@ public class NumericFormElement extends FormControlElementSupport implements For
 	}
 
 	@Override
-	public void setAttributes( Map<String, Object> attributes ) {
+	public NumericFormElement setAttributes( Map<String, Object> attributes ) {
 		textbox.setAttributes( attributes );
+		return this;
 	}
 
 	@Override
-	public void setAttribute( String attributeName, Object attributeValue ) {
+	public NumericFormElement setAttribute( String attributeName, Object attributeValue ) {
 		textbox.setAttribute( attributeName, attributeValue );
+		return this;
 	}
 
 	@Override
-	public void addAttributes( Map<String, Object> attributes ) {
+	public NumericFormElement addAttributes( Map<String, Object> attributes ) {
 		textbox.addAttributes( attributes );
+		return this;
 	}
 
 	@Override
-	public void removeAttribute( String attributeName ) {
+	public NumericFormElement removeAttribute( String attributeName ) {
 		textbox.removeAttribute( attributeName );
+		return this;
 	}
 
 	@Override
@@ -176,7 +187,7 @@ public class NumericFormElement extends FormControlElementSupport implements For
 	}
 
 	@Override
-	public <V> V getAttribute( String attributeName, Class<V> expectedType ) {
+	public <V, U extends V> U getAttribute( String attributeName, Class<V> expectedType ) {
 		return textbox.getAttribute( attributeName, expectedType );
 	}
 
@@ -189,10 +200,11 @@ public class NumericFormElement extends FormControlElementSupport implements For
 		return value;
 	}
 
-	public void setValue( Number value ) {
+	public NumericFormElement setValue( Number value ) {
 		this.value = value;
 
 		textbox.setText( value != null ? Objects.toString( value ) : null );
+		return this;
 	}
 
 	@Override
@@ -222,5 +234,65 @@ public class NumericFormElement extends FormControlElementSupport implements For
 
 	private boolean hasConfiguration() {
 		return getConfiguration() != null;
+	}
+
+	@Override
+	public NumericFormElement setName( String name ) {
+		super.setName( name );
+		return this;
+	}
+
+	@Override
+	public NumericFormElement setCustomTemplate( String customTemplate ) {
+		super.setCustomTemplate( customTemplate );
+		return this;
+	}
+
+	@Override
+	protected NumericFormElement setElementType( String elementType ) {
+		super.setElementType( elementType );
+		return this;
+	}
+
+	@Override
+	public NumericFormElement addChild( ViewElement element ) {
+		super.addChild( element );
+		return this;
+	}
+
+	@Override
+	public NumericFormElement addChildren( Collection<? extends ViewElement> elements ) {
+		super.addChildren( elements );
+		return this;
+	}
+
+	@Override
+	public NumericFormElement addFirstChild( ViewElement element ) {
+		super.addFirstChild( element );
+		return this;
+	}
+
+	@Override
+	public NumericFormElement clearChildren() {
+		super.clearChildren();
+		return this;
+	}
+
+	@Override
+	public NumericFormElement apply( Consumer<ContainerViewElement> consumer ) {
+		super.apply( consumer );
+		return this;
+	}
+
+	@Override
+	public <U extends ViewElement> NumericFormElement applyUnsafe( Consumer<U> consumer ) {
+		super.applyUnsafe( consumer );
+		return this;
+	}
+
+	@Override
+	protected NumericFormElement setTagName( String tagName ) {
+		super.setTagName( tagName );
+		return this;
 	}
 }

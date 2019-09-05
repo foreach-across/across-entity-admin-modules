@@ -21,7 +21,7 @@ import SelectControlAdapter from './select-control-adapter';
 import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
 
 /**
- * {@link BootstrapUiControlAdapter} for <a href="https://silviomoreto.github.io/bootstrap-select/">bootstrap-select</a> elements.
+ * {@link BootstrapUiControlAdapter} for <a href="https://developer.snapappointments.com/bootstrap-select/">bootstrap-select</a> elements.
  * The target of the control adapter is the node on which it is registered.
  */
 export default class BootstrapSelectControlAdapter extends SelectControlAdapter

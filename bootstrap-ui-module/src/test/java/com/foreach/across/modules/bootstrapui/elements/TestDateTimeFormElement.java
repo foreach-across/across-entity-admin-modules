@@ -28,6 +28,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -36,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 {
 	private static final String DATA_ATTRIBUTE =
-			"data-bootstrapui-datetimepicker='{\"datepickerInput\":\"input[type=text]\"," +
+			"data-target-input=\"nearest\" data-bootstrapui-datetimepicker='{\"buttons\":{}," +
 					"\"format\":\"L LT\",\"extraFormats\":[\"YYYY-MM-DD HH:mm\",\"L\",\"YYYY-MM-DD\"]," +
 					"\"locale\":\"en-GB\",\"exportFormat\":\"YYYY-MM-DD HH:mm\"}' data-bootstrapui-adapter-type='datetime'";
 
@@ -52,10 +54,10 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				datetime,
 				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
-						"<input class='form-control' type='text' />" +
-						"<span class='input-group-addon'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
-						"</span>" +
+						"<input data-target=\"\" type=\"text\" class=\"datetimepicker-input form-control\"></input>" +
+						"<div class=\"input-group-append\">" +
+						"<div data-target=\"\" data-toggle=\"datetimepicker\" class=\"input-group-text\"><i class=\"fas fa-calendar\"></i></div>\n" +
+						"</div>" +
 						"<input type='hidden' />" +
 						"</div>"
 		);
@@ -71,12 +73,12 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				datetime,
-				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
-						"<input class='form-control' type='text' id='birthday' name='_birthday' required='required'" +
+				"<div id=\"_dp-controller--birthday\" class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
+						"<input data-target=\"#_dp-controller--birthday\" name=\"_birthday\" id=\"birthday\" type=\"text\" class=\"datetimepicker-input form-control\" required='required'" +
 						" value='2015-08-07 10:31' />" +
-						"<span class='input-group-addon'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
-						"</span>" +
+						"<div class=\"input-group-append\">" +
+						"<div data-target=\"#_dp-controller--birthday\" data-toggle=\"datetimepicker\" class=\"input-group-text\"><i class=\"fas fa-calendar\"></i></div>" +
+						"</div>" +
 						"<input type='hidden' name='birthday' value='2015-08-07 10:31' />" +
 						"</div>"
 		);
@@ -84,15 +86,13 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 
 	@Test
 	public void customIcon() {
-		datetime.setAddonAfter( new GlyphIcon( GlyphIcon.TIME ) );
+		datetime.setAppend( html.i( css.fa.brands( "clock" ) ) );
 
 		renderAndExpect(
 				datetime,
 				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
-						"<input class='form-control' type='text' />" +
-						"<span class='input-group-addon'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-time'></span>" +
-						"</span>" +
+						"<input data-target=\"\" class='datetimepicker-input form-control' type='text' />" +
+						"<div class=\"input-group-append\"><i data-target=\"\" data-toggle=\"datetimepicker\" class=\"fab fa-clock\"></i></div>" +
 						"<input type='hidden' />" +
 						"</div>"
 		);
@@ -106,11 +106,10 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				datetime,
 				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
-						"<input class='form-control' type='text' " +
-						" value='2015-08-07 00:00' />" +
-						"<span class='input-group-addon'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
-						"</span>" +
+						"<input data-target=\"\" type=\"text\" class=\"datetimepicker-input form-control\" value=\"2015-08-07 00:00\"></input>" +
+						"<div class=\"input-group-append\">" +
+						"<div data-target=\"\" data-toggle=\"datetimepicker\" class=\"input-group-text\"><i class=\"fas fa-calendar\"></i></div>" +
+						"</div>" +
 						"<input type='hidden' value='2015-08-07 00:00' />" +
 						"</div>"
 		);
@@ -125,11 +124,11 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				datetime,
 				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
-						"<input class='form-control' type='text'" +
+						"<input data-target=\"\" type=\"text\" class=\"datetimepicker-input form-control\"" +
 						" value='" + today + " 10:31' />" +
-						"<span class='input-group-addon'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
-						"</span>" +
+						"<div class=\"input-group-append\">" +
+						"<div data-target=\"\" data-toggle=\"datetimepicker\" class=\"input-group-text\"><i class=\"fas fa-calendar\"></i></div>" +
+						"</div>" +
 						"<input type='hidden' value='" + today + " 10:31' />" +
 						"</div>"
 		);
@@ -144,11 +143,10 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 		renderAndExpect(
 				datetime,
 				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
-						"<input class='form-control' type='text' " +
-						" value='2015-08-07 10:31' />" +
-						"<span class='input-group-addon'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
-						"</span>" +
+						"<input data-target=\"\" type=\"text\" class=\"datetimepicker-input form-control\" value=\"2015-08-07 10:31\"></input>" +
+						"<div class=\"input-group-append\">" +
+						"<div data-target=\"\" data-toggle=\"datetimepicker\" class=\"input-group-text\"><i class=\"fas fa-calendar\"></i></div>" +
+						"</div>" +
 						"<input type='hidden' value='2015-08-07 10:31' />" +
 						"</div>"
 		);
@@ -161,11 +159,11 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 		datetime.setLocalDateTime( localDateTime );
 
 		String expectedContent = "<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
-				"<input class='form-control' type='text' " +
+				"<input data-target=\"\" class='datetimepicker-input form-control' type='text' " +
 				" value='2015-08-07 10:31' />" +
-				"<span class='input-group-addon'>" +
-				"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
-				"</span>" +
+				"<div class='input-group-append'>" +
+				"<div data-target=\"\" data-toggle=\"datetimepicker\" class=\"input-group-text\"><i class=\"fas fa-calendar\"></i></div>" +
+				"</div>" +
 				"<input type='hidden' value='2015-08-07 10:31' />" +
 				"</div>";
 		renderAndExpect( datetime, expectedContent );
@@ -194,11 +192,11 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 		control.setControlName( "two" );
 		renderAndExpect(
 				control,
-				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
-						"<input class='form-control' type='text' name='_two' id='two' />" +
-						"<span class='input-group-addon'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
-						"</span>" +
+				"<div id=\"_dp-controller--one\" class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
+						" <input data-target=\"#_dp-controller--one\" name=\"_two\" id=\"two\" type=\"text\" class=\"datetimepicker-input form-control\"></input>" +
+						"<div class=\"input-group-append\">" +
+						"<div data-target=\"#_dp-controller--one\" data-toggle=\"datetimepicker\" class=\"input-group-text\"><i class=\"fas fa-calendar\"></i></div>" +
+						"</div>" +
 						"<input name='two' type='hidden' />" +
 						"</div>"
 		);
@@ -218,11 +216,11 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect(
 				control,
-				"<div class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
-						"<input class='form-control' type='text' name='_prefix.one' id='prefix.one' />" +
-						"<span class='input-group-addon'>" +
-						"<span aria-hidden='true' class='glyphicon glyphicon-calendar'></span>" +
-						"</span>" +
+				"<div id=\"_dp-controller--one\" class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
+						"<input data-target=\"#_dp-controller--one\" class='datetimepicker-input form-control' type='text' name='_prefix.one' id='prefix.one' />" +
+						"<div class=\"input-group-append\">" +
+						"<div data-target=\"#_dp-controller--one\" data-toggle=\"datetimepicker\" class=\"input-group-text\"><i class=\"fas fa-calendar\"></i></div>" +
+						"</div>" +
 						"<input name='prefix.one' type='hidden' />" +
 						"</div>"
 		);

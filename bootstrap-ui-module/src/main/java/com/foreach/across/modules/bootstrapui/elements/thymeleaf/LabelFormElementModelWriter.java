@@ -33,7 +33,6 @@ public class LabelFormElementModelWriter extends AbstractHtmlViewElementModelWri
 	protected void writeOpenElement( LabelFormElement viewElement, ThymeleafModelBuilder writer ) {
 		super.writeOpenElement( viewElement, writer );
 
-		writer.addAttributeValue( "class", "control-label" );
 		targetId( viewElement, writer ).ifPresent( id -> writer.addAttribute( "for", id ) );
 
 		writer.addHtml( viewElement.getText() );

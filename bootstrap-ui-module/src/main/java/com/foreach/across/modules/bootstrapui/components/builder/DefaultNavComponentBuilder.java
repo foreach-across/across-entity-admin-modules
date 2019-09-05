@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors
+ * Copyright 2019 the original author or authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,18 @@
 package com.foreach.across.modules.bootstrapui.components.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule.combine;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Builds a Bootstrap nav list structure for a {@link Menu} instance.
@@ -34,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavComponentBuilder>
 {
-	private String navStyle = "";
+	private BootstrapStyleRule navStyle = css.nav;
 	private boolean replaceGroupBySelectedItem = false;
 
 	/**
@@ -43,7 +49,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder simple() {
-		navStyle = "";
+		navStyle = css.nav;
 		return this;
 	}
 
@@ -53,7 +59,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder tabs() {
-		navStyle = "nav-tabs";
+		navStyle = css.nav.tabs;
 		return this;
 	}
 
@@ -63,7 +69,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder pills() {
-		navStyle = "nav-pills";
+		navStyle = css.nav.pills;
 		return this;
 	}
 
@@ -73,7 +79,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder stacked() {
-		navStyle = "nav-pills nav-stacked";
+		navStyle = combine( css.nav.pills, css.flex.column );
 		return this;
 	}
 
@@ -83,7 +89,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder navbar() {
-		navStyle = "navbar-nav";
+		navStyle = css.navbar.nav;
 		return this;
 	}
 
@@ -111,8 +117,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	}
 
 	protected NodeViewElement buildMenu( Menu menuToRender, ViewElementBuilderContext builderContext ) {
-		NodeViewElement list = apply( new NodeViewElement( "ul" ), builderContext );
-		list.addCssClass( "nav", navStyle );
+		NodeViewElement list = apply( html.ul( navStyle ), builderContext );
 
 		if ( menuToRender != null ) {
 			includedItems( menuToRender ).forEach( item -> addMenuItemToList( list, item, builderContext ) );
@@ -130,11 +135,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 					: Boolean.TRUE.equals( itemToRender.getAttribute( ATTR_ICON_ONLY ) );
 
 			if ( iconOnly || !addViewElementIfAttributeExists( item, ATTR_ITEM_VIEW_ELEMENT, list, builderContext ) ) {
-				NodeViewElement li = new NodeViewElement( "li" );
-				addHtmlAttributes( li, item.getAttributes() );
-				if ( itemToRender.isSelected() ) {
-					li.addCssClass( "active" );
-				}
+				NodeViewElement li = html.li( css.nav.item, htmlAttributesOf( item ) );
 
 				if ( itemToRender.isGroup() ) {
 					buildDropDownItem( li, itemToRender, iconOnly, builderContext );
@@ -143,8 +144,9 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 					addItemLink( li, itemToRender, true, iconOnly, builderContext );
 				}
 
-				list.addChild( li );
+				li.set( witherAttribute( itemToRender, item ) );
 
+				list.addChild( li );
 			}
 		}
 	}
@@ -153,13 +155,23 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	                                Menu item,
 	                                boolean iconOnly,
 	                                ViewElementBuilderContext builderContext ) {
-		li.addCssClass( "dropdown" );
+		li.set( css.dropdown, witherAttribute( item, null ) );
 
 		if ( !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, li, builderContext ) ) {
 			LinkViewElement link = new LinkViewElement();
 			link.setUrl( "#" );
-			link.addCssClass( "dropdown-toggle" );
-			link.setAttribute( "data-toggle", "dropdown" );
+			link.set(
+					css.nav.link,
+					css.dropdown.toggle,
+					attribute.role( "button" ),
+					attribute.data.toggle.dropdown,
+					attribute.aria.hasPopup( true ),
+					attribute.aria.expanded( false )
+			);
+
+			if ( item.isSelected() ) {
+				link.set( css.active );
+			}
 
 			if ( item.isSelected() && replaceGroupBySelectedItem
 					&& !Boolean.TRUE.equals( item.getAttribute( ATTR_KEEP_GROUP_ITEM ) ) ) {
@@ -175,17 +187,14 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 			}
 
 			link.addChild( new TextViewElement( " " ) );
-
-			NodeViewElement caret = new NodeViewElement( "span" );
-			caret.addCssClass( "caret" );
-			link.addChild( caret );
-
 			li.addChild( link );
 		}
 
-		NodeViewElement children = new NodeViewElement( "ul" );
+		NodeViewElement children = new NodeViewElement( "div" ).set( css.dropdown.menu );
+		if ( li.hasCssClass( "float-right" ) ) {
+			children.set( css.dropdown.menu.right, css.dropdown.menu.left );
+		}
 		AtomicBoolean nextChildShouldBeSeparator = new AtomicBoolean( false );
-		children.addCssClass( "dropdown-menu" );
 
 		includedItems( item ).forEach( child -> addDropDownChildItem( children, child, nextChildShouldBeSeparator, builderContext ) );
 
@@ -193,7 +202,7 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	}
 
 	private void addDropDownChildItem(
-			NodeViewElement list,
+			NodeViewElement dropDown,
 			Menu item,
 			AtomicBoolean nextChildShouldBeSeparator,
 			ViewElementBuilderContext builderContext
@@ -203,38 +212,37 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 		if ( itemToRender != null ) {
 			boolean shouldInsertSeparator =
 					nextChildShouldBeSeparator.get()
-							|| ( list.hasChildren()
+							|| ( dropDown.hasChildren()
 							&& ( itemToRender.isGroup() || Separator.insertBefore( itemToRender ) ) );
 
 			if ( shouldInsertSeparator ) {
-				NodeViewElement divider = new NodeViewElement( "li" );
-				divider.addCssClass( "divider" );
-				divider.setAttribute( "role", "separator" );
-				list.addChild( divider );
+				dropDown.addChild( html.div( css.dropdown.divider ) );
 
 				nextChildShouldBeSeparator.set( false );
 			}
 
 			if ( itemToRender.isGroup() ) {
-				NodeViewElement header = new NodeViewElement( "li" );
-				header.addCssClass( "dropdown-header" );
+				NodeViewElement header = html.h6( css.dropdown.header );
 				addIconAndText( header, itemToRender, builderContext.resolveText( itemToRender.getTitle() ), true, false, builderContext );
-				list.addChild( header );
+				header.set( witherAttribute( itemToRender, item ) );
+				dropDown.addChild( header );
 
 				includedItems( itemToRender )
 						.filter( i -> !i.isGroup() )
-						.forEach( child -> addDropDownChildItem( list, child, nextChildShouldBeSeparator, builderContext ) );
+						.forEach( child -> addDropDownChildItem( dropDown, child, nextChildShouldBeSeparator, builderContext ) );
 
 				nextChildShouldBeSeparator.set( true );
 			}
 			else {
-				NodeViewElement li = new NodeViewElement( "li" );
-				addHtmlAttributes( li, itemToRender.getAttributes() );
+				LinkViewElement link = addItemLink( dropDown, itemToRender, true, false, builderContext );
+				link.set( css.dropdown.item );
+				link.remove( css.nav.link );
+				addHtmlAttributes( link, itemToRender.getAttributes() );
 				if ( itemToRender.isSelected() ) {
-					li.addCssClass( "active" );
+					link.set( css.active );
 				}
-				addItemLink( li, itemToRender, true, false, builderContext );
-				list.addChild( li );
+
+				link.set( witherAttribute( itemToRender, item ) );
 
 				nextChildShouldBeSeparator.set( Separator.insertAfter( itemToRender ) );
 			}

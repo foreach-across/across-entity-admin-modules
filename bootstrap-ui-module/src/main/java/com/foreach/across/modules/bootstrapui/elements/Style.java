@@ -27,7 +27,6 @@ import java.io.Serializable;
  */
 public class Style implements Serializable
 {
-
 	private static final long serialVersionUID = 1186095031223055070L;
 
 	public static class Button

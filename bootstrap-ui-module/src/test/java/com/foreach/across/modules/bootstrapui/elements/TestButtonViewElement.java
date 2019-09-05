@@ -21,6 +21,8 @@ import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import org.junit.Test;
 
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -230,11 +232,11 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 	public void icon() {
 		ButtonViewElement button = new ButtonViewElement();
 		button.setText( " icon button" );
-		button.setIcon( new GlyphIcon( GlyphIcon.BARCODE ) );
+		button.setIcon( html.i( css.fa.brands( "barcode" ) ) );
 
 		renderAndExpect( button,
 		                 "<button type='button' class='btn btn-default'>" +
-				                 "<span class='glyphicon glyphicon-barcode' aria-hidden='true'></span> icon button" +
+				                 "<i class='fab fa-barcode'></i> icon button" +
 				                 "</button>" );
 
 		button.setTitle( "icon button" );
@@ -242,7 +244,7 @@ public class TestButtonViewElement extends AbstractBootstrapViewElementTest
 
 		renderAndExpect( button,
 		                 "<button type='button' class='btn btn-default' title='icon button'>" +
-				                 "<span class='glyphicon glyphicon-barcode' aria-hidden='true'></span>" +
+				                 "<i class='fab fa-barcode'></i>" +
 				                 "</button>" );
 	}
 

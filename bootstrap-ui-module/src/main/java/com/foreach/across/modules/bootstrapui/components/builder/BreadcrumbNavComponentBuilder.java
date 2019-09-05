@@ -17,12 +17,16 @@
 package com.foreach.across.modules.bootstrapui.components.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Renders the selected path of a {@link com.foreach.across.modules.web.menu.Menu} to a breadcrumb list.
@@ -68,8 +72,7 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 
 	@Override
 	protected NodeViewElement buildMenu( Menu menu, ViewElementBuilderContext builderContext ) {
-		NodeViewElement list = apply( new NodeViewElement( "ol" ), builderContext );
-		list.addCssClass( "breadcrumb" );
+		NodeViewElement list = apply(  html.ol( css.breadcrumb ), builderContext );
 
 		if ( menu != null ) {
 			List<Menu> segments = menu.getSelectedItemPath()
@@ -86,13 +89,13 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 	}
 
 	protected void addBreadcrumbSegment( NodeViewElement list, Menu item, ViewElementBuilderContext builderContext, int level, boolean isLastItem ) {
-		NodeViewElement li = new NodeViewElement( "li" );
+		NodeViewElement li = html.li( css.breadcrumb.item );
 
 		boolean iconOnly = level < iconOnlyLevels && Boolean.TRUE.equals( item.getAttribute( ATTR_ICON_ONLY ) );
 		boolean iconAllowed = level < iconLevels;
 
 		if ( isLastItem ) {
-			li.addCssClass( "active" );
+			li.set( css.active );
 			addIconAndText( li, item, builderContext.resolveText( item.getTitle() ), iconAllowed, iconOnly, builderContext );
 		}
 		else {
@@ -115,6 +118,15 @@ public class BreadcrumbNavComponentBuilder extends NavComponentBuilder<Breadcrum
 		}
 
 		list.addChild( li );
+	}
+
+	@Override
+	protected LinkViewElement addItemLink( NodeViewElement container,
+	                                       Menu item,
+	                                       boolean iconAllowed,
+	                                       boolean iconOnly,
+	                                       ViewElementBuilderContext builderContext ) {
+		return super.addItemLink( container, item, iconAllowed, iconOnly, builderContext ).remove( css.nav.link );
 	}
 
 	private String findFirstNonDisabledChildUrl( Menu menu ) {

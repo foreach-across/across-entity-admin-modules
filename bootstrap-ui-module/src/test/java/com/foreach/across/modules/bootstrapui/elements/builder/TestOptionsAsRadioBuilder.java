@@ -80,12 +80,12 @@ public class TestOptionsAsRadioBuilder extends AbstractBootstrapViewElementTest
 
 		expect(
 				"<div id='options-mybox' data-bootstrapui-adapter-type='container'>" +
-						"<div class='one two radio' data-role='item' data-bootstrapui-adapter-type='checkbox'><label for='mybox'>" +
-						"<input type='radio' value='one' id='mybox' name='mybox' /> Inner text" +
-						"</label></div>" +
-						"<div class='radio disabled' data-bootstrapui-adapter-type='checkbox'><label for='mybox1'>" +
-						"<input type='radio' value='2' checked='checked' disabled='disabled' name='mybox' id='mybox1' /> Short two" +
-						"</label></div>" +
+						"<div class='one two custom-control custom-radio' data-role='item' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input type='radio' value='one' id='mybox' name='mybox' class='custom-control-input' /> " +
+						"<label for='mybox' class='custom-control-label'>Inner text</label></div>" +
+						"<div class='custom-control custom-radio' data-bootstrapui-adapter-type='checkbox'>" +
+						"<input type='radio' value='2' checked='checked' disabled='disabled' name='mybox' id='mybox1' class='custom-control-input'/> " +
+						"<label for='mybox1' class='custom-control-label'>Short two</label></div>" +
 						"</div>"
 		);
 	}

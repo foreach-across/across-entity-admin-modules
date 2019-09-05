@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
@@ -48,7 +49,6 @@ public class TestDateTimeFormElementConfiguration
 		assertEquals( Format.DATETIME, configuration.getFormat() );
 		assertEquals( FMT_PATTERN_DATETIME, configuration.get( "format" ) );
 		assertEquals( "en-GB", configuration.get( "locale" ) );
-		assertEquals( "input[type=text]", configuration.get( "datepickerInput" ) );
 		assertEquals( FMT_EXPORT_MOMENT_DATETIME, configuration.get( "exportFormat" ) );
 		assertArrayEquals(
 				new String[] { FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_EXTRA_PATTERN_DATE },
@@ -73,7 +73,6 @@ public class TestDateTimeFormElementConfiguration
 		assertEquals( Format.DATETIME_FULL, configuration.getFormat() );
 		assertEquals( FMT_PATTERN_DATETIME_FULL, configuration.get( "format" ) );
 		assertEquals( "en-GB", configuration.get( "locale" ) );
-		assertEquals( "input[type=text]", configuration.get( "datepickerInput" ) );
 		assertEquals( FMT_EXPORT_MOMENT_DATETIME, configuration.get( "exportFormat" ) );
 		assertArrayEquals(
 				new String[] { FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_PATTERN_DATETIME,
@@ -93,7 +92,6 @@ public class TestDateTimeFormElementConfiguration
 		assertEquals( Format.DATE, configuration.getFormat() );
 		assertEquals( FMT_PATTERN_DATE, configuration.get( "format" ) );
 		assertEquals( "en-GB", configuration.get( "locale" ) );
-		assertEquals( "input[type=text]", configuration.get( "datepickerInput" ) );
 		assertEquals( FMT_EXPORT_MOMENT_DATE, configuration.get( "exportFormat" ) );
 		assertArrayEquals(
 				new String[] { FMT_EXPORT_MOMENT_DATETIME, FMT_EXTRA_PATTERN_DATE },
@@ -112,7 +110,6 @@ public class TestDateTimeFormElementConfiguration
 		assertEquals( Format.DATE_FULL, configuration.getFormat() );
 		assertEquals( FMT_PATTERN_DATE_FULL, configuration.get( "format" ) );
 		assertEquals( "en-GB", configuration.get( "locale" ) );
-		assertEquals( "input[type=text]", configuration.get( "datepickerInput" ) );
 		assertEquals( FMT_EXPORT_MOMENT_DATE, configuration.get( "exportFormat" ) );
 		assertArrayEquals(
 				new String[] { FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_EXTRA_PATTERN_DATE },
@@ -131,7 +128,6 @@ public class TestDateTimeFormElementConfiguration
 		assertEquals( Format.TIME, configuration.getFormat() );
 		assertEquals( FMT_PATTERN_TIME, configuration.get( "format" ) );
 		assertEquals( "en-GB", configuration.get( "locale" ) );
-		assertEquals( "input[type=text]", configuration.get( "datepickerInput" ) );
 		assertEquals( FMT_EXPORT_MOMENT_TIME, configuration.get( "exportFormat" ) );
 		assertArrayEquals(
 				new String[] { FMT_EXPORT_MOMENT_DATETIME },
@@ -173,7 +169,6 @@ public class TestDateTimeFormElementConfiguration
 		assertEquals( Format.DATETIME, configuration.getFormat() );
 		assertEquals( FMT_PATTERN_DATETIME, configuration.get( "format" ) );
 		assertEquals( "en-GB", configuration.get( "locale" ) );
-		assertEquals( "input[type=text]", configuration.get( "datepickerInput" ) );
 		assertEquals( FMT_EXPORT_MOMENT_DATETIME, configuration.get( "exportFormat" ) );
 		assertArrayEquals(
 				new String[] { FMT_EXPORT_MOMENT_DATETIME, FMT_PATTERN_DATE, FMT_EXTRA_PATTERN_DATE },
@@ -182,7 +177,8 @@ public class TestDateTimeFormElementConfiguration
 
 		assertEquals( "2015-08-07 10:31", configuration.get( "minDate" ) );
 		assertEquals( "2015-08-08 10:31", configuration.get( "maxDate" ) );
-		assertEquals( true, configuration.get( "showClear" ) );
+		Map<String, Boolean> buttons = (Map<String, Boolean>)configuration.get( "buttons" );
+		assertEquals( true, buttons.get( "showClear" ) );
 	}
 
 	@Test

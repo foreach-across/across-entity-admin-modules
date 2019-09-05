@@ -214,11 +214,6 @@ public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory im
 	}
 
 	@Override
-	public GlyphIcon glyphIcon( String icon ) {
-		return new GlyphIcon( icon );
-	}
-
-	@Override
 	public FaIcon faIcon( String icon ) {
 		return new FaIcon( icon );
 	}

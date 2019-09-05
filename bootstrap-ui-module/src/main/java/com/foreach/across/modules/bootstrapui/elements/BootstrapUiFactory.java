@@ -103,8 +103,7 @@ public interface BootstrapUiFactory extends ViewElementBuilderFactory
 
 	AlertViewElementBuilder alert();
 
-	GlyphIcon glyphIcon( String icon );
-
+	@Deprecated
 	FaIcon faIcon( String icon );
 
 	AutoSuggestFormElementBuilder autosuggest();
