@@ -7,7 +7,6 @@
     "dist"
   ],
   "scripts": {
-    "prepare": "yarn build",
     "watch": "foreach-tsdx watch -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
     "build": "foreach-tsdx build -i src/bootstrapui-formelements.ts -i src/bootstrapui.ts --format umd -g autosize=autosize,moment=moment,jquery=jQuery",
     "test": "foreach-tsdx test --env=jsdom",

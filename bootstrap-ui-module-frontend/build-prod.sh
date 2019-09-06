@@ -13,13 +13,9 @@ echo Building resources for $1, writing files to $OUTPUT_PATH
 cd ./src/main/frontend
 
 if [[ $1 != *":"* ]]; then
-  yarn run watch -- --output=$OUTPUT_PATH
+  yarn run build -- --output=$OUTPUT_PATH
 else
   yarn run ${1%:*} -- --output=$OUTPUT_PATH
 fi
 
 cd ../../../
-
-if [[ $1 =~ "webjar" ]]; then
-  mvn clean package
-fi

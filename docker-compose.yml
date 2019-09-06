@@ -5,9 +5,13 @@ services:
     build:
       context: ./bootstrap-ui-module-frontend
       dockerfile: ./Dockerfile
+    command: ./build-prod.sh build:webjar
     volumes:
-      - ./bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule:/build/dist
-    command: yarn run build
+      #      - ./bootstrap-ui-module-frontend/src/main/frontend:/build/src/main/frontend
+      - ./bootstrap-ui-module-frontend/src/main/resources:/build/src/main/resources
+      - ./bootstrap-ui-module-frontend/target:/build/target
+
+
   frontend:
     build:
       context: .
