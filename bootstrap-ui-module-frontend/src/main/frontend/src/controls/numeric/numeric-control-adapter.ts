@@ -29,14 +29,16 @@ import BootstrapUiControlAdapter from '../support/bootstrap-ui-control-adapter';
  *
  * @see numericInitializer
  */
-export default class NumericControlAdapter extends BaseControlAdapter {
+export default class NumericControlAdapter extends BaseControlAdapter
+{
   private readonly initialValue: any;
 
-  constructor(target: any) {
-    super(target);
-    this.initialValue = $(this.getTarget()).autoNumeric('get');
+    constructor( target: any )
+    {
+        super( target );
+        this.initialValue = this.getAutoNumeric().get();
 
-    $(target).on('change', _ => this.triggerChange());
+        $( target ).on( 'change', _ => this.triggerChange() );
 
     // TODO configure 'bootstrapui.submit' event
     // prevent opening the element on enter, but see it as 'submitting' the value instead.
@@ -48,20 +50,23 @@ export default class NumericControlAdapter extends BaseControlAdapter {
   }
 
   getValue(): BootstrapUiControlValueHolder[] {
-    //@ts-ignore
-    const label: string = $(this.getTarget())
-      .val()
-      .toString();
-    const value: any = $(this.getTarget()).autoNumeric('get');
-    return [createControlValueHolder(label, value, this.getTarget())];
+      const label: string = $( this.getTarget() ).val().toString();
+      const value: any = this.getAutoNumeric().get();
+      return [createControlValueHolder( label, value, this.getTarget() )];
   }
 
   reset(): void {
-    this.selectValue(this.initialValue);
+      this.selectValue( this.initialValue );
   }
 
-  selectValue(newValue: any): void {
-    $(this.getTarget()).autoNumeric('set', newValue);
+    selectValue( newValue: any ): void
+    {
+        this.getAutoNumeric().set( newValue );
+    }
+
+    private getAutoNumeric(): any
+    {
+        return $( this.getTarget() ).data( 'autoNumeric' );
   }
 }
 
@@ -70,8 +75,7 @@ export default class NumericControlAdapter extends BaseControlAdapter {
  *
  * @param node to initialize
  */
-export function createNumericControlAdapter(
-  node: any
-): BootstrapUiControlAdapter {
-  return new NumericControlAdapter(node);
+export function createNumericControlAdapter( node: any ): BootstrapUiControlAdapter
+{
+    return new NumericControlAdapter( node );
 }

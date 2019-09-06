@@ -23,44 +23,45 @@
 
 import $ from 'jquery';
 
-function numericInitializer(node: any): void {
-  $('[data-bootstrapui-numeric]', node).each(function() {
-    const configuration = $(this).data('bootstrapui-numeric');
-    const name = $(this).attr('name');
+declare const AutoNumeric: any;
+
+function numericInitializer( node: any ): void
+{
+    $( '[data-bootstrapui-numeric]', node ).each( function () {
+        const configuration = $( this ).data( 'bootstrapui-numeric' );
+        const name = $( this ).attr( 'name' );
 
     const multiplier = configuration.multiplier ? configuration.multiplier : 1;
 
     let multiplied;
 
-    if (multiplier !== 1) {
-      const currentValue = $(this).val();
-      //@ts-ignore
-      if (currentValue && !isNaN(currentValue)) {
-        //@ts-ignore
-        multiplied = parseFloat(currentValue) * multiplier;
+        if ( multiplier !== 1 ) {
+            const currentValue = $( this ).val();
+            if ( currentValue && !isNaN( currentValue ) ) {
+                multiplied = parseFloat( currentValue ) * multiplier;
       }
     }
 
-    $(this)
-      .autoNumeric('init', configuration)
-      .bind('blur focusout keypress keyup', function() {
-        //@ts-ignore
-        if (name.length > 1 && name[0] === '_') {
-          //@ts-ignore
-          let val = $(this).autoNumeric('get');
+        const autoNumeric = new AutoNumeric( this, configuration );
+        $( this )
+            .bind( 'blur focusout keypress keyup', () => {
+                if ( name && name.length > 1 && name[0] === '_' ) {
+                    let val = autoNumeric.get();
 
-          if (multiplier !== 1) {
-            val = val / multiplier;
-          }
-          //@ts-ignore
-          $(`input[type=hidden][name="${name.substring(1)}"]`).val(val);
-        }
-      });
+                    if ( multiplier !== 1 ) {
+                        val = val / multiplier;
+                    }
 
-    if (multiplied) {
-      $(this).autoNumeric('set', multiplied);
+                    $( `input[type=hidden][name="${name.substring( 1 )}"]` ).val( val );
+                }
+            } );
+
+        $( this ).data( 'autoNumeric', autoNumeric );
+
+        if ( multiplied ) {
+            autoNumeric.set( multiplied );
     }
-  });
+    } );
 }
 
 export default numericInitializer;

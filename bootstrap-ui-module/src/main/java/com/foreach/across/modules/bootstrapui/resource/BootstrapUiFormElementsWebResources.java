@@ -15,12 +15,12 @@
  */
 package com.foreach.across.modules.bootstrapui.resource;
 
-import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
 import com.foreach.across.modules.web.resource.WebResource;
 import com.foreach.across.modules.web.resource.WebResourcePackage;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import lombok.RequiredArgsConstructor;
 
+import static com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources.MODULE_RESOURCES_VERSION;
 import static com.foreach.across.modules.web.resource.WebResource.CSS;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 import static com.foreach.across.modules.web.resource.WebResourceRule.add;
@@ -111,7 +111,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
 				// BootstrapUiModule specific
-				add( WebResource.javascript( "@static:/" + BootstrapUiModule.NAME + "/js/bootstrapui-formelements.js" ) )
+				add( WebResource.javascript( "@webjars:/bootstrap-ui/" + MODULE_RESOURCES_VERSION + "/bootstrapui-formelements.umd.development.js" ) )
 						.withKey( NAME )
 						.toBucket( JAVASCRIPT_PAGE_END )
 		);

@@ -44,7 +44,7 @@ interface JQuery {
    *
    * @param config that should be applied to the datetimepicker.
    */
-  datetimepicker(config: any): any;
+  datetimepicker: any;
 
   /**
    * Calls the autonumeric object on a node to execute a method or retrieve/set a property.

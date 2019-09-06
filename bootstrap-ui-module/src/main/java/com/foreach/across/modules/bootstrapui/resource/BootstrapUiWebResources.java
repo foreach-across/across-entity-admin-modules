@@ -38,6 +38,7 @@ public class BootstrapUiWebResources implements WebResourcePackage
 	public static final String POPPER = "popper";
 	public static final String FONT_AWESOME = "font-awesome";
 
+	public static final String MODULE_RESOURCES_VERSION = "0.0.1";
 	private static final String BOOTSTRAP_VERSION = "4.3.1";
 	private static final String POPPER_VERSION = "1.14.3";
 	private static final String FONT_AWESOME_VERSION = "5.10.1";
@@ -67,12 +68,12 @@ public class BootstrapUiWebResources implements WebResourcePackage
 						.toBucket( WebResource.JAVASCRIPT_PAGE_END ),
 
 				// BootstrapUiModule main javascript
-				add( javascript( "@webjars:/bootstrap-ui/0.0.1/bootstrapui.umd.development.js" ) )
+				add( javascript( "@webjars:/bootstrap-ui/" + MODULE_RESOURCES_VERSION + "/bootstrapui.umd.development.js" ) )
 						.withKey( BootstrapUiModule.NAME )
 						.toBucket( WebResource.JAVASCRIPT_PAGE_END ),
 
-				add( WebResource.css( "@webjars:/bootstrap-ui/0.0.1/bootstrapui.umd.development.css" ) )
-						.withKey( NAME + "ui" )
+				add( WebResource.css( "@webjars:/bootstrap-ui/" + MODULE_RESOURCES_VERSION + "/bootstrapui.umd.development.css" ) )
+						.withKey( BootstrapUiModule.NAME )
 						.toBucket( CSS )
 		);
 	}
