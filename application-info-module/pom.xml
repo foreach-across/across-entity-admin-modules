@@ -22,12 +22,16 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>application-info-module-project</artifactId>
-		<version>2.0.0-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>application-info-module</artifactId>
 
-	<name>${project.groupId}:${project.artifactId}</name>
+	<properties>
+		<maven.javadoc.skip>false</maven.javadoc.skip>
+		<maven.deploy.skip>false</maven.deploy.skip>
+		<skipAssembly>false</skipAssembly>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -61,4 +65,29 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<!-- This defines how a specific module will be flattened -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

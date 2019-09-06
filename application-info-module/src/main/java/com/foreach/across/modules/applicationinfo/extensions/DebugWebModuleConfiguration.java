@@ -19,9 +19,8 @@ package com.foreach.across.modules.applicationinfo.extensions;
 import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.modules.applicationinfo.controllers.ApplicationInfoController;
 import com.foreach.across.modules.debugweb.DebugWebModuleSettings;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -31,14 +30,13 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 1.0.1
  */
 @ModuleConfiguration("DebugWebModule")
+@Slf4j
 public class DebugWebModuleConfiguration
 {
-	private static final Logger LOG = LoggerFactory.getLogger( DebugWebModuleConfiguration.class );
-
 	@Autowired
 	public void registerDashboardIfNecessary( DebugWebModuleSettings settings ) {
 		if ( StringUtils.equals( settings.getDashboard(), "/" ) ) {
-			LOG.trace( "Registering debug dashboard to application info controller" );
+			log.trace( "Registering debug dashboard to application info controller" );
 			settings.setDashboard( ApplicationInfoController.PATH );
 		}
 	}

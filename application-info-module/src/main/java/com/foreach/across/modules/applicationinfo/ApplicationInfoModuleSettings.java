@@ -15,6 +15,8 @@
  */
 package com.foreach.across.modules.applicationinfo;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Date;
@@ -24,6 +26,8 @@ import java.util.Date;
  */
 @SuppressWarnings("all")
 @ConfigurationProperties(prefix = "application-info")
+@Getter
+@Setter
 public class ApplicationInfoModuleSettings
 {
 	public static final String UNKNOWN_VALUE = "unknown";
@@ -76,68 +80,4 @@ public class ApplicationInfoModuleSettings
 	 * Timestamp when the application should be considered started.
 	 */
 	private Date startupDate;
-
-	public String getApplicationId() {
-		return applicationId;
-	}
-
-	public void setApplicationId( String applicationId ) {
-		this.applicationId = applicationId;
-	}
-
-	public String getApplicationName() {
-		return applicationName;
-	}
-
-	public void setApplicationName( String applicationName ) {
-		this.applicationName = applicationName;
-	}
-
-	public String getEnvironmentId() {
-		return environmentId;
-	}
-
-	public void setEnvironmentId( String environmentId ) {
-		this.environmentId = environmentId;
-	}
-
-	public String getEnvironmentName() {
-		return environmentName;
-	}
-
-	public void setEnvironmentName( String environmentName ) {
-		this.environmentName = environmentName;
-	}
-
-	public String getBuildId() {
-		return buildId;
-	}
-
-	public void setBuildId( String buildId ) {
-		this.buildId = buildId;
-	}
-
-	public Date getBuildDate() {
-		return buildDate;
-	}
-
-	public void setBuildDate( Date buildDate ) {
-		this.buildDate = buildDate;
-	}
-
-	public String getHostName() {
-		return hostName;
-	}
-
-	public void setHostName( String hostName ) {
-		this.hostName = hostName;
-	}
-
-	public Date getStartupDate() {
-		return startupDate;
-	}
-
-	public void setStartupDate( Date startupDate ) {
-		this.startupDate = startupDate;
-	}
 }
