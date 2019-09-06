@@ -1,6 +1,13 @@
 version: "3.1"
 services:
   # compiling frontend resources
+  frontendv2:
+    build:
+      context: ./bootstrap-ui-module-frontend
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule:/build/dist
+    command: yarn run build
   frontend:
     build:
       context: .
@@ -9,8 +16,8 @@ services:
     command: yarn run build
     container_name: bootstrap-ui-module-assets-builder
     volumes:
-    - ./bootstrap-ui-module/src/main/frontend:/build
-    - ./bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule:/resources/views/static/BootstrapUiModule
+      - ./bootstrap-ui-module/src/main/frontend:/build
+      - ./bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule:/resources/views/static/BootstrapUiModule
 
   # executing e2e tests
   web:
@@ -21,17 +28,17 @@ services:
       context: .
       dockerfile: bootstrap-ui-module/src/main/frontend/tests/e2e/web/Dockerfile
     ports:
-    - "8080:8080"
+      - "8080:8080"
     expose:
-    - "8080"
+      - "8080"
     #    depends_on:
     #      - gulp
     volumes:
-    - ./bootstrap-ui-module-test/target:/web
+      - ./bootstrap-ui-module-test/target:/web
     networks:
       default:
         aliases:
-        - bootstrapui-test.dev.foreach.be
+          - bootstrapui-test.dev.foreach.be
   test:
     ipc: host
     # TTY doesn't show pretty in bamboo
@@ -40,14 +47,14 @@ services:
       context: .
       dockerfile: bootstrap-ui-module/src/main/frontend/tests/e2e/tests/Dockerfile
     depends_on:
-    - web
+      - web
     command: bash -c "./wait-for-it.sh -t 360 web:8080 -- run; ./node_modules/.bin/cypress run --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results-[hash].xml; chmod -R 777 ./cypress"
     links:
-    - web
+      - web
     volumes:
-    - ./bootstrap-ui-module/src/main/frontend/tests/e2e/tests:/cypress
+      - ./bootstrap-ui-module/src/main/frontend/tests/e2e/tests:/cypress
   cleanup:
     image: busybox:latest
     command: sh -c "echo Cleanup up /cypress/cypress/out; ls -al /cypress/cypress; rm -rf /cypress/cypress/out"
     volumes:
-    - ./bootstrap-ui-module/src/main/frontend/tests/e2e/tests:/cypress
+      - ./bootstrap-ui-module/src/main/frontend/tests/e2e/tests:/cypress
