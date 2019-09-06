@@ -5,11 +5,11 @@ RUN mkdir -p /build/
 WORKDIR /build/
 
 # Install dependencies
-COPY /bootstrap-ui-module-frontend1 ./package.json
-COPY /bootstrap-ui-module-frontend1 ./yarn.lock
-COPY /bootstrap-ui-module-frontend1 ./.npmrc
+COPY /bootstrap-ui-module-frontend ./package.json
+COPY /bootstrap-ui-module-frontend ./yarn.lock
+COPY /bootstrap-ui-module-frontend ./.npmrc
 
 # Copy source files
-COPY /bootstrap-ui-module-frontend1 ./tsconfig.json
-COPY /bootstrap-ui-module-frontend1 ./test
-COPY /bootstrap-ui-module-frontend1 ./src
+COPY /bootstrap-ui-module-frontend ./tsconfig.json
+COPY /bootstrap-ui-module-frontend ./test
+COPY /bootstrap-ui-module-frontend ./src
