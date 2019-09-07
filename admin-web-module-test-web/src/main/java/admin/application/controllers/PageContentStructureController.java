@@ -21,9 +21,8 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static admin.application.config.CustomAdminWebIcons.*;
-import static com.foreach.across.modules.adminweb.resource.AdminWebIcons.*;
 import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.iconSet;
 
 /**
@@ -45,9 +43,6 @@ import static com.foreach.across.modules.bootstrapui.elements.icons.IconSet.icon
 @RequiredArgsConstructor
 public class PageContentStructureController
 {
-	private final BootstrapUiFactory bootstrapUiFactory;
-	private final BootstrapUiComponentFactory bootstrapUiComponentFactory;
-
 	@EventListener
 	public void registerMenuItem( AdminMenuEvent adminMenuEvent ) {
 		adminMenuEvent.builder()
@@ -106,14 +101,14 @@ public class PageContentStructureController
 		page.setPageTitle( "Some page title..." );
 		page.addToPageTitleSubText( iconSet( AdminWebModule.NAME ).icon( ALERT ) );
 
-		page.addToNav( bootstrapUiComponentFactory.nav( menu ).tabs().build( builderContext ) );
+		page.addToNav( BootstrapUiBuilders.nav( menu ).tabs().build( builderContext ) );
 		page.addToFeedback(
-				bootstrapUiFactory.alert().danger().dismissible()
-				                  .text( "Global feedback section with a lot of content that will be rendered as a toastr notification." )
-				                  .build( builderContext )
+				BootstrapUiBuilders.alert().danger().dismissible()
+				                   .text( "Global feedback section with a lot of content that will be rendered as a toastr notification." )
+				                   .build( builderContext )
 		);
 
-		page.addToFooter( bootstrapUiFactory.alert().text( "This is the footer." ).build( builderContext ) );
+		page.addToFooter( BootstrapUiBuilders.alert().text( "This is the footer." ).build( builderContext ) );
 		page.addChild( TextViewElement.text( "Hello body content..." ) );
 
 		return PageContentStructure.TEMPLATE;

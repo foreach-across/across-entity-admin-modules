@@ -19,7 +19,7 @@ package com.foreach.across.modules.adminweb.ui;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.resource.AdminWebWebResources;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.resource.WebResource;
@@ -30,8 +30,6 @@ import com.foreach.across.modules.web.template.WebTemplateRegistry;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.support.SecurityWebApplicationContextUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -67,8 +65,6 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 	public static final String MODEL_ATTR_NAVBAR_RIGHT = "adminWebNavbarRightNavigation";
 	public static final String MODEL_ATTR_SIDEBAR = "adminWebSidebarNavigation";
 	public static final String MODEL_ATTR_BREADCRUMB = "adminWebBreadcrumb";
-
-	private BootstrapUiComponentFactory bootstrapUiComponentFactory;
 
 	/**
 	 * Create a default template.
@@ -118,34 +114,34 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 			if ( adminMenu != null ) {
 				model.computeIfAbsent(
 						MODEL_ATTR_NAVBAR,
-						key -> bootstrapUiComponentFactory.nav( adminMenu )
-						                                  .navbar()
-						                                  .keepGroupsAsGroup( true )
-						                                  .replaceGroupBySelectedItem( false )
-						                                  .filter( navPosition( NAVBAR, true ) )
-						                                  .css( "navbar-nav mr-auto" )
-						                                  .build()
+						key -> BootstrapUiBuilders.nav( adminMenu )
+						                          .navbar()
+						                          .keepGroupsAsGroup( true )
+						                          .replaceGroupBySelectedItem( false )
+						                          .filter( navPosition( NAVBAR, true ) )
+						                          .css( "navbar-nav mr-auto" )
+						                          .build()
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_NAVBAR_RIGHT,
-						key -> bootstrapUiComponentFactory.nav( adminMenu )
-						                                  .navbar()
-						                                  .css( "navbar-nav" )
-						                                  .keepGroupsAsGroup( true )
-						                                  .replaceGroupBySelectedItem( false )
-						                                  .filter( navPosition( NAVBAR_RIGHT, false ) )
-						                                  .build()
+						key -> BootstrapUiBuilders.nav( adminMenu )
+						                          .navbar()
+						                          .css( "navbar-nav" )
+						                          .keepGroupsAsGroup( true )
+						                          .replaceGroupBySelectedItem( false )
+						                          .filter( navPosition( NAVBAR_RIGHT, false ) )
+						                          .build()
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_SIDEBAR,
-						key -> bootstrapUiComponentFactory.panels( adminMenu )
-						                                  .keepGroupsAsGroup( true )
-						                                  .filter( navPosition( SIDEBAR, true ) )
-						                                  .build()
+						key -> BootstrapUiBuilders.panels( adminMenu )
+						                          .keepGroupsAsGroup( true )
+						                          .filter( navPosition( SIDEBAR, true ) )
+						                          .build()
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_BREADCRUMB,
-						key -> bootstrapUiComponentFactory
+						key -> BootstrapUiBuilders
 								.breadcrumb( adminMenu )
 								.filter( item -> !Boolean.FALSE.equals( item.getAttribute( AdminMenu.ATTR_BREADCRUMB ) ) )
 								.build()
@@ -166,11 +162,6 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 								        : position.equals( value )
 				        )
 				        .orElse( defaultInclude || menu.getLevel() > 1 );
-	}
-
-	@Autowired
-	void setBootstrapUiComponentFactory( BootstrapUiComponentFactory bootstrapUiComponentFactory ) {
-		this.bootstrapUiComponentFactory = bootstrapUiComponentFactory;
 	}
 }
 
