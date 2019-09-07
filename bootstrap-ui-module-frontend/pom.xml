@@ -26,15 +26,42 @@
 		<version>${revision}</version>
 	</parent>
 
-	<packaging>jar</packaging>
 	<artifactId>bootstrap-ui</artifactId>
+	<packaging>jar</packaging>
 
-	<version>0.0.1</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<name>bootstrap-ui</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<destDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</destDir>
+		<maven.deploy.skip>false</maven.deploy.skip>
 	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- This defines how a specific module will be flattened -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
