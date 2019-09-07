@@ -24,6 +24,6 @@ RUN yarn --frozen-lockfile
 WORKDIR /build/
 
 # Copy source files
-COPY ./src/main/frontend/tsconfig.json ./src/main/frontend/tsconfig.json
-COPY ./src/main/frontend/test ./src/main/frontend/test
-COPY ./src/main/frontend/src ./src/main/frontend/src
+#COPY ./src/main/frontend/tsconfig.json ./src/main/frontend/tsconfig.json
+#COPY ./src/main/frontend/test ./src/main/frontend/test
+#COPY ./src/main/frontend/src ./src/main/frontend/src

@@ -37,8 +37,8 @@ function numericInitializer( node: any ): void
 
         if ( multiplier !== 1 ) {
             const currentValue = $( this ).val();
-            if ( currentValue && !isNaN( currentValue ) ) {
-                multiplied = parseFloat( currentValue ) * multiplier;
+            if ( currentValue && !isNaN( currentValue as number ) ) {
+                multiplied = parseFloat( currentValue as string ) * multiplier;
       }
     }
 

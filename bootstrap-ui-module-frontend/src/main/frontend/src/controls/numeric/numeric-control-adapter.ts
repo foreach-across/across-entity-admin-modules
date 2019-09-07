@@ -50,6 +50,7 @@ export default class NumericControlAdapter extends BaseControlAdapter
   }
 
   getValue(): BootstrapUiControlValueHolder[] {
+      // @ts-ignore
       const label: string = $( this.getTarget() ).val().toString();
       const value: any = this.getAutoNumeric().get();
       return [createControlValueHolder( label, value, this.getTarget() )];
