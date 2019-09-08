@@ -22,7 +22,7 @@ describe( 'ControlAdapter - Numeric', function () {
     const label = '$7,234.23';
 
     before( function () {
-        cy.visit( "/control-adapters" );
+        cy.visit( "/utilities/control-adapters" );
     } );
 
     afterEach( 'reset adapter', function () {

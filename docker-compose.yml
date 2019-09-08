@@ -2,6 +2,7 @@ version: "3.1"
 services:
   # compiling frontend resources
   frontendv2:
+    tty: false
     build:
       context: ./bootstrap-ui-module-frontend
       dockerfile: ./Dockerfile
@@ -11,6 +12,40 @@ services:
       - /build/src/main/frontend/node_modules
       - ./bootstrap-ui-module-frontend/src/main/resources:/build/src/main/resources
       - ./bootstrap-ui-module-frontend/target:/build/target
+
+  webv2:
+    ipc: host
+    # TTY doesn't show pretty in bamboo
+    tty: false
+    build:
+      context: .
+      dockerfile: bootstrap-ui-module-frontend/src/main/frontend/test/e2e/web/Dockerfile
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    #    depends_on:
+    #      - gulp
+    volumes:
+      - ./bootstrap-ui-module-test/target:/web
+    networks:
+      default:
+        aliases:
+          - bootstrapui-test.dev.foreach.be
+  testv2:
+    ipc: host
+    # TTY doesn't show pretty in bamboo
+    tty: false
+    build:
+      context: .
+      dockerfile: bootstrap-ui-module-frontend/src/main/frontend/test/e2e/tests/Dockerfile
+    depends_on:
+      - webv2
+    command: bash -c "./wait-for-it.sh -t 360 web:8080 -- run; ./node_modules/.bin/cypress run --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results-[hash].xml; chmod -R 777 ./cypress"
+    links:
+      - webv2
+    volumes:
+      - ./bootstrap-ui-module-frontend/src/main/frontend/test/e2e/tests:/cypress
 
 
   frontend:

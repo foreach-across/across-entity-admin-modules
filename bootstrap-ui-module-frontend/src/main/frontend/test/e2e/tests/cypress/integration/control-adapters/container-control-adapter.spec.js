@@ -13,107 +13,104 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import adapterUtils from '../../support/utils/control-adapters';
+import adapterUtils from "../../support/utils/control-adapters";
 
-describe('ControlAdapter - Container', function() {
-  const selector = '#options-ca-multi-checkbox';
+describe( 'ControlAdapter - Container', function () {
+    const selector = '#options-ca-multi-checkbox';
 
-  before(function() {
-    cy.visit('/control-adapters');
-  });
+    before( function () {
+        cy.visit( "/utilities/control-adapters" );
+    } );
 
-  it('adapter exists', function() {
-    adapterUtils.assertThatAdapterExists(selector);
-  });
+    it( "adapter exists", function () {
+        adapterUtils.assertThatAdapterExists( selector );
+    } );
 
-  it('has underlying control adapters', function() {
-    adapterUtils.assertHasUnderlyingControlAdapters(selector, 3);
-  });
+    it( "has underlying control adapters", function () {
+        adapterUtils.assertHasUnderlyingControlAdapters( selector, 3 );
+    } );
 
-  it('modifying value throws an error', function() {
-    cy.get(selector).then(wrapper => {
-      const adapter = wrapper.data('bootstrapui-adapter');
-      expect(() => adapter.selectValue('anything')).to.throw(
-        'Selecting values is currently not support on ContainerControlAdapters.'
-      );
-    });
-  });
+    it( "modifying value throws an error", function () {
+        cy.get( selector )
+                .then( ( wrapper ) => {
+                    const adapter = wrapper.data( "bootstrapui-adapter" );
+                    expect( () => adapter.selectValue( "anything" ) ).to.throw( 'Selecting values is currently not support on ContainerControlAdapters.' );
+                } );
+    } );
 
-  it('bootstrapui.change event is fired if a child element is fired', function() {
-    cy.get(selector).then(wrapper => {
-      const adapter = wrapper.data('bootstrapui-adapter');
+    it( "bootstrapui.change event is fired if a child element is fired", function () {
+        cy.get( selector )
+                .then( ( wrapper ) => {
+                    const adapter = wrapper.data( "bootstrapui-adapter" );
 
-      const obj = {
-        handle(controlAdapter) {
-          return controlAdapter;
-        },
-      };
-      const spy = cy.spy(obj, 'handle');
+                    const obj = {
+                        handle( controlAdapter ) {
+                            return controlAdapter;
+                        }
+                    };
+                    const spy = cy.spy( obj, 'handle' );
 
-      wrapper.on('bootstrapui.change', function(event, controlAdapter) {
-        obj.handle(controlAdapter);
-      });
+                    wrapper.on( "bootstrapui.change", function ( event, controlAdapter ) {
+                        obj.handle( controlAdapter );
+                    } );
 
-      wrapper
-        .find('[type=checkbox]')
-        .first()
-        .trigger('change');
+                    wrapper.find( "[type=checkbox]" ).first().trigger( 'change' );
 
-      expect(spy).to.have.callCount(1);
-      expect(spy).to.have.returned(adapter);
-    });
-  });
+                    expect( spy ).to.have.callCount( 1 );
+                    expect( spy ).to.have.returned( adapter );
+                } );
+    } );
 
-  it('reset applies reset on underlying control adapters', function() {
-    cy.get(selector)
-      .find('[type=checkbox]')
-      .each(cb => {
-        cb.prop('checked', true);
-        expect(cb.is(':checked')).to.be.true;
-      })
-      .closest('[data-bootstrapui-adapter-type="container"]')
-      .then(container => {
-        const adapter = container.data('bootstrapui-adapter');
-        adapterUtils.assertAdapterHoldsAmountOfValues(container, 3);
+    it( "reset applies reset on underlying control adapters", function () {
+        cy.get( selector )
+                .find( '[type=checkbox]' )
+                .each( ( cb ) => {
+                    cb.prop( 'checked', true );
+                    expect( cb.is( ':checked' ) ).to.be.true;
+                } )
+                .closest( '[data-bootstrapui-adapter-type="container"]' )
+                .then( ( container ) => {
+                    const adapter = container.data( 'bootstrapui-adapter' );
+                    adapterUtils.assertAdapterHoldsAmountOfValues( container, 3 );
 
-        adapter.reset();
-        adapterUtils.assertAdapterNoValueSelected(container);
-        expect(Cypress.$(':checked', container)).to.have.property('length', 0);
-      });
-  });
+                    adapter.reset();
+                    adapterUtils.assertAdapterNoValueSelected( container );
+                    expect( Cypress.$( ':checked', container ) ).to.have.property( 'length', 0 );
+                } );
+    } );
 
-  it('getValue holds values of underlying control adapters', function() {
-    cy.get(selector)
-      .find('[type=checkbox]')
-      .each((cb, idx) => {
-        if (idx % 2 === 0) {
-          cb.prop('checked', true);
-          expect(cb.is(':checked')).to.be.true;
-        }
-      })
-      .closest('[data-bootstrapui-adapter-type="container"]')
-      .then(container => {
-        adapterUtils.assertAdapterValueSelected(container, 0, 'One', '1');
-        adapterUtils.assertAdapterValueSelected(container, 1, '3', 'Three');
-        adapterUtils.assertAdapterHoldsAmountOfValues(container, 2);
-      });
-  });
+    it( "getValue holds values of underlying control adapters", function () {
+        cy.get( selector )
+                .find( '[type=checkbox]' )
+                .each( ( cb, idx ) => {
+                    if ( idx % 2 === 0 ) {
+                        cb.prop( 'checked', true );
+                        expect( cb.is( ':checked' ) ).to.be.true;
+                    }
+                } )
+                .closest( '[data-bootstrapui-adapter-type="container"]' )
+                .then( ( container ) => {
+                    adapterUtils.assertAdapterValueSelected( container, 0, 'One', '1' );
+                    adapterUtils.assertAdapterValueSelected( container, 1, '3', 'Three' );
+                    adapterUtils.assertAdapterHoldsAmountOfValues( container, 2 );
+                } );
+    } );
 
-  it('Containers element with nested container elements also have a flattened value', function() {
-    cy.get('#ca-nested-containers')
-      .find('[type=checkbox],[type=radio]')
-      .each((cb, idx) => {
-        if (idx % 2 === 0) {
-          cb.prop('checked', true);
-          expect(cb.is(':checked')).to.be.true;
-        }
-      })
-      .get('#ca-nested-containers')
-      .then(container => {
-        adapterUtils.assertAdapterHoldsAmountOfValues(container, 3);
-        adapterUtils.assertAdapterValueSelected(container, 0, 'One', '1');
-        adapterUtils.assertAdapterValueSelected(container, 1, '3', 'Three');
-        adapterUtils.assertAdapterValueSelected(container, 2, 'Two', '2');
-      });
-  });
-});
+    it( 'Containers element with nested container elements also have a flattened value', function () {
+        cy.get( '#ca-nested-containers' )
+                .find( '[type=checkbox],[type=radio]' )
+                .each( ( cb, idx ) => {
+                    if ( idx % 2 === 0 ) {
+                        cb.prop( 'checked', true );
+                        expect( cb.is( ':checked' ) ).to.be.true;
+                    }
+                } )
+                .get( '#ca-nested-containers' )
+                .then( ( container ) => {
+                    adapterUtils.assertAdapterHoldsAmountOfValues( container, 3 );
+                    adapterUtils.assertAdapterValueSelected( container, 0, 'One', '1' );
+                    adapterUtils.assertAdapterValueSelected( container, 1, '3', 'Three' );
+                    adapterUtils.assertAdapterValueSelected( container, 2, 'Two', '2' );
+                } );
+    } );
+} );

@@ -16,135 +16,119 @@
 
 import adapterUtils from '../../support/utils/control-adapters';
 
-describe('ControlAdapter - Select', function() {
-  const multiValueSelectTests = function(selector) {
-    it('value holds option label, option value and option item', function() {
-      cy.get(selector)
-        .select('2', { force: true })
-        .then(select => {
-          adapterUtils.assertAdapterHoldsAmountOfValues(select, 1);
-          adapterUtils.assertAdapterValueSelected(
-            select,
-            0,
-            'Two',
-            '2',
-            select.find('option:selected')[0]
-          );
+describe( 'ControlAdapter - Select', function () {
+    const multiValueSelectTests = function ( selector ) {
+        it( 'value holds option label, option value and option item', function () {
+            cy.get( selector )
+                    .select( '2', {force: true} )
+                    .then( ( select ) => {
+                        adapterUtils.assertAdapterHoldsAmountOfValues( select, 1 );
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2', select.find( 'option:selected' )[0] );
 
-          const adapter = adapterUtils.getAdapterForElement(select);
-          adapter.reset();
-        });
-    });
+                        const adapter = adapterUtils.getAdapterForElement( select );
+                        adapter.reset();
+                    } );
+        } );
 
-    it('modifying value', function() {
-      cy.get(selector)
-        .then(select => adapterUtils.assertAdapterNoValueSelected(select))
-        .select(['1', '2'], { force: true })
-        .then(select => {
-          adapterUtils.assertAdapterHoldsAmountOfValues(select, 2);
-          adapterUtils.assertAdapterValueSelected(select, 0, 'One', '1');
-          adapterUtils.assertAdapterValueSelected(select, 1, 'Two', '2');
-        });
-    });
+        it( 'modifying value', function () {
+            cy.get( selector )
+                    .then( ( select ) => adapterUtils.assertAdapterNoValueSelected( select ) )
+                    .select( ['1', '2'], {force: true} )
+                    .then( ( select ) => {
+                        adapterUtils.assertAdapterHoldsAmountOfValues( select, 2 );
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1' );
+                        adapterUtils.assertAdapterValueSelected( select, 1, 'Two', '2' );
+                    } );
+        } );
 
-    it('reset selects initial value', function() {
-      cy.get(selector)
-        .select(['2', 'Three'], { force: true })
-        .then(select => {
-          adapterUtils.assertAdapterValueSelected(select, 0, 'Two', '2');
-          adapterUtils.assertAdapterValueSelected(select, 1, '3', 'Three');
+        it( 'reset selects initial value', function () {
+            cy.get( selector )
+                    .select( ['2', 'Three'], {force: true} )
+                    .then( ( select ) => {
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2' );
+                        adapterUtils.assertAdapterValueSelected( select, 1, '3', 'Three' );
 
-          adapterUtils.getAdapterForElement(select).reset();
-          adapterUtils.assertAdapterNoValueSelected(select);
-        });
-    });
-  };
+                        adapterUtils.getAdapterForElement( select ).reset();
+                        adapterUtils.assertAdapterNoValueSelected( select );
+                    } );
+        } );
+    };
 
-  const singleValueSelectTests = function(selector) {
-    it('value holds option label, option value and option item', function() {
-      cy.get(selector).then(select => {
-        adapterUtils.assertAdapterValueSelected(
-          select,
-          0,
-          'One',
-          '1',
-          Cypress.$('option:selected', select)[0]
-        );
-      });
-    });
+    const singleValueSelectTests = function ( selector ) {
+        it( 'value holds option label, option value and option item', function () {
+            cy.get( selector )
+                    .then( ( select ) => {
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1', Cypress.$( 'option:selected', select )[0] );
+                    } );
+        } );
 
-    it('modifying value', function() {
-      cy.get(selector)
-        .then(select =>
-          adapterUtils.assertAdapterValueSelected(select, 0, 'One', '1')
-        )
-        .select('2', { force: true })
-        .then(select =>
-          adapterUtils.assertAdapterValueSelected(select, 0, 'Two', '2')
-        );
-    });
+        it( 'modifying value', function () {
+            cy.get( selector )
+                    .then( ( select ) => adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1' ) )
+                    .select( '2', {force: true} )
+                    .then( ( select ) => adapterUtils.assertAdapterValueSelected( select, 0, 'Two', '2' ) );
+        } );
 
-    it('reset selects initial value', function() {
-      cy.get(selector)
-        .select('Three', { force: true })
-        .then(select => {
-          adapterUtils.assertAdapterValueSelected(select, 0, '3', 'Three');
-          adapterUtils.getAdapterForElement(select).reset();
-          adapterUtils.assertAdapterValueSelected(select, 0, 'One', '1');
-        });
-    });
-  };
+        it( 'reset selects initial value', function () {
+            cy.get( selector )
+                    .select( 'Three', {force: true} )
+                    .then( ( select ) => {
+                        adapterUtils.assertAdapterValueSelected( select, 0, '3', 'Three' );
+                        adapterUtils.getAdapterForElement( select ).reset();
+                        adapterUtils.assertAdapterValueSelected( select, 0, 'One', '1' );
+                    } )
+        } );
+    };
 
-  const baseSelectTests = function(selector, eventName) {
-    afterEach('reset adapter', function() {
-      cy.get(selector).then(select => {
-        adapterUtils.getAdapterForElement(select).reset();
-      });
-    });
+    const baseSelectTests = function ( selector, eventName ) {
+        afterEach( 'reset adapter', function () {
+            cy.get( selector )
+                    .then( ( select ) => {
+                        adapterUtils.getAdapterForElement( select ).reset();
+                    } )
+        } );
 
-    it('adapter exists', function() {
-      adapterUtils.assertThatAdapterExists(selector);
-    });
+        it( 'adapter exists', function () {
+            adapterUtils.assertThatAdapterExists( selector );
+        } );
 
-    it('does not have underlying control adapters', function() {
-      adapterUtils.assertHasUnderlyingControlAdapters(selector, 0);
-    });
+        it( 'does not have underlying control adapters', function () {
+            adapterUtils.assertHasUnderlyingControlAdapters( selector, 0 );
+        } );
 
-    it(`bootstrapui.change is fired when a ${eventName} event is emitted on the select`, function() {
-      cy.get(selector).then(select => {
-        adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn(
-          select,
-          eventName
-        );
-      });
-    });
-  };
+        it( `bootstrapui.change is fired when a ${eventName} event is emitted on the select`, function () {
+            cy.get( selector )
+                    .then( ( select ) => {
+                        adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn( select, eventName );
+                    } )
+        } );
+    };
 
-  before(function() {
-    cy.visit('/control-adapters');
-  });
+    before( function () {
+        cy.visit( "/utilities/control-adapters" );
+    } );
 
-  describe('single select', () => {
-    const selector = '#ca-select';
-    baseSelectTests(selector, 'change');
-    singleValueSelectTests(selector);
-  });
+    describe( 'single select', () => {
+        const selector = '#ca-select';
+        baseSelectTests( selector, 'change' );
+        singleValueSelectTests( selector );
+    } );
 
-  describe('multi select', () => {
-    const selector = '#ca-multi-select';
-    baseSelectTests(selector, 'change');
-    multiValueSelectTests(selector);
-  });
+    describe( 'multi select', () => {
+        const selector = '#ca-multi-select';
+        baseSelectTests( selector, 'change' );
+        multiValueSelectTests( selector );
+    } );
 
-  describe('bootstrap select', () => {
-    const selector = '#ca-bootstrap-select';
-    baseSelectTests(selector, 'changed.bs.select');
-    singleValueSelectTests(selector);
-  });
+    describe( 'bootstrap select', () => {
+        const selector = '#ca-bootstrap-select';
+        baseSelectTests( selector, 'changed.bs.select' );
+        singleValueSelectTests( selector );
+    } );
 
-  describe('bootstrap multi select', () => {
-    const selector = '#ca-bootstrap-multi-select';
-    baseSelectTests(selector, 'changed.bs.select');
-    multiValueSelectTests(selector);
-  });
-});
+    describe( 'bootstrap multi select', () => {
+        const selector = '#ca-bootstrap-multi-select';
+        baseSelectTests( selector, 'changed.bs.select' );
+        multiValueSelectTests( selector );
+    } );
+} );

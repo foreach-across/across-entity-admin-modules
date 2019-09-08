@@ -38,7 +38,7 @@ public class BootstrapUiWebResources implements WebResourcePackage
 	public static final String POPPER = "popper";
 	public static final String FONT_AWESOME = "font-awesome";
 
-	public static final String MODULE_RESOURCES_VERSION = "0.0.1-SNAPSHOT";
+	public static final String MODULE_RESOURCES_VERSION = "0.0.1";
 	private static final String BOOTSTRAP_VERSION = "4.3.1";
 	private static final String POPPER_VERSION = "1.14.3";
 	private static final String FONT_AWESOME_VERSION = "5.10.1";

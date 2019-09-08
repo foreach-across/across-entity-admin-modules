@@ -14,79 +14,69 @@
  * limitations under the License.
  */
 
-import adapterUtils from '../../support/utils/control-adapters';
+import adapterUtils from "../../support/utils/control-adapters";
 
-describe('ControlAdapter - Numeric', function() {
-  const selector = '#ca-numeric';
-  const content = '7234.23';
-  const label = '$7,234.23';
+describe( 'ControlAdapter - Numeric', function () {
+    const selector = '#ca-numeric';
+    const content = '7234.23';
+    const label = '$7,234.23';
 
-  before(function() {
-    cy.visit('/control-adapters');
-  });
+    before( function () {
+        cy.visit( "/utilities/control-adapters" );
+    } );
 
-  afterEach('reset adapter', function() {
-    cy.get(selector)
-      .clear()
-      .then(element => {
-        console.log(element.data());
-        adapterUtils.getAdapterForElement(element).reset();
-      })
-      .closest('div.col-md-6')
-      .click();
-  });
+    afterEach( 'reset adapter', function () {
+        cy.get( selector )
+                .clear()
+                .then( ( element ) => {
+                    console.log( element.data() );
+                    adapterUtils.getAdapterForElement( element ).reset();
+                } )
+                .closest( 'div.col-md-6' )
+                .click();
+    } );
 
-  it('adapter exists', function() {
-    adapterUtils.assertThatAdapterExists(selector);
-  });
+    it( 'adapter exists', function () {
+        adapterUtils.assertThatAdapterExists( selector );
+    } );
 
-  it('does not have underlying control adapters', function() {
-    adapterUtils.assertHasUnderlyingControlAdapters(selector, 0);
-  });
+    it( 'does not have underlying control adapters', function () {
+        adapterUtils.assertHasUnderlyingControlAdapters( selector, 0 );
+    } );
 
-  it('value holds the formatted value, value and the textbox', function() {
-    cy.get(selector)
-      .type(content)
-      .then(element => {
-        adapterUtils.assertAdapterValueSelected(
-          element,
-          0,
-          label,
-          content,
-          element[0]
-        );
-      });
-  });
+    it( "value holds the formatted value, value and the textbox", function () {
+        cy.get( selector )
+                .type( content )
+                .then( ( element ) => {
+                    adapterUtils.assertAdapterValueSelected( element, 0, label, content, element[0] );
+                } );
+    } );
 
-  it('modifying value', function() {
-    cy.get(selector)
-      .then(element =>
-        adapterUtils.assertAdapterValueSelected(element, 0, '', '')
-      )
-      .type(content)
-      .then(element =>
-        adapterUtils.assertAdapterValueSelected(element, 0, label, content)
-      );
-  });
+    it( 'modifying value', function () {
+        cy.get( selector )
+                .then( ( element ) => adapterUtils.assertAdapterValueSelected( element, 0, '', '' ) )
+                .type( content )
+                .then( ( element ) => adapterUtils.assertAdapterValueSelected( element, 0, label, content ) );
+    } );
 
-  it('adapter reset leaves currency descriptor', function() {
-    cy.get(selector)
-      .then(element =>
-        adapterUtils.assertAdapterHoldsAmountOfValues(element, 1)
-      )
-      .type(content)
-      .then(element => {
-        adapterUtils.assertAdapterHoldsAmountOfValues(element, 1);
-        adapterUtils.assertAdapterValueSelected(element, 0, label, content);
-        adapterUtils.getAdapterForElement(element).reset();
-        adapterUtils.assertAdapterHoldsAmountOfValues(element, 1);
-        adapterUtils.assertAdapterValueSelected(element, 0, '$', '');
-      });
-  });
+    it( 'adapter reset leaves currency descriptor', function () {
+        cy.get( selector )
+                .then( ( element ) => adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 ) )
+                .type( content )
+                .then( ( element ) => {
+                    adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 );
+                    adapterUtils.assertAdapterValueSelected( element, 0, label, content );
+                    adapterUtils.getAdapterForElement( element ).reset();
+                    adapterUtils.assertAdapterHoldsAmountOfValues( element, 1 );
+                    adapterUtils.assertAdapterValueSelected( element, 0, '$', '' );
+                } );
 
-  it('bootstrapui.change is fired when a change event is emitted on the element', function() {
-    cy.get(selector).then(element => {
-      adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn(element, 'change');
-    });
-  });
-});
+    } );
+
+    it( 'bootstrapui.change is fired when a change event is emitted on the element', function () {
+        cy.get( selector )
+                .then( ( element ) => {
+                    adapterUtils.assertThatBootstrapUiChangeIsTriggeredOn( element, 'change' );
+                } )
+    } );
+} );

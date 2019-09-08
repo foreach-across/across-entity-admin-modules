@@ -20,7 +20,7 @@ describe( 'ControlAdapter - Datepicker', function () {
     const initialFormattedDate = '2019-01-23 00:00';
 
     before( function () {
-        cy.visit( "/control-adapters" );
+        cy.visit( "/utilities/control-adapters" );
     } );
 
     it( "adapter exists", function () {

@@ -146,7 +146,7 @@ describe( 'ControlAdapter - Checkbox', function () {
     };
 
     before( function () {
-        cy.visit( "/control-adapters" );
+        cy.visit( "/utilities/control-adapters" );
     } );
 
     describe( 'Checkbox tests', function () {
