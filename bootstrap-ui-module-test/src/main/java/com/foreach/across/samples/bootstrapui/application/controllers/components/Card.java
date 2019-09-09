@@ -16,14 +16,14 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.div;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.text;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.div;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.text;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
@@ -51,8 +51,8 @@ class Card extends ExampleController
 								       .add( html.p( css.card.text, html.unescapedText(
 										       "Some quick example text to build on the card title and make up the bulk of the card's content." ) )
 								       )
-								       .add( BootstrapUiBuilders.link( css.card.link ).text( "Card link" ) )
-								       .add( BootstrapUiBuilders.link( css.card.link ).text( "Another link" ) )
+								       .add( BootstrapUiBuildersBroken.link( css.card.link ).text( "Card link" ) )
+								       .add( BootstrapUiBuildersBroken.link( css.card.link ).text( "Another link" ) )
 				       )
 				)
 		);

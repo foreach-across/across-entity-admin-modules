@@ -246,4 +246,17 @@ public class FormGroupElement extends AbstractNodeViewElement
 		super.setHtmlId( htmlId );
 		return this;
 	}
+
+
+	@Override
+	public FormGroupElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public FormGroupElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

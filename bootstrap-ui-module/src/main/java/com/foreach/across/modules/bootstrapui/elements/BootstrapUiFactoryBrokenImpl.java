@@ -17,11 +17,16 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
+import com.foreach.across.modules.bootstrapui.elements.builder.entry.BootstrapViewElementBuilders;
 import com.foreach.across.modules.web.ui.StandardViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 
-public class BootstrapUiFactoryImpl extends StandardViewElementBuilderFactory implements BootstrapUiFactory
+/**
+ * @deprecated use the static facade {@link BootstrapViewElementBuilders} instead
+ */
+@Deprecated
+public class BootstrapUiFactoryBrokenImpl extends StandardViewElementBuilderFactory implements BootstrapUiFactoryBroken
 {
 	@Override
 	public HiddenFormElementBuilder hidden() {

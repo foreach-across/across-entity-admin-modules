@@ -32,7 +32,7 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.datetime;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.datetime;
 
 /**
  * @author Steven Gentens

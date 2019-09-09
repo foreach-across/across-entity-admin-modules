@@ -268,4 +268,16 @@ public class ScriptViewElement extends AbstractNodeViewElement
 		super.setHtmlId( htmlId );
 		return this;
 	}
+
+	@Override
+	public ScriptViewElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public ScriptViewElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

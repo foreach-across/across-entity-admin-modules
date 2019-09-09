@@ -16,8 +16,9 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.web.events.BuildMenuEvent;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
@@ -55,12 +56,12 @@ public abstract class ExampleController
 	protected abstract void menuItems( PathBasedMenuBuilder menu );
 
 	protected NodeViewElementBuilder panel( String title, Object... elementOrBuilders ) {
-		return BootstrapUiBuilders.div( css.margin.bottom.s3 ).add( html.h4( html.text( title ) ) ).addAll( toViewElements( elementOrBuilders ) );
+		return html.builders.div( css.margin.bottom.s3 ).add( html.h4( html.text( title ) ) ).addAll( toViewElements( elementOrBuilders ) );
 	}
 
 	protected String render( Object... elementOrBuilders ) {
 		RequestContextHolder.currentRequestAttributes().setAttribute(
-				"container", BootstrapUiBuilders.container().addAll( toViewElements( elementOrBuilders ) ).build(), RequestAttributes.SCOPE_REQUEST
+				"container", html.builders.container().addAll( toViewElements( elementOrBuilders ) ).build(), RequestAttributes.SCOPE_REQUEST
 		);
 
 		return "th/bootstrapUiTest/container";

@@ -17,13 +17,12 @@
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,7 +72,7 @@ class PanelNav extends ExampleController
 		menu.sort();
 		menu.select( MenuSelector.byPath( "/group1/subgroup1/three" ) );
 
-		return BootstrapUiBuilders.panels( menu ).build();
+		return BootstrapUiBuildersBroken.panels( menu ).build();
 	}
 
 	private NodeViewElement simplePanelNav() {
@@ -87,7 +86,7 @@ class PanelNav extends ExampleController
 
 		menu.select( MenuSelector.byPath( "/two" ) );
 
-		return BootstrapUiBuilders.panels( menu ).build();
+		return BootstrapUiBuildersBroken.panels( menu ).build();
 	}
 
 	private NodeViewElement panelNavWithGroupsAndIcons() {
@@ -101,7 +100,7 @@ class PanelNav extends ExampleController
 
 		menu.select( MenuSelector.byPath( "/one/sub2" ) );
 
-		return BootstrapUiBuilders.panels( menu ).build();
+		return BootstrapUiBuildersBroken.panels( menu ).build();
 	}
 
 	private NodeViewElement panelNavWithStyling() {
@@ -116,7 +115,7 @@ class PanelNav extends ExampleController
 		menu.select( MenuSelector.byTitle( "Panel example" ) );
 		menu.setTitle( "Bootstrap Ui Module" );
 
-		return BootstrapUiBuilders.panels( menu ).build();
+		return BootstrapUiBuildersBroken.panels( menu ).build();
 	}
 
 	private NodeViewElement panelNavGroupNotAsPanel() {
@@ -131,7 +130,7 @@ class PanelNav extends ExampleController
 		menu.select( MenuSelector.byTitle( "Panel example" ) );
 		menu.setTitle( "Bootstrap Ui Module" );
 
-		return BootstrapUiBuilders.panels( menu ).build();
+		return BootstrapUiBuildersBroken.panels( menu ).build();
 	}
 
 }

@@ -22,10 +22,10 @@ import com.foreach.across.modules.web.ui.ViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 
 /**
- * @deprecated use the static facade {@link BootstrapUiBuilders} instead
+ * @deprecated use the static facade {@link com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements#builders} instead
  */
 @Deprecated
-public interface BootstrapUiFactory extends ViewElementBuilderFactory
+public interface BootstrapUiFactoryBroken extends ViewElementBuilderFactory
 {
 	HiddenFormElementBuilder hidden();
 

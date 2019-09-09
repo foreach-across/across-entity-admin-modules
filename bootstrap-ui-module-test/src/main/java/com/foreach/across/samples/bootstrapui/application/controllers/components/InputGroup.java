@@ -16,18 +16,21 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
+import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
+import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.InputGroupFormElementBuilderSupport;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import static com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes.attribute;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.*;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.elements.InputGroupFormElement.*;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
@@ -110,20 +113,19 @@ class InputGroup extends ExampleController
 				inputGroup()
 						.control( textbox().placeholder( "Username" ).type( TextboxFormElement.Type.EMAIL ) )
 						.prepend( text( "@" ) ).build(),
-				BootstrapUiElements.inputGroup(
+				bootstrap.inputGroup(
 						css.margin.bottom.s3,
 						control( textbox().placeholder( "Email prefix" ).type( TextboxFormElement.Type.TEXT ).build() ),
 						append( html.text( "@example.com" ) )
 				),
-				BootstrapUiElements.inputGroup( css.margin.bottom.s3, prepend( html.text( "$" ) ), append( html.text( ".00" ) ) ),
-				BootstrapUiElements
-						.inputGroup( css.inputGroup.small, css.margin.bottom.s3,
-						             prepend( html.text( "With textarea" ) ), control( new TextareaFormElement() ) )
+				bootstrap.inputGroup( css.margin.bottom.s3, prepend( html.text( "$" ) ), append( html.text( ".00" ) ) ),
+				bootstrap.inputGroup( css.inputGroup.small, css.margin.bottom.s3,
+				                      prepend( html.text( "With textarea" ) ), control( new TextareaFormElement() ) )
 		);
 	}
 
 	private InputGroupFormElementBuilderSupport inputGroup() {
-		return BootstrapUiBuilders.inputGroup().with( css.margin.bottom.s3 );
+		return BootstrapUiBuildersBroken.inputGroup().with( css.margin.bottom.s3 );
 	}
 
 }

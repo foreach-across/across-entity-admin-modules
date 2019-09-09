@@ -180,10 +180,34 @@ public class TableViewElement extends AbstractNodeViewElement
 		return this;
 	}
 
+	@Override
+	public TableViewElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public TableViewElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
+
 	public static class Caption extends AbstractTextNodeViewElement
 	{
 		public Caption() {
 			super( "caption" );
+		}
+
+		@Override
+		public Caption set( WitherSetter... setters ) {
+			super.set( setters );
+			return this;
+		}
+
+		@Override
+		public Caption remove( WitherRemover... functions ) {
+			super.remove( functions );
+			return this;
 		}
 	}
 
@@ -209,12 +233,36 @@ public class TableViewElement extends AbstractNodeViewElement
 				return this;
 			}
 		}
+
+		@Override
+		public ColumnGroup set( WitherSetter... setters ) {
+			super.set( setters );
+			return this;
+		}
+
+		@Override
+		public ColumnGroup remove( WitherRemover... functions ) {
+			super.remove( functions );
+			return this;
+		}
 	}
 
 	public static class Header extends AbstractNodeViewElement
 	{
 		public Header() {
 			super( "thead" );
+		}
+
+		@Override
+		public Header set( WitherSetter... setters ) {
+			super.set( setters );
+			return this;
+		}
+
+		@Override
+		public Header remove( WitherRemover... functions ) {
+			super.remove( functions );
+			return this;
 		}
 	}
 
@@ -223,12 +271,36 @@ public class TableViewElement extends AbstractNodeViewElement
 		public Footer() {
 			super( "tfoot" );
 		}
+
+		@Override
+		public Footer set( WitherSetter... setters ) {
+			super.set( setters );
+			return this;
+		}
+
+		@Override
+		public Footer remove( WitherRemover... functions ) {
+			super.remove( functions );
+			return this;
+		}
 	}
 
 	public static class Body extends AbstractNodeViewElement
 	{
 		public Body() {
 			super( "tbody" );
+		}
+
+		@Override
+		public Body set( WitherSetter... setters ) {
+			super.set( setters );
+			return this;
+		}
+
+		@Override
+		public Body remove( WitherRemover... functions ) {
+			super.remove( functions );
+			return this;
 		}
 	}
 
@@ -249,6 +321,18 @@ public class TableViewElement extends AbstractNodeViewElement
 			this.style = style;
 			return this;
 		}
+
+		@Override
+		public Row set( WitherSetter... setters ) {
+			super.set( setters );
+			return this;
+		}
+
+		@Override
+		public Row remove( WitherRemover... functions ) {
+			super.remove( functions );
+			return this;
+		}
 	}
 
 	@Accessors(chain = true)
@@ -263,6 +347,18 @@ public class TableViewElement extends AbstractNodeViewElement
 		public Cell() {
 			super( "td" );
 			setElementType( ELEMENT_TYPE + ".cell" );
+		}
+
+		@Override
+		public Cell set( WitherSetter... setters ) {
+			super.set( setters );
+			return this;
+		}
+
+		@Override
+		public Cell remove( WitherRemover... functions ) {
+			super.remove( functions );
+			return this;
 		}
 	}
 }

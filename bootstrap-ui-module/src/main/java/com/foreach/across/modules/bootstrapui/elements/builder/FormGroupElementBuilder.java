@@ -15,15 +15,20 @@
  */
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
-import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.elements.FormControlElement;
+import com.foreach.across.modules.bootstrapui.elements.FormGroupElement;
+import com.foreach.across.modules.bootstrapui.elements.FormLayout;
+import com.foreach.across.modules.bootstrapui.elements.LabelFormElement;
+import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
 
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.*;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<FormGroupElement, FormGroupElementBuilder>
 {
@@ -97,7 +102,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder label( String text ) {
-		label( BootstrapUiBuilders.label( text ) );
+		label( bootstrap.builders.label( text ) );
 		return this;
 	}
 
@@ -193,7 +198,7 @@ public class FormGroupElementBuilder extends AbstractNodeViewElementBuilder<Form
 	 * @return current builder
 	 */
 	public FormGroupElementBuilder tooltip( String text ) {
-		tooltip( BootstrapUiBuilders.tooltip( text ) );
+		tooltip( bootstrap.builders.tooltip().text( text ) );
 		return this;
 	}
 

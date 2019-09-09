@@ -16,7 +16,7 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Size;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
@@ -47,14 +47,14 @@ class Buttons extends ExampleController
 	}
 
 	private ButtonViewElement simpleButtonElement() {
-		return BootstrapUiBuilders
+		return BootstrapUiBuildersBroken
 				.button()
 				.text( "Click me" )
 				.build();
 	}
 
 	private ButtonViewElement buttonAsLink() {
-		return BootstrapUiBuilders
+		return BootstrapUiBuildersBroken
 				.button()
 				.text( "To google  " )
 				.link( "http://www.foreach.be" )
@@ -64,7 +64,7 @@ class Buttons extends ExampleController
 	}
 
 	private ButtonViewElement largeSubmitButton() {
-		return BootstrapUiBuilders
+		return BootstrapUiBuildersBroken
 				.button()
 				.submit()
 				.size( Size.LARGE )

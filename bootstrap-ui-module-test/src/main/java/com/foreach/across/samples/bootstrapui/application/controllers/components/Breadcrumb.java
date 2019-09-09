@@ -17,7 +17,7 @@
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
@@ -54,7 +54,7 @@ class Breadcrumb extends ExampleController
 		menu.select( MenuSelector.byTitle( "Breadcrumb example" ) );
 		menu.setTitle( "Bootstrap Ui Module" );
 
-		return BootstrapUiBuilders.breadcrumb( menu ).build();
+		return BootstrapUiBuildersBroken.breadcrumb( menu ).build();
 	}
 
 	private NodeViewElement breadcrumbWithIcons() {
@@ -69,7 +69,7 @@ class Breadcrumb extends ExampleController
 		menu.select( MenuSelector.byTitle( "Breadcrumb example" ) );
 		menu.setTitle( "Bootstrap Ui Module" );
 
-		return BootstrapUiBuilders.breadcrumb( menu ).build();
+		return BootstrapUiBuildersBroken.breadcrumb( menu ).build();
 	}
 
 }

@@ -16,7 +16,7 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.form.controls;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
@@ -47,22 +47,22 @@ class Textbox extends ExampleController
 	}
 
 	private TextboxFormElement simpleTextbox() {
-		return BootstrapUiBuilders.textbox()
-		                          .placeholder( "Placeholder text..." )
-		                          .build();
+		return BootstrapUiBuildersBroken.textbox()
+		                                .placeholder( "Placeholder text..." )
+		                                .build();
 	}
 
 	private TextboxFormElement textarea() {
-		return BootstrapUiBuilders.textarea()
-		                          .placeholder( "Placeholder text..." )
-		                          .autoSize()
-		                          .build();
+		return BootstrapUiBuildersBroken.textarea()
+		                                .placeholder( "Placeholder text..." )
+		                                .autoSize()
+		                                .build();
 	}
 
 	private TextboxFormElement autoSizingTextbox() {
-		return BootstrapUiBuilders.textbox()
-		                          .placeholder( "Placeholder text..." )
-		                          .autoSize()
-		                          .build();
+		return BootstrapUiBuildersBroken.textbox()
+		                                .placeholder( "Placeholder text..." )
+		                                .autoSize()
+		                                .build();
 	}
 }

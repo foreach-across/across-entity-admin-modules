@@ -14,32 +14,17 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements;
+package com.foreach.across.modules.bootstrapui.elements.builder.entry.support;
+
+import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
+import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
- * Represents a <a href="https://getbootstrap.com/docs/4.3/components/forms/#switches">bootstrap switch</a> element.
+ * Support class used by {@link com.foreach.across.modules.bootstrapui.elements.builder.entry.BootstrapViewElementBuilders}
  *
- * @author Steven Gentens
+ * @author Stijn Vanhoof
  * @since 3.0.0
  */
-public class ToggleFormElement extends CheckboxFormElement
+public class BootstrapSelectBuilderSupport extends BootstrapOptionsBuilderSupport
 {
-	public static final String ELEMENT_TYPE = BootstrapUiElements.TOGGLE;
-
-	public ToggleFormElement() {
-		setElementType( ELEMENT_TYPE );
-	}
-
-	@Override
-	public ToggleFormElement set( WitherSetter... setters ) {
-		super.set( setters );
-		return this;
-	}
-
-	@Override
-	public ToggleFormElement remove( WitherRemover... functions ) {
-		super.remove( functions );
-		return this;
-	}
-
 }

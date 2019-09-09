@@ -200,6 +200,18 @@ public class SelectFormElement extends FormControlElementSupport
 		return this;
 	}
 
+	@Override
+	public SelectFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public SelectFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
+
 	/**
 	 * Single option.
 	 */
@@ -342,6 +354,18 @@ public class SelectFormElement extends FormControlElementSupport
 			super.setTagName( tagName );
 			return this;
 		}
+
+		@Override
+		public Option set( WitherSetter... setters ) {
+			super.set( setters );
+			return this;
+		}
+
+		@Override
+		public Option remove( WitherRemover... functions ) {
+			super.remove( functions );
+			return this;
+		}
 	}
 
 	/**
@@ -459,6 +483,18 @@ public class SelectFormElement extends FormControlElementSupport
 		@Override
 		public OptionGroup setHtmlId( String htmlId ) {
 			super.setHtmlId( htmlId );
+			return this;
+		}
+
+		@Override
+		public OptionGroup set( WitherSetter... setters ) {
+			super.set( setters );
+			return this;
+		}
+
+		@Override
+		public OptionGroup remove( WitherRemover... functions ) {
+			super.remove( functions );
 			return this;
 		}
 	}

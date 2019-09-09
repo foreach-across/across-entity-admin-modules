@@ -22,35 +22,24 @@ import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavCompon
 import com.foreach.across.modules.web.menu.Menu;
 
 /**
- * Factory for more complex component builders.
- *
  * @author Arne Vandamme
  * @since 1.0.0
- * @deprecated use the static {@link com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders} instead
  */
-public interface BootstrapUiComponentFactory
+@Deprecated
+public class BootstrapUiComponentFactoryBrokenImpl implements BootstrapUiComponentFactoryBroken
 {
-	/**
-	 * Returns a builder for rendering a {@link Menu} to a Bootstrap nav type unordered list.
-	 *
-	 * @param menu to render
-	 * @return builder
-	 */
-	DefaultNavComponentBuilder nav( Menu menu );
+	@Override
+	public DefaultNavComponentBuilder nav( Menu menu ) {
+		return new DefaultNavComponentBuilder().menu( menu );
+	}
 
-	/**
-	 * Returns a builder for rendering a {@link Menu} to a (sidebar) list of panels.
-	 *
-	 * @param menu to render
-	 * @return builder
-	 */
-	PanelsNavComponentBuilder panels( Menu menu );
+	@Override
+	public PanelsNavComponentBuilder panels( Menu menu ) {
+		return new PanelsNavComponentBuilder().menu( menu );
+	}
 
-	/**
-	 * Returns a builder for rendering the selected path to a Bootstrap breadcrumb list.
-	 *
-	 * @param menu to render
-	 * @return builder
-	 */
-	BreadcrumbNavComponentBuilder breadcrumb( Menu menu );
+	@Override
+	public BreadcrumbNavComponentBuilder breadcrumb( Menu menu ) {
+		return new BreadcrumbNavComponentBuilder().menu( menu );
+	}
 }

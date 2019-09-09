@@ -21,6 +21,9 @@ import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
  * @author Arne Vandamme
+ * @see com.foreach.across.modules.bootstrapui.attributes.BootstrapAttributes
+ * @see BootstrapStyles
+ *
  */
 public interface BootstrapUiElements extends StandardViewElements
 {
@@ -50,14 +53,4 @@ public interface BootstrapUiElements extends StandardViewElements
 	String FILE_UPLOAD = "bootstrapFileUpload";
 	String AUTOSUGGEST = "bootstrapAutoSuggest";
 	String GENERIC_FORM_CONTROL = "bootstrapGenericFormControl";
-
-	BootstrapStyles css = new BootstrapStyles();
-
-	static LinkViewElement link( ViewElement.WitherSetter... setters ) {
-		return new LinkViewElement().set( setters );
-	}
-
-	static InputGroupFormElement inputGroup( ViewElement.WitherSetter... setters ) {
-		return new InputGroupFormElement().set( setters );
-	}
 }

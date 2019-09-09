@@ -27,4 +27,16 @@ public class RadioFormElement extends CheckboxFormElement
 	public RadioFormElement() {
 		setElementType( ELEMENT_TYPE );
 	}
+
+	@Override
+	public RadioFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public RadioFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

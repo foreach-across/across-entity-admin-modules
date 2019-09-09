@@ -16,7 +16,7 @@
 
 package com.foreach.across.samples.bootstrapui.application.web.ui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
@@ -67,7 +67,7 @@ public class DefaultLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 			if ( !topNav.isEmpty() ) {
 				modelAndView.addObject(
 						"topNav",
-						BootstrapUiBuilders.nav( topNav ).tabs().build()
+						BootstrapUiBuildersBroken.nav( topNav ).tabs().build()
 				);
 			}
 		}

@@ -16,7 +16,7 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.form.controls;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
@@ -55,33 +55,33 @@ class Numeric extends ExampleController
 	}
 
 	private NumericFormElement simpleNumericElement() {
-		return BootstrapUiBuilders.numeric()
-		                          .simple()
-		                          .build();
+		return BootstrapUiBuildersBroken.numeric()
+		                                .simple()
+		                                .build();
 	}
 
 	private NumericFormElement percentageNumericElement() {
-		return BootstrapUiBuilders.numeric()
-		                          .percent()
-		                          .build();
+		return BootstrapUiBuildersBroken.numeric()
+		                                .percent()
+		                                .build();
 	}
 
 	private NumericFormElement currenencyNumericElement() {
-		return BootstrapUiBuilders.numeric()
-		                          .currency( Currency.getInstance( "EUR" ) )
-		                          .build();
+		return BootstrapUiBuildersBroken.numeric()
+		                                .currency( Currency.getInstance( "EUR" ) )
+		                                .build();
 	}
 
 	private NumericFormElement intgerNumericElement() {
-		return BootstrapUiBuilders.numeric()
-		                          .integer()
-		                          .build();
+		return BootstrapUiBuildersBroken.numeric()
+		                                .integer()
+		                                .build();
 	}
 
 	private NumericFormElement decimalNumericElement() {
-		return BootstrapUiBuilders.numeric()
-		                          .decimal( 2 )
-		                          .build();
+		return BootstrapUiBuildersBroken.numeric()
+		                                .decimal( 2 )
+		                                .build();
 	}
 
 }

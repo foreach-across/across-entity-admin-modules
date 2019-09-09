@@ -304,4 +304,16 @@ public class FormViewElement extends AbstractNodeViewElement
 		super.setHtmlId( htmlId );
 		return this;
 	}
+
+	@Override
+	public FormViewElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public FormViewElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

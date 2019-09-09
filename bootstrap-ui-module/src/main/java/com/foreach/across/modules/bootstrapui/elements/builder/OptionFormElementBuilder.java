@@ -236,6 +236,11 @@ public class OptionFormElementBuilder<T extends FormControlElementSupport>
 	}
 
 	@Override
+	public OptionFormElementBuilder<T> with( ViewElement.WitherSetter... setters ) {
+		return super.with( setters );
+	}
+
+	@Override
 	public int compareTo( OptionFormElementBuilder o ) {
 		int comparison = ObjectUtils.compare( getLabel(), o.getLabel() );
 

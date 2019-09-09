@@ -30,8 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.function.Supplier;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.option;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.options;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.option;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.options;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**

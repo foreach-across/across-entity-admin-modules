@@ -16,6 +16,7 @@
 package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.Getter;
@@ -225,6 +226,18 @@ public class TextboxFormElement extends FormControlElementSupport implements Con
 	@Override
 	protected TextboxFormElement setTagName( String tagName ) {
 		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public TextboxFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
 		return this;
 	}
 }

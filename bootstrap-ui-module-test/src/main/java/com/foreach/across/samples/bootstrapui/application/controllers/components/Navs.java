@@ -18,7 +18,7 @@ package com.foreach.across.samples.bootstrapui.application.controllers.component
 
 import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
@@ -198,7 +198,7 @@ class Navs extends ExampleController
 	}
 
 	private ViewElementBuilder<NodeViewElement> menuComponentBuilder( String type, Menu menu ) {
-		DefaultNavComponentBuilder menuBuilder = BootstrapUiBuilders.nav( menu ).with( css.display.block );
+		DefaultNavComponentBuilder menuBuilder = BootstrapUiBuildersBroken.nav( menu ).with( css.display.block );
 
 		switch ( type ) {
 			case "navbar":

@@ -18,6 +18,7 @@ package com.foreach.across.modules.bootstrapui.components.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.AbstractLinkSupportingNodeViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
@@ -36,7 +37,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements.link;
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.wither;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
@@ -288,8 +289,8 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 	                                       boolean iconOnly,
 	                                       ViewElementBuilderContext builderContext ) {
 		if ( iconOnly || !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, container, builderContext ) ) {
-			LinkViewElement link = link( css.nav.link )
-					.setUrl( buildLink( item.getUrl(), builderContext ) );
+			LinkViewElement link = bootstrap.link( css.nav.link )
+			                                .setUrl( buildLink( item.getUrl(), builderContext ) );
 
 			if ( item.isSelected() ) {
 				link.set( css.active );
@@ -304,7 +305,7 @@ public abstract class NavComponentBuilder<SELF extends NavComponentBuilder<SELF>
 			return link;
 		}
 
-		return link( css.nav.link );
+		return bootstrap.link( css.nav.link );
 	}
 
 	protected void addIconAndText( AbstractNodeViewElement node,

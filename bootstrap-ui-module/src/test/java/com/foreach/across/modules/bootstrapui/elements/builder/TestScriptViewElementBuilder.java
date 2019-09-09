@@ -17,11 +17,11 @@
 package com.foreach.across.modules.bootstrapui.elements.builder;
 
 import com.foreach.across.modules.bootstrapui.elements.AbstractBootstrapViewElementTest;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.html;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.script;
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
 
 /**
  * @author Arne Vandamme
@@ -31,21 +31,22 @@ public class TestScriptViewElementBuilder extends AbstractBootstrapViewElementTe
 {
 	@Test
 	public void emptyScript() {
-		renderAndExpect( script().build(), "<script></script>" );
+		renderAndExpect( bootstrap.builders.script().build(), "<script></script>" );
 	}
 
 	@Test
 	public void configuredScript() {
 		renderAndExpect(
-				script( MediaType.TEXT_HTML )
-						.htmlId( "myscript" )
-						.async( true )
-						.source( "mysrc" )
-						.defer( true )
-						.charset( "utf-8" )
-						.data( "value", "test" )
-						.add( html( "alert('hello');" ) )
-						.build(),
+				bootstrap.builders.script()
+				                  .type( MediaType.TEXT_HTML )
+				                  .htmlId( "myscript" )
+				                  .async( true )
+				                  .source( "mysrc" )
+				                  .defer( true )
+				                  .charset( "utf-8" )
+				                  .data( "value", "test" )
+				                  .add( HtmlViewElements.html.unescapedText( "alert('hello');" ) )
+				                  .build(),
 				"<script id='myscript' data-value='test' type='text/html' async='async' defer='defer' src='mysrc' charset='utf-8'>" +
 						"alert('hello');" +
 						"</script>"

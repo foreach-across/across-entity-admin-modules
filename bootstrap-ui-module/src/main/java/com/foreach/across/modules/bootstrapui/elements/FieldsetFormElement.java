@@ -212,10 +212,40 @@ public class FieldsetFormElement extends AbstractNodeViewElement
 		return this;
 	}
 
+	@Override
+	public FieldsetFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public FieldsetFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
+
 	public static class Legend extends AbstractTextNodeViewElement implements ConfigurableTextViewElement
 	{
 		public Legend() {
 			super( "legend" );
+		}
+
+		@Override
+		public Legend setHtmlId( String htmlId ) {
+			super.setHtmlId( htmlId );
+			return this;
+		}
+
+		@Override
+		public Legend set( WitherSetter... setters ) {
+			super.set( setters );
+			return this;
+		}
+
+		@Override
+		public Legend remove( WitherRemover... functions ) {
+			super.remove( functions );
+			return this;
 		}
 	}
 }

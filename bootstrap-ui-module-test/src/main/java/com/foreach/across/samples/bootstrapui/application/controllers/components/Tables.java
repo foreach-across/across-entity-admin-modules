@@ -16,7 +16,7 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
@@ -39,32 +39,32 @@ class Tables extends ExampleController
 	}
 
 	private TableViewElement simpleTableElement() {
-		return BootstrapUiBuilders
+		return BootstrapUiBuildersBroken
 				.table()
 				.header(
-						BootstrapUiBuilders.tableHeader().add(
-								BootstrapUiBuilders.tableHeaderCell().text( "Name" )
+						BootstrapUiBuildersBroken.tableHeader().add(
+								BootstrapUiBuildersBroken.tableHeaderCell().text( "Name" )
 						).add(
-								BootstrapUiBuilders.tableHeaderCell().text( "Value" )
+								BootstrapUiBuildersBroken.tableHeaderCell().text( "Value" )
 						)
 				)
 				.body(
-						BootstrapUiBuilders.tableBody().add(
-								BootstrapUiBuilders.tableRow().add(
-										BootstrapUiBuilders.tableCell().text( "Height" )
+						BootstrapUiBuildersBroken.tableBody().add(
+								BootstrapUiBuildersBroken.tableRow().add(
+										BootstrapUiBuildersBroken.tableCell().text( "Height" )
 								).add(
-										BootstrapUiBuilders.tableCell().text( "128" )
+										BootstrapUiBuildersBroken.tableCell().text( "128" )
 								)
 
 						)
 				)
 				.footer(
-						BootstrapUiBuilders.tableFooter().add(
-								BootstrapUiBuilders.tableRow().add(
-										BootstrapUiBuilders.tableCell()
-										                   .columnSpan( 2 )
-										                   .text( "Table footer" )
-										                   .heading( true )
+						BootstrapUiBuildersBroken.tableFooter().add(
+								BootstrapUiBuildersBroken.tableRow().add(
+										BootstrapUiBuildersBroken.tableCell()
+										                         .columnSpan( 2 )
+										                         .text( "Table footer" )
+										                         .heading( true )
 								)
 						)
 				)

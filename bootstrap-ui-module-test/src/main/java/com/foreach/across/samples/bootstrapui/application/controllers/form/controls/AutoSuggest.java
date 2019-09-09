@@ -40,7 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.*;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
 
 /**

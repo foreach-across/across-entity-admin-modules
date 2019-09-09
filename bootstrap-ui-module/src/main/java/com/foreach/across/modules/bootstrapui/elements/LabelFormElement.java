@@ -181,4 +181,16 @@ public class LabelFormElement extends AbstractNodeViewElement implements Configu
 		super.setHtmlId( htmlId );
 		return this;
 	}
+
+	@Override
+	public LabelFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public LabelFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

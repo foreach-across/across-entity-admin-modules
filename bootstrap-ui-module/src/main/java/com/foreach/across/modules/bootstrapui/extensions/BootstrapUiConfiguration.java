@@ -21,8 +21,8 @@ import com.foreach.across.core.annotations.ModuleConfiguration;
 import com.foreach.across.core.annotations.PostRefresh;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.core.development.AcrossDevelopmentMode;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactoryImpl;
+import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactoryBroken;
+import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactoryBrokenImpl;
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.thymeleaf.*;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
@@ -104,14 +104,15 @@ class BootstrapUiConfiguration
 	@Bean
 	@Lazy
 	@Exposed
-	public BootstrapUiFactory bootstrapUiFactory() {
-		return new BootstrapUiFactoryImpl();
+	public BootstrapUiFactoryBroken bootstrapUiFactory() {
+		return new BootstrapUiFactoryBrokenImpl();
 	}
 
+	@Deprecated
 	@Bean
 	@Lazy
 	@Exposed
-	public BootstrapUiComponentFactory bootstrapUiComponentFactory() {
-		return new BootstrapUiComponentFactoryImpl();
+	public BootstrapUiComponentFactoryBroken bootstrapUiComponentFactory() {
+		return new BootstrapUiComponentFactoryBrokenImpl();
 	}
 }
