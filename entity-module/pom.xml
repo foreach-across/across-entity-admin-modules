@@ -21,12 +21,15 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>entity-module-project</artifactId>
-		<version>4.0.0-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>entity-module</artifactId>
 
-	<name>${project.groupId}:${project.artifactId}</name>
+	<properties>
+		<maven.javadoc.skip>false</maven.javadoc.skip>
+		<maven.deploy.skip>false</maven.deploy.skip>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -135,7 +138,6 @@
 			<plugin>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-maven-plugin</artifactId>
-				<version>1.18.6.0</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>
@@ -153,10 +155,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
 				<configuration>
 					<failOnError>false</failOnError>
-					<additionalparam>-Xdoclint:none</additionalparam>
+					<doclint>none</doclint>
 					<sourcepath>
 						target/delombok;target/generated-sources
 					</sourcepath>
@@ -179,6 +180,27 @@
 							<reportOutputDirectory>${project.reporting.outputDirectory}</reportOutputDirectory>
 							<destDir>${project.version}/javadoc</destDir>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- This defines how a specific module will be flattened -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
