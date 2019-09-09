@@ -32,7 +32,7 @@ describe( 'ControlAdapter - Numeric', function () {
                     console.log( element.data() );
                     adapterUtils.getAdapterForElement( element ).reset();
                 } )
-                .closest( 'div.col-md-6' )
+                .closest( 'div.mb-3' )
                 .click();
     } );
 

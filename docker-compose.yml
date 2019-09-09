@@ -8,10 +8,10 @@ services:
       dockerfile: ./Dockerfile
     command: ./build-prod.sh build:webjar
     volumes:
-      - ./bootstrap-ui-module-frontend/src/main/frontend:/build/src/main/frontend
+      - ./bootstrap-ui-module-frontend/src/main/frontend:/build/src/main/frontend:cached
       - /build/src/main/frontend/node_modules
-      - ./bootstrap-ui-module-frontend/src/main/resources:/build/src/main/resources
-      - ./bootstrap-ui-module-frontend/target:/build/target
+      - ./bootstrap-ui-module-frontend/src/main/resources:/build/src/main/resources:delegated
+      - ./bootstrap-ui-module-frontend/target:/build/target:delegated
 
   webv2:
     ipc: host
