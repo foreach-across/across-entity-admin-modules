@@ -21,6 +21,8 @@ describe( 'ControlAdapter - Datepicker', function () {
 
     before( function () {
         cy.visit( "/utilities/control-adapters" );
+        cy.get( 'li.active > a' )
+                .click();
     } );
 
     it( "adapter exists", function () {

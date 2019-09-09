@@ -46,7 +46,7 @@ function initializeDateTimePickers( node: any ): void
         delete configuration.exportFormat;
 
         $( this ).datetimepicker( configuration );
-        $( this ).on( 'dp.change', ( e: any ) => {
+        $( this ).on( 'change.datetimepicker', ( e: any ) => {
             const exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
             $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
         } );

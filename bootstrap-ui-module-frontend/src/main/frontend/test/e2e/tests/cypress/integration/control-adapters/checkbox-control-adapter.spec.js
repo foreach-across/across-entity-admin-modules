@@ -179,7 +179,7 @@ describe( 'ControlAdapter - Checkbox', function () {
 
         describe( 'unwrapped radio', function () {
             checkboxTests( '#ca-radio-unwrapped', wrappedElementFetcher );
-            wrappedCheckboxTests( '#ca-radio-unwrapped' );
+            unwrappedCheckboxTests( '#ca-radio-unwrapped' );
         } );
 
         describe( 'unwrapped radio without label', function () {
