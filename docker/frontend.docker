@@ -1,0 +1,25 @@
+FROM node:12.9.1-alpine
+
+RUN apk update && apk add bash
+
+# Setup folder
+RUN mkdir -p /build/src/main/frontend/
+
+WORKDIR /build/
+
+# Copy build scripts
+COPY ./bootstrap-ui-module-frontend/build-local.sh ./build-local.sh
+RUN chmod +x ./build-local.sh
+
+COPY ./bootstrap-ui-module-frontend/build-prod.sh ./build-prod.sh
+RUN chmod +x ./build-prod.sh
+
+# Install dependencies
+COPY ./bootstrap-ui-module-frontend/src/main/frontend/package.json ./src/main/frontend/package.json
+COPY ./bootstrap-ui-module-frontend/src/main/frontend/yarn.lock ./src/main/frontend/yarn.lock
+COPY ./bootstrap-ui-module-frontend/src/main/frontend/.npmrc ./src/main/frontend/.npmrc
+
+WORKDIR /build/src/main/frontend
+RUN yarn --frozen-lockfile
+WORKDIR /build/
+

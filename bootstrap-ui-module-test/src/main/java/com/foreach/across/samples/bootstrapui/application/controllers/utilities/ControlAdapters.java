@@ -55,6 +55,7 @@ class ControlAdapters extends ExampleController
 		generatedElements.put( "Datetime", datetime().value( LocalDate.of( 2019, 1, 23 ) ).controlName( "ca-datetime" ).build() );
 		addOptionFormElements( generatedElements, "checkbox" );
 		addOptionFormElements( generatedElements, "radio" );
+		generatedElements.put( "a checkbox", optionElement().controlName( "yada" ).checkbox().build() );
 		generatedElements.put( "Group of checkboxes", optionElement().controlName( "ca-multi-checkbox" ).checkbox().build() );
 		generatedElements.put( "Group of radiobuttons", optionElement().controlName( "ca-multi-radio" ).radio().build() );
 		generatedElements.put( "Nested control adapters",

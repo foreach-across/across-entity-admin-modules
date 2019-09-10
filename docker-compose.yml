@@ -1,72 +1,38 @@
 version: "3.1"
 services:
-  # compiling frontend resources
-  frontendv2:
+  # Build frontend resources
+  frontend:
     tty: false
     build:
-      context: ./bootstrap-ui-module-frontend
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./docker/frontend.docker
     command: ./build-prod.sh build:webjar
     volumes:
       - ./bootstrap-ui-module-frontend/src/main/frontend:/build/src/main/frontend:cached
+      # scope node_modules to the container
       - /build/src/main/frontend/node_modules
       - ./bootstrap-ui-module-frontend/src/main/resources:/build/src/main/resources:delegated
       - ./bootstrap-ui-module-frontend/target:/build/target:delegated
 
-  webv2:
-    ipc: host
-    # TTY doesn't show pretty in bamboo
-    tty: false
-    build:
-      context: .
-      dockerfile: bootstrap-ui-module-frontend/src/main/frontend/test/e2e/web/Dockerfile
-    ports:
-      - "8080:8080"
-    expose:
-      - "8080"
-    #    depends_on:
-    #      - gulp
+  # Update frontend resources lockfile
+  update-lockfile:
+    image: node:12.9.1-alpine
+    command: yarn install
+    container_name: bootstrap-ui-module-update-lockfile
+    working_dir: /build
     volumes:
-      - ./bootstrap-ui-module-test/target:/web
-    networks:
-      default:
-        aliases:
-          - bootstrapui-test.dev.foreach.be
-  testv2:
-    ipc: host
-    # TTY doesn't show pretty in bamboo
-    tty: false
-    build:
-      context: .
-      dockerfile: bootstrap-ui-module-frontend/src/main/frontend/test/e2e/tests/Dockerfile
-    depends_on:
-      - webv2
-    command: bash -c "./wait-for-it.sh -t 360 web:8080 -- run; ./node_modules/.bin/cypress run --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results-[hash].xml; chmod -R 777 ./cypress"
-    links:
-      - webv2
-    volumes:
-      - ./bootstrap-ui-module-frontend/src/main/frontend/test/e2e/tests:/cypress
+      - ./bootstrap-ui-module-frontend/src/main/frontend:/build
+      # scope node_modules to the container
+      - /build/node_modules
 
-
-  frontend:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.assets
-    image: bootstrap-ui-module-assets
-    command: yarn run build
-    container_name: bootstrap-ui-module-assets-builder
-    volumes:
-      - ./bootstrap-ui-module/src/main/frontend:/build
-      - ./bootstrap-ui-module/src/main/resources/views/static/BootstrapUiModule:/resources/views/static/BootstrapUiModule
-
-  # executing e2e tests
+  # Executing E2E tests
   web:
     ipc: host
     # TTY doesn't show pretty in bamboo
     tty: false
     build:
       context: .
-      dockerfile: bootstrap-ui-module/src/main/frontend/tests/e2e/web/Dockerfile
+      dockerfile: ./docker/e2e-web.docker
     ports:
       - "8080:8080"
     expose:
@@ -79,20 +45,22 @@ services:
       default:
         aliases:
           - bootstrapui-test.dev.foreach.be
-  test:
+
+  e2e:
     ipc: host
     # TTY doesn't show pretty in bamboo
     tty: false
     build:
       context: .
-      dockerfile: bootstrap-ui-module/src/main/frontend/tests/e2e/tests/Dockerfile
+      dockerfile: ./docker/e2e-tests.docker
     depends_on:
       - web
     command: bash -c "./wait-for-it.sh -t 360 web:8080 -- run; ./node_modules/.bin/cypress run --project ./cypress --reporter junit --reporter-options mochaFile=cypress/out/test-results-[hash].xml; chmod -R 777 ./cypress"
     links:
       - web
     volumes:
-      - ./bootstrap-ui-module/src/main/frontend/tests/e2e/tests:/cypress
+      - ./bootstrap-ui-module-frontend/src/main/frontend/test/e2e/tests:/cypress
+
   cleanup:
     image: busybox:latest
     command: sh -c "echo Cleanup up /cypress/cypress/out; ls -al /cypress/cypress; rm -rf /cypress/cypress/out"

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [[ $1 == "" ]]; then
-  docker-compose up --build frontend2 && docker-compose run --rm frontendv2 sh -c "yarn run $1"
-elif [[ $1 == build ]]; then
-  docker-compose up --build frontend2
+if [[ $1 == "watch" ]]; then
+  docker-compose up --build frontend && docker-compose run --rm frontend ./build-local.sh watch:webjar
+else
+  docker-compose up --build frontend && docker-compose run --rm frontend ./build-local.sh build:webjar
+fi

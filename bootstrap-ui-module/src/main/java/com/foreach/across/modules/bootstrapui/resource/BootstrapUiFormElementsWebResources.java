@@ -111,7 +111,7 @@ public class BootstrapUiFormElementsWebResources implements WebResourcePackage
 						.toBucket( JAVASCRIPT_PAGE_END ),
 
 				// BootstrapUiModule specific
-				add( WebResource.javascript( "@webjars:/bootstrap-ui/" + MODULE_RESOURCES_VERSION + "/bootstrapui-formelements.umd.development.js" ) )
+				add( WebResource.javascript( "@webjars:/bootstrap-ui/" + MODULE_RESOURCES_VERSION + "/bootstrapui-formelements.umd" + minified( ".js" ) ) )
 						.withKey( NAME )
 						.toBucket( JAVASCRIPT_PAGE_END )
 		);

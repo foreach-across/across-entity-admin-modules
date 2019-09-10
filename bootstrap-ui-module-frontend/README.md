@@ -21,7 +21,7 @@ When doing local development each argument can also be prefixed using `watch:` o
 This will correspondingly automatically recompile the resources or build them once.
 If no prefix is specified, the resources will be watched and rebuild changes automatically.
 
-**NOTE:** to ensure that your resources are automatically reloaded when refreshing the page, ensure that the resources have been build *before* starting the application.
+**NOTE:** to ensure that your resources are automatically reloaded when refreshing the page, ensure that the resources have been build atleast once *before* starting the application.
 
 
 ## Building for production

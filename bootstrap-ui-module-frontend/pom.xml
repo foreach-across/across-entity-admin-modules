@@ -29,12 +29,11 @@
 	<artifactId>bootstrap-ui</artifactId>
 	<packaging>jar</packaging>
 
-	<version>0.0.1-SNAPSHOT</version>
+	<version>${revision}</version>
 	<name>bootstrap-ui</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<destDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</destDir>
 		<maven.deploy.skip>false</maven.deploy.skip>
 	</properties>
 
