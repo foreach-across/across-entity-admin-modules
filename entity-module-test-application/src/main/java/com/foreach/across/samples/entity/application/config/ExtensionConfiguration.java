@@ -17,7 +17,6 @@
 package com.foreach.across.samples.entity.application.config;
 
 import com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
@@ -45,8 +44,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import static com.foreach.across.modules.bootstrapui.config.FontAwesomeIconSetConfiguration.FONT_AWESOME_SOLID_ICON_SET;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.formGroup;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.textbox;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.basicSettings;
 import static com.foreach.across.modules.entity.views.EntityViewCustomizers.formSettings;
 
@@ -65,8 +63,9 @@ public class ExtensionConfiguration implements EntityConfigurer
 		        .formView(
 				        "extension",
 				        basicSettings()
-						        .adminMenu( "/extension", item -> item.attribute( NavComponentBuilder.ATTR_ICON,
-						                                                          IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "external-link-alt" ) ) )
+						        .adminMenu( "/extension",
+						                    item -> item.attribute( NavComponentBuilder.ATTR_ICON,
+						                                            IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "external-link-alt" ) ) )
 						        .andThen( formSettings().forExtension( true ).formLayout( Grid.create( 12 ) ) )
 						        .andThen( builder -> builder.viewProcessor( new PartnerExtensionViewProcessor() ) )
 		        );
@@ -89,7 +88,7 @@ public class ExtensionConfiguration implements EntityConfigurer
 			if ( !bindingResult.hasErrors() ) {
 				entityViewRequest.getPageContentStructure()
 				                 .addToFeedback(
-						                 BootstrapUiBuilders.alert().success().dismissible().text( "Updated url with: " + extension.getUrl() ).build()
+						                 bootstrap.builders.alert().success().dismissible().text( "Updated url with: " + extension.getUrl() ).build()
 				                 );
 			}
 		}
@@ -101,14 +100,15 @@ public class ExtensionConfiguration implements EntityConfigurer
 		                                          ViewElementBuilderMap builderMap ) {
 			builderMap.get( SingleEntityFormViewProcessor.LEFT_COLUMN, ColumnViewElementBuilder.class )
 			          .add(
-					          formGroup()
-							          .label( "URL" )
-							          .control( textbox().controlName( controlPrefix() + ".url" ).text( extension.url ) )
+					          bootstrap.builders.formGroup()
+					                            .label( "URL" )
+					                            .control( bootstrap.builders.textbox().controlName( controlPrefix() + ".url" ).text( extension.url ) )
 			          )
 			          .add(
-					          formGroup()
-							          .label( "Creation year" )
-							          .control( textbox().controlName( controlPrefix() + ".creationYear" ).text( "" + extension.creationYear ) )
+					          bootstrap.builders.formGroup()
+					                            .label( "Creation year" )
+					                            .control( bootstrap.builders.textbox().controlName( controlPrefix() + ".creationYear" )
+					                                                        .text( "" + extension.creationYear ) )
 			          );
 		}
 

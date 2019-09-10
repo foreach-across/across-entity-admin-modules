@@ -26,8 +26,8 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.node;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Post-processor that resolves a help text for a current property and a {@link com.foreach.across.modules.entity.views.bootstrapui.elements.ViewElementFieldset}.
@@ -56,9 +56,9 @@ public class FieldsetHelpTextPostProcessor<T extends ViewElement> extends Abstra
 		if ( !StringUtils.isEmpty( text ) ) {
 			element.getFooter()
 			       .addChild(
-					       node( "small" ).with( css.form.text )
-					                      .add( new TextViewElement( text, escapeHtml ) )
-					                      .build( builderContext )
+					       html.builders.small( css.form.text )
+					                    .add( new TextViewElement( text, escapeHtml ) )
+					                    .build( builderContext )
 			       );
 		}
 	}

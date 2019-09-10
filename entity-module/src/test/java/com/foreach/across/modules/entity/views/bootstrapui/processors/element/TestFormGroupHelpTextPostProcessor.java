@@ -44,6 +44,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class TestFormGroupHelpTextPostProcessor
 {
+	private static final String CSS_FORM_TEXT_HELP = "form-text-help";
+
 	@Mock
 	private EntityPropertyDescriptor descriptor;
 

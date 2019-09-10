@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
@@ -32,6 +31,7 @@ import com.foreach.across.modules.entity.web.EntityLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
 import com.foreach.across.modules.spring.security.actions.AllowableActions;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import lombok.Setter;
@@ -39,6 +39,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Responsible for creating a list view page layout for an entity type.
@@ -82,7 +84,7 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 
 	@Override
 	protected void createViewElementBuilders( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap ) {
-		FormViewElementBuilder listForm = BootstrapUiBuilders
+		FormViewElementBuilder listForm = bootstrap.builders
 				.form()
 				.name( formName )
 				.formName( formName )
@@ -91,12 +93,12 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 				.get();
 
 		String formHeaderRowName = formName + "-header-row";
-		NodeViewElementBuilder formHeaderRow = BootstrapUiBuilders.row().name( formHeaderRowName );
+		NodeViewElementBuilder formHeaderRow = bootstrap.builders.row().name( formHeaderRowName );
 
 		String formHeaderName = formName + "-header";
-		ColumnViewElementBuilder formHeader = BootstrapUiBuilders.column( Grid.Device.MD.width( Grid.Width.FULL ) )
-		                                                         .name( formHeaderName )
-		                                                         .css( "list-header d-flex" );
+		ColumnViewElementBuilder formHeader = bootstrap.builders.column( Grid.Device.MD.width( Grid.Width.FULL ) )
+		                                                        .name( formHeaderName )
+		                                                        .css( "list-header d-flex" );
 
 		formHeaderRow.add( formHeader );
 		listForm.add( formHeaderRow );
@@ -111,7 +113,7 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 
 	private void addViewNameHiddenElement( EntityViewRequest entityViewRequest, FormViewElementBuilder listForm ) {
 		if ( !EntityView.LIST_VIEW_NAME.equals( entityViewRequest.getViewName() ) ) {
-			listForm.add( BootstrapUiBuilders.hidden().controlName( "view" ).value( entityViewRequest.getViewName() ) );
+			listForm.add( bootstrap.builders.hidden().controlName( "view" ).value( entityViewRequest.getViewName() ) );
 		}
 	}
 
@@ -126,16 +128,16 @@ public class ListFormViewProcessor extends EntityViewProcessorAdapter
 
 			if ( allowableActions.contains( AllowableAction.CREATE ) ) {
 				String formActionsName = formName + "-actions";
-				NodeViewElementBuilder actions = BootstrapUiBuilders.div()
-				                                                    .name( formActionsName )
-				                                                    .css( "list-header-actions" )
-				                                                    .add(
-						                                                    BootstrapUiBuilders.button()
-						                                                                       .name( "btn-create" )
-						                                                                       .link( linkBuilder.create() )
-						                                                                       .style( Style.Button.PRIMARY )
-						                                                                       .text( entityMessages.createAction() )
-				                                                    );
+				NodeViewElementBuilder actions = HtmlViewElements.html.builders.div()
+				                                                               .name( formActionsName )
+				                                                               .css( "list-header-actions" )
+				                                                               .add(
+						                                                               bootstrap.builders.button()
+						                                                                                 .name( "btn-create" )
+						                                                                                 .link( linkBuilder.create() )
+						                                                                                 .style( Style.Button.PRIMARY )
+						                                                                                 .text( entityMessages.createAction() )
+				                                                               );
 				builderMap.put( formActionsName, actions );
 				formHeader.add( actions );
 			}

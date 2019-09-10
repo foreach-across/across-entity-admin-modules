@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.DateTimeFormElementConfiguration.Format;
@@ -39,6 +38,7 @@ import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
 import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PersistentProperty;
@@ -59,6 +59,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.ViewElementBuilderSupport.ElementOrBuilder.wrap;
 
 /**
@@ -144,7 +145,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 				}
 			}
 
-			return BootstrapUiBuilders.text().postProcessor( valueTextPostProcessor );
+			return HtmlViewElements.html.builders.text( "" ).postProcessor( valueTextPostProcessor );
 		}
 	}
 
@@ -202,7 +203,7 @@ public class DateTimeFormElementBuilderFactory extends EntityViewElementBuilderF
 		                                                           ViewElementMode viewElementMode,
 		                                                           String viewElementType ) {
 
-			return BootstrapUiBuilders
+			return bootstrap.builders
 					.datetime()
 					.name( propertyDescriptor.getName() )
 					.controlName( propertyDescriptor.getName() )

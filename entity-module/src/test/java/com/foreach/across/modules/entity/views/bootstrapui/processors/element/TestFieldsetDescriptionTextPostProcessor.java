@@ -43,6 +43,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class TestFieldsetDescriptionTextPostProcessor
 {
+	private static final String CSS_FORM_TEXT_DESCRIPTION = "form-text-description";
+
 	@Mock
 	private EntityPropertyDescriptor descriptor;
 

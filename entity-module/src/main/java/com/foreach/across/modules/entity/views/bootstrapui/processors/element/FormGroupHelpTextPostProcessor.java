@@ -26,8 +26,8 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.node;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Post-processor that resolves a help text for a current property and a {@link FormGroupElement}.
@@ -56,9 +56,9 @@ public class FormGroupHelpTextPostProcessor<T extends ViewElement> extends Abstr
 
 			if ( !StringUtils.isEmpty( text ) ) {
 				element.setHelpBlock(
-						node( "small" ).with( css.form.text )
-						               .add( new TextViewElement( text, escapeHtml ) )
-						               .build( builderContext )
+						html.builders.small( css.form.text )
+						             .add( new TextViewElement( text, escapeHtml ) )
+						             .build( builderContext )
 				);
 			}
 		}

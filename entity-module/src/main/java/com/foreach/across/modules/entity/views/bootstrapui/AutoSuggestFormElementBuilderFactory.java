@@ -20,6 +20,7 @@ import com.foreach.across.core.support.ReadableAttributes;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration;
+import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataAttributeRegistrar;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataEndpoint;
 import com.foreach.across.modules.entity.autosuggest.AutoSuggestDataSet;
@@ -41,8 +42,8 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.autosuggest;
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.DEFAULT_DATASET;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Creates an auto-suggest control for a property value.
@@ -87,7 +88,7 @@ public class AutoSuggestFormElementBuilderFactory extends EntityViewElementBuild
 			}
 		}
 
-		return autosuggest()
+		return bootstrap.builders.autosuggest()
 				.name( propertyDescriptor.getName() )
 				.controlName( propertyDescriptor.getName() )
 				.configuration( controlConfiguration )

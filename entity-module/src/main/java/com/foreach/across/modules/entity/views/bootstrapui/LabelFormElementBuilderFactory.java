@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
@@ -27,6 +26,9 @@ import com.foreach.across.modules.web.ui.ViewElementPostProcessor;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.TextViewElementBuilder;
 import org.springframework.stereotype.Component;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Reponsible for creating either a {@link com.foreach.across.modules.bootstrapui.elements.builder.LabelFormElementBuilder}
@@ -48,11 +50,11 @@ public class LabelFormElementBuilderFactory extends EntityViewElementBuilderFact
 	                                                   ViewElementMode viewElementMode, String viewElementType ) {
 		boolean labelTextOnly = ViewElementMode.isLabel( viewElementMode );
 
-		TextViewElementBuilder labelText = BootstrapUiBuilders
+		TextViewElementBuilder labelText = html.builders
 				.text( propertyDescriptor.getDisplayName() )
 				.postProcessor( labelCodeResolver( propertyDescriptor ) );
 
-		return labelTextOnly ? labelText : BootstrapUiBuilders.label().add( labelText );
+		return labelTextOnly ? labelText : bootstrap.builders.label().add( labelText );
 	}
 
 	protected ViewElementPostProcessor<TextViewElement> labelCodeResolver( EntityPropertyDescriptor propertyDescriptor ) {

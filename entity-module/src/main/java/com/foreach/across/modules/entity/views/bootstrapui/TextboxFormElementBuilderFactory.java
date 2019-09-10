@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.TextareaFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
@@ -42,6 +41,8 @@ import javax.validation.constraints.Size;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.Map;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Builds a {@link TextboxFormElement} for a given {@link EntityPropertyDescriptor}.
@@ -77,7 +78,7 @@ public class TextboxFormElementBuilderFactory extends EntityViewElementBuilderFa
 	protected TextboxFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                          ViewElementMode viewElementMode,
 	                                                          String viewElementType ) {
-		return BootstrapUiBuilders
+		return bootstrap.builders
 				.textbox()
 				.name( propertyDescriptor.getName() )
 				.controlName( propertyDescriptor.getName() )
