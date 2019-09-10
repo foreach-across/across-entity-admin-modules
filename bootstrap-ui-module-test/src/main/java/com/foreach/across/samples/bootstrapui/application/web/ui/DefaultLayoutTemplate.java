@@ -16,7 +16,6 @@
 
 package com.foreach.across.samples.bootstrapui.application.web.ui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
@@ -30,6 +29,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
 
 /**
  * @author Arne Vandamme
@@ -67,7 +68,7 @@ public class DefaultLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 			if ( !topNav.isEmpty() ) {
 				modelAndView.addObject(
 						"topNav",
-						BootstrapUiBuildersBroken.nav( topNav ).tabs().build()
+						bootstrap.builders.nav().menu( topNav ).tabs().build()
 				);
 			}
 		}

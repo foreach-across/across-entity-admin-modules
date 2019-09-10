@@ -50,6 +50,14 @@ public class BootstrapTableElementSupport
 		return cell().set( setters );
 	}
 
+	public TableViewElement.Cell headerCell() {
+		return cell().setHeading( true );
+	}
+
+	public TableViewElement.Cell headerCell( ViewElement.WitherSetter... setters ) {
+		return cell( setters ).setHeading( true );
+	}
+
 	public TableViewElement.ColumnGroup columnGroup() {
 		return new TableViewElement.ColumnGroup();
 	}

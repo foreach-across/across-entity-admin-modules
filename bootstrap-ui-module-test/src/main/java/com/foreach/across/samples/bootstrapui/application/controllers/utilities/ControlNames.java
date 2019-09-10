@@ -16,10 +16,11 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.utilities;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.Data;
@@ -28,7 +29,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.*;
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
@@ -52,7 +54,7 @@ class ControlNames extends ExampleController
 
 	@GetMapping
 	String render( Model model ) {
-		FormViewElementBuilder form = BootstrapUiBuildersBroken.form();
+		FormViewElementBuilder form = bootstrap.builders.form();
 
 		for ( int i = 0; i < 3; i++ ) {
 			Todo todo = new Todo();
@@ -66,18 +68,18 @@ class ControlNames extends ExampleController
 	}
 
 	private ContainerViewElementBuilder createTodoForm( Todo item ) {
-		return container()
-				.add(
-						formGroup(
-								label( "Owner" ),
-								textbox().controlName( "owner" ).text( item.getOwner() )
-						)
-				)
-				.add(
-						formGroup(
-								label( "Description" ),
-								textbox().controlName( "description" ).text( item.getDescription() )
-						)
-				);
+		return html.builders.container()
+		                    .add(
+				                    bootstrap.builders
+						                    .formGroup()
+						                    .label( bootstrap.builders.label( "Owner" ) )
+						                    .control( bootstrap.builders.textbox().controlName( "owner" ).text( item.getOwner() ) )
+		                    )
+		                    .add(
+				                    bootstrap.builders
+						                    .formGroup()
+						                    .label( bootstrap.builders.label( "Description" ) )
+						                    .control( bootstrap.builders.textbox().controlName( "description" ).text( item.getDescription() ) )
+		                    );
 	}
 }

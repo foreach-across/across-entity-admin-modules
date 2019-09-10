@@ -33,8 +33,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalDate;
 import java.util.*;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.*;
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.withDataSet;
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Steven Gentens
@@ -52,18 +53,18 @@ class ControlAdapters extends ExampleController
 	@GetMapping
 	public String render( Model model ) {
 		Map<String, ViewElement> generatedElements = new LinkedHashMap<>();
-		generatedElements.put( "Datetime", datetime().value( LocalDate.of( 2019, 1, 23 ) ).controlName( "ca-datetime" ).build() );
+		generatedElements.put( "Datetime", bootstrap.builders.datetime().value( LocalDate.of( 2019, 1, 23 ) ).controlName( "ca-datetime" ).build() );
 		addOptionFormElements( generatedElements, "checkbox" );
 		addOptionFormElements( generatedElements, "radio" );
 		generatedElements.put( "Group of checkboxes", optionElement().controlName( "ca-multi-checkbox" ).checkbox().build() );
 		generatedElements.put( "Group of radiobuttons", optionElement().controlName( "ca-multi-radio" ).radio().build() );
 		generatedElements.put( "Nested control adapters",
-		                       div().htmlId( "ca-nested-containers" )
-		                            .attribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "container" )
-		                            .add(
-				                            optionElement().controlName( "ca-nested-multi-checkbox" ).checkbox(),
-				                            optionElement().controlName( "ca-nested-multi-radio" ).radio()
-		                            ).build()
+		                       html.builders.div().htmlId( "ca-nested-containers" )
+		                                                     .attribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "container" )
+		                                                     .add(
+				                                                     optionElement().controlName( "ca-nested-multi-checkbox" ).checkbox(),
+				                                                     optionElement().controlName( "ca-nested-multi-radio" ).radio()
+		                                                     ).build()
 		);
 		generatedElements.put( "Select", optionElement().controlName( "ca-select" ).select().build() );
 		generatedElements.put( "Multi select", optionElement().controlName( "ca-multi-select" ).select().multiple().build() );
@@ -77,19 +78,19 @@ class ControlAdapters extends ExampleController
 		                                      .select( SelectFormElementConfiguration.liveSearch() )
 		                                      .build() );
 		generatedElements.put( "Autosuggest",
-		                       autosuggest().controlName( "ca-autosuggest" )
-		                                    .configuration(
-				                                    withDataSet( dataset -> dataset.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" ) ) )
-		                                    .build() );
-		generatedElements.put( "Textbox", textbox().controlName( "ca-textbox" ).build() );
-		generatedElements.put( "Autosizing textbox", textbox().autoSize().controlName( "ca-textbox-autosize" ).build() );
-		generatedElements.put( "Textarea", textarea().controlName( "ca-textarea" ).build() );
+		                       bootstrap.builders.autosuggest().controlName( "ca-autosuggest" )
+		                                         .configuration(
+				                                         withDataSet( dataset -> dataset.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" ) ) )
+		                                         .build() );
+		generatedElements.put( "Textbox", bootstrap.builders.textbox().controlName( "ca-textbox" ).build() );
+		generatedElements.put( "Autosizing textbox", bootstrap.builders.textbox().autoSize().controlName( "ca-textbox-autosize" ).build() );
+		generatedElements.put( "Textarea", bootstrap.builders.textbox().multiLine().controlName( "ca-textarea" ).build() );
 
 		NumericFormElementConfiguration numericFormElementConfiguration = new NumericFormElementConfiguration( Locale.US );
 		numericFormElementConfiguration.setLocalizeOutputFormat( false );
 		numericFormElementConfiguration.setLocalizeDecimalSymbols( false );
-		generatedElements.put( "Numeric", numeric().configuration( numericFormElementConfiguration ).controlName( "ca-numeric" ).build() );
-		generatedElements.put( "Numeric without formatting", numeric().controlName( "ca-numeric-noformat" ).build() );
+		generatedElements.put( "Numeric", bootstrap.builders.numeric().configuration( numericFormElementConfiguration ).controlName( "ca-numeric" ).build() );
+		generatedElements.put( "Numeric without formatting", bootstrap.builders.numeric().controlName( "ca-numeric-noformat" ).build() );
 
 		return render( generatedElements.entrySet().stream().map( e -> panel( e.getKey(), e.getValue() ) ).toArray() );
 	}
@@ -104,26 +105,26 @@ class ControlAdapters extends ExampleController
 		                                                                                                   .controlName(
 				                                                                                                   "ca-" + identifier + "-unwrapped-no-label" )
 		                                                                                                   .build() );
-		generatedElements.put( identifier + " outside label", div()
-				.add( label().text( "Alive" ).target( "ca-" + identifier + "-out-label" ) )
+		generatedElements.put( identifier + " outside label", html.builders.div()
+				.add( bootstrap.builders.label().text( "Alive" ).target( "ca-" + identifier + "-out-label" ) )
 				.add( getOptionBuilder( identifier ).value( "Yes" ).controlName( "ca-" + identifier + "-out-label" ) )
 				.build() );
 	}
 
 	private OptionFormElementBuilder getOptionBuilder( String identifier ) {
-		return "checkbox".equals( identifier ) ? checkbox() : radio();
+		return "checkbox".equals( identifier ) ? bootstrap.builders.checkbox() : bootstrap.builders.radio();
 	}
 
 	private OptionsFormElementBuilder optionElement() {
-		return options()
+		return bootstrap.builders.option.options()
 				.addAll( optionChildElements() );
 	}
 
 	private Collection<ViewElementBuilder> optionChildElements() {
 		return Arrays.asList(
-				option().text( "One" ).value( 1 ),
-				option().text( "Two" ).value( 2 ),
-				option().text( "3" ).value( "Three" )
+				bootstrap.builders.option.option().text( "One" ).value( 1 ),
+				bootstrap.builders.option.option().text( "Two" ).value( 2 ),
+				bootstrap.builders.option.option().text( "3" ).value( "Three" )
 		);
 	}
 

@@ -51,6 +51,14 @@ public class BootstrapTableBuilderSupport
 		return cell().with( setters );
 	}
 
+	public TableViewElementBuilder.Cell headerCell() {
+		return cell().heading( true );
+	}
+
+	public TableViewElementBuilder.Cell headerCell( ViewElement.WitherSetter... setters ) {
+		return cell(setters).heading( true );
+	}
+
 	public TableViewElementBuilder.Footer footer() {
 		return new TableViewElementBuilder.Footer();
 	}

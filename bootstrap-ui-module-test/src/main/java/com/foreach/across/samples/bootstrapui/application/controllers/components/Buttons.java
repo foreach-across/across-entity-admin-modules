@@ -16,7 +16,6 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Size;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 @Controller
@@ -47,14 +47,14 @@ class Buttons extends ExampleController
 	}
 
 	private ButtonViewElement simpleButtonElement() {
-		return BootstrapUiBuildersBroken
+		return bootstrap.builders
 				.button()
 				.text( "Click me" )
 				.build();
 	}
 
 	private ButtonViewElement buttonAsLink() {
-		return BootstrapUiBuildersBroken
+		return bootstrap.builders
 				.button()
 				.text( "To google  " )
 				.link( "http://www.foreach.be" )
@@ -64,7 +64,7 @@ class Buttons extends ExampleController
 	}
 
 	private ButtonViewElement largeSubmitButton() {
-		return BootstrapUiBuildersBroken
+		return bootstrap.builders
 				.button()
 				.submit()
 				.size( Size.LARGE )

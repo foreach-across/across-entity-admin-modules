@@ -18,6 +18,8 @@ package com.foreach.across.samples.bootstrapui.application.controllers.component
 
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.Data;
@@ -30,7 +32,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.*;
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 
 /**
  * @author Arne Vandamme
@@ -58,36 +61,39 @@ class Forms extends ExampleController
 	}
 
 	protected FormViewElementBuilder buildForm( FormDto data ) {
-		return form()
-				.commandObject( data )
-				.add(
-						formGroup()
-								.label( "My number" )
-								.tooltip( tooltip( "another tooltip" ) )
-								.required()
-								.detectFieldErrors( true )
-								.control(
-										textbox()
-												.controlName( "number" )
-												.text( "" + data.getNumber() )
-								)
-				)
-				.add(
-						formGroup().tooltip( tooltip( "hello" ) ).control( checkbox().controlName( "checkme" ).label( "Check me out" ) )
-				)
-				.add(
-						formGroup()
-								.label( "My text" )
-								.descriptionBlock( "My text is a very important field containing... your text!" )
-								.helpBlock( "Please fill in all the data" )
-								.control( textbox().controlName( "mytext" ) )
-				)
-				.add(
-						formGroup()
-								.control( checkbox().controlName( "checkmetoo" ).label( "Try me babe" ) )
-								.helpBlock( "Try clicking *on* the checkbox in front of you." )
-				)
-				.add( row().add( column( Grid.Device.MD.width( 12 ) ).add( button().submit().text( "Update" ) ) ) );
+		return bootstrap.builders.form()
+		                         .commandObject( data )
+		                         .add(
+				                         bootstrap.builders.formGroup()
+				                                           .label( "My number" )
+				                                           .tooltip( bootstrap.builders.tooltip().text( "another tooltip" ) )
+				                                           .required()
+				                                           .detectFieldErrors( true )
+				                                           .control(
+						                                           bootstrap.builders.textbox()
+						                                                             .controlName( "number" )
+						                                                             .text( "" + data.getNumber() )
+				                                           )
+		                         )
+		                         .add(
+				                         bootstrap.builders.formGroup().tooltip( bootstrap.builders.tooltip().text( "hello" ) )
+				                                           .control( bootstrap.builders.checkbox().controlName( "checkme" ).label( "Check me out" ) )
+		                         )
+		                         .add(
+				                         bootstrap.builders.formGroup()
+				                                           .label( "My text" )
+				                                           .descriptionBlock( "My text is a very important field containing... your text!" )
+				                                           .helpBlock( "Please fill in all the data" )
+				                                           .control( bootstrap.builders.textbox().controlName( "mytext" ) )
+		                         )
+		                         .add(
+				                         bootstrap.builders.formGroup()
+				                                           .control( bootstrap.builders.checkbox().controlName( "checkmetoo" ).label( "Try me babe" ) )
+				                                           .helpBlock( "Try clicking *on* the checkbox in front of you." )
+		                         )
+		                         .add( bootstrap.builders.row().add( bootstrap.builders.column( Grid.Device.MD.width( 12 ) )
+		                                                                               .add( bootstrap.builders.button( css.button.primary ).submit()
+		                                                                                                       .text( "Update" ) ) ) );
 	}
 
 	@Data

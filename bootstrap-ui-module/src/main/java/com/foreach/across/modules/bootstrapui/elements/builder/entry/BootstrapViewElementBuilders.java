@@ -42,7 +42,7 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
  */
 public class BootstrapViewElementBuilders
 {
-	public final BootstrapOptionsBuilderSupport options = new BootstrapOptionsBuilderSupport();
+	public final BootstrapOptionsBuilderSupport option = new BootstrapOptionsBuilderSupport();
 	public final BootstrapOptionsBuilderSupport select = new BootstrapOptionsBuilderSupport();
 	public final BootstrapTableBuilderSupport table = new BootstrapTableBuilderSupport();
 	public final BootstrapFieldSetBuilderSupport fieldset = new BootstrapFieldSetBuilderSupport();
@@ -84,7 +84,7 @@ public class BootstrapViewElementBuilders
 	 */
 	@SuppressWarnings("unchecked")
 	public OptionFormElementBuilder<CheckboxFormElement> checkbox() {
-		return options.option().checkbox();
+		return option.option().checkbox();
 	}
 
 	public OptionFormElementBuilder<CheckboxFormElement> checkbox( ViewElement.WitherSetter... setters ) {
@@ -103,19 +103,23 @@ public class BootstrapViewElementBuilders
 	 * </pre>
 	 */
 	public OptionsFormElementBuilder checkboxList() {
-		return options.options().checkbox();
+		return option.options().checkbox();
 	}
 
 	public OptionsFormElementBuilder checkboxList( ViewElement.WitherSetter... setters ) {
 		return checkboxList().with( setters );
 	}
 
-	public DateTimeFormElementBuilder dateTime() {
-		return new DateTimeFormElementBuilder();
+	public ColumnViewElementBuilder column( Grid.DeviceGridLayout... layouts ) {
+		return new ColumnViewElementBuilder().layout( layouts );
 	}
 
-	public DateTimeFormElementBuilder dateTime( ViewElement.WitherSetter... setters ) {
-		return dateTime().with( setters );
+	public DateTimeFormElementBuilder datetime() {
+		return new DateTimeFormElementBuilder().datetime();
+	}
+
+	public DateTimeFormElementBuilder datetime( ViewElement.WitherSetter... setters ) {
+		return datetime().with( setters );
 	}
 
 	public FieldsetFormElementBuilder fieldset() {
@@ -227,7 +231,7 @@ public class BootstrapViewElementBuilders
 	 */
 	@SuppressWarnings("unchecked")
 	public OptionFormElementBuilder<RadioFormElement> radio() {
-		return options.option().radio();
+		return option.option().radio();
 	}
 
 	public OptionFormElementBuilder<RadioFormElement> radio( ViewElement.WitherSetter... setters ) {
@@ -246,11 +250,19 @@ public class BootstrapViewElementBuilders
 	 * </pre>
 	 */
 	public OptionsFormElementBuilder radioList() {
-		return options.options().radio();
+		return option.options().radio();
 	}
 
 	public OptionsFormElementBuilder radioList( ViewElement.WitherSetter... setters ) {
 		return radioList().with( setters );
+	}
+
+	public NodeViewElementBuilder row() {
+		return new NodeViewElementBuilder( "div" ).attribute( "class", "row" );
+	}
+
+	public NodeViewElementBuilder row( ViewElement.WitherSetter... setters ) {
+		return row().with( setters );
 	}
 
 	/**
@@ -318,7 +330,7 @@ public class BootstrapViewElementBuilders
 	 * </pre>
 	 */
 	public OptionsFormElementBuilder toggleList() {
-		return options.options().radio();
+		return option.options().toggle();
 	}
 
 	public OptionsFormElementBuilder toggleList( ViewElement.WitherSetter... setters ) {

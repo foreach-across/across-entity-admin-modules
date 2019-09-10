@@ -16,13 +16,14 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.elements.TableViewElement;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
 
 @Controller
 @RequestMapping("/components/table")
@@ -39,32 +40,32 @@ class Tables extends ExampleController
 	}
 
 	private TableViewElement simpleTableElement() {
-		return BootstrapUiBuildersBroken
+		return bootstrap.builders
 				.table()
 				.header(
-						BootstrapUiBuildersBroken.tableHeader().add(
-								BootstrapUiBuildersBroken.tableHeaderCell().text( "Name" )
+						bootstrap.builders.table.header().add(
+								bootstrap.builders.table.headerCell().text( "Name" )
 						).add(
-								BootstrapUiBuildersBroken.tableHeaderCell().text( "Value" )
+								bootstrap.builders.table.headerCell().text( "Value" )
 						)
 				)
 				.body(
-						BootstrapUiBuildersBroken.tableBody().add(
-								BootstrapUiBuildersBroken.tableRow().add(
-										BootstrapUiBuildersBroken.tableCell().text( "Height" )
+						bootstrap.builders.table.body().add(
+								bootstrap.builders.table.row().add(
+										bootstrap.builders.table.cell().text( "Height" )
 								).add(
-										BootstrapUiBuildersBroken.tableCell().text( "128" )
+										bootstrap.builders.table.cell().text( "128" )
 								)
 
 						)
 				)
 				.footer(
-						BootstrapUiBuildersBroken.tableFooter().add(
-								BootstrapUiBuildersBroken.tableRow().add(
-										BootstrapUiBuildersBroken.tableCell()
-										                         .columnSpan( 2 )
-										                         .text( "Table footer" )
-										                         .heading( true )
+						bootstrap.builders.table.footer().add(
+								bootstrap.builders.table.row().add(
+										bootstrap.builders.table.cell()
+										                        .columnSpan( 2 )
+										                        .text( "Table footer" )
+										                        .heading( true )
 								)
 						)
 				)

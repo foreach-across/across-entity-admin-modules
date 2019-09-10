@@ -100,19 +100,4 @@ class BootstrapUiConfiguration
 				}
 		);
 	}
-
-	@Bean
-	@Lazy
-	@Exposed
-	public BootstrapUiFactoryBroken bootstrapUiFactory() {
-		return new BootstrapUiFactoryBrokenImpl();
-	}
-
-	@Deprecated
-	@Bean
-	@Lazy
-	@Exposed
-	public BootstrapUiComponentFactoryBroken bootstrapUiComponentFactory() {
-		return new BootstrapUiComponentFactoryBrokenImpl();
-	}
 }

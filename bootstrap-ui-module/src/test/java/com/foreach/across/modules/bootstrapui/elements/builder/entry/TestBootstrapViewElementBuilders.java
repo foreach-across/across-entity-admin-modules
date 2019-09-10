@@ -22,6 +22,8 @@ import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavCompon
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.junit.Test;
 
@@ -60,7 +62,7 @@ public class TestBootstrapViewElementBuilders
 
 	@Test
 	public void dateTime() {
-		assertThat( bootstrap.builders.dateTime() ).isInstanceOf( DateTimeFormElementBuilder.class );
+		assertThat( bootstrap.builders.datetime() ).isInstanceOf( DateTimeFormElementBuilder.class );
 	}
 
 	@Test
@@ -125,7 +127,7 @@ public class TestBootstrapViewElementBuilders
 
 	@Test
 	public void multiCheckboxOption() {
-		assertThat( bootstrap.builders.options.option() ).isInstanceOf( OptionFormElementBuilder.class );
+		assertThat( bootstrap.builders.option.option() ).isInstanceOf( OptionFormElementBuilder.class );
 	}
 
 	@Test
@@ -135,12 +137,12 @@ public class TestBootstrapViewElementBuilders
 
 	@Test
 	public void option() {
-		assertThat( bootstrap.builders.options.option() ).isInstanceOf( OptionFormElementBuilder.class );
+		assertThat( bootstrap.builders.option.option() ).isInstanceOf( OptionFormElementBuilder.class );
 	}
 
 	@Test
 	public void options() {
-		assertThat( bootstrap.builders.options.options() ).isInstanceOf( OptionsFormElementBuilder.class );
+		assertThat( bootstrap.builders.option.options() ).isInstanceOf( OptionsFormElementBuilder.class );
 	}
 
 	@Test
@@ -160,12 +162,21 @@ public class TestBootstrapViewElementBuilders
 
 	@Test
 	public void radioOption() {
-		assertThat( bootstrap.builders.options.option() ).isInstanceOf( OptionFormElementBuilder.class );
+		assertThat( bootstrap.builders.option.option() ).isInstanceOf( OptionFormElementBuilder.class );
 	}
 
 	@Test
 	public void radioList() {
 		assertThat( bootstrap.builders.radioList() ).isInstanceOf( OptionsFormElementBuilder.class );
+	}
+
+	@Test
+	public void row() {
+		NodeViewElementBuilder rowBuilder = bootstrap.builders.row();
+		NodeViewElement rowElement = rowBuilder.build();
+		assertThat( rowBuilder ).isInstanceOf( NodeViewElementBuilder.class );
+		hasClass( rowElement, "row" );
+		assertThat( rowElement.getTagName() ).isEqualTo( "div" );
 	}
 
 	@Test
@@ -199,6 +210,13 @@ public class TestBootstrapViewElementBuilders
 	}
 
 	@Test
+	public void tableHeaderCell() {
+		TableViewElementBuilder.Cell actual = bootstrap.builders.table.headerCell();
+		assertThat( actual ).isInstanceOf( TableViewElementBuilder.Cell.class );
+		assertThat( actual.build().isHeading() ).isTrue();
+	}
+
+	@Test
 	public void tableFooter() {
 		assertThat( bootstrap.builders.table.footer() ).isInstanceOf( TableViewElementBuilder.Footer.class );
 	}
@@ -225,7 +243,7 @@ public class TestBootstrapViewElementBuilders
 
 	@Test
 	public void toggleOption() {
-		assertThat( bootstrap.builders.options.option() ).isInstanceOf( OptionFormElementBuilder.class );
+		assertThat( bootstrap.builders.option.option() ).isInstanceOf( OptionFormElementBuilder.class );
 	}
 
 	@Test
@@ -236,6 +254,10 @@ public class TestBootstrapViewElementBuilders
 	@Test
 	public void tooltip() {
 		assertThat( bootstrap.builders.tooltip() ).isInstanceOf( TooltipViewElementBuilder.class );
+	}
+
+	private void hasClass( AbstractNodeViewElement element, String aClass ) {
+		assertThat( element.getAttribute( "class" ) ).isEqualTo( aClass );
 	}
 
 }

@@ -43,16 +43,9 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration
 public class ITBootstrapUiModule
 {
-	@Autowired(required = false)
-	private BootstrapUiFactoryBroken bootstrapUiFactory;
 
 	@Autowired
 	private Collection<WebResourcePackageManager> packageManagers;
-
-	@Test
-	public void exposedBeans() {
-		assertNotNull( bootstrapUiFactory );
-	}
 
 	@Test
 	public void webResourcesShouldBeRegistered() {

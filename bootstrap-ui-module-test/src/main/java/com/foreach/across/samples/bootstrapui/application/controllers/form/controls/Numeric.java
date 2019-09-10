@@ -16,8 +16,8 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.form.controls;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
+import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Currency;
+
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
 
 /**
  * Generates a numeric control using a {@link NumericFormElement}.
@@ -55,33 +57,33 @@ class Numeric extends ExampleController
 	}
 
 	private NumericFormElement simpleNumericElement() {
-		return BootstrapUiBuildersBroken.numeric()
-		                                .simple()
-		                                .build();
+		return bootstrap.builders.numeric()
+		                         .simple()
+		                         .build();
 	}
 
 	private NumericFormElement percentageNumericElement() {
-		return BootstrapUiBuildersBroken.numeric()
-		                                .percent()
-		                                .build();
+		return bootstrap.builders.numeric()
+		                         .percent()
+		                         .build();
 	}
 
 	private NumericFormElement currenencyNumericElement() {
-		return BootstrapUiBuildersBroken.numeric()
-		                                .currency( Currency.getInstance( "EUR" ) )
-		                                .build();
+		return bootstrap.builders.numeric()
+		                         .currency( Currency.getInstance( "EUR" ) )
+		                         .build();
 	}
 
 	private NumericFormElement intgerNumericElement() {
-		return BootstrapUiBuildersBroken.numeric()
-		                                .integer()
-		                                .build();
+		return bootstrap.builders.numeric()
+		                         .integer()
+		                         .build();
 	}
 
 	private NumericFormElement decimalNumericElement() {
-		return BootstrapUiBuildersBroken.numeric()
-		                                .decimal( 2 )
-		                                .build();
+		return bootstrap.builders.numeric()
+		                         .decimal( 2 )
+		                         .build();
 	}
 
 }

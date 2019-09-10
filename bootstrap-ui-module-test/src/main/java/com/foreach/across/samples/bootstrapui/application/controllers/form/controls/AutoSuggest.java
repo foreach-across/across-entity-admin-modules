@@ -18,6 +18,7 @@ package com.foreach.across.samples.bootstrapui.application.controllers.form.cont
 
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration;
+import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
@@ -40,8 +41,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.*;
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.resource.WebResource.JAVASCRIPT_PAGE_END;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Generates Twitter Typeahead autosuggest instances.
@@ -78,44 +80,50 @@ class AutoSuggest extends ExampleController
 	}
 
 	private AutoSuggestFormElement defaultAutoSuggest() {
-		return autosuggest()
-				.configuration(
-						AutoSuggestFormElementConfiguration.withDataSet(
-								dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" )
-								                  .setAttribute( "templates", Collections.singletonMap( "footer", "End of dataset" ) )
-						).withDataSet( "willies",
-						               dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest-more?query={{query}}" )
-						)
-				)
-				.notFoundTemplate( text( "Ah, ah ah, '{{query}}' is not the magic word..." ) )
-				.suggestionTemplate( div().add( text( "{{label}} (alt: {{other}})" ) ) )
-				.headerTemplate( div().attribute( "style", "text-decoration: underline" ).add( text( "Suggestions" ) ) )
-				.notFoundTemplate( "willies", text( "Hey willy, '{{query}}' doesn't exist!" ) )
-				.headerTemplate( "willies", div().attribute( "style", "color: red" ).add( text( "My red header" ) ) )
-				.footerTemplate( "willies", div().attribute( "style", "color: red" ).add( text( "My red footer" ) ) )
-				.build();
+		return bootstrap.builders.autosuggest()
+		                         .configuration(
+				                         AutoSuggestFormElementConfiguration.withDataSet(
+						                         dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" )
+						                                           .setAttribute( "templates", Collections.singletonMap( "footer", "End of dataset" ) )
+				                         ).withDataSet( "willies",
+				                                        dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest-more?query={{query}}" )
+				                         )
+		                         )
+		                         .notFoundTemplate( html.builders.text( "Ah, ah ah, '{{query}}' is not the magic word..." ) )
+		                         .suggestionTemplate( html.builders.div().add( html.builders.text( "{{label}} (alt: {{other}})" ) ) )
+		                         .headerTemplate(
+				                         html.builders.div().attribute( "style", "text-decoration: underline" ).add( html.builders.text( "Suggestions" ) ) )
+		                         .notFoundTemplate( "willies", html.builders.text( "Hey willy, '{{query}}' doesn't exist!" ) )
+		                         .headerTemplate( "willies",
+		                                          html.builders.div().attribute( "style", "color: red" ).add( html.builders.text( "My red header" ) ) )
+		                         .footerTemplate( "willies",
+		                                          html.builders.div().attribute( "style", "color: red" ).add( html.builders.text( "My red footer" ) ) )
+		                         .build();
 	}
 
 	private NodeViewElement autoSuggestWithMultipleDatasets() {
-		return div()
-				.add(
-						checkbox()
-								.htmlId( "datasource-switcher" )
-								.label( "Switch datasource" )
-				).add(
-						autosuggest()
-								.htmlId( "js-switch-source-autosuggest" )
-								.configuration(
-										AutoSuggestFormElementConfiguration.withDataSet(
-												dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" )
-										)
-								)
-								.notFoundTemplate( "willies", text( "Hey willy, '{{query}}' doesn't exist!" ) )
-								.notFoundTemplate( text( "Ah, ah ah, '{{query}}' is not the magic word..." ) )
-								.suggestionTemplate( div().add( text( "{{label}} (alt: {{other}})" ) ) )
-								.headerTemplate( "willies", div().attribute( "style", "color: red" ).add( text( "My red header" ) ) )
-								.headerTemplate( div().attribute( "style", "text-decoration: underline" ).add( text( "Suggestions" ) ) )
-								.footerTemplate( "willies", div().attribute( "style", "color: red" ).add( text( "My red footer" ) ) )
+		return html.builders.div()
+		                    .add(
+				                    bootstrap.builders.checkbox()
+				                                      .htmlId( "datasource-switcher" )
+				                                      .label( "Switch datasource" )
+		                    ).add(
+						bootstrap.builders.autosuggest()
+						                  .htmlId( "js-switch-source-autosuggest" )
+						                  .configuration(
+								                  AutoSuggestFormElementConfiguration.withDataSet(
+										                  dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" )
+								                  )
+						                  )
+						                  .notFoundTemplate( "willies", html.builders.text( "Hey willy, '{{query}}' doesn't exist!" ) )
+						                  .notFoundTemplate( html.builders.text( "Ah, ah ah, '{{query}}' is not the magic word..." ) )
+						                  .suggestionTemplate( html.builders.div().add( html.builders.text( "{{label}} (alt: {{other}})" ) ) )
+						                  .headerTemplate( "willies",
+						                                   html.builders.div().attribute( "style", "color: red" ).add( html.builders.text( "My red header" ) ) )
+						                  .headerTemplate( html.builders.div().attribute( "style", "text-decoration: underline" )
+						                                                .add( html.builders.text( "Suggestions" ) ) )
+						                  .footerTemplate( "willies",
+						                                   html.builders.div().attribute( "style", "color: red" ).add( html.builders.text( "My red footer" ) ) )
 
 				).build();
 	}

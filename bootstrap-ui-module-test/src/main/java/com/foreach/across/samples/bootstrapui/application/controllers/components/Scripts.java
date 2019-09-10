@@ -18,8 +18,11 @@ package com.foreach.across.samples.bootstrapui.application.controllers.component
 
 import com.foreach.across.modules.bootstrapui.elements.ScriptViewElement;
 import com.foreach.across.modules.bootstrapui.elements.Style;
+import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.http.MediaType;
@@ -27,7 +30,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.*;
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
+import static com.foreach.across.modules.web.ui.elements.TextViewElement.text;
 
 /**
  * @author Arne Vandamme
@@ -61,19 +67,19 @@ class Scripts extends ExampleController
 	}
 
 	private ViewElement doubleNestedTemplate() {
-		return div()
-				.add(
-						script( MediaType.TEXT_HTML )
-								.data( "id", "double-nested" )
-								.add( nestedHtmlTemplate() )
-								.add( nestedHtmlTemplate() )
-				)
-				.add( button().attribute( "onclick",
-				                          "$(this.parentNode).append( $(BootstrapUiModule.refTarget( $('[data-id=double-nested]', this.parentNode)).html() ) );" )
-				              .style( Style.DANGER )
-				              .text( "Add nested template" ) )
-				.add( paragraph().add( text( "The nested template will be added below." ) ) )
-				.build();
+		return html.builders.div()
+		                    .add(
+				                    bootstrap.builders.script()
+				                                      .type( MediaType.TEXT_HTML )
+				                                      .data( "id", "double-nested" )
+				                                      .add( nestedHtmlTemplate() )
+				                                      .add( nestedHtmlTemplate() )
+		                    )
+		                    .add( bootstrap.builders.button( css.button.danger ).attribute( "onclick",
+		                                                                                    "$(this.parentNode).append( $(BootstrapUiModule.refTarget( $('[data-id=double-nested]', this.parentNode)).html() ) );" )
+		                                            .text( "Add nested template" ) )
+		                    .add( html.builders.p().add( text( "The nested template will be added below." ) ) )
+		                    .build();
 	}
 
 	private ViewElement nestedHtmlTemplate() {
@@ -82,13 +88,12 @@ class Scripts extends ExampleController
 		script.setAttribute( "data-id", "nested" );
 		script.addChild( simpleHtmlTemplate() );
 
-		return div()
+		return html.builders.div()
 				.add( script )
-				.add( button().attribute( "onclick",
+				.add( bootstrap.builders.button(css.button.warning).attribute( "onclick",
 				                          "$(this.parentNode).append( $(BootstrapUiModule.refTarget( $('[data-id=nested]', this.parentNode)).html() ) );" )
-				              .style( Style.WARNING )
 				              .text( "Add simple template" ) )
-				.add( paragraph().add( text( "The simple template will be added below." ) ) )
+				.add( html.builders.p().add( text( "The simple template will be added below." ) ) )
 				.build();
 	}
 
@@ -96,13 +101,12 @@ class Scripts extends ExampleController
 		ScriptViewElement script = new ScriptViewElement();
 		script.setAttribute( "type", "text/html" );
 		script.setAttribute( "data-id", "simple" );
-		script.addChild( paragraph().add( text( "hello from html template" ) ).build() );
+		script.addChild( html.builders.p().add( text( "hello from html template" ) ).build() );
 
-		return div()
+		return html.builders.div()
 				.add( script )
-				.add( button().attribute( "onclick",
+				.add( bootstrap.builders.button(css.button.primary).attribute( "onclick",
 				                          "$(this.parentNode).append( $( BootstrapUiModule.refTarget($('[data-id=simple]', this.parentNode)).html() ) );" )
-				              .style( Style.PRIMARY )
 				              .text( "Show template body" ) )
 				.build();
 	}

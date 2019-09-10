@@ -31,7 +31,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.Collections;
 import java.util.Map;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuildersBroken.*;
+import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
@@ -56,34 +57,35 @@ class FormGroup extends ExampleController
 	}
 
 	private ViewElement simpleFormGroup() {
-		return container()
-				.add( formGroup().label( "Control label" ).control( textbox().controlName( "control" ) ) )
-				.add(
-						formGroup().label( "Control label" )
-						           .required()
-						           .tooltip( "Control tooltip" )
-						           .descriptionBlock( "This is the control description." )
-						           .control( textarea().controlName( "control" ) )
-						           .helpBlock( "Control help text." )
-				)
-				.build();
+		return html.builders.container()
+		                    .add( bootstrap.builders.formGroup().label( "Control label" ).control( bootstrap.builders.textbox().controlName( "control" ) ) )
+		                    .add(
+				                    bootstrap.builders.formGroup().label( "Control label" )
+				                                      .required()
+				                                      .tooltip( "Control tooltip" )
+				                                      .descriptionBlock( "This is the control description." )
+				                                      .control( bootstrap.builders.textbox().multiLine().controlName( "control" ) )
+				                                      .helpBlock( "Control help text." )
+		                    )
+		                    .build();
 	}
 
 	private ViewElement checkboxAndRadios() {
-		return container()
-				.add( formGroup().control( checkbox().controlName( "control" ).label( "This is a checkbox" ) ) )
-				.add(
-						formGroup()
-								.label( "Radio options" )
-								.control(
-										options()
-												.radio()
-												.controlName( "radio" )
-												.add( option().text( "Option 1" ) )
-												.add( option().text( "Option 2" ) )
-								)
-				)
-				.build();
+		return html.builders.container()
+		                    .add( bootstrap.builders.formGroup()
+		                                            .control( bootstrap.builders.checkbox().controlName( "control" ).label( "This is a checkbox" ) ) )
+		                    .add(
+				                    bootstrap.builders.formGroup()
+				                                      .label( "Radio options" )
+				                                      .control(
+						                                      bootstrap.builders.option.options()
+						                                                               .radio()
+						                                                               .controlName( "radio" )
+						                                                               .add( bootstrap.builders.option.option().text( "Option 1" ) )
+						                                                               .add( bootstrap.builders.option.option().text( "Option 2" ) )
+				                                      )
+		                    )
+		                    .build();
 	}
 
 	private ViewElement validation( Model model ) {
@@ -95,11 +97,11 @@ class FormGroup extends ExampleController
 		model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
 		model.addAttribute( "item", target );
 
-		return form().commandObject( target )
-		             .add( formGroup().label( "Texbox" ).control( textbox().controlName( "control" ) ) )
-		             .add( formGroup().control( checkbox().controlName( "control" ).label( "Checkbox" ) ) )
-		             //.postProcessor( (builderContext, formGroup) -> formGroup.setDetectFieldErrors( tr ) ))
-		             .build();
+		return bootstrap.builders.form().commandObject( target )
+		                         .add( bootstrap.builders.formGroup().label( "Texbox" ).control( bootstrap.builders.textbox().controlName( "control" ) ) )
+		                         .add( bootstrap.builders.formGroup().control( bootstrap.builders.checkbox().controlName( "control" ).label( "Checkbox" ) ) )
+		                         //.postProcessor( (builderContext, formGroup) -> formGroup.setDetectFieldErrors( tr ) ))
+		                         .build();
 	}
 
 	@Getter
