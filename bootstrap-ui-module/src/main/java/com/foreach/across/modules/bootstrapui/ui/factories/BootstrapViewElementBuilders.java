@@ -29,6 +29,7 @@ import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapSele
 import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapTableBuilderFactoryHelper;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
+import com.foreach.across.modules.web.ui.elements.builder.ViewElementGeneratorBuilder;
 
 /**
  * A helper class for creating a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} for all main bootstrap 4 components.
@@ -152,6 +153,11 @@ public class BootstrapViewElementBuilders
 
 	public FormGroupElementBuilder formGroup( ViewElement.WitherSetter... setters ) {
 		return formGroup().with( setters );
+	}
+
+	public <ITEM, VIEW_ELEMENT extends ViewElement> ViewElementGeneratorBuilder<ITEM, VIEW_ELEMENT> generator(
+			Class<ITEM> itemClass, Class<VIEW_ELEMENT> viewElementClass ) {
+		return new ViewElementGeneratorBuilder<>();
 	}
 
 	public NodeViewElementBuilder helpBlock() {

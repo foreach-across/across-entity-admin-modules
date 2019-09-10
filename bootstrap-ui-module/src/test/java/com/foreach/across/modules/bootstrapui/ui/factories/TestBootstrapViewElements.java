@@ -141,9 +141,6 @@ public class TestBootstrapViewElements
 
 	@Test
 	public void selectOption() {
-		bootstrap.builders.option.option()
-		bootstrap.builders.radio()
-
 		assertThat( bootstrap.select.option() ).isInstanceOf( SelectFormElement.Option.class );
 	}
 
