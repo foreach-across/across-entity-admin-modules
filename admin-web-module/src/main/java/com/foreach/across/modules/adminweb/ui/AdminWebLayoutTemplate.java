@@ -19,7 +19,6 @@ package com.foreach.across.modules.adminweb.ui;
 import com.foreach.across.modules.adminweb.AdminWeb;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.resource.AdminWebWebResources;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuFactory;
 import com.foreach.across.modules.web.resource.WebResource;
@@ -39,6 +38,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Represents the admin web layout with top and left navigation.
@@ -114,35 +115,39 @@ public class AdminWebLayoutTemplate extends LayoutTemplateProcessorAdapterBean
 			if ( adminMenu != null ) {
 				model.computeIfAbsent(
 						MODEL_ATTR_NAVBAR,
-						key -> BootstrapUiBuilders.nav( adminMenu )
-						                          .navbar()
-						                          .keepGroupsAsGroup( true )
-						                          .replaceGroupBySelectedItem( false )
-						                          .filter( navPosition( NAVBAR, true ) )
-						                          .css( "navbar-nav mr-auto" )
-						                          .build()
+						key -> bootstrap.builders.nav()
+						                         .menu( adminMenu )
+						                         .navbar()
+						                         .keepGroupsAsGroup( true )
+						                         .replaceGroupBySelectedItem( false )
+						                         .filter( navPosition( NAVBAR, true ) )
+						                         .css( "navbar-nav mr-auto" )
+						                         .build()
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_NAVBAR_RIGHT,
-						key -> BootstrapUiBuilders.nav( adminMenu )
-						                          .navbar()
-						                          .css( "navbar-nav" )
-						                          .keepGroupsAsGroup( true )
-						                          .replaceGroupBySelectedItem( false )
-						                          .filter( navPosition( NAVBAR_RIGHT, false ) )
-						                          .build()
+						key -> bootstrap.builders.nav()
+						                         .menu( adminMenu )
+						                         .navbar()
+						                         .css( "navbar-nav" )
+						                         .keepGroupsAsGroup( true )
+						                         .replaceGroupBySelectedItem( false )
+						                         .filter( navPosition( NAVBAR_RIGHT, false ) )
+						                         .build()
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_SIDEBAR,
-						key -> BootstrapUiBuilders.panels( adminMenu )
-						                          .keepGroupsAsGroup( true )
-						                          .filter( navPosition( SIDEBAR, true ) )
-						                          .build()
+						key -> bootstrap.builders.panels()
+						                         .menu( adminMenu )
+						                         .keepGroupsAsGroup( true )
+						                         .filter( navPosition( SIDEBAR, true ) )
+						                         .build()
 				);
 				model.computeIfAbsent(
 						MODEL_ATTR_BREADCRUMB,
-						key -> BootstrapUiBuilders
-								.breadcrumb( adminMenu )
+						key -> bootstrap.builders
+								.breadcrumb()
+								.menu( adminMenu )
 								.filter( item -> !Boolean.FALSE.equals( item.getAttribute( AdminMenu.ATTR_BREADCRUMB ) ) )
 								.build()
 				);
