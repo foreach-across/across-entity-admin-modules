@@ -17,7 +17,7 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
-import com.foreach.across.modules.bootstrapui.elements.builder.entry.BootstrapViewElementBuilders;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElementBuilders;
 import com.foreach.across.modules.web.ui.StandardViewElementBuilderFactory;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;

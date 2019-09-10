@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements.entry;
+package com.foreach.across.modules.bootstrapui.ui.factories;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
-import com.foreach.across.modules.bootstrapui.elements.builder.entry.BootstrapViewElementBuilders;
-import com.foreach.across.modules.bootstrapui.elements.entry.support.BootstrapFieldSetElementSupport;
-import com.foreach.across.modules.bootstrapui.elements.entry.support.BootstrapSelectElementSupport;
-import com.foreach.across.modules.bootstrapui.elements.entry.support.BootstrapTableElementSupport;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapFieldSetElementFactoryHelper;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapSelectElementFactoryHelper;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapTableElementFactoryHelper;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSet;
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElement;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -50,9 +49,9 @@ public class BootstrapViewElements
 	 */
 	public final BootstrapViewElementBuilders builders = new BootstrapViewElementBuilders();
 
-	public final BootstrapSelectElementSupport select = new BootstrapSelectElementSupport();
-	public final BootstrapTableElementSupport table = new BootstrapTableElementSupport();
-	public final BootstrapFieldSetElementSupport fieldset = new BootstrapFieldSetElementSupport();
+	public final BootstrapSelectElementFactoryHelper select = new BootstrapSelectElementFactoryHelper();
+	public final BootstrapTableElementFactoryHelper table = new BootstrapTableElementFactoryHelper();
+	public final BootstrapFieldSetElementFactoryHelper fieldset = new BootstrapFieldSetElementFactoryHelper();
 
 	public AlertViewElement alert() {
 		return new AlertViewElement();

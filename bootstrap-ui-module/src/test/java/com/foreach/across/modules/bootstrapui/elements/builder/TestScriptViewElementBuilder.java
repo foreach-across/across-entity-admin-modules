@@ -21,7 +21,7 @@ import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
-import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * @author Arne Vandamme

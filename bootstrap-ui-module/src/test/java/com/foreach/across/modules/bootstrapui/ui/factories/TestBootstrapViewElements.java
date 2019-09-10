@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements.entry;
+package com.foreach.across.modules.bootstrapui.ui.factories;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
@@ -26,7 +26,7 @@ import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import org.junit.Test;
 
-import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Stijn Vanhoof
  */
-public class TestBootstrap
+public class TestBootstrapViewElements
 {
 	@Test
 	public void alert() {
@@ -141,12 +141,10 @@ public class TestBootstrap
 
 	@Test
 	public void selectOption() {
-		assertThat( bootstrap.select.option() ).isInstanceOf( SelectFormElement.Option.class );
-	}
+		bootstrap.builders.option.option()
+		bootstrap.builders.radio()
 
-	@Test
-	public void selectOptionGroup() {
-		assertThat( bootstrap.select.optionGroup() ).isInstanceOf( SelectFormElement.OptionGroup.class );
+		assertThat( bootstrap.select.option() ).isInstanceOf( SelectFormElement.Option.class );
 	}
 
 	@Test

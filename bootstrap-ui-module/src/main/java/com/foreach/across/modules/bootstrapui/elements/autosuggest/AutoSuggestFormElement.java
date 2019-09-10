@@ -17,7 +17,7 @@
 package com.foreach.across.modules.bootstrapui.elements.autosuggest;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
-import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;

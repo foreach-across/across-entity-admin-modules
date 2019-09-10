@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements.builder.entry.support;
+package com.foreach.across.modules.bootstrapui.ui.factories.support;
 
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
- * Support class used by {@link com.foreach.across.modules.bootstrapui.elements.builder.entry.BootstrapViewElementBuilders}
- *
  * @author Stijn Vanhoof
  * @since 3.0.0
  */
-public class BootstrapOptionsBuilderSupport
+public class BootstrapOptionsElementFactoryHelper
 {
 	/**
-	 * Support class used by {@link com.foreach.across.modules.bootstrapui.elements.builder.entry.BootstrapViewElementBuilders}
-	 *
 	 * Build a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} that can build a single option for a
 	 * select, checkbox, radiobutton or toggle.
-	 *
-	 * By default a select option will be build
+	 * <p>
 	 */
 	public OptionFormElementBuilder option() {
 		return new OptionFormElementBuilder();
@@ -45,8 +40,8 @@ public class BootstrapOptionsBuilderSupport
 	}
 
 	/**
-	 * Build a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} that can build a select, checkbox, radiobutton or toggle.
-	 * By default this will build a select item.
+	 * Build a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} that can build a list of options for a
+	 * select, checkbox, radiobutton or toggle.
 	 * <p>
 	 */
 	public OptionsFormElementBuilder options() {

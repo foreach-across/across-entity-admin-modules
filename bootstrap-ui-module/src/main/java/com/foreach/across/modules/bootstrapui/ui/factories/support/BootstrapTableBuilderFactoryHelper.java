@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements.builder.entry.support;
+package com.foreach.across.modules.bootstrapui.ui.factories.support;
 
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElementBuilders;
 import com.foreach.across.modules.bootstrapui.elements.builder.TableViewElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
- * Support class used by {@link com.foreach.across.modules.bootstrapui.elements.builder.entry.BootstrapViewElementBuilders}
+ * Support class used by {@link BootstrapViewElementBuilders}
  *
  * @author Stijn Vanhoof
  * @since 3.0.0
  */
-public class BootstrapTableBuilderSupport
+public class BootstrapTableBuilderFactoryHelper
 {
 	public TableViewElementBuilder.Body body() {
 		return new TableViewElementBuilder.Body();

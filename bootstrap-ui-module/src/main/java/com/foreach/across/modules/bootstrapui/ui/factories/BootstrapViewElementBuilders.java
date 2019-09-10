@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements.builder.entry;
+package com.foreach.across.modules.bootstrapui.ui.factories;
 
 import com.foreach.across.modules.bootstrapui.components.builder.BreadcrumbNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
@@ -22,11 +22,11 @@ import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavCompon
 import com.foreach.across.modules.bootstrapui.elements.*;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
-import com.foreach.across.modules.bootstrapui.elements.builder.entry.support.BootstrapFieldSetBuilderSupport;
-import com.foreach.across.modules.bootstrapui.elements.builder.entry.support.BootstrapOptionsBuilderSupport;
-import com.foreach.across.modules.bootstrapui.elements.builder.entry.support.BootstrapTableBuilderSupport;
-import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElementBuilder;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapFieldSetBuilderFactoryHelper;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapOptionsBuilderFactoryHelper;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapSelectBuilderFactoryHelper;
+import com.foreach.across.modules.bootstrapui.ui.factories.support.BootstrapTableBuilderFactoryHelper;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 
@@ -42,10 +42,10 @@ import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder
  */
 public class BootstrapViewElementBuilders
 {
-	public final BootstrapOptionsBuilderSupport option = new BootstrapOptionsBuilderSupport();
-	public final BootstrapOptionsBuilderSupport select = new BootstrapOptionsBuilderSupport();
-	public final BootstrapTableBuilderSupport table = new BootstrapTableBuilderSupport();
-	public final BootstrapFieldSetBuilderSupport fieldset = new BootstrapFieldSetBuilderSupport();
+	public final BootstrapOptionsBuilderFactoryHelper option = new BootstrapOptionsBuilderFactoryHelper();
+	public final BootstrapSelectBuilderFactoryHelper select = new BootstrapSelectBuilderFactoryHelper();
+	public final BootstrapTableBuilderFactoryHelper table = new BootstrapTableBuilderFactoryHelper();
+	public final BootstrapFieldSetBuilderFactoryHelper fieldset = new BootstrapFieldSetBuilderFactoryHelper();
 
 	public AlertViewElementBuilder alert() {
 		return new AlertViewElementBuilder();
@@ -276,7 +276,7 @@ public class BootstrapViewElementBuilders
 	 * </pre>
 	 */
 	public OptionsFormElementBuilder select() {
-		return select.options();
+		return option.options();
 	}
 
 	public OptionsFormElementBuilder select( ViewElement.WitherSetter... setters ) {

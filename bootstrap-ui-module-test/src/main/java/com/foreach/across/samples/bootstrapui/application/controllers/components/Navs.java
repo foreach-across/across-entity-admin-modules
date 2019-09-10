@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.customizeViewElement;
-import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.MutableViewElement.Functions.remove;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;

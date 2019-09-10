@@ -17,12 +17,8 @@
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.elements.ScriptViewElement;
-import com.foreach.across.modules.bootstrapui.elements.Style;
-import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
-import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
-import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.http.MediaType;
@@ -30,7 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static com.foreach.across.modules.web.ui.elements.TextViewElement.text;

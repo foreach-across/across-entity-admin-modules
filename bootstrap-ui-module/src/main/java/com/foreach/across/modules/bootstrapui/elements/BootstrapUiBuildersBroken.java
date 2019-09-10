@@ -23,7 +23,7 @@ import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavCompo
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
-import com.foreach.across.modules.bootstrapui.elements.builder.entry.BootstrapViewElementBuilders;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElementBuilders;
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElementBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElement;

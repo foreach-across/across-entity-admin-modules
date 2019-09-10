@@ -17,7 +17,6 @@
 package com.foreach.across.samples.bootstrapui.application.controllers.form.controls;
 
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElement;
-import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Currency;
 
-import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Generates a numeric control using a {@link NumericFormElement}.

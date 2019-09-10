@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements.builder.entry.support;
+package com.foreach.across.modules.bootstrapui.ui.factories.support;
 
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElementBuilders;
 import com.foreach.across.modules.bootstrapui.elements.builder.FieldsetFormElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
- * Support class used by {@link com.foreach.across.modules.bootstrapui.elements.builder.entry.BootstrapViewElementBuilders}
+ * Support class used by {@link BootstrapViewElementBuilders}
  *
  * @author Stijn Vanhoof
  * @since 3.0.0
  */
-public class BootstrapFieldSetBuilderSupport
+public class BootstrapFieldSetBuilderFactoryHelper
 {
 	public FieldsetFormElementBuilder.Legend legend( FieldsetFormElementBuilder fieldset ) {
 		return new FieldsetFormElementBuilder.Legend( fieldset );

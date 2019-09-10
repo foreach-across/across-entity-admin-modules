@@ -17,8 +17,7 @@
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.elements.AlertViewElement;
-import com.foreach.across.modules.bootstrapui.elements.builder.entry.BootstrapViewElementBuilders;
-import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements.builder.entry;
+package com.foreach.across.modules.bootstrapui.ui.factories;
 
 import com.foreach.across.modules.bootstrapui.components.builder.BreadcrumbNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
@@ -27,7 +27,7 @@ import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.junit.Test;
 
-import static com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

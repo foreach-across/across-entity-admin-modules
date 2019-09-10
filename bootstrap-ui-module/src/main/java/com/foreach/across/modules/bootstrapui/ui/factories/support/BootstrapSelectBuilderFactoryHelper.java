@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements.entry.support;
+package com.foreach.across.modules.bootstrapui.ui.factories.support;
 
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElementBuilders;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
-import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
+ * Support class used by {@link BootstrapViewElementBuilders}
+ *
  * @author Stijn Vanhoof
  * @since 3.0.0
  */
-public class BootstrapOptionsElementSupport
+public class BootstrapSelectBuilderFactoryHelper
 {
 	/**
-	 * Build a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} that can build a single option for a
-	 * select, checkbox, radiobutton or toggle.
+	 * Support class used by {@link BootstrapViewElementBuilders}
 	 * <p>
+	 * Build a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} that will build a single select option.
 	 */
 	public OptionFormElementBuilder option() {
 		return new OptionFormElementBuilder();
@@ -37,18 +39,5 @@ public class BootstrapOptionsElementSupport
 
 	public OptionFormElementBuilder option( ViewElement.WitherSetter... setters ) {
 		return option().with( setters );
-	}
-
-	/**
-	 * Build a {@link com.foreach.across.modules.web.ui.ViewElementBuilder} that can build a list of options for a
-	 * select, checkbox, radiobutton or toggle.
-	 * <p>
-	 */
-	public OptionsFormElementBuilder options() {
-		return new OptionsFormElementBuilder();
-	}
-
-	public OptionsFormElementBuilder options( ViewElement.WitherSetter... setters ) {
-		return options().with( setters );
 	}
 }

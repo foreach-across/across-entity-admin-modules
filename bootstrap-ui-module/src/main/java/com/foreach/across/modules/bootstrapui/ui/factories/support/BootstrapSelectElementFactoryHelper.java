@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.foreach.across.modules.bootstrapui.elements.entry.support;
+package com.foreach.across.modules.bootstrapui.ui.factories.support;
 
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -23,7 +23,7 @@ import com.foreach.across.modules.web.ui.ViewElement;
  * @author Stijn Vanhoof
  * @since 3.0.0
  */
-public class BootstrapSelectElementSupport
+public class BootstrapSelectElementFactoryHelper
 {
 	public SelectFormElement.Option option() {
 		return new SelectFormElement.Option();
@@ -31,13 +31,5 @@ public class BootstrapSelectElementSupport
 
 	public SelectFormElement.Option option( ViewElement.WitherSetter... setters ) {
 		return option().set( setters );
-	}
-
-	public SelectFormElement.OptionGroup optionGroup() {
-		return new SelectFormElement.OptionGroup();
-	}
-
-	public SelectFormElement.OptionGroup optionGroup( ViewElement.WitherSetter... setters ) {
-		return optionGroup().set( setters );
 	}
 }

@@ -20,7 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormControlElementBuilderSupport;
 import com.foreach.across.modules.bootstrapui.elements.builder.TextboxFormElementBuilder;
-import com.foreach.across.modules.bootstrapui.elements.entry.BootstrapViewElements;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilder;
