@@ -45,6 +45,11 @@ public class EntityViewFactoryAttributes
 	public static final String VIEW_NAME = EntityViewFactory.class.getName() + ".VIEW_NAME";
 
 	/**
+	 * Contains the template name of the view.
+	 */
+	public static final String VIEW_TEMPLATE_NAME = EntityViewFactory.class.getName() + ".VIEW_TEMPLATE_NAME";
+
+	/**
 	 * Contains a {@link java.util.function.Consumer} that takes an {@link EntityAdminMenuEvent} as parameter.
 	 * Any view with this attribute will usually generate a menu item when the entity menu is being built.
 	 */

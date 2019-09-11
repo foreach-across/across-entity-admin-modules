@@ -95,8 +95,9 @@ export function assertNotNull( location, property, object ) {
 }
 
 export function convertToTypedValue( value ) {
-  if ( value.startsWith( "'" ) && value.endsWith( "'" ) ) {
-    return new EQString( value.substring( 1, value.length - 1 ) );
+  const stringVal = value.toString();
+  if ( stringVal.startsWith( "'" ) && stringVal.endsWith( "'" ) ) {
+    return new EQString( stringVal.substring( 1, stringVal.length - 1 ) );
   }
   return new EQValue( value );
 }

@@ -27,6 +27,7 @@ import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityModel;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.registry.properties.EntityPropertyDescriptor;
+import com.foreach.across.modules.entity.util.EntityTypeDescriptor;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static com.foreach.across.modules.entity.util.EntityUtils.resolveEntityTypeDescriptor;
 
 /**
  * Helper that allows registering simple entity (query) based auto-suggest datasets
@@ -274,7 +277,11 @@ public class AutoSuggestDataAttributeRegistrar
 		}
 		if ( owner instanceof EntityPropertyDescriptor ) {
 			EntityPropertyDescriptor propertyDescriptor = (EntityPropertyDescriptor) owner;
-			return entityRegistry.getEntityConfiguration( propertyDescriptor.getPropertyType() );
+			EntityTypeDescriptor entityTypeDescriptor = resolveEntityTypeDescriptor( propertyDescriptor.getPropertyTypeDescriptor(), entityRegistry );
+			if ( !entityTypeDescriptor.isTargetTypeResolved() ) {
+				throw new IllegalArgumentException( "Unable to resolve EntityConfiguration for property type " + propertyDescriptor );
+			}
+			return entityRegistry.getEntityConfiguration( entityTypeDescriptor.getSimpleTargetType() );
 		}
 		else if ( owner instanceof EntityConfiguration ) {
 			return ( (EntityConfiguration) owner );

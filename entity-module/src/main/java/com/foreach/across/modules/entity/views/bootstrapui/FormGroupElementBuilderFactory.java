@@ -67,7 +67,9 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 
 		ViewElementBuilder controlBuilder = entityViewElementBuilderService.getElementBuilder( propertyDescriptor, controlMode );
 
-		FormGroupElementBuilder formGroup = bootstrap.builders.formGroup().name( NAME_PREFIX + propertyDescriptor.getName() ).control( controlBuilder );
+		FormGroupElementBuilder formGroup = bootstrap.builders.formGroup().name( NAME_PREFIX + propertyDescriptor.getName() )
+		                                               .data( "em-property", propertyDescriptor.getName() )
+		                                               .control( controlBuilder );
 
 		// add form write post processors
 		if ( ViewElementMode.FORM_WRITE.equals( viewElementMode.forSingle() ) ) {

@@ -33,6 +33,8 @@ public class EntityModuleIcons
 {
 	public static final EntityModuleIcons entityModuleIcons = new EntityModuleIcons();
 
+	public EntityModuleControlIcons controls = new EntityModuleControlIcons();
+
 	public EntityModuleEmbeddedCollectionIcons embeddedCollection = new EntityModuleEmbeddedCollectionIcons();
 
 	public EntityModuleFormViewIcons formView = new EntityModuleFormViewIcons();
@@ -58,6 +60,9 @@ public class EntityModuleIcons
 		                                                                                    .set( css.text.danger ) );
 		adminWebIconSet.add( EntityModuleListViewIcons.PREVIOUS_PAGE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "step-backward" ) );
 		adminWebIconSet.add( EntityModuleListViewIcons.NEXT_PAGE, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "step-forward" ) );
+
+		adminWebIconSet.add( EntityModuleAutoSuggestIcons.REMOVE_ITEM, ( imageName ) -> IconSet.iconSet( FONT_AWESOME_SOLID_ICON_SET ).icon( "times" )
+		                                                                                       .set( css.text.danger ) );
 
 		IconSetRegistry.addIconSet( EntityModule.NAME, adminWebIconSet );
 	}

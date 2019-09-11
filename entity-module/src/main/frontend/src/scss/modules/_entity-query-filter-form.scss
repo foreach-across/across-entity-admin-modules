@@ -4,17 +4,39 @@
   }
 
   .entity-query-filter-form-basic {
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
     .form-group {
-      display: inline-block;
+
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+
+      //display: inline-block;
       margin: 0 10px 0 0;
       vertical-align: middle;
+
+      .checkbox-list, .radio-list, .toggle-list {
+        display: flex;
+        align-items: center;
+      }
+
+      //ensure that the values within a select dropdown are actually shown inside the dropdown
+      div.bootstrap-select {
+        div.dropdown-menu > div.inner.show {
+          overflow-y: initial !important;
+        }
+      }
 
       label {
         display: inline-block;
         float: left;
         margin: 0 7px 0 0;
         vertical-align: middle;
-        line-height: 38px;
+        //line-height: 38px;
       }
 
       .form-control, .form-control-static {
@@ -42,6 +64,41 @@
 
           > .form-control {
             width: 200px;
+          }
+        }
+      }
+
+      .multi-value-autosuggest {
+        display: inline-block;
+
+        .multi-value-autosuggest-selected {
+          display: inline;
+
+          tr, td {
+            display: inline-block;
+          }
+
+          tr {
+            border: none;
+            background-color: white;
+            border-radius: 5px;
+            margin: 2px;
+            padding: 3px;
+          }
+
+          td {
+            border: none;
+            padding: 0 5px;
+            background-color: white;
+
+            &.row-actions {
+              padding-top: 1px;
+              padding-left: 0;
+            }
+
+            .glyphicon {
+              font-size: small;
+            }
           }
         }
       }

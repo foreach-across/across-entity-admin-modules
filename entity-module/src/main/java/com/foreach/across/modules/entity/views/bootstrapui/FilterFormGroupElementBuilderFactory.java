@@ -63,7 +63,8 @@ public class FilterFormGroupElementBuilderFactory extends EntityViewElementBuild
 				= entityViewElementBuilderService.getElementBuilder( propertyDescriptor, determineControlViewElementMode( viewElementMode ) );
 
 		FormGroupElementBuilder formGroupElementBuilder = bootstrap.builders.formGroup()
-		                                                                    .name( FormGroupElementBuilderFactory.NAME_PREFIX + propertyDescriptor.getName() )
+		                                                                    .data( "em-property", propertyDescriptor.getName() )
+				.name( FormGroupElementBuilderFactory.NAME_PREFIX + propertyDescriptor.getName() )
 		                                                                    .control( control );
 
 		if ( !isRadioOrCheckboxControl( control ) ) {

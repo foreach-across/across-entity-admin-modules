@@ -132,6 +132,7 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 				.name( FORM )
 				.commandAttribute( "entityViewCommand" )
 				.post()
+				.css( "em-form" )
 				.noValidate();
 
 		String encType = determineFormEncType( entityViewRequest );

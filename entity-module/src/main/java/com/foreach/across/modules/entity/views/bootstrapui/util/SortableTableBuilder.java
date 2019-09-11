@@ -33,6 +33,7 @@ import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.*;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -516,7 +517,8 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 	protected TableViewElementBuilder createTable() {
 		// TODO by rending a BootstrapUi builder two 'table' classes will be present on the table element, see TableViewElementModelBuilder
 		TableViewElementBuilder table = bootstrap.builders.table()
-		                                                  .name( elementName( ELEMENT_TABLE ) )
+		                                                  .css( "em-sortableTable-table" )
+		                                                   .name( elementName( ELEMENT_TABLE ) )
 		                                                  .responsive()
 		                                                  .with( getTableStyles() )
 		                                                  .attributes( createTableAttributes() );
@@ -661,7 +663,7 @@ public class SortableTableBuilder implements ViewElementBuilder<ContainerViewEle
 
 		NodeViewElementBuilder panel = html.builders.div()
 		                                            .name( elementName( ELEMENT_PANEL ) )
-		                                            .with( css.card )
+		                                            .with( css.card, HtmlViewElement.Functions.css( "em-sortableTable-panel" ) )
 		                                            .add(
 				                                            html.builders.div()
 				                                                         .name( elementName( ELEMENT_PANEL_HEADING ) )

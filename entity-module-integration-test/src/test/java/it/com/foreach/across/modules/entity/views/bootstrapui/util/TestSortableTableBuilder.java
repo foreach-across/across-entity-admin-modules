@@ -63,7 +63,7 @@ import static org.mockito.Mockito.*;
 public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 {
 	private static final String TABLE_WITH_RESULT_NUMBER = "<div class='table-responsive'>" +
-			"<table class='table-hover table table-sm table' " +
+			"<table class='em-sortableTable-table table-hover table table-sm table' " +
 			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
 			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
 			"<thead>" +
@@ -76,7 +76,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 			"</div>";
 
 	private static final String TABLE_WITH_RESULT_NUMBER_AND_FORM = "<div class='table-responsive'>" +
-			"<table class='table-hover table table-sm table' " +
+			"<table class='em-sortableTable-table table-hover table table-sm table' " +
 			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
 			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0' data-tbl-form='my-form'>" +
 			"<thead>" +
@@ -89,7 +89,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 			"</div>";
 
 	private static final String TABLE_WITHOUT_RESULT_NUMBER = "<div class='table-responsive'>" +
-			"<table class='table-hover table table-sm table' " +
+			"<table class='em-sortableTable-table table-hover table table-sm table' " +
 			"data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
 			"data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
 			"<thead>" +
@@ -163,7 +163,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 	@Test
 	public void simpleTable() {
 		expect(
-				"<div class='card'>" +
+				"<div class='card em-sortableTable-panel'>" +
 						"<div class='card-header'>xx results</div>" +
 						"<div class='card-body'>" +
 						TABLE_WITH_RESULT_NUMBER +
@@ -183,7 +183,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.pagingMessages( null );
 
 		expect(
-				"<div class='card'>" +
+				"<div class='card em-sortableTable-panel'>" +
 						"<div class='card-header'>custom results</div>" +
 						"<div class='card-body'>" +
 						TABLE_WITH_RESULT_NUMBER +
@@ -197,7 +197,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.showResultNumber( false );
 
 		expect(
-				"<div class='card'>" +
+				"<div class='card em-sortableTable-panel'>" +
 						"<div class='card-header'>xx results</div>" +
 						"<div class='card-body'>" +
 						TABLE_WITHOUT_RESULT_NUMBER +
@@ -224,11 +224,11 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		IconSetRegistry.addIconSet( EntityModule.NAME, iconSet );
 
 		expect(
-				"<div class='card'>" +
+				"<div class='card em-sortableTable-panel'>" +
 						"<div class='card-header'>xx results</div>" +
 						"<div class='card-body'>" +
 						"<div class='table-responsive'>" +
-						"<table class='table-hover table table-sm table' " +
+						"<table class='em-sortableTable-table table-hover table table-sm table' " +
 						"data-tbl='entityList' data-tbl-type='paged' data-tbl-entity-type='entity' " +
 						"data-tbl-current-page='1' data-tbl-total-pages='3' data-tbl-size='20' " +
 						"data-tbl-sort='[{\"prop\":\"one\",\"dir\":\"ASC\"},{\"prop\":\"two\",\"dir\":\"DESC\"},{\"prop\":\"three\",\"dir\":\"DESC\"}]'>" +
@@ -372,7 +372,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 				.sortableOn( "propertyOne", "propertyTwo" );
 
 		expect( "<div class='table-responsive'>" +
-				        "<table class='table-hover table table-sm table' " +
+				        "<table class='em-sortableTable-table table-hover table table-sm table' " +
 				        "data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
 				        "data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
 				        "<thead>" +
@@ -390,7 +390,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.defaultSorting();
 
 		expect( "<div class='table-responsive'>" +
-				        "<table class='table-hover table table-sm table' " +
+				        "<table class='em-sortableTable-table table-hover table table-sm table' " +
 				        "data-tbl='sortableTable' data-tbl-type='paged' data-tbl-entity-type='entity' " +
 				        "data-tbl-current-page='0' data-tbl-total-pages='1' data-tbl-size='0'>" +
 				        "<thead>" +
@@ -411,7 +411,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.tableStyles( css.table.small ).tableOnly( true );
 
 		expect(
-				TABLE_WITH_RESULT_NUMBER.replace( "table-hover", "" )
+				TABLE_WITH_RESULT_NUMBER.replace( "table-hover ", "" )
 		);
 	}
 

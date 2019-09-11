@@ -85,7 +85,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        .detailView()
 		        .listView( lvb -> lvb.entityQueryFilter(
 				        eqf -> eqf.showProperties( "author", "reviewers" )
-				                  .multiValue( "reviewers" )
+				                  .multiValue( "reviewers", "author" )
 		        ) )
 		        .createFormView()
 		        .updateFormView()
@@ -122,6 +122,7 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 		        .deleteFormView()
 		        .show()
 		        .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.AUTOSUGGEST )
+		        .viewElementType( ViewElementMode.FILTER_CONTROL.forMultiple(), BootstrapUiElements.AUTOSUGGEST )
 		        .attribute(
 				        autoSuggestData.entityQuery( "name ilike '{0}%' order by name desc" )
 				                       .control( ctl -> ctl.minLength( 2 ) )
@@ -138,6 +139,11 @@ public class ManualAssociationsConfiguration implements EntityConfigurer
 				                      .property( propertyRegistrars.entityIdProxy( "reviewers" )
 				                                                   .entityType( Author.class )
 				                                                   .targetPropertyName( "reviewerIds" ) )
+				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.AUTOSUGGEST )
+				                      .attribute(
+						                      autoSuggestData.entityQuery( "name ilike '%{0}' order by name desc" )
+						                                     .control( ctl -> ctl.minLength( 1 ) )
+				                      )
 		        )
 		        .createFormView(
 				        vb -> vb.properties(

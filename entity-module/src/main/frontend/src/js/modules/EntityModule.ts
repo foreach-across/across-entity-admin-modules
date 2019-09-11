@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {EmbeddedCollection} from '../components/EmbeddedCollection';
+import {MultiValueAutoSuggest} from '../components/MultiValueAutoSuggest';
 
 export class EntityModule
 {
@@ -69,7 +70,7 @@ export class EntityModule
         /**
          * Initialize depends-on conditions between controls.
          */
-        $( '[data-dependson]', node ).each( function (ix, n) {
+        $( '[data-dependson]', node ).each( function ( ix, n ) {
             const dependsonConfig = $( this ).data( 'dependson' );
             const options = dependsonConfig['options'] != null ? dependsonConfig['options'] : {hide: false};
             delete dependsonConfig['options'];
@@ -120,6 +121,11 @@ export class EntityModule
          * Experimental: initialize embedded collections.
          */
         $( '.js-embedded-collection-form-group', node ).each( ( ix, n ) => new EmbeddedCollection( $( n ) ) );
+
+        /**
+         * Experimental: initialize multi-value autosuggest.
+         */
+        $( '.js-multi-value-autosuggest', node ).each( ( ix, n ) => new MultiValueAutoSuggest( $( n ) ) );
 
         /**
          * Initialize tooltips.
