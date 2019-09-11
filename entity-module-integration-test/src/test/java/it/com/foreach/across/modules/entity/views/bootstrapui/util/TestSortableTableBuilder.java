@@ -411,7 +411,7 @@ public class TestSortableTableBuilder extends AbstractViewElementTemplateTest
 		tableBuilder.tableStyles( css.table.small ).tableOnly( true );
 
 		expect(
-				TABLE_WITH_RESULT_NUMBER.replace( "table-hover", "" )
+				TABLE_WITH_RESULT_NUMBER.replace( "table-hover ", "" )
 		);
 	}
 

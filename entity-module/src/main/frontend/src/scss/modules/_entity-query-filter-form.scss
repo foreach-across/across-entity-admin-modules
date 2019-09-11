@@ -4,17 +4,32 @@
   }
 
   .entity-query-filter-form-basic {
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
     .form-group {
-      display: inline-block;
+
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+
+      //display: inline-block;
       margin: 0 10px 0 0;
       vertical-align: middle;
+
+      .checkbox-list, .radio-list, .toggle-list {
+        display: flex;
+        align-items: center;
+      }
 
       label {
         display: inline-block;
         float: left;
         margin: 0 7px 0 0;
         vertical-align: middle;
-        line-height: 38px;
+        //line-height: 38px;
       }
 
       .form-control, .form-control-static {
