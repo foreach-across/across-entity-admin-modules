@@ -16,8 +16,18 @@
 
 import {EntityModule} from "./modules/EntityModule";
 import {SortableTable} from "./components/SortableTable";
+import {MultiValueAutoSuggestControlAdapter} from './components/MultiValueAutoSuggest';
 
 const entityModule = new EntityModule();
+const bootstrapUiModule = window.BootstrapUiModule;
+
+if ( bootstrapUiModule.ControlAdapterFactory ) {
+    bootstrapUiModule.ControlAdapterFactory.register( 'multi-value-autosuggest', function( node ) {
+        bootstrapUiModule.ControlAdapterFactory.initializeControlAdapters( node );
+        return new MultiValueAutoSuggestControlAdapter( node );
+    } );
+}
+
 
 $( document ).ready( function() {
     entityModule.initializeFormElements();

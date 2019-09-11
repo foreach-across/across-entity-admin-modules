@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 class EntityRegistryBrowserController
 {
-	private static final String DOC_BASE_URL = "https://docs.across.dev/across-site/%s/entity-module%s";
+	private static final String DOC_BASE_URL = "https://docs.across.dev/across-site/%s/entity-module/%s";
 	private static final String JAVADOC_BASE_URL = "https://docs.across.dev/across-standard-modules/EntityModule/%s/javadoc";
 	private static final String DOC_VIEW_PROCESSORS = "%s/services-and-components/default-entityviewprocessors.html";
 	private static final String DOC_ATTRIBUTES_CONFIGURATION = "%s/services-and-components/attributes-overview.html#appendix-entity-configuration-attributes";
@@ -268,11 +268,10 @@ class EntityRegistryBrowserController
 
 	private void registerDocumentationLinks( Model model ) {
 		AcrossVersionInfo versionInfo = entityModuleInfo.getVersionInfo();
-		String docVersion = versionInfo.isSnapshot() ? StringUtils.replace( versionInfo.getVersion(), "SNAPSHOT", "dev" ) : versionInfo.getVersion();
 		String docBaseUrl = String.format(
 				DOC_BASE_URL,
 				versionInfo.isSnapshot() ? "preview" : "production",
-				docVersion.equalsIgnoreCase( "NO_VERSION" ) ? "/" : "/" + docVersion
+				versionInfo.isSnapshot() ? StringUtils.replace( versionInfo.getVersion(), "SNAPSHOT", "dev" ) : versionInfo.getVersion()
 		);
 
 		model.addAttribute( "javadoc", new JavadocHelper() );

@@ -16,6 +16,7 @@
 @import 'settings';
 @import "modules/summary_view";
 @import 'modules/entity-query-filter-form';
+@import 'modules/multi-value-autosuggest';
 
 table.table tr.odd {
   background-color: rgba(0, 0, 0, .05);
@@ -220,3 +221,7 @@ table.table tr.odd {
 //.embedded-collection-actions .btn {
 //  width: 100%;
 //}
+
+.js-multi-value-control > table {
+  margin-top: -1px;
+}

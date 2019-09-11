@@ -45,6 +45,41 @@
           }
         }
       }
+
+      .multi-value-autosuggest {
+        display: inline-block;
+
+        .multi-value-autosuggest-selected {
+          display: inline;
+
+          tr, td {
+            display: inline-block;
+          }
+
+          tr {
+            border: none;
+            background-color: white;
+            border-radius: 5px;
+            margin: 2px;
+            padding: 3px;
+          }
+
+          td {
+            border: none;
+            padding: 0 5px;
+            background-color: white;
+
+            &.row-actions {
+              padding-top: 1px;
+              padding-left: 0;
+            }
+
+            .glyphicon {
+              font-size: small;
+            }
+          }
+        }
+      }
     }
   }
 }

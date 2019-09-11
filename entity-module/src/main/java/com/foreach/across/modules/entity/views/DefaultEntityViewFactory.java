@@ -119,6 +119,14 @@ public class DefaultEntityViewFactory extends AttributeSupport implements Dispat
 				entityView.addAttribute( ATTRIBUTE_CONTAINER_ELEMENT, container );
 
 				PageContentStructure page = entityViewRequest.getPageContentStructure();
+				EntityViewContext entityViewContext = entityViewRequest.getEntityViewContext();
+				page.addCssClass(
+						"em-view-" + entityViewRequest.getConfigurationAttributes().getOrDefault( EntityViewFactoryAttributes.VIEW_TEMPLATE_NAME, "generic" ) );
+				page.setAttribute( "data-em-entity", entityViewContext.getEntityConfiguration().getName() );
+				page.setAttribute( "data-em-view", entityViewRequest.getViewName() );
+				if ( entityViewContext.isForAssociation() ) {
+					page.setAttribute( "data-em-association", entityViewContext.getEntityAssociation().getName() );
+				}
 				page.addChild( container );
 
 				// perform render related post-processing

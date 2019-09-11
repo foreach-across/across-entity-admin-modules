@@ -231,6 +231,7 @@ public abstract class AbstractWritableAttributesAndViewsBuilder<T extends Readab
 			}
 			else {
 				builder.attribute( EntityViewFactoryAttributes.VIEW_NAME, viewName );
+				builder.attribute( EntityViewFactoryAttributes.VIEW_TEMPLATE_NAME, builderTemplateName );
 				builder.attribute( EntityViewRegistry.class, viewRegistry );
 				builder.factoryType( DefaultEntityViewFactory.class );
 				initializeViewFactoryBuilder( viewName, builderTemplateName, builder );

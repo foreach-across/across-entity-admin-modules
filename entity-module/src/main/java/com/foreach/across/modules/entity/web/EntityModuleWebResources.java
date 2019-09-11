@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.web;
 
+import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.web.resource.WebResource;
@@ -44,6 +45,7 @@ public final class EntityModuleWebResources implements WebResourcePackage
 				add( css( "@static:/entity/css/entity-module.css" ) ).withKey( EntityModule.NAME ).toBucket( WebResource.CSS ),
 				add( javascript( "@static:/entity/js/dependson.js" ) ).withKey( EntityModule.NAME + "-dependson" ).toBucket( WebResource.JAVASCRIPT_PAGE_END ),
 				add( javascript( "@static:/entity/js/entity-module.js" ) ).withKey( EntityModule.NAME ).toBucket( WebResource.JAVASCRIPT_PAGE_END )
+				                                                          .after( BootstrapUiFormElementsWebResources.NAME )
 		);
 	}
 }
