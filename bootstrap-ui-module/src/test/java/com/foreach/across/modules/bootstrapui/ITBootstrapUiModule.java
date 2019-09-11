@@ -16,7 +16,7 @@
 package com.foreach.across.modules.bootstrapui;
 
 import com.foreach.across.config.EnableAcrossContext;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactory;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiFactoryBroken;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWebResources;
 import com.foreach.across.modules.bootstrapui.resource.BootstrapUiWebResources;
 import com.foreach.across.modules.bootstrapui.resource.JQueryWebResources;
@@ -43,16 +43,9 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration
 public class ITBootstrapUiModule
 {
-	@Autowired(required = false)
-	private BootstrapUiFactory bootstrapUiFactory;
 
 	@Autowired
 	private Collection<WebResourcePackageManager> packageManagers;
-
-	@Test
-	public void exposedBeans() {
-		assertNotNull( bootstrapUiFactory );
-	}
 
 	@Test
 	public void webResourcesShouldBeRegistered() {

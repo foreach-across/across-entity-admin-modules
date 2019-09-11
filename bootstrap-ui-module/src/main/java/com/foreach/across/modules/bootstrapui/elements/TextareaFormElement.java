@@ -208,4 +208,16 @@ public class TextareaFormElement extends TextboxFormElement
 		super.setTagName( tagName );
 		return this;
 	}
+
+	@Override
+	public TextareaFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public TextareaFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

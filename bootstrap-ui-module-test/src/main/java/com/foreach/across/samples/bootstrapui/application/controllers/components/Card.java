@@ -16,14 +16,12 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.div;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.text;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
@@ -43,16 +41,18 @@ class Card extends ExampleController
 	String render() {
 		return render(
 				panel( "Simple cards",
-				       div( css.card, css.margin.bottom.s2 ).add( div( css.card.body ).add( text( "This is some text within a card body." ) ) ),
-				       div( css.card ).add(
-						       div( css.card.body )
-								       .add( html.h5( css.card.title, html.unescapedText( "Card title" ) ) )
-								       .add( html.h6( css.card.subTitle, css.margin.bottom.s2, css.text.muted, html.unescapedText( "Card subtitle" ) ) )
-								       .add( html.p( css.card.text, html.unescapedText(
-										       "Some quick example text to build on the card title and make up the bulk of the card's content." ) )
-								       )
-								       .add( BootstrapUiBuilders.link( css.card.link ).text( "Card link" ) )
-								       .add( BootstrapUiBuilders.link( css.card.link ).text( "Another link" ) )
+				       html.builders.div( css.card, css.margin.bottom.s2 )
+				                    .add( html.builders.div( css.card.body )
+				                                       .add( html.text( "This is some text within a card body." ) ) ),
+				       html.builders.div( css.card ).add(
+						       html.builders.div( css.card.body )
+						                    .add( html.h5( css.card.title, html.unescapedText( "Card title" ) ) )
+						                    .add( html.h6( css.card.subTitle, css.margin.bottom.s2, css.text.muted, html.unescapedText( "Card subtitle" ) ) )
+						                    .add( html.p( css.card.text, html.unescapedText(
+								                    "Some quick example text to build on the card title and make up the bulk of the card's content." ) )
+						                    )
+						                    .add( bootstrap.builders.link( css.card.link ).text( "Card link" ) )
+						                    .add( bootstrap.builders.link( css.card.link ).text( "Another link" ) )
 				       )
 				)
 		);

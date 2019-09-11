@@ -183,4 +183,16 @@ public class FileUploadFormElement extends FormControlElementSupport
 		super.setTagName( tagName );
 		return this;
 	}
+
+	@Override
+	public FileUploadFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public FileUploadFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

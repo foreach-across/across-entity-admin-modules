@@ -16,18 +16,18 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.form.controls;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElement;
 import com.foreach.across.modules.bootstrapui.elements.SelectFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionsFormElementBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
-import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Generates Bootstrap based tabs from a {@link Menu} instance.
@@ -82,18 +82,17 @@ class Select extends ExampleController
 	}
 
 	private OptionsFormElementBuilder simpleSelect( boolean addEmptyOption ) {
-		OptionsFormElementBuilder select = BootstrapUiBuilders.options()
-		                                                      .select()
-		                                                      .controlName( "controlName" )
-		                                                      .name( "internalName" )
-		                                                      .readonly( false );
+		OptionsFormElementBuilder select = bootstrap.builders.select()
+		                                                     .controlName( "controlName" )
+		                                                     .name( "internalName" )
+		                                                     .readonly( false );
 		if ( addEmptyOption ) {
-			select.add( BootstrapUiBuilders.option().value( "-1" ).text( " " ) );
+			select.add( bootstrap.builders.select.option().value( "-1" ).text( " " ) );
 		}
 
 		select
-				.add( BootstrapUiBuilders.option().value( "one" ).text( "Inner text" ) )
-				.add( BootstrapUiBuilders.option().value( "two" ).text( "Inner text 2" )
+				.add( bootstrap.builders.select.option().value( "one" ).text( "Inner text" ) )
+				.add( bootstrap.builders.select.option().value( "two" ).text( "Inner text 2" )
 				);
 		return select;
 	}
@@ -106,22 +105,21 @@ class Select extends ExampleController
 		SelectFormElement.OptionGroup group = new SelectFormElement.OptionGroup();
 		group.setLabel( "Group label" );
 		group.addChild(
-				BootstrapUiBuilders.option()
-				                   .value( "two" )
-				                   .text( "Inner text 2" )
-				                   .build()
+				bootstrap.builders.select.option()
+				                         .value( "two" )
+				                         .text( "Inner text 2" )
+				                         .build()
 		);
 		group.addChild(
-				BootstrapUiBuilders.option()
-				                   .value( "Short two" )
-				                   .text( "Some text" )
-				                   .build()
+				bootstrap.builders.select.option()
+				                         .value( "Short two" )
+				                         .text( "Some text" )
+				                         .build()
 		);
 
-		OptionsFormElementBuilder select = BootstrapUiBuilders.options()
-		                                                      .select();
+		OptionsFormElementBuilder select = bootstrap.builders.select();
 		if ( addEmptyOption ) {
-			select.add( BootstrapUiBuilders.option().value( "-1" ).text( " " ) );
+			select.add( bootstrap.builders.select.option().value( "-1" ).text( " " ) );
 		}
 		return select
 				.add( group )

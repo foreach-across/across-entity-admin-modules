@@ -26,10 +26,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.div;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.text;
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder.*;
 import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.withDataSet;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -143,7 +142,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 
 	@Test
 	public void customNotFoundTemplateWithViewElementBuilder() {
-		builder.notFoundTemplate( div().add( text( "No results available for {{query}}" ) ) );
+		builder.notFoundTemplate( html.builders.div().add( html.builders.text( "No results available for {{query}}" ) ) );
 		AutoSuggestFormElement actual = builder.createElement( context );
 
 		renderAndExpect( actual,
@@ -158,7 +157,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 
 	@Test
 	public void customSuggestionTemplateWithViewElementBuilder() {
-		builder.suggestionTemplate( div().add( text( "{{value}} (alt: {{other}})" ) ) );
+		builder.suggestionTemplate( html.builders.div().add( html.builders.text( "{{value}} (alt: {{other}})" ) ) );
 		AutoSuggestFormElement actual = builder.createElement( context );
 
 		renderAndExpect( actual,
@@ -172,7 +171,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 
 	@Test
 	public void customFooterTemplateWithViewElementBuilder() {
-		builder.footerTemplate( "willyWonka", text( "End of results for willy wonka" ) );
+		builder.footerTemplate( "willyWonka", html.builders.text( "End of results for willy wonka" ) );
 		AutoSuggestFormElement actual = builder.createElement( context );
 
 		renderAndExpect( actual,
@@ -186,7 +185,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 
 	@Test
 	public void customHeaderTemplateWithViewElementBuilder() {
-		builder.headerTemplate( div().attribute( "style", "text-decoration: underline" ).add( text( "Suggestions" ) ) );
+		builder.headerTemplate( html.builders.div().attribute( "style", "text-decoration: underline" ).add( html.builders.text( "Suggestions" ) ) );
 		AutoSuggestFormElement actual = builder.createElement( context );
 
 		renderAndExpect( actual,
@@ -200,7 +199,7 @@ public class TestAutoSuggestFormElementBuilder extends AbstractBootstrapViewElem
 
 	@Test
 	public void customPendingTemplateWithViewElementBuilder() {
-		builder.pendingTemplate( "cars", text( "Fetching results for {{query}}..." ) );
+		builder.pendingTemplate( "cars", html.builders.text( "Fetching results for {{query}}..." ) );
 		AutoSuggestFormElement actual = builder.createElement( context );
 
 		renderAndExpect( actual,

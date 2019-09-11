@@ -195,4 +195,16 @@ public class CheckboxFormElement extends FormControlElementSupport implements Co
 		super.setTagName( tagName );
 		return this;
 	}
+
+	@Override
+	public CheckboxFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public CheckboxFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

@@ -16,13 +16,14 @@
 
 package com.foreach.across.modules.bootstrapui.elements;
 
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory;
-import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactoryImpl;
+import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactoryBroken;
+import com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactoryBrokenImpl;
 import com.foreach.across.modules.bootstrapui.components.builder.BreadcrumbNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.DefaultNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
 import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.bootstrapui.elements.builder.*;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElementBuilders;
 import com.foreach.across.modules.bootstrapui.elements.tooltip.TooltipViewElementBuilder;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.ui.ViewElement;
@@ -35,15 +36,17 @@ import lombok.NonNull;
 import org.springframework.http.MediaType;
 
 /**
- * Static facade for {@link BootstrapUiFactory} and {@link com.foreach.across.modules.bootstrapui.components.BootstrapUiComponentFactory}.
+ * Static facade for {@link BootstrapUiFactoryBroken} and {@link BootstrapUiComponentFactoryBroken}.
  *
+ * @deprecated use the static facade {@link BootstrapViewElementBuilders} instead
  * @author Arne Vandamme
  * @since 1.2.0
  */
-public class BootstrapUiBuilders
+@Deprecated
+public class BootstrapUiBuildersBroken
 {
-	private static final BootstrapUiFactory FACTORY = new BootstrapUiFactoryImpl();
-	private static final BootstrapUiComponentFactory COMPONENT_FACTORY = new BootstrapUiComponentFactoryImpl();
+	private static final BootstrapUiFactoryBroken FACTORY = new BootstrapUiFactoryBrokenImpl();
+	private static final BootstrapUiComponentFactoryBroken COMPONENT_FACTORY = new BootstrapUiComponentFactoryBrokenImpl();
 
 	public static ContainerViewElementBuilder container() {
 		return new ContainerViewElementBuilder();

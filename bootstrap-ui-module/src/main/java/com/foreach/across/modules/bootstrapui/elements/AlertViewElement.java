@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElement;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractTextNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
@@ -229,6 +230,18 @@ public class AlertViewElement extends AbstractTextNodeViewElement
 	@Override
 	public AlertViewElement setText( String text ) {
 		super.setText( text );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public AlertViewElement remove( WitherRemover... functions ) {
+		super.remove( functions );
 		return this;
 	}
 }

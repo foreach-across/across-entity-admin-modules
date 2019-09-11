@@ -150,4 +150,16 @@ public class StaticFormElement extends AbstractNodeViewElement implements Config
 		super.setHtmlId( htmlId );
 		return this;
 	}
+
+	@Override
+	public StaticFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public StaticFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

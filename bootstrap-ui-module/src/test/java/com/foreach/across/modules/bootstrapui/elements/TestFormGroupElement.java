@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 import static org.junit.Assert.*;
@@ -94,12 +94,12 @@ public class TestFormGroupElement extends AbstractBootstrapViewElementTest
 	@Test
 	public void customGroupFromBuilder() {
 		renderAndExpect(
-				formGroup()
-						.label( label( "Name" ).target( "firstName" ) )
-						.add( hidden().controlName( "name" ).disabled( true ).mapToFormControl() )
-						.add( textbox().controlName( "firstName" ) )
-						.add( textbox().controlName( "lastName" ) )
-						.build(),
+				bootstrap.builders.formGroup()
+				                  .label( bootstrap.builders.label( "Name" ).target( "firstName" ) )
+				                  .add( bootstrap.builders.hidden().controlName( "name" ).disabled( true ).mapToFormControl() )
+				                  .add( bootstrap.builders.textbox().controlName( "firstName" ) )
+				                  .add( bootstrap.builders.textbox().controlName( "lastName" ) )
+				                  .build(),
 				"<div class=\"form-group\">\n" +
 						"    <label for=\"firstName\">Name</label>\n" +
 						"    <input type=\"hidden\" name=\"name\" id=\"name\" disabled=\"disabled\" />\n" +

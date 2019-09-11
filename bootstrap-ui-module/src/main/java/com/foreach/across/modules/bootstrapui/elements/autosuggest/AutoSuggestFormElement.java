@@ -17,6 +17,7 @@
 package com.foreach.across.modules.bootstrapui.elements.autosuggest;
 
 import com.foreach.across.modules.bootstrapui.elements.*;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
@@ -29,7 +30,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * Represents an autosuggest textbox field, created only through an {@link AutoSuggestFormElementBuilder}.
+ * Represents an autosuggest textbox field, can be created through {@link BootstrapViewElements#autoSuggest(TextboxFormElement, HiddenFormElement)}  or using a {@link AutoSuggestFormElementBuilder}.
  *
  * @author Arne Vandamme
  * @since 2.0.0
@@ -42,7 +43,7 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 	private final TextboxFormElement textbox;
 	private final HiddenFormElement valueControl;
 
-	AutoSuggestFormElement( TextboxFormElement textbox, HiddenFormElement valueControl ) {
+	public AutoSuggestFormElement( TextboxFormElement textbox, HiddenFormElement valueControl ) {
 		super( "div" );
 		this.textbox = textbox;
 		this.valueControl = valueControl;
@@ -255,6 +256,18 @@ public final class AutoSuggestFormElement extends AbstractNodeViewElement implem
 	@Override
 	protected AutoSuggestFormElement setTagName( String tagName ) {
 		super.setTagName( tagName );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public AutoSuggestFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
 		return this;
 	}
 }

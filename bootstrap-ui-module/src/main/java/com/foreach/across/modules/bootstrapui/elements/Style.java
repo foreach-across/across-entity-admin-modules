@@ -15,6 +15,7 @@
  */
 package com.foreach.across.modules.bootstrapui.elements;
 
+import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 

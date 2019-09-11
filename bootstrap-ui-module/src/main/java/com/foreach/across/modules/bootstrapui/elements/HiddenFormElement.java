@@ -60,6 +60,18 @@ public class HiddenFormElement extends AbstractVoidNodeViewElement implements Fo
 		return this;
 	}
 
+	@Override
+	public HiddenFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public HiddenFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
+
 	public Object getValue() {
 		return getAttribute( "value" );
 	}

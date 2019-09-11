@@ -17,13 +17,11 @@
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.menu.Menu;
 import com.foreach.across.modules.web.menu.MenuSelector;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
-import com.foreach.across.modules.web.ui.elements.builder.NodeViewElementBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import static com.foreach.across.modules.bootstrapui.components.builder.NavComponentBuilder.ATTR_ICON;
 import static com.foreach.across.modules.bootstrapui.components.builder.PanelsNavComponentBuilder.ATTR_RENDER_AS_PANEL;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 @Controller
@@ -48,7 +47,7 @@ class PanelNav extends ExampleController
 				panel( "Items without group", simplePanelNav() ),
 				panel( "Single group", panelNavWithGroupsAndIcons() ),
 				panel( "Custom styling (TODO)", panelNavWithStyling() ),
-				panel("Multiple groups", panelWithMultipleGroups())
+				panel( "Multiple groups", panelWithMultipleGroups() )
 				//panel( "Panel nav group without panel", panelNavGroupNotAsPanel() )
 		);
 	}
@@ -56,7 +55,7 @@ class PanelNav extends ExampleController
 	private NodeViewElement panelWithMultipleGroups() {
 		Menu menu = new PathBasedMenuBuilder()
 				.item( "/one", "Item 1" ).order( 1 ).and()
-				.item("/two", "Item 2").order( 2 ).and()
+				.item( "/two", "Item 2" ).order( 2 ).and()
 				.group( "/group1", "Group 1" ).order( 3 ).and()
 				.item( "/group1/one", "Group 1 item 1" ).and()
 				.item( "/group1/two", "Group 1 item 2" ).and()
@@ -66,14 +65,14 @@ class PanelNav extends ExampleController
 				.item( "/group1/subgroup1/three", "Sub-group 1 item 3" ).and()
 				.item( "/group1/subgroup1/subgroup1", "Sub-group 1 sub-group 1" ).and()
 				.item( "/group1/subgroup1/subgroup1/one", "Sub-group 1-1 item 1" ).and()
-				.item("/three", "Item 3").order( 6 ).and()
-				.item("/four", "Item 4").order( 7 ).and()
+				.item( "/three", "Item 3" ).order( 6 ).and()
+				.item( "/four", "Item 4" ).order( 7 ).and()
 				.build();
 
 		menu.sort();
 		menu.select( MenuSelector.byPath( "/group1/subgroup1/three" ) );
 
-		return BootstrapUiBuilders.panels( menu ).build();
+		return bootstrap.builders.panels().menu( menu ).build();
 	}
 
 	private NodeViewElement simplePanelNav() {
@@ -87,7 +86,7 @@ class PanelNav extends ExampleController
 
 		menu.select( MenuSelector.byPath( "/two" ) );
 
-		return BootstrapUiBuilders.panels( menu ).build();
+		return bootstrap.builders.panels().menu( menu ).build();
 	}
 
 	private NodeViewElement panelNavWithGroupsAndIcons() {
@@ -101,7 +100,7 @@ class PanelNav extends ExampleController
 
 		menu.select( MenuSelector.byPath( "/one/sub2" ) );
 
-		return BootstrapUiBuilders.panels( menu ).build();
+		return bootstrap.builders.panels().menu( menu ).build();
 	}
 
 	private NodeViewElement panelNavWithStyling() {
@@ -116,7 +115,7 @@ class PanelNav extends ExampleController
 		menu.select( MenuSelector.byTitle( "Panel example" ) );
 		menu.setTitle( "Bootstrap Ui Module" );
 
-		return BootstrapUiBuilders.panels( menu ).build();
+		return bootstrap.builders.panels().menu( menu ).build();
 	}
 
 	private NodeViewElement panelNavGroupNotAsPanel() {
@@ -131,7 +130,7 @@ class PanelNav extends ExampleController
 		menu.select( MenuSelector.byTitle( "Panel example" ) );
 		menu.setTitle( "Bootstrap Ui Module" );
 
-		return BootstrapUiBuilders.panels( menu ).build();
+		return bootstrap.builders.panels().menu( menu ).build();
 	}
 
 }

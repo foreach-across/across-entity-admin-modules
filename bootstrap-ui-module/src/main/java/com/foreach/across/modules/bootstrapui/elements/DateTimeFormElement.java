@@ -311,8 +311,14 @@ public class DateTimeFormElement extends InputGroupFormElement
 	}
 
 	@Override
-	public DateTimeFormElement setHtmlId( String htmlId ) {
-		super.setHtmlId( htmlId );
+	public DateTimeFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public DateTimeFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
 		return this;
 	}
 }

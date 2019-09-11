@@ -16,7 +16,6 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.utilities;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormViewElementBuilder;
 import com.foreach.across.modules.bootstrapui.utils.BootstrapElementUtils;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
@@ -28,7 +27,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
@@ -52,7 +52,7 @@ class ControlNames extends ExampleController
 
 	@GetMapping
 	String render( Model model ) {
-		FormViewElementBuilder form = BootstrapUiBuilders.form();
+		FormViewElementBuilder form = bootstrap.builders.form();
 
 		for ( int i = 0; i < 3; i++ ) {
 			Todo todo = new Todo();
@@ -66,18 +66,18 @@ class ControlNames extends ExampleController
 	}
 
 	private ContainerViewElementBuilder createTodoForm( Todo item ) {
-		return container()
-				.add(
-						formGroup(
-								label( "Owner" ),
-								textbox().controlName( "owner" ).text( item.getOwner() )
-						)
-				)
-				.add(
-						formGroup(
-								label( "Description" ),
-								textbox().controlName( "description" ).text( item.getDescription() )
-						)
-				);
+		return html.builders.container()
+		                    .add(
+				                    bootstrap.builders
+						                    .formGroup()
+						                    .label( bootstrap.builders.label( "Owner" ) )
+						                    .control( bootstrap.builders.textbox().controlName( "owner" ).text( item.getOwner() ) )
+		                    )
+		                    .add(
+				                    bootstrap.builders
+						                    .formGroup()
+						                    .label( bootstrap.builders.label( "Description" ) )
+						                    .control( bootstrap.builders.textbox().controlName( "description" ).text( item.getDescription() ) )
+		                    );
 	}
 }

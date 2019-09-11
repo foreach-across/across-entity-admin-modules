@@ -17,7 +17,7 @@
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
 import com.foreach.across.modules.bootstrapui.elements.AlertViewElement;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
@@ -43,7 +43,7 @@ public class Alerts extends ExampleController
 	}
 
 	private AlertViewElement simpleAlertElement() {
-		return BootstrapUiBuilders
+		return BootstrapViewElements.bootstrap.builders
 				.alert()
 				.danger()
 				.text( "This is a danger alert—check it out!\n" )
@@ -51,7 +51,7 @@ public class Alerts extends ExampleController
 	}
 
 	private AlertViewElement fullOptionAlertElement() {
-		return BootstrapUiBuilders
+		return BootstrapViewElements.bootstrap.builders
 				.alert()
 				.closeLabel( "Close alert" )
 				.dismissible( true )

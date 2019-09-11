@@ -16,13 +16,14 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.form.controls;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.TextboxFormElement;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * @author Arne Vandamme
@@ -47,22 +48,23 @@ class Textbox extends ExampleController
 	}
 
 	private TextboxFormElement simpleTextbox() {
-		return BootstrapUiBuilders.textbox()
-		                          .placeholder( "Placeholder text..." )
-		                          .build();
+		return bootstrap.builders.textbox()
+		                         .placeholder( "Placeholder text..." )
+		                         .build();
 	}
 
 	private TextboxFormElement textarea() {
-		return BootstrapUiBuilders.textarea()
-		                          .placeholder( "Placeholder text..." )
-		                          .autoSize()
-		                          .build();
+		return bootstrap.builders.textbox()
+		                         .multiLine()
+		                         .placeholder( "Placeholder text..." )
+		                         .autoSize()
+		                         .build();
 	}
 
 	private TextboxFormElement autoSizingTextbox() {
-		return BootstrapUiBuilders.textbox()
-		                          .placeholder( "Placeholder text..." )
-		                          .autoSize()
-		                          .build();
+		return bootstrap.builders.textbox()
+		                         .placeholder( "Placeholder text..." )
+		                         .autoSize()
+		                         .build();
 	}
 }

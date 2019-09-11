@@ -295,4 +295,16 @@ public class NumericFormElement extends FormControlElementSupport implements For
 		super.setTagName( tagName );
 		return this;
 	}
+
+	@Override
+	public NumericFormElement set( WitherSetter... setters ) {
+		super.set( setters );
+		return this;
+	}
+
+	@Override
+	public NumericFormElement remove( WitherRemover... functions ) {
+		super.remove( functions );
+		return this;
+	}
 }

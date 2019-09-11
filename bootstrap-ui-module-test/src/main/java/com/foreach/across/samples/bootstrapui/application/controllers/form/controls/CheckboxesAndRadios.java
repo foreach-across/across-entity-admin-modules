@@ -30,8 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.function.Supplier;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.option;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.options;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
@@ -53,17 +52,17 @@ class CheckboxesAndRadios extends ExampleController
 
 	@GetMapping("/checkbox")
 	String checkboxControls( Model model ) {
-		return renderControls( CheckboxFormElement::new, () -> options().checkbox() );
+		return renderControls( CheckboxFormElement::new, () -> bootstrap.builders.checkboxList() );
 	}
 
 	@GetMapping("/radio")
 	String radioControls( Model model ) {
-		return renderControls( RadioFormElement::new, () -> options().radio() );
+		return renderControls( RadioFormElement::new, () -> bootstrap.builders.radioList() );
 	}
 
 	@GetMapping("/switch")
 	String switchControls( Model model ) {
-		return renderControls( ToggleFormElement::new, () -> options().toggle() );
+		return renderControls( ToggleFormElement::new, () -> bootstrap.builders.toggleList() );
 	}
 
 	private String renderControls( Supplier<? extends CheckboxFormElement> control, Supplier<OptionsFormElementBuilder> options ) {
@@ -73,10 +72,10 @@ class CheckboxesAndRadios extends ExampleController
 						.add( html.hr() )
 						.add( options.get()
 						             .controlName( "optionsControl" )
-						             .add( option().text( "" ).value( 0 ) )
-								             .add( option().text( "option 1" ).value( 1 ) )
-						             .add( option().text( "option 2" ).value( 2 ).selected() )
-						             .add( option().text( "option 3" ).value( 3 ) ) ),
+						             .add( bootstrap.builders.option.option().text( "" ).value( 0 ) )
+						             .add( bootstrap.builders.option.option().text( "option 1" ).value( 1 ) )
+						             .add( bootstrap.builders.option.option().text( "option 2" ).value( 2 ).selected() )
+						             .add( bootstrap.builders.option.option().text( "option 3" ).value( 3 ) ) ),
 				panel( "Browser native controls" )
 						.add( control.get().setRenderAsCustomControl( false ).setControlName( "control" ).setText( "Simple control text" ) ),
 				panel( "Unwrapped" )
