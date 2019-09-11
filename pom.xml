@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.foreach.across</groupId>
 		<artifactId>across-standard-module-parent</artifactId>
-		<version>5.0.0-TEST-SNAPSHOT</version>
+		<version>5.0.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.foreach.across.modules</groupId>
@@ -42,7 +42,7 @@
 
 	<developers>
 		<developer>
-			<name>Arne Vandamme</name>
+			<name>Foreach</name>
 			<organization>Foreach</organization>
 			<organizationUrl>https://www.foreach.be</organizationUrl>
 		</developer>
@@ -50,9 +50,9 @@
 
 	<repositories>
 		<repository>
-			<id>foreach-nexus</id>
-			<name>Foreach repository</name>
-			<url>http://repository.foreach.be/nexus/repository/public/</url>
+			<id>across</id>
+			<name>Across Repository</name>
+			<url>https://repository.foreach.be/nexus/repository/public/</url>
 		</repository>
 	</repositories>
 
