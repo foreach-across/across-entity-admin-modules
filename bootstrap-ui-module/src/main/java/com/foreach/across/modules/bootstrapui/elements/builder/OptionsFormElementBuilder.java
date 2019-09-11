@@ -22,8 +22,10 @@ import com.foreach.across.modules.bootstrapui.resource.BootstrapUiFormElementsWe
 import com.foreach.across.modules.web.resource.WebResourceRegistry;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
 import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.builder.AbstractNodeViewElementBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
@@ -188,6 +190,7 @@ public class OptionsFormElementBuilder extends AbstractNodeViewElementBuilder<Ab
 
 			if ( type == Type.CHECKBOX || type == Type.RADIO || type == Type.TOGGLE ) {
 				control = createBoxDiv();
+				control.set( Functions.css( StringUtils.lowerCase( type.toString() ) + "-list" ) );
 				control.setAttribute( BootstrapUiViewElementAttributes.CONTROL_ADAPTER_TYPE, "container" );
 
 				if ( controlName != null ) {

@@ -40,7 +40,7 @@ public class TestOptionsAsToggleBuilder extends AbstractBootstrapViewElementTest
 		builder.htmlId( "mybox" ).controlName( "boxName" );
 
 		expect(
-				"<div data-bootstrapui-adapter-type='container' id='mybox' />"
+				"<div data-bootstrapui-adapter-type='container' id='mybox' class='toggle-list' />"
 		);
 	}
 
@@ -56,7 +56,7 @@ public class TestOptionsAsToggleBuilder extends AbstractBootstrapViewElementTest
 				);
 
 		expect(
-				"<div id='options-mybox' data-bootstrapui-adapter-type='container'>" +
+				"<div id='options-mybox' data-bootstrapui-adapter-type='container' class='toggle-list'>" +
 						"<div class='one two custom-control custom-switch' data-role='item' data-bootstrapui-adapter-type='checkbox'>" +
 						"<input class='custom-control-input' type='checkbox' value='one' id='mybox' name='mybox' />" +
 						"<label class='custom-control-label' for='mybox'>Inner text</label></div>" +
