@@ -77,9 +77,9 @@ public class TestNumericFormElementConfiguration
 		assertEquals( Long.MIN_VALUE, configuration.get( "minimumValue" ) );
 		assertEquals( 2, configuration.get( "decimalPlaces" ) );
 		assertEquals( "B", configuration.get( "roundingMethod" ) );
-		assertEquals( 's', configuration.get( "currencySymbolPlacement" ) );
+		assertEquals( 'p', configuration.get( "currencySymbolPlacement" ) );
 		assertEquals( "(,)", configuration.get( "negativeBracketsTypeOnBlur" ) );
-		assertEquals( Currency.getInstance( "EUR" ).getSymbol().trim(), configuration.get( "currencySymbol" ).toString().trim() );
+		assertEquals( Currency.getInstance( "EUR" ).getSymbol(), configuration.get( "currencySymbol" ) );
 
 		NumberFormat format = configuration.localize( Locale.US ).createNumberFormat();
 		assertEquals( "EUR8,000.52", format.format( new BigDecimal( "8000.52" ) ) );
