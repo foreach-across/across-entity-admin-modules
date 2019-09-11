@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration.Format;
@@ -45,6 +44,9 @@ import java.math.BigInteger;
 import java.util.Currency;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * @author Arne Vandamme
@@ -135,7 +137,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 				}
 			}
 
-			return BootstrapUiBuilders.text().postProcessor( valueTextPostProcessor );
+			return html.builders.text( "" ).postProcessor( valueTextPostProcessor );
 		}
 	}
 
@@ -153,7 +155,7 @@ public class NumericFormElementBuilderFactory extends EntityViewElementBuilderFa
 		protected NumericFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 		                                                          ViewElementMode viewElementMode,
 		                                                          String viewElementType ) {
-			return BootstrapUiBuilders
+			return bootstrap.builders
 					.numeric()
 					.name( propertyDescriptor.getName() )
 					.controlName( propertyDescriptor.getName() )

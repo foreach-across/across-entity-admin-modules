@@ -24,6 +24,13 @@
         align-items: center;
       }
 
+      //ensure that the values within a select dropdown are actually shown inside the dropdown
+      div.bootstrap-select {
+        div.dropdown-menu > div.inner.show {
+          overflow-y: initial !important;
+        }
+      }
+
       label {
         display: inline-block;
         float: left;

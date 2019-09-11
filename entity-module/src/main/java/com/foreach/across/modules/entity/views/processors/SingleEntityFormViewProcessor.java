@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.bootstrapui.elements.builder.ColumnViewElementBuilder;
@@ -42,6 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
  * Creates the form based layout for an entity.  Will create a column form based structure for the body and will replace the default container
@@ -125,7 +127,7 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 
 	@Override
 	protected void createViewElementBuilders( EntityViewRequest entityViewRequest, EntityView entityView, ViewElementBuilderMap builderMap ) {
-		FormViewElementBuilder form = BootstrapUiBuilders
+		FormViewElementBuilder form = bootstrap.builders
 				.form()
 				.name( FORM )
 				.commandAttribute( "entityViewCommand" )
@@ -147,7 +149,7 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 
 		val formColumns = buildFormColumns();
 
-		NodeViewElementBuilder columnRow = BootstrapUiBuilders.row();
+		NodeViewElementBuilder columnRow = bootstrap.builders.row();
 		formColumns.forEach( ( name, column ) -> {
 			columnRow.add( column );
 			builderMap.put( name, column );
@@ -200,16 +202,16 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 
 		if ( errors != null && errors.hasErrors() ) {
 
-			val alert = BootstrapUiBuilders
+			val alert = bootstrap.builders
 					.alert()
 					.danger()
 					.text( messages.withNameSingular( "feedback.validationErrors", entityViewContext.getEntityLabel() ) );
 
 			if ( errors.hasGlobalErrors() ) {
-				val globalErrorList = BootstrapUiBuilders.node( "ul" ).css( "global-errors" );
+				val globalErrorList = html.builders.ul().css( "global-errors" );
 
 				errors.getGlobalErrors().forEach(
-						e -> globalErrorList.add( BootstrapUiBuilders.html(
+						e -> globalErrorList.add( html.builders.unescapedText(
 								"<strong>" + messageCodeResolver.getMessage( e ) + "</strong>"
 						) )
 				);
@@ -223,7 +225,7 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 
 	private String resolveFromUrl( EntityViewRequest entityViewRequest, FormViewElementBuilder form ) {
 		Optional<String> fromUrl = Optional.ofNullable( entityViewRequest.getWebRequest().getParameter( "from" ) );
-		fromUrl.ifPresent( url -> form.add( BootstrapUiBuilders.hidden().controlName( "from" ).value( url ) ) );
+		fromUrl.ifPresent( url -> form.add( bootstrap.builders.hidden().controlName( "from" ).value( url ) ) );
 
 		return fromUrl.orElseGet( entityViewRequest.getEntityViewContext().getLinkBuilder()::overview );
 	}
@@ -231,19 +233,19 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 	protected ContainerViewElementBuilderSupport buildButtonsContainer( EntityViewRequest entityViewRequest,
 	                                                                    EntityView entityView, String fromUrl ) {
 		EntityMessages messages = entityViewRequest.getEntityViewContext().getEntityMessages();
-		return BootstrapUiBuilders
+		return html.builders
 				.container()
 				.name( "buttons" )
-				.add( BootstrapUiBuilders.button()
-				                         .name( "btn-save" )
-				                         .style( Style.PRIMARY )
-				                         .submit()
-				                         .text( messages.messageWithFallback( "actions.save" ) )
+				.add( bootstrap.builders.button()
+				                        .name( "btn-save" )
+				                        .style( Style.PRIMARY )
+				                        .submit()
+				                        .text( messages.messageWithFallback( "actions.save" ) )
 				)
-				.add( BootstrapUiBuilders.button()
-				                         .name( "btn-cancel" )
-				                         .link( fromUrl )
-				                         .text( messages.messageWithFallback( "actions.cancel" ) )
+				.add( bootstrap.builders.button()
+				                        .name( "btn-cancel" )
+				                        .link( fromUrl )
+				                        .text( messages.messageWithFallback( "actions.cancel" ) )
 				);
 	}
 
@@ -255,7 +257,7 @@ public class SingleEntityFormViewProcessor extends EntityViewProcessorAdapter
 			String name = "entityForm-column-" + i;
 			columns.put(
 					name,
-					BootstrapUiBuilders
+					bootstrap.builders
 							.column( position.toArray( new Grid.DeviceGridLayout[position.size()] ) )
 							.name( name )
 			);

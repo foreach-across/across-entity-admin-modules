@@ -23,7 +23,8 @@ import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.menu.AdminMenuEvent;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
+import com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -66,6 +67,7 @@ import java.util.stream.Collectors;
 @AdminWebController
 @RequestMapping("/ax/developer/entityModule/entities")
 @ConditionalOnDevelopmentMode
+@ConditionalOnBootstrapUI
 @RequiredArgsConstructor
 class EntityRegistryBrowserController
 {
@@ -130,7 +132,7 @@ class EntityRegistryBrowserController
 		menu.sort();
 		menu.select( new RequestMenuSelector( request ) );
 
-		page.addToNav( BootstrapUiBuilders.nav( menu ).tabs().build() );
+		page.addToNav( BootstrapViewElements.bootstrap.builders.nav().menu( menu ).tabs().build() );
 
 		if ( "associations".equals( detailView ) ) {
 			if ( detailName != null ) {

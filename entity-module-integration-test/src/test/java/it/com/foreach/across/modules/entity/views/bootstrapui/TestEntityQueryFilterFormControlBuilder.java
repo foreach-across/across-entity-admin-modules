@@ -19,7 +19,6 @@ package it.com.foreach.across.modules.entity.views.bootstrapui;
 import com.foreach.across.config.AcrossContextConfigurer;
 import com.foreach.across.core.AcrossContext;
 import com.foreach.across.modules.bootstrapui.BootstrapUiModule;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.query.EntityQuery;
 import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilterFormControlBuilder;
 import com.foreach.across.modules.web.ui.DefaultViewElementBuilderContext;
@@ -33,6 +32,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * @author Steven Gentens
@@ -93,22 +94,22 @@ public class TestEntityQueryFilterFormControlBuilder extends AbstractViewElement
 		queryFilterFormControlBuilder = new EntityQueryFilterFormControlBuilder().eqlControlName( "extensions[eqFilter]" );
 
 		viewElementControlItems = new ArrayList<>();
-		viewElementControlItems.add( BootstrapUiBuilders.textbox()
-		                                                .controlName( "extensions[myName]" )
-		                                                .htmlId( "extensions[myName]" )
-		                                                .attribute( "data-entity-query-property", "myName" )
-		                                                .attribute( "data-entity-query-operand", "LIKE" )
-		                                                .attribute( "data-entity-query-control", "marker" )
-		                                                .build( builderContext ) );
+		viewElementControlItems.add( bootstrap.builders.textbox()
+		                                               .controlName( "extensions[myName]" )
+		                                               .htmlId( "extensions[myName]" )
+		                                               .attribute( "data-entity-query-property", "myName" )
+		                                               .attribute( "data-entity-query-operand", "LIKE" )
+		                                               .attribute( "data-entity-query-control", "marker" )
+		                                               .build( builderContext ) );
 
-		viewElementControlItems.add( BootstrapUiBuilders.options().checkbox()
-		                                                .controlName( "extensions[myOption]" )
-		                                                .htmlId( "extensions[myOption]" )
-		                                                .attribute( "data-entity-query-property", "myOption" )
-		                                                .attribute( "data-entity-query-operand", "IN" )
-		                                                .attribute( "data-entity-query-control", "marker" )
-		                                                .add( BootstrapUiBuilders.option().checkbox().value( "myOption" ) )
-		                                                .build( builderContext ) );
+		viewElementControlItems.add( bootstrap.builders.checkboxList()
+		                                               .controlName( "extensions[myOption]" )
+		                                               .htmlId( "extensions[myOption]" )
+		                                               .attribute( "data-entity-query-property", "myOption" )
+		                                               .attribute( "data-entity-query-operand", "IN" )
+		                                               .attribute( "data-entity-query-control", "marker" )
+		                                               .add( bootstrap.builders.option.option().checkbox().value( "myOption" ) )
+		                                               .build( builderContext ) );
 	}
 
 	@Test

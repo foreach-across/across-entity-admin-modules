@@ -30,12 +30,12 @@ import com.foreach.across.modules.entity.views.support.EntityMessages;
 import com.foreach.across.modules.entity.web.links.EntityViewLinkBuilder;
 import com.foreach.across.modules.entity.web.links.SingleEntityViewLinkBuilder;
 import com.foreach.across.modules.spring.security.actions.AllowableAction;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElements;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilder;
 import com.foreach.across.modules.web.ui.elements.builder.ContainerViewElementBuilderSupport;
 import org.springframework.stereotype.Component;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.button;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.container;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Provides a default modify and back button for a {@link EntityView#DETAIL_VIEW_NAME} view.
@@ -71,19 +71,19 @@ public class DetailFormViewProcessor extends EntityViewProcessorAdapter
 	@SuppressWarnings("unchecked")
 	private ContainerViewElementBuilderSupport buildButtonsContainer( EntityViewContext entityViewContext, String updateUrl, String cancelUrl ) {
 		EntityMessages messages = entityViewContext.getEntityMessages();
-		ContainerViewElementBuilder container = container().name( "buttons" );
+		ContainerViewElementBuilder container = HtmlViewElements.html.builders.container().name( "buttons" );
 		EntityConfiguration entityConfiguration = entityViewContext.getEntityConfiguration();
 		Object entity = entityViewContext.getEntity();
 
-		ButtonViewElementBuilder backButton = button().name( "btn-back" )
-		                                              .link( cancelUrl )
-		                                              .text( messages.messageWithFallback( "actions.back" ) );
+		ButtonViewElementBuilder backButton = bootstrap.builders.button().name( "btn-back" )
+		                                                        .link( cancelUrl )
+		                                                        .text( messages.messageWithFallback( "actions.back" ) );
 		if ( entityConfiguration.getAllowableActions( entity ).contains( AllowableAction.UPDATE ) ) {
 			container.add(
-					button().name( "btn-update" )
-					        .link( updateUrl )
-					        .style( Style.PRIMARY )
-					        .text( messages.withNameSingular( "actions.modify", entity ) )
+					bootstrap.builders.button().name( "btn-update" )
+					                  .link( updateUrl )
+					                  .style( Style.PRIMARY )
+					                  .text( messages.withNameSingular( "actions.modify", entity ) )
 			);
 		}
 		else {

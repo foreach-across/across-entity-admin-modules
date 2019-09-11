@@ -19,7 +19,6 @@ package com.foreach.across.modules.entity.views.processors;
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.menu.AdminMenu;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -42,6 +41,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Builds the default page structure for a single entity page.  Adds page title, sets page layout and optionally adds the entity menu.
@@ -133,10 +134,11 @@ public class SingleEntityPageStructureViewProcessor extends EntityViewProcessorA
 		menuFactory.buildMenu( entityMenu );
 
 		page.addToNav(
-				BootstrapUiBuilders.nav( entityMenu )
-				                   .tabs()
-				                   .replaceGroupBySelectedItem()
-				                   .build( builderContext )
+				bootstrap.builders.nav()
+				                  .menu( entityMenu )
+				                  .tabs()
+				                  .replaceGroupBySelectedItem()
+				                  .build( builderContext )
 		);
 	}
 

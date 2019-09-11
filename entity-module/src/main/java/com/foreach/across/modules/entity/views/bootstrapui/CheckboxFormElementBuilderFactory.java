@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.builder.OptionFormElementBuilder;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
@@ -29,6 +28,8 @@ import com.foreach.across.modules.entity.views.processors.query.EntityQueryFilte
 import com.foreach.across.modules.entity.views.util.EntityViewElementUtils;
 import com.foreach.across.modules.web.ui.ViewElementBuilderSupport;
 import org.springframework.stereotype.Component;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Builds a {@link OptionFormElementBuilder} in the form of a checkbox for boolean attributes.
@@ -46,23 +47,24 @@ public class CheckboxFormElementBuilderFactory extends EntityViewElementBuilderF
 
 	@Override
 	public OptionFormElementBuilder createInitialBuilder( EntityPropertyDescriptor descriptor, ViewElementMode viewElementMode, String viewElementType ) {
-		return BootstrapUiBuilders.checkbox()
-		                          .name( descriptor.getName() )
-		                          .controlName( descriptor.getName() )
-		                          .text( descriptor.getDisplayName() )
-		                          .value( "on" )
-		                          .postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) )
-		                          .postProcessor( new EntityPropertyValueCheckboxPostProcessor( descriptor ) )
-		                          .postProcessor( new TextCodeResolverPostProcessor<>( "properties." + descriptor.getName() ) )
-		                          .postProcessor(
-				                          ( ( builderContext, element ) -> {
-					                          if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
-						                          element.setValue( true );
-						                          element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
-						                          EntityQueryFilterControlUtils.configureControlSettings(
-								                          ViewElementBuilderSupport.ElementOrBuilder.wrap( element ), descriptor );
-					                          }
-				                          } )
-		                          );
+		return bootstrap.builders
+				.checkbox()
+				.name( descriptor.getName() )
+				.controlName( descriptor.getName() )
+				.text( descriptor.getDisplayName() )
+				.value( "on" )
+				.postProcessor( EntityViewElementUtils.controlNamePostProcessor( descriptor ) )
+				.postProcessor( new EntityPropertyValueCheckboxPostProcessor( descriptor ) )
+				.postProcessor( new TextCodeResolverPostProcessor<>( "properties." + descriptor.getName() ) )
+				.postProcessor(
+						( ( builderContext, element ) -> {
+							if ( ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() ) ) {
+								element.setValue( true );
+								element.addCssClass( EntityQueryFilterProcessor.ENTITY_QUERY_CONTROL_MARKER );
+								EntityQueryFilterControlUtils.configureControlSettings(
+										ViewElementBuilderSupport.ElementOrBuilder.wrap( element ), descriptor );
+							}
+						} )
+				);
 	}
 }

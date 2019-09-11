@@ -18,7 +18,6 @@ package com.foreach.across.modules.entity.views.processors;
 
 import com.foreach.across.core.annotations.Exposed;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.EntityView;
@@ -33,6 +32,8 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Checks if there is global feedback present on the model and renders it in the {@link com.foreach.across.modules.adminweb.ui.PageContentStructure}.
@@ -66,11 +67,11 @@ public final class GlobalPageFeedbackViewProcessor extends EntityViewProcessorAd
 		if ( !isEmptyMap( feedback ) ) {
 			// todo: move to EntityViewPageHelper
 			PageContentStructure page = entityViewRequest.getPageContentStructure();
-			feedback.forEach( ( message, style ) -> page.addToFeedback( BootstrapUiBuilders.alert()
-			                                                                               .style( style )
-			                                                                               .dismissible()
-			                                                                               .text( message )
-			                                                                               .build( builderContext ) ) );
+			feedback.forEach( ( message, style ) -> page.addToFeedback( bootstrap.builders.alert()
+			                                                                              .style( style )
+			                                                                              .dismissible()
+			                                                                              .text( message )
+			                                                                              .build( builderContext ) ) );
 		}
 	}
 

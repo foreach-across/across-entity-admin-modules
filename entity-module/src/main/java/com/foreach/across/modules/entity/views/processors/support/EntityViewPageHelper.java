@@ -17,7 +17,6 @@
 package com.foreach.across.modules.entity.views.processors.support;
 
 import com.foreach.across.core.development.AcrossDevelopmentMode;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Style;
 import com.foreach.across.modules.entity.conditionals.ConditionalOnAdminWeb;
 import com.foreach.across.modules.entity.views.context.EntityViewContext;
@@ -34,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor.FEEDBACK_ATTRIBUTE_KEY;
 import static com.foreach.across.modules.entity.views.processors.GlobalPageFeedbackViewProcessor.addFeedbackMessage;
 
@@ -83,7 +83,7 @@ public class EntityViewPageHelper
 	 *
 	 * @param viewRequest to which to add the message
 	 * @param messageCode for the message
-	 * @param exception that was thrown
+	 * @param exception   that was thrown
 	 */
 	public void throwOrAddExceptionFeedback( EntityViewRequest viewRequest, String messageCode, Throwable exception ) {
 		if ( developmentMode.isActive() ) {
@@ -113,7 +113,7 @@ public class EntityViewPageHelper
 		}
 
 		viewRequest.getPageContentStructure().addToFeedback(
-				BootstrapUiBuilders
+				bootstrap.builders
 						.alert()
 						.danger()
 						.dismissible()

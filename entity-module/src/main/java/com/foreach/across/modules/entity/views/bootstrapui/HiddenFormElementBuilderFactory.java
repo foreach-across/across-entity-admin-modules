@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.HiddenFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.HiddenFormElementBuilder;
@@ -39,6 +38,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+
 /**
  * Renders a hidden input for a property.
  *
@@ -59,15 +60,16 @@ public class HiddenFormElementBuilderFactory extends EntityViewElementBuilderFac
 	@Override
 	protected HiddenFormElementBuilder createInitialBuilder( EntityPropertyDescriptor propertyDescriptor,
 	                                                         ViewElementMode viewElementMode, String viewElementType ) {
-		return BootstrapUiBuilders.hidden()
-		                          .name( propertyDescriptor.getName() )
-		                          .controlName( propertyDescriptor.getName() )
-		                          .postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
-		                          .postProcessor(
-				                          new EntityPropertyValueHiddenPostProcessor(
-						                          entityRegistry, conversionService, propertyDescriptor
-				                          )
-		                          );
+		return bootstrap.builders
+				.hidden()
+				.name( propertyDescriptor.getName() )
+				.controlName( propertyDescriptor.getName() )
+				.postProcessor( EntityViewElementUtils.controlNamePostProcessor( propertyDescriptor ) )
+				.postProcessor(
+						new EntityPropertyValueHiddenPostProcessor(
+								entityRegistry, conversionService, propertyDescriptor
+						)
+				);
 	}
 
 	@Autowired

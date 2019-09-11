@@ -22,7 +22,7 @@ import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 import org.junit.Test;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.textbox;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -37,7 +37,7 @@ public class TestFormGroupRequiredPostProcessor
 
 	@Test
 	public void nothingHappensIfNotAFormGroup() {
-		postProcessor.postProcess( builderContext, textbox().build( builderContext ) );
+		postProcessor.postProcess( builderContext, bootstrap.builders.textbox().build( builderContext ) );
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class TestFormGroupRequiredPostProcessor
 
 	@Test
 	public void groupIsSetAsRequiredIfTheControlIsRequired() {
-		group.setControl( textbox().required().build( builderContext ) );
+		group.setControl( bootstrap.builders.textbox().required().build( builderContext ) );
 
 		assertThat( group.isRequired() ).isFalse();
 		postProcessor.postProcess( builderContext, group );
@@ -71,7 +71,7 @@ public class TestFormGroupRequiredPostProcessor
 
 	@Test
 	public void groupRemainsRequiredEvenIfControlIsNot() {
-		group.setControl( textbox().required( false ).build( builderContext ) );
+		group.setControl( bootstrap.builders.textbox().required( false ).build( builderContext ) );
 		group.setRequired( true );
 
 		postProcessor.postProcess( builderContext, group );

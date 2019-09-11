@@ -16,7 +16,6 @@
 
 package com.foreach.across.modules.entity.views.processors;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.ButtonViewElement;
 import com.foreach.across.modules.bootstrapui.elements.icons.IconSetRegistry;
 import com.foreach.across.modules.bootstrapui.elements.icons.SimpleIconSet;
@@ -80,7 +79,7 @@ public class TestDeleteActionFormViewProcessor
 	public void setUp() {
 		deleteActionFormViewProcessor = new DeleteActionFormViewProcessor();
 
-		ContainerViewElementBuilderSupport buttonsContainer = BootstrapUiBuilders.container()
+		ContainerViewElementBuilderSupport buttonsContainer = html.builders.container()
 		                                                                         .name( "buttons" );
 		when( builderMap.get( SingleEntityFormViewProcessor.FORM_BUTTONS, ContainerViewElementBuilderSupport.class ) )
 				.thenReturn( buttonsContainer );

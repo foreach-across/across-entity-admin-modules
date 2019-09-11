@@ -29,11 +29,11 @@ import org.springframework.context.event.EventListener;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.*;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
@@ -121,7 +121,10 @@ public class ViewElementFieldsetController
 		ViewElementFieldset fieldset = new ViewElementFieldset();
 		fieldset.getTitle().addChild( html.text( "Fieldset title" ) );
 		fieldset.getFooter().addChild( html.text( "Fieldset footer" ) );
-		fieldset.getBody().set( children( formGroup( label( "Field 1" ), textbox() ).build() ) );
+		fieldset.getBody().set( children( bootstrap.builders.formGroup()
+		                                                    .label( bootstrap.builders.label( "Field 1" ) )
+		                                                    .control( bootstrap.builders.textbox() )
+		                                                    .build() ) );
 		return fieldset;
 	}
 

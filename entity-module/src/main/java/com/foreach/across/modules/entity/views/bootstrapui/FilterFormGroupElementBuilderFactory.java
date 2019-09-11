@@ -28,8 +28,7 @@ import com.foreach.across.modules.web.ui.ViewElementBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.formGroup;
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.label;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * Builds the simple form group for a filter control in a basic filter form.
@@ -63,14 +62,14 @@ public class FilterFormGroupElementBuilderFactory extends EntityViewElementBuild
 		ViewElementBuilder control
 				= entityViewElementBuilderService.getElementBuilder( propertyDescriptor, determineControlViewElementMode( viewElementMode ) );
 
-		FormGroupElementBuilder formGroupElementBuilder = formGroup()
-				.data( "em-property", propertyDescriptor.getName() )
+		FormGroupElementBuilder formGroupElementBuilder = bootstrap.builders.formGroup()
+		                                                                    .data( "em-property", propertyDescriptor.getName() )
 				.name( FormGroupElementBuilderFactory.NAME_PREFIX + propertyDescriptor.getName() )
-				.control( control );
+		                                                                    .control( control );
 
 		if ( !isRadioOrCheckboxControl( control ) ) {
 			ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder( propertyDescriptor, ViewElementMode.LABEL );
-			formGroupElementBuilder.label( label().text( labelText ) );
+			formGroupElementBuilder.label( bootstrap.builders.label().text( labelText ) );
 		}
 
 		return formGroupElementBuilder;

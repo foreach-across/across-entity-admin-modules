@@ -43,6 +43,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class TestFieldsetHelpTextPostProcessor
 {
+	protected static final String CSS_FORM_TEXT_HELP = "form-text-help";
+
 	@Mock
 	private EntityPropertyDescriptor descriptor;
 

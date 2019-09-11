@@ -15,7 +15,6 @@
  */
 package com.foreach.across.modules.entity.views.bootstrapui;
 
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.StaticFormElement;
 import com.foreach.across.modules.bootstrapui.elements.builder.FormGroupElementBuilder;
@@ -37,7 +36,7 @@ import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders.formGroup;
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 
 /**
  * @author Arne Vandamme
@@ -68,7 +67,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 
 		ViewElementBuilder controlBuilder = entityViewElementBuilderService.getElementBuilder( propertyDescriptor, controlMode );
 
-		FormGroupElementBuilder formGroup = formGroup().name( NAME_PREFIX + propertyDescriptor.getName() )
+		FormGroupElementBuilder formGroup = bootstrap.builders.formGroup().name( NAME_PREFIX + propertyDescriptor.getName() )
 		                                               .data( "em-property", propertyDescriptor.getName() )
 		                                               .control( controlBuilder );
 
@@ -94,7 +93,7 @@ public class FormGroupElementBuilderFactory extends EntityViewElementBuilderFact
 
 		if ( !isRadioOrCheckboxControl( controlBuilder ) ) {
 			ViewElementBuilder labelText = entityViewElementBuilderService.getElementBuilder( propertyDescriptor, ViewElementMode.LABEL );
-			LabelFormElementBuilder labelBuilder = BootstrapUiBuilders.label().text( labelText );
+			LabelFormElementBuilder labelBuilder = bootstrap.builders.label().text( labelText );
 			formGroup.label( labelBuilder );
 		}
 

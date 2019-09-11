@@ -19,8 +19,8 @@ package com.foreach.across.modules.entity.controllers.admin;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.adminweb.annotations.AdminWebController;
 import com.foreach.across.modules.adminweb.ui.PageContentStructure;
-import com.foreach.across.modules.bootstrapui.elements.BootstrapUiBuilders;
 import com.foreach.across.modules.bootstrapui.elements.Grid;
+import com.foreach.across.modules.entity.conditionals.ConditionalOnBootstrapUI;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
 import com.foreach.across.modules.entity.support.EntityMessageCodeResolver;
@@ -36,12 +36,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
+import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
+
 /**
  * Lists all entity types registered in the context.
  *
  * @author Arne Vandamme
  */
 @AdminWebController
+@ConditionalOnBootstrapUI
 @RequiredArgsConstructor
 public class EntityOverviewController
 {
@@ -57,41 +61,41 @@ public class EntityOverviewController
 				.filter( c -> !c.isHidden() && c.getAllowableActions().contains( AllowableAction.READ ) )
 				.collect( Collectors.groupingBy( this::determineGroupName ) );
 
-		NodeViewElementBuilder row = BootstrapUiBuilders.row();
+		NodeViewElementBuilder row = bootstrap.builders.row();
 
 		entitiesByGroup.forEach( ( groupName, entities ) -> {
-			NodeViewElementBuilder body = BootstrapUiBuilders.div().css( "panel-body" );
+			NodeViewElementBuilder body = html.builders.div().css( "panel-body" );
 
 			entities.forEach( entityConfiguration -> {
 				EntityLinkBuilder linkBuilder = entityConfiguration.getAttribute( EntityLinkBuilder.class );
 				EntityMessageCodeResolver codeResolver = entityConfiguration.getEntityMessageCodeResolver();
 
 				body.add(
-						BootstrapUiBuilders.paragraph().add(
-								BootstrapUiBuilders.link()
-								                   .text( codeResolver.getNameSingular() )
-								                   .url( linkBuilder.overview() )
+						html.builders.p().add(
+								bootstrap.builders.link()
+								                  .text( codeResolver.getNameSingular() )
+								                  .url( linkBuilder.overview() )
 						)
 				);
 			} );
 
 			row.add(
-					BootstrapUiBuilders.column( Grid.Device.MD.width( 3 ) )
-					                   .add(
-							                   BootstrapUiBuilders.div()
-							                                      .css( "panel", "panel-primary" )
-							                                      .add(
-									                                      BootstrapUiBuilders
-											                                      .div()
-											                                      .css( "panel-heading" )
-											                                      .add(
-													                                      BootstrapUiBuilders.node( "h3" )
-													                                                         .css( "panel-title" )
-													                                                         .add( TextViewElement.text( groupName ) )
-											                                      )
-							                                      )
-							                                      .add( body )
-					                   )
+					bootstrap.builders.column( Grid.Device.MD.width( 3 ) )
+					                  .add(
+							                  html.builders.div()
+							                               .css( "panel", "panel-primary" )
+							                               .add(
+									                               html.builders
+											                               .div()
+											                               .css( "panel-heading" )
+											                               .add(
+													                               html.builders.h3()
+													                                            .css( "panel-title" )
+													                                            .add( TextViewElement.text( groupName ) )
+											                               )
+							                               )
+							                               .add( body )
+					                  )
 			);
 		} );
 

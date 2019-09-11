@@ -44,6 +44,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class TestFormGroupDescriptionTextPostProcessor
 {
+	private static final String CSS_FORM_TEXT_DESCRIPTION = "form-text-description";
+
 	@Mock
 	private EntityPropertyDescriptor descriptor;
 
