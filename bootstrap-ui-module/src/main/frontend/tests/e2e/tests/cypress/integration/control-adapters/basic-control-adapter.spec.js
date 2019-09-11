@@ -69,7 +69,7 @@ describe( 'ControlAdapter - Basic', function () {
     };
 
     before( function () {
-        cy.visit( "/control-adapters" );
+        cy.visit( "/utilities/control-adapters" );
     } );
 
     describe( 'textbox', () => {
