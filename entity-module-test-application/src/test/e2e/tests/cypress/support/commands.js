@@ -58,12 +58,12 @@ Cypress.Commands.add( "login", ( username ) => {
 } );
 
 Cypress.Commands.add( 'goToMenuItem', ( title ) => {
-    cy.get( '.nav-sidebar' ).within( () => {
+    cy.get( '.sidebar' ).within( () => {
         cy.get( 'a[title="' + title + '"]' ).click();
     } );
 } );
 
 Cypress.Commands.add( 'assertListViewResults', ( numberOfResultsOnPage, totalNumberOfResults = numberOfResultsOnPage ) => {
     cy.get( 'table tr' ).should( 'have.length', numberOfResultsOnPage + 1 );
-    cy.get( '.pcs-body-section > .panel > .panel-heading' ).contains( totalNumberOfResults );
+    cy.get( '.em-sortableTable-panel > .card-header' ).contains( totalNumberOfResults );
 } );
