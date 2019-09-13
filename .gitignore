@@ -26,3 +26,4 @@ target
 db
 .DS_Store
 local-data
+node_modules

@@ -1,0 +1,14 @@
+version: "3.1"
+services:
+  # Build frontend resources
+  frontend:
+    tty: false
+    build:
+      context: .
+      dockerfile: ./docker/frontend.docker
+    command: yarn run build
+    volumes:
+      - ./bootstrap-theme/src/main/frontend:/build/src/main/frontend:cached
+      # scope node_modules to the container
+      - /build/src/main/frontend/node_modules
+      - ./bootstrap-demo-app/src/main/resources/views/static/bootstrapSample/theme:/build/src/main/resources/META-INF/webjars/ax-bootstrap-theme/0.0.1:delegated

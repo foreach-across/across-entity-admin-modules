@@ -1,0 +1,16 @@
+FROM node:12.9.1-alpine
+
+RUN apk update && apk add bash
+
+# Setup folder
+RUN mkdir -p /build/src/main/frontend/
+
+WORKDIR /build/src/main/frontend
+
+# Install dependencies
+COPY ./bootstrap-theme/src/main/frontend/package.json package.json
+COPY ./bootstrap-theme/src/main/frontend/yarn.lock yarn.lock
+COPY ./bootstrap-theme/src/main/frontend/.npmrc .npmrc
+
+RUN yarn --frozen-lockfile
+
