@@ -1,0 +1,26 @@
+across:
+  development:
+    active: true
+
+acrossHibernate:
+  hibernate-properties:
+    hibernate.format_sql: false
+    hibernate.use_sql_comments: false
+    hibernate.show_sql: false
+
+fileManagerModule:
+  localRepositoriesRoot: local-data/storage
+
+server:
+  error:
+    includeStacktrace: ALWAYS
+  port: 8080
+
+spring:
+  datasource:
+    url: "jdbc:h2:./local-data/db/bootstrapSample-db"
+    username: sa
+
+acrossModule:
+  BootstrapSampleApplicationModule:
+    resources: ../bootstrap-demo-app/src/main/resources

@@ -1,0 +1,8 @@
+acrossHibernate:
+  create-unit-of-work-factory: true
+
+adminWebModule:
+  title: Bootstrap 4 Demo application
+  login:
+    rememberMe:
+      key: test

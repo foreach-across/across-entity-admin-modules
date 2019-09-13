@@ -1,0 +1,100 @@
+/*
+################################################################################################
+This is the main Gradle build file
+################################################################################################
+*/
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        // Provides the bootRun task in Gradle
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.1.RELEASE")
+    }
+}
+
+repositories {
+    maven {
+        // This repository contains the Across RELEASE and SNAPSHOT versions
+        url 'https://repository.foreach.be/nexus/repository/public/'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+// From the spring-boot-gradle-plugin which provides a proper mavenBom import
+dependencyManagement {
+    imports {
+        mavenBom "com.foreach.across:platform-bom:2.1.4.RELEASE"
+    }
+}
+
+group = 'com.across.samples'
+version = '1.0.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+def lombokVersion = '1.16.22'
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
+dependencies {
+    // It seems Gradle BOMs don't deliver accurate resolution of the dependencyManagement sections in across Platform BOM
+    //implementation platform('com.foreach.across:platform-bom:2.1.2.RELEASE')
+
+    // Lombok
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    
+    implementation("com.foreach.across:across-autoconfigure")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    implementation("commons-fileupload:commons-fileupload")
+    implementation("com.h2database:h2")
+
+            implementation("com.foreach.across:across-web")
+            implementation("com.foreach.across.modules:across-hibernate-module")
+            implementation("com.foreach.across.modules:entity-module")
+            implementation("com.foreach.across.modules:properties-module")
+            implementation("com.foreach.across.modules:file-manager-module")
+
+    testCompile("com.foreach.across:across-test")
+}
+
+def buildProperties = new BuildProperties(version: version, revision: "development")
+def buildDate = new Date()
+
+processResources {
+    filesMatching('build.properties') {
+        // Replace the properties in the build.properties file, used in the ApplicationInfoModule
+        expand("pom": buildProperties, 'build': buildProperties, 'timestamp': buildDate)
+    }
+}
+
+bootJar {
+    launchScript()
+    excludeDevtools = true
+    manifest {
+        attributes("Implementation-Title": project.name,
+                "Implementation-Version": version,
+                "Build-Time": buildDate.format("yyyyMMdd-HHmm"))
+    }
+}
+
+class BuildProperties {
+    String version, revision
+}
