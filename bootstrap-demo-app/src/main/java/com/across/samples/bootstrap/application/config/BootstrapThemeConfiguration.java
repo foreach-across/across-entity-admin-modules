@@ -11,7 +11,7 @@ import static com.foreach.across.modules.web.resource.WebResource.CSS;
 import static com.foreach.across.modules.web.resource.WebResource.css;
 
 @Configuration
-public class ThemeConfiguration
+public class BootstrapThemeConfiguration
 {
 	@Autowired
 	void autoRegisterPackage( @Qualifier("adminWebResourcePackageManager") WebResourcePackageManager resourcePackageManager ) {
