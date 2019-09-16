@@ -20,6 +20,7 @@ import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfigu
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityFactory;
+import com.foreach.across.modules.entity.views.EntityView;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -100,6 +101,7 @@ public class LibraryConfiguration implements EntityConfigurer
 		        .and( registerEntityQueryExecutor( libraries::values ) )
 		        .detailView()
 		        .listView()
+		        .view( EntityView.SUMMARY_VIEW_NAME, vb -> vb.showProperties( "name", "books" ) )
 		        .createFormView()
 		        .updateFormView()
 		        .deleteFormView()
@@ -172,6 +174,8 @@ public class LibraryConfiguration implements EntityConfigurer
 	@Data
 	static class Library
 	{
+		@Getter(AccessLevel.PRIVATE)
+		@Setter(AccessLevel.PRIVATE)
 		private String id;
 
 		@NotBlank
@@ -204,6 +208,7 @@ public class LibraryConfiguration implements EntityConfigurer
 		@Length(max = 100)
 		private String title;
 
+		@javax.validation.constraints.NotEmpty
 		private List<Set<Genre>> genres = Collections.emptyList();
 
 		private List<Author> authors = Collections.emptyList();

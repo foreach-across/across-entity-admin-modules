@@ -5,17 +5,19 @@ import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfigu
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityFactory;
+import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.filemanager.business.reference.FileReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.repository.core.EntityInformation;
 
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,6 +29,15 @@ import static com.foreach.across.modules.entity.support.EntityConfigurationCusto
 public class CarConfiguration implements EntityConfigurer
 {
 	private final Map<Serializable, Car> cars = new HashMap<>();
+
+	@EventListener
+	@SuppressWarnings("unused")
+	public void registerMenuItems( EntityAdminMenuEvent<Car> adminMenu ) {
+		if ( adminMenu.isForUpdate() ) {
+			adminMenu.builder()
+			         .item( "#","Link to current page" );
+		}
+	}
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
@@ -167,9 +178,10 @@ public class CarConfiguration implements EntityConfigurer
 		@Length(max = 30)
 		private String name;
 		private Model model;
-		@NonNull
+		@NotNull
 		private ManufacturerConfiguration.Manufacturer manufacturer;
 		private Long price;
+		@NotNull
 		private FileReference manual;
 		private String remarks;
 
