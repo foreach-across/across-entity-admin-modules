@@ -1,9 +1,10 @@
 package com.across.samples.bootstrap.application.config;
 
+import com.foreach.across.core.annotations.OrderInModule;
+import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityFactory;
-import com.foreach.across.modules.entity.views.support.ValueFetcher;
 import com.foreach.across.modules.filemanager.business.reference.FileReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
 @Configuration
+@OrderInModule(1)
 public class CarConfiguration implements EntityConfigurer
 {
 	private final Map<Serializable, Car> cars = new HashMap<>();
@@ -51,15 +53,14 @@ public class CarConfiguration implements EntityConfigurer
 		        .properties(
 				        props -> props.property( "id" )
 				                      .hidden( true )
-				        .and()
-				        .property( "manufacturer" )
-				        .valueFetcher( new ValueFetcher<Car>()
-				        {
-					        @Override
-					        public Object getValue( Car entity ) {
-						        return entity.getManufacturer();
-					        }
-				        } )
+				                      .and()
+				                      .property( "price" )
+				                      .attribute( NumericFormElementConfiguration.class,
+				                                  NumericFormElementConfiguration.currency( Currency.getInstance( "EUR" ), 2, true ) )
+				                      .and()
+				                      .property( "model.options[].price" )
+				                      .attribute( NumericFormElementConfiguration.class,
+				                                  NumericFormElementConfiguration.currency( Currency.getInstance( "EUR" ), 2, true ) )
 		        )
 		        .and( registerEntityQueryExecutor( cars::values ) )
 		        .detailView()
@@ -180,7 +181,7 @@ public class CarConfiguration implements EntityConfigurer
 			b.model = model == null ? null : model.copy();
 			b.manufacturer = manufacturer == null ? null : manufacturer.copy();
 			b.price = price;
-			b.manual = manual == null ? null :  manual.toDto();
+			b.manual = manual == null ? null : manual.toDto();
 			b.remarks = remarks;
 			return b;
 		}

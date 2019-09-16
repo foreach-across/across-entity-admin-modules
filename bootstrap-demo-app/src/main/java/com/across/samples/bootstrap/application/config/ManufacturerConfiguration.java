@@ -1,14 +1,19 @@
 package com.across.samples.bootstrap.application.config;
 
+import com.foreach.across.core.annotations.OrderInModule;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
+import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityFactory;
+import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.repository.core.EntityInformation;
 
 import java.io.Serializable;
@@ -19,9 +24,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.foreach.across.modules.entity.support.EntityConfigurationCustomizers.registerEntityQueryExecutor;
 
 @Configuration
+@OrderInModule(2)
 public class ManufacturerConfiguration implements EntityConfigurer
 {
 	public final static Map<Serializable, Manufacturer> manufacturers = new ConcurrentHashMap<>();
+
+	@EventListener
+	@SuppressWarnings("unused")
+	public void registerMenuItems( EntityAdminMenuEvent<Manufacturer> adminMenu ) {
+		if ( adminMenu.isForUpdate() ) {
+			adminMenu.builder()
+			         .item( "/advanced-options/foreach", "foreach", "https://www.foreach.be/" )
+			         .and()
+			         .item( "/advanced-options/google", "Google", "http://www.google.be" );
+		}
+	}
 
 	@Override
 	public void configure( EntitiesConfigurationBuilder entities ) {
@@ -56,6 +73,15 @@ public class ManufacturerConfiguration implements EntityConfigurer
 		        .createFormView()
 		        .updateFormView()
 		        .deleteFormView()
+		        .association( ab -> ab.targetEntityType( CarConfiguration.Car.class )
+		                              .name( "cars" )
+		                              .targetProperty( "manufacturer" )
+		                              .associationType( EntityAssociation.Type.EMBEDDED )
+		                              .listView()
+		                              .updateFormView()
+		                              .createFormView()
+		                              .deleteFormView()
+		        )
 		        .show();
 	}
 
