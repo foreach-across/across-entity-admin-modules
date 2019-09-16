@@ -1,10 +1,12 @@
 package com.across.samples.bootstrap.application.config;
 
 import com.foreach.across.core.annotations.OrderInModule;
+import com.foreach.across.modules.bootstrapui.elements.BootstrapUiElements;
 import com.foreach.across.modules.bootstrapui.elements.NumericFormElementConfiguration;
 import com.foreach.across.modules.entity.config.EntityConfigurer;
 import com.foreach.across.modules.entity.config.builders.EntitiesConfigurationBuilder;
 import com.foreach.across.modules.entity.registry.EntityFactory;
+import com.foreach.across.modules.entity.views.ViewElementMode;
 import com.foreach.across.modules.entity.views.menu.EntityAdminMenuEvent;
 import com.foreach.across.modules.filemanager.business.reference.FileReference;
 import lombok.AllArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.data.repository.core.EntityInformation;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,7 +38,7 @@ public class CarConfiguration implements EntityConfigurer
 	public void registerMenuItems( EntityAdminMenuEvent<Car> adminMenu ) {
 		if ( adminMenu.isForUpdate() ) {
 			adminMenu.builder()
-			         .item( "#","Link to current page" );
+			         .item( "#", "Link to current page" );
 		}
 	}
 
@@ -72,10 +75,21 @@ public class CarConfiguration implements EntityConfigurer
 				                      .property( "model.options[].price" )
 				                      .attribute( NumericFormElementConfiguration.class,
 				                                  NumericFormElementConfiguration.currency( Currency.getInstance( "EUR" ), 2, true ) )
+				                      .and()
+				                      .property( "soldOutsideEU" )
+				                      // todo migrate to toggle view element
+				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.RADIO )
 		        )
 		        .and( registerEntityQueryExecutor( cars::values ) )
 		        .detailView()
-		        .listView()
+		        .listView(
+				        lvb -> lvb.entityQueryFilter(
+						        eqf -> eqf.showProperties( "name", "manufacturer", "releaseDate", "soldOutsideEU" )
+						                  .properties( props -> props.property( "soldOutsideEU" )
+						                                             .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.RADIO )
+						                  )
+				        )
+		        )
 		        .createFormView()
 		        .updateFormView()
 		        .deleteFormView()
@@ -183,6 +197,10 @@ public class CarConfiguration implements EntityConfigurer
 		private Long price;
 		@NotNull
 		private FileReference manual;
+		@NotNull
+		private LocalDateTime releaseDate;
+		@NotNull
+		private Boolean soldOutsideEU;
 		private String remarks;
 
 		public Car copy() {
