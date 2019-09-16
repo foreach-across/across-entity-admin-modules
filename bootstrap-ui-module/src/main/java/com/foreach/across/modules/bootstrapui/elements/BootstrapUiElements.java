@@ -17,7 +17,6 @@ package com.foreach.across.modules.bootstrapui.elements;
 
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyles;
 import com.foreach.across.modules.web.ui.StandardViewElements;
-import com.foreach.across.modules.web.ui.ViewElement;
 
 /**
  * @author Arne Vandamme
@@ -41,6 +40,7 @@ public interface BootstrapUiElements extends StandardViewElements
 	String TOGGLE = "bootstrapToggleSwitch";
 	String SELECT = "bootstrapSelect";
 	String MULTI_CHECKBOX = "bootstrapMultiCheckbox";
+	String MULTI_TOGGLE = "bootstrapMultiToggleSwitch";
 	String STATIC_CONTROL = "bootstrapStaticControl";
 	String LABEL = "bootstrapLabel";
 	String FORM_GROUP = "bootstrapFormGroup";
