@@ -77,16 +77,25 @@ public class CarConfiguration implements EntityConfigurer
 				                                  NumericFormElementConfiguration.currency( Currency.getInstance( "EUR" ), 2, true ) )
 				                      .and()
 				                      .property( "soldOutsideEU" )
-				                      // todo migrate to toggle view element
+				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.TOGGLE )
+				                      .and()
+				                      .property( "clutch" )
 				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.RADIO )
 		        )
 		        .and( registerEntityQueryExecutor( cars::values ) )
 		        .detailView()
 		        .listView(
 				        lvb -> lvb.entityQueryFilter(
-						        eqf -> eqf.showProperties( "name", "manufacturer", "releaseDate", "soldOutsideEU" )
-						                  .properties( props -> props.property( "soldOutsideEU" )
-						                                             .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.RADIO )
+						        eqf -> eqf.showProperties( "name", "manufacturer", "clutch", "releaseDate", "soldOutsideEU" )
+						                  .properties(
+								                  props -> props.property( "soldOutsideEU" )
+								                                .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.TOGGLE )
+								                                .and()
+								                                .property( "clutch" )
+								                                .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.RADIO )
+								                                .and()
+								                                .property( "releaseDate" )
+								                                .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.DATETIME )
 						                  )
 				        )
 		        )
@@ -196,7 +205,9 @@ public class CarConfiguration implements EntityConfigurer
 		private ManufacturerConfiguration.Manufacturer manufacturer;
 		private Long price;
 		@NotNull
-		private FileReference manual;
+		private FileReference userManual;
+		@NotNull
+		private Boolean clutch;
 		@NotNull
 		private LocalDateTime releaseDate;
 		@NotNull
@@ -211,8 +222,11 @@ public class CarConfiguration implements EntityConfigurer
 			b.model = model == null ? null : model.copy();
 			b.manufacturer = manufacturer == null ? null : manufacturer.copy();
 			b.price = price;
-			b.manual = manual == null ? null : manual.toDto();
+			b.userManual = userManual == null ? null : userManual.toDto();
+			b.releaseDate = releaseDate;
 			b.remarks = remarks;
+			b.soldOutsideEU = soldOutsideEU;
+			b.clutch = clutch;
 			return b;
 		}
 	}
