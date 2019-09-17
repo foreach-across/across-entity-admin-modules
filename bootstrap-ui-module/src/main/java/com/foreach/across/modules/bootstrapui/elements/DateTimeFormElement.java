@@ -20,6 +20,7 @@ import com.foreach.across.modules.web.ui.elements.AbstractNodeViewElement;
 import com.foreach.across.modules.web.ui.elements.ConfigurableTextViewElement;
 import com.foreach.across.modules.web.ui.elements.ContainerViewElement;
 import lombok.NonNull;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
@@ -31,7 +32,6 @@ import java.util.function.Consumer;
 import static com.foreach.across.modules.bootstrapui.styles.BootstrapStyles.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.attribute;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.children;
-import static com.foreach.across.modules.web.ui.elements.HtmlViewElement.Functions.css;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
 /**
@@ -167,7 +167,8 @@ public class DateTimeFormElement extends InputGroupFormElement
 	 */
 	private String getTarget() {
 		if ( StringUtils.isNotBlank( this.getHtmlId() ) ) {
-			return "#" + getHtmlId();
+			String escapedHtmlId = RegExUtils.replaceAll( getHtmlId(), "(:|\\.|\\[|\\]|,|=|@|#)", "\\\\$1" );
+			return "#" + escapedHtmlId;
 		}
 		return "";
 	}

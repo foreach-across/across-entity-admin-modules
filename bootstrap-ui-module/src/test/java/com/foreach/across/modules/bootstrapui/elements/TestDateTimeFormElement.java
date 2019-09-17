@@ -227,4 +227,31 @@ public class TestDateTimeFormElement extends AbstractBootstrapViewElementTest
 
 		assertEquals( "prefix.one", control.getControlName() );
 	}
+
+	@Test
+	public void controlNamesAreEscapedToSupportJQuery() {
+		ContainerViewElement container = new ContainerViewElement();
+		FormInputElement control = datetime;
+
+		String controlName = "properties[props].property[aPro#per@ty].properties[props:abc,def=ghi]";
+		control.setControlName( controlName );
+		render( control );
+		container.addChild( control );
+
+		String escapedControlName = "properties\\[props\\]\\.property\\[aPro\\#per\\@ty\\]\\.properties\\[props\\:abc\\,def\\=ghi\\]";
+
+		renderAndExpect(
+				control,
+				"<div id=\"_dp-controller--" + controlName + "\" class='input-group js-form-datetimepicker date' " + DATA_ATTRIBUTE + ">" +
+						"<input data-target=\"#_dp-controller--" + escapedControlName + "\" class='datetimepicker-input form-control' type='text' name='_" + controlName + "' id='" + controlName + "' />" +
+						"<div class=\"input-group-append\">" +
+						"<div data-target=\"#_dp-controller--" + escapedControlName + "\" data-toggle=\"datetimepicker\" class=\"input-group-text\"><i class=\"fas fa-calendar\"></i></div>" +
+						"</div>" +
+						"<input name='" + controlName + "' type='hidden' />" +
+						"</div>"
+		);
+
+		assertEquals( control.getControlName(), controlName );
+		assertEquals( control.getHtmlId(), "_dp-controller--" + controlName );
+	}
 }

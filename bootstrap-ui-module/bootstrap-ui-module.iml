@@ -114,6 +114,9 @@
     <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy:1.9.13" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy-agent:1.9.13" level="project" />
     <orderEntry type="library" name="Maven: com.foreach.across:across-web:5.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across:across-core:5.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.foreach.across:across-test:5.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.foreach.across:across-web:5.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-web:2.1.7.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:2.1.7.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-logging:2.1.7.RELEASE" level="project" />

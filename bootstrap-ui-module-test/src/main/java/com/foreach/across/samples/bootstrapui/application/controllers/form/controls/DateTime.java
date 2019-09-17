@@ -63,7 +63,7 @@ class DateTime extends ExampleController
 				panel( "Date format", datepickerWithDateFormat().setControlName( "dp10" ) ),
 				panel( "Datepicker with control buttons", datepickerWithAllButtons().setControlName( "dp11" ) ),
 				panel( "Localized fr_FR (Date)", datepickerLocalizedfrFR_Date().setControlName( "dp12" ) ),
-				panel( "Localized fr_FR (LocalDateTime)", datepickerLocalizedfrFR_LocalDateTime().setControlName( "dp13" ) ),
+				panel( "Localized fr_FR (LocalDateTime)", datepickerLocalizedfrFR_LocalDateTime().setControlName( "dp13[]" ) ),
 				panel( "Localized ja_JP (Date)", datepickerLocalizedjaJP_Date().setControlName( "dp14" ) ),
 				panel( "Localized ja_JP (LocalDateTime)", datepickerLocalizedjaJP_LocalDateTime().setControlName( "dp15" ) )
 		);
