@@ -74,6 +74,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		return StringUtils.equals( OPTIONS, viewElementType )
 				|| StringUtils.equals( SELECT, viewElementType )
 				|| StringUtils.equals( RADIO, viewElementType )
+				|| StringUtils.equals( MULTI_TOGGLE, viewElementType )
 				|| StringUtils.equals( MULTI_CHECKBOX, viewElementType );
 	}
 
@@ -125,6 +126,9 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		else if ( MULTI_CHECKBOX.equals( actualType ) ) {
 			options.checkbox();
 		}
+		else if ( MULTI_TOGGLE.equals( actualType ) ) {
+			options.toggle();
+		}
 		else {
 			options.radio();
 		}
@@ -135,7 +139,7 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 
 		boolean isFilterControl = ViewElementMode.FILTER_CONTROL.equals( viewElementMode.forSingle() );
 		boolean nullValuePossible = !typeDescriptor.getSimpleTargetType().isPrimitive()
-				&& !( OptionsFormElementBuilder.Type.RADIO.equals( options.getType() ) && EntityAttributes.isRequired( descriptor ) );
+				&& !( isRadioOrToggleElement( options ) && EntityAttributes.isRequired( descriptor ) );
 
 		if ( isFilterControl ) {
 			optionGenerator.setEmptyOption(
@@ -169,6 +173,11 @@ public class OptionsFormElementBuilderFactory extends EntityViewElementBuilderFa
 		       .add( optionGenerator );
 
 		return options;
+	}
+
+	private boolean isRadioOrToggleElement( OptionsFormElementBuilder options ) {
+		return OptionsFormElementBuilder.Type.RADIO.equals( options.getType() )
+				|| OptionsFormElementBuilder.Type.TOGGLE.equals( options.getType() );
 	}
 
 	private SelectFormElementConfiguration createFilterSelectFormElementConfiguration() {
