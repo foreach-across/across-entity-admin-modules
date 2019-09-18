@@ -79,19 +79,19 @@ public class CarConfiguration implements EntityConfigurer
 				                      .property( "soldOutsideEU" )
 				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.TOGGLE )
 				                      .and()
-				                      .property( "clutch" )
+				                      .property( "transmission" )
 				                      .viewElementType( ViewElementMode.CONTROL, BootstrapUiElements.RADIO )
 		        )
 		        .and( registerEntityQueryExecutor( cars::values ) )
 		        .detailView()
 		        .listView(
 				        lvb -> lvb.entityQueryFilter(
-						        eqf -> eqf.showProperties( "name", "manufacturer", "clutch", "releaseDate", "soldOutsideEU" )
+						        eqf -> eqf.showProperties( "name", "manufacturer", "transmission", "releaseDate", "soldOutsideEU" )
 						                  .properties(
 								                  props -> props.property( "soldOutsideEU" )
 								                                .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.TOGGLE )
 								                                .and()
-								                                .property( "clutch" )
+								                                .property( "transmission" )
 								                                .viewElementType( ViewElementMode.FILTER_CONTROL, BootstrapUiElements.RADIO )
 								                                .and()
 								                                .property( "releaseDate" )
@@ -207,7 +207,7 @@ public class CarConfiguration implements EntityConfigurer
 		@NotNull
 		private FileReference userManual;
 		@NotNull
-		private Boolean clutch;
+		private Boolean transmission;
 		@NotNull
 		private LocalDateTime releaseDate;
 		@NotNull
@@ -226,7 +226,7 @@ public class CarConfiguration implements EntityConfigurer
 			b.releaseDate = releaseDate;
 			b.remarks = remarks;
 			b.soldOutsideEU = soldOutsideEU;
-			b.clutch = clutch;
+			b.transmission = transmission;
 			return b;
 		}
 	}
