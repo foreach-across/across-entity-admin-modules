@@ -27,6 +27,10 @@
       div.bootstrap-select {
         div.dropdown-menu > div.inner.show {
           overflow-y: initial !important;
+
+          > ul.dropdown-menu.inner.show {
+            float: left !important;
+          }
         }
       }
 

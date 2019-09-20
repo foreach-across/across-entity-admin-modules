@@ -64,7 +64,6 @@ class OneToManyEntityAssociationBuilder implements EntityAssociationBuilder
 
 				MutableEntityAssociation association = entityConfiguration.createAssociation( associationName );
 				association.setAttribute( PersistentProperty.class, property );
-				association.setSourceProperty( entityConfiguration.getPropertyRegistry().getProperty( fqPropertyName ) );
 				association.setTargetEntityConfiguration( other );
 				association.setTargetProperty( other.getPropertyRegistry().getProperty( mappedBy ) );
 

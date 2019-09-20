@@ -95,7 +95,7 @@ public class TestRepositoryEntityRegistrar
 				.isVisible( true )
 				.hasRepository()
 				.hasAttribute( EntityAttributes.TRANSACTION_MANAGER_NAME, HibernateJpaConfiguration.TRANSACTION_MANAGER )
-				.hasAssociation( "client.groups", false ).from( "groups" ).to( ClientGroup.class, "id.client" ).and()
+				.hasAssociation( "client.groups", false ).from( null ).to( ClientGroup.class, "id.client" ).and()
 				.hasAssociation( "clientGroup.id.client", true ).from( null ).to( ClientGroup.class, "id.client" );
 
 		verify( Company.class )
