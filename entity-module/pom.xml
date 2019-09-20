@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>com.foreach.across.modules</groupId>
 		<artifactId>entity-module-project</artifactId>
-		<version>3.4.0.RELEASE</version>
+		<version>3.4.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>entity-module</artifactId>

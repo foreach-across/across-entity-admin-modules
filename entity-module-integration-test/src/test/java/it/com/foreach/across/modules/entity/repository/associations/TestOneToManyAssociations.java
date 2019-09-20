@@ -128,10 +128,9 @@ public class TestOneToManyAssociations
 		assertSame( client, association.getSourceEntityConfiguration() );
 		assertSame( clientGroup, association.getTargetEntityConfiguration() );
 
-		assertNotNull( "OneToMany should have both source and target property set", association.getSourceProperty() );
-		assertNotNull( "OneToMany should have both source and target property set", association.getTargetProperty() );
+		assertNull( "OneToMany should have only the target property set", association.getSourceProperty() );
+		assertNotNull( "OneToMany should have only the target property set", association.getTargetProperty() );
 
-		assertSame( client.getPropertyRegistry().getProperty( "groups" ), association.getSourceProperty() );
 		assertEquals( "id.client", association.getTargetProperty().getName() );
 
 		assertTrue( association.hasView( EntityView.LIST_VIEW_NAME ) );
