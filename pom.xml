@@ -18,6 +18,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
+    <parent>
+        <groupId>com.foreach.across</groupId>
+        <artifactId>across-module-parent</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+    </parent>
+
     <groupId>com.foreach.across.modules</groupId>
     <artifactId>admin-web-bootstrap-4-project</artifactId>
     <version>${revision}</version>

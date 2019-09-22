@@ -1,0 +1,14 @@
+/**
+ * Contains the general Bootstrap theme css, to be applied before module extension CSS.
+ */
+
+// see https://getbootstrap.com/docs/4.3/getting-started/theming/ for more information
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+
+$enable-rounded: true;
+$enable-shadows: true;
+$enable-gradients: true;
+$enable-transitions: true;
+
+@import "../../node_modules/bootstrap/scss/bootstrap";

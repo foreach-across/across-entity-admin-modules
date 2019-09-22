@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:across="https://across.dev">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${@adminWeb.title}">Administration</title>
+    <across:web-resources bucket="head"/>
+    <across:web-resources bucket="javascript"/>
+    <th:block th:if="${isLoginPage}">
+        <link rel="stylesheet" th:href="@{@static:adminweb/css/adminweb-login.css}"/>
+    </th:block>
+    <across:web-resources bucket="css"/>
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+
+<div class="wrapper" th:unless="${isLoginPage}">
+
+    <!--/* Main menu navigation */-->
+    <nav id="sidebar" class="sidebar collapse show py-2 px-3">
+        <div class="sidebar-header">
+            <a class="navbar-brand" th:if="${@adminWeb.title}" th:href="@{${#webapp.path('/')}}" th:text="${@adminWeb.title}">
+                application name
+            </a>
+        </div>
+
+        <across:view element="${adminWebSidebarFixed ? adminWebNavbarNavigation : adminWebSidebarNavigation}"/>
+
+        <div th:if="${adminWebSidebarFixed}" class="sidebar-footer py-3">
+            <across:view element="${adminWebNavbarRightNavigation}"/>
+        </div>
+        <!--        <across:view element="${adminWebSidebarNavigation}"/>-->
+        <!--/*
+        <div class="navbar-header admin-navbar-title">
+
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#admin-top-navbar" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="admin-top-navbar">
+            <across:view element="${adminWebNavbarNavigation}"/>
+
+        </div>
+        */-->
+    </nav>
+
+    <!--/* Content body */-->
+    <div th:if="${childPage}" id="content" class="px-5 pb-5 pt-3">
+        <a class="sidebar-toggle" href="#sidebar" data-toggle="collapse" title="Toggle sidebar">
+            <i class="fas fa-align-left"></i>
+        </a>
+
+        <nav>
+            <across:view element="${adminWebBreadcrumb}"/>
+            <th:block th:unless="${adminWebSidebarFixed}">
+                <across:view element="${adminWebNavbarRightNavigation}"/>
+            </th:block>
+        </nav>
+
+        <div th:replace="${childPage} :: content"></div>
+    </div>
+</div>
+
+<!--/* Login page does not render navigation */-->
+<th:block th:if="${isLoginPage}">
+    <div th:replace="${childPage} :: content"></div>
+</th:block>
+
+<across:web-resources bucket="javascript-page-end"/>
+
+<th:block th:fragment="bottom-scripts(scripts)" th:if="${scripts}">
+    <th:block th:insert="${scripts}"/>
+</th:block>
+
+<th:block th:insert="::bottom-scripts(~{${childPage} :: javascript-page-end})"/>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+/**
+ * Contains the admin web specific theme css, to be applied after module extension CSS.
+ */
+
+body {
+  padding-top: 0;
+  background-color: whitesmoke;
+}
+
+.tabbable {
+  background-color: white;
+  padding: 10px;
+}
+
+.wrapper {
+  display: flex;
+  width: 100%
+}
+
+#sidebar {
+  min-width: 300px;
+  max-width: 300px;
+  height: 100vh;
+  background-color: #1d2a3a;
+}
+
+#sidebar.collapse .sidebar-toggle {
+  /*margin-left: -250px;*/
+  display: block;
+}
+
+#sidebar.collapsing {
+  display: none;
+}
+
+#content {
+  position: absolute;
+  width: calc(100% - 300px);
+  height: 100%;
+  top: 0;
+  right: 0;
+}
+
+.sidebar-toggle {
+  display: none;
+  position: absolute;
+  border: solid 1px;
+  padding: 5px 10px;
+  border-radius: 30%;
+  color: gray;
+  background-color: white;
+  left: -20px;
+}
+
+.sidebar-toggle.collapsed {
+  left: 6px;
+  border: none;
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+}

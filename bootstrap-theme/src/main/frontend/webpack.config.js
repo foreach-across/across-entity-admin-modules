@@ -20,7 +20,12 @@ const path = require( "path" );
 const workingDirectory = process.env.INIT_CWD;
 
 const cssEntries = [
-    "adminweb-bootstrap"
+    "adminweb-classic-bootstrap",
+    "adminweb-classic-theme",
+    "adminweb-sidebar-bootstrap",
+    "adminweb-sidebar-theme",
+    "adminweb-sidebar-fixed-bootstrap",
+    "adminweb-sidebar-fixed-theme"
 ];
 
 const outputDir = "../resources/META-INF/webjars/ax-bootstrap-theme/0.0.1";

@@ -6,3 +6,4 @@ adminWebModule:
   login:
     rememberMe:
       key: test
+

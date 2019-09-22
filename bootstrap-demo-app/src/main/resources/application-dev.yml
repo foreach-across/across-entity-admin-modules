@@ -21,6 +21,6 @@ spring:
     url: "jdbc:h2:./local-data/db/bootstrapSample-db"
     username: sa
 
-#acrossModule:
-#  BootstrapSampleApplicationModule:
-#    resources: ../bootstrap-demo-app/src/main/resources
+acrossModule:
+  AdminWebThemesModule:
+    resources: ./bootstrap-theme/src/main/resources

@@ -28,6 +28,10 @@
     <version>${revision}</version>
     <packaging>jar</packaging>
 
+    <properties>
+        <across.platform.version>5.0.0-SNAPSHOT</across.platform.version>
+    </properties>
+
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
@@ -50,4 +54,39 @@
             <url>https://repository.foreach.be/nexus/repository/public/</url>
         </repository>
     </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.foreach.across</groupId>
+                <artifactId>across-module-parent</artifactId>
+                <version>${across.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.foreach.across.modules</groupId>
+            <artifactId>admin-web-module</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
 </project>
