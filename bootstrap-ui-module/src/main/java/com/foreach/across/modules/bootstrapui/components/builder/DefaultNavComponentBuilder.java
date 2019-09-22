@@ -19,7 +19,9 @@ package com.foreach.across.modules.bootstrapui.components.builder;
 import com.foreach.across.modules.bootstrapui.elements.LinkViewElement;
 import com.foreach.across.modules.bootstrapui.styles.BootstrapStyleRule;
 import com.foreach.across.modules.web.menu.Menu;
+import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.modules.web.ui.ViewElementBuilderContext;
+import com.foreach.across.modules.web.ui.elements.HtmlViewElement;
 import com.foreach.across.modules.web.ui.elements.NodeViewElement;
 import com.foreach.across.modules.web.ui.elements.TextViewElement;
 
@@ -41,6 +43,7 @@ import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavComponentBuilder>
 {
 	private BootstrapStyleRule navStyle = css.nav;
+	private ViewElement.WitherSetter<HtmlViewElement> dropDownWither;
 	private boolean replaceGroupBySelectedItem = false;
 
 	/**
@@ -74,12 +77,13 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	}
 
 	/**
-	 * Render menu as stacked pills.
+	 * Render menu as stacked pills, with a dropright.
 	 *
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder stacked() {
 		navStyle = combine( css.nav.pills, css.flex.column );
+		dropDownWither = css.dropdown.direction.right;
 		return this;
 	}
 
@@ -99,6 +103,16 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	 * @return current builder
 	 */
 	public DefaultNavComponentBuilder replaceGroupBySelectedItem() {
+		return replaceGroupBySelectedItem( true );
+	}
+
+	/**
+	 * Configure a wither method to be added to each dropdown item being generated.
+	 * Can be used to set for example the dropdown direction.
+	 *
+	 * @return current builder
+	 */
+	public DefaultNavComponentBuilder dropDownWither( ViewElement.WitherSetter<HtmlViewElement> dropDownWither ) {
 		return replaceGroupBySelectedItem( true );
 	}
 
@@ -156,6 +170,10 @@ public class DefaultNavComponentBuilder extends NavComponentBuilder<DefaultNavCo
 	                                boolean iconOnly,
 	                                ViewElementBuilderContext builderContext ) {
 		li.set( css.dropdown, witherAttribute( item, null ) );
+
+		if ( dropDownWither != null ) {
+			li.set( dropDownWither );
+		}
 
 		if ( !addViewElementIfAttributeExists( item, ATTR_LINK_VIEW_ELEMENT, li, builderContext ) ) {
 			LinkViewElement link = new LinkViewElement();
