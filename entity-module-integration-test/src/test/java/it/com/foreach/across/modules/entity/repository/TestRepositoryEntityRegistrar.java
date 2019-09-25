@@ -138,6 +138,19 @@ public class TestRepositoryEntityRegistrar
 				.isVisible( false );
 	}
 
+	@Test
+	public void automaticallyRegisteredEntitiesAreAttachedToTheCorrectModule() {
+		verify( Client.class ).isFromModule( SpringDataJpaModule.NAME );
+		verify( Company.class ).isFromModule( SpringDataJpaModule.NAME );
+		verify( Car.class ).isFromModule( SpringDataJpaModule.NAME );
+		verify( Group.class ).isFromModule( SpringDataJpaModule.NAME );
+		verify( ClientGroup.class ).isFromModule( SpringDataJpaModule.NAME );
+		verify( Representative.class ).isFromModule( SpringDataJpaModule.NAME );
+
+		// from module which bootstrapped before EntityModule
+		verify( Product.class ).isFromModule( SolrTestModule.NAME );
+	}
+
 	private EntityVerifier verify( Class<?> entityType ) {
 		return new EntityVerifier( entityRegistry, entityType );
 	}
@@ -389,7 +402,7 @@ public class TestRepositoryEntityRegistrar
 	}
 
 	@Configuration
-	@AcrossTestConfiguration(modules = { EntityModule.NAME, AdminWebModule.NAME, SpringSecurityModule.NAME })
+	@AcrossTestConfiguration(modules = { AdminWebModule.NAME, SpringSecurityModule.NAME })
 	public static class Config
 	{
 		@Bean
@@ -407,6 +420,13 @@ public class TestRepositoryEntityRegistrar
 		@Bean
 		public SolrTestModule solrTestModule() {
 			return new SolrTestModule();
+		}
+
+		@Bean
+		public EntityModule entityModule() {
+			EntityModule entityModule = new EntityModule();
+			entityModule.addRuntimeDependency( SolrTestModule.NAME );
+			return entityModule;
 		}
 	}
 }
