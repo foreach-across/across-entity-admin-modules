@@ -30,7 +30,6 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.Collection;
 
 /**
@@ -54,13 +53,28 @@ public class ModuleEntityRegistration
 	private final AcrossContextInfo contextInfo;
 	private final MutableEntityRegistry entityRegistry;
 	private final AutowireCapableBeanFactory beanFactory;
+	private final AcrossModuleInfo currentModule;
+
+	private boolean previousModulesRegistered = false;
 
 	@SuppressWarnings("all")
 	@RefreshableCollection(includeModuleInternals = true, incremental = true)
 	private Collection<EntityRegistrar> registrars;
 
-	@PostConstruct
-	protected void registerAlreadyBootstrappedModules() {
+	@EventListener
+	public void moduleBootstrapped( AcrossModuleBootstrappedEvent moduleBootstrappedEvent ) {
+		if ( !currentModule.equals( moduleBootstrappedEvent.getModule() ) ) {
+			if ( !previousModulesRegistered ) {
+				// todo: workaround for AX-251 (beans from creating module are only added once the module is bootstrapped)
+				previousModulesRegistered = true;
+				registerAlreadyBootstrappedModules();
+			}
+
+			applyModule( moduleBootstrappedEvent.getModule() );
+		}
+	}
+
+	private void registerAlreadyBootstrappedModules() {
 		for ( AcrossModuleInfo moduleInfo : contextInfo.getModules() ) {
 			switch ( moduleInfo.getBootstrapStatus() ) {
 				case BootstrapBusy:
@@ -74,12 +88,7 @@ public class ModuleEntityRegistration
 	}
 
 	@EventListener
-	protected void moduleBootstrapped( AcrossModuleBootstrappedEvent moduleBootstrappedEvent ) {
-		applyModule( moduleBootstrappedEvent.getModule() );
-	}
-
-	@EventListener
-	protected void contextBootstrapped( AcrossContextBootstrappedEvent contextBootstrappedEvent ) {
+	public void contextBootstrapped( AcrossContextBootstrappedEvent contextBootstrappedEvent ) {
 		AcrossContextBeanRegistry beanRegistry = AcrossContextUtils.getBeanRegistry( contextBootstrappedEvent.getContext() );
 
 		// Configure the configuration builder

@@ -16,6 +16,7 @@
 
 package it.com.foreach.across.modules.entity.utils;
 
+import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.modules.entity.registry.EntityAssociation;
 import com.foreach.across.modules.entity.registry.EntityConfiguration;
 import com.foreach.across.modules.entity.registry.EntityRegistry;
@@ -72,6 +73,11 @@ public class EntityVerifier
 		assertTrue( association.hasView( EntityView.UPDATE_VIEW_NAME ) );
 		assertTrue( association.hasView( EntityView.DELETE_VIEW_NAME ) );
 
+		return this;
+	}
+
+	public EntityVerifier isFromModule( String moduleName ) {
+		assertEquals( moduleName, configuration.getAttribute( AcrossModuleInfo.class ).getName() );
 		return this;
 	}
 }

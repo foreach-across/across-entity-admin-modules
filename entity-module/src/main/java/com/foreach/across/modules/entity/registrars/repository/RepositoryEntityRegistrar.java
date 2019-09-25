@@ -16,6 +16,7 @@
 
 package com.foreach.across.modules.entity.registrars.repository;
 
+import com.foreach.across.core.context.AcrossListableBeanFactory;
 import com.foreach.across.core.context.info.AcrossModuleInfo;
 import com.foreach.across.core.context.registry.AcrossContextBeanRegistry;
 import com.foreach.across.modules.entity.EntityAttributes;
@@ -35,6 +36,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
@@ -92,10 +94,16 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 	                              AcrossContextBeanRegistry beanRegistry ) {
 		ApplicationContext applicationContext = moduleInfo.getApplicationContext();
 
-		applicationContext.getBeansOfType( MappingContext.class )
-		                  .forEach( ( name, bean ) -> mappingContextRegistry.addMappingContext( bean ) );
+		AcrossListableBeanFactory lbf = (AcrossListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
 
-		Map<String, RepositoryFactoryInformation> repositoryFactoryInformationMap = applicationContext.getBeansOfType( RepositoryFactoryInformation.class );
+		lbf.getBeansOfType( MappingContext.class )
+		   .forEach( ( name, bean ) -> {
+			   if ( !lbf.isExposedBean( name ) ) {
+				   mappingContextRegistry.addMappingContext( bean );
+			   }
+		   } );
+
+		Map<String, RepositoryFactoryInformation> repositoryFactoryInformationMap = lbf.getBeansOfType( RepositoryFactoryInformation.class );
 
 		Repositories repositories = new Repositories( applicationContext );
 		RepositoryInvokerFactory repositoryInvokerFactory = new DefaultRepositoryInvokerFactory( repositories, mvcConversionService );
@@ -103,6 +111,10 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 		List<MutableEntityConfiguration> registered = new ArrayList<>( repositoryFactoryInformationMap.size() );
 
 		for ( Map.Entry<String, RepositoryFactoryInformation> informationBean : repositoryFactoryInformationMap.entrySet() ) {
+			if ( isExposedBean( lbf, informationBean.getKey() ) ) {
+				continue;
+			}
+
 			RepositoryFactoryInformation repositoryFactoryInformation = informationBean.getValue();
 
 			if ( repositoryFactoryInformation.getPersistentEntity() == null ) {
@@ -136,6 +148,15 @@ class RepositoryEntityRegistrar implements EntityRegistrar
 		}
 
 		LOG.debug( "Registered {} entities from module {}", registered.size(), moduleInfo.getName() );
+	}
+
+	private boolean isExposedBean( AcrossListableBeanFactory lbf, String beanName ) {
+		// todo: workaround for AX-252: exposed factory beans incorrectly identified as not exposed
+		if ( lbf.isExposedBean( beanName ) ) {
+			return true;
+		}
+
+		return lbf.isFactoryBean( beanName ) && lbf.isExposedBean( BeanFactoryUtils.transformedBeanName( beanName ) );
 	}
 
 	@SuppressWarnings("unchecked")

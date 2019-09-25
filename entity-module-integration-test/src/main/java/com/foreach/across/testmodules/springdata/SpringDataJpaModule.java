@@ -20,13 +20,14 @@ import com.foreach.across.core.AcrossModule;
 import com.foreach.across.core.annotations.AcrossDepends;
 import com.foreach.across.core.context.configurer.ApplicationContextConfigurer;
 import com.foreach.across.core.context.configurer.ComponentScanConfigurer;
+import com.foreach.across.modules.entity.EntityModule;
 import com.foreach.across.modules.hibernate.jpa.AcrossHibernateJpaModule;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageConfigurer;
 import com.foreach.across.modules.hibernate.provider.HibernatePackageRegistry;
 
 import java.util.Set;
 
-@AcrossDepends(required = AcrossHibernateJpaModule.NAME)
+@AcrossDepends(required = { AcrossHibernateJpaModule.NAME, EntityModule.NAME })
 public class SpringDataJpaModule extends AcrossModule implements HibernatePackageConfigurer
 {
 	public static final String NAME = "SpringDataJpaModule";
