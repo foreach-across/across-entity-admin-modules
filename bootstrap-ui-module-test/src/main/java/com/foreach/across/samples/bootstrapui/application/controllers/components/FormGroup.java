@@ -16,6 +16,7 @@
 
 package com.foreach.across.samples.bootstrapui.application.controllers.components;
 
+import com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementBuilder;
 import com.foreach.across.modules.web.menu.PathBasedMenuBuilder;
 import com.foreach.across.modules.web.ui.ViewElement;
 import com.foreach.across.samples.bootstrapui.application.controllers.ExampleController;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.Collections;
 import java.util.Map;
 
+import static com.foreach.across.modules.bootstrapui.elements.autosuggest.AutoSuggestFormElementConfiguration.withDataSet;
 import static com.foreach.across.modules.bootstrapui.ui.factories.BootstrapViewElements.bootstrap;
 import static com.foreach.across.modules.web.ui.elements.HtmlViewElements.html;
 
@@ -97,9 +99,17 @@ class FormGroup extends ExampleController
 		model.addAttribute( BindingResult.MODEL_KEY_PREFIX + "item", errors );
 		model.addAttribute( "item", target );
 
+		AutoSuggestFormElementBuilder autoSuggestControl =
+				bootstrap.builders.autosuggest()
+				                  .configuration(
+						                  withDataSet( dataSet -> dataSet.remoteUrl( "/form-controls/autosuggest/suggest?query={{query}}" ) )
+				                  )
+				                  .controlName( "control" );
 		return bootstrap.builders.form().commandObject( target )
 		                         .add( bootstrap.builders.formGroup().label( "Texbox" ).control( bootstrap.builders.textbox().controlName( "control" ) ) )
 		                         .add( bootstrap.builders.formGroup().control( bootstrap.builders.checkbox().controlName( "control" ).label( "Checkbox" ) ) )
+		                         .add( bootstrap.builders.formGroup().label( "Datetime" ).control( bootstrap.builders.datetime().controlName( "control" ) ) )
+		                         .add( bootstrap.builders.formGroup().control( autoSuggestControl ).label( "Autosuggest" ) )
 		                         //.postProcessor( (builderContext, formGroup) -> formGroup.setDetectFieldErrors( tr ) ))
 		                         .build();
 	}

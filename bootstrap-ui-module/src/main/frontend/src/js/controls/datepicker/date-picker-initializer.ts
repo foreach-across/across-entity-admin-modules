@@ -20,7 +20,7 @@
  * @since 2.2.0
  */
 function initializeDateTimePickers( node: any ): void {
-    $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+    $.fn.datetimepicker.Constructor.Default = $.extend( {}, $.fn.datetimepicker.Constructor.Default, {
         icons: {
             time: 'far fa-clock',
             date: 'far fa-calendar',
@@ -32,7 +32,7 @@ function initializeDateTimePickers( node: any ): void {
             clear: 'fas fa-trash',
             close: 'fas fa-times',
         },
-    });
+    } );
 
     $( '[data-bootstrapui-datetimepicker]', node ).each( function () {
         const configuration = $.extend( true, {}, $( this ).data( 'bootstrapui-datetimepicker' ) );
@@ -40,14 +40,19 @@ function initializeDateTimePickers( node: any ): void {
 
         delete configuration.exportFormat;
 
+        const formatAndSetDate = ( currentDate: any ) => {
+            const formattedValue = currentDate ? moment( currentDate ).format( exportFormat ) : '';
+            $( 'input[type=hidden]', $( this ) ).attr( 'value', formattedValue );
+        };
+
         $( this ).datetimepicker( configuration );
-        $( this ).on( 'change.datetimepicker', ( e: any ) => {
-            const exchangeValue = e.date ? moment( e.date ).format( exportFormat ) : '';
-            $( 'input[type=hidden]', $( this ) ).attr( 'value', exchangeValue );
-        } );
+        $( this ).on( 'change.datetimepicker', ( e: any ) => formatAndSetDate( e.date ) );
         $( this ).find( 'input[type="text"]' ).on( 'blur focusout', () => {
             $( this ).data( 'datetimepicker' ).hide();
         } );
+
+        const initialDate = $( this ).data( 'datetimepicker' ).date();
+        formatAndSetDate( initialDate );
     } );
 }
 
